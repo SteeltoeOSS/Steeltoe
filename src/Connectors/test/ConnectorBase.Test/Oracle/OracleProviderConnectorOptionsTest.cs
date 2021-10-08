@@ -14,10 +14,8 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -48,7 +46,6 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["oracle:client:ConnectionString"] = "Data Source=localhost:1521/orclpdb1;User Id=hr;Password=hr;"
@@ -57,10 +54,8 @@ namespace Steeltoe.Connector.Oracle.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new OracleProviderConnectorOptions(config);
 
-            // assert
             Assert.Equal(appsettings["oracle:client:ConnectionString"], sconfig.ToString());
         }
     }

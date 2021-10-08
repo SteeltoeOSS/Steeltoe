@@ -46,7 +46,6 @@ namespace Steeltoe.Stream.StreamHost
         [Trait("Category", "SkipOnLinux")]
         public void HostConfiguresRabbitOptions()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);

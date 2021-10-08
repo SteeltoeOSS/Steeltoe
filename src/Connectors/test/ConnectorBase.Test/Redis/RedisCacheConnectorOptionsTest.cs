@@ -16,10 +16,8 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new RedisCacheConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -78,7 +76,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["redis:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
@@ -87,17 +84,14 @@ namespace Steeltoe.Connector.Redis.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new RedisCacheConnectorOptions(config);
 
-            // assert
             Assert.Equal(appsettings["redis:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
-            // arrange
             // simulate an appsettings file
             var appsettings = new Dictionary<string, string>()
             {
@@ -115,10 +109,8 @@ namespace Steeltoe.Connector.Redis.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new RedisCacheConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["redis:client:ConnectionString"], sconfig.ToString());
         }
     }

@@ -22,14 +22,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void AddConfigServer_DefaultWebHost_AddsConfigServer()
         {
-            // Arrange
             var hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
 
-            // Act
             hostBuilder.AddConfigServer();
             var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-            // Assert
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
             Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
         }
@@ -37,14 +34,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void AddConfigServer_New_WebHostBuilder_AddsConfigServer()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
 
-            // Act
             hostBuilder.AddConfigServer();
             var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-            // Assert
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
             Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
         }
@@ -52,14 +46,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void AddConfigServer_IHostBuilder_AddsConfigServer()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).AddConfigServer();
 
-            // Act
             var host = hostBuilder.Build();
             var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-            // Assert
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
             Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
         }

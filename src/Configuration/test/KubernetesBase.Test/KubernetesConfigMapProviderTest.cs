@@ -22,15 +22,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesConfigMapProvider_ThrowsOnNulls()
         {
-            // arrange
             var client = new Mock<k8s.Kubernetes>();
             var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
 
-            // act
             var ex1 = Assert.Throws<ArgumentNullException>(() => new KubernetesConfigMapProvider(null, settings));
             var ex2 = Assert.Throws<ArgumentNullException>(() => new KubernetesConfigMapProvider(client.Object, null));
 
-            // assert
             Assert.Equal("kubernetes", ex1.ParamName);
             Assert.Equal("settings", ex2.ParamName);
         }
@@ -38,7 +35,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesConfigMapProvider_ThrowsOn403()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.Forbidden);
 
@@ -46,17 +42,14 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
             var provider = new KubernetesConfigMapProvider(client, settings);
 
-            // act
             var ex = Assert.Throws<HttpOperationException>(() => provider.Load());
 
-            // assert
             Assert.Equal(HttpStatusCode.Forbidden, ex.Response.StatusCode);
         }
 
         [Fact]
         public async Task KubernetesConfigMapProvider_ContinuesOn404()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.NotFound);
 
@@ -64,18 +57,15 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings() { ConfigMaps = true, Period = 0 });
             var provider = new KubernetesConfigMapProvider(client, settings);
 
-            // act
             provider.Load();
             await Task.Delay(50);
 
-            // assert
             Assert.True(provider.Polling, "Provider has begun polling");
         }
 
         [Fact]
         public void KubernetesConfigMapProvider_AddsToDictionaryOnSuccess()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
@@ -85,10 +75,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
             var provider = new KubernetesConfigMapProvider(client, settings);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("TestKey", out var testValue));
             Assert.Equal("TestValue", testValue);
         }
@@ -96,7 +84,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesConfigMapProvider_SeesDoubleUnderscore()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
@@ -106,10 +93,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
             var provider = new KubernetesConfigMapProvider(client, settings);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("several:layers:deep:TestKey", out var testValue));
             Assert.Equal("TestValue", testValue);
         }
@@ -117,7 +102,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public async Task KubernetesConfigMapProvider_ReloadsDictionaryOnInterval()
         {
-            // arrange
             var foundKey = false;
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
@@ -134,10 +118,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings() { Period = 1, ConfigMaps = true });
             var provider = new KubernetesConfigMapProvider(client, settings, new CancellationTokenSource(20000).Token);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("TestKey", out var testValue), "TryGet TestKey");
             Assert.Equal("TestValue", testValue);
 
@@ -169,7 +151,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesConfigMapProvider_AddsJsonFileToDictionaryOnSuccess()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
@@ -181,10 +162,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
             var provider = new KubernetesConfigMapProvider(client, settings);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("Test0", out var testValue));
             Assert.Equal("Value0", testValue);
 
@@ -195,7 +174,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesConfigMapProvider_AddsEnvSpecificJsonFileToDictionaryOnSuccess()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
@@ -207,10 +185,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
             var provider = new KubernetesConfigMapProvider(client, settings);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("Test0", out var testValue));
             Assert.Equal("Value0", testValue);
 

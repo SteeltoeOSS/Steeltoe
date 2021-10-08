@@ -17,7 +17,6 @@ namespace Steeltoe.Common.Kubernetes.Test
         [Fact]
         public void ConstructorBindsValuesFromConfig()
         {
-            // arrange
             var json = @"
             {
                 ""spring"": {
@@ -61,10 +60,8 @@ namespace Steeltoe.Common.Kubernetes.Test
             }";
             var config = new ConfigurationBuilder().AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(json))).Build();
 
-            // act
             var appInfo = new KubernetesApplicationOptions(config);
 
-            // assert
             Assert.Equal("testapp", appInfo.Name);
             Assert.Equal("not-default", appInfo.NameSpace);
             Assert.Single(appInfo.Config.Paths);
@@ -86,26 +83,20 @@ namespace Steeltoe.Common.Kubernetes.Test
         [Fact]
         public void Spring_Application_Name__UsedInAppName()
         {
-            // arrange
             var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:application:name", "springappname" } }).Build();
 
-            // act
             var appInfo = new KubernetesApplicationOptions(config);
 
-            // assert
             Assert.Equal("springappname", appInfo.Name);
         }
 
         [Fact]
         public void AssemblyNameIsDefaultAppName()
         {
-            // arrange
             var config = new ConfigurationBuilder().Build();
 
-            // act
             var appInfo = new KubernetesApplicationOptions(config);
 
-            // assert
             Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, appInfo.Name);
         }
     }

@@ -36,15 +36,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Eureka()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
-            // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
 
-            // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
             Assert.NotNull(hostedService);
@@ -54,10 +51,8 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public async Task AddServiceDiscovery_IHostBuilder_StartsUp()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
-            // Act
             var host = await hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).StartAsync();
 
             Assert.True(true);
@@ -66,15 +61,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Consul()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ConsulSettings));
 
-            // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
 
-            // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());
             Assert.NotNull(hostedService);

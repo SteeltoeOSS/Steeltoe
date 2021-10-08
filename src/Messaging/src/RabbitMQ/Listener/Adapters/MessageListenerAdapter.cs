@@ -186,7 +186,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             foreach (var v in values)
             {
                 sb.Append(v);
-                sb.Append(",");
+                sb.Append(',');
             }
 
             return sb.ToString(0, sb.Length - 1);

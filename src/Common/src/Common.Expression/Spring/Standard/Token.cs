@@ -66,14 +66,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         public override string ToString()
         {
             var s = new StringBuilder();
-            s.Append("[").Append(Kind.ToString());
+            s.Append('[').Append(Kind.ToString());
             if (Kind.HasPayload)
             {
-                s.Append(":").Append(Data);
+                s.Append(':').Append(Data);
             }
 
-            s.Append("]");
-            s.Append("(").Append(StartPos).Append(",").Append(EndPos).Append(")");
+            s.Append(']');
+            s.Append('(').Append(StartPos).Append(',').Append(EndPos).Append(')');
             return s.ToString();
         }
     }

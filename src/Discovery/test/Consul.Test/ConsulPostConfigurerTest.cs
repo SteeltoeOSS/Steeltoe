@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test
@@ -14,10 +12,8 @@ namespace Steeltoe.Discovery.Consul.Test
         [Fact]
         public void ValidateOptionsComplainsAboutDefaultWhenWontWork()
         {
-            // arrange
             Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
-            // act & assert
             var exception = Assert.Throws<InvalidOperationException>(() => ConsulPostConfigurer.ValidateConsulOptions(new ConsulOptions()));
             Assert.Contains("localhost", exception.Message);
             Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);

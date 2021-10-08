@@ -18,31 +18,25 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void GetServiceInfos_GetsCFRedisServiceInfos()
         {
-            // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP);
 
             var config = new ConfigurationBuilder().AddCloudFoundry().Build();
 
-            // act
             var infos = config.GetServiceInfos(typeof(RedisServiceInfo));
 
-            // assert
             Assert.NotEmpty(infos);
         }
 
         [Fact]
         public void GetServiceInfos_GetsRedisServiceInfos()
         {
-            // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
             var config = new ConfigurationBuilder().AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build();
 
-            // act
             var infos = config.GetServiceInfos(typeof(RedisServiceInfo));
 
-            // assert
             Assert.NotEmpty(infos);
             var si = infos.First() as RedisServiceInfo;
             Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:host"], si.Host);

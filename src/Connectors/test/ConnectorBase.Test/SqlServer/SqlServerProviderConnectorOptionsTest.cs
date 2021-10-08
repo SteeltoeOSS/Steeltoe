@@ -15,10 +15,8 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -49,7 +47,6 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
@@ -58,17 +55,14 @@ namespace Steeltoe.Connector.SqlServer.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new SqlServerProviderConnectorOptions(config);
 
-            // assert
             Assert.Equal(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
-            // arrange
             // simulate an appsettings file
             var appsettings = new Dictionary<string, string>()
             {
@@ -86,17 +80,14 @@ namespace Steeltoe.Connector.SqlServer.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new SqlServerProviderConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void CloudFoundryConfig_Found_By_Name()
         {
-            // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPNoTag);
 
@@ -106,10 +97,8 @@ namespace Steeltoe.Connector.SqlServer.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new SqlServerProviderConnectorOptions(config);
 
-            // assert
             Assert.NotEqual("192.168.0.80", sconfig.Server);
             Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", sconfig.Database);
             Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", sconfig.Username);
@@ -119,7 +108,6 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void CloudFoundryConfig_Found_By_Tag()
         {
-            // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPIgnoreName);
 
@@ -129,10 +117,8 @@ namespace Steeltoe.Connector.SqlServer.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new SqlServerProviderConnectorOptions(config);
 
-            // assert
             Assert.NotEqual("192.168.0.80", sconfig.Server);
             Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", sconfig.Database);
             Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", sconfig.Username);
@@ -142,7 +128,6 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void ConnectionString_Overridden_By_CloudFoundryConfig_CredsInUrl()
         {
-            // arrange
             // simulate an appsettings file
             var appsettings = new Dictionary<string, string>()
             {
@@ -160,10 +145,8 @@ namespace Steeltoe.Connector.SqlServer.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new SqlServerProviderConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
         }
     }

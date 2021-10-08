@@ -13,10 +13,8 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void Build__ReturnsProvider()
         {
-            // Arrange
             ILoggerFactory factory = new LoggerFactory();
 
-            // Act and Assert
             var source = new SpringBootEnvSource();
             var provider = source.Build(new ConfigurationBuilder());
             Assert.IsType<SpringBootEnvProvider>(provider);

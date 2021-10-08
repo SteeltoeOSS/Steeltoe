@@ -13,12 +13,10 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void PortNumbers_ShouldBeSecuredIfDefaultOrAdded()
         {
-            // arrange
             var properties = new KubernetesDiscoveryOptions();
             properties.KnownSecurePorts.Add(12345);
             var sut = new DefaultIsServicePortSecureResolver(properties);
 
-            // act & assert
             Assert.False(sut.Resolve(new Input("dummy")));
             Assert.False(sut.Resolve(new Input("dummy", 8080)));
             Assert.False(sut.Resolve(new Input("dummy", 1234)));
@@ -31,10 +29,8 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void InputWithSecuredLabel_ShouldResolveToTrue()
         {
-            // arrange
             var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
 
-            // act & assert
             Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
 
             Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));
@@ -43,10 +39,8 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void InputWithSecuredAnnotation_ShouldResolveToTrue()
         {
-            // arrange
             var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
 
-            // act & assert
             Assert.True(sut.Resolve(new Input("dummy", 8080, null, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
 
             Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));

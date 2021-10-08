@@ -34,7 +34,6 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            // arrange
             var config = new CosmosDbConnectorOptions()
             {
                 Host = "https://someHost:443",
@@ -46,10 +45,8 @@ namespace Steeltoe.Connector.CosmosDb.Test
 
             var configurer = new CosmosDbProviderConfigurer();
 
-            // act
             var connString = configurer.Configure(null, config);
 
-            // assert
             Assert.Equal("AccountEndpoint=https://someHost:443;AccountKey=masterKey;", connString);
         }
 

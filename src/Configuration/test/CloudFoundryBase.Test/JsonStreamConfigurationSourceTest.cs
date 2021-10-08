@@ -14,10 +14,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_Throws_StreamNull()
         {
-            // Arrange
             MemoryStream stream = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new JsonStreamConfigurationSource(stream));
             Assert.Contains(nameof(stream), ex.Message);
         }
@@ -25,7 +23,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Build_WithStreamSource_ReturnsExpected()
         {
-            // Arrange
             var environment = @"
                 {
                   ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",

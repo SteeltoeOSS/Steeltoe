@@ -107,7 +107,6 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void Sql_Not_Connected_Returns_Down_Status()
         {
-            // arrange
             var implementationType = SqlServerTypeLocator.SqlConnection;
             var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
@@ -115,10 +114,8 @@ namespace Steeltoe.Connector.Test
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.DOWN, status.Status);
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
@@ -126,7 +123,6 @@ namespace Steeltoe.Connector.Test
         [Fact(Skip = "Integration test - requires local db server")]
         public void Sql_Is_Connected_Returns_Up_Status()
         {
-            // arrange
             var implementationType = SqlServerTypeLocator.SqlConnection;
             var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1, ConnectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true" };
             var sInfo = new SqlServerServiceInfo("MyId", string.Empty);
@@ -134,17 +130,14 @@ namespace Steeltoe.Connector.Test
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UP, status.Status);
         }
 
         [Fact]
         public void MySql_Not_Connected_Returns_Down_Status()
         {
-            // arrange
             var implementationType = MySqlTypeLocator.MySqlConnection;
             var sqlConfig = new MySqlProviderConnectorOptions() { ConnectionTimeout = 1 };
             var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
@@ -152,10 +145,8 @@ namespace Steeltoe.Connector.Test
             var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.DOWN, status.Status);
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
@@ -163,7 +154,6 @@ namespace Steeltoe.Connector.Test
         [Fact(Skip = "Integration test - requires local db server")]
         public void MySql_Is_Connected_Returns_Up_Status()
         {
-            // arrange
             var implementationType = MySqlTypeLocator.MySqlConnection;
             var sqlConfig = new MySqlProviderConnectorOptions() { ConnectionTimeout = 1 };
             var sInfo = new MySqlServiceInfo("MyId", "mysql://steeltoe:steeltoe@localhost:3306");
@@ -171,17 +161,14 @@ namespace Steeltoe.Connector.Test
             var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UP, status.Status);
         }
 
         [Fact]
         public void PostgreSql_Not_Connected_Returns_Down_Status()
         {
-            // arrange
             var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
             var sqlConfig = new PostgresProviderConnectorOptions() { Timeout = 1 };
             var sInfo = new PostgresServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
@@ -189,10 +176,8 @@ namespace Steeltoe.Connector.Test
             var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.DOWN, status.Status);
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
@@ -200,7 +185,6 @@ namespace Steeltoe.Connector.Test
         [Fact(Skip = "Integration test - requires local db server")]
         public void PostgreSql_Is_Connected_Returns_Up_Status()
         {
-            // arrange
             var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
             var sqlConfig = new PostgresProviderConnectorOptions();
             var sInfo = new PostgresServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
@@ -208,17 +192,14 @@ namespace Steeltoe.Connector.Test
             var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UP, status.Status);
         }
 
         [Fact]
         public void Oracle_Not_Connected_Returns_Down_Status()
         {
-            // arrange
             var implementationType = OracleTypeLocator.OracleConnection;
             var sqlConfig = new OracleProviderConnectorOptions() { ConnectionTimeout = 1 };
             var sInfo = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/someService");
@@ -226,10 +207,8 @@ namespace Steeltoe.Connector.Test
             var connFactory = new OracleProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.DOWN, status.Status);
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
@@ -237,7 +216,6 @@ namespace Steeltoe.Connector.Test
         [Fact(Skip = "Integration test - requires local db server")]
         public void Oracle_Is_Connected_Returns_Up_Status()
         {
-            // arrange
             var implementationType = OracleTypeLocator.OracleConnection;
             var sqlConfig = new OracleProviderConnectorOptions();
             var sInfo = new OracleServiceInfo("MyId", "oracle://hr:hr@localhost:1521/orclpdb1");
@@ -245,10 +223,8 @@ namespace Steeltoe.Connector.Test
             var connFactory = new OracleProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UP, status.Status);
         }
     }

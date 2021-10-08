@@ -19,10 +19,8 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryActuators_ThrowsOnNull_Services()
         {
-            // Arrange
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.AddCloudFoundryActuators(null, config));
             Assert.Equal("services", ex.ParamName);
         }
@@ -30,27 +28,21 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryActuators_ThrowsOnNull_Config()
         {
-            // Arrange
             IServiceCollection services2 = new ServiceCollection();
 
-            // Act
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.AddCloudFoundryActuators(services2, null));
 
-            // Assert
             Assert.Equal("config", ex.ParamName);
         }
 
         [Fact]
         public void AddCloudFoundryActuators_ConfiguresCorsDefaults()
         {
-            // arrange
             var hostBuilder = new WebHostBuilder().Configure(config => { });
 
-            // act
             var host = hostBuilder.ConfigureServices((context, services) => services.AddCloudFoundryActuators(context.Configuration)).Build();
             var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
-            // assert
             Assert.NotNull(options);
             var policy = options.Value.GetPolicy("SteeltoeManagement");
             Assert.True(policy.IsOriginAllowed("*"));
@@ -61,16 +53,13 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryActuators_ConfiguresCorsCustom()
         {
-            // arrange
             Action<CorsPolicyBuilder> customCors = (myPolicy) => myPolicy.WithOrigins("http://google.com");
             var hostBuilder = new WebHostBuilder().Configure(config => { });
 
-            // act
             var host = hostBuilder.ConfigureServices((context, services) => services.AddCloudFoundryActuators(context.Configuration, customCors)).Build();
             var options = new ApplicationBuilder(host.Services)
                                 .ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
-            // assert
             Assert.NotNull(options);
             var policy = options.Value.GetPolicy("SteeltoeManagement");
             Assert.True(policy.IsOriginAllowed("http://google.com"));

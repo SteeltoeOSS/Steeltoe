@@ -14,11 +14,9 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             CosmosDbConnectorOptions config = null;
             CosmosDbServiceInfo si = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, config, typeof(CosmosClient)));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -43,12 +41,10 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull_v3()
         {
-            // Arrange
             CosmosDbConnectorOptions config = null;
 
             CosmosDbServiceInfo si = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, config, typeof(Microsoft.Azure.Cosmos.CosmosClient)));
             Assert.Contains(nameof(config), ex.Message);
         }

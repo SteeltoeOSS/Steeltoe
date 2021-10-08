@@ -14,20 +14,16 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         [Fact]
         public void AddRandomValueSource_ThrowsIfConfigBuilderNull()
         {
-            // Arrange
             IConfigurationBuilder configurationBuilder = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RandomValueExtensions.AddRandomValueSource(configurationBuilder));
         }
 
         [Fact]
         public void AddRandomValueSource_ThrowsIfPrefixNull()
         {
-            // Arrange
             string prefix = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentException>(() => RandomValueExtensions.AddRandomValueSource(new ConfigurationBuilder(), prefix));
         }
 

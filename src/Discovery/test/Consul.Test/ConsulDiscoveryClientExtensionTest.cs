@@ -16,40 +16,33 @@ namespace Steeltoe.Discovery.Consul.Test
         [Fact]
         public void ClientEnabledByDefault()
         {
-            // arrange
             var services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            // act
             ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
-            // assert
             Assert.True(clientOptions.Value.Enabled);
         }
 
         [Fact]
         public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
         {
-            // arrange
             var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            // act
             ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
-            // assert
             Assert.False(clientOptions.Value.Enabled);
         }
 
         [Fact]
         public void ClientFavorsConsulDiscoveryEnabled()
         {
-            // arrange
             var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>
             {
@@ -58,12 +51,10 @@ namespace Steeltoe.Discovery.Consul.Test
             };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            // act
             ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
-            // assert
             Assert.True(clientOptions.Value.Enabled);
         }
     }

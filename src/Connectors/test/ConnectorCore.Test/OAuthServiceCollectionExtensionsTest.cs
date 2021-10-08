@@ -22,11 +22,9 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void AddOAuthServiceOptions_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -37,11 +35,9 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void AddOAuthServiceOptions_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -52,12 +48,10 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void AddOAuthServiceOptions_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -65,11 +59,9 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void AddOAuthServiceOptions_NoVCAPs_AddsOAuthOptions()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config);
 
             var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
@@ -79,11 +71,9 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void AddOAuthServiceOptions_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
@@ -91,7 +81,6 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void AddOAuthServiceOptions_MultipleOAuthServices_ThrowsConnectorException()
         {
-            // Arrange
             var env2 = @"
                 {
                     ""p-identity"": [{
@@ -122,7 +111,6 @@ namespace Steeltoe.Connector.OAuth.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -132,7 +120,6 @@ namespace Steeltoe.Connector.OAuth.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
             Assert.Contains("Multiple", ex.Message);
         }
@@ -140,7 +127,6 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void AddOAuthServiceOptions_WithVCAPs_AddsOAuthOptions()
         {
-            // Arrange
             var env2 = @"
                 {
                     ""p-identity"": [{
@@ -158,7 +144,6 @@ namespace Steeltoe.Connector.OAuth.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -168,7 +153,6 @@ namespace Steeltoe.Connector.OAuth.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config);
 
             var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();

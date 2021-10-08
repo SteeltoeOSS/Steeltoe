@@ -77,7 +77,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveNotRequired()
         {
-            var emptyByteArrayMessage = MessageBuilder.WithPayload(new byte[0]).Build();
+            var emptyByteArrayMessage = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
             Assert.Null(resolver.ResolveArgument(paramAnnotatedNotRequired, emptyByteArrayMessage));
 
             var emptyStringMessage = MessageBuilder.WithPayload(string.Empty).Build();

@@ -13,7 +13,6 @@ namespace Steeltoe.Common.Discovery.Test
         [Fact]
         public void Returns_ConfiguredServices()
         {
-            // arrange
             var services = new List<ConfigurationServiceInstance>
             {
                 new ConfigurationServiceInstance { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
@@ -25,10 +24,8 @@ namespace Steeltoe.Common.Discovery.Test
             };
             var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
 
-            // act
             var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
 
-            // assert
             Assert.Equal(3, provider.GetInstances("fruitService").Count);
             Assert.Equal(3, provider.GetInstances("vegetableService").Count);
             Assert.Equal(2, provider.Services.Count);
@@ -37,7 +34,6 @@ namespace Steeltoe.Common.Discovery.Test
         [Fact]
         public void ReceivesUpdatesTo_ConfiguredServices()
         {
-            // arrange
             var services = new List<ConfigurationServiceInstance>
             {
                 new ConfigurationServiceInstance { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
@@ -47,10 +43,8 @@ namespace Steeltoe.Common.Discovery.Test
             Assert.Single(provider.GetInstances("fruitService"));
             Assert.Equal("fruitball", provider.GetInstances("fruitService").First().Host);
 
-            // act
             services.First().Host = "updatedValue";
 
-            // assert
             Assert.Equal("updatedValue", provider.GetInstances("fruitService").First().Host);
         }
     }

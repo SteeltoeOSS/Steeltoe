@@ -98,18 +98,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var sb = new StringBuilder("new ");
             var index = 0;
             sb.Append(GetChild(index++).ToStringAST());
-            sb.Append("(");
+            sb.Append('(');
             for (var i = index; i < ChildCount; i++)
             {
                 if (i > index)
                 {
-                    sb.Append(",");
+                    sb.Append(',');
                 }
 
                 sb.Append(GetChild(i).ToStringAST());
             }
 
-            sb.Append(")");
+            sb.Append(')');
             return sb.ToString();
         }
 

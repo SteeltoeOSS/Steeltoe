@@ -16,32 +16,26 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void Process_NoCurrentSpan_DoesNothing()
         {
-            // Arrange
             using var openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
             var opts = new TracingOptions(null, new ConfigurationBuilder().Build());
             var processor = new TracingLogProcessor(opts);
 
-            // Act
             var result = processor.Process("InputLogMessage");
 
-            // Assert
             Assert.Equal("InputLogMessage", result);
         }
 
         [Fact]
         public void Process_CurrentSpan_ReturnsExpected()
         {
-            // Arrange
             using var openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
             var config = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string> { ["management:tracing:name"] = "foobar" });
             var processor = new TracingLogProcessor(new TracingOptions(new ApplicationInstanceInfo(config), config));
             var tracer = TracerProvider.Default.GetTracer("tracername");
             var span = tracer.StartActiveSpan("spanName");
 
-            // Act
             var result = processor.Process("InputLogMessage");
 
-            // Assert
             Assert.Contains("InputLogMessage", result);
             Assert.Contains("[", result);
             Assert.Contains("]", result);
@@ -66,7 +60,6 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void Process_UseShortTraceIds()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:tracing:name"] = "foobar",
@@ -80,7 +73,6 @@ namespace Steeltoe.Management.Tracing.Test
             var span = tracer.StartActiveSpan("spanName");
             var processor = new TracingLogProcessor(opts);
 
-            // Act
             var result = processor.Process("InputLogMessage");
 
             Assert.Contains("InputLogMessage", result);

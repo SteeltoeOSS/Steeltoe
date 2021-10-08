@@ -99,7 +99,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void ConfigureConnection_NoServiceInfo_ReturnsExpected()
         {
-            // arrange
             var configurer = new RedisCacheConfigurer();
             var config = new RedisCacheConnectorOptions()
             {
@@ -108,11 +107,9 @@ namespace Steeltoe.Connector.Redis.Test
                 Password = "password"
             };
 
-            // act
             var opts = configurer.Configure(null, config);
             Assert.NotNull(opts);
 
-            // assert
             Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
             var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
             Assert.NotNull(ep);
@@ -124,7 +121,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void ConfigureConnection_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            // arrange
             var configurer = new RedisCacheConfigurer();
             var config = new RedisCacheConnectorOptions()
             {
@@ -134,11 +130,9 @@ namespace Steeltoe.Connector.Redis.Test
             };
             var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
 
-            // act
             var opts = configurer.Configure(si, config);
             Assert.NotNull(opts);
 
-            // assert
             Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
             var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
             Assert.NotNull(ep);

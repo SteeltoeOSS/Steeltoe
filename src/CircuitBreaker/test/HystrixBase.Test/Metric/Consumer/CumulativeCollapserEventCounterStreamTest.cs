@@ -148,7 +148,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private static string CollapserEventsToStr(long[] eventCounts)
         {
             var sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             foreach (var eventType in CollapserEventTypeHelper.Values)
             {
                 if (eventCounts[(int)eventType] > 0)
@@ -157,7 +157,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 }
             }
 
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
     }

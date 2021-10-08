@@ -168,11 +168,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             sb.Append(GetChild(0).ToStringAST());
             for (var i = 1; i < ChildCount; i++)
             {
-                sb.Append(" ").Append(OperatorName).Append(" ");
+                sb.Append(' ').Append(OperatorName).Append(' ');
                 sb.Append(GetChild(i).ToStringAST());
             }
 
-            sb.Append(")");
+            sb.Append(')');
             return sb.ToString();
         }
 

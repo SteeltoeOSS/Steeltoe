@@ -58,14 +58,14 @@ namespace Steeltoe.Integration.Support
             sb.Append(" [payload=");
             if (_payload is byte[])
             {
-                sb.Append("byte[").Append(((byte[])(object)_payload).Length).Append("]");
+                sb.Append("byte[").Append(((byte[])(object)_payload).Length).Append(']');
             }
             else
             {
                 sb.Append(_payload);
             }
 
-            sb.Append(", headers=").Append(_headers).Append("]");
+            sb.Append(", headers=").Append(_headers).Append(']');
             return sb.ToString();
         }
 

@@ -162,16 +162,13 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void GetLoggerConfigurations_ReturnsExpected_After_SetLogLevel()
         {
-            // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
             var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
-            // act I
             var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
             var logConfig = provider.GetLoggerConfigurations();
 
-            // assert I
             Assert.Equal(6, logConfig.Count);
             Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
@@ -180,11 +177,9 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
 
-            // act II
             provider.SetLogLevel("A.B", LogLevel.Trace);
             logConfig = provider.GetLoggerConfigurations();
 
-            // assert II
             Assert.Equal(6, logConfig.Count);
             Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
@@ -197,17 +192,14 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void SetLogLevel_Works_OnDefault()
         {
-            // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
             var fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
 
-            // act
             provider.SetLogLevel("Default", LogLevel.Trace);
             var updatedLogConfig = provider.GetLoggerConfigurations();
 
-            // assert
             Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
             Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
         }
@@ -215,19 +207,16 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void ResetLogLevel_Works_OnDefault()
         {
-            // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
             var fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
 
-            // act
             provider.SetLogLevel("Default", LogLevel.Debug);
             var updatedLogConfig = provider.GetLoggerConfigurations();
             provider.SetLogLevel("Default", null);
             var resetConfig = provider.GetLoggerConfigurations();
 
-            // assert
             Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
             Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Debug), updatedLogConfig);
             Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), resetConfig);
@@ -236,7 +225,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void LoggerLogsWithEnrichers()
         {
-            // arrange
             var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
 
             var fac = new LoggerFactory();
@@ -273,7 +261,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void LoggerLogsWithDestructuring()
         {
-            // arrange
             var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
             var fac = new LoggerFactory();
             fac.AddProvider(provider);
@@ -285,14 +272,12 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 
             var logged = unConsole.ToString();
 
-            // assert
             Assert.Contains(@"Info { Info1 = information1, Info2 = information2 }", logged);
         }
 
         [Fact]
         public void LoggerLogs_At_Configured_Setting()
         {
-            // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
             var fac = new LoggerFactory();
             fac.AddProvider(provider);

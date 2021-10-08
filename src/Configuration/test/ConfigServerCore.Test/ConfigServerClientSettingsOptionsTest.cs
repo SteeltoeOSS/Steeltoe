@@ -17,11 +17,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void ConfigureConfigServerClientSettingsOptions_WithDefaults()
         {
-            // Arrange
             var services = new ServiceCollection().AddOptions();
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
-            // Act and Assert
             var builder = new ConfigurationBuilder().AddConfigServer(environment);
             var config = builder.Build();
 

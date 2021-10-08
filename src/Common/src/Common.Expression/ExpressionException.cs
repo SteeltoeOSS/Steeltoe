@@ -66,7 +66,7 @@ namespace Steeltoe.Common.Expression.Internal
                 var output = new StringBuilder();
                 output.Append("Expression [");
                 output.Append(ExpressionString);
-                output.Append("]");
+                output.Append(']');
                 if (Position >= 0)
                 {
                     output.Append(" @");

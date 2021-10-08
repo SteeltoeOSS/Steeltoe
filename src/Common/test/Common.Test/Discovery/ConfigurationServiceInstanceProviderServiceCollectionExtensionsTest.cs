@@ -15,7 +15,6 @@ namespace Steeltoe.Common.Discovery.Test
         [Fact]
         public void AddConfigurationDiscoveryClient_AddsClientWithOptions()
         {
-            // arrange
             var appsettings = @"
 {
     ""discovery"": {
@@ -36,14 +35,12 @@ namespace Steeltoe.Common.Discovery.Test
             cbuilder.AddJsonFile(fileName);
             var services = new ServiceCollection();
 
-            // act
             services.AddConfigurationDiscoveryClient(cbuilder.Build());
             var serviceProvider = services.BuildServiceProvider();
 
             // by getting the provider, we're confirming that the options are also available in the container
             var serviceInstanceProvider = serviceProvider.GetRequiredService(typeof(IServiceInstanceProvider)) as IServiceInstanceProvider;
 
-            // assert
             Assert.NotNull(serviceInstanceProvider);
             Assert.IsType<ConfigurationServiceInstanceProvider>(serviceInstanceProvider);
             Assert.Equal(2, serviceInstanceProvider.Services.Count);

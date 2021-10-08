@@ -23,11 +23,9 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
                     () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
@@ -42,11 +40,9 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
                     () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
@@ -61,12 +57,10 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
                     () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, serviceName));
@@ -76,11 +70,9 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_NoVCAPs_AddsConfiguredConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
 
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>();
@@ -90,11 +82,9 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ConnectorException>(
                     () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "foobar"));
@@ -104,7 +94,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_MultipleRabbitMQServices_ThrowsConnectorException()
         {
-            // Arrange
             var env2 = @"
                 {
                     ""p-rabbitmq"": [{
@@ -137,7 +126,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -147,7 +135,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ConnectorException>(
                     () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
@@ -157,7 +144,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_MultipleRabbitMQServices_DoesntThrow_IfNameUsed()
         {
-            // Arrange
             var env2 = @"
                 {
                     ""p-rabbitmq"": [{
@@ -190,7 +176,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -200,7 +185,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "myRabbitMQService2");
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
             Assert.NotNull(service);
@@ -214,7 +198,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_WithVCAPs_AddsRabbitMQConnection()
         {
-            // Arrange
             var env2 = @"
                 {
                     ""p-rabbitmq"": [{
@@ -233,7 +216,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -243,7 +225,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
 
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
@@ -258,24 +239,20 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_AddsRabbitMQHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
 
         [Fact]
         public void AddRabbitMQConnection_DoesntAddsRabbitMQHealthContributor_WhenCommunityHealthCheckExists()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -285,18 +262,15 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             var ci = cm.Get<RabbitMQConnectionInfo>();
             services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
-            // Act
             RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
-            // Assert
             Assert.Null(healthContributor);
         }
 
         [Fact]
         public void AddRabbitMQConnection_AddsRabbitMQHealthContributor_WhenCommunityHealthCheckExistsAndForced()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -306,11 +280,9 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             var ci = cm.Get<RabbitMQConnectionInfo>();
             services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
-            // Act
             RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
     }

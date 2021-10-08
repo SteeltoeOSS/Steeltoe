@@ -14,12 +14,10 @@ namespace Steeltoe.Management.Endpoint.Test.Hypermedia
         [Fact]
         public void AddHypermediaActuatorServices_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHypermediaActuatorServices(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
