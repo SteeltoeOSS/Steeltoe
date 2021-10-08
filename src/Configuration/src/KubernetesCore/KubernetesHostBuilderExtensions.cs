@@ -4,6 +4,7 @@
 
 using k8s;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Kubernetes;
@@ -20,16 +21,9 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
         public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
-        {
-            hostBuilder
-                .ConfigureAppConfiguration((context, config) =>
-                {
-                    config.AddKubernetes(kubernetesClientConfiguration, loggerFactory);
-                })
-                .ConfigureServices(serviceCollection => serviceCollection.AddKubernetesApplicationInstanceInfo());
-
-            return hostBuilder;
-        }
+                => hostBuilder
+                    .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(kubernetesClientConfiguration, loggerFactory))
+                    .ConfigureServices(svc => svc.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>());
 
         /// <summary>
         /// Add Kubernetes Configuration Providers for configmaps and secrets
@@ -38,15 +32,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
         public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
-        {
-            hostBuilder
-                .ConfigureAppConfiguration((context, config) =>
-                {
-                    config.AddKubernetes(kubernetesClientConfiguration, loggerFactory);
-                })
-                .ConfigureServices((context, serviceCollection) => serviceCollection.AddKubernetesApplicationInstanceInfo());
-
-            return hostBuilder;
-        }
+            => hostBuilder
+                .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(kubernetesClientConfiguration, loggerFactory))
+                .ConfigureServices(svc => svc.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>());
     }
 }

@@ -39,7 +39,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
                 if (e.Response.StatusCode == HttpStatusCode.Forbidden)
                 {
-                    Settings.Logger?.LogCritical(e, "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
+                    Logger?.LogCritical(e, "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
                 }
                 else if (e.Response.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -87,7 +87,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                             Settings.Namespace,
                             onEvent: (eventType, item) =>
                             {
-                                Settings.Logger?.LogInformation("Receved {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
+                                Logger?.LogInformation("Receved {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
                                 switch (eventType)
                                 {
                                     case WatchEventType.Added:
@@ -96,15 +96,15 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                                         ProcessData(item);
                                         break;
                                     default:
-                                        Settings.Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
+                                        Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
                                         break;
                                 }
                             },
                             onError: (exception) =>
                             {
-                                Settings.Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
+                                Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
                             },
-                            onClosed: () => { Settings.Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
+                            onClosed: () => { Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
                         break;
                     case ReloadMethods.Polling:
                         if (!Polling)
@@ -114,7 +114,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
                         break;
                     default:
-                        Settings.Logger?.LogError("Unsupported reload method!");
+                        Logger?.LogError("Unsupported reload method!");
                         break;
                 }
             }
@@ -124,7 +124,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         {
             if (item is null)
             {
-                Settings.Logger?.LogWarning("ConfigMap response is null, no data could be processed");
+                Logger?.LogWarning("ConfigMap response is null, no data could be processed");
                 return;
             }
 
