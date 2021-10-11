@@ -52,7 +52,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         private readonly int _max;
 
-        private readonly List<Token> _tokens = new List<Token>();
+        private readonly List<Token> _tokens = new ();
 
         private readonly string _expressionString;
 

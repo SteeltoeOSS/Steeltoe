@@ -160,7 +160,7 @@ namespace Steeltoe.Common.Lifecycle
 
             private readonly bool _autoStartupOnly;
 
-            private readonly List<LifecycleGroupMember> _members = new List<LifecycleGroupMember>();
+            private readonly List<LifecycleGroupMember> _members = new ();
 
             private readonly ILogger _logger;
 

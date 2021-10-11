@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Endpoint
 {
     public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessageProducer
     {
-        protected object _lock = new object();
+        protected object _lock = new ();
 
         private readonly MessagingTemplate _messagingTemplate;
 

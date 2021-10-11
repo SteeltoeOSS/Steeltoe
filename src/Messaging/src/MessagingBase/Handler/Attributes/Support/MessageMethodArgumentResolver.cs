@@ -19,10 +19,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         {
         }
 
-        public MessageMethodArgumentResolver(IMessageConverter converter)
-        {
-            _converter = converter;
-        }
+        public MessageMethodArgumentResolver(IMessageConverter converter) => _converter = converter;
 
         public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
@@ -47,10 +44,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             return MessageBuilder.CreateMessage(payload, message.Headers, targetPayloadType);
         }
 
-        public virtual bool SupportsParameter(ParameterInfo parameter)
-        {
-            return typeof(IMessage).IsAssignableFrom(parameter.ParameterType);
-        }
+        public virtual bool SupportsParameter(ParameterInfo parameter) => typeof(IMessage).IsAssignableFrom(parameter.ParameterType);
 
         protected virtual Type GetPayloadType(ParameterInfo parameter, IMessage message)
         {
@@ -83,22 +77,13 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         protected virtual bool IsEmptyPayload(object payload)
         {
-            if (payload == null)
+            return payload switch
             {
-                return true;
-            }
-            else if (payload is byte[])
-            {
-                return ((byte[])payload).Length == 0;
-            }
-            else if (payload is string)
-            {
-                return string.IsNullOrEmpty((string)payload);
-            }
-            else
-            {
-                return false;
-            }
+                null => true,
+                byte[] => ((byte[])payload).Length == 0,
+                string sPayload => string.IsNullOrEmpty(sPayload),
+                _ => false
+            };
         }
 
         private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)

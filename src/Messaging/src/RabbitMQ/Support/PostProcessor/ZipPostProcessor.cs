@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
                 compressor.Close();
                 zipper.Dispose();
 
-                byte[] compressed = zipped.ToArray();
+                var compressed = zipped.ToArray();
 
                 _logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
 

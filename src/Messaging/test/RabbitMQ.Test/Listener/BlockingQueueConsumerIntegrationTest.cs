@@ -45,7 +45,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             try
             {
                 blockingQueueConsumer.Start();
-                int n = 0;
+                var n = 0;
                 var consumers = blockingQueueConsumer.CurrentConsumers();
 
                 // Wait for consumers

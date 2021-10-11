@@ -90,7 +90,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             for (int c = 0, max = ChildCount; c < max; c++)
             {
                 var child = GetChild(c);
-                if (!(child is Literal))
+                if (child is not Literal)
                 {
                     if (child is InlineList inlineList)
                     {

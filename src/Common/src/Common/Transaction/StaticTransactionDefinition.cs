@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Transaction
 {
     internal class StaticTransactionDefinition : AbstractTransactionDefinition
     {
-        internal static readonly StaticTransactionDefinition INSTANCE = new StaticTransactionDefinition();
+        internal static readonly StaticTransactionDefinition INSTANCE = new ();
 
         private StaticTransactionDefinition()
         {

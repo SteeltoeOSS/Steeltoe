@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
                 payStream.CopyTo(compressor);
                 compressor.Close();
 
-                byte[] compressed = zipped.ToArray();
+                var compressed = zipped.ToArray();
 
                 _logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
 

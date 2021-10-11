@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Converter
 {
     public class DefaultConversionService : GenericConversionService
     {
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new ();
 
         private static volatile DefaultConversionService _sharedInstance;
 

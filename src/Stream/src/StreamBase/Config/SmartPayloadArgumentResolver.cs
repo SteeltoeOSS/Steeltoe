@@ -61,9 +61,8 @@ namespace Steeltoe.Stream.Config
             }
             else
             {
-                if (_converter is ISmartMessageConverter)
+                if (_converter is ISmartMessageConverter smartConverter)
                 {
-                    var smartConverter = (ISmartMessageConverter)_converter;
                     payload = smartConverter.FromMessage(message, targetClass, parameter);
                 }
                 else

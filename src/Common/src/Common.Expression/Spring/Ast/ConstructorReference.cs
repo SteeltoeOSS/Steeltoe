@@ -49,7 +49,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override bool IsCompilable()
         {
-            if (!(_cachedExecutor is ReflectiveConstructorExecutor) || _exitTypeDescriptor == null)
+            if (_cachedExecutor is not ReflectiveConstructorExecutor || _exitTypeDescriptor == null)
             {
                 return false;
             }
@@ -235,7 +235,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             // First child gives us the array type which will either be a primitive or reference type
             var intendedArrayType = GetChild(0).GetValue(state);
-            if (!(intendedArrayType is string))
+            if (intendedArrayType is not string)
             {
                 throw new SpelEvaluationException(
                     GetChild(0).StartPosition,

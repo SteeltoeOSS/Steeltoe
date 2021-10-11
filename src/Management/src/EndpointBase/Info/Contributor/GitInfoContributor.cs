@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         private const string GITSETTINGS_PREFIX = "git";
         private const string GITPROPERTIES_FILE = "git.properties";
 
-        private static readonly List<string> DATETIME_INPUT_KEYS = new List<string> { "time" };
+        private static readonly List<string> DATETIME_INPUT_KEYS = new () { "time" };
         private readonly string _propFile;
         private readonly ILogger _logger;
 

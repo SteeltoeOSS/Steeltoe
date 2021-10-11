@@ -30,7 +30,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         }
 #pragma warning restore S3963 // "static" fields should be initialized inline
 
-#pragma warning disable IDE1006
         public static readonly SpelTypeCode OBJECT;
         public static readonly SpelTypeCode BOOLEAN;
         public static readonly SpelTypeCode BYTE;
@@ -44,8 +43,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public static readonly SpelTypeCode ULONG;
         public static readonly SpelTypeCode SHORT;
         public static readonly SpelTypeCode USHORT;
-#pragma warning restore IDE1006
-
         private static readonly Dictionary<string, SpelTypeCode> _names;
         private static readonly Dictionary<Type, SpelTypeCode> _types;
 

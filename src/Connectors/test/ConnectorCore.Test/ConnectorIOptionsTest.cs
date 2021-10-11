@@ -19,9 +19,7 @@ namespace Steeltoe.Connector.Test
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     internal class MyOption
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public MyOption()
         {

@@ -19,11 +19,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             Configuration = configuration;
         }
 
-        private static readonly Regex VALID_QUALIFIED_ID_PATTERN = new Regex("[\\p{L}\\p{N}_$]+", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        private static readonly Regex VALID_QUALIFIED_ID_PATTERN = new ("[\\p{L}\\p{N}_$]+", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
         internal SpelParserOptions Configuration { get; }
 
-        internal Stack<SpelNode> ConstructedNodes = new Stack<SpelNode>();
+        internal Stack<SpelNode> ConstructedNodes = new ();
 
         internal string ExpressionString { get; private set; }
 

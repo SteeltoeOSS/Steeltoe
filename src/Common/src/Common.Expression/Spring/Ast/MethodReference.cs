@@ -55,7 +55,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public override bool IsCompilable()
         {
             var executorToCheck = _cachedExecutor;
-            if (executorToCheck == null || executorToCheck.HasProxyTarget || !(executorToCheck.Get() is ReflectiveMethodExecutor))
+            if (executorToCheck == null || executorToCheck.HasProxyTarget || executorToCheck.Get() is not ReflectiveMethodExecutor)
             {
                 return false;
             }
@@ -333,7 +333,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         private IMethodExecutor GetCachedExecutor(IEvaluationContext evaluationContext, object value, Type target, IList<Type> argumentTypes)
         {
             var methodResolvers = evaluationContext.MethodResolvers;
-            if (methodResolvers.Count != 1 || !(methodResolvers[0] is ReflectiveMethodResolver))
+            if (methodResolvers.Count != 1 || methodResolvers[0] is not ReflectiveMethodResolver)
             {
                 // Not a default ReflectiveMethodResolver - don't know whether caching is valid
                 return null;

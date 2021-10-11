@@ -31,9 +31,9 @@ namespace Steeltoe.Stream.Binder
                 return;
             }
 
-            if (message.Payload is MessagingException)
+            if (message.Payload is MessagingException exception)
             {
-                throw (MessagingException)message.Payload;
+                throw exception;
             }
             else
             {

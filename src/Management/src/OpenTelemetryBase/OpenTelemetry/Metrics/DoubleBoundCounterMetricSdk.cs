@@ -26,7 +26,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     internal class DoubleBoundCounterMetricSdk : BoundCounterMetricSdkBase<double>
     {
-        private readonly DoubleCounterSumAggregator _sumAggregator = new DoubleCounterSumAggregator();
+        private readonly DoubleCounterSumAggregator _sumAggregator = new ();
 
         public DoubleBoundCounterMetricSdk(RecordStatus recordStatus)
             : base(recordStatus)

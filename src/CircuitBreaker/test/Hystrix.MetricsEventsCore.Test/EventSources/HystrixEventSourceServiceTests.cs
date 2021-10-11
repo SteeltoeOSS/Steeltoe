@@ -35,7 +35,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
 
             service.OnNext(GetTestData());
 
-            int i = 0;
+            var i = 0;
             while (i++ < 100
                 && listener.CommandEvents.Count <= 0
                 && listener.ThreadPoolEvents.Count <= 0
@@ -82,9 +82,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
                 CollapserMetrics
             }
 
-            public List<EventWrittenEventArgs> CommandEvents = new List<EventWrittenEventArgs>();
-            public List<EventWrittenEventArgs> ThreadPoolEvents = new List<EventWrittenEventArgs>();
-            public List<EventWrittenEventArgs> CollapserEvents = new List<EventWrittenEventArgs>();
+            public List<EventWrittenEventArgs> CommandEvents = new ();
+            public List<EventWrittenEventArgs> ThreadPoolEvents = new ();
+            public List<EventWrittenEventArgs> CollapserEvents = new ();
 
             protected override void OnEventWritten(EventWrittenEventArgs eventData)
             {

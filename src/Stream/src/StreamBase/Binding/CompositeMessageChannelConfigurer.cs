@@ -39,9 +39,9 @@ namespace Steeltoe.Stream.Binding
         {
             foreach (var cconfigurer in _messageChannelConfigurers)
             {
-                if (cconfigurer is IMessageChannelAndSourceConfigurer)
+                if (cconfigurer is IMessageChannelAndSourceConfigurer configurer)
                 {
-                    ((IMessageChannelAndSourceConfigurer)cconfigurer).ConfigurePolledMessageSource(binding, name);
+                    configurer.ConfigurePolledMessageSource(binding, name);
                 }
             }
         }

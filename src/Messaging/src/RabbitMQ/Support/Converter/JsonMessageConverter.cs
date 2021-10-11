@@ -118,8 +118,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 
         private object DoFromMessage(IMessage from, Type targetType, object conversionHint, IMessageHeaders headers, Encoding encoding)
         {
-            var message = from as IMessage<byte[]>;
-            if (message == null)
+            if (from is not IMessage<byte[]> message)
             {
                 throw new MessageConversionException("Failed to convert Message content, message missing byte[] " + from.GetType());
             }

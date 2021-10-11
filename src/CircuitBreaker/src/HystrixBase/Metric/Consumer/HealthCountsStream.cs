@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public class HealthCountsStream : BucketedRollingCounterStream<HystrixCommandCompletion, long[], HealthCounts>
     {
-        private static readonly ConcurrentDictionary<string, HealthCountsStream> Streams = new ConcurrentDictionary<string, HealthCountsStream>();
+        private static readonly ConcurrentDictionary<string, HealthCountsStream> Streams = new ();
 
         private static readonly int NUM_EVENT_TYPES = HystrixEventTypeHelper.Values.Count;
 

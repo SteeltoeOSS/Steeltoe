@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.PostgreSql
     {
         private readonly PostgresServiceInfo _info;
         private readonly PostgresProviderConnectorOptions _config;
-        private readonly PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
+        private readonly PostgresProviderConfigurer _configurer = new ();
         private readonly Type _type;
 
         public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config, Type type)

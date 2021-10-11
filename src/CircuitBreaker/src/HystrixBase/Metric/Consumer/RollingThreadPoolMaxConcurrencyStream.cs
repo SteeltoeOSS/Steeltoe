@@ -9,7 +9,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public class RollingThreadPoolMaxConcurrencyStream : RollingConcurrencyStream
     {
-        private static readonly ConcurrentDictionary<string, RollingThreadPoolMaxConcurrencyStream> Streams = new ConcurrentDictionary<string, RollingThreadPoolMaxConcurrencyStream>();
+        private static readonly ConcurrentDictionary<string, RollingThreadPoolMaxConcurrencyStream> Streams = new ();
 
         public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
         {

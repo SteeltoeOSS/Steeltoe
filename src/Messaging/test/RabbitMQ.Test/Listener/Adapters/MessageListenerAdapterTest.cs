@@ -21,7 +21,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class MessageListenerAdapterTest
     {
-        private readonly SimpleService simpleService = new SimpleService();
+        private readonly SimpleService simpleService = new ();
 
         private readonly MessageHeaders messageProperties;
 

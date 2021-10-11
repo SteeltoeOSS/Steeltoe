@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixCollapserEventStream : IHystrixEventStream<HystrixCollapserEvent>
     {
-        private static readonly ConcurrentDictionary<string, HystrixCollapserEventStream> Streams = new ConcurrentDictionary<string, HystrixCollapserEventStream>();
+        private static readonly ConcurrentDictionary<string, HystrixCollapserEventStream> Streams = new ();
 
         private readonly IHystrixCollapserKey _collapserKey;
 

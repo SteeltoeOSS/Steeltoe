@@ -148,7 +148,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public AbstractExchange Build()
         {
-            AbstractExchange exchange = Create(_name, _type) as AbstractExchange;
+            var exchange = Create(_name, _type) as AbstractExchange;
             exchange.IsDurable = _durable;
             exchange.IsAutoDelete = _autoDelete;
             exchange.Arguments = Arguments;

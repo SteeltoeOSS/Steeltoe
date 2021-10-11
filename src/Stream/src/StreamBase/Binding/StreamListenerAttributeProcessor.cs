@@ -20,7 +20,7 @@ namespace Steeltoe.Stream.Binding
 {
     public class StreamListenerAttributeProcessor
     {
-        internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> _mappedListenerMethods = new Dictionary<string, List<StreamListenerHandlerMethodMapping>>();
+        internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> _mappedListenerMethods = new ();
 
         private readonly IApplicationContext _context;
         private readonly IOptionsMonitor<SpringIntegrationOptions> _springIntegrationOptionsMonitor;

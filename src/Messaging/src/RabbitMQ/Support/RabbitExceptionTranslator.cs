@@ -13,59 +13,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
     public static class RabbitExceptionTranslator
     {
         public static Exception ConvertRabbitAccessException(Exception exception)
-        {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
-            if (exception is RabbitException)
-            {
-                return (RabbitException)exception;
-            }
-
-            if (exception is ChannelAllocationException)
-            {
-                return new RabbitResourceNotAvailableException(exception);
-            }
-
-            if (exception is ProtocolException || exception is ShutdownSignalException)
-            {
-                return new RabbitConnectException(exception);
-            }
-
-            if (exception is ConnectFailureException || exception is BrokerUnreachableException)
-            {
-                return new RabbitConnectException(exception);
-            }
-
-            if (exception is PossibleAuthenticationFailureException)
-            {
-                return new RabbitAuthenticationException(exception);
-            }
-
-            if (exception is OperationInterruptedException)
-            {
-                return new RabbitIOException(exception);
-            }
-
-            if (exception is IOException)
-            {
-                return new RabbitIOException(exception);
-            }
-
-            if (exception is TimeoutException)
-            {
-                return new RabbitTimeoutException(exception);
-            }
-
-            if (exception is ConsumerCancelledException)
-            {
-                throw exception;
-            }
-
-            // fallback
-            return new RabbitUncategorizedException(exception);
-        }
+            => exception switch
+                {
+                    null => throw new ArgumentNullException(nameof(exception)),
+                    RabbitException rabbitException => rabbitException,
+                    ChannelAllocationException => new RabbitResourceNotAvailableException(exception),
+                    ProtocolException or ShutdownSignalException => new RabbitConnectException(exception),
+                    ConnectFailureException or BrokerUnreachableException => new RabbitConnectException(exception),
+                    PossibleAuthenticationFailureException => new RabbitAuthenticationException(exception),
+                    OperationInterruptedException => new RabbitIOException(exception),
+                    IOException => new RabbitIOException(exception),
+                    TimeoutException => new RabbitTimeoutException(exception),
+                    ConsumerCancelledException => throw exception,
+                    _ => new RabbitUncategorizedException(exception)
+                };
     }
 }

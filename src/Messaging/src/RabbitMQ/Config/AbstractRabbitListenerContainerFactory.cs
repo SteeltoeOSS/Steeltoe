@@ -289,8 +289,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 endpoint.SetupListenerContainer(instance);
             }
 
-            var adapterListener = instance.MessageListener as AbstractMessageListenerAdapter;
-            if (adapterListener != null)
+            if (instance.MessageListener is AbstractMessageListenerAdapter adapterListener)
             {
                 if (BeforeSendReplyPostProcessors != null)
                 {

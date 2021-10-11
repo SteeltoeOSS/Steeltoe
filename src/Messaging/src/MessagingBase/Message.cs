@@ -12,10 +12,7 @@ namespace Steeltoe.Messaging
 {
     public static class Message
     {
-        public static IMessage<T> Create<T>(T payload)
-        {
-            return (IMessage<T>)Create(payload, typeof(T));
-        }
+        public static IMessage<T> Create<T>(T payload) => (IMessage<T>)Create(payload, typeof(T));
 
         public static IMessage<T> Create<T>(T payload, IMessageHeaders headers)
         {
@@ -29,10 +26,7 @@ namespace Steeltoe.Messaging
             }
         }
 
-        public static IMessage<T> Create<T>(T payload, IDictionary<string, object> headers)
-        {
-            return (IMessage<T>)Create(payload, new MessageHeaders(headers, null, null), typeof(T));
-        }
+        public static IMessage<T> Create<T>(T payload, IDictionary<string, object> headers) => (IMessage<T>)Create(payload, new MessageHeaders(headers, null, null), typeof(T));
 
         public static IMessage Create(object payload, Type messageType = null)
         {
@@ -128,15 +122,9 @@ namespace Steeltoe.Messaging
             this.headers = headers;
         }
 
-        public P Payload
-        {
-            get { return payload; }
-        }
+        public P Payload => payload;
 
-        public IMessageHeaders Headers
-        {
-            get { return headers; }
-        }
+        public IMessageHeaders Headers => headers;
 
         object IMessage.Payload => Payload;
 
@@ -147,7 +135,7 @@ namespace Steeltoe.Messaging
                 return true;
             }
 
-            if (!(other is Message<P>))
+            if (other is not Message<P>)
             {
                 return false;
             }

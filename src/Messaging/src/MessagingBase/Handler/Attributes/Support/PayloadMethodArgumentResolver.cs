@@ -30,10 +30,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             _useDefaultResolution = useDefaultResolution;
         }
 
-        public virtual bool SupportsParameter(ParameterInfo parameter)
-        {
-            return parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
-        }
+        public virtual bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
 
         public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
@@ -87,39 +84,23 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             }
         }
 
-        protected virtual Type ResolveTargetClass(ParameterInfo parameter, IMessage message)
-        {
-            return parameter.ParameterType;
-        }
+        protected virtual Type ResolveTargetClass(ParameterInfo parameter, IMessage message) => parameter.ParameterType;
 
         protected virtual bool IsEmptyPayload(object payload)
         {
-            if (payload == null)
+            return payload switch
             {
-                return true;
-            }
-            else if (payload is byte[])
-            {
-                return ((byte[])payload).Length == 0;
-            }
-            else if (payload is string)
-            {
-                return string.IsNullOrEmpty((string)payload);
-            }
-            else
-            {
-                return false;
-            }
+                null => true,
+                byte[] => ((byte[])payload).Length == 0,
+                string sPayload => string.IsNullOrEmpty(sPayload),
+                _ => false
+            };
         }
 
         protected virtual void Validate(IMessage message, ParameterInfo parameter, object target)
         {
         }
 
-        private string GetParameterName(ParameterInfo param)
-        {
-            var paramName = param.Name;
-            return paramName ?? "Arg " + param.Position;
-        }
+        private string GetParameterName(ParameterInfo param) => param.Name ?? "Arg " + param.Position;
     }
 }

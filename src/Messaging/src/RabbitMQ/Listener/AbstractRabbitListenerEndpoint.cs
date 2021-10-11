@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             ApplicationContext = applicationContext;
             _loggerFactory = loggerFactory;
-            _logger = loggerFactory?.CreateLogger(this.GetType());
+            _logger = loggerFactory?.CreateLogger(GetType());
             if (applicationContext != null)
             {
                 Resolver = applicationContext.ServiceExpressionResolver;

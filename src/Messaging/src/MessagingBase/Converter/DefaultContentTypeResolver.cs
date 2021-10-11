@@ -23,13 +23,13 @@ namespace Steeltoe.Messaging.Converter
             {
                 return null;
             }
-            else if (value is MimeType)
+            else if (value is MimeType mimeType)
             {
-                return (MimeType)value;
+                return mimeType;
             }
-            else if (value is string)
+            else if (value is string stringVal)
             {
-                return MimeType.ToMimeType((string)value);
+                return MimeType.ToMimeType(stringVal);
             }
             else
             {
@@ -37,9 +37,6 @@ namespace Steeltoe.Messaging.Converter
             }
         }
 
-        public override string ToString()
-        {
-            return "DefaultContentTypeResolver[" + "defaultMimeType=" + DefaultMimeType + "]";
-        }
+        public override string ToString() => "DefaultContentTypeResolver[" + "defaultMimeType=" + DefaultMimeType + "]";
     }
 }

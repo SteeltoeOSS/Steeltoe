@@ -12,8 +12,8 @@ namespace Steeltoe.Messaging.Support
 {
     public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
     {
-        protected List<ITaskSchedulerChannelInterceptor> _schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>();
-        private object _lock = new object();
+        protected List<ITaskSchedulerChannelInterceptor> _schedulerInterceptors = new ();
+        private object _lock = new ();
 
         public TaskSchedulerSubscribableChannel(ILogger logger = null)
         : this(null, logger)
@@ -45,9 +45,9 @@ namespace Steeltoe.Messaging.Support
                 var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>();
                 foreach (var interceptor in interceptors)
                 {
-                    if (interceptor is ITaskSchedulerChannelInterceptor)
+                    if (interceptor is ITaskSchedulerChannelInterceptor interceptor1)
                     {
-                        schedulerInterceptors.Add((ITaskSchedulerChannelInterceptor)interceptor);
+                        schedulerInterceptors.Add(interceptor1);
                     }
                 }
 
@@ -125,12 +125,14 @@ namespace Steeltoe.Messaging.Support
 
         private void UpdateInterceptorsFor(IChannelInterceptor interceptor)
         {
-            if (interceptor is ITaskSchedulerChannelInterceptor)
+            if (interceptor is ITaskSchedulerChannelInterceptor interceptor1)
             {
                 lock (_lock)
                 {
-                    var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>(_schedulerInterceptors);
-                    schedulerInterceptors.Add((ITaskSchedulerChannelInterceptor)interceptor);
+                    var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>(_schedulerInterceptors)
+                    {
+                        interceptor1
+                    };
                     _schedulerInterceptors = schedulerInterceptors;
                 }
             }
@@ -144,10 +146,10 @@ namespace Steeltoe.Messaging.Support
 
             public SendTask(TaskSchedulerSubscribableChannel channel, List<ITaskSchedulerChannelInterceptor> interceptors, IMessage message, IMessageHandler messageHandler)
             {
-                this._channel = channel;
+                _channel = channel;
                 Message = message;
                 MessageHandler = messageHandler;
-                this._interceptors = interceptors;
+                _interceptors = interceptors;
                 _interceptorIndex = -1;
             }
 

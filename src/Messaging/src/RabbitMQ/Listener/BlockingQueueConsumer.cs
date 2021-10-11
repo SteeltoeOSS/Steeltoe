@@ -184,7 +184,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public int QueueCount => Queues.Count;
 
-        public HashSet<string> MissingQueues => new HashSet<string>();
+        public HashSet<string> MissingQueues => new ();
 
         public long LastRetryDeclaration { get; set; }
 
@@ -281,7 +281,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public void RollbackOnExceptionIfNecessary(Exception ex)
         {
-            bool ackRequired = !AcknowledgeMode.IsAutoAck() && (!AcknowledgeMode.IsManual() || ContainerUtils.IsRejectManual(ex));
+            var ackRequired = !AcknowledgeMode.IsAutoAck() && (!AcknowledgeMode.IsManual() || ContainerUtils.IsRejectManual(ex));
             try
             {
                 if (Transactional)
@@ -294,7 +294,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 {
                     if (DeliveryTags.Count > 0)
                     {
-                        ulong deliveryTag = DeliveryTags.Max();
+                        var deliveryTag = DeliveryTags.Max();
                         Channel.BasicNack(deliveryTag, true, ContainerUtils.ShouldRequeue(DefaultRequeueRejected, ex, Logger));
                     }
 
@@ -360,7 +360,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return Consumers.Values.ToList<RC.DefaultBasicConsumer>();
         }
 
-        protected bool HasDelivery => !(Queue.Count == 0);
+        protected bool HasDelivery => Queue.Count != 0;
 
         protected bool Cancelled
         {
@@ -395,7 +395,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         private void PassiveDeclarations()
         {
             // mirrored queue might be being moved
-            int passiveDeclareRetries = DeclarationRetries;
+            var passiveDeclareRetries = DeclarationRetries;
             Declaring = true;
             do
             {
@@ -533,9 +533,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     {
                         try
                         {
-                            if (Channel is IChannelProxy)
+                            if (Channel is IChannelProxy proxy)
                             {
-                                ((IChannelProxy)Channel).TargetChannel.Close();
+                                proxy.TargetChannel.Close();
                             }
                         }
                         catch (TimeoutException)
@@ -575,11 +575,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             {
                 lock (MissingQueues)
                 {
-                    List<string> toRemove = new List<string>();
+                    var toRemove = new List<string>();
                     Exception error = null;
                     foreach (var queueToCheck in MissingQueues)
                     {
-                        bool available = true;
+                        var available = true;
                         IConnection connection = null;
                         RC.IModel channelForCheck = null;
                         try

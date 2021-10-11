@@ -8,7 +8,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class TypeDescriptor
     {
-#pragma warning disable IDE1006
 #pragma warning disable IDE0090
         public static readonly TypeDescriptor V = new TypeDescriptor(typeof(void));
         public static readonly TypeDescriptor I = new TypeDescriptor(typeof(int));
@@ -30,7 +29,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public static readonly TypeDescriptor STRING = new TypeDescriptor(typeof(string));
         public static readonly TypeDescriptor TYPE = new TypeDescriptor(typeof(Type));
 #pragma warning restore IDE0090
-#pragma warning restore IDE1006
 
         private TypeDescriptor _boxed;
         private TypeDescriptor _unBoxed;

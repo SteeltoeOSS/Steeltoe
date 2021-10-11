@@ -127,7 +127,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                             DeclareQueue(queue.QueueName, queue);
                             var prefix = producerProperties.Prefix;
                             var destination = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName.Substring(prefix.Length);
-                            List<string> routingKeys = BindingRoutingKeys(producerProperties);
+                            var routingKeys = BindingRoutingKeys(producerProperties);
                             if (routingKeys == null || routingKeys.Count == 0)
                             {
                                 binding = PartitionedBinding(destination, exchange, queue, null, producerProperties, i);
@@ -263,7 +263,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             if (consumerProperties.BindQueue.GetValueOrDefault())
             {
                 DeclareQueue(queueName, queue);
-                List<string> routingKeys = BindingRoutingKeys(consumerProperties);
+                var routingKeys = BindingRoutingKeys(consumerProperties);
                 if (routingKeys == null || routingKeys.Count == 0)
                 {
                     binding = DeclareConsumerBindings(name, null, options, exchange, partitioned, queue);

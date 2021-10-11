@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Eureka
         protected volatile Applications _localRegionApps;
         protected long _registryFetchCounter = 0;
         protected IEurekaHttpClient _httpClient;
-        protected Random _random = new Random();
+        protected Random _random = new ();
         protected ILogger _logger;
         protected ILogger _regularLogger;
         protected ILogger _startupLogger;
@@ -77,7 +77,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             _appInfoManager = appInfoManager;
             _regularLogger = (ILogger)logFactory?.CreateLogger<DiscoveryClient>() ?? NullLogger.Instance;
-            _startupLogger = logFactory?.CreateLogger("Startup." + this.GetType().FullName) ?? NullLogger.Instance;
+            _startupLogger = logFactory?.CreateLogger("Startup." + GetType().FullName) ?? NullLogger.Instance;
         }
 
         public Application GetApplication(string appName)

@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionKeyExtractorClass()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -22,12 +22,11 @@ namespace Steeltoe.Stream.Partitioning
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     public class CustomPartitionKeyExtractorClassOne : IPartitionKeyExtractorStrategy
     {
         public CustomPartitionKeyExtractorClassOne()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -42,7 +41,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionKeyExtractorClassTwo()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -52,5 +51,4 @@ namespace Steeltoe.Stream.Partitioning
             return message.Headers.Get<string>("key");
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

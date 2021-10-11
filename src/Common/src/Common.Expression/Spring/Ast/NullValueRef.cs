@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class NullValueRef : IValueRef
     {
-        public static readonly NullValueRef INSTANCE = new NullValueRef();
+        public static readonly NullValueRef INSTANCE = new ();
 
         public ITypedValue GetValue() => TypedValue.NULL;
 

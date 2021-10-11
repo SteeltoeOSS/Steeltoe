@@ -41,9 +41,9 @@ namespace Steeltoe.Messaging.Converter
         {
             foreach (var converter in Converters)
             {
-                var result = converter is ISmartMessageConverter ?
-                    ((ISmartMessageConverter)converter).FromMessage(message, targetClass, conversionHint) :
-                    converter.FromMessage(message, targetClass);
+                var result = converter is ISmartMessageConverter smartConverter
+                    ? smartConverter.FromMessage(message, targetClass, conversionHint)
+                    : converter.FromMessage(message, targetClass);
                 if (result != null)
                 {
                     return result;
@@ -53,15 +53,9 @@ namespace Steeltoe.Messaging.Converter
             return null;
         }
 
-        public T FromMessage<T>(IMessage message, object conversionHint)
-        {
-            return (T)FromMessage(message, typeof(T), conversionHint);
-        }
+        public T FromMessage<T>(IMessage message, object conversionHint) => (T)FromMessage(message, typeof(T), conversionHint);
 
-        public T FromMessage<T>(IMessage message)
-        {
-            return (T)FromMessage(message, typeof(T), null);
-        }
+        public T FromMessage<T>(IMessage message) => (T)FromMessage(message, typeof(T), null);
 
         public IMessage ToMessage(object payload, IMessageHeaders headers)
         {
@@ -81,9 +75,9 @@ namespace Steeltoe.Messaging.Converter
         {
             foreach (var converter in Converters)
             {
-                var result = converter is ISmartMessageConverter ?
-                         ((ISmartMessageConverter)converter).ToMessage(payload, headers, conversionHint) :
-                         converter.ToMessage(payload, headers);
+                var result = converter is ISmartMessageConverter smartConverter
+                    ? smartConverter.ToMessage(payload, headers, conversionHint)
+                    : converter.ToMessage(payload, headers);
                 if (result != null)
                 {
                     return result;
@@ -95,9 +89,6 @@ namespace Steeltoe.Messaging.Converter
 
         public List<IMessageConverter> Converters { get; }
 
-        public override string ToString()
-        {
-            return "CompositeMessageConverter[converters=" + Converters.Count + "]";
-        }
+        public override string ToString() => "CompositeMessageConverter[converters=" + Converters.Count + "]";
     }
 }

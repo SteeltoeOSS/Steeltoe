@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
             {
                 try
                 {
-                    foreach (HystrixCommandMetrics commandMetrics in dashboardData.CommandMetrics)
+                    foreach (var commandMetrics in dashboardData.CommandMetrics)
                     {
                         var circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(commandMetrics.CommandKey);
                         var isOpen = circuitBreaker?.IsOpen;
@@ -60,7 +60,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
                             threadPool: commandMetrics.ThreadPoolKey.Name);
                     }
 
-                    foreach (HystrixThreadPoolMetrics threadPoolMetrics in dashboardData.ThreadPoolMetrics)
+                    foreach (var threadPoolMetrics in dashboardData.ThreadPoolMetrics)
                     {
                         HystrixMetricsEventSource.EventLogger.ThreadPoolMetrics(
                              threadpoolKey: threadPoolMetrics.ThreadPoolKey.Name,
@@ -76,7 +76,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
                              reportingHosts: 1); // this will get summed across all instances in a cluster
                     }
 
-                    foreach (HystrixCollapserMetrics collapserMetrics in dashboardData.CollapserMetrics)
+                    foreach (var collapserMetrics in dashboardData.CollapserMetrics)
                     {
                         HystrixMetricsEventSource.EventLogger.CollapserMetrics(
                             collapserKey: collapserMetrics.CollapserKey.Name,

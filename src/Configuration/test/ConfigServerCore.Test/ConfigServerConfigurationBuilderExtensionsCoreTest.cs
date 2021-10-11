@@ -18,7 +18,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
     public class ConfigServerConfigurationBuilderExtensionsCoreTest
     {
-        private readonly Dictionary<string, string> quickTests = new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } };
+        private readonly Dictionary<string, string> quickTests = new () { { "spring:cloud:config:timeout", "10" } };
 
         [Fact]
         public void AddConfigServer_ThrowsIfConfigBuilderNull()

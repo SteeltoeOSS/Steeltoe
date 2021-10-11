@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixCommandCompletionStream : IHystrixEventStream<HystrixCommandCompletion>
     {
-        private static readonly ConcurrentDictionary<string, HystrixCommandCompletionStream> Streams = new ConcurrentDictionary<string, HystrixCommandCompletionStream>();
+        private static readonly ConcurrentDictionary<string, HystrixCommandCompletionStream> Streams = new ();
 
         private readonly IHystrixCommandKey _commandKey;
         private readonly ISubject<HystrixCommandCompletion, HystrixCommandCompletion> _writeOnlySubject;

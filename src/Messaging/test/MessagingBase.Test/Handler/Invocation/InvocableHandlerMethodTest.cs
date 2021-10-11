@@ -327,7 +327,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             public string HandleNullablePrimitive(int? intArg, string stringArg)
             {
                 InvocationCount++;
-                return (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg == null ? "null" : stringArg);
+                return (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg ?? "null");
             }
 
             public void HandleSinglePrimitiveReturnVoid(double value)
@@ -367,7 +367,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             public Task<string> HandleAsyncStringMethod(int? intArg, string stringArg)
             {
                 InvocationCount++;
-                var result = (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg == null ? "null" : stringArg);
+                var result = (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg ?? "null");
                 return Task.FromResult(result);
             }
         }

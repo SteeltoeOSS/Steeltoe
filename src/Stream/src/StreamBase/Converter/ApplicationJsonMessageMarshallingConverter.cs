@@ -17,27 +17,18 @@ namespace Steeltoe.Stream.Converter
         }
 
         protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)
-        {
-            if (payload is byte[])
-            {
-                return payload;
-            }
-            else if (payload is string)
-            {
-                return EncodingUtils.Utf8.GetBytes((string)payload);
-            }
-            else
-            {
-                return base.ConvertToInternal(payload, headers, conversionHint);
-            }
-        }
+            => payload switch
+                {
+                    byte[] => payload,
+                    string sPayload => EncodingUtils.Utf8.GetBytes(sPayload),
+                    _ => base.ConvertToInternal(payload, headers, conversionHint)
+                };
 
         protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
         {
-            object result = null;
-            if (conversionHint is ParameterInfo)
+            if (conversionHint is ParameterInfo info)
             {
-                var conversionHintType = ((ParameterInfo)conversionHint).ParameterType;
+                var conversionHintType = info.ParameterType;
                 if (IsIMessageGenericType(conversionHintType))
                 {
                     /*
@@ -52,11 +43,13 @@ namespace Steeltoe.Stream.Converter
                 // TODO: Look at Java code that uses  (ConvertParameterizedType) below
             }
 
+            object result;
+
             // if (result == null)
             // {
-            if (message.Payload is byte[] && targetClass.IsAssignableFrom(typeof(string)))
+            if (message.Payload is byte[] v && targetClass.IsAssignableFrom(typeof(string)))
             {
-                result = EncodingUtils.Utf8.GetString((byte[])message.Payload);
+                result = EncodingUtils.Utf8.GetString(v);
             }
             else
             {

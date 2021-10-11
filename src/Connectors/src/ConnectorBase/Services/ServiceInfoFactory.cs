@@ -12,9 +12,9 @@ namespace Steeltoe.Connector.Services
     [ServiceInfoFactory]
     public abstract class ServiceInfoFactory : IServiceInfoFactory
     {
-        private static readonly List<string> _userList = new List<string>() { "user", "username", "uid" };
-        private static readonly List<string> _passwordList = new List<string>() { "password", "pw" };
-        private static readonly List<string> _hostList = new List<string>() { "hostname", "host" };
+        private static readonly List<string> _userList = new () { "user", "username", "uid" };
+        private static readonly List<string> _passwordList = new () { "password", "pw" };
+        private static readonly List<string> _hostList = new () { "hostname", "host" };
 
         protected ServiceInfoFactory(Tags tags, string scheme)
             : this(tags, new List<string> { scheme })

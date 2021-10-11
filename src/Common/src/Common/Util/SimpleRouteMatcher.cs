@@ -16,7 +16,7 @@ namespace Steeltoe.Common.Util
                 throw new ArgumentNullException(nameof(pathMatcher));
             }
 
-            this.PathMatcher = pathMatcher;
+            PathMatcher = pathMatcher;
         }
 
         public IPathMatcher PathMatcher { get; }
@@ -60,7 +60,7 @@ namespace Steeltoe.Common.Util
         {
             public DefaultRoute(string path)
             {
-                this.Value = path;
+                Value = path;
             }
 
             public string Value { get; }

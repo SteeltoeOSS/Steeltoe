@@ -18,17 +18,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             var unOrdered = new List<IMessagePostProcessor>();
             foreach (var processor in processors)
             {
-                if (processor is IPriorityOrdered)
+                switch (processor)
                 {
-                    priorityOrdered.Add((IPriorityOrdered)processor);
-                }
-                else if (processor is IOrdered)
-                {
-                    ordered.Add((IOrdered)processor);
-                }
-                else
-                {
-                    unOrdered.Add(processor);
+                    case IPriorityOrdered priOrdered:
+                        priorityOrdered.Add(priOrdered);
+                        break;
+                    case IOrdered orderProcessor:
+                        ordered.Add(orderProcessor);
+                        break;
+                    default:
+                        unOrdered.Add(processor);
+                        break;
                 }
             }
 

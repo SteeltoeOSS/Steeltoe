@@ -85,7 +85,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                 var envelope = new Envelope(resp.DeliveryTag, resp.Redelivered, resp.Exchange, resp.RoutingKey);
                 var messageProperties = MessageHeaderConverter.ToMessageHeaders(resp.BasicProperties, envelope, EncodingUtils.Utf8);
                 var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
-                accessor.ConsumerQueue = this.QueueName;
+                accessor.ConsumerQueue = QueueName;
 
                 // Map<String, Object> headers = this.headerMapper.toHeadersFromRequest(messageProperties);
                 var message = Message.Create<byte[]>(resp.Body, accessor.MessageHeaders);

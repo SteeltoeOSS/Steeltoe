@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.Hystrix
     {
         private readonly HystrixRabbitMQServiceInfo _info;
         private readonly HystrixProviderConnectorOptions _config;
-        private readonly HystrixProviderConfigurer _configurer = new HystrixProviderConfigurer();
+        private readonly HystrixProviderConfigurer _configurer = new ();
         private readonly Type _type;
 
         private readonly MethodInfo _setUri;

@@ -14,13 +14,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class RabbitResourceHolder : ResourceHolderSupport
     {
-        private readonly List<IConnection> _connections = new List<IConnection>();
+        private readonly List<IConnection> _connections = new ();
 
-        private readonly List<RC.IModel> _channels = new List<RC.IModel>();
+        private readonly List<RC.IModel> _channels = new ();
 
-        private readonly Dictionary<IConnection, List<RC.IModel>> _channelsPerConnection = new Dictionary<IConnection, List<RC.IModel>>();
+        private readonly Dictionary<IConnection, List<RC.IModel>> _channelsPerConnection = new ();
 
-        private readonly Dictionary<RC.IModel, List<ulong>> _deliveryTags = new Dictionary<RC.IModel, List<ulong>>();
+        private readonly Dictionary<RC.IModel, List<ulong>> _deliveryTags = new ();
 
         private readonly ILogger _logger;
 

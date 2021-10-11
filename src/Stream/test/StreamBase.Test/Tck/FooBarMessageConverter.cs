@@ -33,7 +33,7 @@ namespace Steeltoe.Stream.Tck
 
         protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)

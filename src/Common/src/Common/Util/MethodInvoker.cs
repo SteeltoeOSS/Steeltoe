@@ -43,12 +43,12 @@ namespace Steeltoe.Common.Util
                     {
                         if (paramType.Equals(superClass))
                         {
-                            result = result + 2;
+                            result += 2;
                             superClass = null;
                         }
                         else if (ClassUtils.IsAssignable(paramType, superClass))
                         {
-                            result = result + 2;
+                            result += 2;
                             superClass = superClass.BaseType;
                         }
                         else
@@ -59,7 +59,7 @@ namespace Steeltoe.Common.Util
 
                     if (paramType.IsInterface)
                     {
-                        result = result + 1;
+                        result++;
                     }
                 }
             }

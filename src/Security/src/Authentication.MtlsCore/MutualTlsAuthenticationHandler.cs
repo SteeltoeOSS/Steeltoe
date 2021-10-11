@@ -23,7 +23,7 @@ namespace Steeltoe.Security.Authentication.Mtls
     /// </summary>
     internal class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsAuthenticationOptions>
     {
-        private static readonly Oid ClientCertificateOid = new Oid("1.3.6.1.5.5.7.3.2");
+        private static readonly Oid ClientCertificateOid = new ("1.3.6.1.5.5.7.3.2");
 
         public MutualTlsAuthenticationHandler(
             IOptionsMonitor<MutualTlsAuthenticationOptions> options,

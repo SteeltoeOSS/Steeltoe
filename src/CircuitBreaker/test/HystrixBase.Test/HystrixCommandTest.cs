@@ -4411,7 +4411,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     internal class FlexibleTestHystrixCommand
     {
         public static int EXECUTE_VALUE = 1;
@@ -5896,7 +5895,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     internal class AsyncCacheableCommand : HystrixCommand<object>
     {
         private readonly string arg;
-        private readonly AtomicBoolean cancelled = new AtomicBoolean(false);
+        private readonly AtomicBoolean cancelled = new (false);
 
         public AsyncCacheableCommand(string arg)
          : base(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
@@ -5959,5 +5958,4 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             return Delay;
         }
     }
-#pragma warning restore SA1402 // File may only contain a single class
 }

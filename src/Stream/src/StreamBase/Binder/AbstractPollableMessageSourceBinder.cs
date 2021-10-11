@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
-using Steeltoe.Integration;
-using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
@@ -38,18 +36,13 @@ namespace Steeltoe.Stream.Binder
         }
 
         public override IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
-        {
-            if (inboundTarget is IPollableSource<IMessageHandler>)
-            {
-                return BindConsumer(name, group, (IPollableSource<IMessageHandler>)inboundTarget, consumerOptions);
-            }
-
-            return base.BindConsumer(name, group, inboundTarget, consumerOptions);
-        }
+            => inboundTarget is IPollableSource<IMessageHandler> source
+                ? BindConsumer(name, group, source, consumerOptions)
+                : base.BindConsumer(name, group, inboundTarget, consumerOptions);
 
         public virtual IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
         {
-            if (!(inboundTarget is DefaultPollableMessageSource bindingTarget))
+            if (inboundTarget is not DefaultPollableMessageSource bindingTarget)
             {
                 throw new InvalidOperationException(nameof(inboundTarget));
             }
@@ -97,29 +90,21 @@ namespace Steeltoe.Stream.Binder
                             name,
                             group,
                             inboundTarget,
-                            sourceAsLifecycle != null ? sourceAsLifecycle : null,
+                            sourceAsLifecycle ?? null,
                             consumerOptions,
                             destination);
             return binding;
         }
 
-        public virtual IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
-        {
-            throw new NotImplementedException();
-        }
+        public virtual IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions) => throw new NotImplementedException();
 
         protected virtual void PostProcessPollableSource(DefaultPollableMessageSource bindingTarget)
         {
         }
 
-        protected virtual IRecoveryCallback GetPolledConsumerRecoveryCallback(ErrorInfrastructure errorInfrastructure, IConsumerOptions options)
-        {
-            return errorInfrastructure.Recoverer;
-        }
+        protected virtual IRecoveryCallback GetPolledConsumerRecoveryCallback(ErrorInfrastructure errorInfrastructure, IConsumerOptions options) => errorInfrastructure.Recoverer;
 
         protected virtual PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination, IConsumerOptions consumerOptions)
-        {
-            throw new InvalidOperationException("This binder does not support pollable consumers");
-        }
+            => throw new InvalidOperationException("This binder does not support pollable consumers");
     }
 }

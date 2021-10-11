@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 {
     public class HeaderMethodArgumentResolverTest
     {
-        private readonly HeaderMethodArgumentResolver resolver = new HeaderMethodArgumentResolver(new DefaultConversionService());
+        private readonly HeaderMethodArgumentResolver resolver = new (new DefaultConversionService());
 
         private readonly ResolvableMethod resolvable = ResolvableMethod.On<HeaderMethodArgumentResolverTest>().Named("HandleMessage").Build();
 

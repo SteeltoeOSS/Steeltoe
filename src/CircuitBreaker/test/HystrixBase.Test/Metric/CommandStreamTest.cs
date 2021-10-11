@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             base.Dispose();
         }
 
-        private static readonly AtomicInteger UniqueId = new AtomicInteger(0);
+        private static readonly AtomicInteger UniqueId = new (0);
 
         public class Command : HystrixCommand<int>
         {

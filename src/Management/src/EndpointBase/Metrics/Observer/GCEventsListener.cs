@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly ILogger<EventSourceListener> _logger;
         private readonly MeasureMetric<long> _collectionCount;
         private readonly MeasureMetric<long> _memoryUsed;
-        private readonly Dictionary<string, string> _memoryLabels = new Dictionary<string, string>() { { "area", "heap" } };
+        private readonly Dictionary<string, string> _memoryLabels = new () { { "area", "heap" } };
 
         private List<long> _previousCollectionCounts = null;
 

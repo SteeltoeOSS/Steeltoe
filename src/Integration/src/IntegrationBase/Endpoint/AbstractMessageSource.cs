@@ -38,29 +38,31 @@ namespace Steeltoe.Integration.Endpoint
                 return null;
             }
 
-            IMessage message = null;
             var headers = EvaluateHeaders();
-            if (result is AbstractMessageBuilder)
-            {
-                if (headers != null && headers.Count > 0)
-                {
-                    ((AbstractMessageBuilder)result).CopyHeaders(headers);
-                }
 
-                message = ((AbstractMessageBuilder)result).Build();
-            }
-            else if (result is IMessage)
+            IMessage message;
+            switch (result)
             {
-                message = (IMessage)result;
-                if (headers != null && headers.Count > 0)
-                {
-                    // create a new Message from this one in order to apply headers
-                    message = MessageBuilderFactory.FromMessage(message).CopyHeaders(headers).Build();
-                }
-            }
-            else
-            {
-                message = MessageBuilderFactory.WithPayload(result).CopyHeaders(headers).Build();
+                case AbstractMessageBuilder amBuilder:
+                    if (headers != null && headers.Count > 0)
+                    {
+                        amBuilder.CopyHeaders(headers);
+                    }
+
+                    message = amBuilder.Build();
+                    break;
+                case IMessage mResult:
+                    message = mResult;
+                    if (headers != null && headers.Count > 0)
+                    {
+                        // create a new Message from this one in order to apply headers
+                        message = MessageBuilderFactory.FromMessage(message).CopyHeaders(headers).Build();
+                    }
+
+                    break;
+                default:
+                    message = MessageBuilderFactory.WithPayload(result).CopyHeaders(headers).Build();
+                    break;
             }
 
             return (IMessage<T>)message;

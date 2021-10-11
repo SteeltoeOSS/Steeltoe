@@ -10,9 +10,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
     public class TokenKind
     {
 #pragma warning disable S3963 // "static" fields should be initialized inline
-#pragma warning disable S4136 // Method overloads should be grouped together
         static TokenKind()
-#pragma warning restore S4136 // Method overloads should be grouped together
         {
             _kinds = new Dictionary<string, TokenKind>();
             LITERAL_INT = new TokenKind(1, "LITERAL_INT");

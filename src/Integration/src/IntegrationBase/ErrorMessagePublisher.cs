@@ -147,7 +147,7 @@ namespace Steeltoe.Integration
             {
                 lastThrowable = PayloadWhenNull(context);
             }
-            else if (!(lastThrowable is MessagingException))
+            else if (lastThrowable is not MessagingException)
             {
                 var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FAILED_MESSAGE_CONTEXT_KEY);
                 lastThrowable = message == null

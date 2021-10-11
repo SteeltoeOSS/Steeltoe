@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.OAuth
     {
         private readonly SsoServiceInfo _info;
         private readonly OAuthConnectorOptions _config;
-        private readonly OAuthConfigurer _configurer = new OAuthConfigurer();
+        private readonly OAuthConfigurer _configurer = new ();
 
         public OAuthConnectorFactory(SsoServiceInfo sinfo, OAuthConnectorOptions config)
         {

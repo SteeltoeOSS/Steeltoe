@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Util.Test
 {
     public class AntPathMatcherTest
     {
-        private readonly AntPathMatcher pathMatcher = new AntPathMatcher();
+        private readonly AntPathMatcher pathMatcher = new ();
 
         [Fact]
         public void Match()
@@ -568,7 +568,7 @@ namespace Steeltoe.Common.Util.Test
             paths.Clear();
         }
 
-        private static Random rng = new Random();
+        private static Random rng = new ();
 
         private static void Shuffle<T>(List<T> list)
         {

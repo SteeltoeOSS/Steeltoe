@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.Oracle
     {
         private readonly OracleServiceInfo _info;
         private readonly OracleProviderConnectorOptions _config;
-        private readonly OracleProviderConfigurer _configurer = new OracleProviderConfigurer();
+        private readonly OracleProviderConfigurer _configurer = new ();
 
         public OracleProviderConnectorFactory()
         {

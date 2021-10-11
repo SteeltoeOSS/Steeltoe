@@ -103,10 +103,7 @@ namespace Steeltoe.Integration.Dispatcher
                 if (_executor != null)
                 {
                     var task = CreateMessageHandlingTask(handler, messageToSend);
-                    _factory.StartNew(() =>
-                    {
-                        task.Run();
-                    });
+                    _factory.StartNew(() => task.Run(), cancellationToken);
                     dispatched++;
                 }
                 else

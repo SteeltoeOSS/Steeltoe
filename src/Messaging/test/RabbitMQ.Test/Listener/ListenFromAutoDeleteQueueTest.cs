@@ -2,18 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Xunit;
 
@@ -102,13 +100,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var rabbitTemplate = new RabbitTemplate(connectionFactory);
             rabbitTemplate.ConvertAndSend(Exch1, Q1, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
-            Assert.True(listener.Queue.Count > 0);
+            Assert.NotEmpty(listener.Queue);
             listenerContainer1.Stop();
             listenerContainer1.Start();
             listenerContainer1._startedLatch.Wait(TimeSpan.FromSeconds(10));
             rabbitTemplate.ConvertAndSend(Exch1, Q1, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
-            Assert.True(listener.Queue.Count > 0);
+            Assert.NotEmpty(listener.Queue);
         }
 
         [Fact]
@@ -120,13 +118,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             rabbitTemplate.ConvertAndSend(Exch2, Q3, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
-            Assert.True(listener.Queue.Count > 0);
+            Assert.NotEmpty(listener.Queue);
             listenerContainer2.Stop();
             listenerContainer2.Start();
             listenerContainer1._startedLatch.Wait(TimeSpan.FromSeconds(10));
             rabbitTemplate.ConvertAndSend(Exch2, Q3, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
-            Assert.True(listener.Queue.Count > 0);
+            Assert.NotEmpty(listener.Queue);
         }
 
         [Fact]
@@ -137,7 +135,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             listenerContainer3._startedLatch.Wait(TimeSpan.FromSeconds(10));
             rabbitTemplate.ConvertAndSend(expiringQueue.QueueName, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
-            Assert.True(listener.Queue.Count > 0);
+            Assert.NotEmpty(listener.Queue);
 
             listenerContainer3.Stop();
             listenerContainer3.Start();
@@ -145,7 +143,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             rabbitTemplate.ConvertAndSend(expiringQueue.QueueName, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
-            Assert.True(listener.Queue.Count > 0);
+            Assert.NotEmpty(listener.Queue);
         }
 
         [Fact]
@@ -154,7 +152,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var rabbitTemplate = new RabbitTemplate(connectionFactory);
             rabbitTemplate.ConvertAndSend(Exch1, Q2, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
-            Assert.True(listener.Queue.Count > 0);
+            Assert.NotEmpty(listener.Queue);
 
             listenerContainer4.Stop();
             var testadminMock = new Mock<IRabbitAdmin>();
@@ -179,8 +177,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             public AcknowledgeMode ContainerAckMode { get; set; }
 
-            public ConcurrentQueue<string> Queue = new ConcurrentQueue<string>();
-            public CountdownEvent Latch = new CountdownEvent(1);
+            public ConcurrentQueue<string> Queue = new ();
+            public CountdownEvent Latch = new (1);
 
             public string HandleMessage(string input)
             {

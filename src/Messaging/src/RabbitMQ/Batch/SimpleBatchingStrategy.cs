@@ -17,8 +17,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
         private readonly int _batchSize;
         private readonly int _bufferLimit;
         private readonly long _timeout;
-        private readonly List<IMessage<byte[]>> _messages = new List<IMessage<byte[]>>();
-        private readonly List<MessageBatch> _empty = new List<MessageBatch>();
+        private readonly List<IMessage<byte[]>> _messages = new ();
+        private readonly List<MessageBatch> _empty = new ();
 
         private string _exchange;
         private string _routingKey;
@@ -45,8 +45,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
                 throw new ArgumentException("Cannot send with different routing keys in the same batch");
             }
 
-            var message = input as IMessage<byte[]>;
-            if (message == null)
+            if (input is not IMessage<byte[]> message)
             {
                 throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
             }
@@ -114,8 +113,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
 
         public void DeBatch(IMessage input, Action<IMessage> fragmentConsumer)
         {
-            var message = input as IMessage<byte[]>;
-            if (message == null)
+            if (input is not IMessage<byte[]> message)
             {
                 throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
             }
@@ -146,7 +144,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
                     body[i] = slice[i];
                 }
 
-                index = index + length;
+                index += length;
 
                 accessor.ContentLength = length;
 
@@ -202,7 +200,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
                     slice[i] = message.Payload[i];
                 }
 
-                index = index + message.Payload.Length;
+                index += message.Payload.Length;
             }
 
             accessor.SetHeader(RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4);

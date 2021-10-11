@@ -55,7 +55,6 @@ namespace Steeltoe.Common.Security
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     internal class FileSource : FileConfigurationSource
     {
         internal string BasePath { get; set; }
@@ -91,5 +90,4 @@ namespace Steeltoe.Common.Security
             Data[key] = value;
         }
     }
-#pragma warning restore SA1402 // File may only contain a single class
 }

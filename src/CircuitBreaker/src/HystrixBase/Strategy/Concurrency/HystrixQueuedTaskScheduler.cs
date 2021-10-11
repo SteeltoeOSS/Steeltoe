@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         [ThreadStatic]
         private static bool isHystrixThreadPoolThread;
 
-        private readonly object _lock = new object();
+        private readonly object _lock = new ();
 
         public HystrixQueuedTaskScheduler(IHystrixThreadPoolOptions options)
             : base(options)

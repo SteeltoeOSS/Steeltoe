@@ -14,7 +14,7 @@ namespace Steeltoe.Stream.TestBinder
 {
     public class TestChannelBinderProvisioner : IProvisioningProvider
     {
-        private readonly Dictionary<string, ISubscribableChannel> _provisionedDestinations = new Dictionary<string, ISubscribableChannel>();
+        private readonly Dictionary<string, ISubscribableChannel> _provisionedDestinations = new ();
         private readonly IApplicationContext _context;
 
         public TestChannelBinderProvisioner(IApplicationContext context, InputDestination inputDestination, OutputDestination outputDestination)

@@ -27,12 +27,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
-        internal CountdownEvent _startedLatch = new CountdownEvent(1);
+        internal CountdownEvent _startedLatch = new (1);
 
-        protected internal readonly List<SimpleConsumer> _consumers = new List<SimpleConsumer>();
-        protected internal readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new Dictionary<string, List<SimpleConsumer>>();
-        protected internal readonly ActiveObjectCounter<SimpleConsumer> _cancellationLock = new ActiveObjectCounter<SimpleConsumer>();
-        protected internal readonly List<SimpleConsumer> _consumersToRestart = new List<SimpleConsumer>();
+        protected internal readonly List<SimpleConsumer> _consumers = new ();
+        protected internal readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new ();
+        protected internal readonly ActiveObjectCounter<SimpleConsumer> _cancellationLock = new ();
+        protected internal readonly List<SimpleConsumer> _consumersToRestart = new ();
         protected const int START_WAIT_TIME = 60;
         protected const int DEFAULT_MONITOR_INTERVAL = 10_000;
         protected const int DEFAULT_ACK_TIMEOUT = 20_000;
@@ -330,8 +330,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private void CheckListenerContainerAware()
         {
-            var listenerAware = MessageListener as IListenerContainerAware;
-            if (listenerAware != null)
+            if (MessageListener is IListenerContainerAware listenerAware)
             {
                 var expectedQueueNames = listenerAware.GetExpectedQueueNames();
                 var queueNames = GetQueueNames();
@@ -516,7 +515,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             _consumerMonitorTask = Task.Run(
                 async () =>
                 {
-                    bool shouldShutdown = false;
+                    var shouldShutdown = false;
                     while (!_consumerMonitorCancelationToken.Token.IsCancellationRequested && !shouldShutdown)
                     {
                         var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -892,7 +891,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             private readonly Connection.IConnection _connection;
             private readonly RC.IModel _targetChannel;
             private readonly ILogger _logger;
-            private readonly object _lock = new object();
+            private readonly object _lock = new ();
 
             public SimpleConsumer(DirectMessageListenerContainer container, Connection.IConnection connection, RC.IModel channel, string queue, ILogger logger = null)
                 : base(channel)
@@ -901,14 +900,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 _connection = connection;
                 Queue = queue;
                 AckRequired = !_container.AcknowledgeMode.IsAutoAck() && !_container.AcknowledgeMode.IsManual();
-                if (channel is IChannelProxy)
-                {
-                    _targetChannel = ((IChannelProxy)channel).TargetChannel;
-                }
-                else
-                {
-                    _targetChannel = null;
-                }
+                _targetChannel = channel is IChannelProxy proxy ? proxy.TargetChannel : null;
 
                 _logger = logger;
                 TransactionManager = _container.TransactionManager;
@@ -950,17 +942,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             public long AckTimeout { get; internal set; }
 
-            public bool TargetChanged
-            {
-                get
-                {
-                    return _targetChannel != null && !_targetChannel.Equals(((IChannelProxy)Model).TargetChannel);
-                }
-            }
+            public bool TargetChanged => _targetChannel != null && !_targetChannel.Equals(((IChannelProxy)Model).TargetChannel);
 
             public int IncrementAndGetEpoch()
             {
-                Epoch = Epoch + 1;
+                Epoch++;
                 return Epoch;
             }
 
@@ -1031,10 +1017,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 CancelConsumer("Consumer " + this + " canceled");
             }
 
-            public override string ToString()
-            {
-                return "SimpleConsumer [queue=" + Queue + ", consumerTag=" + ConsumerTag + " identity=" + GetHashCode() + "]";
-            }
+            public override string ToString() => "SimpleConsumer [queue=" + Queue + ", consumerTag=" + ConsumerTag + " identity=" + GetHashCode() + "]";
 
             internal void CancelConsumer(string eventMessage)
             {

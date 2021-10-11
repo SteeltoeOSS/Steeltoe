@@ -22,12 +22,12 @@ namespace Steeltoe.Stream.Binder
 {
     public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandler>, IPollableMessageSource, ILifecycle, IRetryListener
     {
-        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
+        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
 
         private readonly DirectChannel _dummyChannel;
         private readonly MessagingTemplate _messagingTemplate;
         private readonly ISmartMessageConverter _messageConverter;
-        private readonly List<IChannelInterceptor> _interceptors = new List<IChannelInterceptor>();
+        private readonly List<IChannelInterceptor> _interceptors = new ();
         private RetryTemplate _retryTemplate;
         private IRecoveryCallback _recoveryCallback;
         private int _running;
@@ -88,8 +88,7 @@ namespace Steeltoe.Stream.Binder
 
         public Task Start()
         {
-            var asLifeCycle = Source as ILifecycle;
-            if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && asLifeCycle != null)
+            if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && Source is ILifecycle asLifeCycle)
             {
                 return asLifeCycle.Start();
             }
@@ -99,8 +98,7 @@ namespace Steeltoe.Stream.Binder
 
         public Task Stop()
         {
-            var asLifeCycle = Source as ILifecycle;
-            if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && asLifeCycle != null)
+            if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && Source is ILifecycle asLifeCycle)
             {
                 return asLifeCycle.Stop();
             }
@@ -162,12 +160,13 @@ namespace Steeltoe.Stream.Binder
             catch (Exception e)
             {
                 AckUtils.AutoNack(ackCallback);
-                if (e is MessageHandlingException && ((MessageHandlingException)e).FailedMessage.Equals(message))
+                switch (e)
                 {
-                    throw;
+                    case MessageHandlingException exception when exception.FailedMessage.Equals(message):
+                        throw;
+                    default:
+                        throw new MessageHandlingException(message, e);
                 }
-
-                throw new MessageHandlingException(message, e);
             }
             finally
             {

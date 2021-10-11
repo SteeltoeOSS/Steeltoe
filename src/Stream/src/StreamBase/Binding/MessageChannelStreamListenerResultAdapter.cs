@@ -19,14 +19,11 @@ namespace Steeltoe.Stream.Binding
         }
 
         public bool Supports(Type resultType, Type bindingTarget)
-        {
-            return typeof(IMessageChannel).IsAssignableFrom(resultType) && typeof(IMessageChannel).IsAssignableFrom(bindingTarget);
-        }
+            => typeof(IMessageChannel).IsAssignableFrom(resultType) && typeof(IMessageChannel).IsAssignableFrom(bindingTarget);
 
         public IDisposable Adapt(IMessageChannel streamListenerResult, IMessageChannel bindingTarget)
         {
-            var handler = new BridgeHandler(_context);
-            handler.OutputChannel = bindingTarget;
+            var handler = new BridgeHandler(_context) { OutputChannel = bindingTarget };
 
             ((ISubscribableChannel)streamListenerResult).Subscribe(handler);
 
@@ -34,14 +31,9 @@ namespace Steeltoe.Stream.Binding
         }
 
         public IDisposable Adapt(object streamListenerResult, object bindingTarget)
-        {
-            if (streamListenerResult is IMessageChannel && bindingTarget is IMessageChannel)
-            {
-                return Adapt((IMessageChannel)streamListenerResult, (IMessageChannel)bindingTarget);
-            }
-
-            throw new ArgumentException("Invalid arguments, IMessageChannel required");
-        }
+            => streamListenerResult is IMessageChannel channel && bindingTarget is IMessageChannel channel1
+                ? Adapt(channel, channel1)
+                : throw new ArgumentException("Invalid arguments, IMessageChannel required");
 
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
         public class NoOpDisposable : IDisposable

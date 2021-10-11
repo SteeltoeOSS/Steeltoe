@@ -14,31 +14,16 @@ namespace Steeltoe.Common.Converter
         {
         }
 
-        public override bool Matches(Type sourceType, Type targetType)
-        {
-            if (typeof(T) != targetType)
-            {
-                return false;
-            }
-
-            return true;
-        }
+        public override bool Matches(Type sourceType, Type targetType) => typeof(T) == targetType;
 
         public abstract T Convert(S source);
 
         public override object Convert(object source, Type sourceType, Type targetType)
-        {
-            if (source == null)
-            {
-                return null;
-            }
-
-            if (!typeof(S).IsAssignableFrom(source.GetType()))
-            {
-                throw new ArgumentException("'source' type invalid");
-            }
-
-            return Convert((S)source);
-        }
+            => source switch
+                {
+                    null => null,
+                    not S => throw new ArgumentException("'source' type invalid"),
+                    _ => Convert((S)source)
+                };
     }
 }

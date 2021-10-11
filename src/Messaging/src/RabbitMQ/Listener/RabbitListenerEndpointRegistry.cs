@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistry);
 
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ConcurrentDictionary<string, IMessageListenerContainer>();
+        private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ();
         private bool _isDisposed;
 
         public RabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)
@@ -93,14 +93,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 var container = CreateListenerContainer(endpoint, factory);
                 _listenerContainers.TryAdd(id, container);
 
-                if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null)
+                if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null && ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
                 {
-                    var containerCollection =
-                        ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) as MessageListenerContainerCollection;
-                    if (containerCollection != null)
-                    {
-                        containerCollection.AddContainer(container);
-                    }
+                    containerCollection.AddContainer(container);
                 }
 
                 // if (this.contextRefreshed)
@@ -131,11 +126,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             foreach (var listenerContainer in _listenerContainers.Values)
             {
-                if (listenerContainer is IDisposable)
+                if (listenerContainer is IDisposable disposable)
                 {
                     try
                     {
-                        ((IDisposable)listenerContainer).Dispose();
+                        disposable.Dispose();
                     }
                     catch (Exception ex)
                     {

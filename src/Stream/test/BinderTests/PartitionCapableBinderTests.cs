@@ -48,10 +48,10 @@ namespace Steeltoe.Stream.Binder
             var delimiter = GetDestinationNameDelimiter();
             var producerBinding = binder.BindProducer($"defaultGroup{delimiter}0", output, producerBindingOptions.Producer);
 
-            QueueChannel input1 = new QueueChannel();
+            var input1 = new QueueChannel();
             var binding1 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input1, consumerOptions);
 
-            QueueChannel input2 = new QueueChannel();
+            var input2 = new QueueChannel();
             var binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
 
             var testPayload1 = "foo-" + Guid.NewGuid().ToString();
@@ -59,11 +59,11 @@ namespace Steeltoe.Stream.Binder
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
 
-            Message<byte[]> receivedMessage1 = (Message<byte[]>)Receive(input1);
+            var receivedMessage1 = (Message<byte[]>)Receive(input1);
             Assert.NotNull(receivedMessage1);
             Assert.Equal(testPayload1, Encoding.UTF8.GetString(receivedMessage1.Payload));
 
-            Message<byte[]> receivedMessage2 = (Message<byte[]>)Receive(input2);
+            var receivedMessage2 = (Message<byte[]>)Receive(input2);
             Assert.NotNull(receivedMessage2);
             Assert.Equal(testPayload1, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
@@ -170,7 +170,7 @@ namespace Steeltoe.Stream.Binder
             var bindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(bindingsOptions);
 
-            ConsumerOptions consumerProperties = GetConsumerOptions("input", bindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", bindingsOptions);
             consumerProperties.Concurrency = 2;
             consumerProperties.InstanceIndex = 0;
             consumerProperties.InstanceCount = 3;
@@ -284,7 +284,7 @@ namespace Steeltoe.Stream.Binder
         protected virtual void CheckRkExpressionForPartitionedModuleSpEL(object endpoint)
         {
             var routingExpression = GetEndpointRouting(endpoint);
-            var delimiter = this.GetDestinationNameDelimiter();
+            var delimiter = GetDestinationNameDelimiter();
             var dest = GetExpectedRoutingBaseDestination($"part{delimiter}0", "test") + "-' + Headers['partition']";
             Assert.Contains(dest, routingExpression);
         }

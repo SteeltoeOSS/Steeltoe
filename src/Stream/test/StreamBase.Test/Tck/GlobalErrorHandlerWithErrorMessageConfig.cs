@@ -22,7 +22,7 @@ namespace Steeltoe.Stream.Tck
         [StreamListener("errorChannel")]
         public void GeneralError(IMessage message)
         {
-            this.GlobalErroInvoked = true;
+            GlobalErroInvoked = true;
         }
     }
 }

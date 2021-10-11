@@ -13,16 +13,12 @@ namespace Steeltoe.Integration.Support
     {
         public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributes)
         {
-            var inputMessage = attributes == null ? null
-                  : attributes.GetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY);
-            if (inputMessage is IMessage)
+            var inputMessage = attributes?.GetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY);
+            return inputMessage switch
             {
-                return new ErrorMessage(exception, (IMessage)inputMessage);
-            }
-            else
-            {
-                return new ErrorMessage(exception);
-            }
+                IMessage iMessage => new ErrorMessage(exception, iMessage),
+                _ => new ErrorMessage(exception)
+            };
         }
     }
 }

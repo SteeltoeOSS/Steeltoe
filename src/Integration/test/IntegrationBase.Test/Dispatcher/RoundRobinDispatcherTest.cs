@@ -17,11 +17,11 @@ namespace Steeltoe.Integration.Dispatcher.Test
     {
         private readonly UnicastingDispatcher dispatcher;
 
-        private readonly Mock<IMessage> messageMock = new Mock<IMessage>();
+        private readonly Mock<IMessage> messageMock = new ();
 
-        private readonly Mock<IMessageHandler> handlerMock = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> handlerMock = new ();
 
-        private readonly Mock<IMessageHandler> differentHandlerMock = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> differentHandlerMock = new ();
 
         private readonly IServiceProvider provider;
 

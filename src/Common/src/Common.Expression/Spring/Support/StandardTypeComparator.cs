@@ -87,9 +87,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             // }
             try
             {
-                if (left is IComparable)
+                if (left is IComparable comparable)
                 {
-                    return ((IComparable)left).CompareTo(right);
+                    return comparable.CompareTo(right);
                 }
             }
             catch (Exception ex)

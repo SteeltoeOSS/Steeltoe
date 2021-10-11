@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.Support
     {
         public const string NATIVE_HEADERS = "nativeHeaders";
 
-        private static readonly Dictionary<string, List<string>> _empty = new Dictionary<string, List<string>>();
+        private static readonly Dictionary<string, List<string>> _empty = new ();
 
         protected internal NativeMessageHeaderAccessor()
         : this((IDictionary<string, List<string>>)null)

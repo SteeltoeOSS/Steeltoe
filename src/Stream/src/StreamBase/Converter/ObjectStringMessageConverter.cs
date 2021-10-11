@@ -21,16 +21,10 @@ namespace Steeltoe.Stream.Converter
 
         public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        public override bool CanConvertFrom(IMessage message, Type targetClass)
-        {
-            // only supports the conversion to String
-            return SupportsMimeType(message.Headers);
-        }
+        // only supports the conversion to String
+        public override bool CanConvertFrom(IMessage message, Type targetClass) => SupportsMimeType(message.Headers);
 
-        protected override bool Supports(Type clazz)
-        {
-            return true;
-        }
+        protected override bool Supports(Type clazz) => true;
 
         protected override bool SupportsMimeType(IMessageHeaders headers)
         {
@@ -53,28 +47,11 @@ namespace Steeltoe.Stream.Converter
         {
             if (message.Payload != null)
             {
-                if (message.Payload is byte[])
+                return message.Payload switch
                 {
-                    if (typeof(byte[]).IsAssignableFrom(targetClass))
-                    {
-                        return message.Payload;
-                    }
-                    else
-                    {
-                        return EncodingUtils.Utf8.GetString((byte[])message.Payload);
-                    }
-                }
-                else
-                {
-                    if (typeof(byte[]).IsAssignableFrom(targetClass))
-                    {
-                        return EncodingUtils.Utf8.GetBytes(message.Payload.ToString());
-                    }
-                    else
-                    {
-                        return message.Payload;
-                    }
-                }
+                    byte[] v => typeof(byte[]).IsAssignableFrom(targetClass) ? message.Payload : EncodingUtils.Utf8.GetString(v),
+                    _ => typeof(byte[]).IsAssignableFrom(targetClass) ? EncodingUtils.Utf8.GetBytes(message.Payload.ToString()) : message.Payload,
+                };
             }
 
             return null;
@@ -84,14 +61,11 @@ namespace Steeltoe.Stream.Converter
         {
             if (payload != null)
             {
-                if (payload is byte[])
+                return payload switch
                 {
-                    return payload;
-                }
-                else
-                {
-                    return EncodingUtils.Utf8.GetBytes(payload.ToString());
-                }
+                    byte[] => payload,
+                    _ => EncodingUtils.Utf8.GetBytes(payload.ToString())
+                };
             }
 
             return null;

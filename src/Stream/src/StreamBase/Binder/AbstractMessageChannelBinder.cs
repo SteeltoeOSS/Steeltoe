@@ -26,7 +26,7 @@ namespace Steeltoe.Stream.Binder
     public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChannel>
     {
         protected readonly IProvisioningProvider _provisioningProvider;
-        protected readonly EmbeddedHeadersChannelInterceptor _embeddedHeadersChannelInterceptor = new EmbeddedHeadersChannelInterceptor();
+        protected readonly EmbeddedHeadersChannelInterceptor _embeddedHeadersChannelInterceptor = new ();
         protected readonly string[] _headersToEmbed;
         protected bool _producerBindingExist;
         private readonly ILogger _logger;
@@ -65,7 +65,7 @@ namespace Steeltoe.Stream.Binder
 
         protected override IBinding DoBindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
         {
-            if (!(outboundTarget is ISubscribableChannel))
+            if (outboundTarget is not ISubscribableChannel)
             {
                 throw new ArgumentException("Binding is supported only for ISubscribableChannel instances");
             }
@@ -362,7 +362,7 @@ namespace Steeltoe.Stream.Binder
             var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
-                if (!(errorChannelObject is ISubscribableChannel))
+                if (errorChannelObject is not ISubscribableChannel)
                 {
                     throw new ArgumentException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
                 }
@@ -385,7 +385,7 @@ namespace Steeltoe.Stream.Binder
             var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
-                if (!(errorChannelObject is ISubscribableChannel))
+                if (errorChannelObject is not ISubscribableChannel)
                 {
                     throw new InvalidOperationException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
                 }
@@ -743,23 +743,17 @@ namespace Steeltoe.Stream.Binder
                 _logger = logger;
             }
 
-            public override IDictionary<string, object> ExtendedInfo
-            {
-                get => DoGetExtendedInfo(_destination, _options);
-            }
+            public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
 
-            public override bool IsInput
-            {
-                get { return true; }
-            }
+            public override bool IsInput => true;
 
             protected override void AfterUnbind()
             {
                 try
                 {
-                    if (Endpoint is IDisposable)
+                    if (Endpoint is IDisposable disposable)
                     {
-                        ((IDisposable)Endpoint).Dispose();
+                        disposable.Dispose();
                     }
                 }
                 catch (Exception ex)
@@ -793,15 +787,9 @@ namespace Steeltoe.Stream.Binder
                 _destination = consumerDestination;
             }
 
-            public override IDictionary<string, object> ExtendedInfo
-            {
-                get => DoGetExtendedInfo(_destination, _options);
-            }
+            public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
 
-            public override bool IsInput
-            {
-                get { return true; }
-            }
+            public override bool IsInput => true;
 
             protected override void AfterUnbind()
             {
@@ -814,10 +802,7 @@ namespace Steeltoe.Stream.Binder
         {
             protected readonly ILogger _logger;
 
-            public EmbeddedHeadersChannelInterceptor(ILogger logger = null)
-            {
-                _logger = logger;
-            }
+            public EmbeddedHeadersChannelInterceptor(ILogger logger = null) => _logger = logger;
 
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {

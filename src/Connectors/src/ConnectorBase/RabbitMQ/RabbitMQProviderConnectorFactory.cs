@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.RabbitMQ
     {
         private readonly RabbitMQServiceInfo _info;
         private readonly RabbitMQProviderConnectorOptions _config;
-        private readonly RabbitMQProviderConfigurer _configurer = new RabbitMQProviderConfigurer();
+        private readonly RabbitMQProviderConfigurer _configurer = new ();
         private readonly MethodInfo _setUri;
 
         public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo sinfo, RabbitMQProviderConnectorOptions config, Type connectFactory)

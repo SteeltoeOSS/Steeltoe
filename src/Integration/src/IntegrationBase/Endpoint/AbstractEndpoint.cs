@@ -13,7 +13,7 @@ namespace Steeltoe.Integration.Endpoint
 {
     public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
     {
-        private readonly object _lifecyclelock = new object();
+        private readonly object _lifecyclelock = new ();
         private IIntegrationServices _integrationServices;
 
         protected AbstractEndpoint(IApplicationContext context)

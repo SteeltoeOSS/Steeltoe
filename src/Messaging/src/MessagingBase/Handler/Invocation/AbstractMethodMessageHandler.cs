@@ -14,14 +14,14 @@ namespace Steeltoe.Messaging.Handler.Invocation
 {
     public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     {
-        private readonly List<string> _destinationPrefixes = new List<string>();
-        private readonly List<IHandlerMethodArgumentResolver> _customArgumentResolvers = new List<IHandlerMethodArgumentResolver>();
-        private readonly List<IHandlerMethodReturnValueHandler> _customReturnValueHandlers = new List<IHandlerMethodReturnValueHandler>();
-        private readonly HandlerMethodArgumentResolverComposite _argumentResolvers = new HandlerMethodArgumentResolverComposite();
-        private readonly HandlerMethodReturnValueHandlerComposite _returnValueHandlers = new HandlerMethodReturnValueHandlerComposite();
-        private readonly Dictionary<T, HandlerMethod> _handlerMethods = new Dictionary<T, HandlerMethod>(64);
-        private readonly Dictionary<string, List<T>> _destinationLookup = new Dictionary<string, List<T>>(64);
-        private readonly ConcurrentDictionary<Type, AbstractExceptionHandlerMethodResolver> _exceptionHandlerCache = new ConcurrentDictionary<Type, AbstractExceptionHandlerMethodResolver>();
+        private readonly List<string> _destinationPrefixes = new ();
+        private readonly List<IHandlerMethodArgumentResolver> _customArgumentResolvers = new ();
+        private readonly List<IHandlerMethodReturnValueHandler> _customReturnValueHandlers = new ();
+        private readonly HandlerMethodArgumentResolverComposite _argumentResolvers = new ();
+        private readonly HandlerMethodReturnValueHandlerComposite _returnValueHandlers = new ();
+        private readonly Dictionary<T, HandlerMethod> _handlerMethods = new (64);
+        private readonly Dictionary<string, List<T>> _destinationLookup = new (64);
+        private readonly ConcurrentDictionary<Type, AbstractExceptionHandlerMethodResolver> _exceptionHandlerCache = new ();
         private readonly ILogger _logger;
 
         protected AbstractMethodMessageHandler(ILogger logger = null)

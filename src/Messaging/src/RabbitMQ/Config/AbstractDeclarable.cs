@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public abstract class AbstractDeclarable : IDeclarable
     {
-        protected List<object> _declaringAdmins = new List<object>();
+        protected List<object> _declaringAdmins = new ();
 
         protected AbstractDeclarable(Dictionary<string, object> arguments)
         {

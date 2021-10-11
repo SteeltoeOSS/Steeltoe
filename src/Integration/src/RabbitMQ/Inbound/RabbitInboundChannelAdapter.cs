@@ -28,7 +28,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 {
     public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
     {
-        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
+        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
         private readonly ILogger _logger;
 
         public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer, ILogger logger = null)

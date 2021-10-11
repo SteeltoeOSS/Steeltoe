@@ -12,8 +12,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
     public class RequestCollapser<BatchReturnType, RequestResponseType, RequestArgumentType>
     {
         private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> _commandCollapser;
-        private readonly AtomicReference<TimerReference> _timerListenerReference = new AtomicReference<TimerReference>();
-        private readonly AtomicBoolean _timerListenerRegistered = new AtomicBoolean();
+        private readonly AtomicReference<TimerReference> _timerListenerReference = new ();
+        private readonly AtomicBoolean _timerListenerRegistered = new ();
         private readonly ICollapserTimer _timer;
         private readonly HystrixConcurrencyStrategy _concurrencyStrategy;
 

@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
     public class MessageListenerAdapter : AbstractMessageListenerAdapter
     {
         public const string ORIGINAL_DEFAULT_LISTENER_METHOD = "HandleMessage";
-        private readonly Dictionary<string, string> _queueOrTagToMethodName = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _queueOrTagToMethodName = new ();
 
         public string DefaultListenerMethod { get; set; } = ORIGINAL_DEFAULT_LISTENER_METHOD;
 
@@ -73,18 +73,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         {
             // Check whether the delegate is a IMessageListener impl itself.
             // In that case, the adapter will simply act as a pass-through.
-            var delegateListener = this.Instance;
+            var delegateListener = Instance;
             if (delegateListener != this)
             {
-                if (delegateListener is IChannelAwareMessageListener)
+                switch (delegateListener)
                 {
-                    ((IChannelAwareMessageListener)delegateListener).OnMessage(message, channel);
-                    return;
-                }
-                else if (delegateListener is IMessageListener)
-                {
-                    ((IMessageListener)delegateListener).OnMessage(message);
-                    return;
+                    case IChannelAwareMessageListener listener:
+                        listener.OnMessage(message, channel);
+                        return;
+                    case IMessageListener:
+                        ((IMessageListener)delegateListener).OnMessage(message);
+                        return;
                 }
             }
 
@@ -112,14 +111,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         }
 
         protected virtual object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
-        {
-            return BuildListenerArguments(extractedMessage);
-        }
+            => BuildListenerArguments(extractedMessage);
 
         protected virtual object[] BuildListenerArguments(object extractedMessage)
-        {
-            return new object[] { extractedMessage };
-        }
+            => new object[] { extractedMessage };
 
         protected virtual string GetListenerMethodName(IMessage originalMessage, object extractedMessage)
         {

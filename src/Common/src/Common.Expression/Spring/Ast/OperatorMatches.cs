@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class OperatorMatches : Operator
     {
-        private readonly ConcurrentDictionary<string, Regex> _patternCache = new ConcurrentDictionary<string, Regex>();
+        private readonly ConcurrentDictionary<string, Regex> _patternCache = new ();
 
         public OperatorMatches(int startPos, int endPos, params SpelNode[] operands)
         : base("matches", startPos, endPos, operands)
@@ -30,7 +30,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 throw new SpelEvaluationException(leftOp.StartPosition, SpelMessage.INVALID_FIRST_OPERAND_FOR_MATCHES_OPERATOR, (object)null);
             }
 
-            if (!(right is string))
+            if (right is not string)
             {
                 throw new SpelEvaluationException(rightOp.StartPosition, SpelMessage.INVALID_SECOND_OPERAND_FOR_MATCHES_OPERATOR, right);
             }

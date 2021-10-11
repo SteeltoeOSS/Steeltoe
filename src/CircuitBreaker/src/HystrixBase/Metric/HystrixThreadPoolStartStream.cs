@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixThreadPoolStartStream : IHystrixEventStream<HystrixCommandExecutionStarted>
     {
-        private static readonly ConcurrentDictionary<string, HystrixThreadPoolStartStream> Streams = new ConcurrentDictionary<string, HystrixThreadPoolStartStream>();
+        private static readonly ConcurrentDictionary<string, HystrixThreadPoolStartStream> Streams = new ();
 
         private readonly IHystrixThreadPoolKey _threadPoolKey;
         private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> _writeOnlySubject;

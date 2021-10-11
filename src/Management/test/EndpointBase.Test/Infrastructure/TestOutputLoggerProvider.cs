@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Test.Infrastructure
     internal class TestOutputLoggerProvider : ILoggerProvider
     {
         private readonly ITestOutputHelper _output;
-        private readonly ConcurrentDictionary<string, TestOutputLogger> _loggers = new ConcurrentDictionary<string, TestOutputLogger>();
+        private readonly ConcurrentDictionary<string, TestOutputLogger> _loggers = new ();
 
         public TestOutputLoggerProvider(ITestOutputHelper output)
         {

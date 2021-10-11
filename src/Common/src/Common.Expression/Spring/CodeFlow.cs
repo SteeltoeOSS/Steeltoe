@@ -11,10 +11,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class CodeFlow
     {
-        private static readonly Dictionary<Type, TypeDescriptor> _primitives = new Dictionary<Type, TypeDescriptor>();
+        private static readonly Dictionary<Type, TypeDescriptor> _primitives = new ();
         private readonly CompiledExpression _compiledExpression;
         private readonly Stack<List<TypeDescriptor>> _compilationScopes;
-        private readonly List<Action<ILGenerator, CodeFlow>> _initGenerators = new List<Action<ILGenerator, CodeFlow>>();
+        private readonly List<Action<ILGenerator, CodeFlow>> _initGenerators = new ();
         private int _nextFieldId = 1;
 
         static CodeFlow()

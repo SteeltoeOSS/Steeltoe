@@ -25,7 +25,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         private const string PUBLISHER_SUFFIX = ".publisher";
         private readonly CompositeConnectionListener _connectionListener;
         private readonly CompositeChannelListener _channelListener;
-        private readonly Random _random = new Random();
+        private readonly Random _random = new ();
         private int _defaultConnectionNameStrategyCounter;
 
         protected AbstractConnectionFactory(

@@ -15,8 +15,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public static class RabbitListenerDeclareAtrributeProcessor
     {
-        private static readonly Dictionary<string, Queue> _queueDeclss = new Dictionary<string, Queue>();
-        private static readonly Dictionary<string, QueueBinding> _bindingDecls = new Dictionary<string, QueueBinding>();
+        private static readonly Dictionary<string, Queue> _queueDeclss = new ();
+        private static readonly Dictionary<string, QueueBinding> _bindingDecls = new ();
 
         internal static void ProcessDeclareAttributes(IServiceCollection services, IConfiguration configuration, Type targetClass)
         {
@@ -235,7 +235,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             foreach (var q in declareQueues)
             {
                 var queueName = PropertyPlaceholderHelper.ResolvePlaceholders(q.Name, config);
-                Queue queue = new Queue(queueName);
+                var queue = new Queue(queueName);
                 UpdateQueue(queue, q, config);
                 services.AddRabbitQueue(queue);
                 queues.Add(queue);
@@ -249,7 +249,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             var queues = new List<Queue>();
             foreach (var q in declareQueues)
             {
-                Queue queue = new Queue(q.Name, false, true, true);
+                var queue = new Queue(q.Name, false, true, true);
                 queue.ServiceName = q.Id;
                 UpdateQueue(queue, q, config);
                 services.AddRabbitQueue(queue);
@@ -298,7 +298,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         private static bool GetBoolean(string value, IConfiguration config, string name)
         {
             value = PropertyPlaceholderHelper.ResolvePlaceholders(value, config);
-            if (bool.TryParse(value, out bool result))
+            if (bool.TryParse(value, out var result))
             {
                 return result;
             }

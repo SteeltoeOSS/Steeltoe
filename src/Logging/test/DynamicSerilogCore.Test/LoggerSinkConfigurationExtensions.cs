@@ -18,7 +18,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         {
             if (loggerConfiguration == null)
             {
-                throw new ArgumentNullException("loggerConfiguration");
+                throw new ArgumentNullException(nameof(loggerConfiguration));
             }
 
             return loggerConfiguration.Sink(Test.TestSink.GetCurrentSink(false), LogEventLevel.Verbose);

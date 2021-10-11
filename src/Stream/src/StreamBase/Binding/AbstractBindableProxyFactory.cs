@@ -14,8 +14,8 @@ namespace Steeltoe.Stream.Binding
         protected IDictionary<string, Bindable> _bindables;
         protected IList<IBindingTargetFactory> _bindingTargetFactories;
 
-        protected Dictionary<string, Lazy<object>> _boundInputTargets = new Dictionary<string, Lazy<object>>();
-        protected Dictionary<string, Lazy<object>> _boundOutputTargets = new Dictionary<string, Lazy<object>>();
+        protected Dictionary<string, Lazy<object>> _boundInputTargets = new ();
+        protected Dictionary<string, Lazy<object>> _boundOutputTargets = new ();
 
         public AbstractBindableProxyFactory(Type bindingType, IEnumerable<IBindingTargetFactory> bindingTargetFactories)
             : base(bindingType)

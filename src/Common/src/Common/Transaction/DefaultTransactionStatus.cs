@@ -38,30 +38,27 @@ namespace Steeltoe.Common.Transaction
 
         public override void Flush()
         {
-            if (Transaction is ISmartTransactionObject)
+            if (Transaction is ISmartTransactionObject transactionObject)
             {
-                ((ISmartTransactionObject)Transaction).Flush();
+                transactionObject.Flush();
             }
         }
 
         public override bool IsGlobalRollbackOnly
         {
-            get
-            {
-                return (Transaction is ISmartTransactionObject) && ((ISmartTransactionObject)Transaction).IsRollbackOnly;
-            }
+            get => (Transaction is ISmartTransactionObject transactionObject) && transactionObject.IsRollbackOnly;
             set => base.IsGlobalRollbackOnly = value;
         }
 
         protected override ISavepointManager GetSavepointManager()
         {
             var transaction = Transaction;
-            if (!(transaction is ISavepointManager))
+            if (transaction is not ISavepointManager savepointManager)
             {
                 throw new NestedTransactionNotSupportedException("Transaction object [" + Transaction + "] does not support savepoints");
             }
 
-            return (ISavepointManager)Transaction;
+            return savepointManager;
         }
     }
 }

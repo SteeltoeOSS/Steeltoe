@@ -74,9 +74,9 @@ namespace Steeltoe.Common.Converter
 
         public static int Count(IEnumerable enumerable)
         {
-            if (enumerable is ICollection)
+            if (enumerable is ICollection collection)
             {
-                return ((ICollection)enumerable).Count;
+                return collection.Count;
             }
 
             var count = 0;

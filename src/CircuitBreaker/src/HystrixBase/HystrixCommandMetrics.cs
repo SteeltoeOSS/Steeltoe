@@ -62,7 +62,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return cumulativeEvents;
         };
 
-        private static readonly ConcurrentDictionary<string, HystrixCommandMetrics> Metrics = new ConcurrentDictionary<string, HystrixCommandMetrics>();
+        private static readonly ConcurrentDictionary<string, HystrixCommandMetrics> Metrics = new ();
 
         public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions properties)
         {
@@ -120,7 +120,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Metrics.Clear();
         }
 
-        private readonly AtomicInteger _concurrentExecutionCount = new AtomicInteger();
+        private readonly AtomicInteger _concurrentExecutionCount = new ();
 
         private readonly RollingCommandEventCounterStream _rollingCommandEventCounterStream;
         private readonly CumulativeCommandEventCounterStream _cumulativeCommandEventCounterStream;
@@ -128,7 +128,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         private readonly RollingCommandUserLatencyDistributionStream _rollingCommandUserLatencyDistributionStream;
         private readonly RollingCommandMaxConcurrencyStream _rollingCommandMaxConcurrencyStream;
 
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new ();
 
         private HealthCountsStream _healthCountsStream;
 

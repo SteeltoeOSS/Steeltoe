@@ -23,7 +23,7 @@ namespace Steeltoe.Messaging.Converter
                 throw new ArgumentNullException(nameof(conversionService));
             }
 
-            this._conversionService = conversionService;
+            _conversionService = conversionService;
         }
 
         public override object FromMessage(IMessage message, Type targetClass)

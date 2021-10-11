@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

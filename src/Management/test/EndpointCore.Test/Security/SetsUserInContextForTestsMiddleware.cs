@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Headers.Keys.Contains(TestingHeader))
+            if (context.Request.Headers.ContainsKey(TestingHeader))
             {
                 var claimsIdentity = new ClaimsIdentity(TestFakeAuthentication);
                 claimsIdentity.AddClaim(new Claim("scope", "actuator.read"));
