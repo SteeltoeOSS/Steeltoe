@@ -930,6 +930,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)
         {
             var root = configuration as IConfigurationRoot;
+            if (root.Providers.LastOrDefault() is PlaceholderResolverProvider)
+            {
+                return configuration;
+            }
+
             return new ConfigurationRoot(new List<IConfigurationProvider>() { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers)) });
         }
 
