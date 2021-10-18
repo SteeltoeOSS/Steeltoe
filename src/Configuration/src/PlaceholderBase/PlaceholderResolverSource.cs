@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 
@@ -15,6 +16,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
     /// </summary>
     public class PlaceholderResolverSource : IConfigurationSource
     {
+        internal IConfigurationRoot _configuration;
         internal ILoggerFactory _loggerFactory;
 
         internal IList<IConfigurationSource> _sources;
@@ -32,7 +34,13 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             }
 
             _sources = new List<IConfigurationSource>(sources);
-            _loggerFactory = logFactory;
+            _loggerFactory = logFactory ?? new NullLoggerFactory();
+        }
+
+        public PlaceholderResolverSource(IConfigurationRoot configuration, ILoggerFactory loggerFactory = null)
+        {
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _loggerFactory = loggerFactory ?? new NullLoggerFactory();
         }
 
         /// <summary>
@@ -42,6 +50,11 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// <returns>the placeholder resolver provider</returns>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
+            if (_configuration != null)
+            {
+                return new PlaceholderResolverProvider(_configuration, _loggerFactory);
+            }
+
             var providers = new List<IConfigurationProvider>();
             foreach (var source in _sources)
             {
