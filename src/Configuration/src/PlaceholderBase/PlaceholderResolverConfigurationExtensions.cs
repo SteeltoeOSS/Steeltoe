@@ -27,9 +27,16 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var resolver = new PlaceholderResolverSource(builder.Sources, loggerFactory);
-            builder.Sources.Clear();
-            builder.Add(resolver);
+            if (builder is IConfigurationRoot configuration)
+            {
+                builder.Add(new PlaceholderResolverSource(configuration, loggerFactory));
+            }
+            else
+            {
+                var resolver = new PlaceholderResolverSource(builder.Sources, loggerFactory);
+                builder.Sources.Clear();
+                builder.Add(resolver);
+            }
 
             return builder;
         }
