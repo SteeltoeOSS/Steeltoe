@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
+using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
@@ -75,8 +76,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="logFactory">optional logging factory</param>
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
         {
-            _loggerFactory = logFactory;
-            _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
+            _loggerFactory = logFactory ?? BootstrapLoggerFactory.Instance;
+            _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _configuration = new ConfigurationBuilder().Build();
         }
@@ -91,8 +92,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
-            _loggerFactory = logFactory;
+            _loggerFactory = logFactory ?? BootstrapLoggerFactory.Instance;
+            _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
             _configuration = new ConfigurationBuilder().Build();
         }
 
@@ -175,7 +176,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             if (!_settings.Enabled)
             {
-                _logger?.LogInformation("Config Server client disabled, did not fetch configuration!");
+                _logger.LogInformation("Config Server client disabled, did not fetch configuration!");
                 return null;
             }
 
@@ -194,14 +195,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 var backOff = _settings.RetryInitialInterval;
                 do
                 {
-                    _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
+                    _logger.LogInformation("Fetching config from server at: {0}", _settings.Uri);
                     try
                     {
                         return DoLoad(updateDictionary);
                     }
                     catch (ConfigServerException e)
                     {
-                        _logger?.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", _settings.Uri, e);
+                        _logger.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", _settings.Uri, e);
                         attempts++;
                         if (attempts < _settings.RetryAttempts)
                         {
@@ -219,7 +220,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
             else
             {
-                _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
+                _logger.LogInformation("Fetching config from server at: {0}", _settings.Uri);
                 return DoLoad(updateDictionary);
             }
         }
@@ -239,7 +240,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
                     if (uris.Length > 1)
                     {
-                        _logger?.LogInformation("Multiple Config Server Uris listed.");
+                        _logger.LogInformation("Multiple Config Server Uris listed.");
 
                         // Invoke config servers
                         task = RemoteLoadAsync(uris, label);
@@ -261,7 +262,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     // Update config Data dictionary with any results
                     if (env != null)
                     {
-                        _logger?.LogInformation(
+                        _logger.LogInformation(
                             "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                         if (updateDictionary)
                         {
@@ -302,7 +303,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 error = e;
             }
 
-            _logger?.LogWarning("Could not locate PropertySource: " + error?.ToString());
+            _logger.LogWarning("Could not locate PropertySource: " + error?.ToString());
 
             if (_settings.FailFast)
             {
@@ -379,12 +380,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI, ILoggerFactory loggerFactory)
         {
-            if (loggerFactory is not null)
-            {
-                _loggerFactory = loggerFactory;
-                _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
-            }
-
             if (_configServerDiscoveryService is not null)
             {
                 await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDI, loggerFactory);
@@ -524,7 +519,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
                     // Log status
                     var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-                    _logger?.LogInformation(WebUtility.UrlEncode(message));
+                    _logger.LogInformation(WebUtility.UrlEncode(message));
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -550,7 +545,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 catch (Exception e)
                 {
                     error = e;
-                    _logger?.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
+                    _logger.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
                     if (IsContinueExceptionType(e))
                     {
                         continue;
@@ -604,7 +599,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     // Log status
                     var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
 
-                    _logger?.LogInformation(WebUtility.UrlEncode(message));
+                    _logger.LogInformation(WebUtility.UrlEncode(message));
 
                     // Throw if status >= 400
                     if (response.StatusCode >= HttpStatusCode.BadRequest)
@@ -622,7 +617,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             catch (Exception e)
             {
                 // Log and rethrow
-                _logger?.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
+                _logger.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
                 throw;
             }
             finally
@@ -708,7 +703,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType(), e);
+                    _logger.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType(), e);
                 }
             }
         }
@@ -852,17 +847,17 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 var uri = GetVaultRenewUri();
                 var message = GetVaultRenewMessage(uri);
 
-                _logger?.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
+                _logger.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
 
                 using var response = await _httpClient.SendAsync(message).ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    _logger?.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
+                    _logger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
                 }
             }
             catch (Exception e)
             {
-                _logger?.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
+                _logger.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
             }
             finally
             {

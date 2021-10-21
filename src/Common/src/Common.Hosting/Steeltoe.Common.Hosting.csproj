@@ -17,4 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
+
+  
 </Project>

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using System;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
 
             _configuration = configuration.Providers.First(provider => provider is ConfigServerConfigurationProvider) as ConfigServerConfigurationProvider;
-            _loggerFactory = loggerFactory;
+            _loggerFactory = loggerFactory ?? BootstrapLoggerFactory.Instance;
             _discoveryClient = discoveryClient;
         }
 
