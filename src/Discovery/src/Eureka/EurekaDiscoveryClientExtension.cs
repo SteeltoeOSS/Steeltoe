@@ -145,24 +145,32 @@ namespace Steeltoe.Discovery.Eureka
 
             if (existingHandler is IHttpClientHandlerProvider handlerProvider)
             {
-                services
-                    .AddHttpClient<EurekaDiscoveryClient>("Eureka")
+                AddEurekaHttpClient(services)
                     .ConfigurePrimaryHttpMessageHandler(() => handlerProvider.GetHttpClientHandler());
             }
             else
             {
                 if (certOptions is null)
                 {
-                    services.AddHttpClient<EurekaDiscoveryClient>("Eureka");
+                    AddEurekaHttpClient(services);
                 }
                 else
                 {
-                    services
-                        .AddHttpClient<EurekaDiscoveryClient>("Eureka")
+                    AddEurekaHttpClient(services)
                         .ConfigurePrimaryHttpMessageHandler(services => new ClientCertificateHttpHandler(services.GetRequiredService<IOptionsMonitor<CertificateOptions>>()));
                 }
             }
         }
+
+        private IHttpClientBuilder AddEurekaHttpClient(IServiceCollection services)
+            => services.AddHttpClient<EurekaDiscoveryClient>("Eureka", (services, client) =>
+            {
+                var clientOptions = services.GetRequiredService<IOptionsSnapshot<EurekaClientOptions>>();
+                if (clientOptions.Value.EurekaServerConnectTimeoutSeconds > 0)
+                {
+                    client.Timeout = TimeSpan.FromSeconds(clientOptions.Value.EurekaServerConnectTimeoutSeconds);
+                }
+            });
 
         private EurekaServiceInfo GetServiceInfo(IConfiguration config)
         {
