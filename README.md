@@ -1,6 +1,6 @@
 # Steeltoe .NET Open Source Software
 
-[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=master)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=master)
+[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=main)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=main)
 
 ## Why Steeltoe?
 Are you looking to create .NET microservices? Modernizing existing applications? Moving apps to containers? Steeltoe can help you!
