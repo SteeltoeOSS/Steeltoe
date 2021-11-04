@@ -56,24 +56,22 @@ namespace Steeltoe.Management.Endpoint
         /// Generic routebuilder extension for Actuators.
         /// </summary>
         /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
-        /// <param name="conventionBuilder">A convention builder that applies a convention to the whole collection. </param>
+        /// <param name="convention">A convention builder action that applies a convention to the whole collection. </param>
         /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
         /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
-        public static IEndpointConventionBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder = null)
+        public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
         where TEndpoint : IEndpoint
         {
-            return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
+            MapActuatorEndpoint(endpoints, typeof(TEndpoint), convention);
         }
 
         /// <summary>
         /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
         /// </summary>
         /// <param name="endpoints">The endpoint builder</param>
-        /// <returns>Endpoint convention builder</returns>
-        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints)
+        /// <param name="convention">The convention action to apply</param>
+        public static void MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
         {
-            var conventionBuilder = new EndpointCollectionConventionBuilder();
-
             foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
             {
                 // Some actuators only work on some platforms. i.e. Windows and Linux
@@ -84,10 +82,8 @@ namespace Steeltoe.Management.Endpoint
 
                 // This function just takes what has been registered, and sets up the endpoints
                 // This keeps this method flexible; new actuators that are added later should automatically become available
-                endpointEntry.Setup(endpoints, conventionBuilder);
+                endpointEntry.Setup(endpoints, convention);
             }
-
-            return conventionBuilder;
         }
 
         /// <summary>
@@ -95,12 +91,11 @@ namespace Steeltoe.Management.Endpoint
         /// </summary>
         /// <param name="endpoints">The endpoint builder</param>
         /// <param name="version">Media Version</param>
-        /// <returns>Endpoint convention builder</returns>
         [Obsolete("MediaTypeVersion parameter is not used")]
-        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version)
+        public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version)
             => endpoints.MapAllActuators();
 
-        internal static IEndpointConventionBuilder MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, EndpointCollectionConventionBuilder conventionBuilder = null)
+        internal static void MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, Action<IEndpointConventionBuilder> convention = null)
         {
             if (endpoints == null)
             {
@@ -112,7 +107,6 @@ namespace Steeltoe.Management.Endpoint
             var (middleware, optionsType) = LookupMiddleware(typeEndpoint);
             var options = endpoints.ServiceProvider.GetService(optionsType) as IEndpointOptions;
             var mgmtOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
-            var builder = conventionBuilder ?? new EndpointCollectionConventionBuilder();
 
             foreach (var mgmtOptions in mgmtOptionsCollection)
             {
@@ -133,12 +127,10 @@ namespace Steeltoe.Management.Endpoint
                         .UseMiddleware(middleware, mgmtOptions)
                         .Build();
                     var allowedVerbs = options.AllowedVerbs ?? new List<string> { "Get" };
-
-                    builder.AddConventionBuilder(endpoints.MapMethods(fullPath, allowedVerbs, pipeline));
+                    var conventionBuilder = endpoints.MapMethods(fullPath, allowedVerbs, pipeline);
+                    convention?.Invoke(conventionBuilder);
                 }
             }
-
-            return builder;
         }
 
         private static void ConnectEndpointOptionsWithManagementOptions(IEndpointRouteBuilder endpoints)
@@ -162,27 +154,6 @@ namespace Steeltoe.Management.Endpoint
                         managementOption.EndpointOptions.Add(endpointOption);
                     }
                 }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents a collection of ConventionBuilders which need the same convention applied to all of them.
-    /// </summary>
-    public class EndpointCollectionConventionBuilder : IEndpointConventionBuilder
-    {
-        private List<IEndpointConventionBuilder> _conventionBuilders = new ();
-
-        public void AddConventionBuilder(IEndpointConventionBuilder builder)
-        {
-            _conventionBuilders.Add(builder);
-        }
-
-        public void Add(Action<EndpointBuilder> convention)
-        {
-            foreach (var conventionBuilder in _conventionBuilders)
-            {
-                conventionBuilder.Add(convention);
             }
         }
     }

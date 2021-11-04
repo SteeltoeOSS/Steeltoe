@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using System;
 
@@ -9,6 +10,6 @@ namespace Steeltoe.Management.Endpoint.Internal
 {
     internal class EndpointMappingEntry
     {
-        public Action<IEndpointRouteBuilder, EndpointCollectionConventionBuilder> Setup { get; set; }
+        public Action<IEndpointRouteBuilder, Action<IEndpointConventionBuilder>> Setup { get; set; }
     }
 }

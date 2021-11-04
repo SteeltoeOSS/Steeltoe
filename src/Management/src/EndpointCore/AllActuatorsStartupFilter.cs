@@ -40,8 +40,9 @@ namespace Steeltoe.Management.Endpoint
 
                 app.UseEndpoints(endpoints =>
                 {
-                    var builder = endpoints.MapAllActuators();
-                    _configureConventions?.Invoke(builder);
+                 //   var conventionBuilder = new EndpointCollectionConventionBuilder();
+                  //  _configureConventions?.Invoke(conventionBuilder);
+                    endpoints.MapAllActuators(_configureConventions);
                 });
 
                 app.ApplicationServices.InitializeAvailability();

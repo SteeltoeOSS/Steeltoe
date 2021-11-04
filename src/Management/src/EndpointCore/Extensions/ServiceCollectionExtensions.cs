@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingleton(new EndpointMappingEntry
             {
-                Setup = (endpoints, convention) => endpoints.Map<TEndpoint>(convention)
+                Setup = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder)
             });
             return services;
         }
