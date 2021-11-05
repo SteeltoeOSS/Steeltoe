@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Discovery;
@@ -44,6 +46,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected ILogger _logger;
         protected ILoggerFactory _loggerFactory;
         protected IConfiguration _configuration;
+        protected Timer _tokenRenewTimer;
+        protected Timer _refreshTimer;
+        protected bool _hasConfiguration;
 
         private const string ArrayPattern = @"(\[[0-9]+\])*$";
         private const string VAULT_RENEW_PATH = "vault/v1/auth/token/renew-self";
@@ -55,8 +60,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
         private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
-
-        private Timer _tokenRenewTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
@@ -75,10 +78,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="logFactory">optional logging factory</param>
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
         {
-            _loggerFactory = logFactory;
-            _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _configuration = new ConfigurationBuilder().Build();
+            _ = settings ?? throw new ArgumentNullException(nameof(settings));
+
+            Initialize(settings, logFactory: logFactory);
         }
 
         /// <summary>
@@ -89,11 +91,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="logFactory">optional logging factory</param>
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
-            _loggerFactory = logFactory;
-            _configuration = new ConfigurationBuilder().Build();
+            _ = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            Initialize(settings, httpClient: httpClient, logFactory: logFactory);
         }
 
         /// <summary>
@@ -101,11 +100,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
         public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
-            : this(source.DefaultSettings, source.LogFactory)
         {
             _ = source.Configuration as IConfigurationRoot;
-            _configuration = WrapWithPlaceholderResolver(source.Configuration);
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+            Initialize(source);
         }
 
         /// <summary>
@@ -114,12 +111,60 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
         /// <param name="httpClient">the httpClient to use</param>
         public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, HttpClient httpClient)
-            : this(source.DefaultSettings, source.LogFactory)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _ = source.Configuration as IConfigurationRoot;
-            _configuration = WrapWithPlaceholderResolver(source.Configuration);
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+            _ = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            Initialize(source, httpClient);
+        }
+
+        internal void Initialize(ConfigServerConfigurationSource source, HttpClient httpClient = null, ILoggerFactory logFactory = null)
+        {
+            var settings = source.DefaultSettings;
+            var configuration = WrapWithPlaceholderResolver(source.Configuration);
+            Initialize(settings, configuration, httpClient, logFactory);
+        }
+
+        internal void Initialize(ConfigServerClientSettings settings, IConfiguration configuration = null, HttpClient httpClient = null, ILoggerFactory logFactory = null)
+        {
+            _loggerFactory = logFactory ?? new NullLoggerFactory();
+            _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
+            if (configuration != null)
+            {
+                _configuration = configuration;
+                _hasConfiguration = true;
+            }
+            else
+            {
+                _configuration = new ConfigurationBuilder().Build();
+                _hasConfiguration = false;
+            }
+
+            _settings = settings;
+            _httpClient = httpClient ?? GetHttpClient(_settings);
+
+            OnSettingsChanged();
+        }
+
+        private void OnSettingsChanged()
+        {
+            var existingPollingInterval = _settings.PollingInterval;
+            if (_hasConfiguration)
+            {
+                ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+                _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
+            }
+
+            if (_settings.PollingInterval == TimeSpan.Zero)
+            {
+                _refreshTimer?.Dispose();
+            }
+            else if (_refreshTimer == null)
+            {
+                _refreshTimer = new Timer(_ => DoLoad(), null, TimeSpan.Zero, _settings.PollingInterval);
+            }
+            else if (existingPollingInterval != _settings.PollingInterval)
+            {
+                _refreshTimer.Change(TimeSpan.Zero, _settings.PollingInterval);
+            }
         }
 
         /// <summary>
@@ -129,10 +174,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal JsonSerializerOptions SerializerOptions { get; private set; } =
             new JsonSerializerOptions
-                {
-                    IgnoreNullValues = true,
-                    PropertyNameCaseInsensitive = true,
-                };
+            {
+                IgnoreNullValues = true,
+                PropertyNameCaseInsensitive = true,
+            };
 
         internal IDictionary<string, string> Properties => Data;
 
@@ -170,9 +215,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal ConfigEnvironment LoadInternal(bool updateDictionary = true)
         {
-            // Refresh settings with latest configuration values
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
-
             if (!_settings.Enabled)
             {
                 _logger?.LogInformation("Config Server client disabled, did not fetch configuration!");
@@ -290,7 +332,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             // Adds client settings (e.g spring:cloud:config:uri, etc) back to the (new) Data dictionary
                             AddConfigServerClientSettings(data);
 
-                            Data = data;
+                            static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2)
+                            {
+                                IEqualityComparer<TValue> valueComparer = EqualityComparer<TValue>.Default;
+
+                                return dict1.Count == dict2.Count &&
+                                        dict1.Keys.All(key => dict2.ContainsKey(key) && valueComparer.Equals(dict1[key], dict2[key]));
+                            }
+
+                            if (!AreEqual(Data, data))
+                            {
+                                Data = data;
+                                OnReload();
+                            }
                         }
 
                         return env;
