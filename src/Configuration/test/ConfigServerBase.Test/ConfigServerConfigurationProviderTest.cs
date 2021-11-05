@@ -11,6 +11,7 @@ using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -357,6 +358,46 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task Create_WithPollingTimer()
+        {
+            // Arrange
+            var environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+   
+                    ]
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
+            TestConfigServerStartup.Reset();
+            TestConfigServerStartup.Response = environment;
+            TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
+            TestConfigServerStartup.Label = "testlabel";
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = new ConfigServerClientSettings()
+            {
+                Name = "myName",
+                PollingInterval = TimeSpan.FromMilliseconds(300)
+            };
+            settings.Label = "label,testlabel";
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
+            var token = provider.GetReloadToken();
+
+            await Task.Delay(2000);
+            var postInitialLoadToken = provider.GetReloadToken();
+            await Task.Delay(500);
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.True(TestConfigServerStartup.RequestCount > 1);
+            Assert.True(token.HasChanged);
+            Assert.False(postInitialLoadToken.HasChanged);
         }
 
         [Fact]
