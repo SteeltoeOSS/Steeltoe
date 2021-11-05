@@ -105,7 +105,12 @@ namespace Steeltoe.Management.Endpoint
                                 .UseEndpoints(endpoints =>
                                 {
                                     endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
-                                    endpoints.MapActuatorEndpoint(type, (convention) => convention.RequireAuthorization("TestAuth"));
+#if NET6_0
+                                    endpoints.MapActuatorEndpoint(type, convention => convention.RequireAuthorization("TestAuth"));
+#else
+                                    endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth");
+#endif
+
                                 }))
                         .UseTestServer();
                 });
