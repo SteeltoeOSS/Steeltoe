@@ -74,7 +74,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 var serializeOptions = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
                 };
 
                 return JsonSerializer.Serialize(result, serializeOptions);

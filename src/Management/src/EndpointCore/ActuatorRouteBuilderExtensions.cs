@@ -65,14 +65,18 @@ namespace Steeltoe.Management.Endpoint
             MapActuatorEndpoint(endpoints, typeof(TEndpoint), convention);
         }
 
-#if NET6_0
+        /// <summary>
+        /// Generic routebuilder extension for Actuators.
+        /// </summary>
+        /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
+        /// <param name="conventionBuilder">A convention builder that applies a convention to the whole collection. </param>
+        /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
+        /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
         [Obsolete("Use  Map<TEndpoint>(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null) instead")]
-#endif
-        public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder collectionBuilder)
-
-       where TEndpoint : IEndpoint
+        public static IEndpointConventionBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder)
+        where TEndpoint : IEndpoint
         {
-            MapActuatorEndpoint(endpoints, typeof(TEndpoint), collectionBuilder);
+            return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
         }
 
         /// <summary>
@@ -96,14 +100,13 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
+#if !NET6_0
         /// <summary>
         /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
         /// </summary>
         /// <param name="endpoints">The endpoint builder</param>
         /// <returns>Endpoint convention builder</returns>
-#if NET6_0
         [Obsolete("Use MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention) instead")]
-#endif
         public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints)
         {
             var conventionBuilder = new EndpointCollectionConventionBuilder();
@@ -122,6 +125,7 @@ namespace Steeltoe.Management.Endpoint
 
             return conventionBuilder;
         }
+#endif
 
         /// <summary>
         /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
@@ -130,7 +134,7 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="version">Media Version</param>
         [Obsolete("MediaTypeVersion parameter is not used")]
         public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version)
-            => endpoints.MapAllActuators();
+            => endpoints.MapAllActuators(null);
 
         internal static void MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, Action<IEndpointConventionBuilder> convention)
         {
@@ -170,6 +174,8 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
+        // This method differs from one above in this way in which the convention builder is invoked. With changes in .NET6 this no longer works.
+        [Obsolete("MediaTypeVersion parameter is not used")]
         internal static IEndpointConventionBuilder MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, EndpointCollectionConventionBuilder conventionBuilder = null)
         {
             if (endpoints == null)

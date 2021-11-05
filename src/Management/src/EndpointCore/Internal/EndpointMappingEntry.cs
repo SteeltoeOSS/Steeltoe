@@ -10,8 +10,8 @@ namespace Steeltoe.Management.Endpoint.Internal
 {
     internal class EndpointMappingEntry
     {
-        public Action<IEndpointRouteBuilder, EndpointCollectionConventionBuilder> Setup { get; set; }
-
         public Action<IEndpointRouteBuilder, Action<IEndpointConventionBuilder>> SetupConvention { get; set; }
+
+        public Action<IEndpointRouteBuilder, EndpointCollectionConventionBuilder> Setup { get; set; }
     }
 }

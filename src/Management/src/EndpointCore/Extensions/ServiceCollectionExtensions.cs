@@ -21,8 +21,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingleton(new EndpointMappingEntry
             {
+                // new way compatible with .NET 6
                 SetupConvention = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder),
-                Setup = (endpoints, convention) => endpoints.Map<TEndpoint>()
+
+                // old way for backwards compatibility, will be removed in the future
+#pragma warning disable CS0618 // Type or member is obsolete
+                Setup = (endpoints, convention) => endpoints.Map<TEndpoint>(convention)
+#pragma warning restore CS0618 // Type or member is obsolete
             });
             return services;
         }
