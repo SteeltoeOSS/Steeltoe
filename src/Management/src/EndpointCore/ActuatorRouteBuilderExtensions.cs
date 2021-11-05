@@ -66,20 +66,6 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Generic routebuilder extension for Actuators.
-        /// </summary>
-        /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
-        /// <param name="conventionBuilder">A convention builder that applies a convention to the whole collection. </param>
-        /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
-        /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
-        [Obsolete("Use  Map<TEndpoint>(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null) instead")]
-        public static IEndpointConventionBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder)
-        where TEndpoint : IEndpoint
-        {
-            return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
-        }
-
-        /// <summary>
         /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
         /// </summary>
         /// <param name="endpoints">The endpoint builder</param>
@@ -99,33 +85,6 @@ namespace Steeltoe.Management.Endpoint
                 endpointEntry.SetupConvention(endpoints, convention);
             }
         }
-
-#if !NET6_0
-        /// <summary>
-        /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
-        /// </summary>
-        /// <param name="endpoints">The endpoint builder</param>
-        /// <returns>Endpoint convention builder</returns>
-        [Obsolete("Use MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention) instead")]
-        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints)
-        {
-            var conventionBuilder = new EndpointCollectionConventionBuilder();
-
-            foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
-            {
-                // Some actuators only work on some platforms. i.e. Windows and Linux
-                // Some actuators have different implemenation depending on the MediaTypeVersion
-                // Previously those checks where performed here and when adding things to the IServiceCollection
-                // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
-
-                // This function just takes what has been registered, and sets up the endpoints
-                // This keeps this method flexible; new actuators that are added later should automatically become available
-                endpointEntry.Setup(endpoints, conventionBuilder);
-            }
-
-            return conventionBuilder;
-        }
-#endif
 
         /// <summary>
         /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
@@ -174,7 +133,32 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        // This method differs from one above in this way in which the convention builder is invoked. With changes in .NET6 this no longer works.
+#if !NET6_0
+        /// <summary>
+        /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
+        /// </summary>
+        /// <param name="endpoints">The endpoint builder</param>
+        /// <returns>Endpoint convention builder</returns>
+        [Obsolete("Use MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention) instead")]
+        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints)
+        {
+            var conventionBuilder = new EndpointCollectionConventionBuilder();
+
+            foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
+            {
+                // Some actuators only work on some platforms. i.e. Windows and Linux
+                // Some actuators have different implemenation depending on the MediaTypeVersion
+                // Previously those checks where performed here and when adding things to the IServiceCollection
+                // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
+
+                // This function just takes what has been registered, and sets up the endpoints
+                // This keeps this method flexible; new actuators that are added later should automatically become available
+                endpointEntry.Setup(endpoints, conventionBuilder);
+            }
+
+            return conventionBuilder;
+        }
+
         [Obsolete("MediaTypeVersion parameter is not used")]
         internal static IEndpointConventionBuilder MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, EndpointCollectionConventionBuilder conventionBuilder = null)
         {
@@ -215,6 +199,19 @@ namespace Steeltoe.Management.Endpoint
 
             return builder;
         }
+        /// <summary>
+        /// Generic routebuilder extension for Actuators.
+        /// </summary>
+        /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
+        /// <param name="conventionBuilder">A convention builder that applies a convention to the whole collection. </param>
+        /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
+        /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
+        public static IEndpointConventionBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder)
+        where TEndpoint : IEndpoint
+        {
+            return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
+        }
+#endif
 
         private static void ConnectEndpointOptionsWithManagementOptions(IEndpointRouteBuilder endpoints)
         {
