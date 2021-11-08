@@ -70,7 +70,6 @@
     <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <EFCoreVersion>3.1.0</EFCoreVersion>
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
-    <LoggingVersion>3.1.0</LoggingVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
@@ -92,8 +91,9 @@
     <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
     <PomeloEFCoreVersion>6.0.0-preview.5</PomeloEFCoreVersion>
     <EF6Version>6.4.0</EF6Version>
-    <ExtensionsVersion>6.0.0-rc.*</ExtensionsVersion>
-    <MicrosoftExtensionsRedisVersion>6.0.0-rc.*</MicrosoftExtensionsRedisVersion>
-    <SystemJsonVersion>6.0.0-rc.*</SystemJsonVersion>
+    <ExtensionsVersion>6.0.0</ExtensionsVersion>
+    <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
+    <SystemDiagnosticsVersion>6.0.0</SystemDiagnosticsVersion>
+    <SystemJsonVersion>6.0.0</SystemJsonVersion>
   </PropertyGroup>
 </Project>

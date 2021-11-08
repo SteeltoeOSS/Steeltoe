@@ -33,6 +33,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(ExtensionsVersion)" />
 
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />

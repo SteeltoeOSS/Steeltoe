@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management</RootNamespace>
     <Description>Abstractions for application management and monitoring</Description>
     <PackageTags></PackageTags>
@@ -10,7 +10,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(LoggingVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
   </ItemGroup>
 
