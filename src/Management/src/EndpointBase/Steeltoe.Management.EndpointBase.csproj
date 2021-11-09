@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Endpoint</RootNamespace>
     <Description>Steeltoe management endpoints</Description>
     <PackageTags>actuator;management;monitoring;Spring Cloud;</PackageTags>
@@ -18,8 +18,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(SymReaderVersion)" />
     <PackageReference Include="Microsoft.DiaSymReader.PortablePdb" Version="$(SymReaderPortableVersion)" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="$(DriveInfoVersion)" />
