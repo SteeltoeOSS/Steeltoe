@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Client for service discovery and registration with Neflix Eureka</Description>
     <PackageTags>aspnetcore;Netflix Eureka;Spring;Spring Cloud</PackageTags>
   </PropertyGroup>
@@ -16,8 +16,5 @@
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj" />
     <ProjectReference Include="..\ClientBase\Steeltoe.Discovery.ClientBase.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-    <ProjectReference Include="..\..\..\Management\src\EndpointBase\Steeltoe.Management.EndpointBase.csproj" PrivateAssets="All" />
   </ItemGroup>
 </Project>

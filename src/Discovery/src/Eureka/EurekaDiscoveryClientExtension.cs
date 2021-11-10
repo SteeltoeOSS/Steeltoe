@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,13 +12,9 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
-#if NETSTANDARD2_1_OR_GREATER
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Info;
-#endif
 using System;
 using System.Linq;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
@@ -77,29 +73,37 @@ namespace Steeltoe.Discovery.Eureka
                     var inetOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
                     options.NetUtils = new InetUtils(inetOptions);
                     options.ApplyNetUtils();
-#if NETSTANDARD2_1_OR_GREATER
-                    var mgmtOptions = serviceProvider.GetService<ActuatorManagementOptions>();
-                    if (mgmtOptions is object)
+                    var endpointAssembly = "Steeltoe.Management.EndpointBase";
+                    if (ReflectionHelpers.IsAssemblyLoaded(endpointAssembly))
                     {
-                        if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":HealthCheckUrlPath")))
+                        var actuatorOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions" });
+                        var endpointOptionsBaseType = ReflectionHelpers.FindType(new string[] { "Steeltoe.Management.Abstractions" }, new string[] { "Steeltoe.Management.IEndpointOptions" });
+                        var mgmtOptions = serviceProvider.GetService(actuatorOptionsType);
+                        if (mgmtOptions is object)
                         {
-                            var healthOptions = serviceProvider.GetService<IHealthOptions>();
-                            if (healthOptions is object)
+                            var basePath = (string)actuatorOptionsType.GetProperty("Path").GetValue(mgmtOptions) + '/';
+                            if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":HealthCheckUrlPath")))
                             {
-                                options.HealthCheckUrlPath = mgmtOptions.Path + '/' + healthOptions.Path.TrimStart('/');
+                                var healthOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Health.IHealthOptions" });
+                                var healthOptions = serviceProvider.GetService(healthOptionsType);
+                                if (healthOptions is object)
+                                {
+                                    options.HealthCheckUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path").GetValue(healthOptions)).TrimStart('/');
+                                }
                             }
-                        }
 
-                        if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":StatusPageUrlPath")))
-                        {
-                            var infoOptions = serviceProvider.GetService<IInfoOptions>();
-                            if (infoOptions is object)
+                            if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":StatusPageUrlPath")))
                             {
-                                options.StatusPageUrlPath = mgmtOptions.Path + '/' + infoOptions.Path.TrimStart('/');
+                                var infoOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Info.IInfoOptions" });
+                                var infoOptions = serviceProvider.GetService(infoOptionsType);
+                                if (infoOptions is object)
+                                {
+                                    options.StatusPageUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path").GetValue(infoOptions)).TrimStart('/');
+                                }
                             }
                         }
                     }
-#endif
+
                     var info = GetServiceInfo(config);
                     EurekaPostConfigurer.UpdateConfiguration(config, info, options, info?.ApplicationInfo ?? appInfo);
                 });

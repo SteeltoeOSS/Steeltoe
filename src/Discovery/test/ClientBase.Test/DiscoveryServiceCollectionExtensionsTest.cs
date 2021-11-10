@@ -31,6 +31,8 @@ namespace Steeltoe.Discovery.Client.Test
 {
     public class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
+        private static readonly Dictionary<string, string> FastEureka = new () { { "eureka:client:ShouldRegisterWithEureka", "false" }, { "eureka:client:ShouldFetchRegistry", "false" } };
+
         [Fact]
         public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
         {
@@ -71,16 +73,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
         {
-            // Arrange
-            var appsettings = new Dictionary<string, string>
+            var appsettings = new Dictionary<string, string>(FastEureka)
             {
                 { "spring:application:name", "myName" },
                 { "spring:cloud:inet:defaulthostname", "fromtest" },
                 { "spring:cloud:inet:skipReverseDnsLookup", "true" },
-                { "eureka:client:shouldFetchRegistry", "false" },
-                { "eureka:client:shouldRegisterWithEureka", "false" },
-                { "eureka:instance:useNetUtils", "true" },
-                { "eureka:client:EurekaServer:ConnectTimeoutSeconds", "0" }
+                { "eureka:instance:useNetUtils", "true" }
             };
 
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
@@ -97,20 +95,14 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
         {
-            // Arrange
-            var appsettings = new Dictionary<string, string>()
-            {
-                { "spring:application:name", "myName" },
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
-                { "eureka:client:EurekaServer:ConnectTimeoutSeconds", "0" }
-            };
+            var appsettings = new Dictionary<string, string>(FastEureka);
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(appsettings)
                 .AddPemFiles("instance.crt", "instance.key")
                 .Build();
 
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
-            services.Configure<CertificateOptions>(config);
+            services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(config);
 
@@ -472,21 +464,14 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithEurekaClientCertConfig_AddsDiscoveryClient()
         {
-            // Arrange
-            var appsettings = new Dictionary<string, string>()
-            {
-                { "spring:application:name", "myName" },
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
-                { "eureka:client:shouldFetchRegistry", "false" },
-                { "eureka:client:shouldRegisterWithEureka", "false" }
-            };
+            var appsettings = new Dictionary<string, string>(FastEureka);
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(appsettings)
                 .AddPemFiles("instance.crt", "instance.key")
                 .Build();
 
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
-            services.Configure<CertificateOptions>(config);
+            services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
             services.AddServiceDiscovery(builder => builder.UseEureka());
 
@@ -783,7 +768,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddServiceDiscovery_WithMultipleClients_PicksConfigured()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "eureka:client:EurekaServer:ConnectTimeoutSeconds", "0" } }).Build());
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(FastEureka).Build());
 
             // act
             var provider = serviceCollection.AddServiceDiscovery(builder =>
