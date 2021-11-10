@@ -34,15 +34,6 @@ jobs:
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
-  - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
-  - task: UseDotNet@2
-    displayName: Install .NET 6
-    inputs:
-      version: 6.0.x
-      includePreviewVersions: true
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -101,15 +92,6 @@ jobs:
   pool:
     vmImage: $(imageName)
   steps:
-  - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
-  - task: UseDotNet@2
-    displayName: Install .NET 6
-    inputs:
-      version: 6.0.x
-      includePreviewVersions: true
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -141,11 +123,11 @@ jobs:
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
   - task: DotNetCoreCLI@2
-    displayName: dotnet test
+    displayName: dotnet test 5.0
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--blame-hang-timeout 3m -f net5.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
     condition: succeededOrFailed()
