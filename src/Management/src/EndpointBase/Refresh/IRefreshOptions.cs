@@ -6,5 +6,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
 {
     public interface IRefreshOptions : IEndpointOptions
     {
+        public bool ReturnConfiguration { get; }
     }
 }

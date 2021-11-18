@@ -18,6 +18,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             Assert.Null(opts.Enabled);
             Assert.Equal("refresh", opts.Id);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
+            Assert.True(opts.ReturnConfiguration);
         }
 
         [Fact]
