@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Kubernetes
                 next(app);
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapAllActuators();
+                    endpoints.MapAllActuators(null);
                 });
                 app.ApplicationServices.InitializeAvailability();
             };

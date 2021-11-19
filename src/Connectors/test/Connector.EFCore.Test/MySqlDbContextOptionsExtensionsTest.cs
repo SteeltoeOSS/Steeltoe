@@ -109,7 +109,7 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
             Assert.True(con is MySqlConnection);
         }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         // Run a MySQL server with Docker to match creds below with this command
         // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
         [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]

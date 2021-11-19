@@ -546,7 +546,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
                     app.UseAuthentication();
 
-                    app.Use(async (context, next) =>
+                    app.Run(async (context) =>
                     {
                         var request = context.Request;
                         var response = context.Response;

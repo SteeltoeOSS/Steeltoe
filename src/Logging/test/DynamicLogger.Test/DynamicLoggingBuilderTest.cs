@@ -183,7 +183,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void DynamicLevelSetting_ParmLessAddDynamic_AddsConsoleOptions()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
@@ -193,13 +192,13 @@ namespace Steeltoe.Extensions.Logging.Test
                 })
                 .BuildServiceProvider();
 
-            // act
             var options = services.GetService<IOptionsMonitor<ConsoleLoggerOptions>>();
 
-            // assert
             Assert.NotNull(options);
             Assert.NotNull(options.CurrentValue);
+#pragma warning disable CS0618 // Type or member is obsolete
             Assert.True(options.CurrentValue.DisableColors);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         [Fact]
@@ -265,7 +264,9 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert
             Assert.NotNull(options);
+#pragma warning disable CS0618 // Type or member is obsolete
             Assert.False(options.Value.DisableColors);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         [Fact]
@@ -286,7 +287,9 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert
             Assert.NotNull(options);
+#pragma warning disable CS0618 // Type or member is obsolete
             Assert.True(options.Value.DisableColors);
+#pragma warning restore CS0618 // Type or member is obsolete
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
         }
     }

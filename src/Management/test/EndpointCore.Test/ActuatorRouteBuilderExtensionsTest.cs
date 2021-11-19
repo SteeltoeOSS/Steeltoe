@@ -19,7 +19,6 @@ using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
@@ -68,18 +67,16 @@ namespace Steeltoe.Management.Endpoint
         [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
         public async Task MapTestAuthSuccess(Type type)
         {
-            // Arrange
             var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
-            await ActAndAssert(type, hostBuilder, HttpStatusCode.OK);
+            await ActAndAssert(type, hostBuilder, true);
         }
 
         [Theory]
         [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
         public async Task MapTestAuthFail(Type type)
         {
-            // Arrange
             var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
-            await ActAndAssert(type, hostBuilder, HttpStatusCode.Unauthorized);
+            await ActAndAssert(type, hostBuilder, false);
         }
 
         private static IHostBuilder GetHostBuilder(Type type, Action<AuthorizationPolicyBuilder> policyAction)
@@ -108,7 +105,14 @@ namespace Steeltoe.Management.Endpoint
                                 .UseEndpoints(endpoints =>
                                 {
                                     endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
+#if NET6_0
+                                    endpoints.MapActuatorEndpoint(type, convention => convention.RequireAuthorization("TestAuth"));
+#else
+#pragma warning disable CS0618 // Type or member is obsolete
                                     endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth");
+#pragma warning restore CS0618 // Type or member is obsolete
+#endif
+
                                 }))
                         .UseTestServer();
                 });
@@ -118,19 +122,19 @@ namespace Steeltoe.Management.Endpoint
                 ? services.GetRequiredService<CloudFoundryManagementOptions>()
                 : services.GetRequiredService<ActuatorManagementOptions>();
 
-        private async Task ActAndAssert(Type type, IHostBuilder hostBuilder, HttpStatusCode expectedStatus)
+        private async Task ActAndAssert(Type type, IHostBuilder hostBuilder, bool expectedSuccess)
         {
             var host = await hostBuilder.StartAsync();
             var (middleware, optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
             var options = host.Services.GetService(optionsType) as IEndpointOptions;
             var path = options.GetContextPath(GetManagementContext(type, host.Services));
 
-            // Assert
             Assert.NotNull(path);
 
-            var response = host.GetTestServer().CreateClient().GetAsync(path);
+            using var server = host.GetTestServer();
+            var response = await server.CreateClient().GetAsync(path);
 
-            Assert.True(expectedStatus == response.Result.StatusCode, $"Expected {expectedStatus}, but got {response.Result.StatusCode} for {path} and type {type}");
+            Assert.True(expectedSuccess == response.IsSuccessStatusCode, $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {type}");
         }
     }
 }

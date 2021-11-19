@@ -9,6 +9,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test
@@ -51,6 +52,31 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.NotNull(options);
             Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
             Assert.Equal("/actuator/info", options.Value.StatusPageUrlPath);
+        }
+
+        [Fact]
+        public void ApplyServicesUsesServerTimeout()
+        {
+            var appSettings = new Dictionary<string, string>()
+            {
+                { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
+                { "Eureka:Client:EurekaServer:RetryCount", "1" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IConfiguration>(config);
+            serviceCollection.RegisterDefaultApplicationInstanceInfo();
+            serviceCollection.AddAllActuators(config);
+            var extension = new EurekaDiscoveryClientExtension();
+
+            extension.ApplyServices(serviceCollection);
+            var provider = serviceCollection.BuildServiceProvider();
+
+            var timer = new Stopwatch();
+            timer.Start();
+            var discoveryClient = provider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
+            timer.Stop();
+            Assert.InRange(timer.ElapsedMilliseconds, 0, 3500);
         }
 
         [Fact]

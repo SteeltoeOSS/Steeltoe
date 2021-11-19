@@ -28,7 +28,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         {
             var section = configuration.GetSection(ConfigPath);
             section.Bind(this);
-            if (MinimumLevel == null)
+            if (MinimumLevel == null || MinimumLevel.Default == (LogEventLevel)(-1))
             {
                 MinimumLevel = new MinimumLevel()
                 {
@@ -50,7 +50,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
     public class MinimumLevel
 #pragma warning restore SA1402 // File may only contain a single class
     {
-        public LogEventLevel Default { get; set; }
+        public LogEventLevel Default { get; set; } = (LogEventLevel)(-1);
 
         public Dictionary<string, LogEventLevel> Override { get; set; }
     }
