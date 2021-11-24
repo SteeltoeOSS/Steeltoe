@@ -41,6 +41,11 @@ namespace Steeltoe.Management.Endpoint.Refresh
                 root.Reload();
             }
 
+            if (!Options.ReturnConfiguration)
+            {
+                return new List<string>();
+            }
+
             var keys = new List<string>();
             foreach (var kvp in configuration.AsEnumerable())
             {
