@@ -91,7 +91,7 @@
     <MySqlEFCoreVersion>5.0.0</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>5.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
+    <PomeloEFCoreVersion>5.0.0</PomeloEFCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
