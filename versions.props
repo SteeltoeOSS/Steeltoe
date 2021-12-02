@@ -94,14 +94,14 @@
     <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <AspNetCoreVersion>6.0.0-rc.2.*</AspNetCoreVersion>
-    <EFCoreTestVersion>6.0.0-rc.1.21452.10</EFCoreTestVersion>
-    <MySqlEFCoreVersion>6.0.0-preview3</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion>6.0.0-rc.1</NpgsqlEFCoreVersion>
+    <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
+    <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
+    <MySqlEFCoreVersion>6.0.0</MySqlEFCoreVersion>
+    <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>6.0.0-rc.1</PomeloEFCoreVersion>
+    <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
     <EF6Version>6.4.0</EF6Version>
-    <ExtensionsVersion>6.0.0-rc.2.*</ExtensionsVersion>
+    <ExtensionsVersion>6.0.0</ExtensionsVersion>
     <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
     <SystemJsonVersion>6.0.0</SystemJsonVersion>
     <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>

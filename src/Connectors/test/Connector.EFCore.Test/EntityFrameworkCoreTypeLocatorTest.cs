@@ -76,6 +76,7 @@ namespace Steeltoe.Connector.EFCore.Test
             Assert.NotNull(type);
         }
 
+#if !NET6_0 // TODO: remove when Oracle works with EF 6
         [Fact]
         public void Options_Found_In_OracleEF_Assembly()
         {
@@ -90,6 +91,7 @@ namespace Steeltoe.Connector.EFCore.Test
             Assert.NotNull(type);
             EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
         }
+#endif
 
         [Fact(Skip = "Change NuGet reference to see this test pass")]
         public void Options_Found_In_Devart_Assembly()
