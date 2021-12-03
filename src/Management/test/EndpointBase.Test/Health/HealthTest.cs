@@ -56,8 +56,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             {
                 var options = new JsonSerializerOptions()
                 {
-                    IgnoreNullValues = true,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+#if NET5_0_OR_GREATER
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+#else
+                    IgnoreNullValues = true
+#endif
                 };
                 options.Converters.Add(new HealthConverter());
 

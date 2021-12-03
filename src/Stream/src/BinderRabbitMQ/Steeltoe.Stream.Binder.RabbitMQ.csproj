@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Steeltoe Stream RabbitMQ Binder</Description>
-    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream.Binder.RabbitMQ</RootNamespace>
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud, RabbitMQ, Binder</PackageTags>
   </PropertyGroup>

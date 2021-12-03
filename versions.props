@@ -15,6 +15,7 @@
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>5.0.1</SystemDiagnosticsVersion>
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
+    <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
@@ -41,7 +42,7 @@
     <MoqVersion>4.13.1</MoqVersion>
     
     <OpenTelemetryVersion>1.1.0</OpenTelemetryVersion>
-    <OpenTelemetryInstrumentationVersion>1.0.0-rc7</OpenTelemetryInstrumentationVersion>
+    <OpenTelemetryInstrumentationVersion>1.0.0-rc8</OpenTelemetryInstrumentationVersion>
     
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
@@ -72,6 +73,7 @@
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
     <LoggingVersion>3.1.0</LoggingVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
+    <UnsafeCompilerServicesVersion>5.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
@@ -89,6 +91,21 @@
     <MySqlEFCoreVersion>5.0.0</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>5.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
+    <PomeloEFCoreVersion>5.0.0</PomeloEFCoreVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
+    <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
+    <MySqlEFCoreVersion>6.0.0</MySqlEFCoreVersion>
+    <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
+    <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
+    <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
+    <EF6Version>6.4.0</EF6Version>
+    <ExtensionsVersion>6.0.0</ExtensionsVersion>
+    <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
+    <SystemJsonVersion>6.0.0</SystemJsonVersion>
+    <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>
+    <OpenTelemetryVersion>1.2.0-rc1</OpenTelemetryVersion>
+    <UnsafeCompilerServicesVersion>6.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
 </Project>
