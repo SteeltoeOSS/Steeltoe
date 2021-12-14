@@ -62,10 +62,7 @@ namespace Steeltoe.Management.Endpoint
                 services.AddThreadDumpActuator(config, version);
             }
 
-            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
-            {
-                services.AddHeapDumpActuator(config);
-            }
+            services.AddHeapDumpActuator(config);
 
             services.AddDbMigrationsActuator(config);
             services.AddEnvActuator(config);
