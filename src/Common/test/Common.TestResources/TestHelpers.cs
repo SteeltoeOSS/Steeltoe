@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if NET6_0_OR_GREATER
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.TestHost;
+#endif
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -87,5 +91,29 @@ namespace Steeltoe
                 ""application_version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
                 ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
             }";
+
+        public static readonly Dictionary<string, string> _fastTestsConfiguration = new ()
+        {
+            { "spring:cloud:config:enabled", "false" },
+            { "eureka:client:serviceUrl", "http://127.0.0.1" },
+            { "eureka:client:shouldRegister", "false" },
+            { "eureka:client:eurekaServer:connectTimeoutSeconds", "1" },
+            { "eureka:client:eurekaServer:retryCount", "0" },
+            { "mysql:client:ConnectionTimeout", "1" },
+            { "postgres:client:timeout", "1" },
+            { "redis:client:abortOnConnectFail", "false" },
+            { "redis:client:connectTimeout", "1" },
+            { "sqlserver:credentials:timeout", "1" }
+        };
+
+#if NET6_0_OR_GREATER
+        public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
+        {
+            var webAppBuilder = WebApplication.CreateBuilder(args);
+            webAppBuilder.Configuration.AddInMemoryCollection(_fastTestsConfiguration);
+            webAppBuilder.WebHost.UseTestServer();
+            return webAppBuilder;
+        }
+#endif
     }
 }

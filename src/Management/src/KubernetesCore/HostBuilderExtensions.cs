@@ -58,5 +58,30 @@ namespace Steeltoe.Management.Kubernetes
                     collection.AddKubernetesActuators(context.Configuration, version: mediaTypeVersion);
                     collection.ActivateActuatorEndpoints(configureEndpoints);
                 });
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Adds all standard and Kubernetes-specific actuators to the application
+        /// </summary>
+        /// <param name="webApplicationBuilder">Your <see cref="WebApplicationBuilder"/></param>
+        /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        public static WebApplicationBuilder AddKubernetesActuators(this WebApplicationBuilder webApplicationBuilder, MediaTypeVersion mediaTypeVersion)
+            => webApplicationBuilder.AddKubernetesActuators(null, mediaTypeVersion);
+
+        /// <summary>
+        /// Adds all standard and Kubernetes-specific actuators to the application
+        /// </summary>
+        /// <param name="webApplicationBuilder">Your <see cref="WebApplicationBuilder"/></param>
+        /// <param name="configureEndpoints">Customize endpoint behavior. Useful for tailoring auth requirements</param>
+        /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        public static WebApplicationBuilder AddKubernetesActuators(this WebApplicationBuilder webApplicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+        {
+            webApplicationBuilder.Logging.AddDynamicConsole();
+            webApplicationBuilder.Services
+                .AddKubernetesActuators(webApplicationBuilder.Configuration, version: mediaTypeVersion)
+                .ActivateActuatorEndpoints(configureEndpoints);
+            return webApplicationBuilder;
+        }
+#endif
     }
 }

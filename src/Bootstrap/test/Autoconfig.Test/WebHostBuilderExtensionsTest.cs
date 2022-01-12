@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
-using Serilog.Core;
-using Steeltoe.Common.Diagnostics;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Connector;
@@ -44,12 +42,16 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
     {
         private static readonly Dictionary<string, string> _fastTests = new ()
         {
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:enabled", "false" },
+            { "eureka:client:serviceUrl", "http://127.0.0.1" },
             { "eureka:client:shouldRegister", "true" },
             { "eureka:client:eurekaServer:connectTimeoutSeconds", "1" },
             { "eureka:client:eurekaServer:retryCount", "0" },
+            { "mysql:client:ConnectionTimeout", "1" },
+            { "postgres:client:timeout", "1" },
             { "redis:client:abortOnConnectFail", "false" },
-            { "redis:client:connectTimeout", "1" }
+            { "redis:client:connectTimeout", "1" },
+            { "sqlserver:credentials:timeout", "1" }
         };
 
         [Fact]

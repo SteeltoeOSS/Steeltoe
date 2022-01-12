@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -52,6 +53,19 @@ namespace Steeltoe.Common.Hosting
 
             return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort));
         }
+
+#if NET6_0_OR_GREATER
+        public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
+        {
+            if (webApplicationBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(webApplicationBuilder));
+            }
+
+            webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
+            return webApplicationBuilder;
+        }
+#endif
 
         private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort)
         {

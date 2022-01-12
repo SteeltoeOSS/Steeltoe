@@ -60,6 +60,7 @@ namespace Steeltoe.Extensions.Logging
             {
             }
 
+#if !NET6_0_OR_GREATER
             public override void Configure(ConsoleLoggerOptions options)
             {
                 if (Platform.IsCloudFoundry)
@@ -69,6 +70,7 @@ namespace Steeltoe.Extensions.Logging
 
                 base.Configure(options);
             }
+#endif
         }
     }
 }
