@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.TryAddSingleton<IThreadDumpOptions>(options);
-            services.TryAddSingleton<IThreadDumper, ThreadDumper>();
+            services.TryAddSingleton<IThreadDumper, ThreadDumperEP>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
 
             return services;
