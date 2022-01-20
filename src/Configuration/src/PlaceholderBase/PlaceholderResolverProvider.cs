@@ -21,10 +21,18 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
 
+        private IConfigurationRoot _configuration;
+
         /// <summary>
         /// Gets the configuration this placeholder resolver wraps
         /// </summary>
-        public IConfiguration Configuration { get; private set; }
+        public IConfiguration Configuration
+        {
+            get => _configuration ?? _originalConfiguration;
+        }
+
+        private IConfiguration _originalConfiguration;
+        private readonly IList<string> _resolvedKeys = new List<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceholderResolverProvider"/> class.
@@ -39,7 +47,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Configuration = configuration;
+            _originalConfiguration = configuration;
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
@@ -66,7 +74,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             get { return _providers; }
         }
 
-        public IList<string> ResolvedKeys { get; } = new List<string>();
+        public IList<string> ResolvedKeys => _resolvedKeys;
 
         /// <summary>
         /// Tries to get a configuration value for the specified key. If the value is a placeholder
@@ -116,19 +124,22 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// </summary>
         public void Load()
         {
-            if (Configuration == null)
+            EnsureInitialized();
+            
+            // placeholder provider maybe be used in one of two ways:
+            // 1. it nests all existing providers that came before it and becomes the only provider registered at the application level (wrapped mode)
+            // 2. it acts as last provider in a chain, and contributes overriding values to placeholder overrides (contributing mode)
+            // This is mainly used with .NET 6 ConfigurationManager class that acts as both IConfigurationBuilder & IConfigurationRoot
+            // When detected that it's used in contributing mode, a specialized configuration view is used that doesn't load providers (as that is handled by outer config manager)
+            // we just need a IConfiguration that represents all providers that came before it and we're working under assumption that they are already loaded
+
+            // wrapped view represents a slice of configuration providers that came prior to placeholder. if outer configuration providers are modified, it needs to be reconstructed
+            if (_originalConfiguration is IConfigurationRoot root && _configuration is not null && (!root.Providers.SequenceEqual(_configuration.Providers) || _configuration.Providers.Contains(this)))
             {
-                // Initial Load()
-                Configuration = new ConfigurationRoot(_providers);
+                _configuration = new ConfigurationView(root.Providers.TakeWhile(x => !ReferenceEquals(x, this)).ToList());
             }
-            else
-            {
-                // Reload called
-                if (Configuration is IConfigurationRoot asRoot)
-                {
-                    asRoot.Reload();
-                }
-            }
+            _configuration?.Reload();
+            
         }
 
         /// <summary>
@@ -153,8 +164,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         {
             if (Configuration == null)
             {
-                Configuration = new ConfigurationRoot(_providers);
+                _configuration = new ConfigurationRoot(_providers);
             }
+            
         }
     }
 }
