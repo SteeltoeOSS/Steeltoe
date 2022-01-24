@@ -38,6 +38,8 @@ namespace Steeltoe.Stream.Extensions
             var configRoot = host.Services.GetService<IConfigurationRoot>();
             Assert.NotNull(hostBuilder);
             Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
+            Assert.Single(configRoot.Providers.Where(p => p is SpringBootEnvProvider));
+            Assert.Single(configRoot.Providers.Where(p => p is SpringBootCmdProvider));
         }
 
 #if NET6_0_OR_GREATER

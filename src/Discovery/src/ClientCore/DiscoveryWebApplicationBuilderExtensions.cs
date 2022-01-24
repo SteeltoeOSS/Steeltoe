@@ -4,7 +4,6 @@
 
 #if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector;
 using Steeltoe.Discovery.Client.SimpleClients;
 using System;
@@ -22,8 +21,11 @@ namespace Steeltoe.Discovery.Client
         /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
         /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
         /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
-        public static IServiceCollection AddDiscoveryClient(this WebApplicationBuilder hostBuilder) =>
+        public static WebApplicationBuilder AddDiscoveryClient(this WebApplicationBuilder hostBuilder)
+        {
             hostBuilder.Services.AddDiscoveryClient(hostBuilder.Configuration);
+            return hostBuilder;
+        }
 
         /// <summary>
         /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
@@ -34,8 +36,11 @@ namespace Steeltoe.Discovery.Client
         /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
         /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
         /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
-        public static IServiceCollection AddServiceDiscovery(this WebApplicationBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction) =>
+        public static WebApplicationBuilder AddServiceDiscovery(this WebApplicationBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
+        {
             hostBuilder.Services.AddServiceDiscovery(optionsAction);
+            return hostBuilder;
+        }
     }
 }
 #endif
