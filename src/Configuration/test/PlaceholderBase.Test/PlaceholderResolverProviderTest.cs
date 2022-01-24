@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration configuration = null;
+            IConfigurationRoot configuration = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
         }

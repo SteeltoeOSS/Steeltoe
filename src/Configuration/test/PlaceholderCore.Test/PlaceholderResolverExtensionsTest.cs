@@ -168,7 +168,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
 #if NET6_0_OR_GREATER
         [Fact]
-        public void AddPlaceholderResolver_WebAppBuilder_WrapsApplicationsConfiguration()
+        public void AddPlaceholderResolverViaWebApplicationBuilderWorks()
         {
             var appsettingsJson = @"
                 {

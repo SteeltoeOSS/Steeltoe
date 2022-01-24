@@ -21,18 +21,13 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
 
+        private readonly IConfiguration _originalConfiguration;
         private IConfigurationRoot _configuration;
 
         /// <summary>
         /// Gets the configuration this placeholder resolver wraps
         /// </summary>
-        public IConfiguration Configuration
-        {
-            get => _configuration ?? _originalConfiguration;
-        }
-
-        private IConfiguration _originalConfiguration;
-        private readonly IList<string> _resolvedKeys = new List<string>();
+        public IConfiguration Configuration => _configuration ?? _originalConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceholderResolverProvider"/> class.
@@ -40,14 +35,14 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// </summary>
         /// <param name="configuration">the configuration the provider uses when resolving placeholders</param>
         /// <param name="logFactory">the logger factory to use</param>
-        public PlaceholderResolverProvider(IConfiguration configuration, ILoggerFactory logFactory = null)
+        public PlaceholderResolverProvider(IConfigurationRoot configuration, ILoggerFactory logFactory = null)
         {
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            _originalConfiguration = configuration;
+            _originalConfiguration = new ConfigurationView(configuration.Providers.TakeWhile(x => !ReferenceEquals(x, this)).ToList());
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
@@ -69,12 +64,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
-        public IList<IConfigurationProvider> Providers
-        {
-            get { return _providers; }
-        }
+        public IList<IConfigurationProvider> Providers => _providers;
 
-        public IList<string> ResolvedKeys => _resolvedKeys;
+        public IList<string> ResolvedKeys { get; } = new List<string>();
 
         /// <summary>
         /// Tries to get a configuration value for the specified key. If the value is a placeholder
@@ -125,21 +117,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         public void Load()
         {
             EnsureInitialized();
-            
-            // placeholder provider maybe be used in one of two ways:
-            // 1. it nests all existing providers that came before it and becomes the only provider registered at the application level (wrapped mode)
-            // 2. it acts as last provider in a chain, and contributes overriding values to placeholder overrides (contributing mode)
-            // This is mainly used with .NET 6 ConfigurationManager class that acts as both IConfigurationBuilder & IConfigurationRoot
-            // When detected that it's used in contributing mode, a specialized configuration view is used that doesn't load providers (as that is handled by outer config manager)
-            // we just need a IConfiguration that represents all providers that came before it and we're working under assumption that they are already loaded
-
-            // wrapped view represents a slice of configuration providers that came prior to placeholder. if outer configuration providers are modified, it needs to be reconstructed
-            if (_originalConfiguration is IConfigurationRoot root && _configuration is not null && (!root.Providers.SequenceEqual(_configuration.Providers) || _configuration.Providers.Contains(this)))
-            {
-                _configuration = new ConfigurationView(root.Providers.TakeWhile(x => !ReferenceEquals(x, this)).ToList());
-            }
             _configuration?.Reload();
-            
         }
 
         /// <summary>
@@ -166,7 +144,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             {
                 _configuration = new ConfigurationRoot(_providers);
             }
-            
         }
     }
 }
