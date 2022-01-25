@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-// This file is a modified version of https://github.com/dotnet/aspnetcore/blob/master/src/Security/Authentication/test/CertificateTests.cs
+// This file is a modified version of https://github.com/dotnet/aspnetcore/blob/main/src/Security/Authentication/test/CertificateTests.cs
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -194,9 +195,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        // https://github.com/dotnet/aspnetcore/issues/32813
         [Fact]
-        [Trait("Category", "SkipOnLinux")]
         public async Task VerifyNotYetValidSelfSignedFails()
         {
             var server = CreateServer(
@@ -291,6 +290,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             var server = CreateServer(
                 new MutualTlsAuthenticationOptions
                 {
+                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     Events = successfulValidationEvents,
                     IssuerChain = new List<X509Certificate2>() { Certificates.SelfSignedPrimaryRoot, Certificates.SignedSecondaryRoot }
                 }, Certificates.SignedClient);
@@ -644,40 +644,109 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
         private static class Certificates
         {
-            public static X509Certificate2 SelfSignedPrimaryRoot { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("validSelfSignedPrimaryRootCertificate.cer"));
+            private static readonly string ServerEku = "1.3.6.1.5.5.7.3.1";
+            private static readonly string ClientEku = "1.3.6.1.5.5.7.3.2";
 
-            public static X509Certificate2 SignedSecondaryRoot { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("validSignedSecondaryRootCertificate.cer"));
-
-            public static X509Certificate2 SignedClient { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("validSignedClientCertificate.cer"));
-
-            public static X509Certificate2 SelfSignedValidWithClientEku { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("validSelfSignedClientEkuCertificate.cer"));
-
-            public static X509Certificate2 SelfSignedValidWithNoEku { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("validSelfSignedNoEkuCertificate.cer"));
-
-            public static X509Certificate2 SelfSignedValidWithServerEku { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("validSelfSignedServerEkuCertificate.cer"));
-
-            public static X509Certificate2 SelfSignedNotYetValid { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("selfSignedNoEkuCertificateNotValidYet.cer"));
-
-            public static X509Certificate2 SelfSignedExpired { get; private set; } =
-                new X509Certificate2(GetFullyQualifiedFilePath("selfSignedNoEkuCertificateExpired.cer"));
-
-            private static string GetFullyQualifiedFilePath(string filename)
+            static Certificates()
             {
-                var filePath = Path.Combine(AppContext.BaseDirectory, "TestCertificates", filename);
-                if (!File.Exists(filePath))
-                {
-                    throw new FileNotFoundException(filePath);
-                }
+                var now = DateTimeOffset.UtcNow;
 
-                return filePath;
+                SelfSignedPrimaryRoot = MakeCert(
+                    "CN=Valid Self Signed Client EKU,OU=dev,DC=idunno-dev,DC=org",
+                    ClientEku,
+                    now);
+
+                SignedSecondaryRoot = MakeCert(
+                    "CN=Valid Signed Secondary Root EKU,OU=dev,DC=idunno-dev,DC=org",
+                    ClientEku,
+                    now);
+
+                SelfSignedValidWithServerEku = MakeCert(
+                    "CN=Valid Self Signed Server EKU,OU=dev,DC=idunno-dev,DC=org",
+                    ServerEku,
+                    now);
+
+                SelfSignedValidWithClientEku = MakeCert(
+                    "CN=Valid Self Signed Server EKU,OU=dev,DC=idunno-dev,DC=org",
+                    ClientEku,
+                    now);
+
+                SelfSignedValidWithNoEku = MakeCert(
+                    "CN=Valid Self Signed No EKU,OU=dev,DC=idunno-dev,DC=org",
+                    eku: null,
+                    now);
+
+                SelfSignedExpired = MakeCert(
+                    "CN=Expired Self Signed,OU=dev,DC=idunno-dev,DC=org",
+                    eku: null,
+                    now.AddYears(-2),
+                    now.AddYears(-1));
+
+                SelfSignedNotYetValid = MakeCert(
+                    "CN=Not Valid Yet Self Signed,OU=dev,DC=idunno-dev,DC=org",
+                    eku: null,
+                    now.AddYears(2),
+                    now.AddYears(3));
+
+                SignedClient = MakeCert(
+                    "CN=Valid Signed Client,OU=dev,DC=idunno-dev,DC=org",
+                    ClientEku,
+                    now);
             }
+
+            private static readonly X509KeyUsageExtension DigitalSignatureOnlyUsage =
+                   new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, true);
+
+            private static X509Certificate2 MakeCert(
+                string subjectName,
+                string eku,
+                DateTimeOffset now)
+            {
+                return MakeCert(subjectName, eku, now, now.AddYears(5));
+            }
+
+            private static X509Certificate2 MakeCert(
+                string subjectName,
+                string eku,
+                DateTimeOffset notBefore,
+                DateTimeOffset notAfter)
+            {
+                using (var key = RSA.Create(2048))
+                {
+                    var request = new CertificateRequest(
+                        subjectName,
+                        key,
+                        HashAlgorithmName.SHA256,
+                        RSASignaturePadding.Pkcs1);
+
+                    request.CertificateExtensions.Add(DigitalSignatureOnlyUsage);
+
+                    if (eku != null)
+                    {
+                        request.CertificateExtensions.Add(
+                            new X509EnhancedKeyUsageExtension(
+                                new OidCollection { new Oid(eku, null) }, false));
+                    }
+
+                    return request.CreateSelfSigned(notBefore, notAfter);
+                }
+            }
+
+            public static X509Certificate2 SelfSignedPrimaryRoot { get; private set; }
+
+            public static X509Certificate2 SignedSecondaryRoot { get; private set; }
+
+            public static X509Certificate2 SignedClient { get; private set; }
+
+            public static X509Certificate2 SelfSignedValidWithClientEku { get; private set; }
+
+            public static X509Certificate2 SelfSignedValidWithNoEku { get; private set; }
+
+            public static X509Certificate2 SelfSignedValidWithServerEku { get; private set; }
+
+            public static X509Certificate2 SelfSignedNotYetValid { get; private set; }
+
+            public static X509Certificate2 SelfSignedExpired { get; private set; }
         }
     }
 }
