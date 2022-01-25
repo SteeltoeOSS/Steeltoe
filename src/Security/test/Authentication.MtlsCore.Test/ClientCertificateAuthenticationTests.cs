@@ -164,6 +164,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnLinux")]
         public async Task VerifyExpiredSelfSignedFails()
         {
             var server = CreateServer(
@@ -195,7 +196,9 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
+        // https://github.com/dotnet/aspnetcore/issues/32813
         [Fact]
+        [Trait("Category", "SkipOnLinux")]
         public async Task VerifyNotYetValidSelfSignedFails()
         {
             var server = CreateServer(
