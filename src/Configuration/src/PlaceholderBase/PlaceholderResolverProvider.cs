@@ -21,13 +21,12 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
 
-        private readonly IConfiguration _originalConfiguration;
         private IConfigurationRoot _configuration;
 
         /// <summary>
         /// Gets the configuration this placeholder resolver wraps
         /// </summary>
-        public IConfiguration Configuration => _configuration ?? _originalConfiguration;
+        public IConfiguration Configuration => _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceholderResolverProvider"/> class.
@@ -42,7 +41,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            _originalConfiguration = new ConfigurationView(configuration.Providers.TakeWhile(x => !ReferenceEquals(x, this)).ToList());
+            _configuration = configuration;
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
