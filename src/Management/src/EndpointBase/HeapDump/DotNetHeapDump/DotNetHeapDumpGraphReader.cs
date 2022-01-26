@@ -13,6 +13,7 @@ using Microsoft.Diagnostics.Tracing.Parsers.Symbol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using Address = System.UInt64;
@@ -23,6 +24,7 @@ using Address = System.UInt64;
 /// <summary>
 /// Reads a .NET Heap dump generated from ETW
 /// </summary>
+[ExcludeFromCodeCoverageAttribute()]
 internal class DotNetHeapDumpGraphReader
 {
     /// <summary>

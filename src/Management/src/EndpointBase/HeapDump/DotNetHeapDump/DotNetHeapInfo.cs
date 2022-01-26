@@ -5,10 +5,11 @@
 #pragma warning disable
 using FastSerialization;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Address = System.UInt64;
 
 // Copy of version in Microsoft/Diagnostics
-
+[ExcludeFromCodeCoverageAttribute()]
 internal class DotNetHeapInfo : IFastSerializable
 {
     /// <summary>
@@ -113,7 +114,7 @@ internal class DotNetHeapInfo : IFastSerializable
     private GCHeapDumpSegment m_lastSegment;    // cache for GenerationFor
     #endregion
 }
-
+[ExcludeFromCodeCoverageAttribute()]
 public class GCHeapDumpSegment : IFastSerializable
 {
     public Address Start { get; internal set; }

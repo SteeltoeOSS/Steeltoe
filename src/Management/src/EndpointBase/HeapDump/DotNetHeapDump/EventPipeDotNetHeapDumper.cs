@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Threading;
@@ -21,6 +22,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.GCDump
 {
+    [ExcludeFromCodeCoverageAttribute()]
     internal static class EventPipeDotNetHeapDumper
     {
         internal static volatile bool eventPipeDataPresent = false;
@@ -220,6 +222,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
         }
     }
 
+    [ExcludeFromCodeCoverageAttribute()]
     internal class EventPipeSessionController : IDisposable
     {
         private List<EventPipeProvider> _providers;

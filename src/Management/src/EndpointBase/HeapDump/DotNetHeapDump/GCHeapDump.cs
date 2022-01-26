@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security;
 using System.Text.RegularExpressions;
@@ -21,6 +22,7 @@ using Address = System.UInt64;
 /// Represents a .GCDump file.  You can open it for reading with the construtor
 /// and you can write one with WriteMemoryGraph 
 /// </summary>
+[ExcludeFromCodeCoverageAttribute()]
 internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
 {
     public GCHeapDump(string inputFileName) :
@@ -418,6 +420,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
     #endregion
 }
 
+[ExcludeFromCodeCoverageAttribute()]
 public class JSHeapInfo : IFastSerializable
 {
     #region private
@@ -430,6 +433,7 @@ public class JSHeapInfo : IFastSerializable
     #endregion
 }
 
+[ExcludeFromCodeCoverageAttribute()]
 public class InteropInfo : IFastSerializable
 {
     public class RCWInfo
@@ -716,6 +720,7 @@ public class InteropInfo : IFastSerializable
 /// </graph>
 /// 
 /// </summary>
+[ExcludeFromCodeCoverageAttribute()]
 internal class XmlGcHeapDump
 {
     public static GCHeapDump ReadGCHeapDumpFromXml(string fileName)

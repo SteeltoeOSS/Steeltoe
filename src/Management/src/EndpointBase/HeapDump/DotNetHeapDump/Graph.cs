@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Security;
 using Address = System.UInt64;
+using System.Diagnostics.CodeAnalysis;
 
 // Copy of version in Microsoft/Diagnostics
 // All classes made internal
@@ -74,6 +75,7 @@ namespace Graphs
     /// see code:Graph.SizeOfGraphDescription to determine the overhead for any particular graph.
     /// 
     /// </summary>
+    [ExcludeFromCodeCoverageAttribute()]
     internal class Graph : IFastSerializable, IFastSerializableVersion
     {
         /// <summary>

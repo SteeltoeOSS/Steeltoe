@@ -6,6 +6,7 @@
 using FastSerialization;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Address = System.UInt64;
 
 // Copy of version in Microsoft/Diagnostics
@@ -15,6 +16,7 @@ using Address = System.UInt64;
 
 namespace Graphs
 {
+    [ExcludeFromCodeCoverageAttribute()]
     internal class MemoryGraph : Graph, IFastSerializable
     {
         public MemoryGraph(int expectedSize)
