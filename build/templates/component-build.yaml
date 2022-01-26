@@ -55,10 +55,15 @@ jobs:
       command: test
       projects: $(SolutionFile)
       arguments: --blame-hang-timeout 5m --no-build -c Release -f netcoreapp3.1 -maxcpucount:1 ${{parameters.skipFilter}}
-  - publish: $(Agent.TempDirectory)
+  - task: CopyFiles@2
+    condition: failed()
+    inputs:
+      contents: $(Agent.TempDirectory)/**/*_hangdump.dmp
+      targetFolder: $(Build.ArtifactStagingDirectory)/hangdumps
+  - publish: $(Agent.TempDirectory)/hangdumps
     condition: failed()
     displayName: Publish test result files if tests fail
-    artifact: TestResults
+    artifact: FailedTestOutput-$(Agent.JobName)
   - script: |
       docker kill rabbitmq
       docker rm rabbitmq
