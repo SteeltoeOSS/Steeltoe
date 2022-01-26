@@ -124,8 +124,8 @@ jobs:
       organization: steeltoeoss
       projectKey: SteeltoeOSS_steeltoe
       extraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
-          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
+          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/results/**/*opencover.xml
+          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/results/*.trx
           sonar.exclusions=$(Build.SourcesDirectory)/src/Management/src/Diagnostics*
           sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
@@ -144,9 +144,10 @@ jobs:
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)/results'
       publishTestResults: false
-  - publish: $(Build.SourcesDirectory)*_hangdump.dmp
+  - publish: $(Build.SourcesDirectory)/results
+             /Users/runner/work/1/s/270deb6b-9f29-4599-8f60-989a36ea2204/dotnet_1912_20220126T144627_hangdump.dmp
     condition: failed()
     displayName: Publish hang dump files if .NET 6 tests fail
     artifact: NET6TestDump
@@ -156,9 +157,9 @@ jobs:
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)/results'
       publishTestResults: false
-  - publish: $(Build.SourcesDirectory)*_hangdump.dmp
+  - publish: $(Build.SourcesDirectory)/results
     condition: failed()
     displayName: Publish hang dump files if .NET Core 3.1 tests fail
     artifact: NETCore31TestDump
@@ -180,7 +181,7 @@ jobs:
     condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Consolidate coverage for this job
     inputs:
-      reports: $(Build.SourcesDirectory)/**/*opencover.xml
+      reports: $(Build.SourcesDirectory)/results/**/*opencover.xml
       targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
       reporttypes: Cobertura
   - publish: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
