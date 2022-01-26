@@ -40,18 +40,6 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 {
     public class WebApplicationBuilderExtensionsTest
     {
-        private static readonly Dictionary<string, string> _fastTests = new ()
-        {
-            { "spring:cloud:config:enabled", "false" },
-            { "eureka:client:serviceUrl", "http://127.0.0.1" },
-            { "eureka:client:enabled", "false" },
-            { "mysql:client:ConnectionTimeout", "1" },
-            { "postgres:client:timeout", "1" },
-            { "redis:client:abortOnConnectFail", "false" },
-            { "redis:client:connectTimeout", "1" },
-            { "sqlserver:credentials:timeout", "1" }
-        };
-
         [Fact]
         public void ConfigServerConfiguration_IsAutowired()
         {
@@ -237,7 +225,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         private WebApplication GetWebApplicationWithSteeltoe(params string[] steeltoeInclusions)
         {
             var webAppBuilder = WebApplication.CreateBuilder();
-            webAppBuilder.Configuration.AddInMemoryCollection(_fastTests);
+            webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers._fastTestsConfiguration);
             webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(steeltoeInclusions));
             webAppBuilder.WebHost.UseTestServer();
             return webAppBuilder.Build();

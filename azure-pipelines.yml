@@ -124,8 +124,8 @@ jobs:
       organization: steeltoeoss
       projectKey: SteeltoeOSS_steeltoe
       extraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/results/**/*opencover.xml
-          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/results/*.trx
+          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
+          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
           sonar.exclusions=$(Build.SourcesDirectory)/src/Management/src/Diagnostics*
           sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
@@ -144,7 +144,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)/results'
+      arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
     condition: succeededOrFailed()
@@ -152,14 +152,14 @@ jobs:
     inputs:
       command: test
       projects: '**/*.csproj'
-      arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)/results'
+      arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()
     inputs:
-      contents: $(Build.SourcesDirectory)/results/**/*.dmp
+      contents: $(Build.SourcesDirectory)/**/*.dmp
       targetFolder: $(Build.ArtifactStagingDirectory)/hangdumps
-  - publish: $(Build.SourcesDirectory)/hangdumps
+  - publish: $(Build.ArtifactStagingDirectory)/hangdumps
     condition: failed()
     displayName: Publish test result files if tests fail
     artifact: FailedTestOutput-$(Agent.JobName)
@@ -181,7 +181,7 @@ jobs:
     condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Consolidate coverage for this job
     inputs:
-      reports: $(Build.SourcesDirectory)/results/**/*opencover.xml
+      reports: $(Build.SourcesDirectory)/**/*opencover.xml
       targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
       reporttypes: Cobertura
   - publish: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)

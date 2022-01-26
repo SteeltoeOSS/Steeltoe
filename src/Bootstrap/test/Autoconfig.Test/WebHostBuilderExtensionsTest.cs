@@ -40,20 +40,6 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 {
     public class WebHostBuilderExtensionsTest
     {
-        private static readonly Dictionary<string, string> _fastTests = new ()
-        {
-            { "spring:cloud:config:enabled", "false" },
-            { "eureka:client:serviceUrl", "http://127.0.0.1" },
-            { "eureka:client:shouldRegister", "true" },
-            { "eureka:client:eurekaServer:connectTimeoutSeconds", "1" },
-            { "eureka:client:eurekaServer:retryCount", "0" },
-            { "mysql:client:ConnectionTimeout", "1" },
-            { "postgres:client:timeout", "1" },
-            { "redis:client:abortOnConnectFail", "false" },
-            { "redis:client:connectTimeout", "1" },
-            { "sqlserver:credentials:timeout", "1" }
-        };
-
         [Fact]
         public void ConfigServerConfiguration_IsAutowired()
         {
@@ -64,7 +50,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
                     SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore
                 });
             var hostBuilder = new WebHostBuilder()
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(_fastTests))
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
                 .Configure((b) => { });
 
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -140,7 +126,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var exclusions = SteeltoeAssemblies.AllAssemblies
                 .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore });
             var hostBuilder = new WebHostBuilder()
-                .ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(_fastTests))
+                .ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
                 .Configure((b) => { });
 
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -178,7 +164,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var exclusions = SteeltoeAssemblies.AllAssemblies
                 .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Discovery_ClientBase });
             var hostBuilder = new WebHostBuilder()
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(_fastTests))
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
                 .Configure((b) => { });
 
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -195,7 +181,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
                 .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Discovery_ClientCore });
 
             var host = new WebHostBuilder()
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(_fastTests))
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
                 .AddSteeltoe(exclusions).Configure((b) => { }).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
 

@@ -96,9 +96,7 @@ namespace Steeltoe
         {
             { "spring:cloud:config:enabled", "false" },
             { "eureka:client:serviceUrl", "http://127.0.0.1" },
-            { "eureka:client:shouldRegister", "false" },
-            { "eureka:client:eurekaServer:connectTimeoutSeconds", "1" },
-            { "eureka:client:eurekaServer:retryCount", "0" },
+            { "eureka:client:enabled", "false" },
             { "mysql:client:ConnectionTimeout", "1" },
             { "postgres:client:timeout", "1" },
             { "redis:client:abortOnConnectFail", "false" },
