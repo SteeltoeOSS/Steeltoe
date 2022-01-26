@@ -146,11 +146,6 @@ jobs:
       projects: '**/*.csproj'
       arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)/results'
       publishTestResults: false
-  - publish: $(Build.SourcesDirectory)/results
-             /Users/runner/work/1/s/270deb6b-9f29-4599-8f60-989a36ea2204/dotnet_1912_20220126T144627_hangdump.dmp
-    condition: failed()
-    displayName: Publish hang dump files if .NET 6 tests fail
-    artifact: NET6TestDump
   - task: DotNetCoreCLI@2
     condition: succeededOrFailed()
     displayName: dotnet test 3.1
@@ -161,8 +156,8 @@ jobs:
       publishTestResults: false
   - publish: $(Build.SourcesDirectory)/results
     condition: failed()
-    displayName: Publish hang dump files if .NET Core 3.1 tests fail
-    artifact: NETCore31TestDump
+    displayName: Publish test result files if tests fail
+    artifact: TestResults
   - script: |
       docker kill configserver
       docker rm configserver

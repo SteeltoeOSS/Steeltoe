@@ -1,0 +1,7 @@
+*.trx
+host
+packs
+sdk-manifests
+sdk
+shared
+templates
