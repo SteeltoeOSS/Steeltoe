@@ -48,6 +48,10 @@ jobs:
       command: test
       projects: $(SolutionFile)
       arguments: --blame-hang-timeout 5m --no-build -c Release -f net6.0 -maxcpucount:1 ${{parameters.skipFilter}}
+  - publish: $(Agent.TempDirectory)*_hangdump.dmp
+    condition: failed()
+    displayName: Publish hang dump files if .NET 6 tests fail
+    artifact: NET6TestDump
   - task: DotNetCoreCLI@2
     condition: succeededOrFailed()
     displayName: dotnet test 3.1
@@ -55,6 +59,10 @@ jobs:
       command: test
       projects: $(SolutionFile)
       arguments: --blame-hang-timeout 5m --no-build -c Release -f netcoreapp3.1 -maxcpucount:1 ${{parameters.skipFilter}}
+  - publish: $(Agent.TempDirectory)*_hangdump.dmp
+    condition: failed()
+    displayName: Publish hang dump files if .NET 6 tests fail
+    artifact: NETCore31TestDump
   - script: |
       docker kill rabbitmq
       docker rm rabbitmq
