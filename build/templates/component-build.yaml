@@ -58,7 +58,7 @@ jobs:
   - task: CopyFiles@2
     condition: failed()
     inputs:
-      contents: $(Agent.TempDirectory)/*/*.dmp
+      contents: $(Agent.TempDirectory)/**/*.dmp
       targetFolder: $(Build.ArtifactStagingDirectory)/hangdumps
   - publish: $(Agent.ArtifactStagingDirectory)/hangdumps
     condition: failed()
