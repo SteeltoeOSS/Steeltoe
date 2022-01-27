@@ -676,6 +676,7 @@ namespace Graphs
     /// 
     /// A node implicitly knows where the 'next' child is (that is it is an iterator).  
     /// </summary>
+    [ExcludeFromCodeCoverageAttribute()]
     internal class Node
     {
         public int Size
@@ -933,6 +934,7 @@ namespace Graphs
     /// <summary>
     /// Represents the nodeId of a particular node in the graph.  
     /// </summary>
+    [ExcludeFromCodeCoverageAttribute()]
     internal class NodeType
     {
         /// <summary>
@@ -1048,6 +1050,7 @@ namespace Graphs
     /// <summary>
     /// Holds all interesting data about a module (in particular enough to look up PDB information)
     /// </summary>
+    [ExcludeFromCodeCoverageAttribute()]
     public class Module : IFastSerializable
     {
         /// <summary>
@@ -1132,6 +1135,7 @@ namespace Graphs
     /// <summary>
     /// Stuff that is useful but does not need to be in Graph.   
     /// </summary>
+    [ExcludeFromCodeCoverageAttribute()]
     internal static class GraphUtils
     {
         /// <summary>
@@ -1351,6 +1355,7 @@ namespace Graphs
 /// 
 /// Thus this is a fairly expensive thing to create.  
 /// </summary>
+[ExcludeFromCodeCoverageAttribute()]
 internal class RefGraph
 {
     public RefGraph(Graph graph)
@@ -1512,6 +1517,7 @@ internal class RefGraph
     #endregion
 }
 
+[ExcludeFromCodeCoverageAttribute()]
 internal class RefNode
 {
     /// <summary>
@@ -1647,6 +1653,7 @@ internal class RefNode
 /// 
 /// This is just a first cut...
 /// </summary>
+[ExcludeFromCodeCoverageAttribute()]
 internal class SpanningTree
 {
     public SpanningTree(Graph graph, TextWriter log)
@@ -1999,6 +2006,7 @@ internal class SpanningTree
 /// TODO FIX NOW put in its own file.  
 /// A priority queue, specialized to be a bit more efficient than a generic version would be. 
 /// </summary>
+[ExcludeFromCodeCoverageAttribute()]
 internal class PriorityQueue
 {
     public PriorityQueue(int initialSize = 32)
@@ -2135,6 +2143,7 @@ internal class PriorityQueue
 ///     2) We try hard to keep scale each object type by the count by which the whole
 ///        graph was reduced.  
 /// </summary>
+[ExcludeFromCodeCoverageAttribute()]
 internal class GraphSampler
 {
     /// <summary>

@@ -166,6 +166,7 @@ namespace Graphs
     /// <summary>
     /// Support class for code:MemoryGraph
     /// </summary>
+    [ExcludeFromCodeCoverageAttribute()]
     internal class MemoryNode : Node
     {
         public Address Address { get { return m_memoryGraph.GetAddress(Index); } }
@@ -195,6 +196,7 @@ namespace Graphs
     /// you create the node.  Instead you can keep adding children to it incrementally
     /// and when you are done you call Build() which finalizes it (and all its children)
     /// </summary>
+    [ExcludeFromCodeCoverageAttribute()]
     internal class MemoryNodeBuilder
     {
         public MemoryNodeBuilder(MemoryGraph graph, string typeName, string moduleName = null, NodeIndex nodeIndex = NodeIndex.Invalid)
