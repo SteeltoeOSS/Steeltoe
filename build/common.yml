@@ -18,7 +18,7 @@ jobs:
     parameters:
       component: Common
       OS: macOS
-      # todo: remove comment when finished testing dump captures skipFilter: --filter "Category!=SkipOnMacOS"
+      skipFilter: --filter "Category!=SkipOnMacOS"
   - template: templates/component-build.yaml
     parameters:
       component: Common
