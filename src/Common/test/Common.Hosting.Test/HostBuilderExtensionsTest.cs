@@ -178,6 +178,7 @@ namespace Steeltoe.Common.Hosting.Test
 
 #if NET6_0_OR_GREATER
         [Fact]
+        [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
         public async Task UseCloudHosting_WebApplication_UsesLocalPortSettings()
         {
             Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
