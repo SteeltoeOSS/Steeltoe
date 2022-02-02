@@ -73,6 +73,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Null(options.AccessTokenUri);
             Assert.Null(options.ClientId);
             Assert.Null(options.ClientSecret);
+            Assert.Null(options.Headers);
         }
 
         [Fact]

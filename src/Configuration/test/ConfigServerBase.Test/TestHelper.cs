@@ -35,6 +35,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Null(settings.Username);
             Assert.Null(settings.Password);
             Assert.Null(settings.Token);
+            Assert.Null(settings.Headers);
         }
     }
 }

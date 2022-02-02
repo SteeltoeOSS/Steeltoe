@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
@@ -307,6 +308,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual int TokenRenewRate { get; set; } = DEFAULT_VAULT_TOKEN_RENEW_RATE;
 
         public virtual bool DisableTokenRenewal { get; set; } = DEFAULT_DISABLE_TOKEN_RENEWAL;
+
+        /// <summary>
+        /// Gets or sets headers that will be added to the config server request
+        /// </summary>
+        public virtual Dictionary<string, string> Headers { get; set; }
 
         internal static bool IsMultiServerConfig(string uris)
         {

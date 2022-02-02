@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options;
+using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -93,6 +94,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public string ClientId => Client_Id;
 
+        public Dictionary<string, string> Headers { get; set; }
+
         public ConfigServerClientSettings Settings
         {
             get
@@ -111,6 +114,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     TokenTtl = TokenTtl,
                     TokenRenewRate = TokenRenewRate,
                     DisableTokenRenewal = DisableTokenRenewal,
+                    Headers = Headers,
 
                     Environment = Env,
                     Label = Label,
