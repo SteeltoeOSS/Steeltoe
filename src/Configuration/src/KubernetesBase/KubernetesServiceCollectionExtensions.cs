@@ -10,7 +10,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
     public static class KubernetesServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds KubernetesApplicationInstanceInfo and ensures runtime loggers are used
+        /// Adds KubernetesApplicationInstanceInfo and ensures startup loggers are replaced by runtime loggers
         /// </summary>
         /// <param name="services">Your <see cref="IServiceCollection"/></param>
         public static IServiceCollection AddKubernetesConfigurationServices(this IServiceCollection services) =>
