@@ -21,7 +21,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
     public class RabbitBindingIntegrationTest : IDisposable
     {
         private const string QueueName = "test.queue.RabbitBindingIntegrationTests";
-        private readonly Queue queue = new Queue(QueueName);
+        private readonly Queue queue = new (QueueName);
         private readonly ServiceCollection services;
         private ServiceProvider provider;
 

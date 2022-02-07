@@ -9,46 +9,37 @@ namespace Steeltoe.Common.Availability.Test
 {
     public class LivenessHealthContributorTest
     {
-        private readonly ApplicationAvailability availability = new ApplicationAvailability();
+        private readonly ApplicationAvailability availability = new ();
 
         [Fact]
         public void HandlesUnknown()
         {
-            // arrange
             var contributor = new LivenessHealthContributor(availability);
 
-            // act
             var result = contributor.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UNKNOWN, result.Status);
         }
 
         [Fact]
         public void HandlesCorrect()
         {
-            // arrange
             availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, "tests");
             var contributor = new LivenessHealthContributor(availability);
 
-            // act
             var result = contributor.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UP, result.Status);
         }
 
         [Fact]
         public void HandlesBroken()
         {
-            // arrange
             availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Broken, "tests");
             var contributor = new LivenessHealthContributor(availability);
 
-            // act
             var result = contributor.Health();
 
-            // assert
             Assert.Equal(HealthStatus.DOWN, result.Status);
         }
     }

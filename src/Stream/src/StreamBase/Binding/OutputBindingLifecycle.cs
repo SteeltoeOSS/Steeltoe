@@ -9,7 +9,7 @@ namespace Steeltoe.Stream.Binding
 {
     public class OutputBindingLifecycle : AbstractBindingLifecycle
     {
-        internal List<IBinding> _outputBindings = new List<IBinding>();
+        internal List<IBinding> _outputBindings = new ();
 
         public OutputBindingLifecycle(IBindingService bindingService, IEnumerable<IBindable> bindables)
             : base(bindingService, bindables)

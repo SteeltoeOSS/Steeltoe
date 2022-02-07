@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class Applications
     {
-        private readonly object _addRemoveInstanceLock = new object();
+        private readonly object _addRemoveInstanceLock = new ();
 
         public string AppsHashCode { get; internal set; }
 

@@ -22,14 +22,11 @@ namespace Steeltoe.Management.Kubernetes.Test
         [Fact]
         public async Task AddKubernetesActuators_IHostBuilder_AddsAndActivatesActuators()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-            // Act
             var host = await hostBuilder.AddKubernetesActuators().StartAsync();
             var testClient = host.GetTestServer().CreateClient();
 
-            // Assert
             var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await testClient.GetAsync("/actuator/info");
@@ -49,14 +46,11 @@ namespace Steeltoe.Management.Kubernetes.Test
         [Fact]
         public async Task AddKubernetesActuators_IHostBuilder_AddsAndActivatesActuators_MediaV1()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-            // Act
             var host = await hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).StartAsync();
             var testClient = host.GetTestServer().CreateClient();
 
-            // Assert
             var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await testClient.GetAsync("/actuator/info");
@@ -76,14 +70,11 @@ namespace Steeltoe.Management.Kubernetes.Test
         [Fact]
         public async Task AddKubernetesActuatorsWithConventions_IHostBuilder_AddsAndActivatesActuatorsAddAllActuators()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithSecureRouting);
 
-            // Act
             var host = await hostBuilder.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
             var testClient = host.GetTestServer().CreateClient();
 
-            // Assert
             var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await testClient.GetAsync("/actuator/info");
@@ -103,15 +94,12 @@ namespace Steeltoe.Management.Kubernetes.Test
         [Fact]
         public async Task AddKubernetesActuators_IWebHostBuilder_AddsAndActivatesActuators()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder();
             _testServerWithRouting.Invoke(hostBuilder);
 
-            // Act
             var host = hostBuilder.AddKubernetesActuators().Start();
             var testClient = host.GetTestServer().CreateClient();
 
-            // Assert
             var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await testClient.GetAsync("/actuator/info");
@@ -131,15 +119,12 @@ namespace Steeltoe.Management.Kubernetes.Test
         [Fact]
         public async Task AddKubernetesActuators_IWebHostBuilder_AddsAndActivatesActuators_MediaV1()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder();
             _testServerWithRouting.Invoke(hostBuilder);
 
-            // Act
             var host = hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).Start();
             var testClient = host.GetTestServer().CreateClient();
 
-            // Assert
             var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await testClient.GetAsync("/actuator/info");
@@ -159,15 +144,12 @@ namespace Steeltoe.Management.Kubernetes.Test
         [Fact]
         public async Task AddKubernetesActuatorsWithConventions_IWebHostBuilder_AddsAndActivatesActuatorsAddAllActuators()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder();
             _testServerWithSecureRouting.Invoke(hostBuilder);
 
-            // Act
             var host = hostBuilder.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
             var testClient = host.GetTestServer().CreateClient();
 
-            // Assert
             var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await testClient.GetAsync("/actuator/info");

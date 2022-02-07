@@ -602,9 +602,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         private Operator FindOperator(ISpelNode node)
         {
-            if (node is Operator)
+            if (node is Operator operatorNode)
             {
-                return (Operator)node;
+                return operatorNode;
             }
 
             var childCount = node.ChildCount;

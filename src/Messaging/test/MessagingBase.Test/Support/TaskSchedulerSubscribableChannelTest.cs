@@ -308,7 +308,7 @@ namespace Steeltoe.Messaging.Support.Test
                     throw exceptionToRaise;
                 }
 
-                return messageToReturn != null ? messageToReturn : message;
+                return messageToReturn ?? message;
             }
         }
 

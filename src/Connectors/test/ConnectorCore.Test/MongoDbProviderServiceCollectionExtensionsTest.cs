@@ -23,11 +23,9 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -38,11 +36,9 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -53,12 +49,10 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -66,26 +60,21 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_NoVCAPs_AddsMongoClient()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act
             services.AddMongoClient(config);
             var service = services.BuildServiceProvider().GetService<MongoClient>();
 
-            // Assert
             Assert.NotNull(service);
         }
 
         [Fact]
         public void AddMongoClient_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => services.AddMongoClient(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
@@ -93,7 +82,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_MultipleMongoDbServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -103,7 +91,6 @@ namespace Steeltoe.Connector.MongoDb.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => services.AddMongoClient(config));
             Assert.Contains("Multiple", ex.Message);
         }
@@ -111,7 +98,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_With_Enterprise_VCAPs_AddsMongoClient()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
@@ -119,12 +105,10 @@ namespace Steeltoe.Connector.MongoDb.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             services.AddMongoClient(config);
             var service = services.BuildServiceProvider().GetService<MongoClient>();
             var serviceByInterface = services.BuildServiceProvider().GetService<IMongoClient>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.NotNull(serviceByInterface);
             var connSettings = service.Settings;
@@ -136,7 +120,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_With_a9s_single_VCAPs_AddsMongoClient()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_SingleServer_VCAP);
@@ -144,11 +127,9 @@ namespace Steeltoe.Connector.MongoDb.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             services.AddMongoClient(config);
             var service = services.BuildServiceProvider().GetService<MongoClient>();
 
-            // Assert
             Assert.NotNull(service);
             var connSettings = service.Settings;
             Assert.Single(connSettings.Servers);
@@ -160,7 +141,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_With_a9s_replicas_VCAPs_AddsMongoClient()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_WithReplicas_VCAP);
@@ -168,11 +148,9 @@ namespace Steeltoe.Connector.MongoDb.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             services.AddMongoClient(config);
             var service = services.BuildServiceProvider().GetService<MongoClient>();
 
-            // Assert
             Assert.NotNull(service);
             var connSettings = service.Settings;
             Assert.Contains(new MongoServerAddress("d5584e9-mongodb-0.node.dc1.a9s-mongodb-consul", 27017), connSettings.Servers);
@@ -184,7 +162,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_With_UPS_VCAPs_AddsMongoClient()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.Single_UserProvidedService);
@@ -192,12 +169,10 @@ namespace Steeltoe.Connector.MongoDb.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             services.AddMongoClient(config);
             var service = services.BuildServiceProvider().GetService<MongoClient>();
             var serviceByInterface = services.BuildServiceProvider().GetService<IMongoClient>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.NotNull(serviceByInterface);
             var connSettings = service.Settings;
@@ -209,24 +184,20 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClientConnection_AddsMongoDbHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             services.AddMongoClient(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
 
         [Fact]
         public void AddMongoClientConnection_AddingCommunityContributor_DoesntAddSteeltoeHealthCheck()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -240,18 +211,15 @@ namespace Steeltoe.Connector.MongoDb.Test
             var ci = cm.Get<MongoDbConnectionInfo>();
             services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
 
-            // Act
             services.AddMongoClient(config, "steeltoe");
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
 
-            // Assert
             Assert.Null(healthContributor);
         }
 
         [Fact]
         public void AddMongoClientConnection_AddingCommunityContributor_AddsSteeltoeHealthCheckWhenForced()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -265,11 +233,9 @@ namespace Steeltoe.Connector.MongoDb.Test
             var ci = cm.Get<MongoDbConnectionInfo>();
             services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
 
-            // Act
             services.AddMongoClient(config, "steeltoe", addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
     }

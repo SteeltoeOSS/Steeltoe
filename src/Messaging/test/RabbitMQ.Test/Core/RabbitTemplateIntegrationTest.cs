@@ -882,7 +882,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void TestSymmetricalReceiveAndReply()
         {
-            var template = CreateSendAndReceiveRabbitTemplate(this.connectionFactory);
+            var template = CreateSendAndReceiveRabbitTemplate(connectionFactory);
             template.DefaultReceiveQueue = ROUTE;
             template.RoutingKey = ROUTE;
             template.ReplyAddress = REPLY_QUEUE_NAME;
@@ -1018,7 +1018,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 var reply = template.SendAndReceive(string.Empty, ROUTE, message);
                 Assert.NotNull(reply);
                 Assert.Equal("gzip:utf-8", reply.Headers.ContentEncoding());
-                GUnzipPostProcessor unzipper = new GUnzipPostProcessor();
+                var unzipper = new GUnzipPostProcessor();
                 reply = unzipper.PostProcessMessage(reply);
                 Assert.Equal("FOO", Encoding.UTF8.GetString((byte[])reply.Payload));
             }
@@ -1167,7 +1167,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         private void SendAndReceiveFastGuts(bool tempQueue, bool setDirectReplyToExplicitly, bool expectUsedTemp)
         {
-            var template = CreateSendAndReceiveRabbitTemplate(this.connectionFactory);
+            var template = CreateSendAndReceiveRabbitTemplate(connectionFactory);
             try
             {
                 template.Execute(channel =>

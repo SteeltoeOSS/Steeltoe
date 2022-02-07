@@ -13,7 +13,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
     public class HystrixCommandKeyDefault : HystrixKeyDefault, IHystrixCommandKey
     {
-        private static readonly ConcurrentDictionary<string, HystrixCommandKeyDefault> Intern = new ConcurrentDictionary<string, HystrixCommandKeyDefault>();
+        private static readonly ConcurrentDictionary<string, HystrixCommandKeyDefault> Intern = new ();
 
         internal HystrixCommandKeyDefault(string name)
             : base(name)

@@ -125,9 +125,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                     if (RabbitMessageHeaders.X_DELAY.Equals(key))
                     {
                         var value = entry.Value;
-                        if (value is int)
+                        if (value is int intVal)
                         {
-                            target.ReceivedDelay = (int)value;
+                            target.ReceivedDelay = intVal;
                         }
                     }
                     else
@@ -228,10 +228,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
                 value = writableList;
             }
-            else if (value is IList)
+            else if (value is IList list)
             {
                 var writableList = new List<object>();
-                foreach (var listValue in (IList)value)
+                foreach (var listValue in list)
                 {
                     writableList.Add(ConvertHeaderValueIfNecessary(listValue));
                 }
@@ -248,13 +248,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
                 value = writableMap;
             }
-            else if (value is Type)
+            else if (value is Type type)
             {
-                value = ((Type)value).ToString();
+                value = type.ToString();
             }
-            else if (value is byte[])
+            else if (value is byte[] v)
             {
-                value = new RC.BinaryTableValue((byte[])value);
+                value = new RC.BinaryTableValue(v);
             }
 
             return value;

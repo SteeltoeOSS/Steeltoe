@@ -16,37 +16,31 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
 {
     public class CredHubClientTests
     {
-        private readonly Uri tokenUri = new Uri("http://uaa-server/oauth/token");
+        private readonly Uri tokenUri = new ("http://uaa-server/oauth/token");
         private readonly string credHubBase = "http://credhubServer/api/";
 
         [Fact]
         public async Task CreateAsync_RequestsToken_Once()
         {
-            // arrange
             MockedRequest authRequest = null;
             var mockHttpMessageHandler = InitializedHandlerWithLogin(authRequest);
 
-            // act
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         }
 
         [Fact]
         public async Task WriteAsync_Sets_Values()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
                 .Respond("application/json", "{\"type\":\"value\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example\",\"value\":\"sample\"}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.WriteAsync<ValueCredential>(new ValueSetRequest("example", "sample"));
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Value, response.Type);
@@ -59,7 +53,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task WriteAsync_Sets_Json()
         {
-            // arrange
             var jsonObject = JsonSerializer.Deserialize<JsonElement>(@"{""key"": 123,""key_list"": [""val1"",""val2""],""is_true"": true}");
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
@@ -67,10 +60,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond("application/json", $"{{\"type\":\"json\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"b84cd415-2218-41c9-9455-b3e4c6a5ec0f\",\"name\":\"/example-json\",\"value\":{jsonObject}}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.WriteAsync<JsonCredential>(new JsonSetRequest("example", jsonObject));
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.JSON, response.Type);
@@ -83,17 +74,14 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task WriteAsync_Sets_Password()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
                 .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"73ef170e-12b7-4f91-94a0-e3a1686cbe2b\",\"name\":\"/example-password\",\"value\":\"sample\"}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.WriteAsync<PasswordCredential>(new PasswordSetRequest("example", "sample"));
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Password, response.Type);
@@ -106,7 +94,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task WriteAsyncUserWithPermissions_Sets_UserWithPermissions()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
@@ -115,10 +102,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new UserSetRequest("example-user", "testUser", "testPassword");
 
-            // act
             var response = await client.WriteAsync<UserCredential>(request);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.User, response.Type);
@@ -133,7 +118,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task WriteAsync_Sets_RootCertificate()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
@@ -142,10 +126,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
             var certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
-            // act
             var response = await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", null, certificate, privateKey));
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Certificate, response.Type);
@@ -160,7 +142,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task WriteAsync_Sets_NonRootCertificate()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
@@ -170,10 +151,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
             var certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
-            // act
             var response = await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", privateKey, certificate, certificateAuthority));
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Certificate, response.Type);
@@ -188,7 +167,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task WriteAsync_Sets_RSA()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
@@ -197,10 +175,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
             var publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
-            // act
             var response = await client.WriteAsync<RsaCredential>(new RsaSetRequest("example-rsa", privateKey, publicKey));
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.RSA, response.Type);
@@ -214,7 +190,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task WriteAsync_Sets_SSH()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
@@ -223,10 +198,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
             var publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
-            // act
             var response = await client.WriteAsync<SshCredential>(new SshSetRequest("example-ssh", privateKey, publicKey));
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.SSH, response.Type);
@@ -240,7 +213,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GetByIdAsync_Gets()
         {
-            // arrange
             var credId = Guid.Parse("f82cc4a6-4490-4ed7-92c9-5115006bd691");
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
@@ -248,10 +220,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond("application/json", "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-20T17:37:57Z\",\"id\":\"f82cc4a6-4490-4ed7-92c9-5115006bd691\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyText\\n-----END RSA PRIVATE KEY-----\\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.GetByIdAsync<SshCredential>(credId);
 
-            // assert
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.SSH, response.Type);
             Assert.Equal(new DateTime(2017, 11, 20, 17, 37, 57, DateTimeKind.Utc), response.Version_Created_At);
@@ -265,7 +235,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GetByNameAsync_Gets()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Get, credHubBase + "/v1/data?name=/example-rsa")
@@ -277,10 +246,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 PublicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n"
             };
 
-            // act
             var response = await client.GetByNameAsync<RsaCredential>("/example-rsa");
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.RSA, response.Type);
@@ -294,17 +261,14 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GetByNameAsync_Throws_WithoutName()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.GetByNameAsync<ValueCredential>(string.Empty));
         }
 
         [Fact]
         public async Task GetByNameWithHistoryAsync_Gets()
         {
-            // arrange
             var revisionCount = 3;
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
@@ -312,10 +276,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond("application/json", "{\"data\":[{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:32Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef43\",\"name\":\"/example\",\"value\":\"Value example 3\"},{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:28Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef42\",\"name\":\"/example\",\"value\":\"Value example 2\"},{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:22Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef41\",\"name\":\"/example\",\"value\":\"Value example 1\"}]}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.GetByNameWithHistoryAsync<string>("/example", revisionCount);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             var index = 3;
@@ -332,7 +294,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GenerateAsync_Creates_Password()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
@@ -341,10 +302,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters { Length = 40 });
 
-            // act
             var response = await client.GenerateAsync<PasswordCredential>(request);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Password, response.Type);
@@ -357,7 +316,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GenerateAsync_Creates_PasswordWithPermissions()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
@@ -366,10 +324,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters { Length = 40 });
 
-            // assert
             var response = await client.GenerateAsync<PasswordCredential>(request);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Password, response.Type);
@@ -382,7 +338,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GenerateAsync_Creates_User()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
@@ -391,10 +346,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new UserGenerationRequest("generated-user", new UserGenerationParameters { Length = 40 });
 
-            // act
             var response = await client.GenerateAsync<UserCredential>(request);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.User, response.Type);
@@ -409,7 +362,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GenerateAsync_Creates_Certificate()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
@@ -419,10 +371,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var parms = new CertificateGenerationParameters { CommonName = "TestCA", IsCertificateAuthority = true };
             var request = new CertificateGenerationRequest("example-ca", parms);
 
-            // act
             var response = await client.GenerateAsync<CertificateCredential>(request);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Certificate, response.Type);
@@ -437,7 +387,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GenerateAsync_Creates_RSA()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
@@ -446,10 +395,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new RsaGenerationRequest("example-rsa", CertificateKeyLength.Length_2048);
 
-            // act
             var response = await client.GenerateAsync<RsaCredential>(request);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.RSA, response.Type);
@@ -463,7 +410,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task GenerateAsync_Creates_SSH()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
@@ -472,10 +418,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new SshGenerationRequest("example-ssh");
 
-            // act
             var response = await client.GenerateAsync<SshCredential>(request);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.SSH, response.Type);
@@ -490,7 +434,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task RegenerateAsync_Regenerates_Password()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/regenerate")
@@ -498,10 +441,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.RegenerateAsync<PasswordCredential>("generated-password");
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.Password, response.Type);
@@ -514,7 +455,6 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task RegenerateAsync_Regenerates_RSA()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/regenerate")
@@ -522,10 +462,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond("application/json", "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/regenerated-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.RegenerateAsync<RsaCredential>("regenerated-rsa");
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(CredentialType.RSA, response.Type);
@@ -539,17 +477,14 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task RegenerateAsync_Throws_WithoutName()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.RegenerateAsync<PasswordCredential>(string.Empty));
         }
 
         [Fact]
         public async Task BulkRegenerateAsync_Regenerates_Certificates()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/bulk-regenerate")
@@ -557,10 +492,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond("application/json", "{\"regenerated_credentials\":[\"/example-certificate3\",\"/example-certificate2\"]}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.BulkRegenerateAsync("example-ca");
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(2, response.RegeneratedCredentials.Count);
@@ -570,71 +503,58 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task BulkRegenerateAsync_Throws_WithoutCA()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.BulkRegenerateAsync(string.Empty));
         }
 
         [Fact]
         public async Task DeleteByNameAsync_ReturnsTrue_WhenCredDeleted()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Delete, credHubBase + "/v1/data?name=/example-rsa")
                 .Respond(HttpStatusCode.NoContent);
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.DeleteByNameAsync("/example-rsa");
 
-            // assert
             Assert.True(response);
         }
 
         [Fact]
         public async Task DeleteByNameAsync_ReturnsTrue_WhenCredNotFound()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Delete, credHubBase + "/v1/data?name=/example-rsa")
                 .Respond(HttpStatusCode.NotFound);
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.DeleteByNameAsync("/example-rsa");
 
-            // assert
             Assert.True(response);
         }
 
         [Fact]
         public async Task DeleteByNameAsync_Throws_WithoutName()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.DeleteByNameAsync(string.Empty));
         }
 
         [Fact]
         public async Task FindByNameAsync_Returns_Credentials_WithQuery()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Get, $"{credHubBase}/v1/data?name-like=example")
                 .Respond("application/json", "{\"credentials\":[{\"version_created_at\":\"2017-11-21T20:39:59Z\",\"name\":\"/example-certificate\"},{\"version_created_at\":\"2017-11-21T18:59:26Z\",\"name\":\"/example-user\"},{\"version_created_at\":\"2017-11-20T22:40:00Z\",\"name\":\"/example-ssh\"}]}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.FindByNameAsync("example");
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(3, response.Count);
@@ -646,27 +566,22 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task FindByNameAsync_Throws_WithoutQuery()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.FindByNameAsync(string.Empty));
         }
 
         [Fact]
         public async Task FindByPathAsync_Returns_Credentials_WithQuery()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Get, $"{credHubBase}/v1/data?path=/")
                 .Respond("application/json", "{\"credentials\":[{\"version_created_at\":\"2017-11-21T20:39:59Z\",\"name\":\"/example-certificate\"},{\"version_created_at\":\"2017-11-21T18:59:26Z\",\"name\":\"/example-user\"},{\"version_created_at\":\"2017-11-20T22:40:00Z\",\"name\":\"/example-ssh\"}]}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.FindByPathAsync("/");
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Equal(3, response.Count);
@@ -678,37 +593,30 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task FindByPathAsync_Throws_WithoutQuery()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.FindByPathAsync(string.Empty));
         }
 
         [Fact]
         public async Task GetPermissionsAsync_Throws_WithoutName()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.GetPermissionsAsync(string.Empty));
         }
 
         [Fact]
         public async Task GetPermissionsAsync_ReturnsPermissionedActors()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Get, $"{credHubBase}/v1/permissions?credential_name=/example-password")
                 .Respond("application/json", "{\"credential_name\":\"/example-password\",\"permissions\":[{\"actor\":\"uaa-user:credhub_client\",\"operations\":[\"read\",\"write\",\"delete\",\"read_acl\",\"write_acl\"]}]}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.GetPermissionsAsync("/example-password");
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Single(response);
@@ -725,37 +633,30 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task AddPermissionsAsync_Throws_WithoutName()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.AddPermissionsAsync(string.Empty, null));
         }
 
         [Fact]
         public async Task AddPermissionsAsync_Throws_WithNoPermissions()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.AddPermissionsAsync("user", new List<CredentialPermission>()));
         }
 
         [Fact]
         public async Task AddPermissionsAsync_Throws_WithNullPermissions()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.AddPermissionsAsync("user", null));
         }
 
         [Fact]
         public async Task AddPermissionsAsync_AddsAndReturnsPermissions()
         {
-            // arrange
             var credentialName = "/generated-password";
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockAddRequest = mockHttpMessageHandler
@@ -768,10 +669,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var newPermissions = new CredentialPermission { Actor = "uaa-user:credhub_client", Operations = new List<OperationPermissions> { OperationPermissions.read, OperationPermissions.write, OperationPermissions.delete } };
 
-            // act
             var response = await client.AddPermissionsAsync(credentialName, new List<CredentialPermission> { newPermissions });
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockAddRequest));
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockVerifyRequest));
@@ -789,27 +688,22 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task DeletePermissionAsync_Throws_WithoutActor()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.DeletePermissionAsync(string.Empty, "actor"));
         }
 
         [Fact]
         public async Task DeletePermissionAsync_Throws_WithoutPermissionToDelete()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.DeletePermissionAsync("credential", string.Empty));
         }
 
         [Fact]
         public async Task DeletePermissionAsync_ReturnsTrue_WhenDeleted()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var queryString = new List<KeyValuePair<string, string>>
             {
@@ -822,17 +716,14 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond(HttpStatusCode.NoContent);
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.DeletePermissionAsync("/example-password", "uaa-user:credhub_client");
 
-            // assert
             Assert.True(response);
         }
 
         [Fact]
         public async Task DeletePermissionAsync_ReturnsTrue_WhenNotFound()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var queryString = new List<KeyValuePair<string, string>>
             {
@@ -845,27 +736,22 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .Respond(HttpStatusCode.NotFound);
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-            // act
             var response = await client.DeletePermissionAsync("/example-password", "uaa-user:credhub_client");
 
-            // assert
             Assert.True(response);
         }
 
         [Fact]
         public async Task InterpolateServiceDataAsync_Throws_WithoutServiceData()
         {
-            // arrange
             var client = new CredHubClient();
 
-            // act & assert
             await Assert.ThrowsAsync<ArgumentException>(() => client.InterpolateServiceDataAsync(string.Empty));
         }
 
         [Fact]
         public async Task InterpolateServiceDataAsync_CallsEndpoint_ReturnsInterpolatedString()
         {
-            // arrange
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/interpolate")
@@ -873,10 +759,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var serviceData = "{\"p-config-server\":[{\"credentials\":{\"credhub-ref\":\"((/config-server/credentials))\"},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}";
 
-            // act
             var response = await client.InterpolateServiceDataAsync(serviceData);
 
-            // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
             Assert.Contains("\"key\":123", response);

@@ -14,11 +14,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy
 {
     public static class HystrixPlugins
     {
-        private static readonly AtomicReference<HystrixEventNotifier> _notifier = new AtomicReference<HystrixEventNotifier>();
-        private static readonly AtomicReference<HystrixConcurrencyStrategy> _concurrencyStrategy = new AtomicReference<HystrixConcurrencyStrategy>();
-        private static readonly AtomicReference<HystrixMetricsPublisher> _metricsPublisher = new AtomicReference<HystrixMetricsPublisher>();
-        private static readonly AtomicReference<HystrixCommandExecutionHook> _commandExecutionHook = new AtomicReference<HystrixCommandExecutionHook>();
-        private static readonly AtomicReference<HystrixOptionsStrategy> _options = new AtomicReference<HystrixOptionsStrategy>();
+        private static readonly AtomicReference<HystrixEventNotifier> _notifier = new ();
+        private static readonly AtomicReference<HystrixConcurrencyStrategy> _concurrencyStrategy = new ();
+        private static readonly AtomicReference<HystrixMetricsPublisher> _metricsPublisher = new ();
+        private static readonly AtomicReference<HystrixCommandExecutionHook> _commandExecutionHook = new ();
+        private static readonly AtomicReference<HystrixOptionsStrategy> _options = new ();
 
         static HystrixPlugins()
         {

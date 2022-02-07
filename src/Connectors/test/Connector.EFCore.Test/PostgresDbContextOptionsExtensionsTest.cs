@@ -25,12 +25,10 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void UseNpgsql_ThrowsIfDbContextOptionsBuilderNull()
         {
-            // Arrange
             DbContextOptionsBuilder optionsBuilder = null;
             DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
 
@@ -47,12 +45,10 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void UseNpgsql_ThrowsIfConfigurationNull()
         {
-            // Arrange
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -69,13 +65,11 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void UseNpgsql_ThrowsIfServiceNameNull()
         {
-            // Arrange
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
-            // Act and Assert
             var ex2 = Assert.Throws<ArgumentException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
@@ -86,11 +80,9 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void AddDbContext_NoVCAPs_AddsDbContext_WithPostgresConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
                     options.UseNpgsql(config));
 
@@ -104,11 +96,9 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
                   options.UseNpgsql(config, "foobar"));
 
@@ -119,7 +109,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void AddDbContext_MultiplePostgresServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -129,7 +118,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
                   options.UseNpgsql(config));
 
@@ -140,7 +128,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void AddDbContexts_WithEDBVCAPs_AddsDbContexts()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -150,7 +137,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
                   options.UseNpgsql(config));
 
@@ -176,7 +162,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void AddDbContexts_WithCrunchyVCAPs_AddsDbContexts()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -186,7 +171,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
                   options.UseNpgsql(config));
 
@@ -212,7 +196,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void AddDbContexts_WithEncodedCrunchyVCAPs_AddsDbContexts()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -225,7 +208,6 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
                   options.UseNpgsql(config));
 

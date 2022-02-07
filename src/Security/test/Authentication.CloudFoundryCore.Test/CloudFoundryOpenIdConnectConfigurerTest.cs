@@ -16,13 +16,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            // arrange
             var oidcOptions = new OpenIdConnectOptions();
 
-            // act
             CloudFoundryOpenIdConnectConfigurer.Configure(null, oidcOptions, new CloudFoundryOpenIdConnectOptions() { ValidateCertificates = false });
 
-            // assert
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
             Assert.Equal(CloudFoundryDefaults.ClientId, oidcOptions.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, oidcOptions.ClientSecret);
@@ -36,15 +33,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
-            // arrange
             var authURL = "https://domain";
             var oidcOptions = new OpenIdConnectOptions();
             var info = new SsoServiceInfo("foobar", "clientId", "secret", authURL);
 
-            // act
             CloudFoundryOpenIdConnectConfigurer.Configure(info, oidcOptions, new CloudFoundryOpenIdConnectOptions());
 
-            // assert
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
             Assert.Equal(authURL, oidcOptions.Authority);
             Assert.Equal("clientId", oidcOptions.ClientId);

@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.CosmosDb
     {
         private readonly CosmosDbServiceInfo _info;
         private readonly CosmosDbConnectorOptions _config;
-        private readonly CosmosDbProviderConfigurer _configurer = new CosmosDbProviderConfigurer();
+        private readonly CosmosDbProviderConfigurer _configurer = new ();
 
         public CosmosDbConnectorFactory()
         {

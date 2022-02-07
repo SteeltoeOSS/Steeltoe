@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public class CumulativeCollapserEventCounterStream : BucketedCumulativeCounterStream<HystrixCollapserEvent, long[], long[]>
     {
-        private static readonly ConcurrentDictionary<string, CumulativeCollapserEventCounterStream> Streams = new ConcurrentDictionary<string, CumulativeCollapserEventCounterStream>();
+        private static readonly ConcurrentDictionary<string, CumulativeCollapserEventCounterStream> Streams = new ();
 
         private static readonly int NUM_EVENT_TYPES = CollapserEventTypeHelper.Values.Count;
 

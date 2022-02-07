@@ -1,0 +1,15 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/configuration.yml
+    - src/Configuration/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Configuration
+      runConfigServer: true

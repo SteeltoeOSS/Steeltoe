@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Rabbit.Support
 {
     public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, IRabbitHeaderMapper
     {
-        private static readonly List<string> STANDARD_HEADER_NAMES = new List<string>();
+        private static readonly List<string> STANDARD_HEADER_NAMES = new ();
 
         static DefaultRabbitHeaderMapper()
         {
@@ -101,8 +101,8 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         public static string[] OutboundReplyHeaders { get; } = new string[] { "*" };
 
-        public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger) => new DefaultRabbitHeaderMapper(InboundRequestHeaders, InboundReplyHeaders, logger);
+        public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger) => new (InboundRequestHeaders, InboundReplyHeaders, logger);
 
-        public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger) => new DefaultRabbitHeaderMapper(OutboundRequestHeaders, OutboundReplyHeaders, logger);
+        public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger) => new (OutboundRequestHeaders, OutboundReplyHeaders, logger);
     }
 }

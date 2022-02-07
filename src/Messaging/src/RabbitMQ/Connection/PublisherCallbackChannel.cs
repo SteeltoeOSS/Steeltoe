@@ -27,14 +27,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         public const string RETURNED_MESSAGE_CORRELATION_KEY = "spring_returned_message_correlation";
         public const string RETURN_LISTENER_CORRELATION_KEY = "spring_listener_return_correlation";
         public const string RETURN_LISTENER_ERROR = "No '" + RETURN_LISTENER_CORRELATION_KEY + "' header in returned message";
-        private readonly List<PendingConfirm> _emptyConfirms = new List<PendingConfirm>();
+        private readonly List<PendingConfirm> _emptyConfirms = new ();
         private readonly IMessageHeadersConverter _converter = new DefaultMessageHeadersConverter();
         private readonly ILogger _logger;
-        private readonly object _lock = new object();
-        private readonly ConcurrentDictionary<IListener, SortedDictionary<ulong, PendingConfirm>> _pendingConfirms = new ConcurrentDictionary<IListener, SortedDictionary<ulong, PendingConfirm>>();
-        private readonly ConcurrentDictionary<string, IListener> _listeners = new ConcurrentDictionary<string, IListener>();
-        private readonly SortedDictionary<ulong, IListener> _listenerForSeq = new SortedDictionary<ulong, IListener>();
-        private readonly ConcurrentDictionary<string, PendingConfirm> _pendingReturns = new ConcurrentDictionary<string, PendingConfirm>();
+        private readonly object _lock = new ();
+        private readonly ConcurrentDictionary<IListener, SortedDictionary<ulong, PendingConfirm>> _pendingConfirms = new ();
+        private readonly ConcurrentDictionary<string, IListener> _listeners = new ();
+        private readonly SortedDictionary<ulong, IListener> _listenerForSeq = new ();
+        private readonly ConcurrentDictionary<string, PendingConfirm> _pendingReturns = new ();
         private Action<RC.IModel> _afterAckCallback;
 
         public PublisherCallbackChannel(RC.IModel channel, ILogger logger = null)
@@ -490,13 +490,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         private void HandleAck(object sender, BasicAckEventArgs args)
         {
-            _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", this.ToString(), args.DeliveryTag, args.Multiple);
+            _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
             ProcessAck(args.DeliveryTag, true, args.Multiple, true);
         }
 
         private void HandleNack(object sender, BasicNackEventArgs args)
         {
-            _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", this.ToString(), args.DeliveryTag, args.Multiple);
+            _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
             ProcessAck(args.DeliveryTag, false, args.Multiple, true);
         }
 

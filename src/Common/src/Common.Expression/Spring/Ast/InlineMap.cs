@@ -60,15 +60,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 if (c > 0)
                 {
-                    sb.Append(",");
+                    sb.Append(',');
                 }
 
                 sb.Append(GetChild(c++).ToStringAST());
-                sb.Append(":");
+                sb.Append(':');
                 sb.Append(GetChild(c).ToStringAST());
             }
 
-            sb.Append("}");
+            sb.Append('}');
             return sb.ToString();
         }
 
@@ -90,7 +90,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             for (int c = 0, max = ChildCount; c < max; c++)
             {
                 var child = GetChild(c);
-                if (!(child is Literal))
+                if (child is not Literal)
                 {
                     if (child is InlineList inlineList)
                     {

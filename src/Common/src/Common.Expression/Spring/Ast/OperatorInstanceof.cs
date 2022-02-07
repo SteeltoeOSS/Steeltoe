@@ -25,7 +25,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var leftValue = left.Value;
             var rightValue = right.Value;
             BooleanTypedValue result;
-            if (!(rightValue is Type))
+            if (rightValue is not Type)
             {
                 throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.INSTANCEOF_OPERATOR_NEEDS_CLASS_OPERAND, rightValue == null ? "null" : rightValue.GetType().FullName);
             }
@@ -37,7 +37,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
             else
             {
-                result = BooleanTypedValue.ForValue(rightClass.IsAssignableFrom(leftValue.GetType()));
+                result = BooleanTypedValue.ForValue(rightClass.IsInstanceOfType(leftValue));
             }
 
             _type = rightClass;

@@ -143,7 +143,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return false;
             }
 
-            if (!(obj is InstanceInfo other))
+            if (obj is not InstanceInfo other)
             {
                 return false;
             }
@@ -166,27 +166,27 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             var sb = new StringBuilder("Instance[");
             sb.Append("InstanceId=" + InstanceId);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("HostName=" + HostName);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("IpAddr=" + IpAddr);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("Status=" + Status.ToString());
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("IsUnsecurePortEnabled=" + IsUnsecurePortEnabled);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("Port=" + Port);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("IsSecurePortEnabled=" + IsSecurePortEnabled);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("SecurePort=" + SecurePort);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("VipAddress=" + VipAddress);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("SecureVipAddress=" + SecureVipAddress);
-            sb.Append(",");
+            sb.Append(',');
             sb.Append("ActionType=" + Actiontype.ToString());
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 

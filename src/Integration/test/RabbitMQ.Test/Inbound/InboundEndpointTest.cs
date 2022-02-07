@@ -144,7 +144,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             received = errorChannel.Receive(0);
             Assert.NotNull(received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE));
             Assert.IsType<ManualAckListenerExecutionFailedException>(received.Payload);
-            ManualAckListenerExecutionFailedException ex = (ManualAckListenerExecutionFailedException)received.Payload;
+            var ex = (ManualAckListenerExecutionFailedException)received.Payload;
             Assert.Same(channel2.Object, ex.Channel);
             Assert.Equal(123ul, ex.DeliveryTag);
         }
@@ -162,7 +162,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
             adapter.OutputChannel = new DirectChannel(context);
             adapter.RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1);
-            QueueChannel errors = new QueueChannel(context);
+            var errors = new QueueChannel(context);
             var recoveryCallback = new ErrorMessageSendingRecoverer(context, errors);
             recoveryCallback.ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
             adapter.RecoveryCallback = recoveryCallback;
@@ -293,7 +293,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                     return false;
                 }
 
-                Foo foo = (Foo)obj;
+                var foo = (Foo)obj;
 
                 return !(Bar != null ? !Bar.Equals(foo.Bar) : foo.Bar != null);
             }

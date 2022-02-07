@@ -15,9 +15,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public abstract class RollingConcurrencyStream
     {
-        private readonly BehaviorSubject<int> _rollingMax = new BehaviorSubject<int>(0);
+        private readonly BehaviorSubject<int> _rollingMax = new (0);
         private readonly IObservable<int> _rollingMaxStream;
-        private readonly AtomicReference<IDisposable> _rollingMaxSubscription = new AtomicReference<IDisposable>(null);
+        private readonly AtomicReference<IDisposable> _rollingMaxSubscription = new (null);
 
         private static Func<int, int, int> ReduceToMax { get; } = (a, b) =>
        {

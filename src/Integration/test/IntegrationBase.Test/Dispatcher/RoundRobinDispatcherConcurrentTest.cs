@@ -21,15 +21,15 @@ namespace Steeltoe.Integration.Dispatcher.Test
 
         private readonly UnicastingDispatcher dispatcher;
 
-        private readonly Mock<IMessage> messageMock = new Mock<IMessage>();
+        private readonly Mock<IMessage> messageMock = new ();
 
-        private readonly Mock<IMessageHandler> handlerMock1 = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> handlerMock1 = new ();
 
-        private readonly Mock<IMessageHandler> handlerMock2 = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> handlerMock2 = new ();
 
-        private readonly Mock<IMessageHandler> handlerMock3 = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> handlerMock3 = new ();
 
-        private readonly Mock<IMessageHandler> handlerMock4 = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> handlerMock4 = new ();
 
         private readonly IServiceProvider provider;
 

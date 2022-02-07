@@ -20,6 +20,8 @@ namespace Steeltoe.Discovery.Kubernetes
 {
     public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
     {
+        private const string _springDiscoveryEnabled = "spring:cloud:discovery:enabled";
+
         public void ApplyServices(IServiceCollection services)
         {
             ConfigureKubernetesServices(services);
@@ -33,12 +35,23 @@ namespace Steeltoe.Discovery.Kubernetes
                 .Any();
         }
 
-        private static void ConfigureKubernetesServices(IServiceCollection services)
+        internal static void ConfigureKubernetesServices(IServiceCollection services)
         {
             services.AddKubernetesClient();
             services
                 .AddOptions<KubernetesDiscoveryOptions>()
-                .Configure<IConfiguration>((options, config) => config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX).Bind(options))
+                .Configure<IConfiguration>((options, config) =>
+                {
+                    config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX).Bind(options);
+
+                    // Kubernetes discovery is enabled by default. If spring:cloud:kubernetes:discovery:enabled was not set then check spring:cloud:discovery:enabled
+                    if (options.Enabled &&
+                        config.GetValue<bool?>(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX + ":enabled") is null &&
+                        config.GetValue<bool?>(_springDiscoveryEnabled) == false)
+                    {
+                        options.Enabled = false;
+                    }
+                })
                 .PostConfigure<KubernetesApplicationOptions>((options, appOptions) =>
                 {
                     options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, appOptions.KubernetesRoot + ":discovery:servicename");

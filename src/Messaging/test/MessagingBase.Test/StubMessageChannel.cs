@@ -10,9 +10,9 @@ namespace Steeltoe.Messaging.Test
 {
     internal class StubMessageChannel : ISubscribableChannel
     {
-        private readonly List<IMessage<byte[]>> messages = new List<IMessage<byte[]>>();
+        private readonly List<IMessage<byte[]>> messages = new ();
 
-        private readonly List<IMessageHandler> handlers = new List<IMessageHandler>();
+        private readonly List<IMessageHandler> handlers = new ();
 
         public string ServiceName { get; set; } = "StubMessageChannel";
 

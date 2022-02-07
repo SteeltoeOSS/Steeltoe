@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.EF6Core;
 using System;
 using Xunit;
@@ -15,11 +16,9 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
         [Fact]
         public void AddDbContext_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -30,11 +29,9 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
         [Fact]
         public void AddDbContext_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -45,12 +42,10 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
         [Fact]
         public void AddDbContext_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -58,15 +53,21 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
         [Fact]
         public void AddDbContext_NoVCAPs_AddsDbContext()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             services.AddDbContext<GoodOracleDbContext>(config);
 
-            var service = services.BuildServiceProvider().GetService<GoodOracleDbContext>();
+            var serviceProvider = services.BuildServiceProvider();
+            var service = serviceProvider.GetService<GoodOracleDbContext>();
+            var serviceHealth = serviceProvider.GetService<IHealthContributor>();
             Assert.NotNull(service);
+#if NET461
+            Assert.NotNull(serviceHealth);
+            Assert.IsAssignableFrom<RelationalDbHealthContributor>(serviceHealth);
+#else
+            Assert.Null(serviceHealth);
+#endif
         }
     }
 }

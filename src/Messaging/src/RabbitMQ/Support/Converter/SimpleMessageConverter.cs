@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using Steeltoe.Messaging.Support;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -28,8 +27,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 
         public override object FromMessage(IMessage from, Type targetType, object convertionsHint)
         {
-            IMessage<byte[]> message = from as IMessage<byte[]>;
-            if (message == null)
+            if (from is not IMessage<byte[]> message)
             {
                 throw new MessageConversionException("Failed to convert non byte[] Message content" + from.GetType());
             }
@@ -98,44 +96,51 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         {
             byte[] bytes = null;
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
-            if (payload is byte[])
+            switch (payload)
             {
-                bytes = (byte[])payload;
-                accessor.ContentType = MessageHeaders.CONTENT_TYPE_BYTES;
-            }
-            else if (payload is string)
-            {
-                try
-                {
-                    var enc = EncodingUtils.GetEncoding(DefaultCharset);
-                    bytes = enc.GetBytes((string)payload);
-                }
-                catch (Exception e)
-                {
-                    throw new MessageConversionException("failed to convert to Message content", e);
-                }
+                case byte[] v:
+                    bytes = v;
+                    accessor.ContentType = MessageHeaders.CONTENT_TYPE_BYTES;
+                    break;
+                case string sPayload:
+                    {
+                        try
+                        {
+                            var enc = EncodingUtils.GetEncoding(DefaultCharset);
+                            bytes = enc.GetBytes(sPayload);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new MessageConversionException("failed to convert to Message content", e);
+                        }
 
-                accessor.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
-                accessor.ContentEncoding = DefaultCharset;
-            }
-            else if (payload.GetType().IsSerializable)
-            {
-                try
-                {
-                    var formatter = new BinaryFormatter();
-                    var stream = new MemoryStream(512);
+                        accessor.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
+                        accessor.ContentEncoding = DefaultCharset;
+                        break;
+                    }
 
-                    // TODO: don't disable this warning! https://aka.ms/binaryformatter
+                default:
+                    if (payload.GetType().IsSerializable)
+                    {
+                        try
+                        {
+                            var formatter = new BinaryFormatter();
+                            var stream = new MemoryStream(512);
+
+                            // TODO: don't disable this warning! https://aka.ms/binaryformatter
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
-                    formatter.Serialize(stream, payload);
+                            formatter.Serialize(stream, payload);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
-                    bytes = stream.ToArray();
-                    accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
-                }
-                catch (Exception e)
-                {
-                    throw new MessageConversionException("failed to convert serialized Message content", e);
-                }
+                            bytes = stream.ToArray();
+                            accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
+                        }
+                        catch (Exception e)
+                        {
+                            throw new MessageConversionException("failed to convert serialized Message content", e);
+                        }
+                    }
+
+                    break;
             }
 
             if (bytes == null)

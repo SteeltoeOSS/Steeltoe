@@ -47,7 +47,7 @@ namespace Steeltoe.Messaging.Converter
                 AddHeader(headers, ContentClassIdFieldName, GetContentType(type));
             }
 
-            Type keyType = GetKeyType(type);
+            var keyType = GetKeyType(type);
             if (keyType != null)
             {
                 AddHeader(headers, KeyClassIdFieldName, keyType);

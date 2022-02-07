@@ -22,37 +22,31 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public bool IsFatal(Exception exception)
         {
             var cause = exception.InnerException;
-            while (cause is MessagingException && !(cause is MessageConversionException) && !(cause is MethodArgumentResolutionException))
+            while (cause is MessagingException && cause is not MessageConversionException && cause is not MethodArgumentResolutionException)
             {
                 cause = cause.InnerException;
             }
 
-            if (exception is ListenerExecutionFailedException && IsCauseFatal(cause))
+            switch (exception)
             {
-                _logger?.LogWarning(
-                        "Fatal message conversion error; message rejected; "
-                                + "it will be dropped or routed to a dead letter exchange, if so configured: "
-                                + ((ListenerExecutionFailedException)exception).FailedMessage);
+                case ListenerExecutionFailedException listenerExecution when IsCauseFatal(cause):
+                    _logger?.LogWarning("Fatal message conversion error; message rejected; "
+                                        + "it will be dropped or routed to a dead letter exchange, if so configured: "
+                                        + listenerExecution.FailedMessage);
 
-                return true;
+                    return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
-        protected virtual bool IsUserCauseFatal(Exception cause)
-        {
-            return false;
-        }
+        protected virtual bool IsUserCauseFatal(Exception cause) => false;
 
         private bool IsCauseFatal(Exception cause)
-        {
-            return cause is MessageConversionException
+            => cause is MessageConversionException
                     || cause is MethodArgumentResolutionException
                     || cause is MissingMethodException
                     || cause is InvalidCastException
-
                     || IsUserCauseFatal(cause);
-        }
     }
 }

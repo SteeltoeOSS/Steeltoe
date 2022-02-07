@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config
 {
-    public abstract class AbstractExchange : AbstractDeclarable, IExchange, IServiceNameAware
+    public abstract class AbstractExchange : AbstractDeclarable, IExchange
     {
         protected AbstractExchange(string exchangeName)
             : this(exchangeName, true, false)

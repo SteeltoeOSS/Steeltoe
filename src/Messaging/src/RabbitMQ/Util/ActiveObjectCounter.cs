@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Util
 {
     public class ActiveObjectCounter<T>
     {
-        private readonly ConcurrentDictionary<T, CountdownEvent> _locks = new ConcurrentDictionary<T, CountdownEvent>();
+        private readonly ConcurrentDictionary<T, CountdownEvent> _locks = new ();
 
         public void Add(T activeObject)
         {

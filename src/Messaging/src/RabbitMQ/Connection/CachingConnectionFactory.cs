@@ -39,21 +39,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         }
 
         // Internal for unit tests
-        internal readonly Dictionary<IConnection, SemaphoreSlim> _checkoutPermits = new Dictionary<IConnection, SemaphoreSlim>();
-        internal readonly LinkedList<IChannelProxy> _cachedChannelsNonTransactional = new LinkedList<IChannelProxy>();
-        internal readonly LinkedList<IChannelProxy> _cachedChannelsTransactional = new LinkedList<IChannelProxy>();
-        internal readonly HashSet<ChannelCachingConnectionProxy> _allocatedConnections = new HashSet<ChannelCachingConnectionProxy>();
-        internal readonly LinkedList<ChannelCachingConnectionProxy> _idleConnections = new LinkedList<ChannelCachingConnectionProxy>();
-        internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionNonTransactionalChannels = new Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>>();
-        internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionTransactionalChannels = new Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>>();
+        internal readonly Dictionary<IConnection, SemaphoreSlim> _checkoutPermits = new ();
+        internal readonly LinkedList<IChannelProxy> _cachedChannelsNonTransactional = new ();
+        internal readonly LinkedList<IChannelProxy> _cachedChannelsTransactional = new ();
+        internal readonly HashSet<ChannelCachingConnectionProxy> _allocatedConnections = new ();
+        internal readonly LinkedList<ChannelCachingConnectionProxy> _idleConnections = new ();
+        internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionNonTransactionalChannels = new ();
+        internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionTransactionalChannels = new ();
         internal readonly ChannelCachingConnectionProxy _connection;
         internal bool _stopped;
 
         private const int DEFAULT_CHANNEL_CACHE_SIZE = 25;
 
-        private readonly object _connectionMonitor = new object();
-        private readonly Dictionary<int, AtomicInteger> _channelHighWaterMarks = new Dictionary<int, AtomicInteger>();
-        private readonly AtomicInteger _connectionHighWaterMark = new AtomicInteger();
+        private readonly object _connectionMonitor = new ();
+        private readonly Dictionary<int, AtomicInteger> _channelHighWaterMarks = new ();
+        private readonly AtomicInteger _connectionHighWaterMark = new ();
         private readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
 
         private int _channelCacheSize = DEFAULT_CHANNEL_CACHE_SIZE;
@@ -900,7 +900,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 }
             }
 
-            if ((IsPublisherConfirms || IsPublisherReturns) && !(channel is PublisherCallbackChannel))
+            if ((IsPublisherConfirms || IsPublisherReturns) && channel is not PublisherCallbackChannel)
             {
                 channel = PublisherCallbackChannelFactory.CreateChannel(channel);
             }
@@ -1147,7 +1147,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             protected readonly ChannelCachingConnectionProxy _theConnection;
             protected readonly LinkedList<IChannelProxy> _channelList;
             protected readonly int _channelListIdentity;
-            protected readonly object _targetMonitor = new object();
+            protected readonly object _targetMonitor = new ();
             protected readonly bool _transactional;
             protected readonly bool _confirmSelected;
             protected readonly bool _publisherConfirms;
@@ -2495,7 +2495,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         internal class ChannelCachingConnectionProxy : IConnectionProxy
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
         {
-            internal readonly Dictionary<RC.IModel, IChannelProxy> _channelsAwaitingAcks = new Dictionary<RC.IModel, IChannelProxy>();
+            internal readonly Dictionary<RC.IModel, IChannelProxy> _channelsAwaitingAcks = new ();
             internal int _closeNotified;
             private readonly CachingConnectionFactory _factory;
             private readonly ILogger _logger;

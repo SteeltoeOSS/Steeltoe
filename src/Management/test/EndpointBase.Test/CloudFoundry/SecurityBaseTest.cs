@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
             var perms = new Dictionary<string, object> { { "read_sensitive_data", true } };
 
             response.Content = JsonContent.Create(perms);
-            Permissions result = await securityBase.GetPermissions(response);
+            var result = await securityBase.GetPermissions(response);
             Assert.Equal(Permissions.FULL, result);
         }
     }

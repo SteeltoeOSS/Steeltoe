@@ -26,7 +26,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
     {
         protected internal string _serviceUrl;
 
-        protected object _lock = new object();
+        protected object _lock = new ();
         protected IList<string> _failingServiceUrls = new List<string>();
 
         protected IDictionary<string, string> _headers;
@@ -633,19 +633,14 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #pragma warning restore SA1202 // Elements must be ordered by access
 
         internal string FetchAccessToken()
-        {
-            if (!(Config is EurekaClientOptions config) || string.IsNullOrEmpty(config.AccessTokenUri))
-            {
-                return null;
-            }
-
-            return HttpClientHelper.GetAccessToken(
-                config.AccessTokenUri,
-                config.ClientId,
-                config.ClientSecret,
-                DEFAULT_GETACCESSTOKEN_TIMEOUT,
-                config.ValidateCertificates).GetAwaiter().GetResult();
-        }
+            => Config is not EurekaClientOptions config || string.IsNullOrEmpty(config.AccessTokenUri)
+                ? null
+                : HttpClientHelper.GetAccessToken(
+                    config.AccessTokenUri,
+                    config.ClientId,
+                    config.ClientSecret,
+                    DEFAULT_GETACCESSTOKEN_TIMEOUT,
+                    config.ValidateCertificates).GetAwaiter().GetResult();
 
         internal IList<string> GetServiceUrlCandidates()
         {
@@ -1034,8 +1029,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
         }
 
         private int GetRetryCount(IEurekaClientConfig config)
-        {
-            return !(config is EurekaClientConfig clientConfig) ? DEFAULT_NUMBER_OF_RETRIES : clientConfig.EurekaServerRetryCount;
-        }
+            => config is EurekaClientConfig clientConfig
+                ? clientConfig.EurekaServerRetryCount
+                : DEFAULT_NUMBER_OF_RETRIES;
     }
 }

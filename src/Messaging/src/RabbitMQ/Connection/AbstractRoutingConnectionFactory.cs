@@ -12,9 +12,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
     public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRoutingConnectionFactory
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
-        private readonly ConcurrentDictionary<object, IConnectionFactory> _targetConnectionFactories = new ConcurrentDictionary<object, IConnectionFactory>();
+        private readonly ConcurrentDictionary<object, IConnectionFactory> _targetConnectionFactories = new ();
 
-        private readonly List<IConnectionListener> _connectionListeners = new List<IConnectionListener>();
+        private readonly List<IConnectionListener> _connectionListeners = new ();
 
         public IConnectionFactory DefaultTargetConnectionFactory { get; set; }
 

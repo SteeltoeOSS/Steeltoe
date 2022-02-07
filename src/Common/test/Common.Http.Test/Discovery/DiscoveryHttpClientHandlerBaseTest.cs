@@ -15,10 +15,8 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void Constructor_ThrowsIfClientNull()
         {
-            // Arrange
             IDiscoveryClient client = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryHttpClientHandlerBase(client));
             Assert.Contains(nameof(client), ex.Message);
         }
@@ -26,12 +24,10 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void LookupService_NonDefaultPort_ReturnsOriginalURI()
         {
-            // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             var handler = new DiscoveryHttpClientHandlerBase(client);
             var uri = new Uri("https://foo:8080/test");
 
-            // Act and Assert
             var result = handler.LookupService(uri);
             Assert.Equal(uri, result);
         }
@@ -39,12 +35,10 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void LookupService_DoesntFindService_ReturnsOriginalURI()
         {
-            // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             var handler = new DiscoveryHttpClientHandlerBase(client);
             var uri = new Uri("https://foo/test");
 
-            // Act and Assert
             var result = handler.LookupService(uri);
             Assert.Equal(uri, result);
         }
@@ -52,12 +46,10 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void LookupService_FindsService_ReturnsURI()
         {
-            // Arrange
             IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("https://foundit:5555")));
             var handler = new DiscoveryHttpClientHandlerBase(client);
             var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
-            // Act and Assert
             var result = handler.LookupService(uri);
             Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
         }
@@ -65,12 +57,10 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public async Task LookupServiceAsync_NonDefaultPort_ReturnsOriginalURI()
         {
-            // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             var handler = new DiscoveryHttpClientHandlerBase(client);
             var uri = new Uri("https://foo:8080/test");
 
-            // Act and Assert
             var result = await handler.LookupServiceAsync(uri);
             Assert.Equal(uri, result);
         }
@@ -78,12 +68,10 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public async Task LookupServiceAsync_DoesntFindService_ReturnsOriginalURI()
         {
-            // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             var handler = new DiscoveryHttpClientHandlerBase(client);
             var uri = new Uri("https://foo/test");
 
-            // Act and Assert
             var result = await handler.LookupServiceAsync(uri);
             Assert.Equal(uri, result);
         }
@@ -91,12 +79,10 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public async Task LookupServiceAsync_FindsService_ReturnsURI()
         {
-            // Arrange
             IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("https://foundit:5555")));
             var handler = new DiscoveryHttpClientHandlerBase(client);
             var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
-            // Act and Assert
             var result = await handler.LookupServiceAsync(uri);
             Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
         }

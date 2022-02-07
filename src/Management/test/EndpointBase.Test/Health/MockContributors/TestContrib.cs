@@ -9,10 +9,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 {
     internal class TestContrib : IHealthContributor
     {
-#pragma warning disable SA1401 // Fields must be private
         public bool Called = false;
         public bool Throws = false;
-#pragma warning restore SA1401 // Fields must be private
 
         public TestContrib(string id)
         {

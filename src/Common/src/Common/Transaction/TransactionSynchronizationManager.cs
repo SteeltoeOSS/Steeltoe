@@ -14,15 +14,15 @@ namespace Steeltoe.Common.Transaction
 {
     public static class TransactionSynchronizationManager
     {
-        private static readonly AsyncLocal<Dictionary<object, object>> _resources = new AsyncLocal<Dictionary<object, object>>();
-        private static readonly AsyncLocal<ISet<ITransactionSynchronization>> _synchronizations = new AsyncLocal<ISet<ITransactionSynchronization>>();
-        private static readonly AsyncLocal<bool> _actualTransactionActive = new AsyncLocal<bool>();
-        private static readonly AsyncLocal<int?> _currentTransactionIsolationLevel = new AsyncLocal<int?>();
-        private static readonly AsyncLocal<string> _currentTransactionName = new AsyncLocal<string>();
-        private static readonly AsyncLocal<bool> _currentTransactionReadOnly = new AsyncLocal<bool>();
+        private static readonly AsyncLocal<Dictionary<object, object>> _resources = new ();
+        private static readonly AsyncLocal<ISet<ITransactionSynchronization>> _synchronizations = new ();
+        private static readonly AsyncLocal<bool> _actualTransactionActive = new ();
+        private static readonly AsyncLocal<int?> _currentTransactionIsolationLevel = new ();
+        private static readonly AsyncLocal<string> _currentTransactionName = new ();
+        private static readonly AsyncLocal<bool> _currentTransactionReadOnly = new ();
 
         private static readonly IDictionary<object, object> _emptyDict = new Dictionary<object, object>();
-        private static readonly List<ITransactionSynchronization> _emptyList = new List<ITransactionSynchronization>();
+        private static readonly List<ITransactionSynchronization> _emptyList = new ();
 
         public static IDictionary<object, object> GetResourceMap()
         {
@@ -67,7 +67,7 @@ namespace Steeltoe.Common.Transaction
             map[key] = value;
 
             // Transparently suppress a ResourceHolder that was marked as void...
-            if (oldValue is IResourceHolder && ((IResourceHolder)oldValue).IsVoid)
+            if (oldValue is IResourceHolder holder && holder.IsVoid)
             {
                 oldValue = null;
             }
@@ -248,7 +248,7 @@ namespace Steeltoe.Common.Transaction
             }
 
             // Transparently suppress a ResourceHolder that was marked as void...
-            if (value is IResourceHolder && ((IResourceHolder)value).IsVoid)
+            if (value is IResourceHolder holder && holder.IsVoid)
             {
                 value = null;
             }
@@ -268,7 +268,7 @@ namespace Steeltoe.Common.Transaction
             map.TryGetValue(actualKey, out var value);
 
             // Transparently remove ResourceHolder that was marked as void...
-            if (value is IResourceHolder && ((IResourceHolder)value).IsVoid)
+            if (value is IResourceHolder holder && holder.IsVoid)
             {
                 map.Remove(actualKey);
 

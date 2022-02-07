@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Services;
 using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config
 {
-    public class Binding : AbstractDeclarable, IServiceNameAware, IBinding
+    public class Binding : AbstractDeclarable, IBinding
     {
         internal static IBinding Create(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
         {

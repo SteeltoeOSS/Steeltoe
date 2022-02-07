@@ -16,7 +16,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
     {
         public const string DEFAULT_SERVICE_NAME = nameof(DefaultMessageHandlerMethodFactory);
 
-        protected readonly HandlerMethodArgumentResolverComposite _argumentResolvers = new HandlerMethodArgumentResolverComposite();
+        protected readonly HandlerMethodArgumentResolverComposite _argumentResolvers = new ();
 
         public virtual string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 

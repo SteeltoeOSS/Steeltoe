@@ -28,7 +28,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 {
     public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMessageHandler, ILifecycle
     {
-        private readonly object _lock = new object();
+        private readonly object _lock = new ();
         private readonly string _no_id = Guid.Empty.ToString();
         private readonly ILogger _logger;
 
@@ -271,7 +271,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
             if (correlationData == null)
             {
-                object correlation = requestMessage.Headers[RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION];
+                var correlation = requestMessage.Headers[RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION];
 
                 if (correlation is CorrelationData cdata)
                 {

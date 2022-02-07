@@ -8,7 +8,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
 {
     public class DefaultIsServicePortSecureResolver
     {
-        private readonly List<string> _truthyStrings = new List<string>
+        private readonly List<string> _truthyStrings = new ()
         {
             "true",
             "on",

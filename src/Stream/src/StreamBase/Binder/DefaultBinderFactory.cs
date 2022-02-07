@@ -17,7 +17,7 @@ namespace Steeltoe.Stream.Binder
     public class DefaultBinderFactory : IBinderFactory, IDisposable
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
-        private readonly object _lock = new object();
+        private readonly object _lock = new ();
         private readonly IBinderConfigurations _binderConfigurations;
         private readonly List<IBinderFactoryListener> _listeners; // TODO: implement listener callback
         private readonly IApplicationContext _context;

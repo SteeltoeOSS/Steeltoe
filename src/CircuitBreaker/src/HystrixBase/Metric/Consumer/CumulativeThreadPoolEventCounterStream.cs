@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public class CumulativeThreadPoolEventCounterStream : BucketedCumulativeCounterStream<HystrixCommandCompletion, long[], long[]>
     {
-        private static readonly ConcurrentDictionary<string, CumulativeThreadPoolEventCounterStream> Streams = new ConcurrentDictionary<string, CumulativeThreadPoolEventCounterStream>();
+        private static readonly ConcurrentDictionary<string, CumulativeThreadPoolEventCounterStream> Streams = new ();
 
         private static readonly int ALL_EVENT_TYPES_SIZE = ThreadPoolEventTypeHelper.Values.Count;
 

@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 healthCheckRegistrations = _serviceOptions.CurrentValue.Registrations;
             }
 
-            var result = !(_aggregator is IHealthRegistrationsAggregator registrationAggregator)
+            var result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
                                 ? _aggregator.Aggregate(filteredContributors)
                                 : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider);
             var response = new HealthEndpointResponse(result);

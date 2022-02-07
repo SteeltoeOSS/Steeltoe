@@ -21,10 +21,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void Constructor_ThrowsOnNulls()
         {
-            // Arrange
             ITraceOptions options = null;
 
-            // Act and Assert
             var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceDiagnosticObserver(options));
             Assert.Contains(nameof(options), ex2.Message);
         }
@@ -250,7 +248,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void Subscribe_Listener_StopActivity_AddsToQueue()
         {
-            // arrange
             var listener = new DiagnosticListener("Microsoft.AspNetCore");
             var obs = new TraceDiagnosticObserver(new TraceEndpointOptions());
             obs.Subscribe(listener);
@@ -259,12 +256,10 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var activityName = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
             var current = new Activity(activityName);
 
-            // act
             listener.StartActivity(current, new { HttpContext = context });
             Thread.Sleep(1000);
             listener.StopActivity(current, new { HttpContext = context });
 
-            // assert
             Assert.Single(obs._queue);
             Assert.True(obs._queue.TryPeek(out var result));
             Assert.NotNull(result.Info);

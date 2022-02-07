@@ -36,12 +36,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var cachingConnectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
             mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
             mockConnection.Setup(m => m.IsOpen).Returns(true);
-            Func<RC.IModel> ensureOneModel = EnsureOneModel(onlyChannel.Object, tooManyModels);
+            var ensureOneModel = EnsureOneModel(onlyChannel.Object, tooManyModels);
 
             mockConnection.Setup(m => m.CreateModel()).Returns(onlyChannel.Object);
 
             RC.IBasicConsumer consumer;
-            CountdownEvent consumerLatch = new CountdownEvent(1);
+            var consumerLatch = new CountdownEvent(1);
             onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), null, It.IsAny<RC.IBasicConsumer>()))
                 .Returns((string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, RC.IBasicConsumer iConsumer) =>
                 {
@@ -128,7 +128,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             private volatile bool _committed;
             private volatile bool _rolledBack;
-            private volatile CountdownEvent _latch = new CountdownEvent(1);
+            private volatile CountdownEvent _latch = new (1);
 
             public bool Committed => _committed;
 

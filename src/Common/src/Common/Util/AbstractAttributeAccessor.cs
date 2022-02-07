@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Util
 {
     public abstract class AbstractAttributeAccessor : IAttributeAccessor
     {
-        private readonly Dictionary<string, object> _attributes = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _attributes = new ();
 
         public virtual void SetAttribute(string name, object value)
         {
@@ -76,7 +76,7 @@ namespace Steeltoe.Common.Util
                 return true;
             }
 
-            if (!(other is AbstractAttributeAccessor))
+            if (other is not AbstractAttributeAccessor)
             {
                 return false;
             }
@@ -89,8 +89,7 @@ namespace Steeltoe.Common.Util
 
             foreach (var kvp in _attributes)
             {
-                object value2;
-                if (!accessor._attributes.TryGetValue(kvp.Key, out value2))
+                if (!accessor._attributes.TryGetValue(kvp.Key, out var value2))
                 {
                     return false;
                 }

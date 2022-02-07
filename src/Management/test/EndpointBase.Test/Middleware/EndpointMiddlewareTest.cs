@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Middleware.Test
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     internal class TestMiddleware1 : EndpointMiddleware<string>
     {
         public TestMiddleware1(IEndpoint<string> endpoint, IManagementOptions mgmtOptions, ILogger logger)
@@ -35,5 +34,4 @@ namespace Steeltoe.Management.Endpoint.Middleware.Test
         {
         }
     }
-#pragma warning restore SA1402 // File may only contain a single class
 }

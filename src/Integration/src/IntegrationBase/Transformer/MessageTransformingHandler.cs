@@ -31,8 +31,7 @@ namespace Steeltoe.Integration.Transformer
         {
             get
             {
-                var asLifecycle = Transformer as ILifecycle;
-                if (asLifecycle != null)
+                if (Transformer is ILifecycle asLifecycle)
                 {
                     return asLifecycle.IsRunning;
                 }
@@ -56,8 +55,7 @@ namespace Steeltoe.Integration.Transformer
 
         public Task Start()
         {
-            var asLifecycle = Transformer as ILifecycle;
-            if (asLifecycle != null)
+            if (Transformer is ILifecycle asLifecycle)
             {
                 return asLifecycle.Start();
             }
@@ -67,8 +65,7 @@ namespace Steeltoe.Integration.Transformer
 
         public Task Stop()
         {
-            var asLifecycle = Transformer as ILifecycle;
-            if (asLifecycle != null)
+            if (Transformer is ILifecycle asLifecycle)
             {
                 return asLifecycle.Stop();
             }

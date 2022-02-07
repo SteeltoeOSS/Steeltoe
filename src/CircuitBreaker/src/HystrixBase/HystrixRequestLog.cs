@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        private static readonly HystrixRequestLogVariable RequestLog = new HystrixRequestLogVariable();
+        private static readonly HystrixRequestLogVariable RequestLog = new ();
 
         public static HystrixRequestLog CurrentRequestLog
         {
@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
 
         protected internal const int MAX_STORAGE = 1000;
-        private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new BlockingCollection<IHystrixInvokableInfo>(MAX_STORAGE);
+        private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new (MAX_STORAGE);
 
         internal HystrixRequestLog()
         {
@@ -86,7 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                         events.Sort();
 
                         // replicate functionality of Arrays.toString(events.toArray()) to append directly to existing StringBuilder
-                        builder.Append("[");
+                        builder.Append('[');
                         foreach (var ev in events)
                         {
                             switch (ev)
@@ -95,7 +95,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                                     var numEmissions = command.NumberEmissions;
                                     if (numEmissions > 1)
                                     {
-                                        builder.Append(ev).Append("x").Append(numEmissions).Append(", ");
+                                        builder.Append(ev).Append('x').Append(numEmissions).Append(", ");
                                     }
                                     else
                                     {
@@ -107,7 +107,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                                     var numFallbackEmissions = command.NumberFallbackEmissions;
                                     if (numFallbackEmissions > 1)
                                     {
-                                        builder.Append(ev).Append("x").Append(numFallbackEmissions).Append(", ");
+                                        builder.Append(ev).Append('x').Append(numFallbackEmissions).Append(", ");
                                     }
                                     else
                                     {
@@ -187,12 +187,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                     builder.Append(displayString);
                     var totalExecutionTime = aggregatedCommandExecutionTime[displayString];
-                    builder.Append("[").Append(totalExecutionTime).Append("ms]");
+                    builder.Append('[').Append(totalExecutionTime).Append("ms]");
 
                     var count = aggregatedCommandsExecuted[displayString];
                     if (count > 1)
                     {
-                        builder.Append("x").Append(count);
+                        builder.Append('x').Append(count);
                     }
                 }
 

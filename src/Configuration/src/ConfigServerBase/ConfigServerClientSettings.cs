@@ -172,6 +172,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public virtual string Label { get; set; }
 
+        /// <summary>
+        /// Gets or sets the frequency with which app should check config server for changes in configuration
+        /// </summary>
+        public virtual TimeSpan PollingInterval { get; set; }
+
 #pragma warning disable S4275 // Getters and setters should access the expected fields
         /// <summary>
         /// Gets or sets the username used when accessing the Config Server

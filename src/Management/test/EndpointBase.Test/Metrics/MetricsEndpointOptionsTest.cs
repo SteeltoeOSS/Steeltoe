@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 ["management:endpoints:metrics:enabled"] = "false",
                 ["management:endpoints:metrics:id"] = "metricsmanagement",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

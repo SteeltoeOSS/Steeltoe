@@ -83,7 +83,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 return true;
             }
 
-            if (!(other is ServiceExpressionContext))
+            if (other is not ServiceExpressionContext)
             {
                 return false;
             }

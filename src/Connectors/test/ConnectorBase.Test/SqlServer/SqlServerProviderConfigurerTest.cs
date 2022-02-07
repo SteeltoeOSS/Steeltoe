@@ -10,7 +10,7 @@ namespace Steeltoe.Connector.SqlServer.Test
     public class SqlServerProviderConfigurerTest
     {
         // shared variable to hold config (like from a source such as appsettings)
-        private readonly SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions()
+        private readonly SqlServerProviderConnectorOptions config = new ()
         {
             Server = "localhost",
             Port = 1433,

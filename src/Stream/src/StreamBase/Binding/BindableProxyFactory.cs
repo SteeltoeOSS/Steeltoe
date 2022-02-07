@@ -14,7 +14,7 @@ namespace Steeltoe.Stream.Binding
 {
     public class BindableProxyFactory : AbstractBindableProxyFactory, IBindableProxyFactory
     {
-        private readonly ConcurrentDictionary<MethodInfo, object> _targetCache = new ConcurrentDictionary<MethodInfo, object>();
+        private readonly ConcurrentDictionary<MethodInfo, object> _targetCache = new ();
 
         public BindableProxyFactory(Type bindingType, IEnumerable<IBindingTargetFactory> bindingTargetFactories)
             : base(bindingType, bindingTargetFactories)

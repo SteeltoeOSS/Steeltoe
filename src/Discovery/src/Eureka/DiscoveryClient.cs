@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Eureka
         protected volatile Applications _localRegionApps;
         protected long _registryFetchCounter = 0;
         protected IEurekaHttpClient _httpClient;
-        protected Random _random = new Random();
+        protected Random _random = new ();
         protected ILogger _logger;
         protected ILogger _regularLogger;
         protected ILogger _startupLogger;
@@ -42,25 +42,13 @@ namespace Steeltoe.Discovery.Eureka
 
         public InstanceStatus LastRemoteInstanceStatus { get; internal set; } = InstanceStatus.UNKNOWN;
 
-        public IEurekaHttpClient HttpClient
-        {
-            get
-            {
-                return _httpClient;
-            }
-        }
+        public IEurekaHttpClient HttpClient => _httpClient;
 
         public Applications Applications
         {
-            get
-            {
-                return _localRegionApps;
-            }
+            get => _localRegionApps;
 
-            internal set
-            {
-                _localRegionApps = value;
-            }
+            internal set => _localRegionApps = value;
         }
 
         private readonly IEurekaClientConfig _config;
@@ -89,7 +77,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             _appInfoManager = appInfoManager;
             _regularLogger = (ILogger)logFactory?.CreateLogger<DiscoveryClient>() ?? NullLogger.Instance;
-            _startupLogger = logFactory?.CreateLogger("Startup." + this.GetType().FullName) ?? NullLogger.Instance;
+            _startupLogger = logFactory?.CreateLogger("Startup." + GetType().FullName) ?? NullLogger.Instance;
         }
 
         public event EventHandler<Applications> OnApplicationsChange;
@@ -268,26 +256,11 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        public InstanceStatus GetInstanceRemoteStatus()
-        {
-            return InstanceStatus.UNKNOWN;
-        }
+        public InstanceStatus GetInstanceRemoteStatus() => InstanceStatus.UNKNOWN;
 
-        internal Timer HeartBeatTimer
-        {
-            get
-            {
-                return _heartBeatTimer;
-            }
-        }
+        internal Timer HeartBeatTimer => _heartBeatTimer;
 
-        internal Timer CacheRefreshTimer
-        {
-            get
-            {
-                return _cacheRefreshTimer;
-            }
-        }
+        internal Timer CacheRefreshTimer => _cacheRefreshTimer;
 
         internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
         {
@@ -604,7 +577,9 @@ namespace Steeltoe.Discovery.Eureka
                 ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances
             };
 
-            if (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry)
+            // TODO: add Enabled to IEurekaClientConfig
+            var eurekaClientConfig = ClientConfig as EurekaClientConfig;
+            if (!eurekaClientConfig.Enabled || (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry))
             {
                 return;
             }

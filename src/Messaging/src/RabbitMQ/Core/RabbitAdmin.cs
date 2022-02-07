@@ -21,7 +21,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core
 {
-    public class RabbitAdmin : IRabbitAdmin, IConnectionListener, IServiceNameAware
+    public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     {
         public const string DEFAULT_SERVICE_NAME = "rabbitAdmin";
 
@@ -35,7 +35,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private const double DECLARE_RETRY_MULTIPLIER = 2.0d;
         private const string DELAYED_MESSAGE_EXCHANGE = "x-delayed-message";
 
-        private readonly object _lifecycleMonitor = new object();
+        private readonly object _lifecycleMonitor = new ();
         private ILogger _logger;
         private int _initializing = 0;
 
@@ -247,9 +247,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                         _logger?.LogError(e, "Exception while fetching Queue properties for '{queueName}'", queueName);
                         try
                         {
-                            if (channel is IChannelProxy)
+                            if (channel is IChannelProxy proxy)
                             {
-                                ((IChannelProxy)channel).TargetChannel.Close();
+                                proxy.TargetChannel.Close();
                             }
                         }
                         catch (Exception ex)
@@ -272,10 +272,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var queueInfo = GetQueueInfo(queueName);
             if (queueInfo != null)
             {
-                var props = new Dictionary<string, object>();
-                props.Add(QUEUE_NAME, queueInfo.Name);
-                props.Add(QUEUE_MESSAGE_COUNT, queueInfo.MessageCount);
-                props.Add(QUEUE_CONSUMER_COUNT, queueInfo.ConsumerCount);
+                var props = new Dictionary<string, object>
+                {
+                    { QUEUE_NAME, queueInfo.Name },
+                    { QUEUE_MESSAGE_COUNT, queueInfo.MessageCount },
+                    { QUEUE_CONSUMER_COUNT, queueInfo.ConsumerCount }
+                };
                 return props;
             }
             else
@@ -451,17 +453,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             {
                 foreach (var d in declarable.DeclarableList)
                 {
-                    if (d is IExchange)
+                    switch (d)
                     {
-                        contextExchanges.Add((IExchange)d);
-                    }
-                    else if (d is IQueue)
-                    {
-                        contextQueues.Add((IQueue)d);
-                    }
-                    else if (d is IBinding)
-                    {
-                        contextBindings.Add((IBinding)d);
+                        case IExchange exD:
+                            contextExchanges.Add(exD);
+                            break;
+                        case IQueue qD:
+                            contextQueues.Add(qD);
+                            break;
+                        case IBinding bD:
+                            contextBindings.Add(bD);
+                            break;
                     }
                 }
             }
@@ -605,9 +607,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             _logger?.LogError("Exception while declaring queue'{queueName}'", queue.QueueName);
             try
             {
-                if (channel is IChannelProxy)
+                if (channel is IChannelProxy proxy)
                 {
-                    ((IChannelProxy)channel).TargetChannel.Close();
+                    proxy.TargetChannel.Close();
                 }
             }
             catch (Exception e1)
@@ -672,7 +674,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private void PublishDeclarationExceptionEvent(IDeclarable element, Exception exception)
         {
             var ev = new DeclarationExceptionEvent(this, element, exception);
-            this.LastDeclarationExceptionEvent = ev;
+            LastDeclarationExceptionEvent = ev;
 
             // if (this.applicationEventPublisher != null) {
             //          this.applicationEventPublisher.publishEvent(event);
@@ -747,7 +749,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DECLARE_MAX_ATTEMPTS, true, DECLARE_INITIAL_RETRY_INTERVAL, DECLARE_MAX_RETRY_INTERVAL, DECLARE_RETRY_MULTIPLIER, _logger);
                 }
 
-                if (ConnectionFactory is CachingConnectionFactory && ((CachingConnectionFactory)ConnectionFactory).CacheMode == CachingMode.CONNECTION)
+                if (ConnectionFactory is CachingConnectionFactory factory && factory.CacheMode == CachingMode.CONNECTION)
                 {
                     _logger?.LogWarning("RabbitAdmin auto declaration is not supported with CacheMode.CONNECTION");
                     return;

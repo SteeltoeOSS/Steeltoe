@@ -16,11 +16,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         private const string BOUND_TO_THREAD = "] bound to thread [";
 
-        private static readonly AsyncLocal<Dictionary<object, object>> _resources = new AsyncLocal<Dictionary<object, object>>();
+        private static readonly AsyncLocal<Dictionary<object, object>> _resources = new ();
 
-        private static readonly AsyncLocal<Dictionary<object, Stack<object>>> _stack = new AsyncLocal<Dictionary<object, Stack<object>>>();
+        private static readonly AsyncLocal<Dictionary<object, Stack<object>>> _stack = new ();
 
-        private static Dictionary<object, object> _empty = new Dictionary<object, object>();
+        private static Dictionary<object, object> _empty = new ();
 
         public static IDictionary<object, object> GetResources()
         {

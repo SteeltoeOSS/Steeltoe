@@ -56,7 +56,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
 
         private class TestOutputHelper : ITestOutputHelper
         {
-            private StringBuilder _stringBuilder = new StringBuilder();
+            private StringBuilder _stringBuilder = new ();
 
             public string Output => _stringBuilder.ToString();
 

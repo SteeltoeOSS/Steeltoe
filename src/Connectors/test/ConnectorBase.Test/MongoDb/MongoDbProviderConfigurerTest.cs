@@ -57,7 +57,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            // arrange
             var config = new MongoDbConnectorOptions()
             {
                 Server = "localhost",
@@ -69,10 +68,8 @@ namespace Steeltoe.Connector.MongoDb.Test
 
             var configurer = new MongoDbProviderConfigurer();
 
-            // act
             var connString = configurer.Configure(null, config);
 
-            // assert
             Assert.Equal("mongodb://username:password@localhost:1234/database", connString);
         }
 

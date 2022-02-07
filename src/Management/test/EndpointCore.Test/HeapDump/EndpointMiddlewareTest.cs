@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -26,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static readonly Dictionary<string, string> AppSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> AppSettings = new ()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -67,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 await middle.HandleHeapDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
                 var buffer = new byte[1024];
-                await context.Response.Body.ReadAsync(buffer, 0, 1024);
+                await context.Response.Body.ReadAsync(buffer, default);
                 Assert.NotEqual(0, buffer[0]);
             }
             else
@@ -99,16 +100,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 Assert.Equal("application/octet-stream", contentType.Single());
                 Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-                var tempFile = Path.GetTempFileName();
-                var fs = new FileStream(tempFile, FileMode.Create);
+                using var tempFile = new TempFile();
+                var fs = new FileStream(tempFile.FullPath, FileMode.Create);
                 var input = await result.Content.ReadAsStreamAsync();
                 await input.CopyToAsync(fs);
                 fs.Close();
 
-                var fs2 = File.Open(tempFile, FileMode.Open);
+                var fs2 = File.Open(tempFile.FullPath, FileMode.Open);
                 Assert.NotEqual(0, fs2.Length);
                 fs2.Close();
-                File.Delete(tempFile);
             }
         }
 

@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
     public class BatchingRabbitTemplate : RabbitTemplate
     {
         private readonly IBatchingStrategy _batchingStrategy;
-        private readonly object _batchlock = new object();
+        private readonly object _batchlock = new ();
         private CancellationTokenSource _cancellationTokenSource;
         private Task _scheduledTask;
         private int _count;
@@ -91,7 +91,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     // {
                     //    _cancellationTokenSource.Cancel(false);
                     // }
-                    MessageBatch? batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
+                    var batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
                     if (batch != null)
                     {
                         if (_scheduledTask != null)
@@ -134,7 +134,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             lock (_batchlock)
             {
-                foreach (MessageBatch batch in _batchingStrategy.ReleaseBatches())
+                foreach (var batch in _batchingStrategy.ReleaseBatches())
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {

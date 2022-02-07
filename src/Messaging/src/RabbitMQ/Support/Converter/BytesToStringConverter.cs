@@ -23,13 +23,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         public ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
 
         public object Convert(object source, Type sourceType, Type targetType)
-        {
-            if (!(source is byte[] asByteArray))
-            {
-                return null;
-            }
-
-            return _charset.GetString(asByteArray);
-        }
+            => source is not byte[] asByteArray
+                ? null
+                : _charset.GetString(asByteArray);
     }
 }

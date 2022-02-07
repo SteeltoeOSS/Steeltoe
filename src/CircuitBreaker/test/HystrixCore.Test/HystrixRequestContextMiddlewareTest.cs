@@ -49,7 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             public bool Registered = false;
 
-            private readonly CancellationTokenSource _stoppingSource = new CancellationTokenSource();
+            private readonly CancellationTokenSource _stoppingSource = new ();
 
             public CancellationToken ApplicationStarted => throw new System.NotImplementedException();
 

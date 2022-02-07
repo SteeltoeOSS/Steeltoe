@@ -69,7 +69,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
             var headers = RabbitHeaderAccessor.GetMutableAccessor(message);
 
             var exceptionMessage = exception.InnerException != null ? exception.InnerException.Message : exception.Message;
-            List<string> processed = ProcessStackTrace(exception, exceptionMessage);
+            var processed = ProcessStackTrace(exception, exceptionMessage);
             var stackTraceAsString = processed[0];
             var truncatedExceptionMessage = processed[1];
             if (truncatedExceptionMessage != null)
@@ -98,10 +98,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
 
             if (ErrorExchangeName != null)
             {
-                var routingKey = ErrorRoutingKey != null ? ErrorRoutingKey : PrefixedOriginalRoutingKey(message);
+                var routingKey = ErrorRoutingKey ?? PrefixedOriginalRoutingKey(message);
                 ErrorTemplate.Send(ErrorExchangeName, routingKey, message);
 
-                _logger?.LogWarning("Republishing failed message to exchange '(exchange}' with routing key '{routingKey}'", ErrorExchangeName, routingKey);
+                _logger?.LogWarning("Republishing failed message to exchange '{exchange}' with routing key '{routingKey}'", ErrorExchangeName, routingKey);
             }
             else
             {
@@ -112,22 +112,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
             }
         }
 
-        protected virtual Dictionary<string, object> AddAdditionalHeaders(IMessage message, Exception cause)
-        {
-            return null;
-        }
+        protected virtual Dictionary<string, object> AddAdditionalHeaders(IMessage message, Exception cause) => null;
 
-        private string PrefixedOriginalRoutingKey(IMessage message)
-        {
-            return ErrorRoutingKeyPrefix + message.Headers.ReceivedRoutingKey();
-        }
+        private string PrefixedOriginalRoutingKey(IMessage message) => ErrorRoutingKeyPrefix + message.Headers.ReceivedRoutingKey();
 
         private List<string> ProcessStackTrace(Exception cause, string exceptionMessage)
         {
             var stackTraceAsString = cause.StackTrace;
             if (MaxStackTraceLength < 0)
             {
-                int maxStackTraceLen = RabbitUtils.GetMaxFrame(ErrorTemplate.ConnectionFactory);
+                var maxStackTraceLen = RabbitUtils.GetMaxFrame(ErrorTemplate.ConnectionFactory);
                 if (maxStackTraceLen > 0)
                 {
                     maxStackTraceLen -= FrameMaxHeadroom;
@@ -154,7 +148,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
                             + stackTraceAsString.Substring(start + exceptionMessage.Length);
                 }
 
-                int adjustedStackTraceLen = MaxStackTraceLength - truncatedExceptionMessage.Length;
+                var adjustedStackTraceLen = MaxStackTraceLength - truncatedExceptionMessage.Length;
                 if (adjustedStackTraceLen > 0)
                 {
                     if (stackTraceAsString.Length > adjustedStackTraceLen)

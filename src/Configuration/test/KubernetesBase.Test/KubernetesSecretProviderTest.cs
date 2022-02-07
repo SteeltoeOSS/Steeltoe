@@ -21,15 +21,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesSecretProvider_ThrowsOnNulls()
         {
-            // arrange
             var client = new Mock<k8s.Kubernetes>();
             var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
 
-            // act
             var ex1 = Assert.Throws<ArgumentNullException>(() => new KubernetesSecretProvider(null, settings));
             var ex2 = Assert.Throws<ArgumentNullException>(() => new KubernetesSecretProvider(client.Object, null));
 
-            // assert
             Assert.Equal("kubernetes", ex1.ParamName);
             Assert.Equal("settings", ex2.ParamName);
         }
@@ -37,7 +34,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesSecretProvider_ThrowsOn403()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.Forbidden);
 
@@ -45,17 +41,14 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
             var provider = new KubernetesSecretProvider(client, settings);
 
-            // act
             var ex = Assert.Throws<HttpOperationException>(() => provider.Load());
 
-            // assert
             Assert.Equal(HttpStatusCode.Forbidden, ex.Response.StatusCode);
         }
 
         [Fact]
         public async Task KubernetesSecretProvider_ContinuesOn404()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.NotFound);
 
@@ -63,18 +56,15 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings() { ConfigMaps = true, Period = 0 });
             var provider = new KubernetesConfigMapProvider(client, settings);
 
-            // act
             provider.Load();
             await Task.Delay(50);
 
-            // assert
             Assert.True(provider.Polling, "Provider has begun polling");
         }
 
         [Fact]
         public void KubernetesSecretProvider_AddsToDictionaryOnSuccess()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
@@ -84,10 +74,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testsecret", new ReloadSettings());
             var provider = new KubernetesSecretProvider(client, settings);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("testKey", out var testValue));
             Assert.Equal("testValue", testValue);
         }
@@ -95,7 +83,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void KubernetesSecretProvider_SeesDoubleUnderscore()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
@@ -105,10 +92,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testsecret", new ReloadSettings());
             var provider = new KubernetesSecretProvider(client, settings);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("several:layers:deep:testKey", out var testValue));
             Assert.Equal("testValue", testValue);
         }
@@ -116,7 +101,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public async Task KubernetesSecretProvider_ReloadsDictionaryOnInterval()
         {
-            // arrange
             var foundKey = false;
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
@@ -133,10 +117,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var settings = new KubernetesConfigSourceSettings("default", "testsecret", new ReloadSettings() { Period = 1, Secrets = true });
             var provider = new KubernetesSecretProvider(client, settings, new CancellationTokenSource(20000).Token);
 
-            // act
             provider.Load();
 
-            // assert
             Assert.True(provider.TryGet("testKey", out var testValue), "TryGet testKey");
             Assert.Equal("testValue", testValue);
             while (!foundKey)

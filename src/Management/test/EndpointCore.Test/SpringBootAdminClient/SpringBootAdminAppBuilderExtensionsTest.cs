@@ -60,8 +60,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
 
         private class MyAppLifeTime : IHostApplicationLifetime
         {
-            public CancellationTokenSource AppStartTokenSource = new CancellationTokenSource();
-            public CancellationTokenSource AppStopTokenSource = new CancellationTokenSource();
+            public CancellationTokenSource AppStartTokenSource = new ();
+            public CancellationTokenSource AppStopTokenSource = new ();
 
             public CancellationToken ApplicationStarted => AppStartTokenSource.Token;
 

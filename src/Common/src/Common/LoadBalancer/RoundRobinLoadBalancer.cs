@@ -17,7 +17,7 @@ namespace Steeltoe.Common.LoadBalancer
         public string IndexKeyPrefix = "LoadBalancerIndex-";
         internal readonly IServiceInstanceProvider ServiceInstanceProvider;
         internal readonly IDistributedCache _distributedCache;
-        internal readonly ConcurrentDictionary<string, int> NextIndexForService = new ConcurrentDictionary<string, int>();
+        internal readonly ConcurrentDictionary<string, int> NextIndexForService = new ();
         private readonly DistributedCacheEntryOptions _cacheOptions;
         private readonly ILogger _logger;
 

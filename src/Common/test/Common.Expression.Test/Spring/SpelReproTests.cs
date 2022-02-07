@@ -18,28 +18,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring
     public class SpelReproTests : AbstractExpressionTests
     {
         [Fact]
-        public void NPE_SPR5661()
-        {
-            Evaluate("JoinThreeStrings('a',null,'c')", "ac", typeof(string));
-        }
+        public void NPE_SPR5661() => Evaluate("JoinThreeStrings('a',null,'c')", "ac", typeof(string));
 
         [Fact]
-        public void SWF1086()
-        {
-            Evaluate("PrintDouble(T(Decimal).Parse('14.35'))", "14.35", typeof(string));
-        }
+        public void SWF1086() => Evaluate("PrintDouble(T(Decimal).Parse('14.35'))", "14.35", typeof(string));
 
         [Fact]
-        public void DoubleCoercion()
-        {
-            Evaluate("PrintDouble(14.35)", "14.35", typeof(string));
-        }
+        public void DoubleCoercion() => Evaluate("PrintDouble(14.35)", "14.35", typeof(string));
 
         [Fact]
-        public void DoubleArrayCoercion()
-        {
-            Evaluate("PrintDoubles(GetDoublesAsStringList())", "{14.35, 15.45}", typeof(string));
-        }
+        public void DoubleArrayCoercion() => Evaluate("PrintDoubles(GetDoublesAsStringList())", "{14.35, 15.45}", typeof(string));
 
         [Fact]
         public void SPR5899()
@@ -94,10 +82,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SPR5804()
         {
-            var m = new Dictionary<string, string>
-            {
-                { "foo", "bar" }
-            };
+            var m = new Dictionary<string, string> { { "foo", "bar" } };
             var context = new StandardEvaluationContext(m);  // root is a map instance
             context.AddPropertyAccessor(new MapAccessor());
             var expr = new SpelExpressionParser().ParseRaw("['foo']");
@@ -431,14 +416,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void MapOfMap_SPR7244()
         {
-            var map = new Dictionary<string, object>
-            {
-                { "uri", "http:" }
-            };
-            var nameMap = new Dictionary<string, string>
-            {
-                { "givenName", "Arthur" }
-            };
+            var map = new Dictionary<string, object> { { "uri", "http:" } };
+            var nameMap = new Dictionary<string, string> { { "givenName", "Arthur" } };
             map.Add("value", nameMap);
 
             var context = new StandardEvaluationContext(map);
@@ -539,10 +518,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             var emptyEvalContext = new StandardEvaluationContext();
 
-            var args = new List<Type>
-            {
-                typeof(int)
-            };
+            var args = new List<Type> { typeof(int) };
 
             var target = new ConversionPriority1();
             var me = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target, "GetX", args);
@@ -576,10 +552,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var target = new WideningPrimitiveConversion();
             var emptyEvalContext = new StandardEvaluationContext();
 
-            var args = new List<Type>
-            {
-                typeof(int)
-            };
+            var args = new List<Type> { typeof(int) };
 
             var me = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target, "GetX", args);
             var actual = (int)me.Execute(emptyEvalContext, target, iNTEGER_VALUE).Value;
@@ -626,10 +599,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void VarargsAndPrimitives_SPR8174()
         {
             var emptyEvalContext = new StandardEvaluationContext();
-            var args = new List<Type>
-            {
-                typeof(long)
-            };
+            var args = new List<Type> { typeof(long) };
             var ru = new ReflectionUtil<int>();
             var me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "MethodToCall", args);
 
@@ -711,7 +681,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var parser = new SpelExpressionParser();
             var expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).CONST");
             var value = expression.GetValue(context);
-            Assert.Equal(value, Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver.CONST);
+            Assert.Equal(value, TestResources.le.div.mod.reserved.Reserver.CONST);
         }
 
         [Fact]
@@ -736,10 +706,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var parser = new SpelExpressionParser();
             var context = new StandardEvaluationContext();
-            var methodResolvers = new List<IMethodResolver>
-            {
-                new ParseReflectiveMethodResolver()
-            };
+            var methodResolvers = new List<IMethodResolver> { new ParseReflectiveMethodResolver() };
             context.MethodResolvers = methodResolvers;
             var type = typeof(System.Globalization.NumberStyles);
             context.SetVariable("parseFormat", NumberStyles.HexNumber);
@@ -1245,11 +1212,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var one = new TestClass2("abc");
             var two = new TestClass2("abc");
-            var map = new Dictionary<string, TestClass2>
-            {
-                { "one", one },
-                { "two", two }
-            };
+            var map = new Dictionary<string, TestClass2> { { "one", one }, { "two", two } };
 
             var parser = new SpelExpressionParser();
             var expr = parser.ParseExpression("['one'] == ['two']");
@@ -1259,11 +1222,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SPR11348()
         {
-            var coll = new HashSet<string>
-            {
-                "one",
-                "two"
-            };
+            var coll = new HashSet<string> { "one", "two" };
 
             // coll = Collections.unmodifiableCollection(coll);
             var parser = new SpelExpressionParser();
@@ -1287,10 +1246,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SPR11445_BeanReference()
         {
-            var context = new StandardEvaluationContext
-            {
-                ServiceResolver = new Spr11445Class()
-            };
+            var context = new StandardEvaluationContext { ServiceResolver = new Spr11445Class() };
             var expr = new SpelExpressionParser().ParseRaw("@bean.Echo(@bean.Parameter())");
             Assert.Equal(1, expr.GetValue(context));
         }
@@ -1300,28 +1256,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var sec = new StandardEvaluationContext();
             sec.AddPropertyAccessor(new MapAccessor());
-            var exp = new SpelExpressionParser().ParseExpression(
-                    "T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$MapWithConstant).X");
+            var exp = new SpelExpressionParser().ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$MapWithConstant).X");
             Assert.Equal(1, exp.GetValue(sec));
         }
 
         [Fact]
         public void SPR9735()
         {
-            var item = new Item
-            {
-                Name = "parent"
-            };
+            var item = new Item { Name = "parent" };
 
-            var item1 = new Item
-            {
-                Name = "child1"
-            };
+            var item1 = new Item { Name = "child1" };
 
-            var item2 = new Item
-            {
-                Name = "child2"
-            };
+            var item2 = new Item { Name = "child2" };
 
             item.Add(item1);
             item.Add(item2);
@@ -1423,10 +1369,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void AccessingFactoryBean_spr9511()
         {
-            var context = new StandardEvaluationContext
-            {
-                ServiceResolver = new MyBeanResolver()
-            };
+            var context = new StandardEvaluationContext { ServiceResolver = new MyBeanResolver() };
             var expr = new SpelExpressionParser().ParseRaw("@foo");
             Assert.Equal("custard", expr.GetValue(context));
             expr = new SpelExpressionParser().ParseRaw("&foo");
@@ -1472,17 +1415,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SPR10417()
         {
-            var list1 = new ArrayList
-            {
-                "a",
-                "b",
-                "x"
-            };
-            var list2 = new ArrayList
-            {
-                "c",
-                "x"
-            };
+            var list1 = new ArrayList { "a", "b", "x" };
+            var list2 = new ArrayList { "c", "x" };
             var context = new StandardEvaluationContext();
             context.SetVariable("list1", list1);
             context.SetVariable("list2", list2);
@@ -1497,13 +1431,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             result = ex.GetValue<IEnumerable<string>>(context);
             Assert.Equal("x", string.Join(",", result));
 
-            var list3 = new ArrayList
-            {
-                1,
-                2,
-                3,
-                4
-            };
+            var list3 = new ArrayList { 1, 2, 3, 4 };
 
             context = new StandardEvaluationContext();
             context.SetVariable("list3", list3);
@@ -1519,16 +1447,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SPR10417_maps()
         {
-            var map1 = new Dictionary<string, int>
-            {
-                { "A", 65 },
-                { "B", 66 },
-                { "X", 66 }
-            };
-            var map2 = new Dictionary<string, int>
-            {
-                { "X", 66 }
-            };
+            var map1 = new Dictionary<string, int> { { "A", 65 }, { "B", 66 }, { "X", 66 } };
+            var map2 = new Dictionary<string, int> { { "X", 66 } };
 
             var context = new StandardEvaluationContext();
             context.SetVariable("map1", map1);
@@ -1574,10 +1494,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Contains(expectedMessage, ex.Message);
         }
 
-        private void CheckTemplateParsing(string expression, string expectedValue)
-        {
-            CheckTemplateParsing(expression, TemplateExpressionParsingTests.DEFAULT_TEMPLATE_PARSER_CONTEXT, expectedValue);
-        }
+        private void CheckTemplateParsing(string expression, string expectedValue) => CheckTemplateParsing(expression, TemplateExpressionParsingTests.DEFAULT_TEMPLATE_PARSER_CONTEXT, expectedValue);
 
         private void CheckTemplateParsing(string expression, IParserContext context, string expectedValue)
         {
@@ -1586,19 +1503,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Equal(expectedValue, expr.GetValue(TestScenarioCreator.GetTestEvaluationContext()));
         }
 
-        private void CheckTemplateParsingError(string expression, string expectedMessage)
-        {
-            CheckTemplateParsingError(expression, TemplateExpressionParsingTests.DEFAULT_TEMPLATE_PARSER_CONTEXT, expectedMessage);
-        }
+        private void CheckTemplateParsingError(string expression, string expectedMessage) => CheckTemplateParsingError(expression, TemplateExpressionParsingTests.DEFAULT_TEMPLATE_PARSER_CONTEXT, expectedMessage);
 
         private void CheckTemplateParsingError(string expression, IParserContext context, string expectedMessage)
         {
             var parser = new SpelExpressionParser();
             var ex = Assert.Throws<ParseException>(() => parser.ParseExpression(expression, context));
             var message = ex.Message;
-            if (ex is ExpressionException)
+            if (ex is ExpressionException exception)
             {
-                message = ((ExpressionException)ex).SimpleMessage;
+                message = exception.SimpleMessage;
             }
 
             Assert.Equal(expectedMessage, message);
@@ -1609,10 +1523,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 #pragma warning disable IDE1006 // Naming Styles
         public class ValuesMethodReslover : IMethodResolver
         {
-            public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
-            {
-                return new ValuesMethodExecutor();
-            }
+            public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes) => new ValuesMethodExecutor();
         }
 
         public class ValuesMethodExecutor : IMethodExecutor
@@ -1658,44 +1569,26 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public int div = 3;
             public Dictionary<string, string> M = new ();
 
-            public Reserver()
-            {
-                M.Add("NE", "xyz");
-            }
+            public Reserver() => M.Add("NE", "xyz");
         }
 
         public class WideningPrimitiveConversion
         {
-            public int GetX(long i)
-            {
-                return 10;
-            }
+            public int GetX(long i) => 10;
         }
 
         public class ConversionPriority1
         {
-            public int GetX(ValueType i)
-            {
-                return 20;
-            }
+            public int GetX(ValueType i) => 20;
 
-            public int GetX(int i)
-            {
-                return 10;
-            }
+            public int GetX(int i) => 10;
         }
 
         public class ConversionPriority2
         {
-            public int GetX(int i)
-            {
-                return 10;
-            }
+            public int GetX(int i) => 10;
 
-            public int GetX(ValueType i)
-            {
-                return 20;
-            }
+            public int GetX(ValueType i) => 20;
         }
 
         public class DollarSquareTemplateParserContext : IParserContext
@@ -1739,15 +1632,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
             }
 
-            public int TryToInvokeWithNull(object value)
-            {
-                return value == null ? default : (int)value;
-            }
+            public int TryToInvokeWithNull(object value) => value == null ? default : (int)value;
 
-            public int TryToInvokeWithNull2(int i)
-            {
-                return i;
-            }
+            public int TryToInvokeWithNull2(int i) => i;
 
             public string TryToInvokeWithNull3(object value, params string[] strings)
             {
@@ -1767,10 +1654,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 return sb.ToString();
             }
 
-            public override string ToString()
-            {
-                return "instance";
-            }
+            public override string ToString() => "instance";
         }
 
         public class TestProperties
@@ -1790,30 +1674,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class MapAccessor : IPropertyAccessor
         {
-            public IList<Type> GetSpecificTargetClasses()
-            {
-                return new List<Type>() { typeof(IDictionary) };
-            }
+            public IList<Type> GetSpecificTargetClasses() => new List<Type>() { typeof(IDictionary) };
 
-            public bool CanRead(IEvaluationContext context, object target, string name)
-            {
-                return ((IDictionary)target).Contains(name);
-            }
+            public bool CanRead(IEvaluationContext context, object target, string name) => ((IDictionary)target).Contains(name);
 
-            public ITypedValue Read(IEvaluationContext context, object target, string name)
-            {
-                return new TypedValue(((IDictionary)target)[name]);
-            }
+            public ITypedValue Read(IEvaluationContext context, object target, string name) => new TypedValue(((IDictionary)target)[name]);
 
-            public bool CanWrite(IEvaluationContext context, object target, string name)
-            {
-                return true;
-            }
+            public bool CanWrite(IEvaluationContext context, object target, string name) => true;
 
-            public void Write(IEvaluationContext context, object target, string name, object newValue)
-            {
-                ((IDictionary)target).Add(name, newValue);
-            }
+            public void Write(IEvaluationContext context, object target, string name, object newValue) => ((IDictionary)target).Add(name, newValue);
         }
 
         public class Outer
@@ -1824,15 +1693,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 {
                 }
 
-                public static int Run()
-                {
-                    return 12;
-                }
+                public static int Run() => 12;
 
-                public int Run2()
-                {
-                    return 13;
-                }
+                public int Run2() => 13;
             }
         }
 
@@ -1842,14 +1705,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public string Floo = "bar";
 
-            public XX()
-            {
-                M = new Dictionary<string, string>
-                {
-                    { "$foo", "wibble" },
-                    { "bar", "siddle" }
-                };
-            }
+            public XX() => M = new Dictionary<string, string> { { "$foo", "wibble" }, { "bar", "siddle" } };
         }
 
         public class MyBeanResolver : IServiceResolver
@@ -1896,18 +1752,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public C()
             {
-                Ls = new List<string>
-                {
-                    "abc",
-                    "def"
-                };
+                Ls = new List<string> { "abc", "def" };
 
                 As = new string[] { "abc", "def" };
-                Ms = new Dictionary<string, string>
-                {
-                    ["abc"] = "xyz",
-                    ["def"] = "pqr"
-                };
+                Ms = new Dictionary<string, string> { ["abc"] = "xyz", ["def"] = "pqr" };
             }
         }
 
@@ -1915,15 +1763,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             public string A;
 
-            public D(string s)
-            {
-                A = s;
-            }
+            public D(string s) => A = s;
 
-            public override string ToString()
-            {
-                return "D(" + A + ")";
-            }
+            public override string ToString() => "D(" + A + ")";
         }
 
         public class Resource
@@ -1935,10 +1777,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             private readonly Resource resource;
 
-            public ResourceSummary()
-            {
-                resource = new Resource();
-            }
+            public ResourceSummary() => resource = new Resource();
 
             public Resource Resource => resource;
         }
@@ -1950,10 +1789,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Foo2
         {
-            public void Execute(string str)
-            {
-                Console.WriteLine("Value: " + str);
-            }
+            public void Execute(string str) => Console.WriteLine("Value: " + str);
         }
 
         public class Message
@@ -1971,11 +1807,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public string Wibble = "wobble";
 
-            public string Key
-            {
-                get => "hello";
-                set => Value = value;
-            }
+            public string Key { get => "hello"; set => Value = value; }
         }
 
         public class Holder
@@ -1985,15 +1817,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class SPR9486_FunctionsClass
         {
-            public int Abs(int value)
-            {
-                return Math.Abs(value);
-            }
+            public int Abs(int value) => Math.Abs(value);
 
-            public float Abs(float value)
-            {
-                return Math.Abs(value);
-            }
+            public float Abs(float value) => Math.Abs(value);
         }
 
         public interface IVarargsInterface
@@ -2003,10 +1829,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class VarargsReceiver : IVarargsInterface
         {
-            public string Process(params string[] args)
-            {
-                return "OK";
-            }
+            public string Process(params string[] args) => "OK";
         }
 
         public class ReflectionUtil<T>
@@ -2094,10 +1917,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             private readonly string _mapName;
 
-            public TestPropertyAccessor(string mapName)
-            {
-                this._mapName = mapName;
-            }
+            public TestPropertyAccessor(string mapName) => _mapName = mapName;
 
             public Dictionary<string, string> GetMap(object target)
             {
@@ -2113,30 +1933,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 return null;
             }
 
-            public bool CanRead(IEvaluationContext context, object target, string name)
-            {
-                return GetMap(target).ContainsKey(name);
-            }
+            public bool CanRead(IEvaluationContext context, object target, string name) => GetMap(target).ContainsKey(name);
 
-            public bool CanWrite(IEvaluationContext context, object target, string name)
-            {
-                return GetMap(target).ContainsKey(name);
-            }
+            public bool CanWrite(IEvaluationContext context, object target, string name) => GetMap(target).ContainsKey(name);
 
-            public IList<Type> GetSpecificTargetClasses()
-            {
-                return new List<Type>() { typeof(ContextObject) };
-            }
+            public IList<Type> GetSpecificTargetClasses() => new List<Type>() { typeof(ContextObject) };
 
-            public ITypedValue Read(IEvaluationContext context, object target, string name)
-            {
-                return new TypedValue(GetMap(target)[name]);
-            }
+            public ITypedValue Read(IEvaluationContext context, object target, string name) => new TypedValue(GetMap(target)[name]);
 
-            public void Write(IEvaluationContext context, object target, string name, object newValue)
-            {
-                GetMap(target)[name] = (string)newValue;
-            }
+            public void Write(IEvaluationContext context, object target, string name, object newValue) => GetMap(target)[name] = (string)newValue;
         }
 
         public class ContextObject
@@ -2171,20 +1976,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             public double Value { get; }
 
-            public ListOf(double v)
-            {
-                Value = v;
-            }
+            public ListOf(double v) => Value = v;
         }
 
         public class BeanClass
         {
             public List<ListOf> List { get; }
 
-            public BeanClass(params ListOf[] list)
-            {
-                List = new List<ListOf>(list);
-            }
+            public BeanClass(params ListOf[] list) => List = new List<ListOf>(list);
         }
 
         public enum ABC
@@ -2263,41 +2062,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             // SPR-9194
             private readonly string str;
 
-            public TestClass2(string str)
-            {
-                this.str = str;
-            }
+            public TestClass2(string str) => this.str = str;
 
-            public override bool Equals(object other)
-            {
-                return this == other || (other is TestClass2 &&
-                        str.Equals(((TestClass2)other).str));
-            }
+            public override bool Equals(object other) => this == other || (other is TestClass2 @class && str.Equals(@class.str));
 
-            public override int GetHashCode()
-            {
-                return str.GetHashCode();
-            }
+            public override int GetHashCode() => str.GetHashCode();
         }
 
         public class Spr11445Class : IServiceResolver
         {
             private readonly AtomicInteger counter = new ();
 
-            public int Echo(int invocation)
-            {
-                return invocation;
-            }
+            public int Echo(int invocation) => invocation;
 
-            public int Parameter()
-            {
-                return counter.IncrementAndGet();
-            }
+            public int Parameter() => counter.IncrementAndGet();
 
-            public object Resolve(IEvaluationContext context, string beanName)
-            {
-                return beanName.Equals("bean") ? this : null;
-            }
+            public object Resolve(IEvaluationContext context, string beanName) => beanName.Equals("bean") ? this : null;
         }
 
         public class MapWithConstant : Hashtable
@@ -2325,85 +2105,37 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public object SyncRoot => ((IList)_children).SyncRoot;
 
-            public void Add(Item item)
-            {
-                _children.Add(item);
-            }
+            public void Add(Item item) => _children.Add(item);
 
-            public int Add(object value)
-            {
-                throw new NotImplementedException();
-            }
+            public int Add(object value) => throw new NotImplementedException();
 
-            public void Clear()
-            {
-                _children.Clear();
-            }
+            public void Clear() => _children.Clear();
 
-            public bool Contains(Item o)
-            {
-                return _children.Contains(o);
-            }
+            public bool Contains(Item o) => _children.Contains(o);
 
-            public bool Contains(object value)
-            {
-                return ((IList)_children).Contains(value);
-            }
+            public bool Contains(object value) => ((IList)_children).Contains(value);
 
-            public void CopyTo(Item[] array, int arrayIndex)
-            {
-                _children.CopyTo(array, arrayIndex);
-            }
+            public void CopyTo(Item[] array, int arrayIndex) => _children.CopyTo(array, arrayIndex);
 
-            public void CopyTo(Array array, int index)
-            {
-                ((IList)_children).CopyTo(array, index);
-            }
+            public void CopyTo(Array array, int index) => ((IList)_children).CopyTo(array, index);
 
-            public IEnumerator<Item> GetEnumerator()
-            {
-                return _children.GetEnumerator();
-            }
+            public IEnumerator<Item> GetEnumerator() => _children.GetEnumerator();
 
-            public int IndexOf(Item item)
-            {
-                return _children.IndexOf(item);
-            }
+            public int IndexOf(Item item) => _children.IndexOf(item);
 
-            public int IndexOf(object value)
-            {
-                return ((IList)_children).IndexOf(value);
-            }
+            public int IndexOf(object value) => ((IList)_children).IndexOf(value);
 
-            public void Insert(int index, Item item)
-            {
-                _children.Insert(index, item);
-            }
+            public void Insert(int index, Item item) => _children.Insert(index, item);
 
-            public void Insert(int index, object value)
-            {
-                ((IList)_children).Insert(index, value);
-            }
+            public void Insert(int index, object value) => ((IList)_children).Insert(index, value);
 
-            public bool Remove(Item item)
-            {
-                return _children.Remove(item);
-            }
+            public bool Remove(Item item) => _children.Remove(item);
 
-            public void Remove(object value)
-            {
-                ((IList)_children).Remove(value);
-            }
+            public void Remove(object value) => ((IList)_children).Remove(value);
 
-            public void RemoveAt(int index)
-            {
-                _children.RemoveAt(index);
-            }
+            public void RemoveAt(int index) => _children.RemoveAt(index);
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return _children.GetEnumerator();
-            }
+            IEnumerator IEnumerable.GetEnumerator() => _children.GetEnumerator();
         }
 
         public class UnnamedUser
@@ -2417,33 +2149,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class FooLists
         {
-            public static List<T> NewArrayList<T>(IEnumerable<T> iterable)
-            {
-                return new List<T>(iterable);
-            }
+            public static List<T> NewArrayList<T>(IEnumerable<T> iterable) => new (iterable);
 
-            public static List<T> NewArrayList<T>(params object[] elements)
-            {
-                throw new InvalidOperationException();
-            }
+            public static List<T> NewArrayList<T>(params object[] elements) => throw new InvalidOperationException();
         }
 
         public class DistanceEnforcer
         {
-            public static string From(ValueType no)
-            {
-                return "ValueType:" + no.ToString();
-            }
+            public static string From(ValueType no) => "ValueType:" + no.ToString();
 
-            public static string From(int no)
-            {
-                return "Integer:" + no.ToString();
-            }
+            public static string From(int no) => "Integer:" + no.ToString();
 
-            public static string From(object no)
-            {
-                return "Object:" + no.ToString();
-            }
+            public static string From(object no) => "Object:" + no.ToString();
         }
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning restore IDE1006 // Naming Styles

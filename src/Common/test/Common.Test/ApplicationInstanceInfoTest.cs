@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Utils.IO;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -38,7 +39,6 @@ namespace Steeltoe.Common.Test
         [Fact]
         public void ConstructorReadsApplicationConfiguration()
         {
-            // Arrange
             var configJson = @"
             {
                 ""Application"" : {
@@ -52,7 +52,8 @@ namespace Steeltoe.Common.Test
                 }
             }";
 
-            var path = TestHelpers.CreateTempFile(configJson);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", configJson);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var builder = new ConfigurationBuilder();

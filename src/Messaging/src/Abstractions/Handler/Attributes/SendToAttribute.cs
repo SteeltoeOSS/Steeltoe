@@ -21,7 +21,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
         /// <param name="destinations">the destinations for the message created</param>
         public SendToAttribute(params string[] destinations)
         {
-            this._destinations = destinations;
+            _destinations = destinations;
         }
 
         /// <summary>

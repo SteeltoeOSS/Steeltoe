@@ -23,7 +23,7 @@ namespace Steeltoe.Common.Converter.Test
         }
 
         // Static so only one is created for this battery of tests.. ensures internal cache is filled by all of the tests
-        private static readonly DefaultConversionService ConversionService = new DefaultConversionService();
+        private static readonly DefaultConversionService ConversionService = new ();
 
         [Fact]
         public void TestStringToCharacter()
@@ -363,7 +363,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertEmptyArrayToString()
         {
-            var result = ConversionService.Convert<string>(new string[0]);
+            var result = ConversionService.Convert<string>(Array.Empty<string>());
             Assert.Equal(string.Empty, result);
         }
 
@@ -949,7 +949,7 @@ namespace Steeltoe.Common.Converter.Test
 
             public override bool Equals(object o)
             {
-                if (!(o is ISBN))
+                if (o is not ISBN)
                 {
                     return false;
                 }
@@ -958,10 +958,7 @@ namespace Steeltoe.Common.Converter.Test
                 return value.Equals(isbn.value);
             }
 
-            public override int GetHashCode()
-            {
-                return value.GetHashCode();
-            }
+            public override int GetHashCode() => value.GetHashCode();
 
             public override string ToString()
             {
@@ -992,7 +989,7 @@ namespace Steeltoe.Common.Converter.Test
 
             public override bool Equals(object o)
             {
-                if (!(o is SSN))
+                if (o is not SSN)
                 {
                     return false;
                 }
@@ -1001,10 +998,7 @@ namespace Steeltoe.Common.Converter.Test
                 return value.Equals(ssn.value);
             }
 
-            public override int GetHashCode()
-            {
-                return value.GetHashCode();
-            }
+            public override int GetHashCode() => value.GetHashCode();
 
             public override string ToString()
             {

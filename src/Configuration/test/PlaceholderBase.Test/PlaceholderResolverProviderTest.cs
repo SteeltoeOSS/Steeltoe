@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Utils.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,20 +19,16 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration configuration = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
         }
 
         [Fact]
         public void Constructor_ThrowsIfListIConfigurationProviderNull()
         {
-            // Arrange
             IList<IConfigurationProvider> providers = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers));
         }
 
@@ -131,7 +128,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Trait("Category", "SkipOnMacOS")]
         public void GetReloadToken_ReturnsExpected_NotifyChanges()
         {
-            // Arrange
             var appsettings1 = @"
                 {
                     ""spring"": {
@@ -160,7 +156,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings1);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings1);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -168,7 +165,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             configurationBuilder.AddJsonFile(fileName, false, true);
 
-            // Act and Assert
             var config = configurationBuilder.Build();
 
             var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(config.Providers));
@@ -217,7 +213,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Trait("Category", "SkipOnMacOS")]
         public void Load_ReloadsConfiguration()
         {
-            // Arrange
             var appsettings1 = @"
                 {
                     ""spring"": {
@@ -246,7 +241,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings1);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings1);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -254,7 +250,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             configurationBuilder.AddJsonFile(fileName, false, true);
 
-            // Act and Assert
             var config = configurationBuilder.Build();
 
             var holder = new PlaceholderResolverProvider(config);

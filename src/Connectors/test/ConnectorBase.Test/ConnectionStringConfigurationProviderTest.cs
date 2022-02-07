@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Connector.Redis.Test;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void ConstructorThrowsOnNullProviders()
         {
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new ConnectionStringConfigurationProvider(null));
             Assert.Equal("providers", ex.ParamName);
         }
@@ -65,9 +65,10 @@ namespace Steeltoe.Connector.Test
         {
             var appSettings1 = @"{ ""redis"": { ""client"": { ""host"": ""testHost"" } } }";
             var appSettings2 = @"{ ""redis"": { ""client"": { ""host"": ""updatedTestHost"" } } }";
-            var path = TestHelpers.CreateTempFile(appSettings1);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appSettings1);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             var baseProviders = new ConfigurationBuilder().SetBasePath(directory).AddJsonFile(fileName, false, true).Build().Providers;
             var provider = new ConnectionStringConfigurationProvider(baseProviders);
             var token = provider.GetReloadToken();

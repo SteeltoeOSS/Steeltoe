@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Transformer
 {
     public class JsonToObjectTransformer : AbstractTransformer
     {
-        private DefaultTypeMapper _defaultTypeMapper = new DefaultTypeMapper();
+        private DefaultTypeMapper _defaultTypeMapper = new ();
 
         public Type TargetType { get; set; }
 
@@ -60,20 +60,21 @@ namespace Steeltoe.Integration.Transformer
             }
 
             var payload = message.Payload;
-            object result = null;
+            object result;
+            switch (payload)
+            {
+                case string sPayload:
+                    result = JsonConvert.DeserializeObject(sPayload, targetClass, Settings);
+                    break;
+                case byte[] bPayload:
+                    {
+                        var contentAsString = DefaultCharset.GetString(bPayload);
+                        result = JsonConvert.DeserializeObject(contentAsString, targetClass, Settings);
+                        break;
+                    }
 
-            if (payload is string)
-            {
-                result = JsonConvert.DeserializeObject((string)payload, targetClass, Settings);
-            }
-            else if (payload is byte[])
-            {
-                var contentAsString = DefaultCharset.GetString((byte[])payload);
-                result = JsonConvert.DeserializeObject(contentAsString, targetClass, Settings);
-            }
-            else
-            {
-                throw new MessageConversionException("Failed to convert Message content, message missing byte[] or string: " + payload.GetType());
+                default:
+                    throw new MessageConversionException("Failed to convert Message content, message missing byte[] or string: " + payload.GetType());
             }
 
             if (removeHeaders)
@@ -88,9 +89,6 @@ namespace Steeltoe.Integration.Transformer
             return result;
         }
 
-        private Type ObtainResolvableTypeFromHeadersIfAny(IMessageHeaders headers)
-        {
-            return _defaultTypeMapper.ToType(headers);
-        }
+        private Type ObtainResolvableTypeFromHeadersIfAny(IMessageHeaders headers) => _defaultTypeMapper.ToType(headers);
     }
 }

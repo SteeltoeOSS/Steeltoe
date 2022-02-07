@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class GuidNamingStrategy : INamingStrategy
     {
-        public static readonly GuidNamingStrategy DEFAULT = new GuidNamingStrategy();
+        public static readonly GuidNamingStrategy DEFAULT = new ();
 
         public string GenerateName()
         {

@@ -15,10 +15,8 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -51,7 +49,6 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["mysql:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
@@ -60,17 +57,14 @@ namespace Steeltoe.Connector.MySql.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new MySqlProviderConnectorOptions(config);
 
-            // assert
             Assert.Equal(appsettings["mysql:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
-            // arrange
             // simulate an appsettings file
             var appsettings = new Dictionary<string, string>()
             {
@@ -88,10 +82,8 @@ namespace Steeltoe.Connector.MySql.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new MySqlProviderConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["mysql:client:ConnectionString"], sconfig.ToString());
 
             // NOTE: for this test, we don't expect VCAP_SERVICES to be parsed,

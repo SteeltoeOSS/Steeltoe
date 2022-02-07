@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> appSettings = new ()
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -95,7 +95,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
             var json = await result.Content.ReadAsStringAsync();
 
-            // assert
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
         }
 

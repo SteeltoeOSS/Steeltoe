@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 ["management:metrics:observer:httpClientDesktop"] = "true",
                 ["management:metrics:observer:hystrixEvents"] = "true",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

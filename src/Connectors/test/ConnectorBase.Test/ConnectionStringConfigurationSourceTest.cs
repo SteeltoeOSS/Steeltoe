@@ -35,11 +35,9 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void Build_ReturnsProvider()
         {
-            // Arrange
             var memSource = new MemoryConfigurationSource();
             IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
 
-            // Act and Assert
             var source = new ConnectionStringConfigurationSource(sources);
             var provider = source.Build(new ConfigurationBuilder());
             Assert.IsType<ConnectionStringConfigurationProvider>(provider);

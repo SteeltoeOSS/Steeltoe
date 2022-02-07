@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common.Net;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
@@ -57,7 +58,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""eureka"": {
@@ -111,7 +111,8 @@ namespace Steeltoe.Discovery.Eureka.Test
                         }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -158,23 +159,19 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Options_DontUseInetUtilsByDefault()
         {
-            // arrange
             var mockNetUtils = new Mock<InetUtils>(null, null);
             mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo() { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
             var config = new ConfigurationBuilder().Build();
             var opts = new EurekaInstanceOptions() { NetUtils = mockNetUtils.Object };
 
-            // act
             config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
 
-            // assert
             mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Never);
         }
 
         [Fact]
         public void Options_CanUseInetUtils()
         {
-            // arrange
             var mockNetUtils = new Mock<InetUtils>(null, null);
             mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo() { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
             var appSettings = new Dictionary<string, string> { { "eureka:instance:UseNetUtils", "true" } };
@@ -182,10 +179,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             var opts = new EurekaInstanceOptions() { NetUtils = mockNetUtils.Object };
             config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
 
-            // act
             opts.ApplyNetUtils();
 
-            // assert
             Assert.Equal("FromMock", opts.HostName);
             Assert.Equal("254.254.254.254", opts.IpAddress);
             mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
@@ -195,19 +190,16 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Trait("Category", "SkipOnMacOS")] // for some reason this takes 25-ish seconds on the MSFT-hosted MacOS agent
         public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
         {
-            // arrange
             var appSettings = new Dictionary<string, string> { { "eureka:instance:UseNetUtils", "true" }, { "spring:cloud:inet:SkipReverseDnsLookup", "true" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
             var opts = new EurekaInstanceOptions() { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
             config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
 
-            // act
             var noSlowReverseDNSQuery = new Stopwatch();
             noSlowReverseDNSQuery.Start();
             opts.ApplyNetUtils();
             noSlowReverseDNSQuery.Stop();
 
-            // assert
             Assert.NotNull(opts.HostName);
             Assert.InRange(noSlowReverseDNSQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
         }

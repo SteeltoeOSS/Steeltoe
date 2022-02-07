@@ -47,10 +47,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
 {
     public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
     {
-        private static readonly SimplePassthroughMessageConverter _passThoughConverter = new SimplePassthroughMessageConverter();
+        private static readonly SimplePassthroughMessageConverter _passThoughConverter = new ();
         private static readonly IMessageHeadersConverter _inboundMessagePropertiesConverter = new DefaultBinderMessagePropertiesConverter();
-        private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
-        private static readonly Regex _interceptorNeededPattern = new Regex("(Payload|#root|#this)");
+        private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new ();
+        private static readonly Regex _interceptorNeededPattern = new ("(Payload|#root|#this)");
 
         public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
             : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
@@ -550,7 +550,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private class RejectingErrorMessageHandler : IMessageHandler
         {
-            private readonly RejectAndDontRequeueRecoverer _recoverer = new RejectAndDontRequeueRecoverer();
+            private readonly RejectAndDontRequeueRecoverer _recoverer = new ();
             private readonly ILogger _logger;
 
             public RejectingErrorMessageHandler(ILogger logger)
@@ -656,12 +656,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             private static bool ShouldRepublish(Exception exception)
             {
                 var cause = exception;
-                while (cause != null && !(cause is RabbitRejectAndDontRequeueException) && !(cause is ImmediateAcknowledgeException))
+                while (cause != null && cause is not RabbitRejectAndDontRequeueException && cause is not ImmediateAcknowledgeException)
                 {
                     cause = cause.InnerException;
                 }
 
-                return !(cause is ImmediateAcknowledgeException);
+                return cause is not ImmediateAcknowledgeException;
             }
         }
 
@@ -669,7 +669,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             private readonly string _prefix;
 
-            private readonly AtomicInteger _index = new AtomicInteger();
+            private readonly AtomicInteger _index = new ();
 
             public RabbitBinderConsumerTagStrategy(string prefix)
             {
@@ -697,7 +697,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private class SimplePassthroughMessageConverter : AbstractMessageConverter
         {
-            private readonly SimpleMessageConverter _converter = new SimpleMessageConverter();
+            private readonly SimpleMessageConverter _converter = new ();
 
             public SimplePassthroughMessageConverter()
             {

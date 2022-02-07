@@ -10,7 +10,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionSelectorClass()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -21,12 +21,11 @@ namespace Steeltoe.Stream.Partitioning
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     public class CustomPartitionSelectorClassOne : IPartitionSelectorStrategy
     {
         public CustomPartitionSelectorClassOne()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -41,7 +40,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionSelectorClassTwo()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -51,5 +50,4 @@ namespace Steeltoe.Stream.Partitioning
             return int.Parse((string)key);
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

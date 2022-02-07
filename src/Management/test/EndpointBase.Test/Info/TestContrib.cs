@@ -9,10 +9,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 {
     internal class TestContrib : IInfoContributor
     {
-#pragma warning disable SA1401 // Fields must be private
         public bool Called = false;
         public bool Throws = false;
-#pragma warning restore SA1401 // Fields must be private
 
         public TestContrib()
         {

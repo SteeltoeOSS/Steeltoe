@@ -72,7 +72,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 throw new MessageConversionException("Message converter returned null");
             }
 
-            var builder = (convertedObject is IMessage) ? RabbitMessageBuilder.FromMessage((IMessage)convertedObject) : RabbitMessageBuilder.WithPayload(convertedObject);
+            var builder = (convertedObject is IMessage message1) ? RabbitMessageBuilder.FromMessage(message1) : RabbitMessageBuilder.WithPayload(convertedObject);
             var message = builder.CopyHeadersIfAbsent(headers).Build();
             InvokeHandlerAndProcessResult(amqpMessage, channel, message);
         }
@@ -93,12 +93,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 }
             }
 
-            if (!(result is IMessage<byte[]>))
+            if (result is not IMessage<byte[]> mResult)
             {
                 throw new MessageConversionException("No MessageConverter specified - cannot handle message [" + result + "]");
             }
 
-            return (IMessage<byte[]>)result;
+            return mResult;
         }
 
         protected void InvokeHandlerAndProcessResult(IMessage amqpMessage, RC.IModel channel, IMessage message)
@@ -107,7 +107,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             InvocationResult result = null;
             try
             {
-                if (this.Method == null)
+                if (Method == null)
                 {
                     var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                     accessor.TargetMethod = HandlerAdapter.GetMethodFor(message.Payload);

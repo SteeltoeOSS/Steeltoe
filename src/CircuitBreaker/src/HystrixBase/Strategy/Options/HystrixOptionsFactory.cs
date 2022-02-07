@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             CollapserProperties.Clear();
         }
 
-        private static readonly ConcurrentDictionary<string, IHystrixCommandOptions> CommandProperties = new ConcurrentDictionary<string, IHystrixCommandOptions>();
+        private static readonly ConcurrentDictionary<string, IHystrixCommandOptions> CommandProperties = new ();
 
         public static IHystrixCommandOptions GetCommandOptions(IHystrixCommandKey key, IHystrixCommandOptions builder)
         {
@@ -33,7 +33,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             }
         }
 
-        private static readonly ConcurrentDictionary<string, IHystrixThreadPoolOptions> ThreadPoolProperties = new ConcurrentDictionary<string, IHystrixThreadPoolOptions>();
+        private static readonly ConcurrentDictionary<string, IHystrixThreadPoolOptions> ThreadPoolProperties = new ();
 
         public static IHystrixThreadPoolOptions GetThreadPoolOptions(IHystrixThreadPoolKey key, IHystrixThreadPoolOptions builder)
         {
@@ -50,7 +50,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             }
         }
 
-        private static readonly ConcurrentDictionary<string, IHystrixCollapserOptions> CollapserProperties = new ConcurrentDictionary<string, IHystrixCollapserOptions>();
+        private static readonly ConcurrentDictionary<string, IHystrixCollapserOptions> CollapserProperties = new ();
 
         public static IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey key, IHystrixCollapserOptions builder)
         {

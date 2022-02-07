@@ -36,9 +36,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public const bool DEFAULT_DEBATCHING_ENABLED = true;
         public const int DEFAULT_PREFETCH_COUNT = 250;
 
-        protected readonly object _consumersMonitor = new object();
-        protected readonly object _lock = new object();
-        protected readonly object _lifecycleMonitor = new object();
+        protected readonly object _consumersMonitor = new ();
+        protected readonly object _lock = new ();
+        protected readonly object _lifecycleMonitor = new ();
         protected readonly ILogger _logger;
         protected readonly ILoggerFactory _loggerFactory;
 
@@ -106,15 +106,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public virtual string ListenerId
         {
-            get
-            {
-                return _listenerid != null ? _listenerid : ServiceName;
-            }
+            get => _listenerid ?? ServiceName;
 
-            set
-            {
-                _listenerid = value;
-            }
+            set => _listenerid = value;
         }
 
         public virtual IConsumerTagStrategy ConsumerTagStrategy { get; set; }
@@ -853,7 +847,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, List<IMessage> data)
         {
-            if (!(exception is ListenerExecutionFailedException listnerExcep))
+            if (exception is not ListenerExecutionFailedException)
             {
                 return new ListenerExecutionFailedException("Listener threw exception", exception, data.ToArray());
             }
@@ -863,7 +857,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, IMessage message)
         {
-            if (!(exception is ListenerExecutionFailedException listnerExcep))
+            if (exception is not ListenerExecutionFailedException)
             {
                 return new ListenerExecutionFailedException("Listener threw exception", exception, message);
             }
@@ -1028,7 +1022,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual void CheckMessageListener(object listener)
         {
-            if (!(listener is IMessageListener))
+            if (listener is not IMessageListener)
             {
                 throw new ArgumentException(
                     "Message listener needs to be of type [" + typeof(IMessageListener).Name + "] or [" + typeof(IChannelAwareMessageListener).Name + "]");
@@ -1140,7 +1134,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             if (AfterReceivePostProcessors != null)
             {
-                IMessage postProcessed = message;
+                var postProcessed = message;
                 foreach (var processor in AfterReceivePostProcessors)
                 {
                     postProcessed = processor.PostProcessMessage(postProcessed);
@@ -1174,7 +1168,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             foreach (var q in queues)
             {
                 sb.Append(q.QueueName);
-                sb.Append(",");
+                sb.Append(',');
             }
 
             return sb.ToString(0, sb.Length - 1) + "]";

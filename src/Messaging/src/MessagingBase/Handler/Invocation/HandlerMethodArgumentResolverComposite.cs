@@ -11,10 +11,10 @@ namespace Steeltoe.Messaging.Handler.Invocation
 {
     public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentResolver
     {
-        private readonly List<IHandlerMethodArgumentResolver> _argumentResolvers = new List<IHandlerMethodArgumentResolver>();
+        private readonly List<IHandlerMethodArgumentResolver> _argumentResolvers = new ();
 
         private readonly ConcurrentDictionary<ParameterInfo, IHandlerMethodArgumentResolver> _argumentResolverCache =
-                new ConcurrentDictionary<ParameterInfo, IHandlerMethodArgumentResolver>();
+                new ();
 
         public HandlerMethodArgumentResolverComposite AddResolver(IHandlerMethodArgumentResolver argumentResolver)
         {

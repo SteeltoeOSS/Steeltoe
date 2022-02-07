@@ -14,8 +14,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public class RabbitListenerMetadata
     {
-        internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new Dictionary<Type, RabbitListenerMetadata>();
-        internal static readonly HashSet<string> _groups = new HashSet<string>();
+        internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new ();
+        internal static readonly HashSet<string> _groups = new ();
 
         internal RabbitListenerMetadata(Type targetClass, List<ListenerMethod> methods, List<MethodInfo> multiMethods, List<RabbitListenerAttribute> classLevelListeners)
         {

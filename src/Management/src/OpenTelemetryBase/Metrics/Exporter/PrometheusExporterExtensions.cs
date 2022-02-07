@@ -30,7 +30,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
             {
                 var labels = metric.Labels;
 
-                bool isFirst = false;
+                var isFirst = false;
                 if (!metricNames.Contains(metric.MetricName))
                 {
                     isFirst = true;
@@ -104,7 +104,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
                 var builder = new PrometheusMetricBuilder()
                     .WithName(metric.MetricName);
 
-                bool isFirst = false;
+                var isFirst = false;
                 if (!metricNames.Contains(metric.MetricName))
                 {
                     isFirst = true;

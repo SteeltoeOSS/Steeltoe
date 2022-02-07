@@ -10,7 +10,7 @@ namespace Steeltoe.Connector
 {
     internal static class ServiceInfoCreatorFactory
     {
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new ();
         private static ServiceInfoCreator serviceInfoCreator;
 
         /// <summary>

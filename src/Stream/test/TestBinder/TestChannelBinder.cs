@@ -137,7 +137,7 @@ namespace Steeltoe.Stream.TestBinder
 
         public class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
         {
-            private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
+            private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
             private readonly TestMessageListeningContainer _messageListenerContainer;
 
             public TestMessageProducerSupportEndpoint(IApplicationContext context, TestMessageListeningContainer messageListenerContainer, ILogger logger)

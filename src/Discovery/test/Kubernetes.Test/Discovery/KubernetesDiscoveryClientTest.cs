@@ -20,19 +20,16 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void Constructor_Initializes_Correctly()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler.ToHttpClient());
             const string expectedDesc = "Steeltoe provided Kubernetes native service discovery client";
             var k8SDiscoveryOptions = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions());
 
-            // act
             var testK8SDiscoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions.CurrentValue),
                 client,
                 k8SDiscoveryOptions);
 
-            // assert
             Assert.Equal(expectedDesc, testK8SDiscoveryClient.Description);
         }
 
@@ -52,7 +49,6 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void GetInstances_ShouldBeAbleToHandleEndpointsFromMultipleNamespaces()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/endpoints?fieldSelector=metadata.name%3Dendpoint")
@@ -88,11 +84,9 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 client,
                 options);
 
-            // act
             var genericInstances = discoveryClient.GetInstances("endpoint");
             var instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
-            // assert
             Assert.NotNull(instances);
             Assert.Equal(actual: instances.Count, expected: 2);
 
@@ -113,7 +107,6 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void GetInstances_ShouldBeAbleToHandleEndpointsSingleAddress()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints")
@@ -143,11 +136,9 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 client,
                 options);
 
-            // act
             var genericInstances = discoveryClient.GetInstances("endpoint");
             var instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
-            // assert
             Assert.NotNull(instances);
             Assert.Single(instances);
             Assert.Single(instances.Where(i => i.Host.Equals("ip1") && !i.IsSecure));
@@ -157,7 +148,6 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void GetInstances_ShouldBeAbleToHandleEndpointsSingleAddressAndMultiplePorts()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints")
@@ -187,11 +177,9 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 client,
                 options);
 
-            // act
             var genericInstances = discoveryClient.GetInstances("endpoint");
             var instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
-            // assert
             Assert.NotNull(instances);
             Assert.Single(instances);
             Assert.Single(instances.Where(i => i.Host.Equals("ip1") && !i.IsSecure));
@@ -202,7 +190,6 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void GetInstances_ShouldBeAbleToHandleEndpointsMultipleAddresses()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints")
@@ -232,10 +219,8 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 client,
                 options);
 
-            // act
             var instances = discoveryClient.GetInstances("endpoint");
 
-            // assert
             Assert.NotNull(instances);
             Assert.Equal(expected: 2, actual: instances.Count);
             Assert.Single(instances.Where(i => i.Host.Equals("ip1")).Select(s => s));
@@ -245,7 +230,6 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void GetServices_ShouldReturnAllServicesWhenNoLabelsAreAppliedToTheClient()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
@@ -274,10 +258,8 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 client,
                 options);
 
-            // act
             var services = discoveryClient.Services;
 
-            // assert
             Assert.NotNull(services);
             Assert.Equal(actual: services.Count, expected: 3);
             Assert.True(services.Contains("endpoint1"));
@@ -288,7 +270,6 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void GetServices_ShouldReturnOnlyMatchingServicesWhenLabelsAreAppliedToTheClient()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
@@ -317,13 +298,11 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 client,
                 options);
 
-            // act
             var services = discoveryClient.GetServices(new Dictionary<string, string>
             {
                 { "label", "value" }
             });
 
-            // assert
             Assert.NotNull(services);
             Assert.Equal(actual: services.Count, expected: 2);
             Assert.True(services.Contains("endpoint1"));
@@ -333,7 +312,6 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void EnabledPropertyWorksBothWays()
         {
-            // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             mockHttpMessageHandler
@@ -360,20 +338,16 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 client,
                 options);
 
-            // act
             var services = discoveryClient.Services;
 
-            // assert
             Assert.NotNull(services);
             Assert.Empty(services);
 
             // turn it on
             k8sOptions.Enabled = true;
 
-            // act
             services = discoveryClient.Services;
 
-            // assert
             Assert.NotNull(services);
             Assert.Equal(actual: services.Count, expected: 2);
             Assert.True(services.Contains("endpoint1"));

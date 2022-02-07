@@ -101,8 +101,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         protected override StringBuilder GetEndpointDescription()
         {
             return base.GetEndpointDescription()
-                    .Append(" | bean='").Append(Instance).Append("'")
-                    .Append(" | method='").Append(Method).Append("'");
+                    .Append(" | bean='").Append(Instance).Append('\'')
+                    .Append(" | method='").Append(Method).Append('\'');
         }
 
         private string GetDefaultReplyToAddress()
@@ -132,9 +132,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             {
                 var resolvedValue = ExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
                 var result = Resolver.Evaluate(resolvedValue, ExpressionContext);
-                if (result is string)
+                if (result is string strResult)
                 {
-                    return (string)result;
+                    return strResult;
                 }
             }
 

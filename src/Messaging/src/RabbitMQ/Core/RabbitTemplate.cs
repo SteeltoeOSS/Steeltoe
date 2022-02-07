@@ -7,12 +7,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
-using Steeltoe.Common.Expression;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Retry;
-using Steeltoe.Common.Services;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Core;
@@ -34,15 +32,15 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Core
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IServiceNameAware, IDisposable
+    public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IDisposable
     {
         public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
 
-        internal readonly object _lock = new object();
-        internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> _publisherConfirmChannels = new ConcurrentDictionary<RC.IModel, RabbitTemplate>();
-        internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ConcurrentDictionary<string, PendingReply>();
-        internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer>();
-        internal readonly AsyncLocal<RC.IModel> _dedicatedChannels = new AsyncLocal<RC.IModel>();
+        internal readonly object _lock = new ();
+        internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> _publisherConfirmChannels = new ();
+        internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ();
+        internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new ();
+        internal readonly AsyncLocal<RC.IModel> _dedicatedChannels = new ();
         internal readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
         internal bool _evaluatedFastReplyTo;
         internal bool _usingFastReplyTo;
@@ -55,7 +53,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private const int DEFAULT_REPLY_TIMEOUT = 5000;
         private const int DEFAULT_CONSUME_TIMEOUT = 10000;
 
-        private static readonly SpelExpressionParser _parser = new SpelExpressionParser();
+        private static readonly SpelExpressionParser _parser = new ();
 
         private RabbitOptions _options;
         private int _activeTemplateCallbacks;
@@ -1075,12 +1073,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
 
-            if (value is Exception && ThrowReceivedExceptions)
-            {
-                throw (Exception)value;
-            }
-
-            return value;
+            return value is Exception exception && ThrowReceivedExceptions
+                ? throw exception
+                : value;
         }
 
         public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, Type type, CancellationToken cancellationToken = default)
@@ -1151,12 +1146,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
                 var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
 
-                if (value is Exception && ThrowReceivedExceptions)
+                return value switch
                 {
-                    throw (Exception)value;
-                }
-
-                return value;
+                    Exception exception when ThrowReceivedExceptions => throw exception,
+                    _ => value,
+                };
             }, cancellationToken);
         }
 
@@ -1222,7 +1216,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             if (channel is IPublisherCallbackChannel publisherCallbackChannel)
             {
-                var key = channel is IChannelProxy ? ((IChannelProxy)channel).TargetChannel : channel;
+                var key = channel is IChannelProxy proxy
+                    ? proxy.TargetChannel
+                    : channel;
                 if (_publisherConfirmChannels.TryAdd(key, this))
                 {
                     publisherCallbackChannel.AddListener(this);
@@ -1740,8 +1736,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         protected virtual void SendToRabbit(RC.IModel channel, string exchange, string routingKey, bool mandatory, IMessage message)
         {
-            byte[] body = message.Payload as byte[];
-            if (body == null)
+            if (message.Payload is not byte[] body)
             {
                 throw new InvalidOperationException("Unable to publish IMessage, payload must be a byte[]");
             }
@@ -1983,14 +1978,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         private ISmartMessageConverter GetRequiredSmartMessageConverter()
-        {
-            if (!(GetRequiredMessageConverter() is ISmartMessageConverter converter))
-            {
-                throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter");
-            }
-
-            return converter;
-        }
+            => GetRequiredMessageConverter() is not ISmartMessageConverter converter
+                ? throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter")
+                : converter;
 
         private string GetRequiredQueue()
         {
@@ -2024,9 +2014,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private void SetupConfirm(RC.IModel channel, IMessage message, CorrelationData correlationDataArg)
         {
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-            if ((_publisherConfirms || ConfirmCallback != null) && channel is IPublisherCallbackChannel)
+            if ((_publisherConfirms || ConfirmCallback != null) && channel is IPublisherCallbackChannel callbackChannel)
             {
-                var publisherCallbackChannel = (IPublisherCallbackChannel)channel;
+                var publisherCallbackChannel = callbackChannel;
                 var correlationData = CorrelationDataPostProcessor != null ? CorrelationDataPostProcessor.PostProcess(message, correlationDataArg) : correlationDataArg;
                 var nextPublishSeqNo = channel.NextPublishSeqNo;
                 accessor.PublishSequenceNumber = nextPublishSeqNo;
@@ -2036,7 +2026,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     accessor.SetHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY, correlationData.Id);
                 }
             }
-            else if (channel is IChannelProxy && ((IChannelProxy)channel).IsConfirmSelected)
+            else if (channel is IChannelProxy proxy && proxy.IsConfirmSelected)
             {
                 var nextPublishSeqNo = channel.NextPublishSeqNo;
                 accessor.PublishSequenceNumber = nextPublishSeqNo;
@@ -2280,7 +2270,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
             finally
             {
-                if (consumer != null && !(exception is ConsumerCancelledException) && channel.IsOpen)
+                if (consumer != null && exception is not ConsumerCancelledException && channel.IsOpen)
                 {
                     CancelConsumerQuietly(channel, consumer);
                 }
@@ -2304,12 +2294,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<IMessage, S, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage)
         {
             object receive = receiveMessage;
-            if (!typeof(R).IsAssignableFrom(receive.GetType()))
+            if (receive is not R)
             {
                 receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(R));
             }
 
-            if (!(receive is R messageAsR))
+            if (receive is not R messageAsR)
             {
                 throw new ArgumentException("'receiveAndReplyCallback' can't handle received object '" + receive.GetType() + "'");
             }
@@ -2545,14 +2535,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         private ConfirmListener AddConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
-        {
-            if (acks != null && nacks != null && channel is IChannelProxy && ((IChannelProxy)channel).IsConfirmSelected)
-            {
-                return new ConfirmListener(acks, nacks, channel);
-            }
-
-            return null;
-        }
+            => acks != null && nacks != null && channel is IChannelProxy proxy && proxy.IsConfirmSelected
+                ? new ConfirmListener(acks, nacks, channel)
+                : null;
 
         private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, Connection.IConnection connection)
         {
@@ -2594,7 +2579,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private bool ShouldRethrow(RabbitException ex)
         {
             Exception cause = ex;
-            while (cause != null && !(cause is ShutdownSignalException) && !(cause is ProtocolException))
+            while (cause != null && cause is not ShutdownSignalException && cause is not ProtocolException)
             {
                 cause = cause.InnerException;
             }
@@ -2624,7 +2609,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         #region Nested Types
         protected internal class PendingReply
         {
-            private readonly TaskCompletionSource<IMessage> _future = new TaskCompletionSource<IMessage>();
+            private readonly TaskCompletionSource<IMessage> _future = new ();
 
             public virtual string SavedReplyTo { get; set; }
 

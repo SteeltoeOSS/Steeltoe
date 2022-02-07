@@ -21,7 +21,7 @@ namespace Steeltoe.Integration.Handler
 
         private IMessageChannel _outputChannel;
 
-        private List<string> _notPropagatedHeaders = new List<string>();
+        private List<string> _notPropagatedHeaders = new ();
 
         private bool _noHeadersPropagation = false;
 
@@ -46,18 +46,12 @@ namespace Steeltoe.Integration.Handler
                 return _outputChannel;
             }
 
-            set
-            {
-                _outputChannel = value;
-            }
+            set => _outputChannel = value;
         }
 
         public virtual string OutputChannelName
         {
-            get
-            {
-                return _outputChannelName;
-            }
+            get => _outputChannelName;
 
             set
             {
@@ -72,37 +66,19 @@ namespace Steeltoe.Integration.Handler
 
         public virtual IList<string> NotPropagatedHeaders
         {
-            get
-            {
-                return new List<string>(_notPropagatedHeaders);
-            }
-
-#pragma warning disable S4275 // Getters and setters should access the expected fields
-            set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
-            {
-                UpdateNotPropagatedHeaders(value, false);
-            }
+            get => new List<string>(_notPropagatedHeaders);
+            set => UpdateNotPropagatedHeaders(value, false);
         }
 
-        public virtual void AddNotPropagatedHeaders(params string[] headers)
-        {
-            UpdateNotPropagatedHeaders(headers, true);
-        }
+        public virtual void AddNotPropagatedHeaders(params string[] headers) => UpdateNotPropagatedHeaders(headers, true);
 
         public virtual int SendTimeout
         {
-            get { return _messagingTemplate.SendTimeout; }
-            set { _messagingTemplate.SendTimeout = value; }
+            get => _messagingTemplate.SendTimeout;
+            set => _messagingTemplate.SendTimeout = value;
         }
 
-        protected virtual bool ShouldCopyRequestHeaders
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected virtual bool ShouldCopyRequestHeaders => true;
 
         protected virtual void UpdateNotPropagatedHeaders(IList<string> headers, bool merge)
         {
@@ -195,31 +171,32 @@ namespace Steeltoe.Integration.Handler
 
             var outputAsMessage = output as IMessage;
 
-            if (replyChannel is IMessageChannel)
+            switch (replyChannel)
             {
-                if (outputAsMessage != null)
-                {
-                    _messagingTemplate.Send((IMessageChannel)replyChannel, outputAsMessage);
-                }
-                else
-                {
-                    _messagingTemplate.ConvertAndSend((IMessageChannel)replyChannel, output);
-                }
-            }
-            else if (replyChannel is string)
-            {
-                if (outputAsMessage != null)
-                {
-                    _messagingTemplate.Send((string)replyChannel, outputAsMessage);
-                }
-                else
-                {
-                    _messagingTemplate.ConvertAndSend((string)replyChannel, output);
-                }
-            }
-            else
-            {
-                throw new MessagingException("replyChannel must be a IMessageChannel or String");
+                case IMessageChannel channel:
+                    if (outputAsMessage != null)
+                    {
+                        _messagingTemplate.Send(channel, outputAsMessage);
+                    }
+                    else
+                    {
+                        _messagingTemplate.ConvertAndSend(channel, output);
+                    }
+
+                    break;
+                case string strChannel:
+                    if (outputAsMessage != null)
+                    {
+                        _messagingTemplate.Send(strChannel, outputAsMessage);
+                    }
+                    else
+                    {
+                        _messagingTemplate.ConvertAndSend(strChannel, output);
+                    }
+
+                    break;
+                default:
+                    throw new MessagingException("replyChannel must be a IMessageChannel or String");
             }
         }
 
@@ -296,8 +273,6 @@ namespace Steeltoe.Integration.Handler
         }
 
         private void DoProduceOutput(IMessageHeaders requestHeaders, object reply, object replyChannel)
-        {
-            SendOutput(CreateOutputMessage(reply, requestHeaders), replyChannel, false);
-        }
+            => SendOutput(CreateOutputMessage(reply, requestHeaders), replyChannel, false);
     }
 }

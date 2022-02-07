@@ -6,6 +6,7 @@ using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Test;
 using Steeltoe.Messaging.Handler.Invocation.Test;
 using Steeltoe.Messaging.Support;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -13,7 +14,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 {
     public class HeaderMethodArgumentResolverTest
     {
-        private readonly HeaderMethodArgumentResolver resolver = new HeaderMethodArgumentResolver(new DefaultConversionService());
+        private readonly HeaderMethodArgumentResolver resolver = new (new DefaultConversionService());
 
         private readonly ResolvableMethod resolvable = ResolvableMethod.On<HeaderMethodArgumentResolverTest>().Named("HandleMessage").Build();
 
@@ -27,7 +28,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgument()
         {
-            var message = MessageBuilder.WithPayload(new byte[0]).SetHeader("param1", "foo").Build();
+            var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader("param1", "foo").Build();
             var result = resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message);
             Assert.Equal("foo", result);
         }
@@ -37,7 +38,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         {
             var headers = new TestMessageHeaderAccessor();
             headers.SetNativeHeader("param1", "foo");
-            var message = MessageBuilder.WithPayload(new byte[0]).SetHeaders(headers).Build();
+            var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeaders(headers).Build();
             Assert.Equal("foo", resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
         }
 
@@ -47,7 +48,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
             var headers = new TestMessageHeaderAccessor();
             headers.SetHeader("param1", "foo");
             headers.SetNativeHeader("param1", "native-foo");
-            var message = MessageBuilder.WithPayload(new byte[0]).SetHeaders(headers).Build();
+            var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeaders(headers).Build();
 
             Assert.Equal("foo", resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
             Assert.Equal("native-foo", resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.Header("nativeHeaders.param1")).Arg(), message));
@@ -56,14 +57,14 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgumentNotFound()
         {
-            var message = MessageBuilder.WithPayload(new byte[0]).Build();
+            var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
             Assert.Throws<MessageHandlingException>(() => resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
         }
 
         [Fact]
         public void ResolveArgumentDefaultValue()
         {
-            var message = MessageBuilder.WithPayload(new byte[0]).Build();
+            var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
             var result = resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.Header("name", "bar")).Arg(), message);
             Assert.Equal("bar", result);
         }

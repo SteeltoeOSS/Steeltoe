@@ -13,11 +13,8 @@ namespace Steeltoe.Connector.Oracle.Test
         public void Property_Can_Locate_ConnectionType()
         {
             // arrange -- handled by including a compatible Oracle NuGet package
-
-            // act
             var type = OracleTypeLocator.OracleConnection;
 
-            // assert
             Assert.NotNull(type);
         }
 
@@ -28,10 +25,8 @@ namespace Steeltoe.Connector.Oracle.Test
             var assemblies = OracleTypeLocator.Assemblies;
             OracleTypeLocator.Assemblies = new string[] { "Oracle.ManagedDataAccess" };
 
-            // act
             var type = OracleTypeLocator.OracleConnection;
 
-            // assert
             Assert.NotNull(type);
             OracleTypeLocator.Assemblies = assemblies;
         }
@@ -39,14 +34,11 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void Throws_When_ConnectionType_NotFound()
         {
-            // arrange
             var types = OracleTypeLocator.ConnectionTypeNames;
             OracleTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
-            // act
             var exception = Assert.Throws<TypeLoadException>(() => OracleTypeLocator.OracleConnection);
 
-            // assert
             Assert.Equal("Unable to find OracleConnection, are you missing a Oracle ODP.NET assembly?", exception.Message);
 
             // reset

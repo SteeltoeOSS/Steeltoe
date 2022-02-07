@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
@@ -38,7 +39,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""eureka"": {
@@ -92,7 +92,8 @@ namespace Steeltoe.Discovery.Eureka.Test
                         }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();

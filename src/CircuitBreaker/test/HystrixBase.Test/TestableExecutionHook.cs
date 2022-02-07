@@ -30,10 +30,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             sequenceRecorder.Append(methodName).Append(" - ");
         }
 
-        internal StringBuilder ExecutionSequence = new StringBuilder();
-        internal List<Notification<object>> CommandEmissions = new List<Notification<object>>();
-        internal List<Notification<object>> ExecutionEmissions = new List<Notification<object>>();
-        internal List<Notification<object>> FallbackEmissions = new List<Notification<object>>();
+        internal StringBuilder ExecutionSequence = new ();
+        internal List<Notification<object>> CommandEmissions = new ();
+        internal List<Notification<object>> ExecutionEmissions = new ();
+        internal List<Notification<object>> FallbackEmissions = new ();
 
         public bool CommandEmissionsMatch(int numOnNext, int numOnError, int numOnCompleted)
         {

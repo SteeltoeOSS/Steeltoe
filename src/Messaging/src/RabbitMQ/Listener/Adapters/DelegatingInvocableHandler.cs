@@ -20,11 +20,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class DelegatingInvocableHandler
     {
-        private static readonly SpelExpressionParser PARSER = new SpelExpressionParser();
+        private static readonly SpelExpressionParser PARSER = new ();
         private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
 
-        private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new Dictionary<IInvocableHandlerMethod, IExpression>();
-        private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new ConcurrentDictionary<Type, IInvocableHandlerMethod>();
+        private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new ();
+        private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new ();
 
         public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, object bean, IServiceExpressionResolver resolver, IServiceExpressionContext context)
         : this(handlers, null, bean, resolver, context)
@@ -139,7 +139,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 }
             }
 
-            return result != null ? result : DefaultHandler;
+            return result ?? DefaultHandler;
         }
 
         protected bool MatchHandlerMethod(Type payloadClass, IInvocableHandlerMethod handler)
@@ -234,12 +234,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             {
                 var resolvedValue = ServiceExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
                 var newValue = Resolver.Evaluate(resolvedValue, ServiceExpressionContext);
-                if (!(newValue is string))
+                if (newValue is not string sValue)
                 {
                     throw new InvalidOperationException("Invalid SendToAttribute expression");
                 }
 
-                return (string)newValue;
+                return sValue;
             }
             else
             {

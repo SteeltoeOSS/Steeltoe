@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Utils.IO;
 using System;
 using System.IO;
 using System.Threading;
@@ -35,8 +36,9 @@ namespace Steeltoe.Common.Security.Test
         [Trait("Category", "SkipOnMacOS")]
         public async Task AddPemFiles_ReloadsOnChange()
         {
-            var tempFile1 = await CreateTempFileAsync("cert");
-            var tempFile2 = await CreateTempFileAsync("key");
+            using var sandbox = new Sandbox();
+            var tempFile1 = sandbox.CreateFile("cert", "cert");
+            var tempFile2 = sandbox.CreateFile("key", "key");
 
             var config = new ConfigurationBuilder()
                 .AddPemFiles(tempFile1, tempFile2)
@@ -60,8 +62,9 @@ namespace Steeltoe.Common.Security.Test
         [Fact]
         public async Task AddPemFiles_NotifiesOnChange()
         {
-            var tempFile1 = await CreateTempFileAsync("cert1");
-            var tempFile2 = await CreateTempFileAsync("key1");
+            using var sandbox = new Sandbox();
+            var tempFile1 = sandbox.CreateFile("cert", "cert1");
+            var tempFile2 = sandbox.CreateFile("key", "key1");
 
             var config = new ConfigurationBuilder()
                 .AddPemFiles(tempFile1, tempFile2)
@@ -109,7 +112,13 @@ namespace Steeltoe.Common.Security.Test
         [Fact]
         public async Task AddCertificateFile_NotifiesOnChange()
         {
-            // arrange
+            // TODO: investigate why test fails when using Sandbox
+            // see: https://github.com/SteeltoeOSS/Steeltoe/issues/736
+            /*
+            using var sandbox = new Sandbox();
+            var filename = sandbox.CreateFile("fakeCertificate.p12", "cert1");
+            */
+
             var filename = "fakeCertificate.p12";
             await File.WriteAllTextAsync(filename, "cert1");
 
@@ -122,11 +131,9 @@ namespace Steeltoe.Common.Security.Test
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
             Assert.Equal("cert1", await File.ReadAllTextAsync(config["certificate"]));
 
-            // act
             await File.WriteAllTextAsync(filename, "barfoo");
             await Task.Delay(2000);
 
-            // assert
             Assert.Equal("barfoo", await File.ReadAllTextAsync(config["certificate"]));
             Assert.True(changeCalled);
 
@@ -141,13 +148,6 @@ namespace Steeltoe.Common.Security.Test
                 await Task.Delay(1000);
                 File.Delete(filename);
             }
-        }
-
-        private async Task<string> CreateTempFileAsync(string contents)
-        {
-            var tempFile = Path.GetTempFileName();
-            await File.WriteAllTextAsync(tempFile, contents);
-            return tempFile;
         }
     }
 }

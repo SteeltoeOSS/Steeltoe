@@ -16,13 +16,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
     {
         private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> _commandCollapser;
         private readonly int _maxBatchSize;
-        private readonly AtomicBoolean _batchStarted = new AtomicBoolean();
+        private readonly AtomicBoolean _batchStarted = new ();
 
-        private readonly ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>> _argumentMap = new ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+        private readonly ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>> _argumentMap = new ();
         private readonly IHystrixCollapserOptions _properties;
 
-        private readonly ReaderWriterLockSlim _batchLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-        private readonly AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+        private readonly ReaderWriterLockSlim _batchLock = new (LockRecursionPolicy.SupportsRecursion);
+        private readonly AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new ();
 
         public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, int maxBatchSize)
         {

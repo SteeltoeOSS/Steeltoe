@@ -55,7 +55,7 @@ namespace Steeltoe.Stream.Binding
                         }
                     }
 
-                    if (arguments[parameterIndex] == null && parameterType.IsAssignableFrom(targetBean.GetType()))
+                    if (arguments[parameterIndex] == null && parameterType.IsInstanceOfType(targetBean))
                     {
                         arguments[parameterIndex] = targetBean;
                     }

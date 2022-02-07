@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         protected override StringBuilder GetEndpointDescription()
         {
             return base.GetEndpointDescription()
-                    .Append(" | messageListener='").Append(MessageListener).Append("'");
+                    .Append(" | messageListener='").Append(MessageListener).Append('\'');
         }
     }
 }

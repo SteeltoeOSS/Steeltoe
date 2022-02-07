@@ -188,10 +188,7 @@ namespace Steeltoe.Messaging.Core
             }
         }
 
-        protected override IMessage DoReceive(IMessageChannel destination)
-        {
-            return DoReceive(destination, ReceiveTimeout);
-        }
+        protected override IMessage DoReceive(IMessageChannel destination) => DoReceive(destination, ReceiveTimeout);
 
         protected IMessage DoReceive(IMessageChannel channel, int timeout)
         {
@@ -200,7 +197,7 @@ namespace Steeltoe.Messaging.Core
                 throw new ArgumentNullException(nameof(channel));
             }
 
-            if (!(channel is IPollableChannel))
+            if (channel is not IPollableChannel)
             {
                 throw new InvalidOperationException("A PollableChannel is required to receive messages");
             }
@@ -215,10 +212,7 @@ namespace Steeltoe.Messaging.Core
             return message;
         }
 
-        protected override Task<IMessage> DoReceiveAsync(IMessageChannel destination, CancellationToken cancellationToken)
-        {
-            return DoReceiveAsync(destination, ReceiveTimeout, cancellationToken);
-        }
+        protected override Task<IMessage> DoReceiveAsync(IMessageChannel destination, CancellationToken cancellationToken) => DoReceiveAsync(destination, ReceiveTimeout, cancellationToken);
 
         protected Task<IMessage> DoReceiveAsync(IMessageChannel channel, int timeout, CancellationToken cancellationToken = default)
         {
@@ -227,7 +221,7 @@ namespace Steeltoe.Messaging.Core
                 throw new ArgumentNullException(nameof(channel));
             }
 
-            if (!(channel is IPollableChannel))
+            if (channel is not IPollableChannel)
             {
                 throw new InvalidOperationException("A PollableChannel is required to receive messages");
             }
@@ -393,7 +387,7 @@ namespace Steeltoe.Messaging.Core
 
         private class TemporaryReplyChannel : IPollableChannel
         {
-            private readonly CountdownEvent _replyLatch = new CountdownEvent(1);
+            private readonly CountdownEvent _replyLatch = new (1);
 
             private readonly bool _throwExceptionOnLateReply;
 

@@ -19,14 +19,14 @@ namespace Steeltoe.Discovery.Client.Test
 {
     public class DiscoveryWebHostBuilderExtensionsTest
     {
-        private static readonly Dictionary<string, string> EurekaSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> EurekaSettings = new ()
         {
             ["eureka:client:shouldRegister"] = "true",
             ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "1",
             ["eureka:client:eurekaServer:retryCount"] = "0",
         };
 
-        private static readonly Dictionary<string, string> ConsulSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> ConsulSettings = new ()
         {
             ["consul:discovery:serviceName"] = "testhost",
             ["consul:discovery:enabled"] = "true",
@@ -37,15 +37,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Eureka()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
-            // Act
             var host = hostBuilder.AddDiscoveryClient().Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var hostedService = host.Services.GetService<IHostedService>();
 
-            // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
             Assert.IsType<DiscoveryClientService>(hostedService);
@@ -54,15 +51,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Consul()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ConsulSettings));
 
-            // Act
             var host = hostBuilder.AddDiscoveryClient().Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var hostedService = host.Services.GetService<IHostedService>();
 
-            // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());
             Assert.IsType<DiscoveryClientService>(hostedService);
@@ -71,15 +65,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Eureka()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
-            // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var hostedService = host.Services.GetService<IHostedService>();
 
-            // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
             Assert.IsType<DiscoveryClientService>(hostedService);
@@ -88,15 +79,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Consul()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ConsulSettings));
 
-            // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var hostedService = host.Services.GetService<IHostedService>();
 
-            // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());
             Assert.IsType<DiscoveryClientService>(hostedService);

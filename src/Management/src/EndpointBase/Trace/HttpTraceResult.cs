@@ -25,9 +25,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class HttpTrace
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public long Timestamp { get; }
 
@@ -52,9 +50,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class Request
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public string Method { get; }
 
@@ -73,9 +69,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class Response
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public int Status { get; }
 
@@ -88,9 +82,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class Session
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public string Id { get; }
 
@@ -100,9 +92,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class Principal
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public string Name { get; }
 

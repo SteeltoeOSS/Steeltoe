@@ -71,7 +71,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
         }
 
         // String is CollapserKey.name() (we can't use CollapserKey directly as we can't guarantee it implements hashcode/equals correctly)
-        private static readonly ConcurrentDictionary<string, object> GlobalScopedCollapsers = new ConcurrentDictionary<string, object>();
+        private static readonly ConcurrentDictionary<string, object> GlobalScopedCollapsers = new ();
 
         private RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> GetCollapserForGlobalScope<BatchReturnType, ResponseType, RequestArgumentType>(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser)
         {
@@ -80,7 +80,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
         }
 
         // String is HystrixCollapserKey.name() (we can't use HystrixCollapserKey directly as we can't guarantee it implements hashcode/equals correctly)
-        private static readonly ConcurrentDictionary<string, object> RequestScopedCollapsers = new ConcurrentDictionary<string, object>();
+        private static readonly ConcurrentDictionary<string, object> RequestScopedCollapsers = new ();
 
         private RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> GetCollapserForUserRequest<BatchReturnType, ResponseType, RequestArgumentType>(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser)
         {

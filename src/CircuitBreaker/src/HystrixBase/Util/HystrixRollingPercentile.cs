@@ -26,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
          * This will get flipped each time a new bucket is created.
          */
         /* package for testing */
-        private volatile PercentileSnapshot _currentPercentileSnapshot = new PercentileSnapshot(0);
+        private volatile PercentileSnapshot _currentPercentileSnapshot = new (0);
 
         public HystrixRollingPercentile(int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
             : this(Actual_time, timeInMilliseconds, numberOfBuckets, bucketDataLength, enabled)
@@ -127,7 +127,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         private PercentileSnapshot CurrentPercentileSnapshot => _currentPercentileSnapshot;
 
-        private readonly object _newBucketLock = new object();
+        private readonly object _newBucketLock = new ();
 
         private Bucket GetCurrentBucket()
         {
@@ -258,7 +258,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             internal readonly int _datalength;
             internal readonly AtomicIntegerArray _list;
-            internal readonly AtomicInteger _index = new AtomicInteger();
+            internal readonly AtomicInteger _index = new ();
 
             public PercentileBucketData(int dataLength)
             {

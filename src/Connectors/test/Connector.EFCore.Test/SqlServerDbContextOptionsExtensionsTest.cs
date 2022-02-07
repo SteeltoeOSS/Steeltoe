@@ -24,12 +24,10 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void UseSqlServer_ThrowsIfDbContextOptionsBuilderNull()
         {
-            // Arrange
             DbContextOptionsBuilder optionsBuilder = null;
             DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
 
@@ -46,12 +44,10 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void UseSqlServer_ThrowsIfConfigurationNull()
         {
-            // Arrange
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -68,13 +64,11 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void UseSqlServer_ThrowsIfServiceNameNull()
         {
-            // Arrange
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
-            // Act and Assert
             var ex2 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
@@ -85,11 +79,9 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void AddDbContext_NoVCAPs_AddsDbContext_WithSqlServerConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
@@ -102,11 +94,9 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config, "foobar"));
 
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
@@ -116,7 +106,6 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -126,7 +115,6 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
                   options.UseSqlServer(config));
 
@@ -137,7 +125,6 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -147,7 +134,6 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
             var built = services.BuildServiceProvider();
@@ -169,7 +155,6 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
         [Fact]
         public void AddDbContexts_WithAzureVCAPs_AddsDbContexts()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -179,7 +164,6 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
             var built = services.BuildServiceProvider();

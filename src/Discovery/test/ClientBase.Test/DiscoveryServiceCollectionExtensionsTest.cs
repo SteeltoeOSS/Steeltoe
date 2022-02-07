@@ -9,20 +9,24 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Http;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Connector;
 using Steeltoe.Discovery.Client.SimpleClients;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Kubernetes;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using Xunit;
@@ -31,10 +35,11 @@ namespace Steeltoe.Discovery.Client.Test
 {
     public class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
+        private static readonly Dictionary<string, string> FastEureka = new () { { "eureka:client:ShouldRegisterWithEureka", "false" }, { "eureka:client:ShouldFetchRegistry", "false" } };
+
         [Fact]
         public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""spring"": {
@@ -51,7 +56,8 @@ namespace Steeltoe.Discovery.Client.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -71,16 +77,12 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
         {
-            // Arrange
-            var appsettings = new Dictionary<string, string>
+            var appsettings = new Dictionary<string, string>(FastEureka)
             {
                 { "spring:application:name", "myName" },
                 { "spring:cloud:inet:defaulthostname", "fromtest" },
                 { "spring:cloud:inet:skipReverseDnsLookup", "true" },
-                { "eureka:client:shouldFetchRegistry", "false" },
-                { "eureka:client:shouldRegisterWithEureka", "false" },
-                { "eureka:instance:useNetUtils", "true" },
-                { "eureka:client:EurekaServer:ConnectTimeoutSeconds", "0" }
+                { "eureka:instance:useNetUtils", "true" }
             };
 
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
@@ -97,46 +99,54 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
         {
-            // Arrange
-            var appsettings = new Dictionary<string, string>()
-            {
-                { "spring:application:name", "myName" },
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
-                { "eureka:client:EurekaServer:ConnectTimeoutSeconds", "0" }
-            };
+            var appsettings = new Dictionary<string, string>(FastEureka);
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(appsettings)
                 .AddPemFiles("instance.crt", "instance.key")
                 .Build();
 
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
-            services.Configure<CertificateOptions>(config);
+            services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(config);
 
-            // act
             var serviceProvider = services.BuildServiceProvider();
-            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>();
-            var handlerProvider = serviceProvider.GetService<IHttpClientHandlerProvider>();
+            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
+            var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
+            var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("_httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+            var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
+            var innerHandler = GetInnerHttpHandler(handler);
 
-            // assert
             Assert.NotNull(discoveryClient);
-            Assert.NotNull(handlerProvider);
+            Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
+        }
+
+#pragma warning disable SA1202 // Elements should be ordered by access
+        private object GetInnerHttpHandler(object handler)
+        {
+            while (handler is not null)
+            {
+                handler = handler.GetType().GetProperty("InnerHandler").GetValue(handler);
+                if (handler is HttpClientHandler h)
+                {
+                    break;
+                }
+            }
+
+            return handler;
         }
 
         [Fact]
         public void AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
+#pragma warning restore SA1202 // Elements should be ordered by access
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>() { { "spring:application:name", "myName" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config);
 
-            // Act
             services.AddDiscoveryClient();
             var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
 
-            // assert
             Assert.NotNull(client);
             Assert.IsType<NoOpDiscoveryClient>(client);
             Assert.Empty(client.Services);
@@ -146,11 +156,9 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
@@ -158,7 +166,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_MultipleRegistryServices_ThrowsConnectorException()
         {
-            // Arrange
             var env1 = @"
                 {
                     ""limits"": {
@@ -224,7 +231,6 @@ namespace Steeltoe.Discovery.Client.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
@@ -234,7 +240,6 @@ namespace Steeltoe.Discovery.Client.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config));
             Assert.Contains("Multiple", ex.Message);
         }
@@ -242,7 +247,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithConsulConfiguration_AddsDiscoveryClient()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""spring"": {
@@ -261,7 +265,8 @@ namespace Steeltoe.Discovery.Client.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -295,7 +300,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithConsulInetConfiguration_AddsDiscoveryClient()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -326,7 +330,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithKubernetesConfig_AddsDiscoveryClient()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -336,10 +339,8 @@ namespace Steeltoe.Discovery.Client.Test
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
 
-            // act
             var provider = services.AddDiscoveryClient(config).BuildServiceProvider();
 
-            // assert
             var service = provider.GetService<IDiscoveryClient>();
             var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
             Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
@@ -349,10 +350,8 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection serviceCollection = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddServiceDiscovery(serviceCollection, (builder) => { }));
             Assert.Contains(nameof(serviceCollection), ex.Message);
         }
@@ -360,10 +359,8 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_AddsNoOpClientIfBuilderActionNull()
         {
-            // Arrange
             var services = new ServiceCollection().AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            // Act
             services.AddServiceDiscovery();
             var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
             Assert.NotNull(client);
@@ -375,7 +372,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithConfiguration_AddsAndWorks()
         {
-            // arrange
             var appsettings = @"
 {
     ""discovery"": {
@@ -387,7 +383,8 @@ namespace Steeltoe.Discovery.Client.Test
         ]
     }
 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var sCollection = new ServiceCollection()
                 .AddOptions()
                 .AddSingleton<IConfiguration>(
@@ -410,7 +407,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithEurekaConfig_AddsDiscoveryClient()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""spring"": {
@@ -427,7 +423,8 @@ namespace Steeltoe.Discovery.Client.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -447,7 +444,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -472,46 +468,37 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithEurekaClientCertConfig_AddsDiscoveryClient()
         {
-            // Arrange
-            var appsettings = new Dictionary<string, string>()
-            {
-                { "spring:application:name", "myName" },
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
-                { "eureka:client:shouldFetchRegistry", "false" },
-                { "eureka:client:shouldRegisterWithEureka", "false" }
-            };
+            var appsettings = new Dictionary<string, string>(FastEureka);
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(appsettings)
                 .AddPemFiles("instance.crt", "instance.key")
                 .Build();
 
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
-            services.Configure<CertificateOptions>(config);
+            services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
             services.AddServiceDiscovery(builder => builder.UseEureka());
 
-            // act
             var serviceProvider = services.BuildServiceProvider();
-            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>();
-            var handlerProvider = serviceProvider.GetService<IHttpClientHandlerProvider>();
+            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
+            var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
+            var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("_httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+            var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
+            var innerHandler = GetInnerHttpHandler(handler);
 
-            // assert
             Assert.NotNull(discoveryClient);
-            Assert.NotNull(handlerProvider);
+            Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
         }
 
         [Fact]
         public void AddServiceDiscovery_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            // Act
             DiscoveryServiceCollectionExtensions.AddServiceDiscovery(services, builder => builder.UseEureka("foobar"));
             var sp = services.BuildServiceProvider();
 
-            // assert
             var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
             Assert.Contains("foobar", ex.Message);
         }
@@ -519,7 +506,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_MultipleRegistryServices_ThrowsConnectorException()
         {
-            // Arrange
             var env1 = @"
                 {
                     ""limits"": {
@@ -585,7 +571,6 @@ namespace Steeltoe.Discovery.Client.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
@@ -593,11 +578,9 @@ namespace Steeltoe.Discovery.Client.Test
 
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
 
-            // Act
             DiscoveryServiceCollectionExtensions.AddServiceDiscovery(services, (options) => options.UseEureka());
             var sp = services.BuildServiceProvider();
 
-            // Assert
             var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
             Assert.Contains("Multiple", ex.Message);
         }
@@ -605,7 +588,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithConsulConfiguration_AddsDiscoveryClient()
         {
-            // Arrange
             var appSettings = new Dictionary<string, string>()
             {
                 { "spring:application:name", "myName" },
@@ -641,7 +623,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithConsulInetConfiguration_AddsDiscoveryClient()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -672,7 +653,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithConsulUrlConfiguration_AddsDiscoveryClient()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -702,7 +682,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithConsul_UrlBypassWorks()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -726,7 +705,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddDiscoveryClient_WithConsul_PreferPortOverUrl()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -753,7 +731,6 @@ namespace Steeltoe.Discovery.Client.Test
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "consul:discovery:cachettl", "1" }, { "eureka:client:cachettl", "1" } }).Build());
 
-            // act
             var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
                 {
                     builder.UseConsul();
@@ -769,7 +746,6 @@ namespace Steeltoe.Discovery.Client.Test
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            // act
             var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
             {
                 builder.UseConsul();
@@ -783,16 +759,14 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddServiceDiscovery_WithMultipleClients_PicksConfigured()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "eureka:client:EurekaServer:ConnectTimeoutSeconds", "0" } }).Build());
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(FastEureka).Build());
 
-            // act
             var provider = serviceCollection.AddServiceDiscovery(builder =>
             {
                 builder.UseConsul();
                 builder.UseEureka();
             }).BuildServiceProvider();
 
-            // assert
             var service = provider.GetService<IDiscoveryClient>();
             Assert.True(service.GetType().IsAssignableFrom(typeof(EurekaDiscoveryClient)));
         }
@@ -800,7 +774,6 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithKubernetesConfig_AddsDiscoveryClient()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
@@ -810,10 +783,8 @@ namespace Steeltoe.Discovery.Client.Test
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
 
-            // act
             var provider = services.AddServiceDiscovery(builder => builder.UseKubernetes()).BuildServiceProvider();
 
-            // assert
             var service = provider.GetService<IDiscoveryClient>();
             var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
             Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));

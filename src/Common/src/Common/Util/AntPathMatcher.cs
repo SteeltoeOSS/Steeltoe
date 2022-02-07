@@ -16,13 +16,13 @@ namespace Steeltoe.Common.Util
 
         private const int CACHE_TURNOFF_THRESHOLD = 65536;
 
-        private static readonly Regex VARIABLE_PATTERN = new Regex("\\{[^/]+?\\}", RegexOptions.Compiled);
+        private static readonly Regex VARIABLE_PATTERN = new ("\\{[^/]+?\\}", RegexOptions.Compiled);
 
         private static readonly char[] WILDCARD_CHARS = { '*', '?', '{' };
 
-        private readonly ConcurrentDictionary<string, string[]> _tokenizedPatternCache = new ConcurrentDictionary<string, string[]>();
+        private readonly ConcurrentDictionary<string, string[]> _tokenizedPatternCache = new ();
 
-        private readonly ConcurrentDictionary<string, AntPathStringMatcher> _stringMatcherCache = new ConcurrentDictionary<string, AntPathStringMatcher>();
+        private readonly ConcurrentDictionary<string, AntPathStringMatcher> _stringMatcherCache = new ();
 
         private string _pathSeparator;
 
@@ -739,8 +739,8 @@ namespace Steeltoe.Common.Util
         protected class AntPathStringMatcher
         {
             private const string DEFAULT_VARIABLE_PATTERN = "(.*)";
-            private static readonly Regex GLOB_PATTERN = new Regex("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
-            private readonly List<string> _variableNames = new List<string>();
+            private static readonly Regex GLOB_PATTERN = new ("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
+            private readonly List<string> _variableNames = new ();
             private Regex _pattern;
 
             public AntPathStringMatcher(string pattern)

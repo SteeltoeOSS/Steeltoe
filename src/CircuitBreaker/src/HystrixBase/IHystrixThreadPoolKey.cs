@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     /// </summary>
     public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPoolKey
     {
-        private static readonly ConcurrentDictionary<string, HystrixThreadPoolKeyDefault> Intern = new ConcurrentDictionary<string, HystrixThreadPoolKeyDefault>();
+        private static readonly ConcurrentDictionary<string, HystrixThreadPoolKeyDefault> Intern = new ();
 
         internal HystrixThreadPoolKeyDefault(string name)
             : base(name)

@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixThreadEventStream
     {
-        private static ThreadLocal<HystrixThreadEventStream> threadLocalStreams = new ThreadLocal<HystrixThreadEventStream>(
+        private static ThreadLocal<HystrixThreadEventStream> threadLocalStreams = new (
             () =>
         {
             return new HystrixThreadEventStream(Thread.CurrentThread.ManagedThreadId);

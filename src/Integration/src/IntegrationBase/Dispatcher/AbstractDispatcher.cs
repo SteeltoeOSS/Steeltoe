@@ -23,10 +23,10 @@ namespace Steeltoe.Integration.Dispatcher
         protected readonly ILogger _logger;
         protected readonly TaskScheduler _executor;
         protected readonly TaskFactory _factory;
-        protected List<IMessageHandler> _handlers = new List<IMessageHandler>();
+        protected List<IMessageHandler> _handlers = new ();
 
-        private readonly object _lock = new object();
-        private readonly MessageHandlerComparer _comparer = new MessageHandlerComparer();
+        private readonly object _lock = new ();
+        private readonly MessageHandlerComparer _comparer = new ();
         private IErrorHandler _errorHandler;
         private volatile IMessageHandler _theOneHandler;
         private IIntegrationServices _integrationServices;
@@ -184,7 +184,7 @@ namespace Steeltoe.Integration.Dispatcher
             return false;
         }
 
-        internal List<IMessageHandler> Handlers => new List<IMessageHandler>(_handlers);
+        internal List<IMessageHandler> Handlers => new (_handlers);
 
         private class MessageHandlerComparer : OrderComparer, IComparer<IMessageHandler>
         {

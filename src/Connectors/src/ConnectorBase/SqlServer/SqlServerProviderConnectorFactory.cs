@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.SqlServer
     {
         private readonly SqlServerServiceInfo _info;
         private readonly SqlServerProviderConnectorOptions _config;
-        private readonly SqlServerProviderConfigurer _configurer = new SqlServerProviderConfigurer();
+        private readonly SqlServerProviderConfigurer _configurer = new ();
 
         public SqlServerProviderConnectorFactory()
         {

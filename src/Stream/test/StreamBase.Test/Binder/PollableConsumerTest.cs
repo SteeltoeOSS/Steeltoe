@@ -244,7 +244,7 @@ namespace Steeltoe.Stream.Binder
                 var original = new MessageValues(
                     Encoding.UTF8.GetBytes("foo"),
                     new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, "application/octet-stream" } });
-                var payload = new byte[0];
+                var payload = Array.Empty<byte>();
                 try
                 {
                     payload = EmbeddedHeaderUtils.EmbedHeaders(original, MessageHeaders.CONTENT_TYPE);
@@ -321,7 +321,7 @@ namespace Steeltoe.Stream.Binder
 
             var getter = binder.GetType().GetProperty("LastError").GetGetMethod();
 
-            var lastError = getter.Invoke(binder, new object[0]) as IMessage;
+            var lastError = getter.Invoke(binder, Array.Empty<object>()) as IMessage;
             Assert.NotNull(lastError);
 
             var lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
@@ -335,7 +335,7 @@ namespace Steeltoe.Stream.Binder
             Assert.True(pollableSource.Poll(h2));
             Assert.Equal(1, h2.Count);
 
-            lastError = getter.Invoke(binder, new object[0]) as IMessage;
+            lastError = getter.Invoke(binder, Array.Empty<object>()) as IMessage;
             lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
             Assert.Equal("no retries", lastErrorMessage);
         }

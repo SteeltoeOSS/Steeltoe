@@ -26,7 +26,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
     [Obsolete]
     public class CloudFoundryHostBuilderExtensionsTest
     {
-        private static readonly Dictionary<string, string> ManagementSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> ManagementSettings = new ()
         {
             ["management:endpoints:path"] = "/testing",
         };
@@ -36,16 +36,13 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryActuators_IWebHostBuilder()
         {
-            // Arrange
             var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(configureApp => { });
 
-            // Act
             var host = hostBuilder.AddCloudFoundryActuators().Build();
             var managementOptions = host.Services.GetServices<IManagementOptions>();
 
             var filters = host.Services.GetServices<IStartupFilter>();
 
-            // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
             if (Platform.IsWindows)
@@ -73,19 +70,16 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryActuators_IWebHostBuilder_Serilog()
         {
-            // Arrange
             var hostBuilder = WebHost.CreateDefaultBuilder()
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
                 .Configure(configureApp => { })
                 .ConfigureLogging(logging => logging.AddDynamicSerilog());
 
-            // Act
             var host = hostBuilder.AddCloudFoundryActuators().Build();
             var managementOptions = host.Services.GetServices<IManagementOptions>();
 
             var filters = host.Services.GetServices<IStartupFilter>();
 
-            // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
             if (Platform.IsWindows)
@@ -113,16 +107,13 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryActuators_IHostBuilder()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-            // Act
             var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).Build();
             var managementOptions = host.Services.GetServices<IManagementOptions>();
 
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-            // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
             if (Platform.IsWindows)
@@ -150,15 +141,12 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public async Task AddCloudFoundryActuators_IHostBuilder_IStartupFilterFires()
         {
-            // Arrange
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(testServerWithRouting)
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-            // Act
             var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
 
-            // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
             Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
             response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
@@ -170,15 +158,12 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public async Task AddCloudFoundryActuatorsV1_IHostBuilder_IStartupFilterFires()
         {
-            // Arrange
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(testServerWithRouting)
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-            // Act
             var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
 
-            // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
             Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
             response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
@@ -190,20 +175,17 @@ namespace Steeltoe.Management.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryActuators_IHostBuilder_Serilog()
         {
-            // Arrange
             var hostBuilder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging => logging.AddDynamicSerilog())
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
                 .ConfigureWebHost(testServerWithRouting)
                 .AddCloudFoundryActuators();
 
-            // Act
             var host = hostBuilder.Build();
             var managementOptions = host.Services.GetServices<IManagementOptions>();
 
             var filters = host.Services.GetServices<IStartupFilter>();
 
-            // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
             if (Platform.IsWindows)

@@ -24,7 +24,6 @@ namespace Steeltoe.Common.LoadBalancer.Test
         [Fact]
         public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex()
         {
-            // arrange
             var services = new List<ConfigurationServiceInstance>
             {
                 new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
@@ -38,14 +37,12 @@ namespace Steeltoe.Common.LoadBalancer.Test
             var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
             var loadBalancer = new RoundRobinLoadBalancer(provider);
 
-            // act
             Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "fruitService"]);
             Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "vegetableService"]);
             var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
             await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
             var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
 
-            // assert
             Assert.Equal(1, loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "fruitservice"]);
             Assert.Equal(8000, fruitResult.Port);
             Assert.Equal(2, loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "vegetableservice"]);
@@ -55,7 +52,6 @@ namespace Steeltoe.Common.LoadBalancer.Test
         [Fact]
         public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
         {
-            // arrange
             var services = new List<ConfigurationServiceInstance>
             {
                 new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
@@ -69,12 +65,10 @@ namespace Steeltoe.Common.LoadBalancer.Test
             var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
             var loadBalancer = new RoundRobinLoadBalancer(provider, GetCache());
 
-            // act
             var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
             await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
             var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
 
-            // assert
             Assert.Equal(8000, fruitResult.Port);
             Assert.Equal(8011, vegResult.Port);
         }

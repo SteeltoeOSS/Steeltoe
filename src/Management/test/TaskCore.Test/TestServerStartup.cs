@@ -28,11 +28,7 @@ namespace Steeltoe.Management.TaskCore.Test
         }
     }
 
-#pragma warning disable CA1032 // Implement standard exception constructors
-#pragma warning disable SA1402 // File may only contain a single type
     internal class PassException : Exception
-#pragma warning restore SA1402 // File may only contain a single type
-#pragma warning restore CA1032 // Implement standard exception constructors
     {
     }
 }

@@ -14,10 +14,8 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new RabbitMQProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }

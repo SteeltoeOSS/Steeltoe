@@ -32,10 +32,7 @@ namespace Steeltoe.Integration.Transformer
                 return _messageBuilderFactory;
             }
 
-            set
-            {
-                _messageBuilderFactory = value;
-            }
+            set => _messageBuilderFactory = value;
         }
 
         public IMessage Transform(IMessage message)
@@ -48,7 +45,7 @@ namespace Steeltoe.Integration.Transformer
                     return null;
                 }
 
-                return (result is IMessage) ? (IMessage)result : MessageBuilderFactory.WithPayload(result).CopyHeaders(message.Headers).Build();
+                return (result is IMessage iMessage) ? iMessage : MessageBuilderFactory.WithPayload(result).CopyHeaders(message.Headers).Build();
             }
             catch (MessageTransformationException)
             {

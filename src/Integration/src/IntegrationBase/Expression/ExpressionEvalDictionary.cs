@@ -32,7 +32,7 @@ namespace Steeltoe.Integration.Expression
         }
 
         #region IDictionary
-        public object this[string key] { get => this.Get(key); set => throw new NotImplementedException(); }
+        public object this[string key] { get => Get(key); set => throw new NotImplementedException(); }
 
         public ICollection<string> Keys => _original.Keys;
 
@@ -44,7 +44,7 @@ namespace Steeltoe.Integration.Expression
                 var keys = _original.Keys;
                 foreach (var key in keys)
                 {
-                    list.Add(this.Get(key));
+                    list.Add(Get(key));
                 }
 
                 return list;
@@ -109,7 +109,7 @@ namespace Steeltoe.Integration.Expression
 
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
         {
-            if (!this.ContainsKey(key))
+            if (!ContainsKey(key))
             {
                 value = null;
                 return false;

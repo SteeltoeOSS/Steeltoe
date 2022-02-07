@@ -82,7 +82,7 @@ namespace Steeltoe.Messaging.Support
 
             var type = typeof(V);
 
-            if (!type.IsAssignableFrom(value.GetType()))
+            if (!type.IsInstanceOfType(value))
             {
                 _logger?.LogDebug("Skipping header '{headerName}': expected type [{type}], but got [{valueType}]", name, type, value.GetType());
                 return default;

@@ -28,65 +28,50 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public async Task CloudFoundryCertificateAuth_AcceptsSameSpace()
         {
-            // arrange
             var host = await GetHostBuilder().StartAsync();
 
-            // act
             var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameSpaceAuthorizationPolicy);
 
-            // assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task CloudFoundryCertificateAuth_AcceptsSameOrg()
         {
-            // arrange
             var host = await GetHostBuilder().StartAsync();
 
-            // act
             var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameOrganizationAuthorizationPolicy);
 
-            // assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task CloudFoundryCertificateAuth_RejectsOrgMismatch()
         {
-            // arrange
             var host = await GetHostBuilder().StartAsync();
 
-            // act
             var response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameOrganizationAuthorizationPolicy);
 
-            // assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
         public async Task CloudFoundryCertificateAuth_RejectsSpaceMismatch()
         {
-            // arrange
             var host = await GetHostBuilder().StartAsync();
 
-            // act
             var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameSpaceAuthorizationPolicy);
 
-            // assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
         public async Task AddCloudFoundryCertificateAuth_ForbiddenWithoutCert()
         {
-            // arrange
             var host = await GetHostBuilder().StartAsync();
 
-            // act
             var response = await host.GetTestClient().GetAsync("http://localhost/" + CloudFoundryDefaults.SameSpaceAuthorizationPolicy);
 
-            // assert
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 

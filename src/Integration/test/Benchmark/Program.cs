@@ -6,14 +6,12 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Support;
 using System;
 using System.Threading.Tasks;
 
 [MemoryDiagnoser]
 public class Program
-{
-
+{ 
     //|                                                Method |     Mean |   Error |  StdDev | Gen 0 | Gen 1 | Gen 2 | Allocated |
     //|------------------------------------------------------ |---------:|--------:|--------:|------:|------:|------:|----------:|
     //|           DirectChannel_Send_10_000_000_SingleHandler | 229.1 ms | 2.47 ms | 2.31 ms |     - |     - |     - |   5.97 KB |
@@ -80,7 +78,6 @@ public class Program
     [Benchmark]
     public void DirectChannel_Send_10_000_000_TwoHandlers()
     {
-
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();
@@ -109,7 +106,6 @@ public class Program
     [Benchmark]
     public void DirectChannel_Send_10_000_000_FourHandlers()
     {
-
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();

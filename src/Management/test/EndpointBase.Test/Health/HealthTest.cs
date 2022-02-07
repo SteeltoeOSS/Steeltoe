@@ -7,6 +7,7 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -56,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             {
                 var options = new JsonSerializerOptions()
                 {
-                    IgnoreNullValues = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 };
                 options.Converters.Add(new HealthConverter());

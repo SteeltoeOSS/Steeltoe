@@ -22,12 +22,10 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IConfigurationRoot config = null;
             var connectorConfiguration = new ConfigurationBuilder().Build();
             var connectorOptions = new RedisCacheConnectorOptions();
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, "foobar"));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -41,11 +39,9 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorConfigurationNull()
         {
-            // Arrange
             var config = new ConfigurationBuilder().Build();
             IConfigurationRoot connectorConfiguration = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorConfiguration, "foobar"));
             Assert.Contains(nameof(connectorConfiguration), ex.Message);
         }
@@ -53,11 +49,9 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorOptionsNull()
         {
-            // Arrange
             var config = new ConfigurationBuilder().Build();
             RedisCacheConnectorOptions connectorOptions = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorOptions, "foobar"));
             Assert.Contains(nameof(connectorOptions), ex.Message);
         }
@@ -65,12 +59,10 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
             var connectorOptions = new RedisCacheConnectorOptions();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
 
@@ -84,7 +76,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_NoVCAPs_CreatesFactory()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["redis:client:host"] = "127.0.0.1",
@@ -98,7 +89,6 @@ namespace Steeltoe.Connector.Redis.Test
             var config = configurationBuilder.Build();
             var connectorOptions = new RedisCacheConnectorOptions(config);
 
-            // Act and Assert
             Assert.NotNull(RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config));
             Assert.NotNull(RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(new ConfigurationBuilder().Build(), config));
             Assert.NotNull(RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(new ConfigurationBuilder().Build(), connectorOptions));
@@ -107,7 +97,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_MultipleRedisServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -118,7 +107,6 @@ namespace Steeltoe.Connector.Redis.Test
             var config = builder.Build();
             var connectorOptions = new RedisCacheConnectorOptions();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config));
             Assert.Contains("Multiple", ex.Message);
 

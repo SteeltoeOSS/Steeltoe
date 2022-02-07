@@ -76,7 +76,7 @@ namespace Steeltoe.Discovery.Consul.Registry
         {
             if (!Options.Enabled)
             {
-                _logger?.LogDebug("Discovery Lifecycle disabled.Not starting");
+                _logger?.LogDebug("Discovery Lifecycle disabled. Not starting");
                 return;
             }
 

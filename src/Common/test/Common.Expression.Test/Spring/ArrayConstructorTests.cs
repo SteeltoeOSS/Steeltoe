@@ -115,107 +115,100 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.True(o.GetType().IsArray);
             var s = new StringBuilder();
             s.Append('[');
-            if (o is int[])
+            if (o is int[] iArray)
             {
-                var array = (int[])o;
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < iArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i]);
+                    s.Append(iArray[i]);
                 }
             }
-            else if (o is bool[])
+            else if (o is bool[] bArray)
             {
-                var array = (bool[])o;
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < bArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i]);
+                    s.Append(bArray[i]);
                 }
             }
-            else if (o is char[])
+            else if (o is char[] cArray)
             {
-                var array = (char[])o;
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < cArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i]);
+                    s.Append(cArray[i]);
                 }
             }
-            else if (o is long[])
+            else if (o is long[] lArray)
             {
-                var array = (long[])o;
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < lArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i]);
+                    s.Append(lArray[i]);
                 }
             }
-            else if (o is short[])
+            else if (o is short[] sArray)
             {
-                var array = (short[])o;
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < sArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i]);
+                    s.Append(sArray[i]);
                 }
             }
-            else if (o is double[])
+            else if (o is double[] dArray)
             {
-                var array = (double[])o;
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < dArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i].ToString("F1"));
+                    s.Append(dArray[i].ToString("F1"));
                 }
             }
-            else if (o is float[])
+            else if (o is float[] fArray)
             {
-                var array = (float[])o;
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < fArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i].ToString("F1"));
+                    s.Append(fArray[i].ToString("F1"));
                 }
             }
-            else if (o is byte[] array)
+            else if (o is byte[] byArray)
             {
-                for (var i = 0; i < array.Length; i++)
+                for (var i = 0; i < byArray.Length; i++)
                 {
                     if (i > 0)
                     {
                         s.Append(',');
                     }
 
-                    s.Append(array[i]);
+                    s.Append(byArray[i]);
                 }
             }
             else

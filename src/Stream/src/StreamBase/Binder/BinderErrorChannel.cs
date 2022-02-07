@@ -41,9 +41,9 @@ namespace Steeltoe.Stream.Binder
                 base.Subscribe(_finalHandler);
             }
 
-            if (handler is ILastSubscriberMessageHandler && _finalHandler == null)
+            if (handler is ILastSubscriberMessageHandler lastSubHandler && _finalHandler == null)
             {
-                _finalHandler = (ILastSubscriberMessageHandler)handler;
+                _finalHandler = lastSubHandler;
             }
 
             return result;
@@ -55,9 +55,6 @@ namespace Steeltoe.Stream.Binder
             return base.Unsubscribe(handler);
         }
 
-        public int Subscribers
-        {
-            get { return _subscribers; }
-        }
+        public int Subscribers => _subscribers;
     }
 }

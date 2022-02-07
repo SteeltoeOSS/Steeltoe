@@ -25,15 +25,12 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void MongoDbConnectionInfo_FromCosmosVCAP()
         {
-            // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServer_CosmosDb_VCAP);
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
 
-            // act
             var connInfo = cm.Get<MongoDbConnectionInfo>();
 
-            // assert
             Assert.NotNull(connInfo);
             Assert.Equal("mongodb://u83bde2c09fd:36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w==@u83bde2c09fd.documents.azure.com:10255/?ssl=true&replicaSet=globaldb", connInfo.ConnectionString);
             Assert.StartsWith("MongoDb", connInfo.Name);

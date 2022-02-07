@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public class RollingCommandUserLatencyDistributionStream : RollingDistributionStream<HystrixCommandCompletion>
     {
-        private static readonly ConcurrentDictionary<string, RollingCommandUserLatencyDistributionStream> Streams = new ConcurrentDictionary<string, RollingCommandUserLatencyDistributionStream>();
+        private static readonly ConcurrentDictionary<string, RollingCommandUserLatencyDistributionStream> Streams = new ();
 
         private static Func<LongHistogram, HystrixCommandCompletion, LongHistogram> AddValuesToBucket { get; } = (initialDistribution, @event) =>
         {

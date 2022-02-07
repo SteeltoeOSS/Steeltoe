@@ -13,13 +13,10 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void Property_Can_Locate_ConnectionTypes()
         {
             // arrange -- handled by including a compatible RabbitMQ NuGet package
-
-            // act
             var interfaceType = RabbitMQTypeLocator.IConnectionFactory;
             var implementationType = RabbitMQTypeLocator.ConnectionFactory;
             var connectionType = RabbitMQTypeLocator.IConnection;
 
-            // assert
             Assert.NotNull(interfaceType);
             Assert.NotNull(implementationType);
             Assert.NotNull(connectionType);
@@ -28,14 +25,11 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Throws_When_ConnectionType_NotFound()
         {
-            // arrange
             var types = RabbitMQTypeLocator.ConnectionInterfaceTypeNames;
             RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new string[] { "something-Wrong" };
 
-            // act
             var exception = Assert.Throws<TypeLoadException>(() => RabbitMQTypeLocator.IConnectionFactory);
 
-            // assert
             Assert.Equal("Unable to find IConnectionFactory, are you missing the RabbitMQ.Client assembly?", exception.Message);
 
             // reset

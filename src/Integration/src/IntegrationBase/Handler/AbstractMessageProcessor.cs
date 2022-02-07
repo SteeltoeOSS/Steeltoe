@@ -19,7 +19,7 @@ namespace Steeltoe.Integration.Handler
 
         object IMessageProcessor.ProcessMessage(IMessage message)
         {
-            return this.ProcessMessage(message);
+            return ProcessMessage(message);
         }
     }
 }

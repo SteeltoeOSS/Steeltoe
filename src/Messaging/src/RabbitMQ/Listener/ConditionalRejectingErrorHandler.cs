@@ -41,9 +41,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
             if (!CauseChainContainsRRADRE(exception) && _exceptionStrategy.IsFatal(exception))
             {
-                if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException)
+                if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException listenerException)
                 {
-                    var failed = ((ListenerExecutionFailedException)exception).FailedMessage;
+                    var failed = listenerException.FailedMessage;
                     if (failed != null)
                     {
                         var accessor = RabbitHeaderAccessor.GetMutableAccessor(failed);

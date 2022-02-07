@@ -14,9 +14,9 @@ namespace Steeltoe.Stream.Binder
     public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
         where C : AbstractBinder<IMessageChannel>
     {
-        protected HashSet<string> _queues = new HashSet<string>();
+        protected HashSet<string> _queues = new ();
 
-        protected HashSet<string> _exchanges = new HashSet<string>();
+        protected HashSet<string> _exchanges = new ();
 
         private C _binder;
 
@@ -53,7 +53,7 @@ namespace Steeltoe.Stream.Binder
         public virtual IBinding BindConsumer(string name, string group, IMessageChannel inboundTarget, IConsumerOptions consumerOptions)
         {
             CheckChannelIsConfigured(inboundTarget, consumerOptions);
-            return this.BindConsumer(name, group, (object)inboundTarget, consumerOptions);
+            return BindConsumer(name, group, (object)inboundTarget, consumerOptions);
         }
 
         public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
@@ -64,7 +64,7 @@ namespace Steeltoe.Stream.Binder
 
         public virtual IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
         {
-            return this.BindProducer(name, (object)outboundTarget, producerOptions);
+            return BindProducer(name, (object)outboundTarget, producerOptions);
         }
 
         public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)

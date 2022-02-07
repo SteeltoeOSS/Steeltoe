@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         private readonly IConversionService _conversionService;
         private readonly IApplicationContext _applicationContext;
         private readonly ServiceExpressionContext _expressionContext;
-        private readonly ConcurrentDictionary<ParameterInfo, NamedValueInfo> _namedValueInfoCache = new ConcurrentDictionary<ParameterInfo, NamedValueInfo>();
+        private readonly ConcurrentDictionary<ParameterInfo, NamedValueInfo> _namedValueInfoCache = new ();
 
         protected AbstractNamedValueMethodArgumentResolver(IConversionService conversionService, IApplicationContext context)
         {

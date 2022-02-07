@@ -12,11 +12,8 @@ namespace Steeltoe.Connector.EFCore.Test
         public void Property_Can_Locate_MySqlDbContextOptionsType()
         {
             // arrange -- handled by including a compatible EF Core NuGet package
-
-            // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
-            // assert
             Assert.NotNull(type);
         }
 
@@ -28,10 +25,8 @@ namespace Steeltoe.Connector.EFCore.Test
             var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
             EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "MySql.EntityFrameworkCore" };
 
-            // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
-            // assert
             Assert.NotNull(type);
             EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
         }
@@ -43,10 +38,8 @@ namespace Steeltoe.Connector.EFCore.Test
             var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
             EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "Pomelo.EntityFrameworkCore.MySql" };
 
-            // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
-            // assert
             Assert.NotNull(type);
             EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
         }
@@ -56,11 +49,8 @@ namespace Steeltoe.Connector.EFCore.Test
         public void Property_Can_Locate_PostgreSqlDbContextOptionsType()
         {
             // arrange -- handled by including a compatible EF Core NuGet package
-
-            // act
             var type = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 
-            // assert
             Assert.NotNull(type);
         }
 
@@ -68,11 +58,8 @@ namespace Steeltoe.Connector.EFCore.Test
         public void Property_Can_Locate_SqlServerDbContextOptionsType()
         {
             // arrange -- handled by including a compatible EF Core NuGet package
-
-            // act
             var type = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
-            // assert
             Assert.NotNull(type);
         }
 
@@ -83,10 +70,8 @@ namespace Steeltoe.Connector.EFCore.Test
             var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
             EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0] };
 
-            // act
             var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 
-            // assert
             Assert.NotNull(type);
             EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
         }
@@ -98,10 +83,8 @@ namespace Steeltoe.Connector.EFCore.Test
             var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
             EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1] };
 
-            // act
             var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 
-            // assert
             Assert.NotNull(type);
             EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
         }

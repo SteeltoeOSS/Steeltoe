@@ -20,15 +20,9 @@ namespace Steeltoe.Integration.Support
         {
         }
 
-        public override void Add(string key, object value)
-        {
-            headers.Add(key, value);
-        }
+        public override void Add(string key, object value) => headers.Add(key, value);
 
-        public override void Add(KeyValuePair<string, object> item)
-        {
-            headers.Add(item);
-        }
+        public override void Add(KeyValuePair<string, object> item) => headers.Add(item);
 
         public virtual void AddRange(IDictionary<string, object> map)
         {
@@ -40,37 +34,25 @@ namespace Steeltoe.Integration.Support
 
         public override object this[string key] { get => headers[key]; set => headers[key] = value; }
 
-        public override void Clear()
-        {
-            headers.Clear();
-        }
+        public override void Clear() => headers.Clear();
 
-        public override bool Remove(KeyValuePair<string, object> item)
-        {
-            return headers.Remove(item);
-        }
+        public override bool Remove(KeyValuePair<string, object> item) => headers.Remove(item);
 
-        public override bool Remove(string key)
-        {
-            return headers.Remove(key);
-        }
+        public override bool Remove(string key) => headers.Remove(key);
 
         private static string ExtractId(IDictionary<string, object> headers)
         {
             if (headers != null && headers.ContainsKey(ID))
             {
                 var id = headers[ID];
-                if (id is string)
+                switch (id)
                 {
-                    return id as string;
-                }
-                else if (id is byte[])
-                {
-                    return new Guid((byte[])id).ToString();
-                }
-                else if (id is Guid)
-                {
-                    return ((Guid)id).ToString();
+                    case string:
+                        return id as string;
+                    case byte[] v:
+                        return new Guid(v).ToString();
+                    case Guid guid:
+                        return guid.ToString();
                 }
             }
 
@@ -82,7 +64,7 @@ namespace Steeltoe.Integration.Support
             if (headers != null && headers.ContainsKey(TIMESTAMP))
             {
                 var timestamp = headers[TIMESTAMP];
-                return (timestamp is string) ? long.Parse((string)timestamp) : (long)timestamp;
+                return (timestamp is string strTimestamp) ? long.Parse(strTimestamp) : (long)timestamp;
             }
 
             return null;

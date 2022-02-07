@@ -11,17 +11,14 @@ namespace Steeltoe.Common.Converter
 {
     public class ObjectToObjectConverter : AbstractGenericConditionalConverter
     {
-        private static readonly ConcurrentDictionary<Type, MemberInfo> _conversionMemberCache = new ConcurrentDictionary<Type, MemberInfo>();
+        private static readonly ConcurrentDictionary<Type, MemberInfo> _conversionMemberCache = new ();
 
         public ObjectToObjectConverter()
             : base(GetConvertiblePairs())
         {
         }
 
-        public override bool Matches(Type sourceType, Type targetType)
-        {
-            return sourceType != targetType && HasConversionMethodOrConstructor(targetType, sourceType);
-        }
+        public override bool Matches(Type sourceType, Type targetType) => sourceType != targetType && HasConversionMethodOrConstructor(targetType, sourceType);
 
         public override object Convert(object source, Type sourceType, Type targetType)
         {
@@ -36,21 +33,14 @@ namespace Steeltoe.Common.Converter
 
             try
             {
-                if (member is MethodInfo)
+                if (member is MethodInfo method)
                 {
-                    var method = (MethodInfo)member;
-                    if (!method.IsStatic)
-                    {
-                        return method.Invoke(source, new object[0]);
-                    }
-                    else
-                    {
-                        return method.Invoke(null, new object[1] { source });
-                    }
+                    return !method.IsStatic
+                        ? method.Invoke(source, new object[0])
+                        : method.Invoke(null, new object[1] { source });
                 }
-                else if (member is ConstructorInfo)
+                else if (member is ConstructorInfo ctor)
                 {
-                    var ctor = (ConstructorInfo)member;
                     return ctor.Invoke(new object[1] { source });
                 }
             }
@@ -70,18 +60,9 @@ namespace Steeltoe.Common.Converter
                 targetClass.Name));
         }
 
-        internal static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass)
-        {
-            return GetValidatedMember(targetClass, sourceClass) != null;
-        }
+        internal static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass) => GetValidatedMember(targetClass, sourceClass) != null;
 
-        private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
-        {
-            return new HashSet<(Type Source, Type Target)>()
-            {
-                (typeof(object), typeof(object))
-            };
-        }
+        private static ISet<(Type Source, Type Target)> GetConvertiblePairs() => new HashSet<(Type Source, Type Target)>() { (typeof(object), typeof(object)) };
 
         private static MemberInfo GetValidatedMember(Type targetClass, Type sourceClass)
         {
@@ -109,24 +90,12 @@ namespace Steeltoe.Common.Converter
         }
 
         private static bool IsApplicable(MemberInfo member, Type sourceClass)
-        {
-            if (member is MethodInfo)
+            => member switch
             {
-                var method = (MethodInfo)member;
-                return !method.IsStatic ?
-                    method.DeclaringType.IsAssignableFrom(sourceClass) :
-                        method.GetParameters()[0].ParameterType == sourceClass;
-            }
-            else if (member is ConstructorInfo)
-            {
-                var ctor = (ConstructorInfo)member;
-                return ctor.GetParameters()[0].ParameterType == sourceClass;
-            }
-            else
-            {
-                return false;
-            }
-        }
+                MethodInfo method => !method.IsStatic ? method.DeclaringType.IsAssignableFrom(sourceClass) : method.GetParameters()[0].ParameterType == sourceClass,
+                ConstructorInfo ctor => ctor.GetParameters()[0].ParameterType == sourceClass,
+                _ => false
+            };
 
         private static MethodInfo DetermineToMethod(Type targetClass, Type sourceClass)
         {
@@ -162,8 +131,6 @@ namespace Steeltoe.Common.Converter
         }
 
         private static ConstructorInfo DetermineFactoryConstructor(Type targetClass, Type sourceClass)
-        {
-            return ConversionUtils.GetConstructorIfAvailable(targetClass, sourceClass);
-        }
+            => ConversionUtils.GetConstructorIfAvailable(targetClass, sourceClass);
     }
 }

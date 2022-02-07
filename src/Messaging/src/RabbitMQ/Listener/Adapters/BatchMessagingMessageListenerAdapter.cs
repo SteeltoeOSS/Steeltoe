@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             ILogger logger = null)
             : base(context, bean, method, returnExceptions, errorHandler, true, logger)
         {
-            BatchingStrategy = batchingStrategy == null ? new SimpleBatchingStrategy(0, 0, 0L) : batchingStrategy;
+            BatchingStrategy = batchingStrategy ?? new SimpleBatchingStrategy(0, 0, 0L);
         }
 
         private IBatchingStrategy BatchingStrategy { get; }
@@ -129,7 +129,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 throw new MessageConversionException("Message converter returned null");
             }
 
-            var builder = (convertedObject is IMessage) ? RabbitMessageBuilder.FromMessage((IMessage)convertedObject) : RabbitMessageBuilder.WithPayload(convertedObject);
+            var builder = (convertedObject is IMessage message1) ? RabbitMessageBuilder.FromMessage(message1) : RabbitMessageBuilder.WithPayload(convertedObject);
             var message = builder.CopyHeadersIfAbsent(headers).Build();
             return message;
         }

@@ -12,9 +12,9 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 {
     public class HeadersMethodArgumentResolverTest
     {
-        private readonly HeadersMethodArgumentResolver resolver = new HeadersMethodArgumentResolver();
+        private readonly HeadersMethodArgumentResolver resolver = new ();
 
-        private readonly IMessage message = MessageBuilder.WithPayload(new byte[0])
+        private readonly IMessage message = MessageBuilder.WithPayload(Array.Empty<byte>())
             .CopyHeaders(new Dictionary<string, object>() { { "foo", "bar" } })
             .Build();
 

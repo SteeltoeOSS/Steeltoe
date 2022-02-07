@@ -11,14 +11,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void ValidateIssuer_ValidatesCorrectly()
         {
-            // arrange
             var cftv = new CloudFoundryTokenValidator();
 
-            // act
             var uaaResult = cftv.ValidateIssuer("https://uaa.system.testcloud.com/", null, null);
             var foobarResult = cftv.ValidateIssuer("https://foobar.system.testcloud.com/", null, null);
 
-            // assert
             Assert.NotNull(uaaResult);
             Assert.Null(foobarResult);
         }

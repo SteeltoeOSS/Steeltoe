@@ -1,0 +1,14 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/connectors.yml
+    - src/Connectors/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Connectors

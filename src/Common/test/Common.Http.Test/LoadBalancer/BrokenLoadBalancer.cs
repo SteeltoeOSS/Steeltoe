@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
 {
     internal class BrokenLoadBalancer : ILoadBalancer
     {
-        internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new List<Tuple<Uri, Uri, TimeSpan, Exception>>();
+        internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BrokenLoadBalancer"/> class.

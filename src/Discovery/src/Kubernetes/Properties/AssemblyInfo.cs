@@ -4,5 +4,8 @@
 
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Kubernetes;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.Kubernetes.Test")]
 
 [assembly: DiscoveryClientAssembly(typeof(KubernetesDiscoveryClientExtension))]

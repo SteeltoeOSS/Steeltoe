@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         private static readonly int NUMBER_THREADPOOL_EVENT_TYPES = ALL_THREADPOOL_EVENT_TYPES.Count;
 
         // String is HystrixThreadPoolKey.name() (we can't use HystrixThreadPoolKey directly as we can't guarantee it implements hashcode/equals correctly)
-        private static readonly ConcurrentDictionary<string, HystrixThreadPoolMetrics> Metrics = new ConcurrentDictionary<string, HystrixThreadPoolMetrics>();
+        private static readonly ConcurrentDictionary<string, HystrixThreadPoolMetrics> Metrics = new ();
 
         public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key, IHystrixTaskScheduler taskScheduler, IHystrixThreadPoolOptions properties)
         {
@@ -89,7 +89,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Metrics.Clear();
         }
 
-        private readonly AtomicInteger _concurrentExecutionCount = new AtomicInteger();
+        private readonly AtomicInteger _concurrentExecutionCount = new ();
 
         private readonly RollingThreadPoolEventCounterStream _rollingCounterStream;
         private readonly CumulativeThreadPoolEventCounterStream _cumulativeCounterStream;

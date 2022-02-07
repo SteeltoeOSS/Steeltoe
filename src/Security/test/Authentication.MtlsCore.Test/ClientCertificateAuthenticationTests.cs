@@ -404,7 +404,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.SubjectName.Name))
             {
                 actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.X500DistinguishedName);
-                if (actual.Count() > 0)
+                if (actual.Any())
                 {
                     Assert.Single(actual);
                     Assert.Equal(Certificates.SelfSignedValidWithNoEku.SubjectName.Name, actual.First().Value);
@@ -414,7 +414,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.SerialNumber))
             {
                 actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.SerialNumber);
-                if (actual.Count() > 0)
+                if (actual.Any())
                 {
                     Assert.Single(actual);
                     Assert.Equal(Certificates.SelfSignedValidWithNoEku.SerialNumber, actual.First().Value);
@@ -424,7 +424,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.DnsName, false)))
             {
                 actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Dns);
-                if (actual.Count() > 0)
+                if (actual.Any())
                 {
                     Assert.Single(actual);
                     Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.DnsName, false), actual.First().Value);
@@ -434,7 +434,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.EmailName, false)))
             {
                 actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Email);
-                if (actual.Count() > 0)
+                if (actual.Any())
                 {
                     Assert.Single(actual);
                     Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.EmailName, false), actual.First().Value);
@@ -444,7 +444,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.SimpleName, false)))
             {
                 actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Name);
-                if (actual.Count() > 0)
+                if (actual.Any())
                 {
                     Assert.Single(actual);
                     Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.SimpleName, false), actual.First().Value);
@@ -454,7 +454,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UpnName, false)))
             {
                 actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Upn);
-                if (actual.Count() > 0)
+                if (actual.Any())
                 {
                     Assert.Single(actual);
                     Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UpnName, false), actual.First().Value);
@@ -464,7 +464,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UrlName, false)))
             {
                 actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Uri);
-                if (actual.Count() > 0)
+                if (actual.Any())
                 {
                     Assert.Single(actual);
                     Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UrlName, false), actual.First().Value);
@@ -546,7 +546,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
                     app.UseAuthentication();
 
-                    app.Use(async (context, next) =>
+                    app.Run(async (context) =>
                     {
                         var request = context.Request;
                         var response = context.Response;
@@ -609,7 +609,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             return server;
         }
 
-        private readonly CertificateAuthenticationEvents successfulValidationEvents = new CertificateAuthenticationEvents()
+        private readonly CertificateAuthenticationEvents successfulValidationEvents = new ()
         {
             OnCertificateValidated = context =>
             {
@@ -625,7 +625,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             }
         };
 
-        private readonly CertificateAuthenticationEvents failedValidationEvents = new CertificateAuthenticationEvents()
+        private readonly CertificateAuthenticationEvents failedValidationEvents = new ()
         {
             OnCertificateValidated = context =>
             {
@@ -634,7 +634,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             }
         };
 
-        private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new CertificateAuthenticationEvents()
+        private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new ()
         {
             OnCertificateValidated = context =>
             {

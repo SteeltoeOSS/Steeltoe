@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Transaction
 {
     internal class WithoutTransactionOperations : ITransactionOperations
     {
-        public static readonly WithoutTransactionOperations INSTANCE = new WithoutTransactionOperations();
+        public static readonly WithoutTransactionOperations INSTANCE = new ();
 
         private WithoutTransactionOperations()
         {

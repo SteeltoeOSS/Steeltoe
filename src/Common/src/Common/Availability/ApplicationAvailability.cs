@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Availability
     {
         public readonly string LivenessKey = "Liveness";
         public readonly string ReadinessKey = "Readiness";
-        private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new Dictionary<string, IAvailabilityState>();
+        private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new ();
         private readonly ILogger<ApplicationAvailability> _logger;
 
         public ApplicationAvailability(ILogger<ApplicationAvailability> logger = null) => _logger = logger;
@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Availability
         /// <param name="caller">Logged at trace level for tracking origin of state change</param>
         public void SetAvailabilityState(string stateKey, IAvailabilityState newState, string caller)
         {
-            if ((stateKey.Equals(LivenessKey) && !(newState is LivenessState)) || (stateKey.Equals(ReadinessKey) && !(newState is ReadinessState)))
+            if ((stateKey.Equals(LivenessKey) && newState is not LivenessState) || (stateKey.Equals(ReadinessKey) && newState is not ReadinessState))
             {
                 throw new InvalidOperationException($"{stateKey} state can only be of type {stateKey}State");
             }

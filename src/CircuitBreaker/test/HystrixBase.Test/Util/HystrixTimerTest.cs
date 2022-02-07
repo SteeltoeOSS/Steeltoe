@@ -185,7 +185,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
         private class TestListener : ITimerListener
         {
-            public AtomicInteger TickCount = new AtomicInteger();
+            public AtomicInteger TickCount = new ();
 
             public TestListener(int interval)
             {

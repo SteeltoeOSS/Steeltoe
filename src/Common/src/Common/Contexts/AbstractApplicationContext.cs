@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Contexts
     public abstract class AbstractApplicationContext : IApplicationContext
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
-        private readonly ConcurrentDictionary<string, object> _instances = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _instances = new ();
 
         protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings)
         {
@@ -137,7 +137,7 @@ namespace Steeltoe.Common.Contexts
 
         public T GetService<T>()
         {
-            return (T)this.GetService(typeof(T));
+            return (T)GetService(typeof(T));
         }
 
         public object GetService(Type serviceType)

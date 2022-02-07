@@ -26,13 +26,10 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void WindowsNetworkFileShare_Constructor_SetsValuesOn_ConnectSuccess()
         {
-            // arrange
             var fakeMPR = new FakeMPR();
 
-            // act
             _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMPR);
 
-            // assert
             Assert.Equal("user", fakeMPR._username);
             Assert.Equal("password", fakeMPR._password);
             Assert.Equal(@"\\server\path", fakeMPR._networkpath);
@@ -41,13 +38,10 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void WindowsNetworkFileShare_Constructor_ConcatsUserAndDomain()
         {
-            // arrange
             var fakeMPR = new FakeMPR();
 
-            // act
             _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMPR);
 
-            // assert
             Assert.Equal(@"domain\user", fakeMPR._username);
             Assert.Equal("password", fakeMPR._password);
             Assert.Equal(@"\\server\path", fakeMPR._networkpath);
@@ -56,13 +50,10 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void WindowsNetworkFileShare_Constructor_ThrowsOn_ConnectFail()
         {
-            // arrange
             var fakeMPR = new FakeMPR(false);
 
-            // act
             var exception = Assert.Throws<ExternalException>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMPR));
 
-            // assert
             Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);
         }
     }

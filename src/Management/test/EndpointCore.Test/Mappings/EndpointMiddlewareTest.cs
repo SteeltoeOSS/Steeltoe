@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static readonly Dictionary<string, string> AppSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> AppSettings = new ()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",

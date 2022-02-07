@@ -27,11 +27,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -42,11 +40,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -57,12 +53,10 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -70,11 +64,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_NoVCAPs_AddsSqlServerConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
@@ -84,11 +76,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
@@ -105,7 +95,6 @@ namespace Steeltoe.Connector.SqlServer.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(config));
             Assert.Contains("Multiple", ex.Message);
         }
@@ -113,7 +102,6 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_WithVCAPs_AddsSqlServerConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -123,7 +111,6 @@ namespace Steeltoe.Connector.SqlServer.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddSqlServerConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
@@ -139,7 +126,6 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_WithUserVCAP_AddsSqlServerConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -149,7 +135,6 @@ namespace Steeltoe.Connector.SqlServer.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddSqlServerConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
@@ -163,7 +148,6 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_WithAzureBrokerVCAPs_AddsSqlServerConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVCAP);
@@ -173,7 +157,6 @@ namespace Steeltoe.Connector.SqlServer.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            // Act and Assert
             services.AddSqlServerConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
@@ -192,24 +175,20 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerConnection_AddsRelationalHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             services.AddSqlServerConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
 
         [Fact]
         public void AddSqlServerConnection_DoesntAddsRelationalHealthContributor_WhenCommunityHealthCheckExists()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -219,18 +198,15 @@ namespace Steeltoe.Connector.SqlServer.Test
             var ci = cm.Get<SqlServerConnectionInfo>();
             services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
 
-            // Act
             services.AddSqlServerConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
-            // Assert
             Assert.Null(healthContributor);
         }
 
         [Fact]
         public void AddSqlServerConnection_AddsRelationalHealthContributor_WhenCommunityHealthCheckExistsAndForced()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -240,11 +216,9 @@ namespace Steeltoe.Connector.SqlServer.Test
             var ci = cm.Get<SqlServerConnectionInfo>();
             services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
 
-            // Act
             services.AddSqlServerConnection(config, addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
     }

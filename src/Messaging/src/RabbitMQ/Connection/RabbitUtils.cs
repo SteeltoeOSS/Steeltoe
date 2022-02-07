@@ -30,7 +30,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         public const ushort ConnectionClose_ClassId = 10;
         public const ushort ConnectionClose_MethodId = 50;
 
-        private static readonly AsyncLocal<bool?> _physicalCloseRequired = new AsyncLocal<bool?>();
+        private static readonly AsyncLocal<bool?> _physicalCloseRequired = new ();
 
         public static void CloseConnection(IConnection connection, ILogger logger = null)
         {
@@ -234,13 +234,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         public static bool IsPassiveDeclarationChannelClose(Exception exception)
         {
             RC.ShutdownEventArgs cause = null;
-            if (exception is ShutdownSignalException)
+            switch (exception)
             {
-                cause = ((ShutdownSignalException)exception).Args;
-            }
-            else if (exception is ProtocolException)
-            {
-                cause = ((ProtocolException)exception).ShutdownReason;
+                case ShutdownSignalException:
+                    cause = ((ShutdownSignalException)exception).Args;
+                    break;
+                case ProtocolException:
+                    cause = ((ProtocolException)exception).ShutdownReason;
+                    break;
             }
 
             if (cause != null)
@@ -259,14 +260,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             RC.ShutdownEventArgs args = null;
             while (cause != null && args == null)
             {
-                if (cause is ShutdownSignalException)
+                if (cause is ShutdownSignalException exception1)
                 {
-                    args = ((ShutdownSignalException)cause).Args;
+                    args = exception1.Args;
                 }
 
-                if (cause is OperationInterruptedException)
+                if (cause is OperationInterruptedException exception2)
                 {
-                    args = ((OperationInterruptedException)cause).ShutdownReason;
+                    args = exception2.ShutdownReason;
                 }
 
                 cause = cause.InnerException;
@@ -309,9 +310,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             RC.ShutdownEventArgs args = null;
             while (cause != null && args == null)
             {
-                if (cause is OperationInterruptedException)
+                if (cause is OperationInterruptedException exception)
                 {
-                    args = ((OperationInterruptedException)cause).ShutdownReason;
+                    args = exception.ShutdownReason;
                 }
 
                 cause = cause.InnerException;

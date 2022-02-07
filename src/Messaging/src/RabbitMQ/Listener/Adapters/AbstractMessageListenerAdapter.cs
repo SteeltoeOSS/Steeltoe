@@ -31,7 +31,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         private const string DEFAULT_ENCODING = "UTF-8";
 
-        private static readonly SpelExpressionParser PARSER = new SpelExpressionParser();
+        private static readonly SpelExpressionParser PARSER = new ();
         private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
 
         protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
@@ -132,12 +132,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         protected internal virtual IMessage<byte[]> BuildMessage(RC.IModel channel, object result, Type genericType)
         {
             var converter = MessageConverter;
-            if (converter != null && !(result is IMessage<byte[]>))
+            if (converter != null && result is not IMessage<byte[]>)
             {
                 result = converter.ToMessage(result, new MessageHeaders(), genericType);
             }
 
-            if (!(result is IMessage<byte[]>))
+            if (result is not IMessage<byte[]>)
             {
                 throw new MessageConversionException("No MessageConverter specified - cannot handle message [" + result + "]");
             }
@@ -368,22 +368,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         private Address EvaluateReplyTo(IMessage request, object source, object result, IExpression expression)
         {
-            Address replyTo;
             var value = expression.GetValue(EvalContext, new ReplyExpressionRoot(request, source, result));
-            if (!(value is string) && !(value is Address))
+            var replyTo = value switch
             {
-                throw new ArgumentException("response expression must evaluate to a String or Address");
-            }
-
-            if (value is string)
-            {
-                replyTo = new Address((string)value);
-            }
-            else
-            {
-                replyTo = (Address)value;
-            }
-
+                not string and not Address => throw new ArgumentException("response expression must evaluate to a String or Address"),
+                string sValue => new Address(sValue),
+                _ => (Address)value,
+            };
             return replyTo;
         }
 
@@ -398,7 +389,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 var returnType = resultArg.ReturnType;
                 if (returnType != null)
                 {
-                    var actualTypeArguments = returnType.ContainsGenericParameters ? returnType.GetGenericArguments() : new Type[0];
+                    var actualTypeArguments = returnType.ContainsGenericParameters ? returnType.GetGenericArguments() : Array.Empty<Type>();
                     if (actualTypeArguments.Length > 0)
                     {
                         returnType = actualTypeArguments[0];
@@ -419,7 +410,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         private void BasicAck(IMessage request, RC.IModel channel)
         {
             var tag = request.Headers.DeliveryTag();
-            var deliveryTag = tag.HasValue ? tag.Value : 0;
+            var deliveryTag = tag ?? 0;
             try
             {
                 channel.BasicAck(deliveryTag, false);

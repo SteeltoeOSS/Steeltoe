@@ -51,7 +51,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithVcapApplicationConfiguration()
         {
-            // Arrange
             var configJson = @"
             {
                 ""vcap"": {
@@ -117,7 +116,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConstructorWithIConfigurationRoot_Binds()
         {
-            // Arrange
             var configJson = @"
             {
                 ""vcap"": {
@@ -183,7 +181,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConstructorWithIConfiguration_Binds()
         {
-            // Arrange
             var configJson = @"
             {
                 ""vcap"": {

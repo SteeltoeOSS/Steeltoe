@@ -202,10 +202,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void CreateExchangeReturnsCorrectType()
         {
-            // Arrange
             var services = new ServiceCollection();
 
-            // Act and assert
             RabbitListenerDeclareAtrributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
             var exchanges = services.BuildServiceProvider().GetServices<IExchange>();
             Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.DIRECT);

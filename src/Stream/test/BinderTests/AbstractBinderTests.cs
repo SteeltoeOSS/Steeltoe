@@ -141,7 +141,7 @@ namespace Steeltoe.Stream.Binder
             var moduleOutputChannel1 = CreateBindableChannel("output1", producerBindingProperties);
 
             var moduleOutputChannel2 = CreateBindableChannel("output2", producerBindingProperties);
-            QueueChannel moduleInputChannel = new QueueChannel();
+            var moduleInputChannel = new QueueChannel();
             var producerBinding1 = binder.BindProducer($"foo{delimiter}xy", moduleOutputChannel1, producerBindingProperties.Producer);
             var producerBinding2 = binder.BindProducer($"foo{delimiter}yz", moduleOutputChannel2, producerBindingProperties.Producer);
             var consumerBinding1 = binder.BindConsumer($"foo{delimiter}xy", "testSendAndReceiveMultipleTopics", moduleInputChannel, consumerProperties);
@@ -216,7 +216,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendPojoReceivePojoWithStreamListenerDefaultContentType()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStation", typeof(Station));
+            var handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();
@@ -247,7 +247,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendJsonReceivePojoWithStreamListener()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStation", typeof(Station));
+            var handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();
@@ -279,7 +279,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendJsonReceiveJsonWithStreamListener()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStationString", typeof(string));
+            var handler = BuildStreamListener(GetType(), "EchoStationString", typeof(string));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();
@@ -310,7 +310,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendPojoReceivePojoWithStreamListener()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStation", typeof(Station));
+            var handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();
@@ -388,7 +388,7 @@ namespace Steeltoe.Stream.Binder
 
         protected IMessage Receive(IPollableChannel channel, int additionalMultiplier)
         {
-            long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            var startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var receive = channel.Receive((int)(1000 * TimeoutMultiplier * additionalMultiplier));
             var elapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
             return receive;
@@ -496,7 +496,7 @@ namespace Steeltoe.Stream.Binder
             method.MessageMethodArgumentResolvers = resolver;
             var constr = typeof(StreamListenerMessageHandler).GetConstructor(new Type[] { typeof(IApplicationContext), typeof(InvocableHandlerMethod), typeof(bool), typeof(string[]) });
 
-            var handler = (StreamListenerMessageHandler)constr.Invoke(new object[] { binder.ApplicationContext, method, false, new string[0] });
+            var handler = (StreamListenerMessageHandler)constr.Invoke(new object[] { binder.ApplicationContext, method, false, Array.Empty<string>() });
 
             handler.OutputChannelName = channelName;
             return handler;
@@ -512,7 +512,7 @@ namespace Steeltoe.Stream.Binder
             var selectors = applicationContext.GetServices<IPartitionSelectorStrategy>();
             var bindingServiceOptionsMonitor = new BindingServiceOptionsMonitor(bindingServiceProperties);
 
-            MessageConverterConfigurer messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), extractors, selectors);
+            var messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), extractors, selectors);
 
             return messageConverterConfigurer;
         }

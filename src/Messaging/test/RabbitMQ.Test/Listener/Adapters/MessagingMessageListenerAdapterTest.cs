@@ -21,8 +21,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class MessagingMessageListenerAdapterTest : AbstractTest
     {
-        private readonly DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
-        private readonly SampleBean sample = new SampleBean();
+        private readonly DefaultMessageHandlerMethodFactory factory = new ();
+        private readonly SampleBean sample = new ();
 
         [Fact]
         public void BuildMessageWithStandardMessage()
