@@ -12,6 +12,5 @@ namespace Steeltoe.Common.Logging
         void Update(IConfiguration value);
 
         void Update(ILoggerFactory value);
-
     }
 }

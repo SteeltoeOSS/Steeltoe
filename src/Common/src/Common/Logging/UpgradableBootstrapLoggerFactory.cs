@@ -86,6 +86,7 @@ namespace Steeltoe.Common.Logging
                     logger.Logger = _factoryInstance.CreateLogger(logger.Name);
                 }
             }
+
             _innerFactory = value;
         }
 
@@ -193,7 +194,6 @@ namespace Steeltoe.Common.Logging
         //         }
         //     }
         // }
-
         internal class BoostrapLoggerInst : ILogger
         {
             public volatile ILogger Logger;
