@@ -32,7 +32,7 @@ namespace Steeltoe.Management.CloudFoundry
 
                 next(app);
 
-                app.UseEndpoints(endpoints => endpoints.MapAllActuators());
+                app.UseEndpoints(endpoints => endpoints.MapAllActuators(null));
                 app.ApplicationServices.InitializeAvailability();
             };
         }
