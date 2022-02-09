@@ -18,12 +18,13 @@
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="$(OracleEFCoreVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'"><!--Oracle doesn't work with EF Core 5+ yet-->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="MySql.EntityFrameworkCore" Version="$(MySqlEFCoreVersion)" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloEFCoreVersion)" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" />

@@ -11,6 +11,7 @@ jobs:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
     SolutionFile: src/${{parameters.component}}/${{parameters.component}}.sln
+    CommonTestArgs: --blame-hang-timeout 3m --no-build -c Release --collect "XPlat Code Coverage" -maxcpucount:1 --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)
   pool:
     vmImage: ${{parameters.OS}}-latest
   steps:
@@ -47,14 +48,25 @@ jobs:
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: --blame-hang-timeout 5m --no-build -c Release -f net6.0 -maxcpucount:1 ${{parameters.skipFilter}}
+      arguments: -f net6.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
   - task: DotNetCoreCLI@2
     condition: succeededOrFailed()
     displayName: dotnet test 3.1
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: --blame-hang-timeout 5m --no-build -c Release -f netcoreapp3.1 -maxcpucount:1 ${{parameters.skipFilter}}
+      arguments: -f netcoreapp3.1 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
+  - task: CopyFiles@2
+    condition: failed()
+    inputs:
+      contents: $(Build.SourcesDirectory)/**/*.dmp
+      targetFolder: $(Build.ArtifactStagingDirectory)/hangdumps
+  - publish: $(Build.ArtifactStagingDirectory)/hangdumps
+    condition: failed()
+    displayName: Publish test result files if tests fail
+    artifact: FailedTestOutput-$(Agent.JobName)
   - script: |
       docker kill rabbitmq
       docker rm rabbitmq
@@ -65,3 +77,10 @@ jobs:
       docker rm configserver
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Stop Config Server
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    displayName: Publish test results
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '*.trx'
+      mergeTestResults: true

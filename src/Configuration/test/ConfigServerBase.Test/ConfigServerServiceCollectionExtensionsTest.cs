@@ -7,13 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Steeltoe.Extensions.Configuration.ConfigServer;
-using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class ConfigServerServiceCollectionExtensionsTest
     {
@@ -21,13 +19,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void ConfigureConfigServerClientOptions_ThrowsIfServiceCollectionNull()
         {
             IServiceCollection services = null;
-            IConfigurationRoot config = null;
-
-            var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions(config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions());
             Assert.Contains(nameof(services), ex.Message);
         }
 
         [Fact]
+        [Obsolete]
         public void ConfigureConfigServerClientOptions_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
@@ -43,36 +40,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             var services = new ServiceCollection();
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
-            var builder = new ConfigurationBuilder().AddConfigServer(environment);
+            var builder = new ConfigurationBuilder().AddConfigServer(environment.EnvironmentName);
             var config = builder.Build();
-            services.ConfigureConfigServerClientOptions(config);
-
+            services.AddSingleton<IConfiguration>(config);
+            services.ConfigureConfigServerClientOptions();
             var serviceProvider = services.BuildServiceProvider();
             var service = serviceProvider.GetService<IOptions<ConfigServerClientSettingsOptions>>();
             Assert.NotNull(service);
             var options = service.Value;
             Assert.NotNull(options);
             TestHelper.VerifyDefaults(options.Settings);
-
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED, options.Enabled);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_FAILFAST, options.FailFast);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, options.Uri);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, options.Environment);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION, options.ValidateCertificates);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL, options.RetryInitialInterval);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS, options.RetryAttempts);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_ENABLED, options.RetryEnabled);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER, options.RetryMultiplier);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL, options.RetryMaxInterval);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_TIMEOUT_MILLISECONDS, options.Timeout);
-            Assert.Null(options.Name);
-            Assert.Null(options.Label);
-            Assert.Null(options.Username);
-            Assert.Null(options.Password);
-            Assert.Null(options.Token);
-            Assert.Null(options.AccessTokenUri);
-            Assert.Null(options.ClientId);
-            Assert.Null(options.ClientSecret);
         }
 
         [Fact]
@@ -81,9 +58,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             var services = new ServiceCollection();
             var environment = HostingHelpers.GetHostingEnvironment();
 
-            var builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } }).AddConfigServer(environment);
+            var builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } }).AddConfigServer(environment.EnvironmentName);
             var config = builder.Build();
-            services.ConfigureConfigServerClientOptions(config);
+            services.ConfigureConfigServerClientOptions();
 
             var serviceProvider = services.BuildServiceProvider();
             var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();

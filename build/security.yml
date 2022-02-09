@@ -3,10 +3,12 @@ pr:
     include:
     - main
   paths:
+    exclude:
+    - /
     include:
-    - build/templates/*
+    - build/templates
     - build/security.yml
-    - src/Security/*
+    - src/Security
 
 jobs:
   - template: templates/component-build.yaml

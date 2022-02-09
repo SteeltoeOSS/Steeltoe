@@ -34,7 +34,6 @@ namespace Steeltoe.Common
 
         public void Dispose()
         {
-
         }
     }
 }

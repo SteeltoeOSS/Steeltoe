@@ -460,12 +460,13 @@ namespace Steeltoe.Management.Endpoint.Test
             var hostBuilder = _testServerWithRouting;
 
             var host = hostBuilder.AddAllActuators().Start();
+            var client = host.GetTestServer().CreateClient();
 
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await client.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await client.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await client.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -520,13 +521,14 @@ namespace Steeltoe.Management.Endpoint.Test
                                 .AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
 
             var host = hostBuilder.Start();
+            var client = host.GetTestServer().CreateClient();
 
             Assert.Single(host.Services.GetServices<IStartupFilter>());
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await client.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await client.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await client.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -543,14 +545,15 @@ namespace Steeltoe.Management.Endpoint.Test
                     .AddHealthActuator();
 
             var host = hostBuilder.Start();
+            var client = host.GetTestServer().CreateClient();
 
             // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
             Assert.Single(host.Services.GetServices<IStartupFilter>());
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await client.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await client.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await client.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 

@@ -178,7 +178,9 @@ namespace Steeltoe.Extensions.Logging.Test
 
             Assert.NotNull(options);
             Assert.NotNull(options.CurrentValue);
+#if !NET6_0_OR_GREATER
             Assert.True(options.CurrentValue.DisableColors);
+#endif
         }
 
         [Fact]
@@ -235,7 +237,9 @@ namespace Steeltoe.Extensions.Logging.Test
             var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
 
             Assert.NotNull(options);
+#if !NET6_0_OR_GREATER
             Assert.False(options.Value.DisableColors);
+#endif
         }
 
         [Fact]
@@ -253,7 +257,9 @@ namespace Steeltoe.Extensions.Logging.Test
             var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
 
             Assert.NotNull(options);
+#if !NET6_0_OR_GREATER
             Assert.True(options.Value.DisableColors);
+#endif
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
         }
     }
