@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Kubernetes
         /// </summary>
         /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <param name="podUtilities">Bring your own <see cref="IPodUtilities"/>. Defaults to <see cref="StandardPodUtilities"/></param>
-        public static void AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities = null)
+        public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities = null)
         {
             if (services is null)
             {
@@ -41,6 +41,7 @@ namespace Steeltoe.Management.Kubernetes
             }
 
             services.AddSingleton<IInfoContributor, KubernetesInfoContributor>();
+            return services;
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Steeltoe.Management.Kubernetes
         /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided</param>
         /// <param name="podUtilities">Bring your own <see cref="IPodUtilities"/>. Defaults to <see cref="StandardPodUtilities"/></param>
         /// <param name="version">Set response type version</param>
-        public static void AddKubernetesActuators(this IServiceCollection services, IConfiguration config = null, IPodUtilities podUtilities = null, MediaTypeVersion version = MediaTypeVersion.V2)
+        public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IConfiguration config = null, IPodUtilities podUtilities = null, MediaTypeVersion version = MediaTypeVersion.V2)
         {
             if (services is null)
             {
@@ -59,6 +60,7 @@ namespace Steeltoe.Management.Kubernetes
 
             services.AddKubernetesInfoContributor(podUtilities);
             services.AddAllActuators(config, version);
+            return services;
         }
     }
 }

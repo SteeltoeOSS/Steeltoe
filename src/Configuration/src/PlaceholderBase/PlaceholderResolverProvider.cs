@@ -21,10 +21,12 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
 
+        private IConfigurationRoot _configuration;
+
         /// <summary>
         /// Gets the configuration this placeholder resolver wraps
         /// </summary>
-        public IConfiguration Configuration { get; private set; }
+        public IConfiguration Configuration => _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceholderResolverProvider"/> class.
@@ -32,14 +34,14 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// </summary>
         /// <param name="configuration">the configuration the provider uses when resolving placeholders</param>
         /// <param name="logFactory">the logger factory to use</param>
-        public PlaceholderResolverProvider(IConfiguration configuration, ILoggerFactory logFactory = null)
+        public PlaceholderResolverProvider(IConfigurationRoot configuration, ILoggerFactory logFactory = null)
         {
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Configuration = configuration;
+            _configuration = configuration;
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
@@ -61,10 +63,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
-        public IList<IConfigurationProvider> Providers
-        {
-            get { return _providers; }
-        }
+        public IList<IConfigurationProvider> Providers => _providers;
 
         public IList<string> ResolvedKeys { get; } = new List<string>();
 
@@ -116,19 +115,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// </summary>
         public void Load()
         {
-            if (Configuration == null)
-            {
-                // Initial Load()
-                Configuration = new ConfigurationRoot(_providers);
-            }
-            else
-            {
-                // Reload called
-                if (Configuration is IConfigurationRoot asRoot)
-                {
-                    asRoot.Reload();
-                }
-            }
+            EnsureInitialized();
+            _configuration?.Reload();
         }
 
         /// <summary>
@@ -153,7 +141,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         {
             if (Configuration == null)
             {
-                Configuration = new ConfigurationRoot(_providers);
+                _configuration = new ConfigurationRoot(_providers);
             }
         }
     }
