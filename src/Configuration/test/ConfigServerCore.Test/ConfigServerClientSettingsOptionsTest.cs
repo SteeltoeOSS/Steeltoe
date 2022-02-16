@@ -94,8 +94,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             builder.SetBasePath(directory);
             builder.AddJsonFile(fileName);
             var config = builder.Build();
+            services.AddSingleton<IConfiguration>(config);
 
-            services.ConfigureConfigServerClientOptions(config);
+            services.ConfigureConfigServerClientOptions();
             var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
             Assert.NotNull(service);
             var options = service.Value;
