@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -17,10 +18,10 @@ namespace Steeltoe.Common.Hosting
         /// <summary>
         /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
         /// </summary>
-        /// <param name="webHostBuilder">Your WebHostBuilder</param>
+        /// <param name="webHostBuilder">Your <see cref="IWebHostBuilder"/></param>
         /// <param name="runLocalHttpPort">Set the Http port number with code so you don't need to set environment variables locally</param>
         /// <param name="runLocalHttpsPort">Set the Https port number with code so you don't need to set environment variables locally</param>
-        /// <returns>Your HostBuilder, now listening on port(s) found in the environment or passed in</returns>
+        /// <returns>Your <see cref="IWebHostBuilder"/>, now listening on port(s) found in the environment or passed in</returns>
         /// <remarks>runLocalPort parameter will not be used if an environment variable PORT is found</remarks>
         public static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
         {
@@ -35,10 +36,10 @@ namespace Steeltoe.Common.Hosting
         /// <summary>
         /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
         /// </summary>
-        /// <param name="hostBuilder">Your HostBuilder</param>
+        /// <param name="hostBuilder">Your <see cref="IHostBuilder"/></param>
         /// <param name="runLocalHttpPort">Set the Http port number with code so you don't need to set environment variables locally</param>
         /// <param name="runLocalHttpsPort">Set the Https port number with code so you don't need to set environment variables locally</param>
-        /// <returns>Your HostBuilder, now listening on port(s) found in the environment or passed in</returns>
+        /// <returns>Your <see cref="IHostBuilder"/>, now listening on port(s) found in the environment or passed in</returns>
         /// <remarks>
         /// runLocalPort parameter will not be used if an environment variable PORT is found<br /><br />
         /// THIS EXTENSION IS NOT COMPATIBLE WITH IIS EXPRESS
@@ -52,6 +53,30 @@ namespace Steeltoe.Common.Hosting
 
             return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort));
         }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
+        /// </summary>
+        /// <param name="webApplicationBuilder">Your <see cref="WebApplicationBuilder"/></param>
+        /// <param name="runLocalHttpPort">Set the Http port number with code so you don't need to set environment variables locally</param>
+        /// <param name="runLocalHttpsPort">Set the Https port number with code so you don't need to set environment variables locally</param>
+        /// <returns>Your <see cref="WebApplicationBuilder"/>, now listening on port(s) found in the environment or passed in</returns>
+        /// <remarks>
+        /// runLocalPort parameter will not be used if an environment variable PORT is found<br /><br />
+        /// THIS EXTENSION IS NOT COMPATIBLE WITH IIS EXPRESS
+        /// </remarks>
+        public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
+        {
+            if (webApplicationBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(webApplicationBuilder));
+            }
+
+            webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
+            return webApplicationBuilder;
+        }
+#endif
 
         private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort)
         {

@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint
         public static void AddAllActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy)
             => services.AddAllActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
 
-        public static void AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (services == null)
             {
@@ -62,10 +62,7 @@ namespace Steeltoe.Management.Endpoint
                 services.AddThreadDumpActuator(config, version);
             }
 
-            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
-            {
-                services.AddHeapDumpActuator(config);
-            }
+            services.AddHeapDumpActuator(config);
 
             services.AddDbMigrationsActuator(config);
             services.AddEnvActuator(config);
@@ -77,6 +74,7 @@ namespace Steeltoe.Management.Endpoint
             services.AddMetricsActuator(config);
             services.AddPrometheusActuator(config);
             services.AddRefreshActuator(config);
+            return services;
         }
 
         private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)

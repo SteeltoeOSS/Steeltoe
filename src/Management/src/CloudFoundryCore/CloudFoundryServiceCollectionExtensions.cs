@@ -20,7 +20,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided</param>
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
-        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config = null, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static IServiceCollection AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config = null, Action<CorsPolicyBuilder> buildCorsPolicy = null)
             => services.AddCloudFoundryActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="version">Set response type version</param>
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
-        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static IServiceCollection AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (services == null)
             {
@@ -40,6 +40,7 @@ namespace Steeltoe.Management.CloudFoundry
 
             services.AddCloudFoundryActuator(config);
             services.AddAllActuators(config, version, buildCorsPolicy);
+            return services;
         }
     }
 }

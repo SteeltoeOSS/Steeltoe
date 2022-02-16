@@ -34,13 +34,13 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
             if (typeof(T) == typeof(double))
             {
                 DoubleMetrics = metrics
-                .Select(x => (x as ProcessedMetric<double>))
+                .Select(x => x as ProcessedMetric<double>)
                 .ToList();
             }
             else
             {
                 LongMetrics = metrics
-                .Select(x => (x as ProcessedMetric<long>))
+                .Select(x => x as ProcessedMetric<long>)
                 .ToList();
             }
 

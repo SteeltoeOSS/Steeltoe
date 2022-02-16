@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
@@ -30,7 +31,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID, settings.DiscoveryServiceId);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED, settings.HealthEnabled);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE, settings.HealthTimeToLive);
-            Assert.Null(settings.Name);
+
+            try
+            {
+                Assert.Null(settings.Name);
+            }
+            catch
+            {
+                Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, settings.Name);
+            }
+
             Assert.Null(settings.Label);
             Assert.Null(settings.Username);
             Assert.Null(settings.Password);

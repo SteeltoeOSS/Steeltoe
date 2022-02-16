@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint
                 static bool Query(Type t) => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
                 static bool SupportedOnPlatform(Type t) => !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump"))
                                                             || (t.Name.StartsWith("ThreadDump") && Platform.IsWindows)
-                                                            || (t.Name.StartsWith("HeapDump") && EndpointServiceCollectionExtensions.IsHeapDumpSupported());
+                                                            || t.Name.StartsWith("HeapDump");
                 var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes()
                                 .Union(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes())
                                 .Where(Query).Where(SupportedOnPlatform).ToList();

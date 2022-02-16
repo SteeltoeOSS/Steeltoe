@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.ConfigServer</RootNamespace>
     <Description>Package for adding Spring Cloud Config Server configuration provider to ASP.NET Core applications</Description>
     <PackageTags>aspnetcore;Spring Cloud;Spring Cloud Config Server</PackageTags>

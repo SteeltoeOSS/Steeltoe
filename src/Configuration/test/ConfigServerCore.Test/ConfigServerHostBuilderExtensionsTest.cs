@@ -54,5 +54,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
             Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
         }
+
+#if NET6_0_OR_GREATER
+        [Fact]
+        public void AddConfigServer_WebApplicationBuilder_AddsConfigServer()
+        {
+            var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+            hostBuilder.AddConfigServer();
+            var host = hostBuilder.Build();
+
+            var config = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
+            Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
+            Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
+        }
+#endif
     }
 }

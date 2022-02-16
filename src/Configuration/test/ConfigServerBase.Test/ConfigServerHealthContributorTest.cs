@@ -139,7 +139,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "true" },
                 { "spring:cloud:config:health:timeToLive", "1" },
-                { "spring:cloud:config:timeout", "10" },
+                { "spring:cloud:config:timeout", "1" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);

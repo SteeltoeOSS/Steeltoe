@@ -24,9 +24,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
             var builder = new ConfigurationBuilder().AddConfigServer(environment);
-            var config = builder.Build();
+            services.AddSingleton<IConfiguration>(services => builder.Build());
 
-            services.ConfigureConfigServerClientOptions(config);
+            services.ConfigureConfigServerClientOptions();
             var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
             Assert.NotNull(service);
             var options = service.Value;

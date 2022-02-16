@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
 using System;
 
@@ -14,6 +16,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     /// </summary>
     public static class ConfigServerServiceCollectionExtensions
     {
+        [Obsolete("IConfiguration parameter is not needed anymore")]
         public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -34,6 +37,23 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return services;
         }
 
+        public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services
+                .AddOptions<ConfigServerClientSettingsOptions>()
+                .Configure<IConfiguration>((options, config) =>
+                {
+                    config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX).Bind(options);
+                });
+
+            return services;
+        }
+
         /// <summary>
         /// Add the ConfigServerHealthContributor as a IHealthContributor to the service container.
         /// </summary>
@@ -49,6 +69,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             services.AddSingleton<IHealthContributor, ConfigServerHealthContributor>();
 
             return services;
+        }
+
+        /// <summary>
+        /// Configures ConfigServerClientSettingsOptions, ConfigServerHostedService, Config Server Health Contributor
+        /// and ensures IConfigurationRoot is available
+        /// </summary>
+        /// <param name="services">Your <see cref="IServiceCollection"/></param>
+        public static void AddConfigServerServices(this IServiceCollection services)
+        {
+            services.ConfigureConfigServerClientOptions();
+            services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IConfiguration>() as IConfigurationRoot);
+            services.TryAddSingleton<IHostedService, ConfigServerHostedService>();
+            services.AddConfigServerHealthContributor();
         }
     }
 }

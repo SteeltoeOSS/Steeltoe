@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
-using Serilog.Core;
-using Steeltoe.Common.Diagnostics;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Connector;
@@ -42,15 +40,6 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 {
     public class HostBuilderExtensionsTest
     {
-        private static readonly Dictionary<string, string> _fastTests = new ()
-        {
-            { "spring:cloud:config:timeout", "10" },
-            { "eureka:client:shouldRegister", "true" },
-            { "eureka:client:eurekaServer:connectTimeoutSeconds", "1" },
-            { "eureka:client:eurekaServer:retryCount", "0" },
-            { "redis:client:abortOnConnectFail", "false" }
-        };
-
         [Fact]
         public void ConfigServerConfiguration_IsAutowired()
         {
@@ -60,7 +49,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
                     SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerCore,
                     SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore
                 });
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(_fastTests));
+            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration));
 
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
             var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
@@ -134,7 +123,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         {
             var exclusions = SteeltoeAssemblies.AllAssemblies
                 .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore });
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(_fastTests));
+            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers._fastTestsConfiguration));
 
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
             var config = host.Services.GetService<IConfiguration>() as ConfigurationRoot;
@@ -170,7 +159,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         {
             var exclusions = SteeltoeAssemblies.AllAssemblies
                 .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Discovery_ClientBase });
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(_fastTests));
+            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration));
 
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -186,7 +175,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
                 .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Discovery_ClientCore });
 
             var host = new HostBuilder()
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(_fastTests))
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
                 .AddSteeltoe(exclusions).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
 
