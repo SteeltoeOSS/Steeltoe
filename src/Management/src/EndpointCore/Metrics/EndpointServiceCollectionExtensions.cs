@@ -10,13 +10,11 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.OpenTelemetry.Metrics.Export;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
-using Steeltoe.Management.OpenTelemetry.Stats;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 using System;
 using System.Diagnostics.Tracing;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -44,51 +42,52 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var observerOptions = new MetricsObserverOptions(config);
             services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
-            AddMetricsObservers(services, observerOptions);
+            services.TryAddSingleton(new SteeltoeExporterOptions());
+                AddMetricsObservers(services, observerOptions);
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
+            //    services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
             services.AddOpenTelemetry();
 
-            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
+        //    services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
 #pragma warning restore CS0618 // Type or member is obsolete
             services.AddActuatorEndpointMapping<MetricsEndpoint>();
         }
 
-        public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+                public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
+                {
+                    if (services == null)
+                    {
+                        throw new ArgumentNullException(nameof(services));
+                    }
 
-            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+                    config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+                    if (config == null)
+                    {
+                        throw new ArgumentNullException(nameof(config));
+                    }
 
-            services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+                    services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+                    services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+                    services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
-            var metricsEndpointOptions = new MetricsEndpointOptions(config);
-            services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
+                    var metricsEndpointOptions = new MetricsEndpointOptions(config);
+                    services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
 
-            var observerOptions = new MetricsObserverOptions(config);
-            services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
+                    var observerOptions = new MetricsObserverOptions(config);
+                    services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
-            services.AddPrometheusActuatorServices(config);
+                    services.AddPrometheusActuatorServices(config);
 
-            AddMetricsObservers(services, observerOptions);
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
-            services.AddOpenTelemetry();
-            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
-#pragma warning restore CS0618 // Type or member is obsolete
-            services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
-        }
+                    AddMetricsObservers(services, observerOptions);
+        #pragma warning disable CS0618 // Type or member is obsolete
+                   // services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
+                    services.AddOpenTelemetry();
+                  //  services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
+        #pragma warning restore CS0618 // Type or member is obsolete
+                    services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
+                }
 
         private static void AddMetricsObservers(IServiceCollection services, MetricsObserverOptions observerOptions)
         {
@@ -132,19 +131,22 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         private static void AddOpenTelemetry(this IServiceCollection services)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.TryAddSingleton<MultiExporter>();
-            services.TryAddSingleton((provider) =>
-            {
-                var exporter = provider.GetService<MultiExporter>();
-                return new SteeltoeProcessor(exporter); // TODO: Capture from options when OTel Configuration is finalized
-            });
-            services.TryAddSingleton<IStats>((provider) =>
-            {
-                var processor = provider.GetService<SteeltoeProcessor>();
-                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(3));
-            });
-#pragma warning restore CS0618 // Type or member is obsolete
+          //  services.TryAddSingleton(new PrometheusExporterOptions() { StartHttpListener = false });
+            services.TryAddSingleton<SteeltoeExporter>();
+            services.TryAddSingleton<PrometheusExporterWrapper>();
+ 
+            services.TryAddSingleton(provider =>
+                {
+                    var steeltoeExporter = provider.GetService<SteeltoeExporter>();
+                    var promExporter = provider.GetService<PrometheusExporterWrapper>();
+                    //     var steeltoePrometheusOptions = provider.GetService<IPrometheus>
+                    return new OpenTelemetryMetrics(steeltoeExporter, promExporter);
+                });
+            //services.TryAddSingleton((provider) =>
+            //{
+            //    var stats = provider.GetService<IStats>() as OpenTelemetryMetrics;
+            //    return stats.SteeltoeExporter;
+            //});
         }
     }
 }

@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -37,6 +40,17 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IMetricsEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<MetricsEndpoint>();
+            services.AddSingleton(new SteeltoeExporterOptions());
+
+            services.AddSingleton(provider =>
+            {
+                services.AddSingleton<PrometheusExporterWrapper>();
+                var options = provider.GetService<SteeltoeExporterOptions>();
+                var steeltoeExporter = new SteeltoeExporter(options);
+                var promExporter = provider.GetService<PrometheusExporterWrapper>();
+                OpenTelemetryMetrics.Initialize(steeltoeExporter, promExporter);
+                return steeltoeExporter;
+            });
             services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
             return services;

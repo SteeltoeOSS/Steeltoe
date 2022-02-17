@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
@@ -27,18 +28,19 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         private readonly string _generationKey = "generation";
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly MeasureMetric<long> _collectionCount;
-        private readonly MeasureMetric<long> _memoryUsed;
-        private readonly Dictionary<string, string> _memoryLabels = new () { { "area", "heap" } };
+        private readonly Counter<long> _collectionCount;
+        private readonly Counter<double> _memoryUsed;
+        private readonly Dictionary<string, object> _memoryLabels = new () { { "area", "heap" } };
 
         private List<long> _previousCollectionCounts = null;
 
-        public GCEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
-            : base(stats)
+        public GCEventsListener(ILogger<EventSourceListener> logger = null)
+            : base()
         {
             _logger = logger;
-            _memoryUsed = Meter.CreateInt64Measure("clr.memory.used");
-            _collectionCount = Meter.CreateInt64Measure("clr.gc.collections");
+            var meter = OpenTelemetryMetrics.Meter;
+            _memoryUsed = meter.CreateCounter<double>("clr.memory.used");
+            _collectionCount = meter.CreateCounter<long>("clr.gc.collections");
         }
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
@@ -73,7 +75,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
         {
             var totalMemory = GC.GetTotalMemory(false);
-            _memoryUsed.Record(default, totalMemory, _memoryLabels);
+            _memoryUsed.Add(totalMemory, _memoryLabels.AsReadonlySpan());
             var counts = new List<long>(GC.MaxGeneration);
             for (var i = 0; i < GC.MaxGeneration; i++)
             {
@@ -85,9 +87,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                     count -= _previousCollectionCounts[i];
                 }
 
-                var genKeylabelSet = new List<KeyValuePair<string, string>>()
-                    { new KeyValuePair<string, string>(_generationKey, GENERATION_TAGVALUE_NAME + i) };
-                _collectionCount.Record(default, count, genKeylabelSet);
+                var genKeylabelSet = new List<KeyValuePair<string, object>>()
+                    { new KeyValuePair<string, object>(_generationKey, GENERATION_TAGVALUE_NAME + i) };
+                _collectionCount.Add(count, genKeylabelSet.AsReadonlySpan());
             }
 
             _previousCollectionCounts = counts;

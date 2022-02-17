@@ -3,14 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -31,16 +31,18 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _uriTagKey = "uri";
         private readonly string _methodTagKey = "method";
         private readonly string _clientTagKey = "clientName";
+        private Histogram<double> _clientTimeMeasure;
+        private Histogram<double> _clientCountMeasure;
 
-        private readonly MeasureMetric<double> _clientTimeMeasure;
-        private readonly MeasureMetric<long> _clientCountMeasure;
+        //private readonly MeasureMetric<double> _clientTimeMeasure;
+        //private readonly MeasureMetric<long> _clientCountMeasure;
 
-        public HttpClientCoreObserver(IMetricsObserverOptions options, IStats stats, ILogger<HttpClientCoreObserver> logger)
-            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
+        public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
         {
             PathMatcher = new Regex(options.EgressIgnorePattern);
-            _clientTimeMeasure = Meter.CreateDoubleMeasure("http.client.request.time");
-            _clientCountMeasure = Meter.CreateInt64Measure("http.client.request.count");
+            _clientTimeMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.time");
+            _clientCountMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.count");
 
             /* TODO: figureout bound instruments & view API
             var view = View.Create(
@@ -117,20 +119,20 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             if (current.Duration.TotalMilliseconds > 0)
             {
                 var labels = GetLabels(request, response, taskStatus);
-                _clientTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labels);
-                _clientCountMeasure.Record(default(SpanContext), 1, labels);
+                _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels.AsReadonlySpan());
+                _clientCountMeasure.Record(1, labels.AsReadonlySpan());
             }
         }
 
-        protected internal IEnumerable<KeyValuePair<string, string>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+        protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
         {
             var uri = request.RequestUri.ToString();
             var statusCode = GetStatusCode(response, taskStatus);
-            var labels = new List<KeyValuePair<string, string>>();
-            labels.Add(KeyValuePair.Create(_uriTagKey, uri));
-            labels.Add(KeyValuePair.Create(_statusTagKey, statusCode));
-            labels.Add(KeyValuePair.Create(_clientTagKey, request.RequestUri.Host));
-            labels.Add(KeyValuePair.Create(_methodTagKey, request.Method.ToString()));
+            var labels = new List<KeyValuePair<string, object>>();
+            labels.Add(KeyValuePair.Create(_uriTagKey, (object)uri));
+            labels.Add(KeyValuePair.Create(_statusTagKey, (object)statusCode));
+            labels.Add(KeyValuePair.Create(_clientTagKey, (object)request.RequestUri.Host));
+            labels.Add(KeyValuePair.Create(_methodTagKey, (object)request.Method.ToString()));
             return labels;
         }
 

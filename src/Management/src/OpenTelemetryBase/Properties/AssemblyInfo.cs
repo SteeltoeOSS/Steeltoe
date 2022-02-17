@@ -8,5 +8,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.TracingBase.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.TracingCore.Test")]
 
+[assembly: InternalsVisibleTo("Steeltoe.Management.EndpointBase")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointBase.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointCore.Test")]

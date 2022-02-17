@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Stats;
+using Steeltoe.Management.OpenTelemetry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -28,17 +28,16 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _exceptionTagKey = "exception";
         private readonly string _methodTagKey = "method";
         private readonly string _uriTagKey = "uri";
+        private readonly Histogram<double> _responseTime;
+        private readonly Histogram<double> _serverCount;
 
-        private readonly MeasureMetric<double> _responseTimeMeasure;
-        private readonly CounterMetric<long> _serverCountMeasure;
-
-        public AspNetCoreHostingObserver(IMetricsObserverOptions options, IStats stats, ILogger<AspNetCoreHostingObserver> logger)
-            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
+        public AspNetCoreHostingObserver(IMetricsObserverOptions options, ILogger<AspNetCoreHostingObserver> logger)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
         {
             PathMatcher = new Regex(options.IngressIgnorePattern);
-
-            _responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.requests.seconds");
-            _serverCountMeasure = Meter.CreateInt64Counter("http.server.requests.count");
+            var meter = OpenTelemetryMetrics.Meter;
+            _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
+            _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");
             /*
             //var view = View.Create(
             //        ViewName.Create("http.server.request.time"),
@@ -98,28 +97,28 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (current.Duration.TotalMilliseconds > 0)
             {
-                var labelSets = GetLabelSets(arg); // Todo: Used bound labelsets
+                var labelSets = GetLabelSets(arg);
 
-                _serverCountMeasure.Add(default, 1, labelSets);
-                _responseTimeMeasure.Record(default, current.Duration.TotalSeconds, labelSets);
+                _serverCount.Record(1, labelSets);
+                _responseTime.Record(current.Duration.TotalSeconds, labelSets);
             }
         }
 
-        protected internal List<KeyValuePair<string, string>> GetLabelSets(HttpContext arg)
+        protected internal ReadOnlySpan<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
         {
             var uri = arg.Request.Path.ToString();
             var statusCode = arg.Response.StatusCode.ToString();
             var exception = GetException(arg);
 
-            var tagValues = new List<KeyValuePair<string, string>>
+            var tagValues = new List<KeyValuePair<string, object>>
             {
-                new KeyValuePair<string, string>(_uriTagKey, uri),
-                new KeyValuePair<string, string>(_statusTagKey, statusCode),
-                new KeyValuePair<string, string>(_exceptionTagKey, exception),
-                new KeyValuePair<string, string>(_methodTagKey, arg.Request.Method)
+                new KeyValuePair<string, object>(_uriTagKey, uri),
+                new KeyValuePair<string, object>(_statusTagKey, statusCode),
+                new KeyValuePair<string, object>(_exceptionTagKey, exception),
+                new KeyValuePair<string, object>(_methodTagKey, arg.Request.Method)
             };
 
-            return tagValues;
+            return new ReadOnlySpan<KeyValuePair<string, object>>(tagValues.ToArray());
         }
 
         protected internal string GetException(HttpContext arg)

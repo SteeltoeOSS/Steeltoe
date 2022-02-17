@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Text.RegularExpressions;
 
@@ -14,16 +12,16 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public abstract class MetricsObserver : DiagnosticObserver
     {
-        protected Meter Meter { get; }
+        //protected Meter Meter { get; }
 
         protected IMetricsObserverOptions Options { get; }
 
         protected Regex PathMatcher { get; set; }
 
-        public MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, IStats stats, ILogger logger = null)
+        public MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
             : base(observerName, diagnosticName, logger)
         {
-            Meter = stats.Meter;
+            // Meter = stats.Meter;
             Options = options;
         }
 

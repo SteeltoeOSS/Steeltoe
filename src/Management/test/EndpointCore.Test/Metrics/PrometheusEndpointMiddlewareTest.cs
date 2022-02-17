@@ -6,10 +6,8 @@ using Microsoft.AspNetCore.Http;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
-using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,13 +26,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new PrometheusEndpointOptions();
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
-            var exporter = new PrometheusExporter();
-            var processor = new SteeltoeProcessor(exporter);
-            var factory = AutoCollectingMeterFactory.Create(processor);
-            var meter = factory.GetMeter("Test");
-            SetupTestView(meter);
-            factory.CollectAllMetrics();
-            processor.ExportMetrics();
+            var exporter = new PrometheusExporterWrapper();
+            SetupTestView(exporter);
 
             Task.Delay(1000).Wait();
 
@@ -47,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var rdr = new StreamReader(context.Response.Body);
             var text = await rdr.ReadToEndAsync();
-            Assert.Equal("# HELP test Testtest\n# TYPE test counter\ntest{a=\"v1\",b=\"v1\",c=\"v1\"} 45\n", text);
+            Assert.StartsWith("# TYPE test counter\ntest{a=\"v1\",b=\"v1\",c=\"v1\"} 45", text);
         }
 
         private HttpContext CreateRequest(string method, string path, string query = null)
@@ -69,19 +62,20 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             return context;
         }
 
-        private void SetupTestView(Meter meter)
+        private void SetupTestView(PrometheusExporterWrapper prometheusExporter)
         {
-            var measure = meter.CreateDoubleCounter("test");
-            var labels = new Dictionary<string, string>()
+            OpenTelemetryMetrics.Initialize(null, prometheusExporter);
+            var measure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
+            var labels = new Dictionary<string, object>()
             {
                 { "a", "v1" },
                 { "b", "v1" },
                 { "c", "v1" }
-            }.ToList();
+            };
 
             for (var i = 0; i < 10; i++)
             {
-                measure.Add(default(SpanContext), i, labels);
+                measure.Add(i, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
             }
 
             /*var tagsComponent = new TagsComponent();

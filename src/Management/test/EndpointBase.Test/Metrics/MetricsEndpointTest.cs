@@ -5,24 +5,27 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.Endpoint.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
-    [Obsolete]
     public class MetricsEndpointTest : BaseTest
     {
+        private readonly Meter _meter;
         private readonly ITestOutputHelper _output;
 
         public MetricsEndpointTest(ITestOutputHelper output)
         {
+            _meter = new Meter(OpenTelemetryMetrics.InstrumentationName, OpenTelemetryMetrics.InstrumentationVersion);
+
             _output = output;
         }
 
@@ -38,21 +41,25 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             using (var tc = new TestContext(_output))
             {
-                SetupStats(out var exporter);
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(exporter);
                 };
 
                 var ep = tc.GetService<IMetricsEndpoint>();
+
+                var requests = _meter.CreateCounter<long>("http.server.requests");
+                requests.Add(1);
+                var memory = _meter.CreateCounter<double>("gc.memory.used");
+                memory.Add(25);
+
                 var result = ep.Invoke(null);
                 Assert.NotNull(result);
                 Assert.IsType<MetricsListNamesResponse>(result);
                 var resp = result as MetricsListNamesResponse;
                 Assert.NotEmpty(resp.Names);
                 Assert.Contains("http.server.requests", resp.Names);
-                Assert.Contains("jvm.memory.used", resp.Names);
+                Assert.Contains("gc.memory.used", resp.Names);
                 Assert.Equal(2, resp.Names.Count);
             }
 
@@ -61,7 +68,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(new SteeltoeExporter());
                 };
 
                 var ep = tc.GetService<IMetricsEndpoint>();
@@ -79,44 +85,41 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             using (var tc = new TestContext(_output))
             {
-                var stats = new TestOpenTelemetryMetrics();
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(stats.Exporter);
                 };
 
                 var ep = tc.GetService<IMetricsEndpoint>();
-                var testMeasure = stats.Meter.CreateDoubleMeasure("test.test1");
+
+                var testMeasure = _meter.CreateCounter<double>("test.test1");
                 long allKeyssum = 0;
-                var labels = new Dictionary<string, string>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } }.ToList();
+                var labelsKvps = new Dictionary<string, object>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
                 for (var i = 0; i < 10; i++)
                 {
                     allKeyssum += i;
-                    testMeasure.Record(default, i, labels);
+                    testMeasure.Add(i, labelsKvps.AsReadonlySpan());
                 }
 
-                stats.Factory.CollectAllMetrics();
-                stats.Processor.ExportMetrics();
-
-                var req = new MetricsRequest("test.test1", labels);
+                var tags = labelsKvps.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
+                var req = new MetricsRequest("test.test1", tags);
                 var resp = ep.Invoke(req) as MetricsResponse;
                 Assert.NotNull(resp);
 
                 Assert.Equal("test.test1", resp.Name);
 
                 Assert.NotNull(resp.Measurements);
-                Assert.Equal(2, resp.Measurements.Count);
+                Assert.Single(resp.Measurements);
 
-                var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.VALUE);
+                var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.TOTAL);
                 Assert.NotNull(sample);
-                Assert.Equal((double)allKeyssum / 10, sample.Value);
+                Assert.Equal((double)allKeyssum, sample.Value);
 
                 Assert.NotNull(resp.AvailableTags);
                 Assert.Equal(3, resp.AvailableTags.Count);
 
-                req = new MetricsRequest("foo.bar", labels);
+                req = new MetricsRequest("foo.bar", tags);
                 resp = ep.Invoke(req) as MetricsResponse;
                 Assert.Null(resp);
             }
@@ -161,27 +164,22 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             using (var tc = new TestContext(_output))
             {
-                var stats = new TestOpenTelemetryMetrics();
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(stats.Exporter);
                 };
 
                 var ep = tc.GetService<MetricsEndpoint>();
 
-                var counter = stats.Meter.CreateDoubleCounter("test.test1");
-                counter.Add(default, 100, LabelSet.BlankLabelSet);
-
-                stats.Factory.CollectAllMetrics();
-                stats.Processor.ExportMetrics();
+                var counter = _meter.CreateCounter<double>("test.test1");
+                counter.Add(100);
 
                 ep.GetMetricsCollection(out var measurements, out _);
                 Assert.NotNull(measurements);
                 Assert.Single(measurements.Values);
                 var sample = measurements.Values.FirstOrDefault()[0];
                 Assert.Equal(100, sample.Value);
-                Assert.Equal(MetricStatistic.COUNT, sample.Statistic);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
             }
         }
 
@@ -190,20 +188,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             using (var tc = new TestContext(_output))
             {
-                var stats = new TestOpenTelemetryMetrics();
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(stats.Exporter);
                 };
 
                 var ep = tc.GetService<MetricsEndpoint>();
 
-                var measure = stats.Meter.CreateDoubleMeasure("test.test3");
-                measure.Record(default, 100, LabelSet.BlankLabelSet);
-
-                stats.Factory.CollectAllMetrics();
-                stats.Processor.ExportMetrics();
+                var measure = _meter.CreateObservableGauge<double>("test.test3", () => 100);
 
                 ep.GetMetricsCollection(out var measurements, out _);
                 Assert.Single(measurements.Values);
@@ -269,36 +261,31 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             using (var tc = new TestContext(_output))
             {
-                var stats = new TestOpenTelemetryMetrics();
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(stats.Exporter);
                 };
 
                 var ep = tc.GetService<MetricsEndpoint>();
 
-                var counter = stats.Meter.CreateDoubleCounter("test.test1");
+                var counter = _meter.CreateCounter<double>("test.test1");
 
-                var v1Tags = new Dictionary<string, string>()
+                var v1Tags = new Dictionary<string, object>()
                 {
                     { "a", "v1" },
                     { "b", "v1" },
                     { "c", "v1" }
                 };
 
-                var v2Tags = new Dictionary<string, string>()
+                var v2Tags = new Dictionary<string, object>()
                 {
                     { "a", "v2" },
                     { "b", "v2" },
                     { "c", "v2" }
                 };
 
-                counter.Add(default, 1, v1Tags);
-                counter.Add(default, 1, v2Tags);
-
-                stats.Factory.CollectAllMetrics();
-                stats.Processor.ExportMetrics();
+                counter.Add(1, v1Tags.AsReadonlySpan());
+                counter.Add(1, v2Tags.AsReadonlySpan());
 
                 ep.GetMetricsCollection(out _, out var tagDictionary);
 
@@ -324,12 +311,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 Assert.Contains("v1", tag.Values);
                 Assert.Contains("v2", tag.Values);
 
-                var counter2 = stats.Meter.CreateDoubleCounter("test.test2");
+                var counter2 = _meter.CreateCounter<double>("test.test2");
 
-                counter2.Add(default, 1, LabelSet.BlankLabelSet);
-
-                stats.Factory.CollectAllMetrics();
-                stats.Processor.ExportMetrics();
+                counter2.Add(1);
 
                 ep.GetMetricsCollection(out _, out tagDictionary);
 
@@ -346,31 +330,29 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             using (var tc = new TestContext(_output))
             {
-                var stats = new TestOpenTelemetryMetrics();
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(stats.Exporter);
                 };
 
                 var ep = tc.GetService<MetricsEndpoint>();
 
-                var testMeasure = stats.Meter.CreateDoubleMeasure("test.test1");
-                var context1 = new Dictionary<string, string>()
+                var testMeasure = _meter.CreateHistogram<double>("test.test1");
+                var context1 = new Dictionary<string, object>()
                 {
                     { "a", "v1" },
                     { "b", "v1" },
                     { "c", "v1" }
                 };
-                var context2 = new Dictionary<string, string>()
+                var context2 = new Dictionary<string, object>()
                 {
                     { "a", "v1" },
                 };
-                var context3 = new Dictionary<string, string>()
+                var context3 = new Dictionary<string, object>()
                 {
                     { "b", "v1" },
                 };
-                var context4 = new Dictionary<string, string>()
+                var context4 = new Dictionary<string, object>()
                 {
                     { "c", "v1" },
                 };
@@ -379,28 +361,28 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 for (var i = 0; i < 10; i++)
                 {
                     allKeyssum += i;
-                    testMeasure.Record(default, i, context1);
+                    testMeasure.Record(i, context1.AsReadonlySpan());
                 }
 
                 long asum = 0;
                 for (var i = 0; i < 10; i++)
                 {
                     asum += i;
-                    testMeasure.Record(default, i, context2);
+                    testMeasure.Record(i, context2.AsReadonlySpan());
                 }
 
                 long bsum = 0;
                 for (var i = 0; i < 10; i++)
                 {
                     bsum += i;
-                    testMeasure.Record(default, i, context3);
+                    testMeasure.Record(i, context3.AsReadonlySpan());
                 }
 
                 long csum = 0;
                 for (var i = 0; i < 10; i++)
                 {
                     csum += i;
-                    testMeasure.Record(default, i, context4);
+                    testMeasure.Record(i, context4.AsReadonlySpan());
                 }
 
                 var alltags = new List<KeyValuePair<string, string>>()
@@ -410,19 +392,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                     new KeyValuePair<string, string>("c", "v1")
                 };
 
-                stats.Factory.CollectAllMetrics();
-                stats.Processor.ExportMetrics();
                 ep.GetMetricsCollection(out var measurements, out var tags);
                 Assert.NotNull(measurements);
                 var measurement = measurements["test.test1"];
-                Assert.Equal(8, measurement.Count);
+                Assert.Equal(4, measurement.Count); // TODO: Isthis right? 
                 var sample = measurement[0];
-                Assert.Equal((double)allKeyssum / 10, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
-
-                sample = measurement[1];
-                Assert.Equal(allKeyssum, sample.Value);
+                Assert.Equal((double)allKeyssum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+
+                //sample = measurement[1];
+                //Assert.Equal(allKeyssum, sample.Value);
+                //Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
                 var atags = new List<KeyValuePair<string, string>>()
                 {
@@ -431,12 +411,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 var result = ep.GetMetricSamplesByTags(measurements, "test.test1", atags);
                 Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
-                sample = result[0];
-                Assert.Equal((double)(allKeyssum + asum) / 20, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+                Assert.Equal(1, result.Count);
 
-                sample = result[1];
+                //sample = result[0];
+                //Assert.Equal((double)(allKeyssum + asum) / 20, sample.Value);
+                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = result[0];
                 Assert.Equal(allKeyssum + asum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
@@ -449,13 +430,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 Assert.NotNull(result);
                 Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
+                Assert.Equal(1, result.Count);
+
+                //sample = result[0];
+                //Assert.Equal((double)(allKeyssum + bsum) / 20, sample.Value);
+                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
 
                 sample = result[0];
-                Assert.Equal((double)(allKeyssum + bsum) / 20, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
-
-                sample = result[1];
 
                 Assert.Equal(allKeyssum + bsum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
@@ -467,13 +448,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", ctags);
                 Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
+                Assert.Equal(1, result.Count);
+
+                //sample = result[0];
+                //Assert.Equal((double)(allKeyssum + csum) / 20, sample.Value);
+                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
 
                 sample = result[0];
-                Assert.Equal((double)(allKeyssum + csum) / 20, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
-
-                sample = result[1];
                 Assert.Equal(allKeyssum + csum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
@@ -486,13 +467,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", abtags);
 
                 Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
+                Assert.Equal(1, result.Count);
+
+                //sample = result[0];
+                //Assert.Equal((double)allKeyssum / 10, sample.Value);
+                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
 
                 sample = result[0];
-                Assert.Equal((double)allKeyssum / 10, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
-
-                sample = result[1];
                 Assert.Equal(allKeyssum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
@@ -504,13 +485,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", actags);
 
                 Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
+                Assert.Equal(1, result.Count);
 
                 sample = result[0];
-                Assert.Equal((double)allKeyssum / 10, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+                //Assert.Equal((double)allKeyssum / 10, sample.Value);
+                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
 
-                sample = result[1];
+                //sample = result[1];
                 Assert.Equal(allKeyssum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
@@ -522,13 +503,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", bctags);
 
                 Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
+                Assert.Equal(1, result.Count);
 
                 sample = result[0];
-                Assert.Equal((double)allKeyssum / 10, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+                //Assert.Equal((double)allKeyssum / 10, sample.Value);
+                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
 
-                sample = result[1];
+                //sample = result[1];
                 Assert.Equal(allKeyssum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
             }
@@ -539,28 +520,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             using (var tc = new TestContext(_output))
             {
-                var stats = new TestOpenTelemetryMetrics();
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddMetricsActuatorServices(configuration);
-                    services.AddSingleton(stats.Exporter);
                 };
 
                 var ep = tc.GetService<IMetricsEndpoint>();
 
-                var testMeasure = stats.Meter.CreateDoubleMeasure("test.total");
-                var labels = new Dictionary<string, string>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } }.ToList();
+                var testMeasure = _meter.CreateCounter<double>("test.total");
+                var labels = new Dictionary<string, object>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
-                long allKeyssum = 0;
-                for (var i = 0; i < 10; i++)
+                double allKeyssum = 0;
+                for (double i = 0; i < 10; i++)
                 {
                     allKeyssum += i;
-                    testMeasure.Record(default, i, labels);
+                    testMeasure.Add( i, labels.AsReadonlySpan());
                 }
 
-                stats.Factory.CollectAllMetrics();
-                stats.Processor.ExportMetrics();
-                var req = new MetricsRequest("test.total", labels);
+                var req = new MetricsRequest("test.total", labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList());
 
                 var resp = ep.Invoke(req) as MetricsResponse;
 
@@ -569,52 +546,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 Assert.Equal("test.total", resp.Name);
 
                 Assert.NotNull(resp.Measurements);
-                Assert.Equal(2, resp.Measurements.Count);
-                var sample = resp.Measurements[1];
+                Assert.Equal(1, resp.Measurements.Count);
+                var sample = resp.Measurements[0];
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
                 Assert.Equal(allKeyssum, sample.Value);
 
                 Assert.NotNull(resp.AvailableTags);
                 Assert.Equal(3, resp.AvailableTags.Count);
             }
-        }
-
-        private void SetupStats(out SteeltoeExporter exporter)
-        {
-            var stats = new TestOpenTelemetryMetrics();
-            var meter = stats.Meter;
-            exporter = stats.Exporter;
-
-            var httpServerRquestMeasure = meter.CreateDoubleMeasure("http.server.requests");
-            httpServerRquestMeasure.Record(default, 10, GetServerLabels());
-
-            var memoryUsageMeasure = meter.CreateDoubleMeasure("jvm.memory.used");
-            memoryUsageMeasure.Record(default, 10, GetMemoryLabels());
-
-            stats.Factory.CollectAllMetrics();
-            stats.Processor.ExportMetrics();
-        }
-
-        private List<KeyValuePair<string, string>> GetMemoryLabels()
-        {
-            var labels = new List<KeyValuePair<string, string>>();
-
-            labels.Add(KeyValuePair.Create("area", string.Empty));
-            labels.Add(KeyValuePair.Create("id", string.Empty));
-
-            return labels;
-        }
-
-        private List<KeyValuePair<string, string>> GetServerLabels()
-        {
-            var labels = new List<KeyValuePair<string, string>>();
-
-            labels.Add(KeyValuePair.Create("exception", string.Empty));
-            labels.Add(KeyValuePair.Create("method", string.Empty));
-            labels.Add(KeyValuePair.Create("uri", string.Empty));
-            labels.Add(KeyValuePair.Create("status", string.Empty));
-
-            return labels;
         }
     }
 }

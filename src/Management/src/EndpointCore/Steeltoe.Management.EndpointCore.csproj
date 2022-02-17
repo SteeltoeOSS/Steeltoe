@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Metrics\Observer\" />
+  </ItemGroup>
 </Project>
