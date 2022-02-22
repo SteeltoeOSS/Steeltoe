@@ -54,15 +54,6 @@ namespace Steeltoe.Management.CloudFoundry.Test
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
             }
 
-            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
-            {
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
-            }
-
             Assert.NotNull(filters);
             Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
         }
@@ -91,14 +82,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
             }
 
-            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
-            {
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
-            }
+            Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
             Assert.NotNull(filters);
             Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
@@ -125,14 +109,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
             }
 
-            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
-            {
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
-            }
+            Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
             Assert.NotNull(filter);
             Assert.IsType<CloudFoundryActuatorsStartupFilter>(filter);
@@ -197,14 +174,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
             }
 
-            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
-            {
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
-            }
+            Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
             Assert.NotNull(filters);
             Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());

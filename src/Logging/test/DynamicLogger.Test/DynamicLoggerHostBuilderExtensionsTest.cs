@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#if NET6_0_OR_GREATER
+using Microsoft.AspNetCore.Builder;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -52,5 +55,46 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger.Test
             Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
             Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
         }
+
+#if NET6_0_OR_GREATER
+        [Fact]
+        public void AddDynamicLogging_WebApplicationBuilder_AddsDynamicLogging()
+        {
+            var hostBuilder = WebApplication.CreateBuilder();
+            hostBuilder.AddDynamicLogging();
+            var host = hostBuilder.Build();
+            var loggerProviders = host.Services.GetServices<ILoggerProvider>();
+
+            Assert.Single(loggerProviders.Where(provider => provider is DynamicConsoleLoggerProvider));
+        }
+
+        [Fact]
+        public void AddDynamicLogging_WebApplicationBuilder_RemovesConsoleLogging()
+        {
+            var hostBuilder = WebApplication.CreateBuilder();
+            hostBuilder.Logging.AddConsole();
+            hostBuilder.AddDynamicLogging();
+
+            var host = hostBuilder.Build();
+            var loggerProviders = host.Services.GetServices<ILoggerProvider>();
+
+            Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
+            Assert.Single(loggerProviders.Where(provider => provider is DynamicConsoleLoggerProvider));
+        }
+
+        [Fact]
+        public void AddDynamicLogging_WebApplicationBuilder_RemovesConsoleLoggingDefaultBuilder()
+        {
+            var hostBuilder = Host.CreateDefaultBuilder()
+                .ConfigureLogging(ilb => ilb.AddConsole())
+                .AddDynamicLogging();
+
+            var host = hostBuilder.Build();
+            var loggerProviders = host.Services.GetServices<ILoggerProvider>();
+
+            Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
+            Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
+        }
+#endif
     }
 }

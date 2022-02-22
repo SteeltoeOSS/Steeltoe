@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                         services.AddHeapDumpActuatorServices(configuration);
                         services.AddSingleton<IHeapDumper>(sp =>
                         {
-                            return new WindowsHeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<WindowsHeapDumper>>());
+                            return new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>());
                         });
                     };
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Utils.IO;
 using System;
@@ -19,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration configuration = null;
+            IConfigurationRoot configuration = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
         }
@@ -264,6 +265,29 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.True(holder.TryGet("spring:cloud:config:name", out val));
             Assert.Equal("newMyName", val);
         }
+
+#if NET6_0_OR_GREATER
+        [Fact]
+        public void AdjustConfigManagerBuilder_CorrectlyReflectNewValues()
+        {
+            var manager = new ConfigurationManager();
+            var template = new Dictionary<string, string> { { "placeholder", "${value}" } };
+            var valueProviderA = new Dictionary<string, string> { { "value", "a" } };
+            var valueProviderB = new Dictionary<string, string> { { "value", "b" } };
+            manager.AddInMemoryCollection(template);
+            manager.AddInMemoryCollection(valueProviderA);
+            manager.AddInMemoryCollection(valueProviderB);
+            manager.AddPlaceholderResolver();
+            var result = manager.GetValue<string>("placeholder");
+            Assert.Equal("b", result);
+
+            var builder = (IConfigurationBuilder)manager;
+            var firstSource = builder.Sources.OfType<MemoryConfigurationSource>().First(x => x.InitialData is not null && x.InitialData.SequenceEqual(valueProviderB));
+            builder.Sources.Remove(firstSource);
+            result = manager.GetValue<string>("placeholder");
+            Assert.Equal("a", result);
+        }
+#endif
 
         [Fact]
         public void GetChildKeys_ReturnsResolvableSection()

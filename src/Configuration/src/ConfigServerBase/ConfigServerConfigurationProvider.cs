@@ -975,7 +975,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 clientHandler.ClientCertificates.Add(settings.ClientCertificate);
             }
 
-            return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, clientHandler, settings.Timeout);
+            var client = HttpClientHelper.GetHttpClient(settings.ValidateCertificates, clientHandler, settings.Timeout);
+            if (settings.Headers != null)
+            {
+                foreach (var header in settings.Headers)
+                {
+                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            }
+
+            return client;
         }
 
         private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)

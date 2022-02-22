@@ -945,6 +945,27 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
+        public void GetHttpClient_AddsHeaders_IfConfigured()
+        {
+            var settings = new ConfigServerClientSettings
+            {
+                Name = "foo",
+                Environment = "development",
+                Headers = new Dictionary<string, string>()
+                {
+                    { "foo", "bar" },
+                    { "bar", "foo" }
+                }
+            };
+
+            var provider = new TestConfigServerConfigurationProvider(settings);
+            var httpClient = provider.TheConfiguredClient;
+
+            Assert.Equal("bar", httpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault());
+            Assert.Equal("foo", httpClient.DefaultRequestHeaders.GetValues("bar").SingleOrDefault());
+        }
+
+        [Fact]
         public void IsDiscoveryFirstEnabled_ReturnsExpected()
         {
             var settings = new ConfigServerClientSettings
@@ -1133,6 +1154,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             Assert.Equal("my-app", options.Name);
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
+        }
+
+        private class TestConfigServerConfigurationProvider : ConfigServerConfigurationProvider
+        {
+            public TestConfigServerConfigurationProvider(ConfigServerClientSettings settings)
+                : base(settings)
+            {
+            }
+
+            public HttpClient TheConfiguredClient => _httpClient;
         }
 
         private sealed class TestOptions

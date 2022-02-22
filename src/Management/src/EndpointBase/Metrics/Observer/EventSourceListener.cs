@@ -33,6 +33,18 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             DoubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
         }
 
+        public override void Dispose()
+        {
+            try
+            {
+                base.Dispose();
+            }
+            catch (Exception)
+            {
+                // Catch and ignore exceptions
+            }
+        }
+
         protected Meter Meter => _stats.Meter;
 
         protected virtual void ExtractAndRecordMetric(

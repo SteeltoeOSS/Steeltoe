@@ -3,10 +3,12 @@ pr:
     include:
     - main
   paths:
+    exclude:
+    - /
     include:
-    - build/templates/*
+    - build/templates
     - build/configuration.yml
-    - src/Configuration/*
+    - src/Configuration
 
 jobs:
   - template: templates/component-build.yaml
