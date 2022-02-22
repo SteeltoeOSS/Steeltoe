@@ -40,76 +40,61 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
         {
-            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
-            {
-                var opts = new HeapDumpEndpointOptions();
-                var mopts = new ActuatorManagementOptions();
-                mopts.EndpointOptions.Add(opts);
+            var opts = new HeapDumpEndpointOptions();
+            var mopts = new ActuatorManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
-                IServiceCollection serviceCollection = new ServiceCollection();
-                serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-                var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
+            IServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
+            var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-                var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
-                var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
-                var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
-                var logger4 = loggerFactory.CreateLogger<HeapDumper>();
+            var logger1 = loggerFactory.CreateLogger<HeapDumper>();
+            var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+            var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+            var logger4 = loggerFactory.CreateLogger<HeapDumper>();
 
-                // WindowsHeapDumper should be used with .NET Core 3.1 on Windows. HeapDumper should be used with Linux and .NET 5 on Windows
-                var obs = (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
-                            ? new WindowsHeapDumper(opts, logger: logger1)
-                            : !Platform.IsOSX
-                                ? (IHeapDumper)new HeapDumper(opts, logger: logger4)
-                                : throw new InvalidOperationException("Unsupported Platfornm");
+            var obs = new HeapDumper(opts, logger: logger1);
 
-                var ep = new HeapDumpEndpoint(opts, obs, logger2);
-                var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
-                var context = CreateRequest("GET", "/heapdump");
-                await middle.HandleHeapDumpRequestAsync(context);
-                context.Response.Body.Seek(0, SeekOrigin.Begin);
-                var buffer = new byte[1024];
-                await context.Response.Body.ReadAsync(buffer, default);
-                Assert.NotEqual(0, buffer[0]);
-            }
-            else
-            {
-                return;
-            }
+            var ep = new HeapDumpEndpoint(opts, obs, logger2);
+            var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
+            var context = CreateRequest("GET", "/heapdump");
+            await middle.HandleHeapDumpRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var buffer = new byte[1024];
+            await context.Response.Body.ReadAsync(buffer, default);
+            Assert.NotEqual(0, buffer[0]);
         }
 
         [Fact]
         public async Task HeapDumpActuator_ReturnsExpectedData()
         {
-            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
+            var builder = new WebHostBuilder()
+            .UseStartup<Startup>()
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+            .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
-                var builder = new WebHostBuilder()
-                .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-                .ConfigureLogging((webhostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
-                using var server = new TestServer(builder);
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddDynamicConsole();
+            });
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-                Assert.True(result.Content.Headers.Contains("Content-Type"));
-                var contentType = result.Content.Headers.GetValues("Content-Type");
-                Assert.Equal("application/octet-stream", contentType.Single());
-                Assert.True(result.Content.Headers.Contains("Content-Disposition"));
+            Assert.True(result.Content.Headers.Contains("Content-Type"));
+            var contentType = result.Content.Headers.GetValues("Content-Type");
+            Assert.Equal("application/octet-stream", contentType.Single());
+            Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-                using var tempFile = new TempFile();
-                var fs = new FileStream(tempFile.FullPath, FileMode.Create);
-                var input = await result.Content.ReadAsStreamAsync();
-                await input.CopyToAsync(fs);
-                fs.Close();
+            var tempFile = new TempFile();
+            var fs = new FileStream(tempFile.FullPath, FileMode.Create);
+            var input = await result.Content.ReadAsStreamAsync();
+            await input.CopyToAsync(fs);
+            fs.Close();
 
-                var fs2 = File.Open(tempFile.FullPath, FileMode.Open);
-                Assert.NotEqual(0, fs2.Length);
-                fs2.Close();
-            }
+            var fs2 = File.Open(tempFile.FullPath, FileMode.Open);
+            Assert.NotEqual(0, fs2.Length);
+            fs2.Close();
         }
 
         [Fact]

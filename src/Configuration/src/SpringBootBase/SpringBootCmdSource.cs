@@ -4,9 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot
 {

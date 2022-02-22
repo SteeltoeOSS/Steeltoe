@@ -14,11 +14,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 {
     public static class EndpointServiceCollectionExtensions
     {
-        public static bool IsHeapDumpSupported()
-        {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && typeof(object).Assembly.GetType("System.Index") != null);
-        }
-
         /// <summary>
         /// Adds components of the Heap Dump actuator to Microsoft-DI
         /// </summary>
@@ -37,23 +32,12 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (IsHeapDumpSupported())
-            {
-                services.AddActuatorManagementOptions(config);
-                services.AddHeapDumpActuatorServices(config);
+            services.AddActuatorManagementOptions(config);
+            services.AddHeapDumpActuatorServices(config);
 
-                // if running .NET Core on Windows
-                if (RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase) && Platform.IsWindows)
-                {
-                    services.TryAddSingleton<IHeapDumper, WindowsHeapDumper>();
-                }
-                else
-                {
-                    services.TryAddSingleton<IHeapDumper, HeapDumper>();
-                }
+            services.TryAddSingleton<IHeapDumper, HeapDumper>();
 
-                services.AddActuatorEndpointMapping<HeapDumpEndpoint>();
-            }
+            services.AddActuatorEndpointMapping<HeapDumpEndpoint>();
         }
     }
 }

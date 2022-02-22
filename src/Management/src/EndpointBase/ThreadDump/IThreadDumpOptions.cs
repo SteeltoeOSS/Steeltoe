@@ -6,5 +6,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public interface IThreadDumpOptions : IEndpointOptions
     {
+        public int Duration { get; set; }
     }
 }

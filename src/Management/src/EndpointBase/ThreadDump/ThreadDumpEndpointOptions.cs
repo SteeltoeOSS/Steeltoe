@@ -24,5 +24,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 Id = "dump";
             }
         }
+
+        public int Duration { get; set; } = 10; // 10 ms
     }
 }

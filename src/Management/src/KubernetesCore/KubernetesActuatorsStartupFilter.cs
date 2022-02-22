@@ -13,8 +13,11 @@ namespace Steeltoe.Management.Kubernetes
     [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class KubernetesActuatorsStartupFilter : IStartupFilter
     {
+        private readonly MediaTypeVersion _mediaTypeVersion;
+
         public KubernetesActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
         {
+            _mediaTypeVersion = mediaTypeVersion;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -24,7 +27,7 @@ namespace Steeltoe.Management.Kubernetes
                 next(app);
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapAllActuators();
+                    endpoints.MapAllActuators(_mediaTypeVersion);
                 });
                 app.ApplicationServices.InitializeAvailability();
             };
