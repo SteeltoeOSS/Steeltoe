@@ -15,30 +15,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class DiscoveryClientTest : AbstractBaseTest
     {
-        [Fact]
-        public void Constructor_Throws_IfInstanceConfigNull()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryClient(null));
-            Assert.Contains("clientConfig", ex.Message);
-        }
-
-        [Fact]
-        public void Constructor_TimersNotStarted()
-        {
-            var config = new EurekaClientConfig()
-            {
-                ShouldRegisterWithEureka = false,
-                ShouldFetchRegistry = false
-            };
-            var client = new DiscoveryClient(config);
-            Assert.Null(client.CacheRefreshTimer);
-            Assert.Null(client.HeartBeatTimer);
-        }
-
-        [Fact]
-        public async System.Threading.Tasks.Task FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
-        {
-            var json = @"
+        private const string FooAddedJson = @"
                 { 
                     ""applications"": { 
                         ""versions__delta"":""1"",
@@ -71,8 +48,64 @@ namespace Steeltoe.Discovery.Eureka.Test
                     }
                 }";
 
+        private const string FooModifiedJson = @"
+                { 
+                    ""applications"": { 
+                        ""versions__delta"":""3"",
+                        ""apps__hashcode"":""UP_1_"",
+                        ""application"":[{
+                            ""name"":""FOO"",
+                            ""instance"":[{ 
+                                ""instanceId"":""localhost:foo"",
+                                ""hostName"":""localhost"",
+                                ""app"":""FOO"",
+                                ""ipAddr"":""192.168.56.1"",
+                                ""status"":""UP"",
+                                ""overriddenstatus"":""UNKNOWN"",
+                                ""port"":{""$"":8080,""@enabled"":""true""},
+                                ""securePort"":{""$"":443,""@enabled"":""false""},
+                                ""countryId"":1,
+                                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
+                                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
+                                ""homePageUrl"":""http://localhost:8080/"",
+                                ""statusPageUrl"":""http://localhost:8080/info"",
+                                ""healthCheckUrl"":""http://localhost:8080/health"",
+                                ""vipAddress"":""foo"",
+                                ""isCoordinatingDiscoveryServer"":""false"",
+                                ""lastUpdatedTimestamp"":""1457714988223"",
+                                ""lastDirtyTimestamp"":""1457714988172"",
+                                ""actionType"":""MODIFIED""
+                            }]
+                        }]
+                    }
+                }";
+
+        [Fact]
+        public void Constructor_Throws_IfInstanceConfigNull()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryClient(null));
+            Assert.Contains("clientConfig", ex.Message);
+        }
+
+        [Fact]
+        public void Constructor_TimersNotStarted()
+        {
+            var config = new EurekaClientConfig()
+            {
+                ShouldRegisterWithEureka = false,
+                ShouldFetchRegistry = false
+            };
+            var client = new DiscoveryClient(config);
+            Assert.Null(client.CacheRefreshTimer);
+            Assert.Null(client.HeartBeatTimer);
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
+        {
             var envir = HostingHelpers.GetHostingEnvironment();
-            TestConfigServerStartup.Response = json;
+            TestConfigServerStartup.Response = FooAddedJson;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -128,40 +161,8 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async System.Threading.Tasks.Task FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
         {
-            var json = @"
-                { 
-                    ""applications"": { 
-                        ""versions__delta"":""3"",
-                        ""apps__hashcode"":""UP_1_"",
-                        ""application"":[{
-                            ""name"":""FOO"",
-                            ""instance"":[{ 
-                                ""instanceId"":""localhost:foo"",
-                                ""hostName"":""localhost"",
-                                ""app"":""FOO"",
-                                ""ipAddr"":""192.168.56.1"",
-                                ""status"":""UP"",
-                                ""overriddenstatus"":""UNKNOWN"",
-                                ""port"":{""$"":8080,""@enabled"":""true""},
-                                ""securePort"":{""$"":443,""@enabled"":""false""},
-                                ""countryId"":1,
-                                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
-                                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-                                ""homePageUrl"":""http://localhost:8080/"",
-                                ""statusPageUrl"":""http://localhost:8080/info"",
-                                ""healthCheckUrl"":""http://localhost:8080/health"",
-                                ""vipAddress"":""foo"",
-                                ""isCoordinatingDiscoveryServer"":""false"",
-                                ""lastUpdatedTimestamp"":""1457714988223"",
-                                ""lastDirtyTimestamp"":""1457714988172"",
-                                ""actionType"":""MODIFIED""
-                            }]
-                        }]
-                    }
-                }";
             var envir = HostingHelpers.GetHostingEnvironment();
-            TestConfigServerStartup.Response = json;
+            TestConfigServerStartup.Response = FooModifiedJson;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -722,6 +723,40 @@ namespace Steeltoe.Discovery.Eureka.Test
             var currentCount = _timerFuncCount;
             System.Threading.Thread.Sleep(1000);
             Assert.Equal(currentCount, _timerFuncCount);
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task ApplicationEventsFireOnChangeDuringFetch()
+        {
+            var eventCount = 0;
+            TestConfigServerStartup.Response = FooAddedJson;
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(HostingHelpers.GetHostingEnvironment().EnvironmentName);
+            var server = new TestServer(builder);
+
+            var uri = "http://localhost:8888/";
+            server.BaseAddress = new Uri(uri);
+            var config = new EurekaClientConfig()
+            {
+                ShouldFetchRegistry = false,
+                ShouldRegisterWithEureka = false,
+                EurekaServerServiceUrls = uri.ToString()
+            };
+
+            var httpClient = new EurekaHttpClient(config, server.CreateClient());
+            var client = new DiscoveryClient(config, httpClient) { Applications = new Applications() };
+            client.OnApplicationsChange += (sender, applications) =>
+            {
+                eventCount++;
+            };
+
+            await client.FetchFullRegistryAsync();
+            Assert.Equal(1, eventCount);
+
+            TestConfigServerStartup.Response = FooModifiedJson;
+
+            await client.FetchRegistryDeltaAsync();
+            Assert.Equal(2, eventCount);
         }
 
         private volatile int _timerFuncCount;
