@@ -44,11 +44,11 @@ namespace Steeltoe.Common.Hosting.Test
             // test default bootstrapper mode
             logger.LogInformation("Test");
             mockLogger.Verify(x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
 
             // test change to log levels after updated with config
             var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
@@ -63,7 +63,7 @@ namespace Steeltoe.Common.Hosting.Test
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((o, t) => string.Equals("Test2", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
                     It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
                 Times.Never);
 
             // upgrade bootstrapper with new logfactory, and confirm that it delegates to loggers spawned from it
@@ -80,7 +80,7 @@ namespace Steeltoe.Common.Hosting.Test
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((o, t) => string.Equals("Test3", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
                     It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
                 Times.Never);
         }
     }
