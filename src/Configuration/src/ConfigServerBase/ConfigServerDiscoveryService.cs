@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 using System;
@@ -31,8 +32,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _logFactory = logFactory;
-            _logger = _logFactory?.CreateLogger(typeof(ConfigServerDiscoveryService)) ?? NullLogger.Instance;
+            _logFactory = logFactory ?? BootstrapLoggerFactory.Instance;
+            _logger = _logFactory.CreateLogger<ConfigServerDiscoveryService>();
             SetupDiscoveryClient();
         }
 
@@ -40,11 +41,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         internal void SetupDiscoveryClient()
         {
             var services = new ServiceCollection();
-            if (_logFactory != null)
-            {
-                services.AddSingleton(_logFactory);
-                services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
-            }
+            services.AddSingleton(_logFactory);
+            services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
 
             // force settings to make sure we don't register the app here
             var cfgBuilder = new ConfigurationBuilder()
@@ -112,12 +110,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 await _discoveryClient.ShutdownAsync().ConfigureAwait(false);
                 _discoveryClient = discoveryClientFromDI;
                 _usingInitialDiscoveryClient = false;
-            }
-
-            if (loggerFactory is not null)
-            {
-                _logFactory = loggerFactory;
-                _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
             }
         }
 
