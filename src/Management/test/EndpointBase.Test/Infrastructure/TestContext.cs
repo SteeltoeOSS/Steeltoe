@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
 using Xunit.Abstractions;
 
@@ -74,6 +75,8 @@ namespace Steeltoe.Management.Endpoint.Test.Infrastructure
         public void Dispose()
         {
             _loggerProvider.Dispose();
+           // var exporter = _serviceProvider.GetService<SteeltoeExporter>();
+            //exporter?.Dispose();
         }
     }
 }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.OpenTelemetry;
@@ -31,34 +32,33 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _uriTagKey = "uri";
         private readonly string _methodTagKey = "method";
         private readonly string _clientTagKey = "clientName";
+        private readonly IViewRegistry _viewRegistry;
         private Histogram<double> _clientTimeMeasure;
         private Histogram<double> _clientCountMeasure;
 
-        public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger)
+        public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger, IViewRegistry viewRegistry)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
         {
-            PathMatcher = new Regex(options.EgressIgnorePattern);
+            _viewRegistry = viewRegistry ?? throw new ArgumentNullException(nameof(viewRegistry));
+            SetPathMatcher(new Regex(options.EgressIgnorePattern));
 
             _clientTimeMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
             _clientCountMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.count");
 
-            // Bring back views when available
-            /*var view = View.Create(
-                    ViewName.Create("http.desktop.client.request.time"),
-                    "Total request time",
-                    clientTimeMeasure,
-                    Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
-                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
-
-            ViewManager.RegisterView(view);
-
-            view = View.Create(
-                    ViewName.Create("http.desktop.client.request.count"),
-                    "Total request counts",
-                    clientCountMeasure,
-                    Sum.Create(),
-                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
-            ViewManager.RegisterView(view);*/
+            _viewRegistry.AddView(
+                "http.desktop.client.request.time",
+                new ExplicitBucketHistogramConfiguration()
+                {
+                    Boundaries = new double[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
+                    TagKeys = new string[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
+                });
+            _viewRegistry.AddView(
+                "http.desktop.client.request.count",
+                new ExplicitBucketHistogramConfiguration()
+                {
+                    Boundaries = new double[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
+                    TagKeys = new string[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
+                });
         }
 
         public override void ProcessEvent(string evnt, object arg)

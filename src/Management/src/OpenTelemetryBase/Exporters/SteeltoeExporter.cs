@@ -40,10 +40,12 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         {
         }
 
+        private Func<int, bool> _collect;
+
         public Func<int, bool> Collect
         {
-            get;
-            set;
+            get => _collect;
+            set => _collect = value;
         }
 
         public override ExportResult Export(in Batch<Metric> metrics)
@@ -91,11 +93,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                     // TODO: Handle all types and verify
                     if (metric.MetricType.IsHistogram())
                     {
-
                         var sum = metricPoint.GetHistogramSum();
                         //  var count = metricPoint.GetHistogramCount();
                         measurements[metric.Name].Add(new MetricSample(MetricStatistic.TOTAL, sum, tags));
-
                     }
                     else if (((int)metric.MetricType & 0b_0000_1111) == 0x0a /* I8 */)
                     {

@@ -153,14 +153,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
-            //var stats = new TestOpenTelemetryMetrics();
             var exporter = new SteeltoeExporter(new SteeltoeExporterOptions());
-
-            SetupTestView(exporter);
+            using var meterProvider = OpenTelemetryMetrics.Initialize(null, exporter, null);
 
             var ep = new MetricsEndpoint(opts, exporter);
-
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+
+            SetupTestView(exporter);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
@@ -207,7 +206,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private void SetupTestView(SteeltoeExporter exporter)
         {
-            OpenTelemetryMetrics.Initialize(exporter, null);
+            //OpenTelemetryMetrics.Initialize(exporter, null);
+          
             var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
 
             var labels = new Dictionary<string, object>()

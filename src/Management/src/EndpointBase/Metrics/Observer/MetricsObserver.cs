@@ -9,19 +9,25 @@ using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public abstract class MetricsObserver : DiagnosticObserver
     {
-        //protected Meter Meter { get; }
-
         protected IMetricsObserverOptions Options { get; }
 
-        protected Regex PathMatcher { get; set; }
+        private Regex _pathMatcher;
+
+        protected Regex GetPathMatcher()
+        {
+            return _pathMatcher;
+        }
+
+        protected void SetPathMatcher(Regex value)
+        {
+            _pathMatcher = value;
+        }
 
         public MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
             : base(observerName, diagnosticName, logger)
         {
-            // Meter = stats.Meter;
             Options = options;
         }
 
@@ -39,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 return false;
             }
 
-            return PathMatcher.IsMatch(path);
+            return GetPathMatcher().IsMatch(path);
         }
     }
 }

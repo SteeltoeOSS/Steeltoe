@@ -8,8 +8,10 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,20 +29,33 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
             var exporter = new PrometheusExporterWrapper();
-            SetupTestView(exporter);
-
-            Task.Delay(1000).Wait();
+            var viewRegistry = new ViewRegistry();
+            using var otel = OpenTelemetryMetrics.Initialize(viewRegistry, null, exporter, "test1", "1.0");
 
             var ep = new PrometheusScraperEndpoint(opts, exporter);
             var middle = new PrometheusScraperEndpointMiddleware(null, ep, mopts);
+            var meter = new Meter("test1", "1.0");
+            var measure = meter.CreateCounter<double>("test");
+            var labels = new Dictionary<string, object>()
+            {
+                { "a", "v1" },
+                { "b", "v1" },
+                { "c", "v1" }
+            };
 
+            for (var i = 0; i < 10; i++)
+            {
+                measure.Add(i, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
+            }
+
+            Task.Delay(1000).Wait();
             var context = CreateRequest("GET", "/actuator/prometheus");
 
             await middle.HandleMetricsRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var rdr = new StreamReader(context.Response.Body);
             var text = await rdr.ReadToEndAsync();
-            Assert.StartsWith("# TYPE test counter\ntest{a=\"v1\",b=\"v1\",c=\"v1\"} 45", text);
+            Assert.Contains("# TYPE test counter\ntest{a=\"v1\",b=\"v1\",c=\"v1\"} 45", text);
         }
 
         private HttpContext CreateRequest(string method, string path, string query = null)
@@ -64,19 +79,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private void SetupTestView(PrometheusExporterWrapper prometheusExporter)
         {
-            OpenTelemetryMetrics.Initialize(null, prometheusExporter);
-            var measure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
-            var labels = new Dictionary<string, object>()
-            {
-                { "a", "v1" },
-                { "b", "v1" },
-                { "c", "v1" }
-            };
-
-            for (var i = 0; i < 10; i++)
-            {
-                measure.Add(i, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
-            }
+            //OpenTelemetryMetrics.Initialize(null, prometheusExporter);
+           
 
             /*var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;

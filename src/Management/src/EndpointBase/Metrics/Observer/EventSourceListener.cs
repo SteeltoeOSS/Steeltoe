@@ -25,7 +25,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         internal EventSourceListener( ILogger<EventSourceListener> logger = null)
         {
-           // _stats = stats ?? throw new ArgumentNullException(nameof(stats));
             _logger = logger;
             LongCounters = new ConcurrentDictionary<string, Counter<long>>();
             DoubleCounters = new ConcurrentDictionary<string, Counter<double>>();

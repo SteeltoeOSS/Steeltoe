@@ -14,14 +14,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
     public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
     {
         private readonly SteeltoeExporter _exporter;
-      //  private readonly OpenTelemetryMetrics _metrics;// Temporarily force creation
         private readonly ILogger<MetricsEndpoint> _logger;
 
         public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
             : base(options)
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
-        //    _metrics = metrics;
             _logger = logger;
         }
 
@@ -93,11 +91,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return new MetricsResponse(request.MetricName, measurements, availTags);
         }
 
-        //TODO: Move metrics Types to OpentelemetryBase
         protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> measurements, out MetricsCollection<List<MetricTag>> availTags) => _exporter.GetMetricsCollection(out measurements, out availTags);
-        
-           
-#pragma warning restore CS0618 // Type or member is obsolete
-
     }
 }

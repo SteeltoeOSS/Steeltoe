@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,14 +31,19 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _uriTagKey = "uri";
         private readonly Histogram<double> _responseTime;
         private readonly Histogram<double> _serverCount;
+        private readonly IViewRegistry _viewRegistry;
 
-        public AspNetCoreHostingObserver(IMetricsObserverOptions options, ILogger<AspNetCoreHostingObserver> logger)
+        public AspNetCoreHostingObserver(IMetricsObserverOptions options, ILogger<AspNetCoreHostingObserver> logger, IViewRegistry viewRegistry)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
         {
-            PathMatcher = new Regex(options.IngressIgnorePattern);
+
+            SetPathMatcher(new Regex(options.IngressIgnorePattern));
             var meter = OpenTelemetryMetrics.Meter;
+
+            _viewRegistry = viewRegistry ?? throw new ArgumentNullException(nameof(viewRegistry));
             _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
             _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");
+
             /*
             //var view = View.Create(
             //        ViewName.Create("http.server.request.time"),

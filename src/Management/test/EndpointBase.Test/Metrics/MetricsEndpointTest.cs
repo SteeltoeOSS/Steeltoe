@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,13 +20,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
     public class MetricsEndpointTest : BaseTest
     {
-        private readonly Meter _meter;
         private readonly ITestOutputHelper _output;
 
         public MetricsEndpointTest(ITestOutputHelper output)
         {
-            _meter = new Meter(OpenTelemetryMetrics.InstrumentationName, OpenTelemetryMetrics.InstrumentationVersion);
-
             _output = output;
         }
 
@@ -47,10 +45,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 };
 
                 var ep = tc.GetService<IMetricsEndpoint>();
-
-                var requests = _meter.CreateCounter<long>("http.server.requests");
+                var requests = OpenTelemetryMetrics.Meter.CreateCounter<long>("http.server.requests");
                 requests.Add(1);
-                var memory = _meter.CreateCounter<double>("gc.memory.used");
+                var memory = OpenTelemetryMetrics.Meter.CreateCounter<double>("gc.memory.used");
                 memory.Add(25);
 
                 var result = ep.Invoke(null);
@@ -60,6 +57,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 Assert.NotEmpty(resp.Names);
                 Assert.Contains("http.server.requests", resp.Names);
                 Assert.Contains("gc.memory.used", resp.Names);
+
                 Assert.Equal(2, resp.Names.Count);
             }
 
@@ -92,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 var ep = tc.GetService<IMetricsEndpoint>();
 
-                var testMeasure = _meter.CreateCounter<double>("test.test1");
+                var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
                 long allKeyssum = 0;
                 var labelsKvps = new Dictionary<string, object>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
@@ -103,11 +101,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 }
 
                 var tags = labelsKvps.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
-                var req = new MetricsRequest("test.test1", tags);
+                var req = new MetricsRequest("test.test5", tags);
                 var resp = ep.Invoke(req) as MetricsResponse;
                 Assert.NotNull(resp);
 
-                Assert.Equal("test.test1", resp.Name);
+                Assert.Equal("test.test5", resp.Name);
 
                 Assert.NotNull(resp.Measurements);
                 Assert.Single(resp.Measurements);
@@ -125,39 +123,37 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             }
         }
 
-        /* TODO: Support other aggregations
-        [Fact]
-        public void GetStatistic_ReturnsExpected()
-        {
-            var opts = new MetricsEndpointOptions();
-            var exporter = new SteeltoeExporter();
-            var ep = new MetricsEndpoint(opts, exporter);
+        //[Fact]
+        //public void GetStatistic_ReturnsExpected()
+        //{
+        //    var opts = new MetricsEndpointOptions();
+        //    var exporter = new SteeltoeExporter();
+        //    var ep = new MetricsEndpoint(opts, exporter);
 
-            var m1 = MeasureDouble.Create("test.totalTime", "test", MeasureUnit.Seconds);
-            var result = ep.GetStatistic(Sum.Create(), m1);
-            Assert.Equal(MetricStatistic.TOTALTIME, result);
+        //    var m1 = MeasureDouble.Create("test.totalTime", "test", MeasureUnit.Seconds);
+        //    var result = ep.GetStatistic(Sum.Create(), m1);
+        //    Assert.Equal(MetricStatistic.TOTALTIME, result);
 
-            var m2 = MeasureDouble.Create("test.value", "test", MeasureUnit.Seconds);
-            result = ep.GetStatistic(LastValue.Create(), m2);
-            Assert.Equal(MetricStatistic.VALUE, result);
+        //    var m2 = MeasureDouble.Create("test.value", "test", MeasureUnit.Seconds);
+        //    result = ep.GetStatistic(LastValue.Create(), m2);
+        //    Assert.Equal(MetricStatistic.VALUE, result);
 
-            var m3 = MeasureDouble.Create("test.count", "test", MeasureUnit.Seconds);
-            result = ep.GetStatistic(Count.Create(), m3);
-            Assert.Equal(MetricStatistic.COUNT, result);
+        //    var m3 = MeasureDouble.Create("test.count", "test", MeasureUnit.Seconds);
+        //    result = ep.GetStatistic(Count.Create(), m3);
+        //    Assert.Equal(MetricStatistic.COUNT, result);
 
-            var m4 = MeasureDouble.Create("test.sum", "test", MeasureUnit.Bytes);
-            result = ep.GetStatistic(Sum.Create(), m4);
-            Assert.Equal(MetricStatistic.TOTAL, result);
+        //    var m4 = MeasureDouble.Create("test.sum", "test", MeasureUnit.Bytes);
+        //    result = ep.GetStatistic(Sum.Create(), m4);
+        //    Assert.Equal(MetricStatistic.TOTAL, result);
 
-            var m5 = MeasureDouble.Create("foobar", "test", MeasureUnit.Seconds);
-            result = ep.GetStatistic(Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), m5);
-            Assert.Equal(MetricStatistic.TOTALTIME, result);
+        //    var m5 = MeasureDouble.Create("foobar", "test", MeasureUnit.Seconds);
+        //    result = ep.GetStatistic(Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), m5);
+        //    Assert.Equal(MetricStatistic.TOTALTIME, result);
 
-            var m6 = MeasureDouble.Create("foobar", "test", MeasureUnit.Bytes);
-            result = ep.GetStatistic(Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), m6);
-            Assert.Equal(MetricStatistic.TOTAL, result);
-        }
-        */
+        //    var m6 = MeasureDouble.Create("foobar", "test", MeasureUnit.Bytes);
+        //    result = ep.GetStatistic(Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), m6);
+        //    Assert.Equal(MetricStatistic.TOTAL, result);
+        // }
 
         [Fact]
         public void GetMetricSamples_ReturnsExpectedCounter()
@@ -171,7 +167,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 var ep = tc.GetService<MetricsEndpoint>();
 
-                var counter = _meter.CreateCounter<double>("test.test1");
+                var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test7");
                 counter.Add(100);
 
                 ep.GetMetricsCollection(out var measurements, out _);
@@ -183,27 +179,27 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             }
         }
 
-        [Fact]
-        public void GetMetricSamples_ReturnsExpectedMeasure()
-        {
-            using (var tc = new TestContext(_output))
-            {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddMetricsActuatorServices(configuration);
-                };
+        //[Fact]
+        //public void GetMetricSamples_ReturnsExpectedMeasure()
+        //{
+        //    using (var tc = new TestContext(_output))
+        //    {
+        //        tc.AdditionalServices = (services, configuration) =>
+        //        {
+        //            services.AddMetricsActuatorServices(configuration);
+        //        };
 
-                var ep = tc.GetService<MetricsEndpoint>();
+        //        var ep = tc.GetService<MetricsEndpoint>();
 
-                var measure = _meter.CreateObservableGauge<double>("test.test3", () => 100);
+        //        var measure = _meter.CreateObservableGauge<double>("test.test3", () => 100);
 
-                ep.GetMetricsCollection(out var measurements, out _);
-                Assert.Single(measurements.Values);
-                var sample = measurements.Values.FirstOrDefault()[0];
-                Assert.Equal(100, sample.Value);
-                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
-            }
-        }
+        //        ep.GetMetricsCollection(out var measurements, out _);
+        //        Assert.Single(measurements.Values);
+        //        var sample = measurements.Values.FirstOrDefault()[0];
+        //        Assert.Equal(100, sample.Value);
+        //        Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+        //    }
+        //}
 
         // TODO: Support other aggregations
         /*
@@ -267,8 +263,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 };
 
                 var ep = tc.GetService<MetricsEndpoint>();
-
-                var counter = _meter.CreateCounter<double>("test.test1");
+                var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test2");
 
                 var v1Tags = new Dictionary<string, object>()
                 {
@@ -292,7 +287,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 Assert.NotNull(tagDictionary);
                 Assert.Single(tagDictionary.Values);
 
-                var tags = tagDictionary["test.test1"];
+                var tags = tagDictionary["test.test2"];
 
                 Assert.Equal(3, tags.Count);
 
@@ -311,7 +306,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 Assert.Contains("v1", tag.Values);
                 Assert.Contains("v2", tag.Values);
 
-                var counter2 = _meter.CreateCounter<double>("test.test2");
+                var counter2 = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test3");
 
                 counter2.Add(1);
 
@@ -320,7 +315,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 Assert.NotNull(tagDictionary);
                 Assert.Single(tagDictionary.Values);
 
-                tags = tagDictionary["test.test2"];
+                tags = tagDictionary["test.test3"];
                 Assert.Empty(tags);
             }
         }
@@ -337,7 +332,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 var ep = tc.GetService<MetricsEndpoint>();
 
-                var testMeasure = _meter.CreateHistogram<double>("test.test1");
+                var testMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("test.test1");
                 var context1 = new Dictionary<string, object>()
                 {
                     { "a", "v1" },
@@ -394,15 +389,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 ep.GetMetricsCollection(out var measurements, out var tags);
                 Assert.NotNull(measurements);
+                Assert.Single(measurements);
+
                 var measurement = measurements["test.test1"];
-                Assert.Equal(4, measurement.Count); // TODO: Isthis right? 
+                Assert.Equal(4, measurement.Count);
+
                 var sample = measurement[0];
                 Assert.Equal((double)allKeyssum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-
-                //sample = measurement[1];
-                //Assert.Equal(allKeyssum, sample.Value);
-                //Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
                 var atags = new List<KeyValuePair<string, string>>()
                 {
@@ -411,11 +405,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 var result = ep.GetMetricSamplesByTags(measurements, "test.test1", atags);
                 Assert.NotNull(result);
-                Assert.Equal(1, result.Count);
-
-                //sample = result[0];
-                //Assert.Equal((double)(allKeyssum + asum) / 20, sample.Value);
-                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+                Assert.Single(result);
 
                 sample = result[0];
                 Assert.Equal(allKeyssum + asum, sample.Value);
@@ -429,12 +419,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", btags);
 
                 Assert.NotNull(result);
-                Assert.NotNull(result);
-                Assert.Equal(1, result.Count);
-
-                //sample = result[0];
-                //Assert.Equal((double)(allKeyssum + bsum) / 20, sample.Value);
-                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+                Assert.Single(result);
 
                 sample = result[0];
 
@@ -448,11 +433,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", ctags);
                 Assert.NotNull(result);
-                Assert.Equal(1, result.Count);
-
-                //sample = result[0];
-                //Assert.Equal((double)(allKeyssum + csum) / 20, sample.Value);
-                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+                Assert.Single(result);
 
                 sample = result[0];
                 Assert.Equal(allKeyssum + csum, sample.Value);
@@ -467,11 +448,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", abtags);
 
                 Assert.NotNull(result);
-                Assert.Equal(1, result.Count);
-
-                //sample = result[0];
-                //Assert.Equal((double)allKeyssum / 10, sample.Value);
-                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+                Assert.Single(result);
 
                 sample = result[0];
                 Assert.Equal(allKeyssum, sample.Value);
@@ -485,13 +462,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", actags);
 
                 Assert.NotNull(result);
-                Assert.Equal(1, result.Count);
+                Assert.Single(result);
 
                 sample = result[0];
-                //Assert.Equal((double)allKeyssum / 10, sample.Value);
-                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
 
-                //sample = result[1];
                 Assert.Equal(allKeyssum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
@@ -503,13 +477,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 result = ep.GetMetricSamplesByTags(measurements, "test.test1", bctags);
 
                 Assert.NotNull(result);
-                Assert.Equal(1, result.Count);
+                Assert.Single(result);
 
                 sample = result[0];
-                //Assert.Equal((double)allKeyssum / 10, sample.Value);
-                //Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
 
-                //sample = result[1];
                 Assert.Equal(allKeyssum, sample.Value);
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
             }
@@ -527,7 +498,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 var ep = tc.GetService<IMetricsEndpoint>();
 
-                var testMeasure = _meter.CreateCounter<double>("test.total");
+                var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");
                 var labels = new Dictionary<string, object>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
                 double allKeyssum = 0;
@@ -546,7 +517,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 Assert.Equal("test.total", resp.Name);
 
                 Assert.NotNull(resp.Measurements);
-                Assert.Equal(1, resp.Measurements.Count);
+                Assert.Single(resp.Measurements);
                 var sample = resp.Measurements[0];
                 Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
                 Assert.Equal(allKeyssum, sample.Value);

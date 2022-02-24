@@ -4,11 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Metrics;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -42,17 +44,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<MetricsEndpoint>();
             services.AddSingleton(new SteeltoeExporterOptions());
 
-            services.AddSingleton(provider =>
+            services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
+            services.TryAddSingleton(provider =>
             {
-                services.AddSingleton<PrometheusExporterWrapper>();
-                var options = provider.GetService<SteeltoeExporterOptions>();
-                var steeltoeExporter = new SteeltoeExporter(options);
-                var promExporter = provider.GetService<PrometheusExporterWrapper>();
-                OpenTelemetryMetrics.Initialize(steeltoeExporter, promExporter);
+                var meterProvider = provider.AddOtelMetrics(out var steeltoeExporter, out _);
+                services.TryAddSingleton(meterProvider);
                 return steeltoeExporter;
             });
-            services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
-
             return services;
         }
 
@@ -79,8 +77,33 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<PrometheusScraperEndpoint>();
             services.TryAddSingleton<IPrometheusScraperEndpoint>(provider => provider.GetRequiredService<PrometheusScraperEndpoint>());
-
+            services.TryAddSingleton(provider =>
+            {
+                var meterProvider = provider.AddOtelMetrics(out _, out var promExporter);
+                services.TryAddSingleton(meterProvider);
+                return promExporter;
+            });
             return services;
         }
+
+        private static MeterProvider AddOtelMetrics(this IServiceProvider provider, out SteeltoeExporter exporter, out PrometheusExporterWrapper promExporter)
+        {
+            var views = provider.GetService<IViewRegistry>();
+            exporter = null;
+            promExporter = null;
+            var exporterOptions = provider.GetService<SteeltoeExporterOptions>();
+            if (exporterOptions != null)
+            {
+                exporter = new SteeltoeExporter(exporterOptions);
+            }
+
+            if (provider.GetService<PrometheusEndpointOptions>() != null)
+            {
+                promExporter = new PrometheusExporterWrapper();
+            }
+
+            return OpenTelemetryMetrics.Initialize(views, exporter, promExporter);
+        }
+
     }
 }
