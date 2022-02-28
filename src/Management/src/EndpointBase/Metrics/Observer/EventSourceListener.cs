@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         private readonly ILogger<EventSourceListener> _logger;
 
-        internal EventSourceListener( ILogger<EventSourceListener> logger = null)
+        internal EventSourceListener(ILogger<EventSourceListener> logger = null)
         {
             _logger = logger;
             LongCounters = new ConcurrentDictionary<string, Counter<long>>();

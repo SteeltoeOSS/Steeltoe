@@ -81,6 +81,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             //        new List<ITagKey>() { threadKindKey });
             // ViewManager.RegisterView(view);
         }
+
         private IEnumerable<Measurement<long>> GetCollectionCount()
         {
             var metrics = CLRRuntimeSource.GetHeapMetrics();

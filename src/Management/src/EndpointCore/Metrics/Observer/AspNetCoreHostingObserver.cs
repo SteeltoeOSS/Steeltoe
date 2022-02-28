@@ -35,7 +35,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         public AspNetCoreHostingObserver(IMetricsObserverOptions options, ILogger<AspNetCoreHostingObserver> logger, IViewRegistry viewRegistry)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
         {
-
             SetPathMatcher(new Regex(options.IngressIgnorePattern));
             var meter = OpenTelemetryMetrics.Meter;
 
@@ -104,12 +103,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 var labelSets = GetLabelSets(arg);
 
-                _serverCount.Record(1, labelSets);
-                _responseTime.Record(current.Duration.TotalSeconds, labelSets);
+                _serverCount.Record(1, labelSets.AsReadonlySpan());
+                _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
             }
         }
 
-        protected internal ReadOnlySpan<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
+        protected internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
         {
             var uri = arg.Request.Path.ToString();
             var statusCode = arg.Response.StatusCode.ToString();
@@ -123,7 +122,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 new KeyValuePair<string, object>(_methodTagKey, arg.Request.Method)
             };
 
-            return new ReadOnlySpan<KeyValuePair<string, object>>(tagValues.ToArray());
+            return tagValues;
         }
 
         protected internal string GetException(HttpContext arg)

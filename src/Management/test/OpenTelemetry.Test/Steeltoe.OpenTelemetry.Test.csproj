@@ -8,6 +8,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedtest.props" />
 
+
   <ItemGroup>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -28,7 +29,5 @@
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Impl\Metrics\Aggregators\" />
-  </ItemGroup>
+
 </Project>

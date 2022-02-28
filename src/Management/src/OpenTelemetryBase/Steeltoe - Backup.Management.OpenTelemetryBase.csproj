@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryInstrumentationVersion)" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="$(OpenTelemetryInstrumentationVersion)" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 

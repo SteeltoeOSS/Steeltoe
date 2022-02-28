@@ -57,7 +57,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             var metricSamples = new MetricsCollection<List<MetricSample>>();
             var availTags = new MetricsCollection<List<MetricTag>>();
 
-            if (metrics.Count>0)
+            if (metrics.Count > 0)
             {
                 GetMetricsCollection(metrics, out metricSamples, out availTags);
             }

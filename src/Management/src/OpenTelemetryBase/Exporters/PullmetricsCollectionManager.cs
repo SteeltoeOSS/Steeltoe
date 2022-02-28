@@ -37,7 +37,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         }
 
 #if NETCOREAPP3_1_OR_GREATER
-        public ValueTask<CollectionResponse> EnterCollect()
+        public ValueTask<ICollectionResponse> EnterCollect()
 #else
         public Task<ICollectionResponse> EnterCollect()
 #endif
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                 Interlocked.Increment(ref this.readerCount);
                 this.ExitGlobalLock();
 #if NETCOREAPP3_1_OR_GREATER
-                return new ValueTask<CollectionResponse>(previousView);
+                return new ValueTask<ICollectionResponse>(previousView);
 #else
                 return Task.FromResult(previousView);
 #endif
@@ -70,7 +70,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                 Interlocked.Increment(ref this.readerCount);
                 this.ExitGlobalLock();
 #if NETCOREAPP3_1_OR_GREATER
-                return new ValueTask<CollectionResponse>(this.collectionTcs.Task);
+                return new ValueTask<ICollectionResponse>(this.collectionTcs.Task);
 #else
                 return this.collectionTcs.Task;
 #endif
@@ -109,7 +109,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             this.ExitGlobalLock();
 
 #if NETCOREAPP3_1_OR_GREATER
-            return new ValueTask<CollectionResponse>(response);
+            return new ValueTask<ICollectionResponse>(response);
 #else
             return Task.FromResult(response);
 #endif
