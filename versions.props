@@ -14,6 +14,7 @@
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>5.0.1</SystemDiagnosticsVersion>
     <SystemJsonVersion>5.0.2</SystemJsonVersion>
+    <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
@@ -44,7 +45,7 @@
     
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
-    <TestSdkVersion>16.11.0</TestSdkVersion>
+    <TestSdkVersion>17.0.0</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.3</XunitStudioVersion>
@@ -72,6 +73,7 @@
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
     <LoggingVersion>3.1.0</LoggingVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
+    <UnsafeCompilerServicesVersion>5.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
@@ -85,15 +87,18 @@
     <MicrosoftExtensionsRedisVersion>3.1.19</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <AspNetCoreVersion>6.0.0-rc.2.*</AspNetCoreVersion>
-    <EFCoreTestVersion>6.0.0-rc.1.21452.10</EFCoreTestVersion>
-    <MySqlEFCoreVersion>6.0.0-preview3</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion>6.0.0-rc.1</NpgsqlEFCoreVersion>
-    <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>6.0.0-rc.1</PomeloEFCoreVersion>
+    <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
+    <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
+    <MySqlEFCoreVersion>6.0.0</MySqlEFCoreVersion>
+    <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
+    <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
+    <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
     <EF6Version>6.4.0</EF6Version>
-    <ExtensionsVersion>6.0.0-rc.2.*</ExtensionsVersion>
+    <ExtensionsVersion>6.0.0</ExtensionsVersion>
     <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
     <SystemJsonVersion>6.0.0</SystemJsonVersion>
+    <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>
+    <OpenTelemetryVersion>1.2.0-rc1</OpenTelemetryVersion>
+    <UnsafeCompilerServicesVersion>6.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
 </Project>

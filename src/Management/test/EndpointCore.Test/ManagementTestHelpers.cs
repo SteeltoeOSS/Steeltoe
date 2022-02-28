@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
-    public static class TestHelpers
+    public static class ManagementTestHelpers
     {
         public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
         {

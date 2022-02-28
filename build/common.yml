@@ -3,12 +3,23 @@ pr:
     include:
     - main
   paths:
+    exclude:
+    - /
     include:
-    - build/templates/*
+    - build/templates
     - build/common.yml
-    - src/Common/*
+    - src/Common
 
 jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Common
+  - template: templates/component-build.yaml
+    parameters:
+      component: Common
+      OS: macOS
+      skipFilter: --filter "Category!=SkipOnMacOS"
+  - template: templates/component-build.yaml
+    parameters:
+      component: Common
+      OS: windows

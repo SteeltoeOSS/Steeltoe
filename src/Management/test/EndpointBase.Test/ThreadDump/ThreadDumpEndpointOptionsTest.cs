@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 
             var opts = new ThreadDumpEndpointOptions(config);
             var cloudOpts = new CloudFoundryEndpointOptions(config);
-            var ep = new ThreadDumpEndpoint(opts, new ThreadDumper(opts));
+            var ep = new ThreadDumpEndpoint(opts, new ThreadDumperEP(opts));
 
             Assert.True(cloudOpts.Enabled);
             Assert.Equal(string.Empty, cloudOpts.Id);

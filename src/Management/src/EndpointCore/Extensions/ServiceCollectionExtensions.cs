@@ -25,9 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 SetupConvention = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder),
 #if !NET6_0
                 // old way for backwards compatibility, will be removed in the future
-#pragma warning disable CS0618 // Type or member is obsolete
                 Setup = (endpoints, convention) => endpoints.Map<TEndpoint>(convention)
-#pragma warning restore CS0618 // Type or member is obsolete
 #endif
             });
             return services;

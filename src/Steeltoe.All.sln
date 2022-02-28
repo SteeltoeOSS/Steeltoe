@@ -340,7 +340,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{656A78
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\build\circuitbreaker.yml = ..\build\circuitbreaker.yml
-		..\codecov.yml = ..\codecov.yml
 		..\build\common.yml = ..\build\common.yml
 		..\build\configuration.yml = ..\build\configuration.yml
 		..\build\connectors.yml = ..\build\connectors.yml

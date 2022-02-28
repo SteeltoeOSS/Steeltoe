@@ -30,6 +30,18 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             DoubleCounters = new ConcurrentDictionary<string, Counter<double>>();
         }
 
+        public override void Dispose()
+        {
+            try
+            {
+                base.Dispose();
+            }
+            catch (Exception)
+            {
+                // Catch and ignore exceptions
+            }
+        }
+
         protected virtual void ExtractAndRecordMetric(
             string eventSourceName,
             EventWrittenEventArgs eventData,

@@ -36,50 +36,46 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public async Task HandleThreadDumpRequestAsync_ReturnsExpected()
         {
-            if (Platform.IsWindows)
-            {
-                var opts = new ThreadDumpEndpointOptions();
+            var opts = new ThreadDumpEndpointOptions();
 
-                var mgmtOptions = new ActuatorManagementOptions();
-                mgmtOptions.EndpointOptions.Add(opts);
+            var mgmtOptions = new ActuatorManagementOptions();
+            mgmtOptions.EndpointOptions.Add(opts);
 
-                var obs = new ThreadDumper(opts);
-                var ep = new ThreadDumpEndpoint(opts, obs);
-                var middle = new ThreadDumpEndpointMiddleware(null, ep, mgmtOptions);
-                var context = CreateRequest("GET", "/dump");
-                await middle.HandleThreadDumpRequestAsync(context);
-                context.Response.Body.Seek(0, SeekOrigin.Begin);
-                var rdr = new StreamReader(context.Response.Body);
-                var json = await rdr.ReadToEndAsync();
-                Assert.StartsWith("[", json);
-                Assert.EndsWith("]", json);
-            }
+            var obs = new ThreadDumperEP(opts);
+            var ep = new ThreadDumpEndpoint(opts, obs);
+            var middle = new ThreadDumpEndpointMiddleware(null, ep, mgmtOptions);
+            var context = CreateRequest("GET", "/dump");
+            await middle.HandleThreadDumpRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
+            Assert.NotNull(json);
+            Assert.NotEqual("[]", json);
+            Assert.StartsWith("[", json);
+            Assert.EndsWith("]", json);
         }
 
         [Fact]
         public async Task ThreadDumpActuator_ReturnsExpectedData()
         {
-            if (Platform.IsWindows)
+            var builder = new WebHostBuilder()
+            .UseStartup<StartupV1>()
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+            .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
-                var builder = new WebHostBuilder()
-                .UseStartup<StartupV1>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-                .ConfigureLogging((webhostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddDynamicConsole();
+            });
 
-                using var server = new TestServer(builder);
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                Assert.NotEqual("[]", json);
-                Assert.StartsWith("[", json);
-                Assert.EndsWith("]", json);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+            Assert.NotEqual("[]", json);
+            Assert.StartsWith("[", json);
+            Assert.EndsWith("]", json);
         }
 
         [Fact]

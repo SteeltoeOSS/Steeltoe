@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Connector;
 using Steeltoe.Discovery.Client.SimpleClients;
@@ -22,7 +21,7 @@ namespace Steeltoe.Discovery.Client
         /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
         /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
         public static IHostBuilder AddDiscoveryClient(this IHostBuilder hostBuilder) =>
-            hostBuilder.ConfigureServices((context, collection) => collection.AddDiscoveryClient());
+            hostBuilder.ConfigureServices((context, collection) => collection.AddDiscoveryClient(context.Configuration));
 
         /// <summary>
         /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
