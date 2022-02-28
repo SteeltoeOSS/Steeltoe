@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry;
-using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new PrometheusEndpointOptions();
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
-            var exporter = new PrometheusExporterWrapper();
+            var exporter = new SteeltoePrometheusExporter();
             var viewRegistry = new ViewRegistry();
             using var otel = OpenTelemetryMetrics.Initialize(viewRegistry, null, exporter, "test1", "1.0");
 
@@ -77,11 +76,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             return context;
         }
 
-        private void SetupTestView(PrometheusExporterWrapper prometheusExporter)
+        private void SetupTestView(SteeltoePrometheusExporter prometheusExporter)
         {
-            //OpenTelemetryMetrics.Initialize(null, prometheusExporter);
-           
-
             /*var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;
 

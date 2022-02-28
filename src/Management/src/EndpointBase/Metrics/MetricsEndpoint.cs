@@ -57,6 +57,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             }
 
             static MetricSample SumAggregator(MetricSample current, MetricSample next) => new (current.Statistic, current.Value + next.Value, current.Tags);
+            static MetricSample MaxAggregator(MetricSample current, MetricSample next) => new (current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
 
             var valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.VALUE);
             if (valueSamples.Any())
@@ -83,14 +84,28 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 sampleList.Add(countSamples.Aggregate(SumAggregator));
             }
 
+            var maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.MAX);
+            if (maxSamples.Any())
+            {
+                var sample = maxSamples.Aggregate(MaxAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.MAX, sample.Value, sample.Tags));
+            }
+
             return sampleList;
         }
 
-        protected internal MetricsResponse GetMetric(MetricsRequest request, List<MetricSample> measurements, List<MetricTag> availTags)
+        protected internal MetricsResponse GetMetric(MetricsRequest request, List<MetricSample> metricSamples, List<MetricTag> availTags)
         {
-            return new MetricsResponse(request.MetricName, measurements, availTags);
+            return new MetricsResponse(request.MetricName, metricSamples, availTags);
         }
 
-        protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> measurements, out MetricsCollection<List<MetricTag>> availTags) => _exporter.GetMetricsCollection(out measurements, out availTags);
+        protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
+        {
+            var collectionResponse = (SteeltoeCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
+            metricSamples = collectionResponse.MetricSamples;
+            availTags = collectionResponse.AvailableTags;
+
+            // TODO: update the response header with actual updatetime
+        }
     }
 }

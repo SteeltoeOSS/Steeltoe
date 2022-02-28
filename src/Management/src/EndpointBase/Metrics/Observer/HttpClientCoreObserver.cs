@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class HttpClientCoreObserver : MetricsObserver
     {
         internal const string DIAGNOSTIC_NAME = "HttpHandlerDiagnosticListener";

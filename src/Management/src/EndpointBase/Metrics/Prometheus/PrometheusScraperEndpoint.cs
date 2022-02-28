@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry;
-using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
 using System.Text;
 
@@ -12,10 +11,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
     {
-        private readonly PrometheusExporterWrapper _exporter;
+        private readonly SteeltoePrometheusExporter _exporter;
         private readonly ILogger<PrometheusScraperEndpoint> _logger;
 
-        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, PrometheusExporterWrapper exporter, ILogger<PrometheusScraperEndpoint> logger = null)
+        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, SteeltoePrometheusExporter exporter, ILogger<PrometheusScraperEndpoint> logger = null)
             : base(options)
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
@@ -27,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var result = string.Empty;
             try
             {
-                var collectionResponse = _exporter.CollectionManager.EnterCollect().Result;
+                var collectionResponse = (PrometheusCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
                 try
                 {
                     if (collectionResponse.View.Count > 0)

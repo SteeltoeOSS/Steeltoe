@@ -27,5 +27,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             ExactMatch = false;
         }
+
+        public long ScrapeResponseCacheDurationMilliseconds { get; set; }
     }
 }

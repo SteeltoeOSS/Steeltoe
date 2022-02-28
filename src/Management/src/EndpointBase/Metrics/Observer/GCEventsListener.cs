@@ -12,7 +12,10 @@ using System.Diagnostics.Tracing;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
+    /// <summary>
+    /// Events are fired when garbage collection occurs
+    /// </summary>
+    [Obsolete("Use CLRRuntimeSource Instead")]
     public class GCEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";

@@ -20,7 +20,7 @@ namespace Steeltoe.Management.OpenTelemetry
 
         public static Meter Meter => new Meter(InstrumentationName, InstrumentationVersion);
 
-        public static MeterProvider Initialize(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter = null, PrometheusExporterWrapper prometheusExporter = null, string name = null, string version = null)
+        public static MeterProvider Initialize(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter = null, SteeltoePrometheusExporter prometheusExporter = null, string name = null, string version = null)
         {
             var builder = Sdk.CreateMeterProviderBuilder()
                 .AddMeter(name ?? InstrumentationName, version ?? InstrumentationVersion)

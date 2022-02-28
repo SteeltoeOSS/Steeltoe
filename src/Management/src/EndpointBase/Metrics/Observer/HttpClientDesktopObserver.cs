@@ -19,7 +19,6 @@ using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class HttpClientDesktopObserver : MetricsObserver
     {
         internal const string DIAGNOSTIC_NAME = "System.Net.Http.Desktop";
@@ -116,7 +115,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 var labels = GetLabels(request, statusCode);
                 _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels.AsReadonlySpan());
-                _clientCountMeasure.Record( 1, labels.AsReadonlySpan());
+                _clientCountMeasure.Record(1, labels.AsReadonlySpan());
             }
         }
 

@@ -15,7 +15,6 @@ using System.Globalization;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class EventCounterListener : EventListener
     {
         private readonly ILogger<EventCounterListener> _logger;
@@ -33,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         }
 
         /// <summary>
-        // Processes a new EventSource event.
+        /// Processes a new EventSource event.
         /// </summary>
         /// <param name="eventData">Event to process.</param>
         protected override void OnEventWritten(EventWrittenEventArgs eventData)

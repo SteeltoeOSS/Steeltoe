@@ -17,17 +17,17 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
-    [Obsolete]
     public class MetricsEndpointMiddlewareTest : BaseTest
     {
+        private PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
+
         [Fact]
         public void ParseTag_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
-
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(new SteeltoeExporterOptions()));
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             Assert.Null(middle.ParseTag("foobar"));
@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(new SteeltoeExporterOptions()));
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(new SteeltoeExporterOptions()));
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(new SteeltoeExporterOptions()));
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/metrics");
@@ -119,7 +119,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(new SteeltoeExporterOptions()));
+            var exporter = new SteeltoeExporter(_scraperOptions);
+
+            using var meterProvider = OpenTelemetryMetrics.Initialize(null, exporter, null);
+            var ep = new MetricsEndpoint(opts, exporter);
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -137,8 +140,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            var ep = new MetricsEndpoint(opts, exporter);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter(new SteeltoeExporterOptions()));
+            using var meterProvider = OpenTelemetryMetrics.Initialize(null, exporter, null);
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
@@ -153,7 +158,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
-            var exporter = new SteeltoeExporter(new SteeltoeExporterOptions());
+            var exporter = new SteeltoeExporter(_scraperOptions);
             using var meterProvider = OpenTelemetryMetrics.Initialize(null, exporter, null);
 
             var ep = new MetricsEndpoint(opts, exporter);
@@ -206,8 +211,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private void SetupTestView(SteeltoeExporter exporter)
         {
-            //OpenTelemetryMetrics.Initialize(exporter, null);
-          
             var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
 
             var labels = new Dictionary<string, object>()

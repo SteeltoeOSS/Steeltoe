@@ -10,9 +10,6 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.OpenTelemetry;
-using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Diagnostics.Tracing;
@@ -44,7 +41,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
             services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-            services.TryAddSingleton(new SteeltoeExporterOptions());
             AddMetricsObservers(services, observerOptions);
 
             services.AddActuatorEndpointMapping<MetricsEndpoint>();
@@ -100,19 +96,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
             }
 
-            if (observerOptions.GCEvents)
+            if (observerOptions.GCEvents || observerOptions.ThreadPoolEvents)
             {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, CLRRuntimeObserver>());
             }
 
             if (observerOptions.EventCounterEvents)
             {
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
-            }
-
-            if (observerOptions.ThreadPoolEvents)
-            {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadPoolEventsListener>());
             }
 
             if (observerOptions.HystrixEvents)

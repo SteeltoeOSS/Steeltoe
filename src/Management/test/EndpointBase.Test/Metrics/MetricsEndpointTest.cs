@@ -123,38 +123,37 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             }
         }
 
-        //[Fact]
-        //public void GetStatistic_ReturnsExpected()
-        //{
+        // [Fact]
+        // public void GetStatistic_ReturnsExpected()
+        // {
         //    var opts = new MetricsEndpointOptions();
         //    var exporter = new SteeltoeExporter();
         //    var ep = new MetricsEndpoint(opts, exporter);
 
-        //    var m1 = MeasureDouble.Create("test.totalTime", "test", MeasureUnit.Seconds);
+        // var m1 = MeasureDouble.Create("test.totalTime", "test", MeasureUnit.Seconds);
         //    var result = ep.GetStatistic(Sum.Create(), m1);
         //    Assert.Equal(MetricStatistic.TOTALTIME, result);
 
-        //    var m2 = MeasureDouble.Create("test.value", "test", MeasureUnit.Seconds);
+        // var m2 = MeasureDouble.Create("test.value", "test", MeasureUnit.Seconds);
         //    result = ep.GetStatistic(LastValue.Create(), m2);
         //    Assert.Equal(MetricStatistic.VALUE, result);
 
-        //    var m3 = MeasureDouble.Create("test.count", "test", MeasureUnit.Seconds);
+        // var m3 = MeasureDouble.Create("test.count", "test", MeasureUnit.Seconds);
         //    result = ep.GetStatistic(Count.Create(), m3);
         //    Assert.Equal(MetricStatistic.COUNT, result);
 
-        //    var m4 = MeasureDouble.Create("test.sum", "test", MeasureUnit.Bytes);
+        // var m4 = MeasureDouble.Create("test.sum", "test", MeasureUnit.Bytes);
         //    result = ep.GetStatistic(Sum.Create(), m4);
         //    Assert.Equal(MetricStatistic.TOTAL, result);
 
-        //    var m5 = MeasureDouble.Create("foobar", "test", MeasureUnit.Seconds);
+        // var m5 = MeasureDouble.Create("foobar", "test", MeasureUnit.Seconds);
         //    result = ep.GetStatistic(Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), m5);
         //    Assert.Equal(MetricStatistic.TOTALTIME, result);
 
-        //    var m6 = MeasureDouble.Create("foobar", "test", MeasureUnit.Bytes);
+        // var m6 = MeasureDouble.Create("foobar", "test", MeasureUnit.Bytes);
         //    result = ep.GetStatistic(Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), m6);
         //    Assert.Equal(MetricStatistic.TOTAL, result);
         // }
-
         [Fact]
         public void GetMetricSamples_ReturnsExpectedCounter()
         {
@@ -179,9 +178,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             }
         }
 
-        //[Fact]
-        //public void GetMetricSamples_ReturnsExpectedMeasure()
-        //{
+        // [Fact]
+        // public void GetMetricSamples_ReturnsExpectedMeasure()
+        // {
         //    using (var tc = new TestContext(_output))
         //    {
         //        tc.AdditionalServices = (services, configuration) =>
@@ -189,19 +188,19 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         //            services.AddMetricsActuatorServices(configuration);
         //        };
 
-        //        var ep = tc.GetService<MetricsEndpoint>();
+        // var ep = tc.GetService<MetricsEndpoint>();
 
-        //        var measure = _meter.CreateObservableGauge<double>("test.test3", () => 100);
+        // var measure = _meter.CreateObservableGauge<double>("test.test3", () => 100);
 
-        //        ep.GetMetricsCollection(out var measurements, out _);
+        // ep.GetMetricsCollection(out var measurements, out _);
         //        Assert.Single(measurements.Values);
         //        var sample = measurements.Values.FirstOrDefault()[0];
         //        Assert.Equal(100, sample.Value);
         //        Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
         //    }
-        //}
+        // }
 
-        // TODO: Support other aggregations
+        // TODO: Support other aggregations (Not supported by OTEL yet)
         /*
         SetupTestView(stats, Sum.Create(), null, "test.test2");
         viewData = stats.ViewManager.GetView(ViewName.Create("test.test2"));
@@ -505,7 +504,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 for (double i = 0; i < 10; i++)
                 {
                     allKeyssum += i;
-                    testMeasure.Add( i, labels.AsReadonlySpan());
+                    testMeasure.Add(i, labels.AsReadonlySpan());
                 }
 
                 var req = new MetricsRequest("test.total", labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList());

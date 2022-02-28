@@ -27,4 +27,8 @@
     </PackageReference>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Impl\Metrics\Aggregators\" />
+  </ItemGroup>
 </Project>

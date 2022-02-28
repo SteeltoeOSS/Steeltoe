@@ -1,187 +1,200 @@
-﻿//Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-//using Steeltoe.Management.Endpoint.Test;
-//using System;
-//using System.Collections.Generic;
-//using System.Diagnostics;
-//using System.Linq;
-//using System.Net;
-//using System.Net.Http;
-//using System.Threading.Tasks;
-//using Xunit;
+using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Xunit;
 
-//namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
-//{
-//    [Obsolete]
-//    public class HttpClientCoreObserverTest : BaseTest
-//    {
-//        // TODO: Pending View API
-//        /*
-//        [Fact]
-//        public void Constructor_RegistersExpectedViews()
-//        {
-//            var options = new MetricsEndpointOptions();
-//            var stats = new OpenCensusStats();
-//            var tags = new OpenCensusTags();
-//            var observer = new HttpClientCoreObserver(options, stats, tags, null);
+namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
+{
+    [Obsolete]
+    public class HttpClientCoreObserverTest : BaseTest
+    {
+        private readonly PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
 
-//            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.client.request.time")));
-//            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.client.request.count")));
-//        }
-//        */
+        [Fact]
+        public void Constructor_RegistersExpectedViews()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
-//        [Fact]
-//        public void ShouldIgnore_ReturnsExpected()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var obs = new HttpClientCoreObserver(options, stats, null);
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.time");
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.count");
+        }
 
-//            Assert.True(obs.ShouldIgnoreRequest("/api/v2/spans"));
-//            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
-//            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
-//            Assert.False(obs.ShouldIgnoreRequest("/api/test"));
-//            Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
-//        }
+        [Fact]
+        public void ShouldIgnore_ReturnsExpected()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-//        [Fact]
-//        public void ProcessEvent_IgnoresNulls()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientCoreObserver(options, stats, null);
+            Assert.True(obs.ShouldIgnoreRequest("/api/v2/spans"));
+            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
+            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
+            Assert.False(obs.ShouldIgnoreRequest("/api/test"));
+            Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
+        }
 
-//            observer.ProcessEvent("foobar", null);
-//            observer.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
+        [Fact]
+        public void ProcessEvent_IgnoresNulls()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-//            var act = new Activity("Test");
-//            act.Start();
-//            observer.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
-//            observer.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, null);
-//            act.Stop();
-//        }
+            obs.ProcessEvent("foobar", null);
+            obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
 
-//        [Fact]
-//        public void GetStatusCode_ReturnsExpected()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientCoreObserver(options, stats, null);
+            var act = new Activity("Test");
+            act.Start();
+            obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
+            obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, null);
+            act.Stop();
+        }
 
-//            var message = GetHttpResponseMessage(HttpStatusCode.OK);
-//            var status = observer.GetStatusCode(message, default);
-//            Assert.Equal("200", status);
+        [Fact]
+        public void GetStatusCode_ReturnsExpected()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-//            status = observer.GetStatusCode(null, TaskStatus.Canceled);
-//            Assert.Equal("CLIENT_CANCELED", status);
+            var message = GetHttpResponseMessage(HttpStatusCode.OK);
+            var status = obs.GetStatusCode(message, default);
+            Assert.Equal("200", status);
 
-//            status = observer.GetStatusCode(null, TaskStatus.Faulted);
-//            Assert.Equal("CLIENT_FAULT", status);
+            status = obs.GetStatusCode(null, TaskStatus.Canceled);
+            Assert.Equal("CLIENT_CANCELED", status);
 
-//            status = observer.GetStatusCode(null, TaskStatus.RanToCompletion);
-//            Assert.Equal("CLIENT_ERROR", status);
-//        }
+            status = obs.GetStatusCode(null, TaskStatus.Faulted);
+            Assert.Equal("CLIENT_FAULT", status);
 
-//        [Fact]
-//        public void GetTagContext_ReturnsExpected()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientCoreObserver(options, stats, null);
+            status = obs.GetStatusCode(null, TaskStatus.RanToCompletion);
+            Assert.Equal("CLIENT_ERROR", status);
+        }
 
-//            var req = GetHttpRequestMessage();
-//            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
-//            var tagContext = observer.GetLabels(req, resp, TaskStatus.RanToCompletion);
-//            var tagValues = tagContext.ToList();
-//            tagValues.Contains(KeyValuePair.Create("clientName", "localhost:5555"));
-//            tagValues.Contains(KeyValuePair.Create("uri", "/foo/bar"));
-//            tagValues.Contains(KeyValuePair.Create("status", "500"));
-//            tagValues.Contains(KeyValuePair.Create("method", "GET"));
-//        }
+        [Fact]
+        public void GetTagContext_ReturnsExpected()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-//        [Fact]
-//        [Trait("Category", "FlakyOnHostedAgents")]
-//        public void HandleStopEvent_RecordsStats()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientCoreObserver(options, stats, null);
-//            var factory = stats.Factory;
-//            var processor = stats.Processor;
+            var req = GetHttpRequestMessage();
+            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+            var tagContext = obs.GetLabels(req, resp, TaskStatus.RanToCompletion);
+            var tagValues = tagContext.ToList();
+            tagValues.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"));
+            tagValues.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"));
+            tagValues.Contains(KeyValuePair.Create("status", (object)"500"));
+            tagValues.Contains(KeyValuePair.Create("method", (object)"GET"));
+        }
 
-//            var req = GetHttpRequestMessage();
-//            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+        [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
+        public void HandleStopEvent_RecordsStats()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
 
-//            var act = new Activity("Test");
-//            act.Start();
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            using var otelMetrics = OpenTelemetryMetrics.Initialize(viewRegistry, exporter);
+            var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
-//            Task.Delay(1000).Wait();
-//            act.SetEndTime(DateTime.UtcNow);
+            var req = GetHttpRequestMessage();
+            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
-//            observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
-//            observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
+            var act = new Activity("Test");
+            act.Start();
 
-//            factory.CollectAllMetrics();
+            Task.Delay(1000).Wait();
+            act.SetEndTime(DateTime.UtcNow);
 
-//            var timeSummary = processor.GetMetricByName<double>("http.client.request.time");
-//            Assert.NotNull(timeSummary);
-//            var average = timeSummary.Sum / timeSummary.Count;
-//            Assert.InRange(average, 975.0, 1200.0);
-//            Assert.InRange(timeSummary.Max, 975.0, 1200.0);
+            observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
+            observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
 
-//            var countSummary = processor.GetMetricByName<long>("http.client.request.count");
-//            Assert.Equal(2, countSummary.Count);
+            var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-//            act.Stop();
-//        }
+            var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
+            var timeSummary = timeSample.Value.FirstOrDefault();
+            var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
+            var countSummary = countSample.Value.FirstOrDefault();
 
-//        [Fact]
-//        [Trait("Category", "FlakyOnHostedAgents")]
-//        public void HandleExceptionEvent_RecordsStats()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientCoreObserver(options, stats, null);
-//            var factory = stats.Factory;
-//            var processor = stats.Processor;
+            Assert.NotNull(timeSample.Value);
 
-//            var req = GetHttpRequestMessage();
-//            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+            var average = timeSummary.Value / countSummary.Value;
+            Assert.InRange(average, 975.0, 1200.0);
 
-//            var act = new Activity("Test");
-//            act.Start();
-//            Task.Delay(1000).Wait();
-//            act.SetEndTime(DateTime.UtcNow);
+            // Assert.InRange(max, 975.0, 1200.0);
+            // TODO: Readd when aggregations are available
+            Assert.Equal(2, countSummary.Value);
 
-//            observer.HandleExceptionEvent(act, req);
-//            observer.HandleExceptionEvent(act, req);
+            act.Stop();
+        }
 
-//            factory.CollectAllMetrics();
+        [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
+        public void HandleExceptionEvent_RecordsStats()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
-//            var timeSummary = processor.GetMetricByName<double>("http.client.request.time");
-//            Assert.NotNull(timeSummary);
-//            var average = timeSummary.Sum / timeSummary.Count;
-//            Assert.InRange(average, 990.0, 1200.0);
-//            Assert.InRange(timeSummary.Max, 990.0, 1200.0);
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            using var otelMetrics = OpenTelemetryMetrics.Initialize(viewRegistry, exporter);
 
-//            var countSummary = processor.GetMetricByName<long>("http.client.request.count");
-//            Assert.Equal(2, countSummary.Count);
+            var req = GetHttpRequestMessage();
+            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
-//            act.Stop();
-//        }
+            var act = new Activity("Test");
+            act.Start();
+            Task.Delay(1000).Wait();
+            act.SetEndTime(DateTime.UtcNow);
 
-//        private HttpResponseMessage GetHttpResponseMessage(HttpStatusCode code)
-//        {
-//            var m = new HttpResponseMessage(code);
-//            return m;
-//        }
+            observer.HandleExceptionEvent(act, req);
+            observer.HandleExceptionEvent(act, req);
 
-//        private HttpRequestMessage GetHttpRequestMessage()
-//        {
-//            var m = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5555/foo/bar");
-//            return m;
-//        }
-//    }
-//}
+            var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+
+            var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
+            var timeSummary = timeSample.Value.FirstOrDefault();
+            var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
+            var countSummary = countSample.Value.FirstOrDefault();
+
+            Assert.NotNull(timeSample.Value);
+
+            var average = timeSummary.Value / countSummary.Value;
+            Assert.InRange(average, 975.0, 1200.0);
+
+            // Assert.InRange(max, 975.0, 1200.0);
+            // TODO: Readd when aggregations are available
+            Assert.Equal(2, countSummary.Value);
+
+            act.Stop();
+        }
+
+        private HttpResponseMessage GetHttpResponseMessage(HttpStatusCode code)
+        {
+            var m = new HttpResponseMessage(code);
+            return m;
+        }
+
+        private HttpRequestMessage GetHttpRequestMessage()
+        {
+            var m = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5555/foo/bar");
+            return m;
+        }
+    }
+}

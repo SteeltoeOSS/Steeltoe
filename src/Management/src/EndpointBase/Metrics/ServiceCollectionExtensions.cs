@@ -42,12 +42,20 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IMetricsEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<MetricsEndpoint>();
-            services.AddSingleton(new SteeltoeExporterOptions());
 
             services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
             services.TryAddSingleton(provider =>
             {
-                var meterProvider = provider.AddOtelMetrics(out var steeltoeExporter, out _);
+                var options = provider.GetService<IMetricsEndpointOptions>();
+                IPullmetricsExporterOptions pullMetricsOptions = null;
+
+                if (options != null)
+                {
+                    pullMetricsOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                }
+
+                var steeltoeExporter = new SteeltoeExporter(pullMetricsOptions);
+                var meterProvider = provider.AddOtelMetrics(steeltoeExporter);
                 services.TryAddSingleton(meterProvider);
                 return steeltoeExporter;
             });
@@ -76,34 +84,28 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IPrometheusEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<PrometheusScraperEndpoint>();
-            services.TryAddSingleton<IPrometheusScraperEndpoint>(provider => provider.GetRequiredService<PrometheusScraperEndpoint>());
             services.TryAddSingleton(provider =>
             {
-                var meterProvider = provider.AddOtelMetrics(out _, out var promExporter);
+                var options = provider.GetService<IPrometheusEndpointOptions>();
+                IPullmetricsExporterOptions pullMetricsOptions = null;
+
+                if (options != null)
+                {
+                    pullMetricsOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                }
+
+                var promExporter = new SteeltoePrometheusExporter(pullMetricsOptions);
+                var meterProvider = provider.AddOtelMetrics(null, promExporter);
                 services.TryAddSingleton(meterProvider);
                 return promExporter;
             });
             return services;
         }
 
-        private static MeterProvider AddOtelMetrics(this IServiceProvider provider, out SteeltoeExporter exporter, out PrometheusExporterWrapper promExporter)
+        private static MeterProvider AddOtelMetrics(this IServiceProvider provider, SteeltoeExporter exporter = null, SteeltoePrometheusExporter promExporter = null)
         {
             var views = provider.GetService<IViewRegistry>();
-            exporter = null;
-            promExporter = null;
-            var exporterOptions = provider.GetService<SteeltoeExporterOptions>();
-            if (exporterOptions != null)
-            {
-                exporter = new SteeltoeExporter(exporterOptions);
-            }
-
-            if (provider.GetService<PrometheusEndpointOptions>() != null)
-            {
-                promExporter = new PrometheusExporterWrapper();
-            }
-
             return OpenTelemetryMetrics.Initialize(views, exporter, promExporter);
         }
-
     }
 }

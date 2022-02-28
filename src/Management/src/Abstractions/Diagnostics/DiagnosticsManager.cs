@@ -17,30 +17,21 @@ namespace Steeltoe.Common.Diagnostics
         internal IDisposable _listenersSubscription;
         internal ILogger<DiagnosticsManager> _logger;
         internal IList<IDiagnosticObserver> _observers;
-        internal IList<IPolledDiagnosticSource> _sources;
+        internal IList<IRuntimeDiagnosticSource> _sources;
         internal IList<EventListener> _eventListeners;
 
-        internal Thread _workerThread;
         internal bool _workerThreadShutdown = false;
         internal int _started = 0;
-
-        private const int POLL_DELAY_MILLI = 15000;
-
         private static readonly Lazy<DiagnosticsManager> AsSingleton = new (() => new DiagnosticsManager());
 
         public static DiagnosticsManager Instance => AsSingleton.Value;
 
         public DiagnosticsManager(
-            IEnumerable<IPolledDiagnosticSource> polledSources,
+            IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
             IEnumerable<IDiagnosticObserver> observers,
             IEnumerable<EventListener> eventListeners,
             ILogger<DiagnosticsManager> logger = null)
         {
-            if (polledSources == null)
-            {
-                throw new ArgumentNullException(nameof(polledSources));
-            }
-
             if (observers == null)
             {
                 throw new ArgumentNullException(nameof(observers));
@@ -48,7 +39,7 @@ namespace Steeltoe.Common.Diagnostics
 
             _logger = logger;
             _observers = observers.ToList();
-            _sources = polledSources.ToList();
+            _sources = runtimeSources.ToList();
             _eventListeners = eventListeners.ToList();
         }
 
@@ -56,12 +47,12 @@ namespace Steeltoe.Common.Diagnostics
         {
             _logger = logger;
             _observers = new List<IDiagnosticObserver>();
-            _sources = new List<IPolledDiagnosticSource>();
+            _sources = new List<IRuntimeDiagnosticSource>();
         }
 
         public IList<IDiagnosticObserver> Observers => _observers;
 
-        public IList<IPolledDiagnosticSource> Sources => _sources;
+        public IList<IRuntimeDiagnosticSource> Sources => _sources;
 
         public void OnCompleted()
         {
@@ -86,13 +77,6 @@ namespace Steeltoe.Common.Diagnostics
             if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
             {
                 _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
-
-                _workerThread = new Thread(Poller)
-                {
-                    IsBackground = true,
-                    Name = "DiagnosticsPoller"
-                };
-                _workerThread.Start();
             }
         }
 
@@ -146,27 +130,6 @@ namespace Steeltoe.Common.Diagnostics
         ~DiagnosticsManager()
         {
             Dispose(false);
-        }
-
-        private void Poller(object obj)
-        {
-            while (!_workerThreadShutdown)
-            {
-                try
-                {
-                    foreach (var source in _sources)
-                    {
-                        source.Poll();
-                    }
-
-                    Thread.Sleep(POLL_DELAY_MILLI);
-                }
-                catch (Exception e)
-                {
-                    _logger?.LogError(e, "Diagnostic source poller exception, terminating");
-                    return;
-                }
-            }
         }
     }
 }

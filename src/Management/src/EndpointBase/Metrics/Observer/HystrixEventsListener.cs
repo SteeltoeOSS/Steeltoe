@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class HystrixEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Steeltoe.Hystrix.Events";

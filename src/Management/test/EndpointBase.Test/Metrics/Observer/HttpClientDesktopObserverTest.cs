@@ -1,118 +1,131 @@
-﻿//// Licensed to the .NET Foundation under one or more agreements.
-//// The .NET Foundation licenses this file to you under the Apache 2.0 License.
-//// See the LICENSE file in the project root for more information.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-//using Steeltoe.Management.Endpoint.Test;
-//using Steeltoe.Management.EndpointBase.Test.Metrics;
-//using System;
-//using System.Collections.Generic;
-//using System.Diagnostics;
-//using System.Net;
-//using System.Net.Http;
-//using System.Threading;
-//using Xunit;
+using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using Xunit;
 
-//namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
-//{
-//    [Obsolete]
-//    public class HttpClientDesktopObserverTest : BaseTest
-//    {
-//        // Bring back with Views API
-//        /* [Fact]
-//         public void Constructor_RegistersExpectedViews()
-//         {
-//             var options = new MetricsEndpointOptions();
-//             var stats = new OpenCensusStats();
-//             var tags = new OpenCensusTags();
-//             var observer = new HttpClientDesktopObserver(options, stats, tags, null);
+namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
+{
+    [Obsolete]
+    public class HttpClientDesktopObserverTest : BaseTest
+    {
+        [Fact]
+        public void Constructor_RegistersExpectedViews()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
-//             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time")));
-//             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count")));
-//         }*/
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.time");
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.count");
+        }
 
-//        [Fact]
-//        public void ShouldIgnore_ReturnsExpected()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientDesktopObserver(options, stats, null);
+        [Fact]
+        public void ShouldIgnore_ReturnsExpected()
+        {
+            var options = new MetricsObserverOptions();
 
-//            Assert.True(observer.ShouldIgnoreRequest("/api/v2/spans"));
-//            Assert.True(observer.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
-//            Assert.True(observer.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
-//            Assert.False(observer.ShouldIgnoreRequest("/api/test"));
-//            Assert.False(observer.ShouldIgnoreRequest("/v2/apps"));
-//        }
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
-//        [Fact]
-//        public void ProcessEvent_IgnoresNulls()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientDesktopObserver(options, stats, null);
+            Assert.True(observer.ShouldIgnoreRequest("/api/v2/spans"));
+            Assert.True(observer.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
+            Assert.True(observer.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
+            Assert.False(observer.ShouldIgnoreRequest("/api/test"));
+            Assert.False(observer.ShouldIgnoreRequest("/v2/apps"));
+        }
 
-//            observer.ProcessEvent("foobar", null);
-//            observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
+        [Fact]
+        public void ProcessEvent_IgnoresNulls()
+        {
+            var options = new MetricsObserverOptions();
 
-//            var act = new Activity("Test");
-//            act.Start();
-//            observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
-//            observer.ProcessEvent(HttpClientDesktopObserver.STOPEX_EVENT, null);
-//            act.Stop();
-//        }
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
-//        [Fact]
-//        public void GetTagContext_ReturnsExpected()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientDesktopObserver(options, stats, null);
+            observer.ProcessEvent("foobar", null);
+            observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
 
-//            var req = GetHttpRequestMessage();
-//            var labels = observer.GetLabels(req, HttpStatusCode.InternalServerError);
-//            labels.Contains(KeyValuePair.Create("clientName", "localhost:5555"));
-//            labels.Contains(KeyValuePair.Create("uri", "/foo/bar"));
-//            labels.Contains(KeyValuePair.Create("status", "500"));
-//            labels.Contains(KeyValuePair.Create("method", "GET"));
-//        }
+            var act = new Activity("Test");
+            act.Start();
+            observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
+            observer.ProcessEvent(HttpClientDesktopObserver.STOPEX_EVENT, null);
+            act.Stop();
+        }
 
-//        [Fact]
-//        public void HandleStopEvent_RecordsStats()
-//        {
-//            var options = new MetricsObserverOptions();
-//            var stats = new TestOpenTelemetryMetrics();
-//            var observer = new HttpClientDesktopObserver(options, stats, null);
-//            var factory = stats.Factory;
-//            var processor = stats.Processor;
+        [Fact]
+        public void GetTagContext_ReturnsExpected()
+        {
+            var options = new MetricsObserverOptions();
 
-//            var req = GetHttpRequestMessage();
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
-//            var act = new Activity("Test");
-//            act.Start();
-//            Thread.Sleep(1000);
-//            act.SetEndTime(DateTime.UtcNow);
+            var req = GetHttpRequestMessage();
+            var labels = observer.GetLabels(req, HttpStatusCode.InternalServerError).ToList();
+            labels.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"));
+            labels.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"));
+            labels.Contains(KeyValuePair.Create("status", (object)"500"));
+            labels.Contains(KeyValuePair.Create("method", (object)"GET"));
+        }
 
-//            observer.HandleStopEvent(act, req, HttpStatusCode.InternalServerError);
-//            observer.HandleStopEvent(act, req, HttpStatusCode.OK);
+        [Fact]
+        public void HandleStopEvent_RecordsStats()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
 
-//            factory.CollectAllMetrics();
+            var scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
+            var exporter = new SteeltoeExporter(scraperOptions);
+            using var otelMetrics = OpenTelemetryMetrics.Initialize(viewRegistry, exporter);
 
-//            var requestTime = processor.GetMetricByName<double>("http.desktop.client.request.time");
-//            Assert.NotNull(requestTime);
-//            Assert.InRange(requestTime.Min, 950.0, 1500.0);
-//            Assert.InRange(requestTime.Max, 950.0, 1500.0);
+            var req = GetHttpRequestMessage();
 
-//            var requestCount = processor.GetMetricByName<long>("http.desktop.client.request.count");
-//            Assert.NotNull(requestCount);
-//            Assert.Equal(2, requestCount.Sum);
-//            act.Stop();
-//        }
+            var act = new Activity("Test");
+            act.Start();
+            Thread.Sleep(1000);
+            act.SetEndTime(DateTime.UtcNow);
 
-//        private HttpWebRequest GetHttpRequestMessage()
-//        {
-//            var m = WebRequest.CreateHttp("http://localhost:5555/foo/bar");
-//            m.Method = HttpMethod.Get.Method;
-//            return m;
-//        }
-//    }
-//}
+            observer.HandleStopEvent(act, req, HttpStatusCode.InternalServerError);
+            observer.HandleStopEvent(act, req, HttpStatusCode.OK);
+
+            var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+
+            var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.time");
+            var timeSummary = timeSample.Value.FirstOrDefault();
+            var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.count");
+            var countSummary = countSample.Value.FirstOrDefault();
+
+            Assert.NotNull(timeSample.Value);
+
+            var average = timeSummary.Value / countSummary.Value;
+            Assert.InRange(average, 950.0, 1500.0);
+
+            Assert.Equal(2, countSummary.Value);
+
+            // TODO: Readd when aggregations are available
+            // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Min, 950.0, 1500.0);
+            // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Max, 950.0, 1500.0);
+            act.Stop();
+        }
+
+        private HttpWebRequest GetHttpRequestMessage()
+        {
+            var m = WebRequest.CreateHttp("http://localhost:5555/foo/bar");
+            m.Method = HttpMethod.Get.Method;
+            return m;
+        }
+    }
+}
