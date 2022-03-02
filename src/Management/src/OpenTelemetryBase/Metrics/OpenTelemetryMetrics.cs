@@ -7,7 +7,9 @@ using OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 using Steeltoe.Management.OpenTelemetry.Metrics;
+using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Management.OpenTelemetry
@@ -20,23 +22,5 @@ namespace Steeltoe.Management.OpenTelemetry
 
         public static Meter Meter => new Meter(InstrumentationName, InstrumentationVersion);
 
-        public static MeterProvider Initialize(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter = null, SteeltoePrometheusExporter prometheusExporter = null, string name = null, string version = null)
-        {
-            var builder = Sdk.CreateMeterProviderBuilder()
-                .AddMeter(name ?? InstrumentationName, version ?? InstrumentationVersion)
-                .AddRegisteredViews(viewRegistry);
-
-            if (steeltoeExporter != null)
-            {
-                builder = builder.AddSteeltoeExporter(steeltoeExporter);
-            }
-
-            if (prometheusExporter != null)
-            {
-                builder = builder.AddReader(new BaseExportingMetricReader(prometheusExporter));
-            }
-
-            return builder.Build();
-        }
     }
 }

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly Histogram<double> _serverCount;
         private readonly IViewRegistry _viewRegistry;
 
-        public AspNetCoreHostingObserver(IMetricsObserverOptions options, ILogger<AspNetCoreHostingObserver> logger, IViewRegistry viewRegistry)
+        public AspNetCoreHostingObserver(IMetricsObserverOptions options, IViewRegistry viewRegistry, ILogger<AspNetCoreHostingObserver> logger )
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
         {
             SetPathMatcher(new Regex(options.IngressIgnorePattern));

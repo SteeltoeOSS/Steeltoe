@@ -16,10 +16,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
         private readonly SteeltoeExporter _exporter;
         private readonly ILogger<MetricsEndpoint> _logger;
 
-        public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
+        public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
             : base(options)
         {
-            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+            _exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
             _logger = logger;
         }
 
@@ -101,7 +101,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
         {
-            var collectionResponse = (SteeltoeCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
+            var collectRef = _exporter.CollectionManager.EnterCollect;
+
+            var collectionResponse = (SteeltoeCollectionResponse)collectRef?.Invoke().Result;
             metricSamples = collectionResponse.MetricSamples;
             availTags = collectionResponse.AvailableTags;
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.Test.Metrics;
@@ -44,6 +45,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                     services.AddMetricsActuatorServices(configuration);
                 };
 
+                var meterFactory = tc.GetService<MeterProvider>();
                 var ep = tc.GetService<IMetricsEndpoint>();
                 var requests = OpenTelemetryMetrics.Meter.CreateCounter<long>("http.server.requests");
                 requests.Add(1);
@@ -67,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 {
                     services.AddMetricsActuatorServices(configuration);
                 };
-
+                var meterFactory = tc.GetService<MeterProvider>();
                 var ep = tc.GetService<IMetricsEndpoint>();
                 var result = ep.Invoke(null);
                 Assert.NotNull(result);
@@ -87,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 {
                     services.AddMetricsActuatorServices(configuration);
                 };
-
+                var meterFactory = tc.GetService<MeterProvider>();
                 var ep = tc.GetService<IMetricsEndpoint>();
 
                 var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
@@ -163,7 +165,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 {
                     services.AddMetricsActuatorServices(configuration);
                 };
-
+                var meterFactory = tc.GetService<MeterProvider>();
                 var ep = tc.GetService<MetricsEndpoint>();
 
                 var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test7");
@@ -260,7 +262,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 {
                     services.AddMetricsActuatorServices(configuration);
                 };
-
+                var meterFactory = tc.GetService<MeterProvider>();
                 var ep = tc.GetService<MetricsEndpoint>();
                 var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test2");
 
@@ -328,7 +330,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 {
                     services.AddMetricsActuatorServices(configuration);
                 };
-
+                var meterFactory = tc.GetService<MeterProvider>();
                 var ep = tc.GetService<MetricsEndpoint>();
 
                 var testMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("test.test1");
@@ -494,7 +496,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 {
                     services.AddMetricsActuatorServices(configuration);
                 };
-
+                var meterFactory = tc.GetService<MeterProvider>();
                 var ep = tc.GetService<IMetricsEndpoint>();
 
                 var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");

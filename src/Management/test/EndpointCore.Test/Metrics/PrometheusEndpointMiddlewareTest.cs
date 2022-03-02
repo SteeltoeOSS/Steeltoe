@@ -29,9 +29,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             mopts.EndpointOptions.Add(opts);
             var exporter = new SteeltoePrometheusExporter();
             var viewRegistry = new ViewRegistry();
-            using var otel = OpenTelemetryMetrics.Initialize(viewRegistry, null, exporter, "test1", "1.0");
+            using var otel = GetTestMetrics(viewRegistry, null, exporter, "test1", "1.0");
 
-            var ep = new PrometheusScraperEndpoint(opts, exporter);
+            var ep = new PrometheusScraperEndpoint(opts,new List<IMetricsExporter>() { exporter });
             var middle = new PrometheusScraperEndpointMiddleware(null, ep, mopts);
             var meter = new Meter("test1", "1.0");
             var measure = meter.CreateCounter<double>("test");

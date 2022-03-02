@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
 using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -14,10 +16,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
         private readonly SteeltoePrometheusExporter _exporter;
         private readonly ILogger<PrometheusScraperEndpoint> _logger;
 
-        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, SteeltoePrometheusExporter exporter, ILogger<PrometheusScraperEndpoint> logger = null)
+        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<PrometheusScraperEndpoint> logger = null)
             : base(options)
         {
-            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+            _exporter = exporters?.OfType<SteeltoePrometheusExporter>().FirstOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
             _logger = logger;
         }
 

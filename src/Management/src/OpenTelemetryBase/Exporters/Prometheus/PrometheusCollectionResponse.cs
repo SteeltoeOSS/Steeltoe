@@ -12,13 +12,10 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         {
             View = view;
             GeneratedAtUtc = generatedAtUtc;
-          //  FromCache = fromCache;
         }
 
         public ArraySegment<byte> View { get; }
 
         public DateTime GeneratedAtUtc { get; }
-
-      //  public bool FromCache { get; }
     }
 }

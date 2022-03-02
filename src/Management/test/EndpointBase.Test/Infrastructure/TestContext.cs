@@ -75,8 +75,6 @@ namespace Steeltoe.Management.Endpoint.Test.Infrastructure
         public void Dispose()
         {
             _loggerProvider.Dispose();
-           // var exporter = _serviceProvider.GetService<SteeltoeExporter>();
-            //exporter?.Dispose();
         }
     }
 }

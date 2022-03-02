@@ -3,10 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -43,6 +49,24 @@ namespace Steeltoe.Management.Endpoint.Test
             options.Converters.Add(new HealthConverter());
             options.Converters.Add(new MetricsResponseConverter());
             return options;
+        }
+
+        public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter, string name = null, string version = null)
+        {
+            var builder = Sdk.CreateMeterProviderBuilder()
+                .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
+                .AddRegisteredViews(viewRegistry);
+            if (steeltoeExporter != null)
+            {
+                builder.AddSteeltoeExporter(steeltoeExporter);
+            }
+
+            if (prometheusExporter != null)
+            {
+                builder.AddReader(new BaseExportingMetricReader(prometheusExporter));
+            }
+
+            return builder.Build();
         }
     }
 }

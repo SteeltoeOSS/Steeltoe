@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
             var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
             var exporter = new SteeltoeExporter(scraperOptions);
-            using var otelMetrics = OpenTelemetryMetrics.Initialize(viewRegistry, exporter);
+            using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
 
             var req = GetHttpRequestMessage();
 
@@ -104,9 +104,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
             var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.time");
-            var timeSummary = timeSample.Value.FirstOrDefault();
+            Func<MetricSample, MetricSample, MetricSample> sumAgg = (x, y) => new MetricSample(x.Statistic, x.Value + y.Value, x.Tags);
+            var timeSummary = timeSample.Value.Aggregate(sumAgg);
             var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.count");
-            var countSummary = countSample.Value.FirstOrDefault();
+            var countSummary = countSample.Value.Aggregate(sumAgg);
 
             Assert.NotNull(timeSample.Value);
 

@@ -7,11 +7,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Metrics.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
+using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -44,21 +46,15 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<MetricsEndpoint>();
 
             services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
-            services.TryAddSingleton(provider =>
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoeExporter>(provider =>
             {
                 var options = provider.GetService<IMetricsEndpointOptions>();
-                IPullmetricsExporterOptions pullMetricsOptions = null;
+                var exporterOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                return new SteeltoeExporter(exporterOptions);
+            }));
 
-                if (options != null)
-                {
-                    pullMetricsOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
-                }
-
-                var steeltoeExporter = new SteeltoeExporter(pullMetricsOptions);
-                var meterProvider = provider.AddOtelMetrics(steeltoeExporter);
-                services.TryAddSingleton(meterProvider);
-                return steeltoeExporter;
-            });
+            services.AddOpenTelemetryMetricsForSteeltoe();
             return services;
         }
 
@@ -84,28 +80,34 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IPrometheusEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<PrometheusScraperEndpoint>();
-            services.TryAddSingleton(provider =>
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoePrometheusExporter>(provider =>
             {
-                var options = provider.GetService<IPrometheusEndpointOptions>();
-                IPullmetricsExporterOptions pullMetricsOptions = null;
+                var options = provider.GetService<IMetricsEndpointOptions>();
+                var exporterOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                return new SteeltoePrometheusExporter(exporterOptions);
+            }));
+            services.AddOpenTelemetryMetricsForSteeltoe();
 
-                if (options != null)
-                {
-                    pullMetricsOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
-                }
-
-                var promExporter = new SteeltoePrometheusExporter(pullMetricsOptions);
-                var meterProvider = provider.AddOtelMetrics(null, promExporter);
-                services.TryAddSingleton(meterProvider);
-                return promExporter;
-            });
             return services;
         }
 
-        private static MeterProvider AddOtelMetrics(this IServiceProvider provider, SteeltoeExporter exporter = null, SteeltoePrometheusExporter promExporter = null)
+        internal static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, string name = null, string version = null)
         {
-            var views = provider.GetService<IViewRegistry>();
-            return OpenTelemetryMetrics.Initialize(views, exporter, promExporter);
+            var builder = new MeterProviderBuilderHosting(services);
+
+            return services.AddOpenTelemetryMetrics(builder =>
+            {
+                builder.Configure((provider, deferredBuilder) =>
+                {
+                    var stackTrace = new StackTrace();
+                    var views = provider.GetService<IViewRegistry>();
+                    var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
+                    deferredBuilder
+                        .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
+                        .AddRegisteredViews(views)
+                        .AddExporters(exporters);
+                });
+            });
         }
     }
 }

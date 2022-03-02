@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,12 +22,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void Constructor_RegistersExpectedViews()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
-            // var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
-
-            // Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.time")));
-            // Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.count")));
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.seconds");
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.count");
         }
 
         [Fact]
@@ -34,28 +35,30 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         {
             var options = new MetricsObserverOptions();
 
-            var obs = new AspNetCoreHostingObserver(options, null, null);
+            var viewRegistry = new ViewRegistry();
+            var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
-            Assert.True(obs.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
-            Assert.True(obs.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
-            Assert.True(obs.ShouldIgnoreRequest("/foo/bar/image.png"));
-            Assert.True(obs.ShouldIgnoreRequest("/foo/bar/image.gif"));
-            Assert.True(obs.ShouldIgnoreRequest("/favicon.ico"));
-            Assert.True(obs.ShouldIgnoreRequest("/foo.js"));
-            Assert.True(obs.ShouldIgnoreRequest("/foo.css"));
-            Assert.True(obs.ShouldIgnoreRequest("/javascript/foo.js"));
-            Assert.True(obs.ShouldIgnoreRequest("/css/foo.css"));
-            Assert.True(obs.ShouldIgnoreRequest("/foo.html"));
-            Assert.True(obs.ShouldIgnoreRequest("/html/foo.html"));
-            Assert.False(obs.ShouldIgnoreRequest("/api/test"));
-            Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
+            Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
+            Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
+            Assert.True(observer.ShouldIgnoreRequest("/foo/bar/image.png"));
+            Assert.True(observer.ShouldIgnoreRequest("/foo/bar/image.gif"));
+            Assert.True(observer.ShouldIgnoreRequest("/favicon.ico"));
+            Assert.True(observer.ShouldIgnoreRequest("/foo.js"));
+            Assert.True(observer.ShouldIgnoreRequest("/foo.css"));
+            Assert.True(observer.ShouldIgnoreRequest("/javascript/foo.js"));
+            Assert.True(observer.ShouldIgnoreRequest("/css/foo.css"));
+            Assert.True(observer.ShouldIgnoreRequest("/foo.html"));
+            Assert.True(observer.ShouldIgnoreRequest("/html/foo.html"));
+            Assert.False(observer.ShouldIgnoreRequest("/api/test"));
+            Assert.False(observer.ShouldIgnoreRequest("/v2/apps"));
         }
 
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
             var options = new MetricsObserverOptions();
-            var observer = new AspNetCoreHostingObserver(options, null, null);
+            var viewRegistry = new ViewRegistry();
+            var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(AspNetCoreHostingObserver.STOP_EVENT, null);
@@ -70,7 +73,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         public void GetException_ReturnsExpected()
         {
             var options = new MetricsObserverOptions();
-            var observer = new AspNetCoreHostingObserver(options, null, null);
+            var viewRegistry = new ViewRegistry();
+            var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
             var context = GetHttpRequestMessage();
             var exception = observer.GetException(context);
@@ -91,7 +95,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         public void GetLabelSets_ReturnsExpected()
         {
             var options = new MetricsObserverOptions();
-            var observer = new AspNetCoreHostingObserver(options, null, null);
+            var viewRegistry = new ViewRegistry();
+            var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
             var context = GetHttpRequestMessage();
             var exceptionHandlerFeature = new ExceptionHandlerFeature()
@@ -114,8 +119,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         public void HandleStopEvent_RecordsStats()
         {
             var options = new MetricsObserverOptions();
-
-            var observer = new AspNetCoreHostingObserver(options, null, null);
+            var viewRegistry = new ViewRegistry();
+            var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
             var context = GetHttpRequestMessage();
             var exceptionHandlerFeature = new ExceptionHandlerFeature()

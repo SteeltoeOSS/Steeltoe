@@ -110,7 +110,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var viewRegistry = new ViewRegistry();
 
             var exporter = new SteeltoeExporter(_scraperOptions);
-            using var otelMetrics = OpenTelemetryMetrics.Initialize(viewRegistry, exporter);
+            using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
             var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
             var req = GetHttpRequestMessage();
@@ -153,7 +153,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
             var exporter = new SteeltoeExporter(_scraperOptions);
-            using var otelMetrics = OpenTelemetryMetrics.Initialize(viewRegistry, exporter);
+            using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
 
             var req = GetHttpRequestMessage();
             var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);

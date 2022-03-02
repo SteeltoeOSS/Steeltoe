@@ -2,13 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
@@ -46,44 +50,44 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             using var listener = new EventCounterListener(new MetricsObserverOptions());
 
             var exporter = new SteeltoeExporter(_scraperOptions);
-            using var otelMetrics = OpenTelemetryMetrics.Initialize(null, exporter);
-            Task.Delay(1000).Wait();
+            using var otelMetrics = GetTestMetrics(null, exporter, null);
+            Task.Delay(2000).Wait();
 
             var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
             foreach (var metric in _metrics)
             {
-                var summary = collectionResponse.MetricSamples.Select(x => x.Key == metric).ToList();
+                var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
                 Assert.NotNull(summary);
                 Assert.True(summary.Count > 0);
             }
         }
 
-        // [Fact]
-        // public void EventCounterListenerGetsMetricsWithExclusionsTest()
-        // {
-        //    var options = new MetricsEndpointOptions();
-        //    var exclusions = new List<string> { "alloc-rate", "threadpool-completed-items-count", "gen-1-gc-count", "gen-1-size" };
-        //    using var listener = new EventCounterListener(new MetricsObserverOptions { ExcludedMetrics = exclusions });
-        //    var exporter = new SteeltoeExporter(_scraperOptions);
-        //    using var otelMetrics = OpenTelemetryMetrics.Initialize(null, exporter);
-        //   // Task.Delay(2000).Wait();
+        [Fact]
+        public void EventCounterListenerGetsMetricsWithExclusionsTest()
+        {
+            var options = new MetricsEndpointOptions();
+            var exclusions = new List<string> { "alloc-rate", "threadpool-completed-items-count", "gen-1-gc-count", "gen-1-size" };
+            using var listener = new EventCounterListener(new MetricsObserverOptions { ExcludedMetrics = exclusions });
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            using var otelMetrics = GetTestMetrics(null, exporter, null);
+            Task.Delay(2000).Wait();
 
-        // var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+            var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-        // foreach (var metric in _metrics)
-        //    {
-        //        var summary = collectionResponse.MetricSamples.Select(x => x.Key == metric).ToList();
-        //        if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty)))
-        //        {
-        //            Assert.NotNull(summary);
-        //            Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
-        //        }
-        //        else
-        //        {
-        //            Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
-        //        }
-        //    }
-        // }
+            foreach (var metric in _metrics)
+            {
+                var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+                if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty)))
+                {
+                    Assert.NotNull(summary);
+                    Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
+                }
+                else
+                {
+                    Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+                }
+            }
+        }
     }
 }
