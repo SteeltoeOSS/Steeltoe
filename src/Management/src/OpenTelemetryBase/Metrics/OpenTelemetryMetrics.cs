@@ -17,10 +17,11 @@ namespace Steeltoe.Management.OpenTelemetry
     public static class OpenTelemetryMetrics
     {
         public static readonly AssemblyName AssemblyName = typeof(OpenTelemetryMetrics).Assembly.GetName();
-        public static readonly string InstrumentationName = AssemblyName.Name;
+
         public static readonly string InstrumentationVersion = AssemblyName.Version.ToString();
 
         public static Meter Meter => new Meter(InstrumentationName, InstrumentationVersion);
 
+        public static string InstrumentationName { get; set; } = AssemblyName.Name;
     }
 }

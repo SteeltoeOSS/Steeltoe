@@ -19,17 +19,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
     [Obsolete]
     public class AspNetCoreHostingObserverTest : BaseTest
     {
-        [Fact]
-        public void Constructor_RegistersExpectedViews()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
-            var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
-
-            Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.seconds");
-            Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.count");
-        }
-
+        // [Fact] TODO: Do we need these views
+        // public void Constructor_RegistersExpectedViews()
+        // {
+        //    var options = new MetricsObserverOptions();
+        //    var viewRegistry = new ViewRegistry();
+        //    var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
+        //    Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.seconds");
+        //    Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.count");
+        // }
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {

@@ -86,9 +86,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var options = new MetricsObserverOptions();
             var viewRegistry = new ViewRegistry();
 
-            var scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
+            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+
+            var scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 10 };
             var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
             var exporter = new SteeltoeExporter(scraperOptions);
+
             using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
 
             var req = GetHttpRequestMessage();
@@ -104,12 +107,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
             var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.time");
+            Assert.NotNull(timeSample.Value);
+
             Func<MetricSample, MetricSample, MetricSample> sumAgg = (x, y) => new MetricSample(x.Statistic, x.Value + y.Value, x.Tags);
+
             var timeSummary = timeSample.Value.Aggregate(sumAgg);
             var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.count");
             var countSummary = countSample.Value.Aggregate(sumAgg);
-
-            Assert.NotNull(timeSample.Value);
 
             var average = timeSummary.Value / countSummary.Value;
             Assert.InRange(average, 950.0, 1500.0);

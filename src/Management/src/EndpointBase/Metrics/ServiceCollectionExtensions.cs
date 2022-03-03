@@ -7,10 +7,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Metrics.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Diagnostics;
@@ -93,8 +91,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, string name = null, string version = null)
         {
-            var builder = new MeterProviderBuilderHosting(services);
-
             return services.AddOpenTelemetryMetrics(builder =>
             {
                 builder.Configure((provider, deferredBuilder) =>

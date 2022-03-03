@@ -8,6 +8,7 @@ using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,6 +49,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         {
             var options = new MetricsEndpointOptions();
             using var listener = new EventCounterListener(new MetricsObserverOptions());
+            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
             var exporter = new SteeltoeExporter(_scraperOptions);
             using var otelMetrics = GetTestMetrics(null, exporter, null);

@@ -112,73 +112,73 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Null(middle.GetMetricName(context3.Request));
         }
 
-        //[Fact]
-        //public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
-        //{
-        //    var opts = new MetricsEndpointOptions();
-        //    var mopts = new CloudFoundryManagementOptions();
-        //    mopts.EndpointOptions.Add(opts);
+        [Fact]
+        public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
+        {
+            var opts = new MetricsEndpointOptions();
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
+            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+            var exporter = new SteeltoeExporter(_scraperOptions);
 
-        //    var exporter = new SteeltoeExporter(_scraperOptions);
+            using var meterProvider = GetTestMetrics(null, exporter, null);
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-        //    using var meterProvider = OpenTelemetryMetrics.Initialize(null, exporter, null);
-        //    var ep = new MetricsEndpoint(opts, exporter);
-        //    var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
 
-        //    var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
+            await middle.HandleMetricsRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
+            Assert.Equal("{\"names\":[]}", json);
+        }
 
-        //    await middle.HandleMetricsRequestAsync(context);
-        //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-        //    var rdr = new StreamReader(context.Response.Body);
-        //    var json = await rdr.ReadToEndAsync();
-        //    Assert.Equal("{\"names\":[]}", json);
-        //}
+        [Fact]
+        public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
+        {
+            var opts = new MetricsEndpointOptions();
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
 
-        //[Fact]
-        //public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
-        //{
-        //    var opts = new MetricsEndpointOptions();
-        //    var mopts = new CloudFoundryManagementOptions();
-        //    mopts.EndpointOptions.Add(opts);
-        //    var exporter = new SteeltoeExporter(_scraperOptions);
-        //    var ep = new MetricsEndpoint(opts, exporter);
+            using var meterProvider = GetTestMetrics(null, exporter, null);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-        //    using var meterProvider = OpenTelemetryMetrics.Initialize(null, exporter, null);
-        //    var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
 
-        //    var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
+            await middle.HandleMetricsRequestAsync(context);
+            Assert.Equal(404, context.Response.StatusCode);
+        }
 
-        //    await middle.HandleMetricsRequestAsync(context);
-        //    Assert.Equal(404, context.Response.StatusCode);
-        //}
+        [Fact]
+        public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
+        {
+            var opts = new MetricsEndpointOptions();
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            using var meterProvider = GetTestMetrics(null, exporter, null);
 
-        //[Fact]
-        //public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
-        //{
-        //    var opts = new MetricsEndpointOptions();
-        //    var mopts = new CloudFoundryManagementOptions();
-        //    mopts.EndpointOptions.Add(opts);
-        //    var exporter = new SteeltoeExporter(_scraperOptions);
-        //    using var meterProvider = OpenTelemetryMetrics.Initialize(null, exporter, null);
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-        //    var ep = new MetricsEndpoint(opts, exporter);
-        //    var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+            SetupTestView(exporter);
 
-        //    SetupTestView(exporter);
+            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
-        //    var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
+            await middle.HandleMetricsRequestAsync(context);
+            Assert.Equal(200, context.Response.StatusCode);
 
-        //    await middle.HandleMetricsRequestAsync(context);
-        //    Assert.Equal(200, context.Response.StatusCode);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
 
-        //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-        //    var rdr = new StreamReader(context.Response.Body);
-        //    var json = await rdr.ReadToEndAsync();
-
-        //    // TODO: Make sure this is OK to not have the "VALUE" or a custom view is needed
-        //    // Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
-        //    Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
-        //}
+            // TODO: Make sure this is OK to not have the "VALUE" or a custom view is needed
+            // Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+            Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+        }
 
         [Fact]
         public void RoutesByPathAndVerb()

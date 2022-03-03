@@ -101,9 +101,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
         {
-            var collectRef = _exporter.CollectionManager.EnterCollect;
-
-            var collectionResponse = (SteeltoeCollectionResponse)collectRef?.Invoke().Result;
+            var collectionResponse = (SteeltoeCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
             metricSamples = collectionResponse.MetricSamples;
             availTags = collectionResponse.AvailableTags;
 
