@@ -4,10 +4,11 @@
 
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     /// ActiveWorkerThreadCount - UInt32 - Number of worker threads available to process work, including those that are already processing work.
     /// RetiredWorkerThreadCount - UInt32 - Number of worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
     /// </summary>
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
+    [Obsolete("Use CLRRuntimeObserver instead")]
     public class ThreadPoolEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
@@ -46,13 +47,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         };
 
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly MeasureMetric<long> _availableThreads;
+        private readonly Counter<long> _availableThreads;
 
-        public ThreadPoolEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
-            : base(stats)
+        public ThreadPoolEventsListener(ILogger<EventSourceListener> logger = null)
+            : base()
         {
             _logger = logger;
-            _availableThreads = Meter.CreateInt64Measure($"clr.threadpool.available");
+            _availableThreads = OpenTelemetryMetrics.Meter.CreateCounter<long>($"clr.threadpool.available");
         }
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
@@ -76,15 +77,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             }
         }
 
-        protected IDictionary<string, string> GetLabelSet(string eventName)
+        protected IDictionary<string, object> GetLabelSet(string eventName)
         {
             return eventName switch
             {
-                var en when eventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase) =>
-                new Dictionary<string, string> { { "kind", "completionPort" } },
-                var en when eventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase) =>
-                new Dictionary<string, string> { { "kind", "worker" } },
-                _ => new Dictionary<string, string>()
+                _ when eventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase) =>
+                new Dictionary<string, object> { { "kind", "completionPort" } },
+                _ when eventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase) =>
+                new Dictionary<string, object> { { "kind", "worker" } },
+                _ => new Dictionary<string, object>()
             };
         }
 
@@ -113,7 +114,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 {
                     var activeCount = Convert.ToInt64(payloadEnumerator.Current, CultureInfo.InvariantCulture);
                     var available = maxWorker - activeCount;
-                    _availableThreads.Record(default(SpanContext), available, GetLabelSet(eventData.EventName).ToList());
+                    _availableThreads.Add(available, GetLabelSet(eventData.EventName).AsReadonlySpan());
                 }
             }
         }

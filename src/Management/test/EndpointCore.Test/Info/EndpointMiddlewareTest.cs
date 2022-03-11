@@ -97,7 +97,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             Assert.Equal("2017-07-12T18:40:39Z", bTime.GetString());
             var commitInfo = gitNode["commit"].TryGetProperty("time", out var cTime);
             Assert.Equal("2017-06-08T12:47:02Z", cTime.GetString());
-         }
+        }
 
         [Fact]
         public async Task InfoActuator_UsesCustomJsonSerializerOptions()

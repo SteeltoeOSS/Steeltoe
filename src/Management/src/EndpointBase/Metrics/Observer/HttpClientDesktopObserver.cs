@@ -3,14 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -18,7 +19,6 @@ using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class HttpClientDesktopObserver : MetricsObserver
     {
         internal const string DIAGNOSTIC_NAME = "System.Net.Http.Desktop";
@@ -31,35 +31,33 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _uriTagKey = "uri";
         private readonly string _methodTagKey = "method";
         private readonly string _clientTagKey = "clientName";
+        private readonly IViewRegistry _viewRegistry;
+        private Histogram<double> _clientTimeMeasure;
+        private Histogram<double> _clientCountMeasure;
 
-        private readonly MeasureMetric<double> _clientTimeMeasure;
-        private readonly MeasureMetric<long> _clientCountMeasure;
-
-        public HttpClientDesktopObserver(IMetricsObserverOptions options, IStats stats, ILogger<HttpClientDesktopObserver> logger)
-            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
+        public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger, IViewRegistry viewRegistry)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
         {
-            PathMatcher = new Regex(options.EgressIgnorePattern);
+            _viewRegistry = viewRegistry ?? throw new ArgumentNullException(nameof(viewRegistry));
+            SetPathMatcher(new Regex(options.EgressIgnorePattern));
 
-            _clientTimeMeasure = Meter.CreateDoubleMeasure("http.desktop.client.request.time");
-            _clientCountMeasure = Meter.CreateInt64Measure("http.desktop.client.request.count");
+            _clientTimeMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
+            _clientCountMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.count");
 
-            // Bring back views when available
-            /*var view = View.Create(
-                    ViewName.Create("http.desktop.client.request.time"),
-                    "Total request time",
-                    clientTimeMeasure,
-                    Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
-                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
-
-            ViewManager.RegisterView(view);
-
-            view = View.Create(
-                    ViewName.Create("http.desktop.client.request.count"),
-                    "Total request counts",
-                    clientCountMeasure,
-                    Sum.Create(),
-                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
-            ViewManager.RegisterView(view);*/
+            _viewRegistry.AddView(
+                "http.desktop.client.request.time",
+                new ExplicitBucketHistogramConfiguration()
+                {
+                    Boundaries = new double[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
+                    TagKeys = new string[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
+                });
+            _viewRegistry.AddView(
+                "http.desktop.client.request.count",
+                new ExplicitBucketHistogramConfiguration()
+                {
+                    Boundaries = new double[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
+                    TagKeys = new string[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
+                });
         }
 
         public override void ProcessEvent(string evnt, object arg)
@@ -116,14 +114,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             if (current.Duration.TotalMilliseconds > 0)
             {
                 var labels = GetLabels(request, statusCode);
-                _clientTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labels);
-                _clientCountMeasure.Record(default(SpanContext), 1, labels);
+                _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels.AsReadonlySpan());
+                _clientCountMeasure.Record(1, labels.AsReadonlySpan());
             }
         }
 
-        protected internal List<KeyValuePair<string, string>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
+        protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
         {
-            return new Dictionary<string, string>()
+            return new Dictionary<string, object>()
                     {
                         { _uriTagKey, request.RequestUri.ToString() },
                         { _statusTagKey, statusCode.ToString() },

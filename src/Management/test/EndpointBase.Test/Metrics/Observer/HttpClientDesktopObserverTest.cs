@@ -3,10 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -17,25 +20,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
     [Obsolete]
     public class HttpClientDesktopObserverTest : BaseTest
     {
-        // Bring back with Views API
-        /* [Fact]
-         public void Constructor_RegistersExpectedViews()
-         {
-             var options = new MetricsEndpointOptions();
-             var stats = new OpenCensusStats();
-             var tags = new OpenCensusTags();
-             var observer = new HttpClientDesktopObserver(options, stats, tags, null);
+        [Fact]
+        public void Constructor_RegistersExpectedViews()
+        {
+            var options = new MetricsObserverOptions();
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
-             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time")));
-             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count")));
-         }*/
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.time");
+            Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.count");
+        }
 
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {
             var options = new MetricsObserverOptions();
-            var stats = new TestOpenTelemetryMetrics();
-            var observer = new HttpClientDesktopObserver(options, stats, null);
+
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
             Assert.True(observer.ShouldIgnoreRequest("/api/v2/spans"));
             Assert.True(observer.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
@@ -48,8 +50,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         public void ProcessEvent_IgnoresNulls()
         {
             var options = new MetricsObserverOptions();
-            var stats = new TestOpenTelemetryMetrics();
-            var observer = new HttpClientDesktopObserver(options, stats, null);
+
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
@@ -65,25 +68,31 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         public void GetTagContext_ReturnsExpected()
         {
             var options = new MetricsObserverOptions();
-            var stats = new TestOpenTelemetryMetrics();
-            var observer = new HttpClientDesktopObserver(options, stats, null);
+
+            var viewRegistry = new ViewRegistry();
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
             var req = GetHttpRequestMessage();
-            var labels = observer.GetLabels(req, HttpStatusCode.InternalServerError);
-            labels.Contains(KeyValuePair.Create("clientName", "localhost:5555"));
-            labels.Contains(KeyValuePair.Create("uri", "/foo/bar"));
-            labels.Contains(KeyValuePair.Create("status", "500"));
-            labels.Contains(KeyValuePair.Create("method", "GET"));
+            var labels = observer.GetLabels(req, HttpStatusCode.InternalServerError).ToList();
+            labels.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"));
+            labels.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"));
+            labels.Contains(KeyValuePair.Create("status", (object)"500"));
+            labels.Contains(KeyValuePair.Create("method", (object)"GET"));
         }
 
         [Fact]
         public void HandleStopEvent_RecordsStats()
         {
             var options = new MetricsObserverOptions();
-            var stats = new TestOpenTelemetryMetrics();
-            var observer = new HttpClientDesktopObserver(options, stats, null);
-            var factory = stats.Factory;
-            var processor = stats.Processor;
+            var viewRegistry = new ViewRegistry();
+
+            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+
+            var scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 10 };
+            var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
+            var exporter = new SteeltoeExporter(scraperOptions);
+
+            using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
 
             var req = GetHttpRequestMessage();
 
@@ -95,16 +104,25 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleStopEvent(act, req, HttpStatusCode.InternalServerError);
             observer.HandleStopEvent(act, req, HttpStatusCode.OK);
 
-            factory.CollectAllMetrics();
+            var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-            var requestTime = processor.GetMetricByName<double>("http.desktop.client.request.time");
-            Assert.NotNull(requestTime);
-            Assert.InRange(requestTime.Min, 950.0, 1500.0);
-            Assert.InRange(requestTime.Max, 950.0, 1500.0);
+            var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.time");
+            Assert.NotNull(timeSample.Value);
 
-            var requestCount = processor.GetMetricByName<long>("http.desktop.client.request.count");
-            Assert.NotNull(requestCount);
-            Assert.Equal(2, requestCount.Sum);
+            Func<MetricSample, MetricSample, MetricSample> sumAgg = (x, y) => new MetricSample(x.Statistic, x.Value + y.Value, x.Tags);
+
+            var timeSummary = timeSample.Value.Aggregate(sumAgg);
+            var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.count");
+            var countSummary = countSample.Value.Aggregate(sumAgg);
+
+            var average = timeSummary.Value / countSummary.Value;
+            Assert.InRange(average, 950.0, 1500.0);
+
+            Assert.Equal(2, countSummary.Value);
+
+            // TODO: Readd when aggregations are available
+            // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Min, 950.0, 1500.0);
+            // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Max, 950.0, 1500.0);
             act.Stop();
         }
 

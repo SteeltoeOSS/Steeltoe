@@ -4,9 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Metrics;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
+using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -37,8 +42,17 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IMetricsEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<MetricsEndpoint>();
+
             services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoeExporter>(provider =>
+            {
+                var options = provider.GetService<IMetricsEndpointOptions>();
+                var exporterOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                return new SteeltoeExporter(exporterOptions);
+            }));
+
+            services.AddOpenTelemetryMetricsForSteeltoe();
             return services;
         }
 
@@ -64,9 +78,32 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IPrometheusEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<PrometheusScraperEndpoint>();
-            services.TryAddSingleton<IPrometheusScraperEndpoint>(provider => provider.GetRequiredService<PrometheusScraperEndpoint>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoePrometheusExporter>(provider =>
+            {
+                var options = provider.GetService<IMetricsEndpointOptions>();
+                var exporterOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                return new SteeltoePrometheusExporter(exporterOptions);
+            }));
+            services.AddOpenTelemetryMetricsForSteeltoe();
 
             return services;
+        }
+
+        internal static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, string name = null, string version = null)
+        {
+            return services.AddOpenTelemetryMetrics(builder =>
+            {
+                builder.Configure((provider, deferredBuilder) =>
+                {
+                    var stackTrace = new StackTrace();
+                    var views = provider.GetService<IViewRegistry>();
+                    var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
+                    deferredBuilder
+                        .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
+                        .AddRegisteredViews(views)
+                        .AddExporters(exporters);
+                });
+            });
         }
     }
 }

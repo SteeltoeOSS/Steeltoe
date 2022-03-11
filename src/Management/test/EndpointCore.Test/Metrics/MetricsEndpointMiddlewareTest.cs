@@ -3,31 +3,31 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointBase.Test.Metrics;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
-    [Obsolete]
     public class MetricsEndpointMiddlewareTest : BaseTest
     {
+        private PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
+
         [Fact]
         public void ParseTag_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
-
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             Assert.Null(middle.ParseTag("foobar"));
@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/metrics");
@@ -118,8 +118,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
+            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+            var exporter = new SteeltoeExporter(_scraperOptions);
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
+            using var meterProvider = GetTestMetrics(null, exporter, null);
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -137,8 +140,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
 
-            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
+            using var meterProvider = GetTestMetrics(null, exporter, null);
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
@@ -153,14 +158,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
-            var stats = new TestOpenTelemetryMetrics();
-            var exporter = stats.Exporter;
+            var exporter = new SteeltoeExporter(_scraperOptions);
+            using var meterProvider = GetTestMetrics(null, exporter, null);
 
-            SetupTestView(stats);
-
-            var ep = new MetricsEndpoint(opts, exporter);
-
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+
+            SetupTestView(exporter);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
@@ -170,7 +174,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var rdr = new StreamReader(context.Response.Body);
             var json = await rdr.ReadToEndAsync();
-            Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+
+            // TODO: Make sure this is OK to not have the "VALUE" or a custom view is needed
+            // Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+            Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 
         [Fact]
@@ -202,22 +209,21 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             return context;
         }
 
-        private void SetupTestView(TestOpenTelemetryMetrics stats)
+        private void SetupTestView(SteeltoeExporter exporter)
         {
-            var measure = stats.Meter.CreateDoubleMeasure("test");
+            var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
 
-            var labels = new List<KeyValuePair<string, string>>();
-            labels.Add(KeyValuePair.Create("a", "v1"));
-            labels.Add(KeyValuePair.Create("b", "v1"));
-            labels.Add(KeyValuePair.Create("c", "v1"));
+            var labels = new Dictionary<string, object>()
+            {
+                { "a", "v1" },
+                { "b", "v1" },
+                { "c", "v1" },
+            };
 
             for (var i = 0; i < 10; i++)
             {
-                measure.Record(default(SpanContext), i, labels);
+                counter.Add(i, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
             }
-
-            stats.Factory.CollectAllMetrics();
-            stats.Processor.ExportMetrics();
         }
     }
 }

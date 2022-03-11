@@ -2,34 +2,56 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-#pragma warning disable CS0618 // Type or member is obsolete
     public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
     {
-        private readonly PrometheusExporter _exporter;
-        private string _cachedMetrics;
+        private readonly SteeltoePrometheusExporter _exporter;
+        private readonly ILogger<PrometheusScraperEndpoint> _logger;
 
-        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, PrometheusExporter exporter)
+        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<PrometheusScraperEndpoint> logger = null)
             : base(options)
         {
-            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+            _exporter = exporters?.OfType<SteeltoePrometheusExporter>().FirstOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
+            _logger = logger;
         }
 
         public override string Invoke()
         {
-            var metrics = _exporter.GetMetricsCollection();
-
-            if (!string.IsNullOrEmpty(metrics))
+            var result = string.Empty;
+            try
             {
-                _cachedMetrics = metrics;
+                var collectionResponse = (PrometheusCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
+                try
+                {
+                    if (collectionResponse.View.Count > 0)
+                    {
+                        result = Encoding.UTF8.GetString(collectionResponse.View.Array, 0, collectionResponse.View.Count);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Collection failure.");
+                    }
+                }
+                finally
+                {
+                    _exporter.CollectionManager.ExitCollect();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex.Message);
             }
 
-            return _cachedMetrics;
+            _exporter.OnExport = null;
+            return result;
         }
     }
-#pragma warning restore CS0618 // Type or member is obsolete
 }

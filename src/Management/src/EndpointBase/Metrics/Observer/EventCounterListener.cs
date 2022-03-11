@@ -4,31 +4,29 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class EventCounterListener : EventListener
     {
-        private readonly IStats _stats;
         private readonly ILogger<EventCounterListener> _logger;
         private readonly string _eventSourceName = "System.Runtime";
         private readonly string _eventName = "EventCounters";
         private readonly IMetricsObserverOptions _options;
 
-        private ConcurrentDictionary<string, MeasureMetric<double>> _doubleMeasureMetrics = new ();
-        private ConcurrentDictionary<string, MeasureMetric<long>> _longMeasureMetrics = new ();
+        private ConcurrentDictionary<string, Counter<double>> _doubleMeasureMetrics = new ();
+        private ConcurrentDictionary<string, Counter<long>> _longMeasureMetrics = new ();
 
-        public EventCounterListener(IStats stats, IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
+        public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
         {
-            _stats = stats ?? throw new ArgumentNullException(nameof(stats));
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
         }
@@ -69,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (_eventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
             {
-                var refreshInterval = new Dictionary<string, string>() { { "EventCounterIntervalSec", "1" } };
+                var refreshInterval = new Dictionary<string, string>() { { "EventCounterIntervalSec", "1" } }; // TODO: Make it configurable
                 try
                 {
                     EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, refreshInterval);
@@ -87,7 +85,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             double? doubleValue = null;
             long? longValue = null;
             var counterName = string.Empty;
-            var labelSet = new List<KeyValuePair<string, string>>();
+            var labelSet = new List<KeyValuePair<string, object>>();
             var excludedMetric = false;
             foreach (var payload in eventPayload)
             {
@@ -109,11 +107,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                         break;
                     case var kn when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
                         var counterDisplayName = payload.Value.ToString();
-                        labelSet.Add(KeyValuePair.Create("DisplayName", counterDisplayName));
+                        labelSet.Add(KeyValuePair.Create("DisplayName", (object)counterDisplayName));
                         break;
                     case var kn when key.Equals("DisplayUnits", StringComparison.OrdinalIgnoreCase):
                         var counterDisplayUnit = payload.Value.ToString();
-                        labelSet.Add(KeyValuePair.Create("DisplayUnits", counterDisplayUnit));
+                        labelSet.Add(KeyValuePair.Create("DisplayUnits", (object)counterDisplayUnit));
                         break;
                     case var kn when key.Equals("Mean", StringComparison.OrdinalIgnoreCase):
                         doubleValue = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
@@ -135,7 +133,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                             foreach (var keyValuePairString in keyValuePairStrings)
                             {
                                 var keyValuePair = keyValuePairString.Split(':');
-                                labelSet.Add(KeyValuePair.Create(keyValuePair[0], keyValuePair[1]));
+                                labelSet.Add(KeyValuePair.Create(keyValuePair[0], (object)keyValuePair[1]));
                             }
                         }
 
@@ -149,15 +147,16 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
                     metricName,
-                    (name) => _stats.Meter.CreateDoubleMeasure($"{name}"));
-                doubleMetric.Record(default, doubleValue.Value, labelSet);
+                    (name) => OpenTelemetryMetrics.Meter.CreateCounter<double>($"{name}"));
+                doubleMetric.Add(doubleValue.Value, labelSet.AsReadonlySpan());
             }
             else if (longValue.HasValue)
             {
                 var longMetric = _longMeasureMetrics.GetOrAddEx(
                     metricName,
-                    (name) => _stats.Meter.CreateInt64Measure($"{name}"));
-                longMetric.Record(default, longValue.Value, labelSet);
+                    (name) => OpenTelemetryMetrics.Meter.CreateCounter<long>($"{name}"));
+                longMetric.Add(
+                    longValue.Value, labelSet.AsReadonlySpan());
             }
         }
     }

@@ -3,29 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry.Metrics.Export;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-#pragma warning disable CS0618 // Type or member is obsolete
     public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
     {
         private readonly SteeltoeExporter _exporter;
         private readonly ILogger<MetricsEndpoint> _logger;
 
-        private List<ProcessedMetric<long>> LongMetrics { get; set; }
-
-        private List<ProcessedMetric<double>> DoubleMetrics { get; set; }
-
-        public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
+        public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
             : base(options)
         {
-            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+            _exporter = exporters?.OfType<SteeltoeExporter>().SingleOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
             _logger = logger;
         }
 
@@ -53,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return null;
         }
 
-        protected internal List<MetricSample> GetMetricSamplesByTags(MetricDictionary<List<MetricSample>> measurements, string metricName, IEnumerable<KeyValuePair<string, string>> tags)
+        protected internal List<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName, IEnumerable<KeyValuePair<string, string>> tags)
         {
             IEnumerable<MetricSample> filtered = measurements[metricName];
             var sampleList = new List<MetricSample>();
@@ -63,6 +57,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             }
 
             static MetricSample SumAggregator(MetricSample current, MetricSample next) => new (current.Statistic, current.Value + next.Value, current.Tags);
+            static MetricSample MaxAggregator(MetricSample current, MetricSample next) => new (current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
 
             var valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.VALUE);
             if (valueSamples.Any())
@@ -89,177 +84,28 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 sampleList.Add(countSamples.Aggregate(SumAggregator));
             }
 
+            var maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.MAX);
+            if (maxSamples.Any())
+            {
+                var sample = maxSamples.Aggregate(MaxAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.MAX, sample.Value, sample.Tags));
+            }
+
             return sampleList;
         }
 
-        protected internal MetricsResponse GetMetric(MetricsRequest request, List<MetricSample> measurements, List<MetricTag> availTags)
+        protected internal MetricsResponse GetMetric(MetricsRequest request, List<MetricSample> metricSamples, List<MetricTag> availTags)
         {
-            return new MetricsResponse(request.MetricName, measurements, availTags);
+            return new MetricsResponse(request.MetricName, metricSamples, availTags);
         }
 
-        protected internal void GetMetricsCollection(out MetricDictionary<List<MetricSample>> measurements, out MetricDictionary<List<MetricTag>> availTags)
+        protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
         {
-            measurements = new MetricDictionary<List<MetricSample>>();
-            availTags = new MetricDictionary<List<MetricTag>>();
+            var collectionResponse = (SteeltoeCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
+            metricSamples = collectionResponse.MetricSamples;
+            availTags = collectionResponse.AvailableTags;
 
-            var doubleMetrics = _exporter.GetAndClearDoubleMetrics();
-            if (doubleMetrics == null || doubleMetrics.Count <= 0)
-            {
-                doubleMetrics = DoubleMetrics;
-            }
-            else
-            {
-                DoubleMetrics = doubleMetrics;
-            }
-
-            if (doubleMetrics != null)
-            {
-                for (var i = 0; i < doubleMetrics.Count; i++)
-                {
-                    var metric = doubleMetrics[i];
-                    var labels = metric.Labels;
-
-                    switch (metric.AggregationType)
-                    {
-                        case AggregationType.DoubleSum:
-                            {
-                                var doubleSum = metric.Data as SumData<double>;
-
-                                var doubleValue = doubleSum.Sum;
-
-                                measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleValue, labels));
-
-                                AddLabelsToTags(availTags, metric.MetricName, labels);
-
-                                break;
-                            }
-
-                        case AggregationType.Summary:
-                            {
-                                var doubleSummary = metric.Data as SummaryData<double>;
-
-                                var value = doubleSummary.Count > 0 ? doubleSummary.Sum / doubleSummary.Count : 0;
-                                measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.VALUE, value, labels));
-
-                                // If labels contain time, Total time
-                                if (labels.Any(l => l.Key.Equals("TimeUnit", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL_TIME, doubleSummary.Sum, labels));
-                                }
-                                else
-                                {
-                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum, labels));
-                                }
-
-                                AddLabelsToTags(availTags, metric.MetricName, labels);
-
-                                break;
-                            }
-
-                        default:
-                            _logger.LogDebug($"Handle Agg Type {metric.AggregationType} in doubleMetrics");
-                            break;
-                    }
-                }
-            }
-
-            var longMetrics = _exporter.GetAndClearLongMetrics();
-            if (longMetrics == null || longMetrics.Count <= 0)
-            {
-                longMetrics = LongMetrics;
-            }
-            else
-            {
-                LongMetrics = longMetrics;
-            }
-
-            if (longMetrics != null)
-            {
-                foreach (var metric in longMetrics)
-                {
-                    var labels = metric.Labels;
-                    switch (metric.AggregationType)
-                    {
-                        case AggregationType.LongSum:
-                            {
-                                var longSum = metric.Data as SumData<long>;
-                                var longValue = longSum.Sum;
-
-                                measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, longValue, labels));
-                                AddLabelsToTags(availTags, metric.MetricName, labels);
-
-                                break;
-                            }
-
-                        case AggregationType.Summary:
-                            {
-                                var longSummary = metric.Data as SummaryData<long>;
-
-                                var value = longSummary.Count > 0 ? longSummary.Sum / longSummary.Count : 0;
-                                measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.VALUE, value, labels));
-
-                                // If labels contain time, Total time
-                                if (labels.Any(l => l.Key.Equals("TimeUnit", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL_TIME, longSummary.Sum, labels));
-                                }
-                                else
-                                {
-                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, longSummary.Sum, labels));
-                                }
-
-                                AddLabelsToTags(availTags, metric.MetricName, labels);
-
-                                break;
-                            }
-
-                        default:
-                            _logger.LogDebug($"Handle Agg Type {metric.AggregationType} in longMetrics");
-                            break;
-                    }
-                }
-            }
-        }
-
-        private void AddLabelsToTags(MetricDictionary<List<MetricTag>> availTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
-        {
-            foreach (var label in labels)
-            {
-                var currentTags = availTags[name];
-                var existingTag = currentTags.FirstOrDefault(tag => tag.Tag.Equals(label.Key, StringComparison.OrdinalIgnoreCase));
-
-                if (existingTag != null)
-                {
-                    existingTag.Values.Add(label.Value);
-                }
-                else
-                {
-                    currentTags.Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
-                }
-            }
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        protected internal class MetricDictionary<T>
-            : Dictionary<string, T>
-            where T : new()
-        {
-            public MetricDictionary()
-            {
-            }
-
-            public new T this[string key]
-            {
-                get
-                {
-                    if (!ContainsKey(key))
-                    {
-                        base[key] = new T();
-                    }
-
-                    return base[key];
-                }
-            }
+            // TODO: update the response header with actual updatetime
         }
     }
 }

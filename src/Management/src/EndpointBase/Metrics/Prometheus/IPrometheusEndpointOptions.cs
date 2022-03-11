@@ -6,5 +6,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public interface IPrometheusEndpointOptions : IEndpointOptions
     {
+        long ScrapeResponseCacheDurationMilliseconds { get; }
     }
 }

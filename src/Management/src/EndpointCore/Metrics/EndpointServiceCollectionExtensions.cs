@@ -10,13 +10,9 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.OpenTelemetry.Metrics.Export;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
-using Steeltoe.Management.OpenTelemetry.Stats;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Diagnostics.Tracing;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -44,14 +40,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var observerOptions = new MetricsObserverOptions(config);
             services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
+            services.TryAddSingleton<IViewRegistry, ViewRegistry>();
             AddMetricsObservers(services, observerOptions);
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
-            services.AddOpenTelemetry();
-
-            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
-#pragma warning restore CS0618 // Type or member is obsolete
             services.AddActuatorEndpointMapping<MetricsEndpoint>();
         }
 
@@ -78,21 +69,18 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             var observerOptions = new MetricsObserverOptions(config);
             services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
+            services.TryAddSingleton<IViewRegistry, ViewRegistry>();
+            services.TryAddSingleton<PrometheusEndpointOptions>();
 
             services.AddPrometheusActuatorServices(config);
 
             AddMetricsObservers(services, observerOptions);
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
-            services.AddOpenTelemetry();
-            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
-#pragma warning restore CS0618 // Type or member is obsolete
+
             services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
         }
 
         private static void AddMetricsObservers(IServiceCollection services, MetricsObserverOptions observerOptions)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             if (observerOptions.AspNetCoreHosting)
             {
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
@@ -108,9 +96,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
             }
 
-            if (observerOptions.GCEvents)
+            if (observerOptions.GCEvents || observerOptions.ThreadPoolEvents)
             {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, CLRRuntimeObserver>());
             }
 
             if (observerOptions.EventCounterEvents)
@@ -118,33 +106,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
             }
 
-            if (observerOptions.ThreadPoolEvents)
-            {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadPoolEventsListener>());
-            }
-
             if (observerOptions.HystrixEvents)
             {
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, HystrixEventsListener>());
             }
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
-
-        private static void AddOpenTelemetry(this IServiceCollection services)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.TryAddSingleton<MultiExporter>();
-            services.TryAddSingleton((provider) =>
-            {
-                var exporter = provider.GetService<MultiExporter>();
-                return new SteeltoeProcessor(exporter); // TODO: Capture from options when OTel Configuration is finalized
-            });
-            services.TryAddSingleton<IStats>((provider) =>
-            {
-                var processor = provider.GetService<SteeltoeProcessor>();
-                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(3));
-            });
-#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

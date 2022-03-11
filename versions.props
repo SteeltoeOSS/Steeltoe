@@ -40,8 +40,8 @@
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     
-    <OpenTelemetryVersion>1.1.0</OpenTelemetryVersion>
-    <OpenTelemetryInstrumentationVersion>1.0.0-rc8</OpenTelemetryInstrumentationVersion>
+    <OpenTelemetryVersion>1.2.0-rc2</OpenTelemetryVersion>
+    <OpenTelemetryInstrumentationVersion>1.0.0-rc9</OpenTelemetryInstrumentationVersion>
     
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>

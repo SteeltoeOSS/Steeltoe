@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -11,7 +10,6 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class HystrixEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Steeltoe.Hystrix.Events";
@@ -23,10 +21,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         };
 
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly Dictionary<string, string> _cktBreakerLabels = new ();
+        private readonly Dictionary<string, object> _cktBreakerLabels = new ();
 
-        public HystrixEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
-            : base(stats, logger)
+        public HystrixEventsListener(ILogger<EventSourceListener> logger = null)
+            : base(logger)
         {
             _logger = logger;
         }

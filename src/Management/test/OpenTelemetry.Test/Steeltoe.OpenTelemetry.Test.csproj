@@ -8,6 +8,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedtest.props" />
 
+
   <ItemGroup>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -27,4 +28,6 @@
     </PackageReference>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
+
+
 </Project>

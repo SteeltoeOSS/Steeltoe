@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
 using Xunit.Abstractions;
 

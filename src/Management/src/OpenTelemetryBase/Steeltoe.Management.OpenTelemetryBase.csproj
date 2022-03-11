@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Steeltoe Management OpenTelemetry</Description>
-    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Steeltoe.Management.OpenTelemetryBase</AssemblyName>
     <PackageId>Steeltoe.Management.OpenTelemetryBase</PackageId>
     <PackageTags>Tracing;OpenTelemetry;Management;Monitoring</PackageTags>
@@ -12,8 +12,9 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="$(UnsafeCompilerServicesVersion)" />
+    <PackageReference Include="OpenTelemetry" Version="1.2.0-rc2" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
