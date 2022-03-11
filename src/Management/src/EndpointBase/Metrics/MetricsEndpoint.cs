@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
         public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
             : base(options)
         {
-            _exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
+            _exporter = exporters?.OfType<SteeltoeExporter>().SingleOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
             _logger = logger;
         }
 
