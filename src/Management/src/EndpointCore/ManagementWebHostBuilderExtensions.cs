@@ -239,5 +239,13 @@ namespace Steeltoe.Management.Endpoint
                     collection.AddAllActuators(context.Configuration, mediaTypeVersion);
                     collection.ActivateActuatorEndpoints(configureEndpoints);
                 });
+
+        /// <summary>
+        /// Adds Wavefront to the application
+        /// </summary>
+        /// <param name="hostBuilder">Your HostBuilder</param>
+        public static IWebHostBuilder AddWavefront(this IWebHostBuilder hostBuilder)
+            => hostBuilder
+                .ConfigureServices((context, collection) => collection.AddWavefrontMetrics(context.Configuration));
     }
 }

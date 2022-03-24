@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
@@ -30,6 +32,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private ObservableGauge<long> _collectionCountMeasure;
         private ObservableGauge<long> _activeThreadsMeasure;
         private ObservableGauge<long> _availThreadsMeasure;
+        private ObservableGauge<double> _processUptimeMeasure;
 
         private CLRRuntimeSource.HeapMetrics _previous = default(CLRRuntimeSource.HeapMetrics);
 
@@ -42,6 +45,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             _activeThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
             _availThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
 
+            _processUptimeMeasure = meter.CreateObservableGauge("clr.process.uptime", GetUptime, "Process uptime in seconds", "count");
             RegisterViews(viewRegistry);
         }
 
@@ -104,6 +108,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             var metrics = CLRRuntimeSource.GetHeapMetrics();
             return new Measurement<double>(metrics.TotalMemory, _heapTags.AsReadonlySpan());
+        }
+
+        private double GetUptime()
+        {
+            var diff = DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime();
+            return diff.TotalSeconds;
         }
 
         private IEnumerable<Measurement<long>> GetActiveThreadPoolWorkers()

@@ -15,6 +15,7 @@
     <PackageReference Include="OpenTelemetry" Version="1.2.0-rc2" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
+    <PackageReference Include="Wavefront.SDK.CSharp" Version="1.8.0-beta" />
   </ItemGroup>
 
   <ItemGroup>

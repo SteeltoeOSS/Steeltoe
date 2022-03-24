@@ -22,8 +22,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _eventName = "EventCounters";
         private readonly IMetricsObserverOptions _options;
 
-        private ConcurrentDictionary<string, Counter<double>> _doubleMeasureMetrics = new ();
-        private ConcurrentDictionary<string, Counter<long>> _longMeasureMetrics = new ();
+        private ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new ();
+        private ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new ();
+
+        private ConcurrentDictionary<string, double> _lastDoubleValue = new ();
+        private ConcurrentDictionary<string, long> _lastLongValue = new ();
 
         public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
         {
@@ -87,6 +90,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             var counterName = string.Empty;
             var labelSet = new List<KeyValuePair<string, object>>();
             var excludedMetric = false;
+            string counterDisplayUnit = null, counterDisplayName = null;
             foreach (var payload in eventPayload)
             {
                 if (excludedMetric)
@@ -106,11 +110,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
                         break;
                     case var kn when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
-                        var counterDisplayName = payload.Value.ToString();
+                        counterDisplayName = payload.Value.ToString();
                         labelSet.Add(KeyValuePair.Create("DisplayName", (object)counterDisplayName));
                         break;
                     case var kn when key.Equals("DisplayUnits", StringComparison.OrdinalIgnoreCase):
-                        var counterDisplayUnit = payload.Value.ToString();
+                        counterDisplayUnit = payload.Value.ToString();
                         labelSet.Add(KeyValuePair.Create("DisplayUnits", (object)counterDisplayUnit));
                         break;
                     case var kn when key.Equals("Mean", StringComparison.OrdinalIgnoreCase):
@@ -145,19 +149,29 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (doubleValue.HasValue)
             {
+                _lastDoubleValue[metricName] = doubleValue.Value;
+
                 var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
                     metricName,
-                    (name) => OpenTelemetryMetrics.Meter.CreateCounter<double>($"{name}"));
-                doubleMetric.Add(doubleValue.Value, labelSet.AsReadonlySpan());
+                    (name) => OpenTelemetryMetrics.Meter.CreateObservableGauge<double>($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
             }
             else if (longValue.HasValue)
             {
+                _lastLongValue[metricName] = longValue.Value;
                 var longMetric = _longMeasureMetrics.GetOrAddEx(
                     metricName,
-                    (name) => OpenTelemetryMetrics.Meter.CreateCounter<long>($"{name}"));
-                longMetric.Add(
-                    longValue.Value, labelSet.AsReadonlySpan());
+                    (name) => OpenTelemetryMetrics.Meter.CreateObservableGauge<long>($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
             }
+        }
+
+        private Measurement<double> ObserveDouble(string name, List<KeyValuePair<string, object>> labelSet)
+        {
+            return new Measurement<double>(_lastDoubleValue[name], labelSet);
+        }
+
+        private Measurement<long> ObserveLong(string name, List<KeyValuePair<string, object>> labelSet)
+        {
+            return new Measurement<long>(_lastLongValue[name], labelSet);
         }
     }
 }

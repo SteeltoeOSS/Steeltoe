@@ -4,8 +4,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Metrics;
+using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management;
+using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
@@ -89,13 +92,12 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        internal static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, string name = null, string version = null)
+        public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, string name = null, string version = null)
         {
             return services.AddOpenTelemetryMetrics(builder =>
             {
                 builder.Configure((provider, deferredBuilder) =>
                 {
-                    var stackTrace = new StackTrace();
                     var views = provider.GetService<IViewRegistry>();
                     var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
                     deferredBuilder

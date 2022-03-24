@@ -38,6 +38,15 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics
                 builder = builder.AddReader(new BaseExportingMetricReader(prometheusExporter));
             }
 
+            var wavefrontExporter = exporters.OfType<WavefrontExporter>().FirstOrDefault();
+            if (wavefrontExporter != null)
+            {
+                var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step);
+
+                metricReader.Temporality = AggregationTemporality.Cumulative;
+                return builder.AddReader(metricReader);
+            }
+
             return builder;
         }
     }
