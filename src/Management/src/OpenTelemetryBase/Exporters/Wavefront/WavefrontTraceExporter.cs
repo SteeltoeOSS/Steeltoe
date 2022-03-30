@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using System;
@@ -16,7 +15,7 @@ using Wavefront.SDK.CSharp.DirectIngestion;
 namespace Steeltoe.Management.OpenTelemetry.Exporters
 {
     /// <summary>
-    /// Exporter to send spans and Traces to wavefront from Opentelemetry 
+    /// Exporter to send spans and Traces to wavefront from Opentelemetry
     /// </summary>
     public class WavefrontTraceExporter : BaseExporter<Activity>
     {
@@ -31,7 +30,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             _wavefrontSender = new WavefrontDirectIngestionClient.Builder(_options.Uri, token)
                                 .MaxQueueSize(_options.MaxQueueSize)
                                 .BatchSize(_options.BatchSize)
-                                .FlushIntervalSeconds(_options.Step/1000)
+                                .FlushIntervalSeconds(_options.Step / 1000)
                                 .Build();
             _logger = logger;
         }
@@ -67,7 +66,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             return ExportResult.Success;
         }
 
-        private IList<KeyValuePair<string, string>> GetTags(IEnumerable<KeyValuePair<string, string?>> inputTags)
+        private IList<KeyValuePair<string, string>> GetTags(IEnumerable<KeyValuePair<string, string>> inputTags)
         {
             var tags = inputTags.ToList();
             tags.Add(new ("application", _options.Name.ToLower()));

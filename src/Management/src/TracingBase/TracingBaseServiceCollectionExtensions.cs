@@ -170,10 +170,11 @@ namespace Steeltoe.Management.Tracing
         private static TracerProviderBuilder AddWavefrontExporter(TracerProviderBuilder builder)
         {
             IDeferredTracerProviderBuilder deferredTracerProviderBuilder = builder as IDeferredTracerProviderBuilder;
-            return deferredTracerProviderBuilder.Configure(delegate (IServiceProvider sp, TracerProviderBuilder builder)
+            return deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
              {
                  var config = sp.GetService<IConfiguration>();
                  var wavefrontOptions = new WavefrontExporterOptions(config);
+
                  // Only add if wavefront is configured
                  if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
                  {

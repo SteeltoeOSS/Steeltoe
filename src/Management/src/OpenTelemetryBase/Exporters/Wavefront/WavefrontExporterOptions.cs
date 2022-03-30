@@ -8,7 +8,7 @@ using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront
 {
-    public class WavefrontExporterOptions: IWavefrontExporterOptions
+    public class WavefrontExporterOptions : IWavefrontExporterOptions
     {
         // Note: this key is shared between tracing and metrics to mirror the Spring boot configuration settings.
         public const string WAVEFRONT_PREFIX = "management:metrics:export:wavefront";

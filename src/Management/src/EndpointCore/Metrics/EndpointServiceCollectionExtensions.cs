@@ -121,30 +121,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return services;
         }
 
-        //public static IServiceCollection AddWavefrontTracing(this IServiceCollection services, IConfiguration configuration = null)
-        //{
-        //    if (services == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(services));
-        //    }
-
-        //    configuration ??= services.BuildServiceProvider().GetService<IConfiguration>();
-        //    if (configuration == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(configuration));
-        //    }
-
-        //    //services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, WavefrontExporter>(provider =>
-        //    //{
-        //    //    var options = provider.GetService<IMetricsEndpointOptions>();
-        //    //    var logger = provider.GetService<ILogger<WavefrontExporter>>();
-        //    //    return new WavefrontExporter(new WavefrontExporterOptions(configuration).Config, logger);
-        //    //}));
-        //    services.Add
-
-        //    return services;
-        //}
-
         internal static void AddMetricsObservers(IServiceCollection services, MetricsObserverOptions observerOptions)
         {
             if (observerOptions.AspNetCoreHosting)

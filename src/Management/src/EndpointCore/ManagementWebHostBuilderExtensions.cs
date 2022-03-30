@@ -247,6 +247,5 @@ namespace Steeltoe.Management.Endpoint
         public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
             => hostBuilder
                 .ConfigureServices((context, collection) => collection.AddWavefrontMetrics(context.Configuration));
-
     }
 }
