@@ -572,7 +572,7 @@ namespace Steeltoe.Management.Endpoint.Test
             };
 
             var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
-            var host = hostBuilder.AddWavefront().Build();
+            var host = hostBuilder.AddWavefrontMetrics().Build();
 
             var diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
             Assert.Single(diagnosticsManagers);

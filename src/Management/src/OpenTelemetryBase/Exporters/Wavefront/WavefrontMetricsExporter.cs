@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
@@ -16,30 +17,30 @@ using Wavefront.SDK.CSharp.Entities.Histograms;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters
 {
-    public class WavefrontExporter : IMetricsExporter
+    public class WavefrontMetricsExporter : IMetricsExporter
     {
-        private readonly ILogger<WavefrontExporter> _logger;
-        private WavefrontConfig _options;
+        private readonly ILogger<WavefrontMetricsExporter> _logger;
         private WavefrontDirectIngestionClient _wavefrontSender;
+        private WavefrontExporterOptions _options;
 
-        internal WavefrontConfig Options => _options;
+        internal WavefrontExporterOptions Options => _options;
 
-        public WavefrontExporter(WavefrontConfig options, ILogger<WavefrontExporter> logger)
+        public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
         {
-            var url = options?.WavefrontURL ?? "https://vmware.wavefront.com";
-            var token = options?.Token ?? throw new ArgumentNullException(nameof(options.Token));
-            var builder = new WavefrontDirectIngestionClient.Builder(url, token);
+            _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
+            var token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
 
-            builder.MaxQueueSize(options?.MaxQueueSize ?? 100_000);
-
-            builder.BatchSize(options?.BatchSize ?? 20_000);
-
-            var flushSeconds = (options?.Step ?? 2000) / 1000;
-            builder.FlushIntervalSeconds(flushSeconds);
-
-            _options = options;
             _logger = logger;
-            _wavefrontSender = builder.Build();
+            _wavefrontSender = new WavefrontDirectIngestionClient.Builder(_options.Uri, token)
+                                .MaxQueueSize(_options.MaxQueueSize)
+                                .BatchSize(_options.BatchSize)
+                                .FlushIntervalSeconds(_options.Step / 1000)
+                                .Build();
+        }
+
+        public WavefrontMetricsExporter(Func<int, bool> collect)
+        {
+            Collect = collect;
         }
 
         public override System.Func<int, bool> Collect
@@ -122,8 +123,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
         {
             var tags = inputTags.AsDictionary();
-            tags.Add("application", _options.AppName.ToLower()); // TODO: update to mirror spring boot
+            tags.Add("application", _options.Name.ToLower());
             tags.Add("service", _options.Service.ToLower());
+            tags.Add("component", "wavefront-metrics-exporter");
             return tags;
         }
     }

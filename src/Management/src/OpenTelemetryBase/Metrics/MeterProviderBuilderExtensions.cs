@@ -38,7 +38,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics
                 builder = builder.AddReader(new BaseExportingMetricReader(prometheusExporter));
             }
 
-            var wavefrontExporter = exporters.OfType<WavefrontExporter>().FirstOrDefault();
+            var wavefrontExporter = exporters.OfType<WavefrontMetricsExporter>().FirstOrDefault();
             if (wavefrontExporter != null)
             {
                 var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step);

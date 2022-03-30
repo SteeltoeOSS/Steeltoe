@@ -244,8 +244,9 @@ namespace Steeltoe.Management.Endpoint
         /// Adds Wavefront to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
-        public static IWebHostBuilder AddWavefront(this IWebHostBuilder hostBuilder)
+        public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
             => hostBuilder
                 .ConfigureServices((context, collection) => collection.AddWavefrontMetrics(context.Configuration));
+
     }
 }

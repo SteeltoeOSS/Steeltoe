@@ -12,6 +12,7 @@ using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Diagnostics.Tracing;
@@ -109,16 +110,40 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             AddMetricsObservers(services, observerOptions);
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, WavefrontExporter>(provider =>
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, WavefrontMetricsExporter>(provider =>
             {
                 var options = provider.GetService<IMetricsEndpointOptions>();
-                var logger = provider.GetService<ILogger<WavefrontExporter>>();
-                return new WavefrontExporter(new WavefrontExporterOptions(configuration).Config, logger);
+                var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
+                return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
             }));
             services.AddOpenTelemetryMetricsForSteeltoe();
 
             return services;
         }
+
+        //public static IServiceCollection AddWavefrontTracing(this IServiceCollection services, IConfiguration configuration = null)
+        //{
+        //    if (services == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(services));
+        //    }
+
+        //    configuration ??= services.BuildServiceProvider().GetService<IConfiguration>();
+        //    if (configuration == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(configuration));
+        //    }
+
+        //    //services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, WavefrontExporter>(provider =>
+        //    //{
+        //    //    var options = provider.GetService<IMetricsEndpointOptions>();
+        //    //    var logger = provider.GetService<ILogger<WavefrontExporter>>();
+        //    //    return new WavefrontExporter(new WavefrontExporterOptions(configuration).Config, logger);
+        //    //}));
+        //    services.Add
+
+        //    return services;
+        //}
 
         internal static void AddMetricsObservers(IServiceCollection services, MetricsObserverOptions observerOptions)
         {

@@ -31,7 +31,13 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
         public override ExportResult Export(in Batch<Metric> batch)
         {
-            return OnExport(batch);
+            var result = ExportResult.Failure;
+            if (OnExport != null)
+            {
+                result = OnExport(batch);
+            }
+
+            return result;
         }
 
         internal override Func<Batch<Metric>, ExportResult> OnExport
