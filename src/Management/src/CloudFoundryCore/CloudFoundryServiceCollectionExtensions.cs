@@ -70,7 +70,7 @@ namespace Steeltoe.Management.CloudFoundry
                         {
                             policy
                                 .WithMethods("GET", "POST")
-                                .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
+                                .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
 
                             if (buildCorsPolicy != null)
                             {
