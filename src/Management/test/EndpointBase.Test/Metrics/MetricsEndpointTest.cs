@@ -23,6 +23,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public MetricsEndpointTest(ITestOutputHelper output)
         {
             _output = output;
+            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
         }
 
         [Fact]

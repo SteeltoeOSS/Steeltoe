@@ -175,8 +175,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var rdr = new StreamReader(context.Response.Body);
             var json = await rdr.ReadToEndAsync();
 
-            // TODO: Make sure this is OK to not have the "VALUE" or a custom view is needed
-            // Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
             Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 

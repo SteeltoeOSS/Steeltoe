@@ -13,7 +13,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
     {
         internal PullmetricsCollectionManager CollectionManager { get; }
 
-        internal long ScrapeResponseCacheDurationMilliseconds { get; }
+        internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
         private byte[] _buffer = new byte[85000]; // encourage the object to live in LOH (large object heap)
 

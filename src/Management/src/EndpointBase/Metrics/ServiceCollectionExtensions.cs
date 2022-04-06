@@ -104,6 +104,12 @@ namespace Microsoft.Extensions.DependencyInjection
                         .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
                         .AddRegisteredViews(views)
                         .AddExporters(exporters);
+
+                    var wavefrontExporter = provider.GetServices(typeof(WavefrontMetricsExporter)) as WavefrontMetricsExporter;
+                    if (wavefrontExporter != null)
+                    {
+                        deferredBuilder.AddWavefrontExporter(wavefrontExporter);
+                    }
                 });
             });
         }

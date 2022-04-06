@@ -28,6 +28,7 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
 using System.Linq;
 using System.Net;
@@ -392,6 +393,19 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await client.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public void AddWavefrontExporter()
+        {
+            var host =
+                  GetTestWebAppWithSecureRouting(builder =>
+                  {
+                      builder
+                          .AddWavefrontMetrics();
+                  });
+            var exporter = host.Services.GetService<WavefrontMetricsExporter>();
+            Assert.NotNull(exporter);
         }
 
         private WebApplicationBuilder GetTestServerWithRouting()

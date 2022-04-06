@@ -110,12 +110,13 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             AddMetricsObservers(services, observerOptions);
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, WavefrontMetricsExporter>(provider =>
+            services.TryAddSingleton(provider =>
             {
                 var options = provider.GetService<IMetricsEndpointOptions>();
                 var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
                 return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
-            }));
+            });
+
             services.AddOpenTelemetryMetricsForSteeltoe();
 
             return services;

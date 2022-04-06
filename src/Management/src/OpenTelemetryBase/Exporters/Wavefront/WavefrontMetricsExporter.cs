@@ -17,7 +17,7 @@ using Wavefront.SDK.CSharp.Entities.Histograms;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters
 {
-    public class WavefrontMetricsExporter : IMetricsExporter
+    public class WavefrontMetricsExporter : BaseExporter<Metric>
     {
         private readonly ILogger<WavefrontMetricsExporter> _logger;
         private WavefrontDirectIngestionClient _wavefrontSender;
@@ -38,23 +38,6 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                                 .Build();
         }
 
-        public WavefrontMetricsExporter(Func<int, bool> collect)
-        {
-            Collect = collect;
-        }
-
-        public override System.Func<int, bool> Collect
-        {
-            get;
-            set;
-        }
-
-        internal override System.Func<Batch<Metric>, ExportResult> OnExport
-        {
-            get;
-            set;
-        }
-
         public override ExportResult Export(in Batch<Metric> batch)
         {
             _logger.LogTrace("Calling export");
@@ -62,9 +45,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             {
                 bool isLong = ((int)metric.MetricType & 0b_0000_1111) == 0x0a; // I8 : signed 8 byte integer
                 bool isSum = metric.MetricType.IsSum();
-                var rand = new Random().NextDouble() * 100;
 
-                var timestamp2 = DateTimeUtils.UnixTimeMilliseconds(DateTime.UtcNow);
                 try
                 {
                     if (!metric.MetricType.IsHistogram())
@@ -84,7 +65,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
                             var tags = GetTags(metricPoint.Tags);
 
-                            _wavefrontSender.SendMetric(metric.Name.ToLower(), doubleValue, timestamp2, _options.Source, tags);
+                            _wavefrontSender.SendMetric(metric.Name.ToLower(), doubleValue, timestamp, _options.Source, tags);
                         }
                     }
                     else
@@ -108,16 +89,6 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             }
 
             return ExportResult.Success;
-        }
-
-        internal override ICollectionResponse GetCollectionResponse(Batch<Metric> metrics = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        internal override ICollectionResponse GetCollectionResponse(ICollectionResponse collectionResponse, System.DateTime updatedTime)
-        {
-            throw new System.NotImplementedException();
         }
 
         private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)

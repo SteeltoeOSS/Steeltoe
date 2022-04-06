@@ -582,7 +582,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Single(options);
             var viewRegistry = host.Services.GetServices<IViewRegistry>();
             Assert.Single(viewRegistry);
-            var exporters = host.Services.GetServices<IMetricsExporter>();
+            var exporters = host.Services.GetServices<WavefrontMetricsExporter>();
             Assert.Single(exporters);
         }
 

@@ -20,7 +20,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
     {
         internal PullmetricsCollectionManager CollectionManager { get; }
 
-        internal long ScrapeResponseCacheDurationMilliseconds { get; }
+        internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
        // private List<Metric> _metricsView;
 

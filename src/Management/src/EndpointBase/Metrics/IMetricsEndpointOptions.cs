@@ -6,6 +6,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public interface IMetricsEndpointOptions : IEndpointOptions
     {
-        long ScrapeResponseCacheDurationMilliseconds { get; }
+        int ScrapeResponseCacheDurationMilliseconds { get; }
     }
 }

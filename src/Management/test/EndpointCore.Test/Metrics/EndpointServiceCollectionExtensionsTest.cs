@@ -58,6 +58,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.NotNull(ep);
         }
 
+        [Fact]
+        public void AddWavefront_ThrowsWhenNull()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(null, GetConfiguration()));
+            Assert.Contains("services", ex.Message);
+            var ex1 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(new ServiceCollection(), null));
+            Assert.Contains("services", ex.Message);
+        }
+
         private IConfiguration GetConfiguration()
         {
             var builder = new ConfigurationBuilder();

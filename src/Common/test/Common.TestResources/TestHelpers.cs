@@ -92,7 +92,9 @@ namespace Steeltoe
             { "postgres:client:timeout", "1" },
             { "redis:client:abortOnConnectFail", "false" },
             { "redis:client:connectTimeout", "1" },
-            { "sqlserver:credentials:timeout", "1" }
+            { "sqlserver:credentials:timeout", "1" },
+            { "management:metrics:export:wavefront:apiToken", "test" },
+            { "management:metrics:export:wavefront:uri", "http://test.io" },
         }.ToImmutableDictionary();
 
 #if NET6_0_OR_GREATER
