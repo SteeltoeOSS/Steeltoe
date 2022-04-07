@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
             services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-            AddMetricsObservers(services, observerOptions);
+            AddMetricsObservers(services);
 
             services.AddActuatorEndpointMapping<MetricsEndpoint>();
         }
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             services.AddPrometheusActuatorServices(config);
 
-            AddMetricsObservers(services, observerOptions);
+            AddMetricsObservers(services);
 
             services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
         }
@@ -86,34 +86,31 @@ namespace Steeltoe.Management.Endpoint.Metrics
         /// Adds the services used by the Wavefront exporter
         /// </summary>
         /// <param name="services">Reference to the service collection</param>
-        /// <param name="configuration">Reference to the configuration system</param>
         /// <returns>A reference to the service collection</returns>
-        public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services, IConfiguration configuration = null)
+        public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            configuration ??= services.BuildServiceProvider().GetService<IConfiguration>();
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-            var observerOptions = new MetricsObserverOptions(configuration);
-            services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
+            services.TryAddSingleton<IMetricsObserverOptions>(provider =>
+            {
+                var configuration = provider.GetService<IConfiguration>();
+                return new MetricsObserverOptions(configuration);
+            });
             services.TryAddSingleton<IViewRegistry, ViewRegistry>();
 
-            AddMetricsObservers(services, observerOptions);
+            AddMetricsObservers(services);
 
             services.TryAddSingleton(provider =>
             {
                 var options = provider.GetService<IMetricsEndpointOptions>();
                 var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
+                var configuration = provider.GetService<IConfiguration>();
                 return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
             });
 
@@ -122,8 +119,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return services;
         }
 
-        internal static void AddMetricsObservers(IServiceCollection services, MetricsObserverOptions observerOptions)
+        internal static void AddMetricsObservers(IServiceCollection services)
         {
+            var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            var observerOptions = new MetricsObserverOptions(configuration);
             if (observerOptions.AspNetCoreHosting)
             {
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());

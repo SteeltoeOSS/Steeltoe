@@ -39,7 +39,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             services.AddOptions();
             services.AddLogging();
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddMetricsActuator(config);
+            services.AddSingleton(config);
+            services.AddMetricsActuator();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -61,9 +62,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void AddWavefront_ThrowsWhenNull()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(null, GetConfiguration()));
-            Assert.Contains("services", ex.Message);
-            var ex1 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(new ServiceCollection(), null));
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(null));
             Assert.Contains("services", ex.Message);
         }
 
