@@ -27,10 +27,13 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         {
             _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
             var token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
+
+            var flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
+
             _wavefrontSender = new WavefrontDirectIngestionClient.Builder(_options.Uri, token)
                                 .MaxQueueSize(_options.MaxQueueSize)
                                 .BatchSize(_options.BatchSize)
-                                .FlushIntervalSeconds(_options.Step / 1000)
+                                .FlushIntervalSeconds(flushInterval)
                                 .Build();
             _logger = logger;
         }

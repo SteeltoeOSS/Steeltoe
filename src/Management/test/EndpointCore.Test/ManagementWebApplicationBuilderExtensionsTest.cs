@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
@@ -30,6 +31,7 @@ using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -396,16 +398,30 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddWavefrontExporter()
+        public async void AddWavefrontExporter()
         {
-            var host =
-                  GetTestWebAppWithSecureRouting(builder =>
-                  {
-                      builder
-                          .AddWavefrontMetrics();
-                  });
+            var settings = new Dictionary<string, string>()
+            {
+                { "management:metrics:export:wavefront:apiToken", "test" },
+                { "management:metrics:export:wavefront:uri", "http://test.io" },
+                { "management:metrics:export:wavefront:step", "500" }
+            };
+
+            var builder = WebApplication.CreateBuilder();
+            builder.Configuration.AddInMemoryCollection(settings);
+            builder.WebHost.UseTestServer();
+
+            var host = builder.AddWavefrontMetrics().Build();
+
+            await host.StartAsync();
+
+            await Task.Delay(3000);
+
+            // Excercise the deferred builder logic by starting the test host.
+            // Validate the exporter got actually added
             var exporter = host.Services.GetService<WavefrontMetricsExporter>();
             Assert.NotNull(exporter);
+            await host.StopAsync();
         }
 
         private WebApplicationBuilder GetTestServerWithRouting()
