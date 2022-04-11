@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A0CD0464-8E5B-42DD-8464-13FC8E6F35FF}"
 EndProject
@@ -76,7 +76,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTelemetryBase", "..\Management\src\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj", "{1658BD8E-989F-425D-BE49-2BD3B6083D5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{55A893A9-C40F-4BFE-821D-87CA38CA7035}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{55A893A9-C40F-4BFE-821D-87CA38CA7035}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.Abstractions", "..\Logging\src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj", "{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -424,6 +428,30 @@ Global
 		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|x64.Build.0 = Release|Any CPU
 		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|x86.ActiveCfg = Release|Any CPU
 		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|x86.Build.0 = Release|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Debug|x64.Build.0 = Debug|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Debug|x86.Build.0 = Debug|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Release|x64.ActiveCfg = Release|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Release|x64.Build.0 = Release|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Release|x86.ActiveCfg = Release|Any CPU
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536}.Release|x86.Build.0 = Release|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Debug|x64.Build.0 = Debug|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Debug|x86.Build.0 = Debug|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|x64.ActiveCfg = Release|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|x64.Build.0 = Release|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|x86.ActiveCfg = Release|Any CPU
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -457,6 +485,8 @@ Global
 		{5CDD57FE-B25F-43A4-9C0B-ADA723CE22A5} = {26A62999-E553-40B7-B393-2195557F6D8B}
 		{1658BD8E-989F-425D-BE49-2BD3B6083D5F} = {26A62999-E553-40B7-B393-2195557F6D8B}
 		{55A893A9-C40F-4BFE-821D-87CA38CA7035} = {26A62999-E553-40B7-B393-2195557F6D8B}
+		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536} = {26A62999-E553-40B7-B393-2195557F6D8B}
+		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438} = {26A62999-E553-40B7-B393-2195557F6D8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09301AE1-862F-43FC-9E71-732151D4CDDF}

@@ -169,7 +169,7 @@ namespace Steeltoe.Discovery.Eureka
         private IHttpClientBuilder AddEurekaHttpClient(IServiceCollection services)
             => services.AddHttpClient<EurekaDiscoveryClient>("Eureka", (services, client) =>
             {
-                var clientOptions = services.GetRequiredService<IOptionsSnapshot<EurekaClientOptions>>();
+                var clientOptions = services.GetRequiredService<IOptions<EurekaClientOptions>>();
                 if (clientOptions.Value.EurekaServerConnectTimeoutSeconds > 0)
                 {
                     client.Timeout = TimeSpan.FromSeconds(clientOptions.Value.EurekaServerConnectTimeoutSeconds);
