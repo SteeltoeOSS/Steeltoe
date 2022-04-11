@@ -40,5 +40,13 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics
 
             return builder;
         }
+
+        public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder, WavefrontMetricsExporter wavefrontExporter)
+        {
+            var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step);
+
+            metricReader.Temporality = AggregationTemporality.Cumulative;
+            return builder.AddReader(metricReader);
+        }
     }
 }

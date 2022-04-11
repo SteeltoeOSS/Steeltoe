@@ -13,7 +13,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
     {
         internal PullmetricsCollectionManager CollectionManager { get; }
 
-        internal long ScrapeResponseCacheDurationMilliseconds { get; }
+        internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
         private byte[] _buffer = new byte[85000]; // encourage the object to live in LOH (large object heap)
 
@@ -31,7 +31,13 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
         public override ExportResult Export(in Batch<Metric> batch)
         {
-            return OnExport(batch);
+            var result = ExportResult.Failure;
+            if (OnExport != null)
+            {
+                result = OnExport(batch);
+            }
+
+            return result;
         }
 
         internal override Func<Batch<Metric>, ExportResult> OnExport

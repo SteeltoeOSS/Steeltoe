@@ -6,6 +6,6 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 {
     internal class PullmetricsExporterOptions : IPullmetricsExporterOptions
     {
-        public long ScrapeResponseCacheDurationMilliseconds { get; set; }
+        public int ScrapeResponseCacheDurationMilliseconds { get; set; }
     }
 }

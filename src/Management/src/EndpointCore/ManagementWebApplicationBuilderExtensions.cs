@@ -222,6 +222,16 @@ namespace Steeltoe.Management.Endpoint
             applicationBuilder.Services.ActivateActuatorEndpoints(configureEndpoints);
             return applicationBuilder;
         }
+
+        /// <summary>
+        /// Add Wavefront Metrics Exporter
+        /// </summary>
+        /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+        public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
+        {
+            applicationBuilder.Services.AddWavefrontMetrics();
+            return applicationBuilder;
+        }
     }
 }
 #endif

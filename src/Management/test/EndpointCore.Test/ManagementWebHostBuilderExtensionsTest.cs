@@ -11,10 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
+using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Test;
@@ -29,7 +31,10 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
+using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -555,6 +560,30 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             response = await client.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public void AddWavefront_IWebHostBuilder()
+        {
+            var wfSettings = new Dictionary<string, string>()
+            {
+                { "management:metrics:export:wavefront:uri", "https://wavefront.vmware.com" },
+                { "management:metrics:export:wavefront:apiToken", "testToken" }
+            };
+
+            var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
+            var host = hostBuilder.AddWavefrontMetrics().Build();
+
+            var diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
+            Assert.Single(diagnosticsManagers);
+            var diagnosticServices = host.Services.GetServices<IHostedService>().OfType<DiagnosticServices>();
+            Assert.Single(diagnosticServices);
+            var options = host.Services.GetServices<IMetricsObserverOptions>();
+            Assert.Single(options);
+            var viewRegistry = host.Services.GetServices<IViewRegistry>();
+            Assert.Single(viewRegistry);
+            var exporters = host.Services.GetServices<WavefrontMetricsExporter>();
+            Assert.Single(exporters);
         }
 
         private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
