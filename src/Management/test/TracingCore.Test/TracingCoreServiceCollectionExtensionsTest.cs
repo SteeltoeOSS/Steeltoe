@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
@@ -70,6 +71,26 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.NotNull(tracerProvider);
 
             Assert.NotNull(serviceProvider.GetService<IOptions<OtlpExporterOptions>>());
+        }
+
+        [Fact]
+        public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
+        {
+#if !NET6_0
+            AppContext.SetSwitch(
+                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+#endif
+            var services = new ServiceCollection()
+                .AddSingleton(GetConfiguration(new Dictionary<string, string>()
+                {
+                    { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
+                    { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
+                }));
+
+            var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+
+            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
         }
     }
 }

@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront
 {
-    internal interface IPullmetricsExporterOptions
+    public class IWavefrontExporterOptions
     {
-        int ScrapeResponseCacheDurationMilliseconds { get; set; }
     }
 }

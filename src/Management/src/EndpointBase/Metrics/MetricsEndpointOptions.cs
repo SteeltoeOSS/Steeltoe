@@ -46,6 +46,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public string EgressIgnorePattern { get; set; }
 
-        public long ScrapeResponseCacheDurationMilliseconds { get; set; }
+        public int ScrapeResponseCacheDurationMilliseconds { get; set; }
     }
 }

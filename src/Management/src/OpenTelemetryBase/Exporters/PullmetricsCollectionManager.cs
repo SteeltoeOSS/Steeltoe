@@ -32,7 +32,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         public PullmetricsCollectionManager(IMetricsExporter exporter)
         {
             this.exporter = exporter;
-            this.scrapeResponseCacheDurationInMilliseconds = 2000;
+            this.scrapeResponseCacheDurationInMilliseconds = exporter.ScrapeResponseCacheDurationMilliseconds;
             this.onCollectRef = this.OnCollect;
         }
 
