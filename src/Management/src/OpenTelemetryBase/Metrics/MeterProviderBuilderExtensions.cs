@@ -45,7 +45,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics
         {
             var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step);
 
-            metricReader.Temporality = AggregationTemporality.Cumulative;
+            metricReader.TemporalityPreference = MetricReaderTemporalityPreference.Cumulative;
             return builder.AddReader(metricReader);
         }
     }
