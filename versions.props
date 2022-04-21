@@ -40,7 +40,7 @@
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     
-    <OpenTelemetryVersion>1.2.0-rc5</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.2.0</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
     

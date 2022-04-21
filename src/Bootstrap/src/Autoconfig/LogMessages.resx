@@ -183,4 +183,7 @@
   <data name="WireConnectorsConfiguration" xml:space="preserve">
     <value>Configured ConnectionStrings configuration provider</value>
   </data>
+  <data name="WireWavefrontMetrics" xml:space="preserve">
+    <value>Configured Wavefront Metrics</value>
+  </data>
 </root>

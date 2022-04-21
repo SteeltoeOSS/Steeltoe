@@ -9,18 +9,15 @@ using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Wavefront.SDK.CSharp.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
-using Wavefront.SDK.CSharp.Entities.Histograms;
+using Wavefront.SDK.CSharp.Entities.Metrics;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters
 {
     public class WavefrontMetricsExporter : BaseExporter<Metric>
     {
         private readonly ILogger<WavefrontMetricsExporter> _logger;
-        private WavefrontDirectIngestionClient _wavefrontSender;
+        private IWavefrontMetricSender _wavefrontSender;
         private WavefrontExporterOptions _options;
 
         internal WavefrontExporterOptions Options => _options;
@@ -28,14 +25,27 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
         {
             _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
-            var token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
-            var flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
             _logger = logger;
-            _wavefrontSender = new WavefrontDirectIngestionClient.Builder(_options.Uri, token)
-                                .MaxQueueSize(_options.MaxQueueSize)
-                                .BatchSize(_options.BatchSize)
-                                .FlushIntervalSeconds(flushInterval)
-                                .Build();
+
+            var token = string.Empty;
+            var uri = _options.Uri;
+            if (_options.Uri.StartsWith("proxy://"))
+            {
+                uri = "http" + _options.Uri.Substring("proxy".Length); // Proxy reporting is now http on newer proxies.
+            }
+            else
+            {
+                // Token is required for Direct Ingestion
+                token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
+            }
+
+            var flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
+
+            _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token)
+                                    .MaxQueueSize(_options.MaxQueueSize)
+                                    .BatchSize(_options.BatchSize)
+                                    .FlushIntervalSeconds(flushInterval)
+                                    .Build();
         }
 
         public override ExportResult Export(in Batch<Metric> batch)

@@ -26,11 +26,22 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
         {
             _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
-            var token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
+
+            var token = string.Empty;
+            var uri = _options.Uri;
+            if (_options.Uri.StartsWith("proxy://"))
+            {
+                uri = "http" + _options.Uri.Substring("proxy".Length); // Proxy reporting is now http on newer proxies.
+            }
+            else
+            {
+                // Token is required for Direct Ingestion
+                token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
+            }
 
             var flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
 
-            _wavefrontSender = new WavefrontDirectIngestionClient.Builder(_options.Uri, token)
+            _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token)
                                 .MaxQueueSize(_options.MaxQueueSize)
                                 .BatchSize(_options.BatchSize)
                                 .FlushIntervalSeconds(flushInterval)

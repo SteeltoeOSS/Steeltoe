@@ -98,6 +98,8 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
 
+            webApplicationBuilder.WireIfConfigured(WireWavefrontMetrics, ConfigHelper.HasWavefront);
+
             if (!webApplicationBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
             {
                 webApplicationBuilder.WireIfLoaded(WireDistributedTracingBase, SteeltoeAssemblies.Steeltoe_Management_TracingBase);
@@ -121,6 +123,17 @@ namespace Steeltoe.Bootstrap.Autoconfig
         private static bool WireIfAnyLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, params string[] assembly)
         {
             if (assembly.Any(AssemblyExtensions.IsAssemblyLoaded))
+            {
+                action(webApplicationBuilder);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool WireIfConfigured(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, Func<bool> isConfigured)
+        {
+            if (isConfigured())
             {
                 action(webApplicationBuilder);
                 return true;
@@ -230,6 +243,10 @@ namespace Steeltoe.Bootstrap.Autoconfig
             webApplicationBuilder.Services.ActivateActuatorEndpoints();
             webApplicationBuilder.Log(LogMessages.WireAllActuators);
         }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder) =>
+            webApplicationBuilder.AddWavefrontMetrics().Log(LogMessages.WireWavefrontMetrics);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDynamicSerilog(this WebApplicationBuilder webApplicationBuilder) =>
