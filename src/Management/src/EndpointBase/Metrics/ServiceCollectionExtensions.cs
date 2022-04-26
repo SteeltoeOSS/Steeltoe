@@ -105,7 +105,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         .AddRegisteredViews(views)
                         .AddExporters(exporters);
 
-                    var wavefrontExporter = provider.GetService<WavefrontMetricsExporter>();
+                    var wavefrontExporter = provider.GetService<WavefrontMetricsExporter>(); // Not an IMetricsExporter
                     if (wavefrontExporter != null)
                     {
                         deferredBuilder.AddWavefrontExporter(wavefrontExporter);

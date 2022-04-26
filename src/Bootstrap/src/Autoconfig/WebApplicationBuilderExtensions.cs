@@ -98,7 +98,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
 
-            webApplicationBuilder.WireIfConfigured(WireWavefrontMetrics, ConfigHelper.HasWavefront);
+            webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
 
             if (!webApplicationBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
             {
@@ -123,17 +123,6 @@ namespace Steeltoe.Bootstrap.Autoconfig
         private static bool WireIfAnyLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, params string[] assembly)
         {
             if (assembly.Any(AssemblyExtensions.IsAssemblyLoaded))
-            {
-                action(webApplicationBuilder);
-                return true;
-            }
-
-            return false;
-        }
-
-        private static bool WireIfConfigured(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, Func<bool> isConfigured)
-        {
-            if (isConfigured())
             {
                 action(webApplicationBuilder);
                 return true;
@@ -245,8 +234,15 @@ namespace Steeltoe.Bootstrap.Autoconfig
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder) =>
+        private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
+        {
+            if (!webApplicationBuilder.Configuration.HasWavefront())
+            {
+                return;
+            }
+
             webApplicationBuilder.AddWavefrontMetrics().Log(LogMessages.WireWavefrontMetrics);
+        }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDynamicSerilog(this WebApplicationBuilder webApplicationBuilder) =>

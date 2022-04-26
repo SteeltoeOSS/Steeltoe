@@ -27,6 +27,7 @@ using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
@@ -251,6 +252,23 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
             Assert.IsType<AllActuatorsStartupFilter>(filter);
+        }
+
+        [Fact]
+        public void Wavefront_IsAutowired()
+        {
+            var exclusions = SteeltoeAssemblies.AllAssemblies
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore });
+
+            var host = new HostBuilder()
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
+                .AddSteeltoe(exclusions).Build();
+            var exporter = host.Services.GetService<WavefrontMetricsExporter>();
+
+            Assert.NotNull(exporter);
+
+            var tracerProvider = host.Services.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
         }
 
         [Fact]

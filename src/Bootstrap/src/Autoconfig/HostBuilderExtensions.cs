@@ -4,7 +4,6 @@
 
 #pragma warning disable 0436
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -26,6 +25,7 @@ using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.CloudFoundry;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
@@ -99,7 +99,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
 
-            hostBuilder.WireIfConfigured(WireWavefrontMetrics, ConfigHelper.HasWavefront);
+            hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
 
             if (!hostBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
             {
@@ -113,17 +113,6 @@ namespace Steeltoe.Bootstrap.Autoconfig
         private static bool WireIfLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
         {
             if (assembly.All(AssemblyExtensions.IsAssemblyLoaded))
-            {
-                action(hostBuilder);
-                return true;
-            }
-
-            return false;
-        }
-
-        private static bool WireIfConfigured(this IHostBuilder hostBuilder, Action<IHostBuilder> action, Func<bool> isConfigured)
-        {
-            if (isConfigured())
             {
                 action(hostBuilder);
                 return true;
@@ -244,7 +233,14 @@ namespace Steeltoe.Bootstrap.Autoconfig
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireWavefrontMetrics(this IHostBuilder hostBuilder) =>
-            hostBuilder.AddWavefrontMetrics().Log(LogMessages.WireWavefrontMetrics);
+            hostBuilder
+                .ConfigureServices((context, collection) =>
+                {
+                    if (context.Configuration.HasWavefront())
+                    {
+                        collection.AddWavefrontMetrics();
+                    }
+                });
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDynamicSerilog(this IHostBuilder hostBuilder) =>

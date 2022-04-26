@@ -26,6 +26,7 @@ using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.CloudFoundry;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
@@ -57,24 +58,24 @@ namespace Steeltoe.Bootstrap.Autoconfig
         /// <param name="loggerFactory">For logging within auto-configuration</param>
         public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
         {
-            AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
-            _loggerFactory = loggerFactory;
-            _logger = loggerFactory?.CreateLogger(_loggerName) ?? NullLogger.Instance;
+           AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
+           _loggerFactory = loggerFactory;
+           _logger = loggerFactory?.CreateLogger(_loggerName) ?? NullLogger.Instance;
 
-            if (!hostBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerCore))
+           if (!hostBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerCore))
             {
                 hostBuilder.WireIfAnyLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore);
             }
 
-            if (Platform.IsKubernetes && AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesCore))
+           if (Platform.IsKubernetes && AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesCore))
             {
                 WireKubernetesConfiguration(hostBuilder);
             }
 
-            hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_RandomValueBase);
-            hostBuilder.WireIfAnyLoaded(WirePlaceholderResolver, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderCore);
+           hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_RandomValueBase);
+           hostBuilder.WireIfAnyLoaded(WirePlaceholderResolver, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderCore);
 
-            if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore))
+           if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore))
             {
                 hostBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
                 hostBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
@@ -86,10 +87,10 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 hostBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
             }
 
-            hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore);
-            hostBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientBase, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
+           hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore);
+           hostBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientBase, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
 
-            if (AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_KubernetesCore, SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore))
+           if (AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_KubernetesCore, SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore))
             {
                 hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.Steeltoe_Management_KubernetesCore);
                 hostBuilder.WireIfLoaded(WireCloudFoundryActuators, SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore);
@@ -99,13 +100,15 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
 
-            if (!hostBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
+           hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
+
+           if (!hostBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
             {
                 hostBuilder.WireIfLoaded(WireDistributedTracingBase, SteeltoeAssemblies.Steeltoe_Management_TracingBase);
             }
 
-            hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.Steeltoe_Security_Authentication_CloudFoundryCore);
-            return hostBuilder;
+           hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.Steeltoe_Security_Authentication_CloudFoundryCore);
+           return hostBuilder;
         }
 
         private static bool WireIfLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, params string[] assembly)
@@ -227,6 +230,17 @@ namespace Steeltoe.Bootstrap.Autoconfig
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireAllActuators(this IWebHostBuilder hostBuilder) =>
             hostBuilder.AddAllActuators().Log(LogMessages.WireAllActuators);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireWavefrontMetrics(this IWebHostBuilder hostBuilder) =>
+           hostBuilder
+               .ConfigureServices((context, collection) =>
+               {
+                   if (context.Configuration.HasWavefront())
+                   {
+                       collection.AddWavefrontMetrics();
+                   }
+               });
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDynamicSerilog(this IWebHostBuilder hostBuilder) =>

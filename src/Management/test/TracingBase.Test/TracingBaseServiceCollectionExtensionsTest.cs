@@ -32,28 +32,8 @@ namespace Steeltoe.Management.Tracing.Test
 
             var serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
 
-            // confirm Steeltoe types were registered
-            Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
-            Assert.IsType<TracingLogProcessor>(serviceProvider.GetService<IDynamicMessageProcessor>());
-
-            // confirm OpenTelemetry types were registered
-            var tracerProvider = serviceProvider.GetService<TracerProvider>();
-            Assert.NotNull(tracerProvider);
-            var hst = serviceProvider.GetService<IHostedService>();
-            Assert.NotNull(hst);
-
-            // confirm instrumentation(s) were added as expected
-            var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
-            Assert.NotNull(instrumentations);
-            Assert.Single(instrumentations);
-            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-
-            Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
-            var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
-            Assert.Equal(2, props.Count);
-            Assert.Contains(props, p => p is B3Propagator);
-            Assert.Contains(props, p => p is BaggagePropagator);
+            ValidateServiceCollectionCommon(serviceProvider);
+            ValidateServiceCollectionBase(serviceProvider);
         }
 
         // this test should find Jaeger and Zipkin exporters, see TracingCore.Test for OTLP

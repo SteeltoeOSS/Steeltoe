@@ -14,6 +14,7 @@ using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
@@ -178,7 +179,8 @@ namespace Steeltoe.Management.Tracing
                  // Only add if wavefront is configured
                  if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
                  {
-                     builder.AddWavefrontExporter(wavefrontOptions);
+                     var logger = sp.GetService<ILogger<WavefrontTraceExporter>>();
+                     builder.AddWavefrontExporter(wavefrontOptions, logger);
                  }
              });
         }

@@ -50,7 +50,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
         public override ExportResult Export(in Batch<Metric> batch)
         {
-            _logger.LogTrace("Calling export");
+            int metricCount = 0;
             foreach (var metric in batch)
             {
                 bool isLong = ((int)metric.MetricType & 0b_0000_1111) == 0x0a; // I8 : signed 8 byte integer
@@ -76,6 +76,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                             var tags = GetTags(metricPoint.Tags);
 
                             _wavefrontSender.SendMetric(metric.Name.ToLower(), doubleValue, timestamp, _options.Source, tags);
+                            metricCount++;
                         }
                     }
                     else
@@ -89,6 +90,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
                             _wavefrontSender.SendMetric(metric.Name.ToLower() + "_count", metricPoint.GetHistogramCount(), timestamp, _options.Source, tags);
                             _wavefrontSender.SendMetric(metric.Name.ToLower() + "_sum", metricPoint.GetHistogramSum(), timestamp, _options.Source, tags);
+                            metricCount += 2;
                         }
                     }
                 }
@@ -98,6 +100,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                 }
             }
 
+            _logger?.LogTrace($"Exported {metricCount} metrics to {_options.Uri}");
             return ExportResult.Success;
         }
 

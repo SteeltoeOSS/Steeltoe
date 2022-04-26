@@ -19,11 +19,11 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
     /// </summary>
     public class WavefrontTraceExporter : BaseExporter<Activity>
     {
-        private readonly ILogger<WavefrontMetricsExporter> _logger;
+        private readonly ILogger<WavefrontTraceExporter> _logger;
         private WavefrontDirectIngestionClient _wavefrontSender;
         private WavefrontExporterOptions _options;
 
-        public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
+        public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
         {
             _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
 
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
         public override ExportResult Export(in Batch<Activity> batch)
         {
-            _logger?.LogTrace("Calling export");
+            int spanCount = 0;
             foreach (var activity in batch)
             {
                 try
@@ -69,6 +69,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                              null,
                              GetTags(activity.Tags),
                              null);
+                        spanCount++;
                     }
                 }
                 catch (Exception ex)
@@ -77,6 +78,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                 }
             }
 
+            _logger?.LogTrace($"Exported {spanCount} spans to {_options.Uri}");
             return ExportResult.Success;
         }
 

@@ -3,9 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
+using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System.Collections.Generic;
 using System.Reflection;
+using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test
 {
@@ -33,5 +39,47 @@ namespace Steeltoe.Management.Tracing.Test
 
         protected object GetPrivateField(object baseObject, string fieldName)
              => baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
+
+        protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
+        {
+            // confirm Steeltoe types were registered
+            Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
+            Assert.IsType<TracingLogProcessor>(serviceProvider.GetService<IDynamicMessageProcessor>());
+
+            // confirm OpenTelemetry types were registered
+            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
+            var hst = serviceProvider.GetService<IHostedService>();
+            Assert.NotNull(hst);
+        }
+
+        protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)
+        {
+            // confirm instrumentation(s) were added as expected
+            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+            var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
+            Assert.NotNull(instrumentations);
+            Assert.Single(instrumentations);
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+
+            Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+            var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
+            var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
+            Assert.Equal(2, props.Count);
+            Assert.Contains(props, p => p is B3Propagator);
+            Assert.Contains(props, p => p is BaggagePropagator);
+        }
+
+        protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)
+        {
+            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+
+            // confirm instrumentation(s) were added as expected
+            var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
+            Assert.NotNull(instrumentations);
+            Assert.Equal(2, instrumentations.Count);
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+        }
     }
 }

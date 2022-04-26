@@ -36,22 +36,8 @@ namespace Steeltoe.Management.Tracing.Test
 
             var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
 
-            // confirm Steeltoe types were registered
-            Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
-            Assert.IsType<TracingLogProcessor>(serviceProvider.GetService<IDynamicMessageProcessor>());
-
-            // confirm OpenTelemetry types were registered
-            var tracerProvider = serviceProvider.GetService<TracerProvider>();
-            Assert.NotNull(tracerProvider);
-            var hst = serviceProvider.GetService<IHostedService>();
-            Assert.NotNull(hst);
-
-            // confirm instrumentation(s) were added as expected
-            var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
-            Assert.NotNull(instrumentations);
-            Assert.Equal(2, instrumentations.Count);
-            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+            ValidateServiceCollectionCommon(serviceProvider);
+            ValidateServiceContainerCore(serviceProvider);
         }
 
         // this test should find OTLP exporter is configured, see TracingBase.Test for Zipkin & Jaeger
