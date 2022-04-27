@@ -191,7 +191,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         }
 
         [Fact]
-        public void Wavefront_IsAutowired()
+        public void WavefrontMetricsExporter_IsAutowired()
         {
             var exclusions = SteeltoeAssemblies.AllAssemblies
                 .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore });
@@ -203,8 +203,24 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 
             Assert.NotNull(exporter);
 
+        }
+
+        [Fact]
+        public void WavefrontTraceExporter_IsAutowired()
+        {
+            var exclusions = SteeltoeAssemblies.AllAssemblies
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore });
+
+            var host = new WebHostBuilder()
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
+                .AddSteeltoe(exclusions).Configure((b) => { }).Build();
+
             var tracerProvider = host.Services.GetService<TracerProvider>();
             Assert.NotNull(tracerProvider);
+            var processor = tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider);
+            var exporter = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
+            Assert.NotNull(exporter);
+            Assert.IsType<WavefrontTraceExporter>(exporter);
         }
 
         [Fact]
