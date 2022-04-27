@@ -194,7 +194,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         public void WavefrontMetricsExporter_IsAutowired()
         {
             var exclusions = SteeltoeAssemblies.AllAssemblies
-                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore });
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore });
 
             var host = new WebHostBuilder()
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
@@ -202,14 +202,13 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var exporter = host.Services.GetService<WavefrontMetricsExporter>();
 
             Assert.NotNull(exporter);
-
         }
 
         [Fact]
         public void WavefrontTraceExporter_IsAutowired()
         {
             var exclusions = SteeltoeAssemblies.AllAssemblies
-                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore });
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingCore });
 
             var host = new WebHostBuilder()
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
