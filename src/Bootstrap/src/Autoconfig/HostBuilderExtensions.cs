@@ -25,6 +25,7 @@ using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.CloudFoundry;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
@@ -97,6 +98,8 @@ namespace Steeltoe.Bootstrap.Autoconfig
             {
                 hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
+
+            hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
 
             if (!hostBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
             {
@@ -227,6 +230,17 @@ namespace Steeltoe.Bootstrap.Autoconfig
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireAllActuators(this IHostBuilder hostBuilder) =>
             hostBuilder.AddAllActuators().Log(LogMessages.WireAllActuators);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireWavefrontMetrics(this IHostBuilder hostBuilder) =>
+            hostBuilder
+                .ConfigureServices((context, collection) =>
+                {
+                    if (context.Configuration.HasWavefront())
+                    {
+                        collection.AddWavefrontMetrics();
+                    }
+                });
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDynamicSerilog(this IHostBuilder hostBuilder) =>

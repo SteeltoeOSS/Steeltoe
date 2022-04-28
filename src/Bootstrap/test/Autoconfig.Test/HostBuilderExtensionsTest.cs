@@ -27,6 +27,7 @@ using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
@@ -251,6 +252,38 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
             Assert.IsType<AllActuatorsStartupFilter>(filter);
+        }
+
+        [Fact]
+        public void WavefrontMetricsExporter_IsAutowired()
+        {
+            var exclusions = SteeltoeAssemblies.AllAssemblies
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore });
+
+            var host = new HostBuilder()
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
+                .AddSteeltoe(exclusions).Build();
+            var exporter = host.Services.GetService<WavefrontMetricsExporter>();
+
+            Assert.NotNull(exporter);
+        }
+
+        [Fact]
+        public void WavefrontTraceExporter_IsAutowired()
+        {
+            var exclusions = SteeltoeAssemblies.AllAssemblies
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingCore });
+
+            var host = new HostBuilder()
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
+                .AddSteeltoe(exclusions).Build();
+
+            var tracerProvider = host.Services.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
+            var processor = tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider);
+            var exporter = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
+            Assert.NotNull(exporter);
+            Assert.IsType<WavefrontTraceExporter>(exporter);
         }
 
         [Fact]

@@ -95,6 +95,11 @@ namespace Steeltoe
             { "sqlserver:credentials:timeout", "1" },
         }.ToImmutableDictionary();
 
+        public static readonly ImmutableDictionary<string, string> _wavefrontConfiguration = new Dictionary<string, string>()
+        {
+             { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
+        }.ToImmutableDictionary();
+
 #if NET6_0_OR_GREATER
         public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
         {

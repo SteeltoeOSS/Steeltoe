@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Tracing</RootNamespace>
     <Description>Add distributed tracing to ASP.NET Core applications</Description>
     <PackageTags>aspnetcore;management;monitoring;metrics;Distributed Trace</PackageTags>

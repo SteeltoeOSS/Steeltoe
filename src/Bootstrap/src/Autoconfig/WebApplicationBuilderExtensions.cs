@@ -98,6 +98,8 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
 
+            webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
+
             if (!webApplicationBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
             {
                 webApplicationBuilder.WireIfLoaded(WireDistributedTracingBase, SteeltoeAssemblies.Steeltoe_Management_TracingBase);
@@ -229,6 +231,17 @@ namespace Steeltoe.Bootstrap.Autoconfig
             webApplicationBuilder.Services.AddAllActuators(webApplicationBuilder.Configuration);
             webApplicationBuilder.Services.ActivateActuatorEndpoints();
             webApplicationBuilder.Log(LogMessages.WireAllActuators);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
+        {
+            if (!webApplicationBuilder.Configuration.HasWavefront())
+            {
+                return;
+            }
+
+            webApplicationBuilder.AddWavefrontMetrics().Log(LogMessages.WireWavefrontMetrics);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

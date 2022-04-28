@@ -19,18 +19,29 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
     /// </summary>
     public class WavefrontTraceExporter : BaseExporter<Activity>
     {
-        private readonly ILogger<WavefrontMetricsExporter> _logger;
+        private readonly ILogger<WavefrontTraceExporter> _logger;
         private WavefrontDirectIngestionClient _wavefrontSender;
         private WavefrontExporterOptions _options;
 
-        public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
+        public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
         {
             _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
-            var token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
+
+            var token = string.Empty;
+            var uri = _options.Uri;
+            if (_options.Uri.StartsWith("proxy://"))
+            {
+                uri = "http" + _options.Uri.Substring("proxy".Length); // Proxy reporting is now http on newer proxies.
+            }
+            else
+            {
+                // Token is required for Direct Ingestion
+                token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
+            }
 
             var flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
 
-            _wavefrontSender = new WavefrontDirectIngestionClient.Builder(_options.Uri, token)
+            _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token)
                                 .MaxQueueSize(_options.MaxQueueSize)
                                 .BatchSize(_options.BatchSize)
                                 .FlushIntervalSeconds(flushInterval)
@@ -40,7 +51,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
         public override ExportResult Export(in Batch<Activity> batch)
         {
-            _logger?.LogTrace("Calling export");
+            int spanCount = 0;
             foreach (var activity in batch)
             {
                 try
@@ -58,6 +69,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                              null,
                              GetTags(activity.Tags),
                              null);
+                        spanCount++;
                     }
                 }
                 catch (Exception ex)
@@ -66,6 +78,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                 }
             }
 
+            _logger?.LogTrace($"Exported {spanCount} spans to {_options.Uri}");
             return ExportResult.Success;
         }
 

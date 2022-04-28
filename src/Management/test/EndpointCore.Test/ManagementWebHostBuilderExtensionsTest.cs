@@ -586,6 +586,22 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Single(exporters);
         }
 
+        [Fact]
+        public void AddWavefront_ProxyConfigIsValid()
+        {
+            var wfSettings = new Dictionary<string, string>()
+            {
+                { "management:metrics:export:wavefront:uri", "proxy://wavefront.vmware.com" },
+                { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
+            };
+
+            var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
+            var host = hostBuilder.AddWavefrontMetrics().Build();
+
+            var exporters = host.Services.GetServices<WavefrontMetricsExporter>();
+            Assert.Single(exporters);
+        }
+
         private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
         private readonly IWebHostBuilder _testServerWithSecureRouting =
             new WebHostBuilder().UseTestServer()

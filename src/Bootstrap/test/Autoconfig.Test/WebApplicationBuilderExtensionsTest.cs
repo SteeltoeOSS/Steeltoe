@@ -26,6 +26,7 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
@@ -169,6 +170,44 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             Assert.NotNull(filter);
 
             await ActuatorTestAsync(webApp.GetTestClient());
+        }
+
+        [Fact]
+        public async Task WavefrontMetricsExporter_IsAutowired()
+        {
+            var webAppBuilder = WebApplication.CreateBuilder();
+            webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers._wavefrontConfiguration);
+            var exclusions = new List<string>() { SteeltoeAssemblies.Steeltoe_Management_EndpointCore };
+            webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
+            webAppBuilder.WebHost.UseTestServer();
+            var webApp = webAppBuilder.Build();
+
+            webApp.UseRouting();
+            await webApp.StartAsync();
+            var exporter = webApp.Services.GetService<WavefrontMetricsExporter>();
+
+            Assert.NotNull(exporter);
+        }
+
+        [Fact]
+        public async Task WavefrontTraceExporter_IsAutowired()
+        {
+            var webAppBuilder = WebApplication.CreateBuilder();
+            webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers._wavefrontConfiguration);
+            var exclusions = new List<string>() { SteeltoeAssemblies.Steeltoe_Management_TracingCore };
+            webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
+            webAppBuilder.WebHost.UseTestServer();
+            var webApp = webAppBuilder.Build();
+
+            webApp.UseRouting();
+            await webApp.StartAsync();
+
+            var tracerProvider = webApp.Services.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
+            var processor = tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider);
+            var exporter = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
+            Assert.NotNull(exporter);
+            Assert.IsType<WavefrontTraceExporter>(exporter);
         }
 
         [Fact]

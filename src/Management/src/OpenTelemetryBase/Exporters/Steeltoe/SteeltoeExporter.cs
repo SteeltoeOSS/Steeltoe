@@ -14,7 +14,6 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
     /// <summary>
     /// Exporter of OpenTelemetry metrics to Steeltoe Format.
     /// </summary>
-    [AggregationTemporality(AggregationTemporality.Cumulative)]
     [ExportModes(ExportModes.Pull)]
     public class SteeltoeExporter : IMetricsExporter
     {
