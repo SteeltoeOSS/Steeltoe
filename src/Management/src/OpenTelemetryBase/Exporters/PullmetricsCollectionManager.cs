@@ -163,9 +163,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
         private bool ExecuteCollect()
         {
             this.exporter.OnExport = this.onCollectRef;
-            bool result = this.exporter.Collect(Timeout.Infinite);
+            var result = this.exporter.Collect?.Invoke(Timeout.Infinite);
             this.exporter.OnExport = null;
-            return result;
+            return result.HasValue ? result.Value : false;
         }
 
         private ExportResult OnCollect(Batch<Metric> metrics)
