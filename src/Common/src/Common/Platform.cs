@@ -43,5 +43,21 @@ namespace Steeltoe.Common
         /// Gets a value indicating whether an app is running on a cloud provider. Currently supports Cloud Foundry and Kubernetes
         /// </summary>
         public static bool IsCloudHosted => IsCloudFoundry || IsKubernetes;
+
+        /// <summary>
+        /// Test, please ignore.
+        /// </summary>
+        public static bool IsSomethingElse
+        {
+            get
+            {
+                if (IsContainerized || IsKubernetes)
+                {
+                    throw new NotImplementedException();
+                }
+
+                throw new NotSupportedException();
+            }
+        }
     }
 }
