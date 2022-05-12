@@ -34,7 +34,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
                 WriteCommandMetrics(writer, commandMetrics);
             }
             catch (Exception)
-            {                
+            { 
+                
             }
             return sw.ToString();
         }
