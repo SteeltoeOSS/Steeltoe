@@ -36,6 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             catch (Exception)
             { 
             }
+
             return sw.ToString();
         }
 
@@ -50,6 +51,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             catch (Exception)
             {
             }
+
             return sw.ToString();
         }
 
@@ -64,6 +66,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             catch (Exception)
             {
             }
+
             return sw.ToString();
         }
 
