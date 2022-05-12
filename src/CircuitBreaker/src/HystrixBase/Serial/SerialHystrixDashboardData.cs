@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -29,7 +29,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
         {
             using var sw = new StringWriter();
             using var writer = new JsonTextWriter(sw);
-            WriteCommandMetrics(writer, commandMetrics);
+            try
+            {
+                WriteCommandMetrics(writer, commandMetrics);
+            }
+            catch (Exception)
+            {                
+            }
             return sw.ToString();
         }
 
@@ -37,7 +43,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
         {
             using var sw = new StringWriter();
             using var writer = new JsonTextWriter(sw);
-            WriteThreadPoolMetrics(writer, threadPoolMetrics);
+            try
+            {
+                WriteThreadPoolMetrics(writer, threadPoolMetrics);
+  
+            }
+            catch (Exception)
+            {
+                
+            }
             return sw.ToString();
         }
 
@@ -45,7 +59,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
         {
             using var sw = new StringWriter();
             using var writer = new JsonTextWriter(sw);
-            WriteCollapserMetrics(writer, collapserMetrics);
+            try
+            {
+                WriteCollapserMetrics(writer, collapserMetrics);
+            }
+            catch (Exception)
+            {
+               
+            }
             return sw.ToString();
         }
 
