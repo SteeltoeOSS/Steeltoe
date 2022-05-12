@@ -35,7 +35,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             }
             catch (Exception)
             { 
-                
             }
             return sw.ToString();
         }
@@ -47,11 +46,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             try
             {
                 WriteThreadPoolMetrics(writer, threadPoolMetrics);
-  
             }
             catch (Exception)
             {
-                
             }
             return sw.ToString();
         }
@@ -66,7 +63,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             }
             catch (Exception)
             {
-               
             }
             return sw.ToString();
         }
