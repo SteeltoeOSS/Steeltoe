@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management;
@@ -15,6 +16,7 @@ using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -55,7 +57,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 return new SteeltoeExporter(exporterOptions);
             }));
 
-            services.AddOpenTelemetryMetricsForSteeltoe();
             return services;
         }
 
@@ -87,31 +88,58 @@ namespace Microsoft.Extensions.DependencyInjection
                 var exporterOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
                 return new SteeltoePrometheusExporter(exporterOptions);
             }));
-            services.AddOpenTelemetryMetricsForSteeltoe();
 
             return services;
         }
 
-        public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, string name = null, string version = null)
+        /// <summary>
+        /// Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by Opentelemetry. 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <param name="name"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
         {
-            return services.AddOpenTelemetryMetrics(builder =>
+            if (services.Any(sd => sd.ServiceType == typeof(MeterProvider)))
             {
-                builder.Configure((provider, deferredBuilder) =>
-                {
-                    var views = provider.GetService<IViewRegistry>();
-                    var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
-                    deferredBuilder
-                        .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
-                        .AddRegisteredViews(views)
-                        .AddExporters(exporters);
+                throw new InvalidOperationException("Opentelemetry has already been configured!Use the configure method to customize your metrics pipeline instead");
+            }
 
-                    var wavefrontExporter = provider.GetService<WavefrontMetricsExporter>(); // Not an IMetricsExporter
-                    if (wavefrontExporter != null)
-                    {
-                        deferredBuilder.AddWavefrontExporter(wavefrontExporter);
-                    }
-                });
+            return services.AddOpenTelemetryMetrics(builder => builder.ConfigureSteeltoeMetrics());
+        }
+
+        public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name=null, string version = null)
+        {
+            if (configure != null)
+            {
+                builder.Configure(configure);
+            }
+            builder.Configure((provider, deferredBuilder) =>
+            {
+                var views = provider.GetService<IViewRegistry>();
+                var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
+                var services = deferredBuilder.GetServices();
+                if (services.Any(sd => sd.ImplementationType == typeof(MeterProviderBuilder)))
+                {
+                    Console.WriteLine("MeterProviderBuilder is here");
+                }
+
+                deferredBuilder
+                    .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
+                    .AddRegisteredViews(views)
+                    .AddExporters(exporters);
+
+                var wavefrontExporter = provider.GetService<WavefrontMetricsExporter>(); // Not an IMetricsExporter
+
+                if (wavefrontExporter != null)
+                {
+                    deferredBuilder.AddWavefrontExporter(wavefrontExporter);
+                }
             });
+            return builder;
         }
     }
 }
