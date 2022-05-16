@@ -197,7 +197,7 @@ namespace Steeltoe.Common.Converter
                 return false;
             }
 
-            return collectionType.GetConstructor(new Type[0]) != null;
+            return collectionType.GetConstructor(Type.EmptyTypes) != null;
         }
 
         public static IList CreateCompatListFor(Type type)

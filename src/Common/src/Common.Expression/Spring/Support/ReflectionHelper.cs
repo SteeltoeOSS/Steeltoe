@@ -230,7 +230,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         {
             if (paramTypes == null)
             {
-                paramTypes = new Type[0];
+                paramTypes = Type.EmptyTypes;
             }
 
             return clazz.GetConstructor(paramTypes);
