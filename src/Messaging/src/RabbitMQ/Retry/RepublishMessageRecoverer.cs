@@ -56,7 +56,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
 
         public string ErrorRoutingKey { get; }
 
-        public int MaxStackTraceLength { get; set; } = -1;
+        public int MaxStackTraceLength { get; set; }
 
         public string ErrorRoutingKeyPrefix { get; set; }
 

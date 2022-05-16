@@ -22,7 +22,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public TestCommandBuilder(ExecutionIsolationStrategy isolationStrategy)
         {
-            CommandPropertiesDefaults = HystrixCommandOptionsTest.GetUnitTestOptions();
             CommandPropertiesDefaults.ExecutionIsolationStrategy = isolationStrategy;
         }
 

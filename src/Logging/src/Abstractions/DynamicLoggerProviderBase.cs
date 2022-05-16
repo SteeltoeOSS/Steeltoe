@@ -16,10 +16,10 @@ namespace Steeltoe.Extensions.Logging
         private static readonly Filter _falseFilter = (cat, level) => false;
 
         private readonly ConcurrentDictionary<string, LogLevel> _originalLevels;
-        private readonly ConcurrentDictionary<string, Filter> _runningFilters = new ();
+        private readonly ConcurrentDictionary<string, Filter> _runningFilters;
 
         private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
-        private Func<string, LogLevel, bool> _filter = _falseFilter;
+        private Func<string, LogLevel, bool> _filter;
         private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new ();
         private ILoggerProvider _delegate;
 
