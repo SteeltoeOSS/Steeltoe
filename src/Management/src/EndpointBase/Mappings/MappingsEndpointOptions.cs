@@ -11,7 +11,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:mappings";
 
         public MappingsEndpointOptions()
-            : base()
         {
             Id = "mappings";
             RequiredPermissions = Permissions.RESTRICTED;

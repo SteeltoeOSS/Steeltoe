@@ -37,7 +37,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         public RollingCollapserEventCounterStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
             RollingCollapserEventCounterStream.Reset();

@@ -26,7 +26,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
         private readonly HystrixConfigurationStream stream;
 
         public HystrixConfigurationStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
             stream = HystrixConfigurationStream.GetNonSingletonInstanceOnlyUsedInUnitTests(10);

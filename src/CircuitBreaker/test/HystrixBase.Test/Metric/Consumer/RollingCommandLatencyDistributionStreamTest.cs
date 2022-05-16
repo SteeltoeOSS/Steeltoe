@@ -32,7 +32,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         public RollingCommandLatencyDistributionStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
             RollingCommandLatencyDistributionStream.Reset();

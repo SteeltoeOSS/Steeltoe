@@ -9,7 +9,6 @@ namespace Steeltoe.Stream.Binder
     public class RequeueCurrentMessageException : Exception
     {
         public RequeueCurrentMessageException()
-         : base()
         {
         }
 

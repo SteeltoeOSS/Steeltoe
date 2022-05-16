@@ -62,7 +62,6 @@ namespace Steeltoe.Common.Security
         internal string Key { get; }
 
         public FileSource(string key)
-            : base()
         {
             Key = key;
         }

@@ -13,7 +13,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         private StatusChangedArgs eventArg;
 
         public ApplicationInfoManagerTest()
-            : base()
         {
             eventArg = null;
         }

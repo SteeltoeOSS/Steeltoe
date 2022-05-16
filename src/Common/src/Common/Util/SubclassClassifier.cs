@@ -24,7 +24,6 @@ namespace Steeltoe.Common.Util
         }
 
         public SubclassClassifier(ConcurrentDictionary<Type, C> typeMap, C defaultValue)
-            : base()
         {
             TypeMap = new ConcurrentDictionary<Type, C>(typeMap);
             DefaultValue = defaultValue;

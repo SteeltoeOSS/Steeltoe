@@ -28,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         }
 
         public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger = null)
-            : base()
         {
             _propFile = propFile;
             _logger = logger;

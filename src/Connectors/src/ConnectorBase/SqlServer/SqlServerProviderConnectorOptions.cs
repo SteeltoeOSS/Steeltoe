@@ -22,7 +22,6 @@ namespace Steeltoe.Connector.SqlServer
         }
 
         public SqlServerProviderConnectorOptions(IConfiguration config)
-            : base()
         {
             if (config == null)
             {

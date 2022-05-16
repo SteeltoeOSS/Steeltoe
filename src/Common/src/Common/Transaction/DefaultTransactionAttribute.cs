@@ -10,7 +10,6 @@ namespace Steeltoe.Common.Transaction
     public class DefaultTransactionAttribute : DefaultTransactionDefinition, ITransactionAttribute
     {
         public DefaultTransactionAttribute()
-            : base()
         {
         }
 

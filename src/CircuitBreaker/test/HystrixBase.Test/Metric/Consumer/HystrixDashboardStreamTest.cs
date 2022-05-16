@@ -25,7 +25,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private readonly HystrixDashboardStream stream;
 
         public HystrixDashboardStreamTest(ITestOutputHelper output)
-            : base()
         {
             stream = HystrixDashboardStream.GetNonSingletonInstanceOnlyUsedInUnitTests(10);
             this.output = output;

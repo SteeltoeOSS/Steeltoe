@@ -18,7 +18,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         private readonly ITestOutputHelper output;
 
         public HystrixConcurrencyStrategyTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

@@ -15,7 +15,6 @@ namespace Steeltoe.Management.Endpoint.Health
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:health";
 
         public HealthEndpointOptions()
-            : base()
         {
             Id = "health";
             RequiredPermissions = Permissions.RESTRICTED;

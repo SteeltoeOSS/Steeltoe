@@ -34,7 +34,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         public CumulativeCommandEventCounterStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

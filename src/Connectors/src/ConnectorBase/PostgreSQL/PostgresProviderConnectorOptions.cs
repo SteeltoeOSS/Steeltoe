@@ -23,7 +23,6 @@ namespace Steeltoe.Connector.PostgreSql
         }
 
         public PostgresProviderConnectorOptions(IConfiguration config)
-            : base()
         {
             if (config == null)
             {

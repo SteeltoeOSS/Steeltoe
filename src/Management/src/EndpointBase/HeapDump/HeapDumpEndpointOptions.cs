@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:heapdump";
 
         public HeapDumpEndpointOptions()
-            : base()
         {
             Id = "heapdump";
         }

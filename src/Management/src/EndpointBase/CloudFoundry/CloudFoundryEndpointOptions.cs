@@ -14,7 +14,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private const bool Default_ValidateCertificates = true;
 
         public CloudFoundryEndpointOptions()
-            : base()
         {
             Id = string.Empty;
         }

@@ -49,7 +49,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         private readonly ITestOutputHelper output;
 
         public HystrixThreadEventStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
             commandKey = HystrixCommandKeyDefault.AsKey("CMD-ThreadStream");

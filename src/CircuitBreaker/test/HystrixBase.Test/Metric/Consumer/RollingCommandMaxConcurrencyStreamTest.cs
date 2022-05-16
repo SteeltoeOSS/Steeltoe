@@ -33,7 +33,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private readonly ITestOutputHelper output;
 
         public RollingCommandMaxConcurrencyStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
 

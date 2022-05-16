@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Env
         private static readonly string[] KEYS_TO_SANITIZE = new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" };
 
         public EnvEndpointOptions()
-            : base()
         {
             Id = "env";
             RequiredPermissions = Permissions.RESTRICTED;

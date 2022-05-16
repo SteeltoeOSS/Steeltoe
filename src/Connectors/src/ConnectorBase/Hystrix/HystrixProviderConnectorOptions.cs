@@ -22,7 +22,6 @@ namespace Steeltoe.Connector.Hystrix
         }
 
         public HystrixProviderConnectorOptions(IConfiguration config)
-            : base()
         {
             if (config == null)
             {

@@ -25,7 +25,6 @@ namespace Steeltoe.Connector.MySql
         }
 
         public MySqlProviderConnectorOptions(IConfiguration config)
-            : base()
         {
             if (config == null)
             {

@@ -20,7 +20,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private readonly ITestOutputHelper output;
 
         public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

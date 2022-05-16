@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Trace
         private const int DEFAULT_CAPACITY = 100;
 
         public TraceEndpointOptions()
-            : base()
         {
             Id = "trace";
             Capacity = DEFAULT_CAPACITY;

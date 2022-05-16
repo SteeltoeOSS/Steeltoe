@@ -66,7 +66,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         [ActivatorUtilitiesConstructor]
         public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, Connection.IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
-            : base()
         {
             _optionsMonitor = optionsMonitor;
             ConnectionFactory = connectionFactory;
@@ -76,7 +75,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         public RabbitTemplate(RabbitOptions options, Connection.IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
-            : base()
         {
             _options = options;
             ConnectionFactory = connectionFactory;
@@ -86,7 +84,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
-            : base()
         {
             _optionsMonitor = optionsMonitor;
             ConnectionFactory = connectionFactory;
@@ -96,7 +93,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         public RabbitTemplate(RabbitOptions options, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
-            : base()
         {
             _options = options;
             ConnectionFactory = connectionFactory;
@@ -106,7 +102,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         public RabbitTemplate(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
-            : base()
         {
             ConnectionFactory = connectionFactory;
             MessageConverter = new Support.Converter.SimpleMessageConverter();
@@ -116,7 +111,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         public RabbitTemplate(ILogger logger = null)
-            : base()
         {
             MessageConverter = new Support.Converter.SimpleMessageConverter();
             DefaultSendDestination = string.Empty + "/" + string.Empty;

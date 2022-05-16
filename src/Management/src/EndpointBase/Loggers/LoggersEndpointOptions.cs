@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
 
         public LoggersEndpointOptions()
-            : base()
         {
             Id = "loggers";
             AllowedVerbs = new List<string> { "Get", "Post" };

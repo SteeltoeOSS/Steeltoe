@@ -11,7 +11,6 @@ namespace Steeltoe.Management.Endpoint.Info
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:info";
 
         public InfoEndpointOptions()
-            : base()
         {
             Id = "info";
             RequiredPermissions = Permissions.RESTRICTED;

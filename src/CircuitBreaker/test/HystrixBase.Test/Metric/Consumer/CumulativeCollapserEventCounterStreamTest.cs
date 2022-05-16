@@ -31,7 +31,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private IDisposable latchSubscription;
 
         public CumulativeCollapserEventCounterStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

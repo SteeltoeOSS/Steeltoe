@@ -15,7 +15,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
         internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
 
         public MetricsObserverOptions()
-            : base()
         {
             IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
             EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;

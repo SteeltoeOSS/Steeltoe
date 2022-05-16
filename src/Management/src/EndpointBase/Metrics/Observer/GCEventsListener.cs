@@ -38,7 +38,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private List<long> _previousCollectionCounts;
 
         public GCEventsListener(ILogger<EventSourceListener> logger = null)
-            : base()
         {
             _logger = logger;
             var meter = OpenTelemetryMetrics.Meter;

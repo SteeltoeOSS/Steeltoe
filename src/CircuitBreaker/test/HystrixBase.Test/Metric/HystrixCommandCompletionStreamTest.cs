@@ -44,7 +44,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         private readonly ITestOutputHelper output;
 
         public HystrixCommandCompletionStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

@@ -19,7 +19,6 @@ namespace Steeltoe.Connector.OAuth
         }
 
         public OAuthConnectorOptions(IConfiguration config)
-            : base()
         {
             if (config == null)
             {

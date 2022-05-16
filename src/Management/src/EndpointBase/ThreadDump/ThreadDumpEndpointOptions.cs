@@ -11,7 +11,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dump";
 
         public ThreadDumpEndpointOptions()
-            : base()
         {
             Id = "dump";
         }

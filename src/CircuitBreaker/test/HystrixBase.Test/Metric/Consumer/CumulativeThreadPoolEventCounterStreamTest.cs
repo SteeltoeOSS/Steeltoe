@@ -32,7 +32,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         public CumulativeThreadPoolEventCounterStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

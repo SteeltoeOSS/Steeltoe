@@ -50,7 +50,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly Counter<long> _availableThreads;
 
         public ThreadPoolEventsListener(ILogger<EventSourceListener> logger = null)
-            : base()
         {
             _logger = logger;
             _availableThreads = OpenTelemetryMetrics.Meter.CreateCounter<long>($"clr.threadpool.available");

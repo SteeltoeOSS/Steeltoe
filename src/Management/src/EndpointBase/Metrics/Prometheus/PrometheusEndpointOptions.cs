@@ -11,7 +11,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
         internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:prometheus";
 
         public PrometheusEndpointOptions()
-            : base()
         {
             Id = "prometheus";
             ExactMatch = false;

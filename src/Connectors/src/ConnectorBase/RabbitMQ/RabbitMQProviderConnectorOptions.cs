@@ -23,7 +23,6 @@ namespace Steeltoe.Connector.RabbitMQ
         }
 
         public RabbitMQProviderConnectorOptions(IConfiguration config)
-            : base()
         {
             if (config == null)
             {

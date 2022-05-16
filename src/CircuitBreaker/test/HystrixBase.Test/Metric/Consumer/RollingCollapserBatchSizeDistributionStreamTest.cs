@@ -31,7 +31,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         public RollingCollapserBatchSizeDistributionStreamTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

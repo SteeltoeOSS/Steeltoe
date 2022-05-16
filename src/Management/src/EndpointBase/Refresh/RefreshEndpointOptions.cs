@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
         private const bool RETURN_CONFIGURATION = true;
 
         public RefreshEndpointOptions()
-            : base()
         {
             Id = "refresh";
             RequiredPermissions = Permissions.RESTRICTED;

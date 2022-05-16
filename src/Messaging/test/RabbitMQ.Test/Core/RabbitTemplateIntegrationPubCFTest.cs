@@ -11,7 +11,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
     public class RabbitTemplateIntegrationPubCFTest : RabbitTemplateIntegrationTest
     {
         public RabbitTemplateIntegrationPubCFTest()
-            : base()
         {
             template.UsePublisherConnection = true;
             routingTemplate.UsePublisherConnection = true;

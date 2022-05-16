@@ -11,7 +11,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
     public class DataBindingMethodResolver : ReflectiveMethodResolver
     {
         private DataBindingMethodResolver()
-        : base()
         {
         }
 

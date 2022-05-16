@@ -20,7 +20,6 @@ namespace Steeltoe.Connector.Oracle
         }
 
         public OracleProviderConnectorOptions(IConfiguration config)
-            : base()
         {
             if (config == null)
             {

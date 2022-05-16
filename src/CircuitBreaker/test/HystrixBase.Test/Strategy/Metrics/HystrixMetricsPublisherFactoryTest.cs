@@ -17,7 +17,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
         private readonly ITestOutputHelper output;
 
         public HystrixMetricsPublisherFactoryTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

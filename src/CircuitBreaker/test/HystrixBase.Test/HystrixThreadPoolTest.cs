@@ -16,7 +16,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private readonly ITestOutputHelper output;
 
         public HystrixThreadPoolTest(ITestOutputHelper output)
-            : base()
         {
             this.output = output;
         }

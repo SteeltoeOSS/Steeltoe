@@ -11,7 +11,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:actuator";
 
         public HypermediaEndpointOptions()
-            : base()
         {
             Id = string.Empty;
         }
