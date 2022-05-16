@@ -138,9 +138,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     }
                     else
                     {
-                        if (provider is ConfigServerConfigurationProvider)
+                        if (provider is ConfigServerConfigurationProvider configServer)
                         {
-                            result = provider as ConfigServerConfigurationProvider;
+                            result = configServer;
                             break;
                         }
                     }

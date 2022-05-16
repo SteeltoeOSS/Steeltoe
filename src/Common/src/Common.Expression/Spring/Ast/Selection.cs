@@ -98,10 +98,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 return new TypedValueHolderValueRef(new TypedValue(result), this);
             }
 
-            if (operand is IEnumerable)
+            if (operand is IEnumerable data)
             {
-                var operandAsArray = operand as Array;
-                var data = operand as IEnumerable;
+                var operandAsArray = data as Array;
 
                 var result = new List<object>();
                 var index = 0;
@@ -149,7 +148,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     return new TypedValueHolderValueRef(new TypedValue(lastElem), this);
                 }
 
-                if (operand is IEnumerable && operandAsArray == null)
+                if (operandAsArray == null)
                 {
                     return new TypedValueHolderValueRef(new TypedValue(result), this);
                 }

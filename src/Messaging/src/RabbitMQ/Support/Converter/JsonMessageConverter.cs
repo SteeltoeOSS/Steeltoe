@@ -126,9 +126,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
             object content;
             try
             {
-                if (conversionHint is ParameterInfo)
+                if (conversionHint is ParameterInfo pinfo)
                 {
-                    var pinfo = conversionHint as ParameterInfo;
                     content = ConvertBytesToObject(message.Payload, encoding, pinfo.ParameterType);
                 }
                 else if (targetType != null)

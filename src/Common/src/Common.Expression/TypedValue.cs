@@ -34,16 +34,14 @@ namespace Steeltoe.Common.Expression.Internal
                 return true;
             }
 
-            if (obj is not TypedValue)
+            if (obj is not TypedValue otherTv)
             {
                 return false;
             }
 
-            var otherTv = (TypedValue)obj;
-
             return ObjectUtils.NullSafeEquals(Value, otherTv.Value) &&
-                    ((TypeDescriptor == null && otherTv.TypeDescriptor == null) ||
-                            ObjectUtils.NullSafeEquals(TypeDescriptor, otherTv.TypeDescriptor));
+                ((TypeDescriptor == null && otherTv.TypeDescriptor == null) ||
+                    ObjectUtils.NullSafeEquals(TypeDescriptor, otherTv.TypeDescriptor));
         }
 
         public override int GetHashCode() => ObjectUtils.NullSafeHashCode(Value);

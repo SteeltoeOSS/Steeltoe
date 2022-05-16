@@ -82,9 +82,8 @@ namespace Steeltoe.Stream.Binder
 
         private void CheckChannelIsConfigured(IMessageChannel messageChannel, IConsumerOptions options)
         {
-            if (messageChannel is AbstractSubscribableChannel && !options.UseNativeDecoding)
+            if (messageChannel is AbstractSubscribableChannel subChan && !options.UseNativeDecoding)
             {
-                var subChan = messageChannel as AbstractSubscribableChannel;
                 if (subChan.ChannelInterceptors.Count == 0)
                 {
                     throw new InvalidOperationException("'messageChannel' appears to be misconfigured. Consider creating channel via AbstractBinderTest.createBindableChannel(..)");

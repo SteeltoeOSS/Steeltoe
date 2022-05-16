@@ -1390,9 +1390,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         #region Protected
         protected internal virtual IMessage ConvertMessageIfNecessary(object message)
         {
-            if (message is IMessage<byte[]>)
+            if (message is IMessage<byte[]> byteArrayMessage)
             {
-                return (IMessage)message;
+                return byteArrayMessage;
             }
 
             return GetRequiredMessageConverter().ToMessage(message, new MessageHeaders());

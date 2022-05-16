@@ -76,12 +76,11 @@ namespace Steeltoe.Common.Util
                 return true;
             }
 
-            if (other is not AbstractAttributeAccessor)
+            if (other is not AbstractAttributeAccessor accessor)
             {
                 return false;
             }
 
-            var accessor = (AbstractAttributeAccessor)other;
             if (accessor._attributes.Count != _attributes.Count)
             {
                 return false;

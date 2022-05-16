@@ -29,12 +29,10 @@ namespace Steeltoe.Integration.Handler.Support
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
             var payload = message.Payload;
-            if (payload is not ICollection<IMessage>)
+            if (payload is not ICollection<IMessage> messages)
             {
                 throw new ArgumentException("This Argument Resolver support only messages with payload as ICollection<IMessage>");
             }
-
-            var messages = (ICollection<IMessage>)payload;
 
             if (!_expressionCache.ContainsKey(parameter))
             {

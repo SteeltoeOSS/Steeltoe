@@ -24,13 +24,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public override bool Equals(object o)
         {
-            if (o is not PlaceOfBirth)
+            if (o is not PlaceOfBirth oPob)
             {
                 return false;
             }
 
-            var oPOB = (PlaceOfBirth)o;
-            return city.Equals(oPOB.city);
+            return city.Equals(oPob.city);
         }
 
         public override int GetHashCode() => city.GetHashCode();

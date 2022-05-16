@@ -309,15 +309,14 @@ namespace Steeltoe.Common.Util
                 return true;
             }
 
-            if (other is not MimeType)
+            if (other is not MimeType otherType)
             {
                 return false;
             }
 
-            var otherType = (MimeType)other;
             return Type.Equals(otherType.Type, StringComparison.InvariantCultureIgnoreCase) &&
-                    Subtype.Equals(otherType.Subtype, StringComparison.InvariantCultureIgnoreCase) &&
-                    ParametersAreEqual(otherType);
+                Subtype.Equals(otherType.Subtype, StringComparison.InvariantCultureIgnoreCase) && 
+                ParametersAreEqual(otherType);
         }
 
         public override int GetHashCode()

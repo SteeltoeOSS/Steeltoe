@@ -135,12 +135,11 @@ namespace Steeltoe.Messaging
                 return true;
             }
 
-            if (other is not Message<P>)
+            if (other is not Message<P> otherMsg)
             {
                 return false;
             }
 
-            var otherMsg = (Message<P>)other;
             return ObjectUtils.NullSafeEquals(payload, otherMsg.payload) && headers.Equals(otherMsg.headers);
         }
 

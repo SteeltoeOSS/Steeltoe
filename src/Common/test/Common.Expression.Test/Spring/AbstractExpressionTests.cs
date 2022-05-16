@@ -183,11 +183,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 var result = PrintArray(value as Array);
                 return result;
             }
-            else if (value is IDictionary)
+            else if (value is IDictionary dictionary)
             {
-                var asDict = value as IDictionary;
                 var sb = new StringBuilder("{");
-                foreach (DictionaryEntry obj in asDict)
+                foreach (DictionaryEntry obj in dictionary)
                 {
                     sb.Append(StringValueOf(obj.Key));
                     sb.Append('=');
@@ -203,9 +202,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 sb.Append('}');
                 return sb.ToString();
             }
-            else if (value is IEnumerable && value is not string)
+            else if (value is IEnumerable enumerable && value is not string)
             {
-                var enumerable = value as IEnumerable;
                 var sb = new StringBuilder("[");
                 foreach (var obj in enumerable)
                 {

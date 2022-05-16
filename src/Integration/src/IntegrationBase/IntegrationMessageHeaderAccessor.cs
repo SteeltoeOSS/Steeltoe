@@ -104,13 +104,13 @@ namespace Steeltoe.Integration
                 return default;
             }
 
-            if (value is not T)
+            if (value is not T typedValue)
             {
                 throw new ArgumentException("Incorrect type specified for header '" + key + "'. Expected [" + typeof(T)
                         + "] but actual type is [" + value.GetType() + "]");
             }
 
-            return (T)value;
+            return typedValue;
         }
 
         public override IDictionary<string, object> ToDictionary()

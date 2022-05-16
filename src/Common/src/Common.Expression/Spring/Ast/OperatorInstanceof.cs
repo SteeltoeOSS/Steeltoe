@@ -25,12 +25,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var leftValue = left.Value;
             var rightValue = right.Value;
             BooleanTypedValue result;
-            if (rightValue is not Type)
+            if (rightValue is not Type rightClass)
             {
                 throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.INSTANCEOF_OPERATOR_NEEDS_CLASS_OPERAND, rightValue == null ? "null" : rightValue.GetType().FullName);
             }
 
-            var rightClass = (Type)rightValue;
             if (leftValue == null)
             {
                 result = BooleanTypedValue.FALSE;  // null is not an instanceof anything

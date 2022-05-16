@@ -223,7 +223,7 @@ namespace Steeltoe.Integration.Handler
                     return outputAsMessage;
                 }
 
-                builder = IntegrationServices.MessageBuilderFactory.FromMessage((IMessage)output);
+                builder = IntegrationServices.MessageBuilderFactory.FromMessage(outputAsMessage);
             }
             else
             {

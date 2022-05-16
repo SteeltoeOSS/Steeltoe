@@ -202,14 +202,12 @@ namespace Steeltoe.Common.Converter
                     return true;
                 }
 
-                if (other is not ConverterCacheKey)
+                if (other is not ConverterCacheKey otherKey)
                 {
                     return false;
                 }
 
-                var otherKey = (ConverterCacheKey)other;
-                return _sourceType.Equals(otherKey._sourceType) &&
-                        _targetType.Equals(otherKey._targetType);
+                return _sourceType.Equals(otherKey._sourceType) && _targetType.Equals(otherKey._targetType);
             }
 
             public override int GetHashCode() => (_sourceType.GetHashCode() * 29) + _targetType.GetHashCode();
@@ -241,8 +239,7 @@ namespace Steeltoe.Common.Converter
             {
                 foreach (var converter in _converters)
                 {
-                    if (converter is not IConditionalGenericConverter ||
-                            ((IConditionalGenericConverter)converter).Matches(sourceType, targetType))
+                    if (converter is not IConditionalGenericConverter genericConverter || genericConverter.Matches(sourceType, targetType))
                     {
                         return converter;
                     }

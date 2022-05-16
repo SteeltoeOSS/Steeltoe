@@ -99,10 +99,8 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
                 var result = _invoker(_handler, args);
 
-                if (result is Task)
+                if (result is Task resultAsTask)
                 {
-                    var resultAsTask = result as Task;
-
                     var isAsyncMethod = Method.CustomAttributes
                         .Any(x => x.AttributeType.Name == nameof(System.Runtime.CompilerServices.AsyncStateMachineAttribute));
 

@@ -434,9 +434,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             {
                 result.Add(queue.QueueName);
             }
-            else if (resolvedValueToUse is string)
+            else if (resolvedValueToUse is string asString)
             {
-                var asString = resolvedValueToUse as string;
                 result.Add(asString);
             }
             else if (resolvedValueToUse is IEnumerable enumerable)

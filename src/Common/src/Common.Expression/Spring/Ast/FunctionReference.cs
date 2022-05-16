@@ -33,7 +33,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 throw new SpelEvaluationException(StartPosition, SpelMessage.FUNCTION_NOT_DEFINED, _name);
             }
 
-            if (value.Value is not MethodInfo)
+            if (value.Value is not MethodInfo method)
             {
                 // Possibly a static method registered as a function
                 throw new SpelEvaluationException(SpelMessage.FUNCTION_REFERENCE_CANNOT_BE_INVOKED, _name, value.GetType());
@@ -41,7 +41,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             try
             {
-                return ExecuteFunctionJLRMethod(state, (MethodInfo)value.Value);
+                return ExecuteFunctionJLRMethod(state, method);
             }
             catch (SpelEvaluationException ex)
             {

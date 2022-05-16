@@ -197,12 +197,12 @@ namespace Steeltoe.Messaging.Core
                 throw new ArgumentNullException(nameof(channel));
             }
 
-            if (channel is not IPollableChannel)
+            if (channel is not IPollableChannel pollableChannel)
             {
                 throw new InvalidOperationException("A PollableChannel is required to receive messages");
             }
 
-            var message = ((IPollableChannel)channel).Receive(timeout);
+            var message = pollableChannel.Receive(timeout);
 
             if (message == null)
             {

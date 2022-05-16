@@ -99,14 +99,14 @@ namespace Steeltoe.Integration.Channel
                 return channel;
             }
 
-            if (errorChannelHeader is not string)
+            if (errorChannelHeader is not string header)
             {
                 throw new ArgumentException("Unsupported error channel header type. Expected IMessageChannel or String, but actual type is [" + errorChannelHeader.GetType() + "]");
             }
 
             if (ChannelResolver != null)
             {
-                return ChannelResolver.ResolveDestination((string)errorChannelHeader); // NOSONAR not null
+                return ChannelResolver.ResolveDestination(header); // NOSONAR not null
             }
             else
             {

@@ -74,7 +74,7 @@ namespace Steeltoe.Common.Transaction
 
         public override bool Equals(object other)
             => this == other ||
-                (base.Equals(other) && (other is not TransactionTemplate || TransactionManager == ((TransactionTemplate)other).TransactionManager));
+                (base.Equals(other) && (other is not TransactionTemplate otherTemplate || TransactionManager == otherTemplate.TransactionManager));
 
         public override int GetHashCode() => base.GetHashCode();
 

@@ -249,7 +249,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             // Indexing into a Map
-            if (target is System.Collections.IDictionary)
+            if (target is System.Collections.IDictionary dictionary)
             {
                 var key = index;
                 var mapkeyType = ReflectionHelper.GetMapKeyTypeDescriptor(targetDescriptor);
@@ -259,7 +259,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 }
 
                 _indexedType = IndexedType.MAP;
-                return new MapIndexingValueRef(this, state.TypeConverter, (IDictionary)target, key, targetDescriptor);
+                return new MapIndexingValueRef(this, state.TypeConverter, dictionary, key, targetDescriptor);
             }
 
             // If the object is something that looks indexable by an integer,

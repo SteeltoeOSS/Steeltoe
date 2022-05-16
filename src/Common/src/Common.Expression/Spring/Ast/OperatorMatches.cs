@@ -30,14 +30,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 throw new SpelEvaluationException(leftOp.StartPosition, SpelMessage.INVALID_FIRST_OPERAND_FOR_MATCHES_OPERATOR, (object)null);
             }
 
-            if (right is not string)
+            if (right is not string rightString)
             {
                 throw new SpelEvaluationException(rightOp.StartPosition, SpelMessage.INVALID_SECOND_OPERAND_FOR_MATCHES_OPERATOR, right);
             }
 
             try
             {
-                var rightString = (string)right;
                 _patternCache.TryGetValue(rightString, out var pattern);
                 if (pattern == null)
                 {
@@ -49,11 +48,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
             catch (ArgumentException ex)
             {
-                throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.INVALID_PATTERN, right);
+                throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.INVALID_PATTERN, rightString);
             }
             catch (RegexMatchTimeoutException ex)
             {
-                throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.FLAWED_PATTERN, right);
+                throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.FLAWED_PATTERN, rightString);
             }
         }
     }

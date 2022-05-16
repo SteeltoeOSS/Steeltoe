@@ -82,9 +82,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             var converter = MessageConverter;
             if (converter != null)
             {
-                if (result is IMessage)
+                if (result is IMessage asMessage)
                 {
-                    var asMessage = result as IMessage;
                     result = converter.ToMessage(asMessage.Payload, asMessage.Headers, genericType);
                 }
                 else

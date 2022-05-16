@@ -49,7 +49,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override bool IsCompilable()
         {
-            if (_cachedExecutor is not ReflectiveConstructorExecutor || _exitTypeDescriptor == null)
+            if (_cachedExecutor is not ReflectiveConstructorExecutor executor || _exitTypeDescriptor == null)
             {
                 return false;
             }
@@ -65,7 +65,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 }
             }
 
-            var executor = (ReflectiveConstructorExecutor)_cachedExecutor;
             if (executor == null)
             {
                 return false;
@@ -235,7 +234,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             // First child gives us the array type which will either be a primitive or reference type
             var intendedArrayType = GetChild(0).GetValue(state);
-            if (intendedArrayType is not string)
+            if (intendedArrayType is not string type)
             {
                 throw new SpelEvaluationException(
                     GetChild(0).StartPosition,
@@ -243,7 +242,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     FormatHelper.FormatClassNameForMessage(intendedArrayType?.GetType()));
             }
 
-            var type = (string)intendedArrayType;
             Type componentType;
             var arrayTypeCode = SpelTypeCode.ForName(type);
             if (arrayTypeCode == SpelTypeCode.OBJECT)

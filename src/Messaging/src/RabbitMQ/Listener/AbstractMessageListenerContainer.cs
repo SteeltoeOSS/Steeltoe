@@ -389,9 +389,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public virtual IConnectionFactory GetConnectionFactory()
         {
             var connectionFactory = ConnectionFactory;
-            if (connectionFactory is IRoutingConnectionFactory)
+            if (connectionFactory is IRoutingConnectionFactory routingFactory)
             {
-                var routingFactory = connectionFactory as IRoutingConnectionFactory;
                 var targetConnectionFactory = routingFactory.GetTargetConnectionFactory(GetRoutingLookupKey()); // NOSONAR never null
                 if (targetConnectionFactory != null)
                 {
@@ -847,22 +846,22 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, List<IMessage> data)
         {
-            if (exception is not ListenerExecutionFailedException)
+            if (exception is not ListenerExecutionFailedException listenerException)
             {
                 return new ListenerExecutionFailedException("Listener threw exception", exception, data.ToArray());
             }
 
-            return (ListenerExecutionFailedException)exception;
+            return listenerException;
         }
 
         protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, IMessage message)
         {
-            if (exception is not ListenerExecutionFailedException)
+            if (exception is not ListenerExecutionFailedException listenerException)
             {
                 return new ListenerExecutionFailedException("Listener threw exception", exception, message);
             }
 
-            return (ListenerExecutionFailedException)exception;
+            return listenerException;
         }
 
         protected virtual void HandleListenerException(Exception exception)

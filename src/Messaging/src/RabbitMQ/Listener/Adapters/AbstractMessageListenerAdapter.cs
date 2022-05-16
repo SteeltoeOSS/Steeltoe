@@ -137,12 +137,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 result = converter.ToMessage(result, new MessageHeaders(), genericType);
             }
 
-            if (result is not IMessage<byte[]>)
+            if (result is not IMessage<byte[]> byteArrayMessage)
             {
                 throw new MessageConversionException("No MessageConverter specified - cannot handle message [" + result + "]");
             }
 
-            return (IMessage<byte[]>)result;
+            return byteArrayMessage;
         }
 
         protected virtual void HandleListenerException(Exception exception)
@@ -170,7 +170,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         {
             if (channel != null)
             {
-                if (resultArg.ReturnValue is Task)
+                if (resultArg.ReturnValue is Task asTask)
                 {
                     if (!IsManualAck)
                     {
@@ -178,7 +178,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                                 + "otherwise the container will ack the message immediately");
                     }
 
-                    var asTask = resultArg.ReturnValue as Task;
                     asTask.ContinueWith(
                         (t) =>
                         {

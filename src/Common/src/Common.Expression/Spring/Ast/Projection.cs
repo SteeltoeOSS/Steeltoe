@@ -61,10 +61,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 return new TypedValueHolderValueRef(new TypedValue(result), this);
             }
 
-            if (operand is IEnumerable)
+            if (operand is IEnumerable data)
             {
-                var data = operand as IEnumerable;
-
                 var result = new List<object>();
                 Type arrayElementType = null;
                 foreach (var element in data)

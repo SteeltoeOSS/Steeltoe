@@ -549,14 +549,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     return true;
                 }
 
-                if (obj is not PropertyCacheKey)
+                if (obj is not PropertyCacheKey otherKey)
                 {
                     return false;
                 }
 
-                var otherKey = (PropertyCacheKey)obj;
                 return _clazz == otherKey._clazz && _property.Equals(otherKey._property) &&
-                        _targetIsClass == otherKey._targetIsClass;
+                       _targetIsClass == otherKey._targetIsClass;
             }
 
             public override int GetHashCode()

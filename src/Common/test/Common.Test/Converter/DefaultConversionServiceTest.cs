@@ -949,12 +949,11 @@ namespace Steeltoe.Common.Converter.Test
 
             public override bool Equals(object o)
             {
-                if (o is not ISBN)
+                if (o is not ISBN isbn)
                 {
                     return false;
                 }
 
-                var isbn = (ISBN)o;
                 return value.Equals(isbn.value);
             }
 
@@ -989,12 +988,11 @@ namespace Steeltoe.Common.Converter.Test
 
             public override bool Equals(object o)
             {
-                if (o is not SSN)
+                if (o is not SSN ssn)
                 {
                     return false;
                 }
 
-                var ssn = (SSN)o;
                 return value.Equals(ssn.value);
             }
 

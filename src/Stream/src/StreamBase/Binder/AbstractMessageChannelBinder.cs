@@ -65,7 +65,7 @@ namespace Steeltoe.Stream.Binder
 
         protected override IBinding DoBindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
         {
-            if (outboundTarget is not ISubscribableChannel)
+            if (outboundTarget is not ISubscribableChannel subscribableChannel)
             {
                 throw new ArgumentException("Binding is supported only for ISubscribableChannel instances");
             }
@@ -77,7 +77,7 @@ namespace Steeltoe.Stream.Binder
             {
                 producerDestination = _provisioningProvider.ProvisionProducerDestination(name, producerOptions);
                 var errorChannel = producerOptions.ErrorChannelEnabled ? RegisterErrorInfrastructure(producerDestination) : null;
-                producerMessageHandler = CreateProducerMessageHandler(producerDestination, producerOptions, outboundTarget, errorChannel);
+                producerMessageHandler = CreateProducerMessageHandler(producerDestination, producerOptions, subscribableChannel, errorChannel);
             }
             catch (Exception e) when (e is BinderException || e is ProvisioningException)
             {
@@ -93,15 +93,15 @@ namespace Steeltoe.Stream.Binder
                 producerMsgHandlerLifecycle.Start();
             }
 
-            PostProcessOutputChannel(outboundTarget, producerOptions);
+            PostProcessOutputChannel(subscribableChannel, producerOptions);
             var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), _headersToEmbed, UseNativeEncoding(producerOptions));
             sendingHandler.Initialize();
-            ((ISubscribableChannel)outboundTarget).Subscribe(sendingHandler);
+            subscribableChannel.Subscribe(sendingHandler);
 
             IBinding binding = new DefaultProducingMessageChannelBinding(
                 this,
                 name,
-                outboundTarget,
+                subscribableChannel,
                 producerMessageHandler is ILifecycle lifecycle ? lifecycle : null,
                 producerOptions,
                 producerDestination,
@@ -362,12 +362,12 @@ namespace Steeltoe.Stream.Binder
             var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
-                if (errorChannelObject is not ISubscribableChannel)
+                if (errorChannelObject is not ISubscribableChannel subscribableChannel)
                 {
                     throw new ArgumentException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
                 }
 
-                errorChannel = (ISubscribableChannel)errorChannelObject;
+                errorChannel = subscribableChannel;
             }
             else
             {
@@ -385,12 +385,12 @@ namespace Steeltoe.Stream.Binder
             var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
-                if (errorChannelObject is not ISubscribableChannel)
+                if (errorChannelObject is not ISubscribableChannel subscribableChannel)
                 {
                     throw new InvalidOperationException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
                 }
 
-                errorChannel = (ISubscribableChannel)errorChannelObject;
+                errorChannel = subscribableChannel;
             }
             else
             {
