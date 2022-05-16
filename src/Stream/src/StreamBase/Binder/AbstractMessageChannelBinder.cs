@@ -420,7 +420,8 @@ namespace Steeltoe.Stream.Binder
             var errorBridgeHandlerName = GetErrorBridgeName(destination);
             if (ApplicationContext.GetService<IMessageChannel>(errorChannelName) is ISubscribableChannel channel)
             {
-                if (ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName) is IMessageHandler bridgeHandler)
+                var bridgeHandler = ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName);
+                if (bridgeHandler != null)
                 {
                     channel.Unsubscribe(bridgeHandler);
                     ApplicationContext.Deregister(errorBridgeHandlerName);
@@ -444,15 +445,17 @@ namespace Steeltoe.Stream.Binder
 
                 if (ApplicationContext.GetService<IMessageChannel>(errorChannelName) is ISubscribableChannel channel)
                 {
-                    if (ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName) is IMessageHandler bridgeHandler)
+                    var bridgeHandler = ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName);
+                    if (bridgeHandler != null)
                     {
                         channel.Unsubscribe(bridgeHandler);
                         DestroyBean(errorBridgeHandlerName);
                     }
 
-                    if (ApplicationContext.GetService<IMessageHandler>(errorMessageHandlerName) is IMessageHandler handler)
+                    var messageHandler = ApplicationContext.GetService<IMessageHandler>(errorMessageHandlerName);
+                    if (messageHandler != null)
                     {
-                        channel.Unsubscribe(handler);
+                        channel.Unsubscribe(messageHandler);
                         DestroyBean(errorMessageHandlerName);
                     }
 

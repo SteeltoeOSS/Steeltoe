@@ -88,14 +88,14 @@ namespace Steeltoe.Discovery.Eureka
                         var actuatorOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions" });
                         var endpointOptionsBaseType = ReflectionHelpers.FindType(new string[] { "Steeltoe.Management.Abstractions" }, new string[] { "Steeltoe.Management.IEndpointOptions" });
                         var mgmtOptions = serviceProvider.GetService(actuatorOptionsType);
-                        if (mgmtOptions is object)
+                        if (mgmtOptions != null)
                         {
                             var basePath = (string)actuatorOptionsType.GetProperty("Path").GetValue(mgmtOptions) + '/';
                             if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":HealthCheckUrlPath")))
                             {
                                 var healthOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Health.IHealthOptions" });
                                 var healthOptions = serviceProvider.GetService(healthOptionsType);
-                                if (healthOptions is object)
+                                if (healthOptions != null)
                                 {
                                     options.HealthCheckUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path").GetValue(healthOptions)).TrimStart('/');
                                 }
@@ -105,7 +105,7 @@ namespace Steeltoe.Discovery.Eureka
                             {
                                 var infoOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Info.IInfoOptions" });
                                 var infoOptions = serviceProvider.GetService(infoOptionsType);
-                                if (infoOptions is object)
+                                if (infoOptions != null)
                                 {
                                     options.StatusPageUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path").GetValue(infoOptions)).TrimStart('/');
                                 }

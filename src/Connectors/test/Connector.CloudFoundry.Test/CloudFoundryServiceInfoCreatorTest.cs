@@ -260,7 +260,7 @@ namespace Steeltoe.Connector.CloudFoundry.Test
             var creator = CloudFoundryServiceInfoCreator.Instance(config);
 
             var result = creator.GetServiceInfos<MySqlServiceInfo>();
-            Assert.Equal(2, result.Count(si => si is MySqlServiceInfo));
+            Assert.Equal(2, result.Count(si => si != null));
 
             var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
             Assert.Equal(2, result2.Count(si => si is MySqlServiceInfo));
@@ -278,7 +278,6 @@ namespace Steeltoe.Connector.CloudFoundry.Test
 
             var result6 = creator.GetServiceInfo<MySqlServiceInfo>("spring-cloud-broker-db2");
             Assert.NotNull(result6);
-            Assert.True(result6 is MySqlServiceInfo);
 
             var result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
             Assert.NotNull(result7);

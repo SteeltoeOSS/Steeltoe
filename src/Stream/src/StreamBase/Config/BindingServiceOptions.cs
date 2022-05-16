@@ -157,7 +157,8 @@ namespace Steeltoe.Stream.Config
             }
 
             var bindingOptions = GetBindingOptions(inputBindingName);
-            if (bindingOptions.Consumer is not ConsumerOptions consumerOptions)
+            var consumerOptions = bindingOptions.Consumer;
+            if (consumerOptions == null)
             {
                 consumerOptions = new ConsumerOptions();
                 consumerOptions.PostProcess(inputBindingName, Default.Consumer);
@@ -186,7 +187,8 @@ namespace Steeltoe.Stream.Config
             }
 
             var bindingOptions = GetBindingOptions(outputBindingName);
-            if (bindingOptions.Producer is not ProducerOptions producerOptions)
+            var producerOptions = bindingOptions.Producer;
+            if (producerOptions == null)
             {
                 producerOptions = new ProducerOptions();
                 producerOptions.PostProcess(outputBindingName, Default.Producer);

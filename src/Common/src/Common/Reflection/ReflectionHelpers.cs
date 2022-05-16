@@ -88,7 +88,7 @@ namespace Steeltoe.Common.Reflection
             where T : AssemblyContainsTypeAttribute
         {
             TryLoadAssembliesWithAttribute<T>();
-            return FindAssemblies(assembly => assembly.GetCustomAttribute<T>() is object);
+            return FindAssemblies(assembly => assembly.GetCustomAttribute<T>() != null);
         }
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             bool preserveDefaultConsole = false)
         {
             LoggerConfiguration loggerConfiguration = null;
-            if (configureLogger is object)
+            if (configureLogger != null)
             {
                 loggerConfiguration = new LoggerConfiguration().ReadFrom.Configuration(hostBuilder.Configuration);
                 configureLogger(hostBuilder, loggerConfiguration);

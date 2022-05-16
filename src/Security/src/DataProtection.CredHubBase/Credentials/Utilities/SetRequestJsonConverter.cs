@@ -21,7 +21,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Credentials.Utilities
             writer.WriteStartObject("value");
             foreach (var prop in value.Value.GetType().GetProperties())
             {
-                if (prop.GetValue(value.Value) is object || !options.IgnoreNullValues)
+                if (prop.GetValue(value.Value) != null || !options.IgnoreNullValues)
                 {
                     writer.WriteString(prop.Name.ToLower(), prop.GetValue(value.Value)?.ToString());
                 }

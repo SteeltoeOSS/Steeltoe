@@ -666,22 +666,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public ITypedValue GetValue()
             {
                 GrowCollectionIfNecessary();
-                if (_collection is IList)
+                if (_collection != null)
                 {
                     var o = _collection[_index];
                     _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(typeof(object));
                     return new TypedValue(o, ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor, o));
-                }
-
-                var pos = 0;
-                foreach (var o in _collection)
-                {
-                    if (pos == _index)
-                    {
-                        return new TypedValue(o, ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor, o));
-                    }
-
-                    pos++;
                 }
 
                 throw new InvalidOperationException("Failed to find indexed element " + _index + ": " + _collection);
@@ -690,7 +679,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public void SetValue(object newValue)
             {
                 GrowCollectionIfNecessary();
-                if (_collection is IList)
+                if (_collection != null)
                 {
                     var list = _collection;
                     var elemTypeDesc = ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor);

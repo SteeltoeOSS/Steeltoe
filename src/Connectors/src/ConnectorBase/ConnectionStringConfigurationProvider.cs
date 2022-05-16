@@ -52,7 +52,7 @@ namespace Steeltoe.Connector
                     // look for a service info with that id
                     ServiceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(Configuration.Value);
                     var serviceInfo = ServiceInfoCreator.ServiceInfos.FirstOrDefault(si => si.Id.Equals(searchKey));
-                    if (serviceInfo is object)
+                    if (serviceInfo != null)
                     {
                         value = ConnectionStringManager.Value.GetFromServiceInfo(serviceInfo).ConnectionString;
                         return true;

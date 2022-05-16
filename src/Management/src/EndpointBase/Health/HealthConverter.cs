@@ -18,19 +18,19 @@ namespace Steeltoe.Management.Endpoint.Health
         public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            if (value is HealthEndpointResponse health)
+            if (value != null)
             {
-                writer.WriteString("status", health.Status.ToString());
-                if (!string.IsNullOrEmpty(health.Description))
+                writer.WriteString("status", value.Status.ToString());
+                if (!string.IsNullOrEmpty(value.Description))
                 {
-                    writer.WriteString("description", health.Description);
+                    writer.WriteString("description", value.Description);
                 }
 
-                if (health.Details != null && health.Details.Count > 0)
+                if (value.Details != null && value.Details.Count > 0)
                 {
                     writer.WritePropertyName("details");
                     writer.WriteStartObject();
-                    foreach (var detail in health.Details)
+                    foreach (var detail in value.Details)
                     {
                         writer.WritePropertyName(detail.Key);
                         JsonSerializer.Serialize(writer, detail.Value, options);

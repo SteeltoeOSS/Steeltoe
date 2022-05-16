@@ -27,7 +27,7 @@ namespace Steeltoe.Connector
 
             lock (_lock)
             {
-                if (serviceInfoCreator is object && configuration == serviceInfoCreator.Configuration && (bool)serviceInfoCreator.GetType().GetProperty("IsRelevant").GetValue(null))
+                if (serviceInfoCreator != null && configuration == serviceInfoCreator.Configuration && (bool)serviceInfoCreator.GetType().GetProperty("IsRelevant").GetValue(null))
                 {
                     return serviceInfoCreator;
                 }

@@ -91,7 +91,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
                     httpClient: _httpClient,
                     logger: _logger);
 
-                if (token is object)
+                if (token != null)
                 {
                     // set the token
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
