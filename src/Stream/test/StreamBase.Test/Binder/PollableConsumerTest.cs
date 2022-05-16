@@ -307,7 +307,7 @@ namespace Steeltoe.Stream.Binder
 
             var latch = new CountdownEvent(2);
             binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
+            var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME) as ISubscribableChannel;
             var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
             errorChan.Subscribe(errorChanHandler);
 
@@ -366,7 +366,7 @@ namespace Steeltoe.Stream.Binder
 
             var latch = new CountdownEvent(1);
             binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
+            var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME) as ISubscribableChannel;
             var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
             errorChan.Subscribe(errorChanHandler);
 
