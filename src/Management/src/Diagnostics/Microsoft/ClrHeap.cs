@@ -1259,7 +1259,7 @@ namespace Microsoft.Diagnostics.Runtime
             return (size + AlignConst) & ~(AlignConst);
         }
 
-        public override bool IsEphemeral { get { return _segment.Address == _subHeap.EphemeralSegment; ; } }
+        public override bool IsEphemeral { get { return _segment.Address == _subHeap.EphemeralSegment; } }
         internal HeapSegment(RuntimeBase clr, ISegmentData segment, SubHeap subHeap, bool large, HeapBase heap)
         {
             _clr = clr;

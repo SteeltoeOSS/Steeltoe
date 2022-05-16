@@ -47,7 +47,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 Assert.False(true, "Exception: " + e.Message);
-                output.WriteLine(e.ToString());
             }
             finally
             {
@@ -92,7 +91,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 Assert.False(true, "Exception: " + e.Message);
-                output.WriteLine(e.ToString());
             }
         }
 

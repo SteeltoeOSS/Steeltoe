@@ -385,7 +385,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         internal override IAppDomainData GetAppDomainData(ulong addr)
         {
-            LegacyAppDomainData data = new LegacyAppDomainData(); ;
+            LegacyAppDomainData data = new LegacyAppDomainData();
             if (_sos.GetAppDomainData(addr, out data) < 0)
             {
                 // We can face an exception while walking domain data if we catch the process

@@ -268,7 +268,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
                     return false;
             }
 
-            return true; ;
+            return true;
         }
 
         private bool AtSentinel()
