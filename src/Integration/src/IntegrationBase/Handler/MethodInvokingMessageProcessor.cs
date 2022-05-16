@@ -28,7 +28,7 @@ namespace Steeltoe.Integration.Handler
         private readonly IMessageHandlerMethodFactory _messageHandlerMethodFactory;
         private readonly IInvocableHandlerMethod _invocableHandlerMethod;
         private IConversionService _conversionService;
-        private bool _isRunning = false;
+        private bool _isRunning;
 
         public MethodInvokingMessageProcessor(IApplicationContext context, object targetObject, MethodInfo method)
             : base(context)

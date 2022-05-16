@@ -23,7 +23,7 @@ namespace Steeltoe.Extensions.Logging
         private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new ();
         private ILoggerProvider _delegate;
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProviderBase"/> class.

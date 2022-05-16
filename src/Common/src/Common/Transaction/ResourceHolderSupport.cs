@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Transaction
 {
     public abstract class ResourceHolderSupport : IResourceHolder
     {
-        private int _referenceCount = 0;
+        private int _referenceCount;
 
         public bool SynchronizedWithTransaction { get; set; }
 

@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Http
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private const bool DEFAULT_VALIDATE_CERTIFICATES = true;
 
-        private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate = null;
+        private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate;
 
         private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (sender, cert, chain, sslPolicyErrors) => true;
 

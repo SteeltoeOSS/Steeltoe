@@ -67,10 +67,10 @@ namespace Steeltoe.Common.Availability.Test
             Assert.Equal(ReadinessState.AcceptingTraffic, lastReadinessState);
         }
 
-        private int livenessChanges = 0;
+        private int livenessChanges;
         private LivenessState lastLivenessState;
 
-        private int readinessChanges = 0;
+        private int readinessChanges;
         private ReadinessState lastReadinessState;
 
         private void Availability_ReadinessChanged(object sender, EventArgs e)

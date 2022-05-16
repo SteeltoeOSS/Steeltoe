@@ -231,7 +231,7 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class TestScheduler : TaskScheduler
         {
-            public bool WasTaskScheduled = false;
+            public bool WasTaskScheduled;
 
             protected override IEnumerable<Task> GetScheduledTasks()
             {

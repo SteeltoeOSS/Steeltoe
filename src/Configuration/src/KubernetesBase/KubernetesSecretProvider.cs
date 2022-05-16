@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
     {
         private Watcher<V1Secret> SecretWatcher { get; set; }
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
             : base(kubernetes, settings, cancellationToken)

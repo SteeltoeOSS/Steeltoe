@@ -922,9 +922,9 @@ namespace Steeltoe.Common.Converter.Test
 
         private class ISBN
         {
-            public static int ConstructorCount = 0;
-            public static int ToStringCount = 0;
-            public static int ValueOfCount = 0;
+            public static int ConstructorCount;
+            public static int ToStringCount;
+            public static int ValueOfCount;
 
             public static void Reset()
             {
@@ -968,9 +968,9 @@ namespace Steeltoe.Common.Converter.Test
 
         private class SSN
         {
-            public static int ConstructorCount = 0;
+            public static int ConstructorCount;
 
-            public static int ToStringCount = 0;
+            public static int ToStringCount;
 
             public static void Reset()
             {

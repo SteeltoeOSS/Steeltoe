@@ -9,15 +9,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     public class TestCommandBuilder
     {
         public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OWNER_ONE;
-        public IHystrixCommandKey DependencyKey = null;
-        public IHystrixThreadPoolKey ThreadPoolKey = null;
+        public IHystrixCommandKey DependencyKey;
+        public IHystrixThreadPoolKey ThreadPoolKey;
         public ICircuitBreaker CircuitBreaker;
-        public IHystrixThreadPool ThreadPool = null;
+        public IHystrixThreadPool ThreadPool;
         public IHystrixCommandOptions CommandPropertiesDefaults = HystrixCommandOptionsTest.GetUnitTestOptions();
         public IHystrixThreadPoolOptions ThreadPoolPropertiesDefaults = HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();
         public HystrixCommandMetrics Metrics;
-        public SemaphoreSlim FallbackSemaphore = null;
-        public SemaphoreSlim ExecutionSemaphore = null;
+        public SemaphoreSlim FallbackSemaphore;
+        public SemaphoreSlim ExecutionSemaphore;
         public TestableExecutionHook ExecutionHook = new ();
 
         public TestCommandBuilder(ExecutionIsolationStrategy isolationStrategy)

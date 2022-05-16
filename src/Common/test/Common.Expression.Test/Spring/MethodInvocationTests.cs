@@ -266,8 +266,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         // Simple filter
         public class LocalFilter : IMethodFilter
         {
-            public bool RemoveIfNotAnnotated = false;
-            public bool FilterCalled = false;
+            public bool RemoveIfNotAnnotated;
+            public bool FilterCalled;
 
             public List<MethodInfo> Filter(List<MethodInfo> methods)
             {

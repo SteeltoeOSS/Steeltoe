@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly Counter<double> _memoryUsed;
         private readonly Dictionary<string, object> _memoryLabels = new () { { "area", "heap" } };
 
-        private List<long> _previousCollectionCounts = null;
+        private List<long> _previousCollectionCounts;
 
         public GCEventsListener(ILogger<EventSourceListener> logger = null)
             : base()

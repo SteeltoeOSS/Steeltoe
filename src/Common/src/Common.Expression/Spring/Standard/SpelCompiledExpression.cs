@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
     {
         private readonly ILogger<SpelCompiledExpression> _logger;
 
-        private int _initialized = 0;
+        private int _initialized;
 
         internal delegate object SpelExpressionDelegate(SpelCompiledExpression expression, object target, IEvaluationContext context);
 

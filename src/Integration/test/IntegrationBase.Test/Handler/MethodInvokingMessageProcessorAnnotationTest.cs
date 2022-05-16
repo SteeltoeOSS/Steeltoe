@@ -17,7 +17,7 @@ namespace Steeltoe.Integration.Handler
 {
     public class MethodInvokingMessageProcessorAnnotationTest
     {
-        private static volatile int _concurrencyFailures = 0;
+        private static volatile int _concurrencyFailures;
         private readonly TestService _testService = new ();
         private readonly Employee _employee = new ("oleg", "zhurakousky");
 

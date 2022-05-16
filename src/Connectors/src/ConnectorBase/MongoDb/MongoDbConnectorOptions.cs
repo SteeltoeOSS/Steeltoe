@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.MongoDb
         public const string Default_Server = "localhost";
         public const int Default_Port = 27017;
         private const string MONGODB_CLIENT_SECTION_PREFIX = "mongodb:client";
-        private readonly bool _cloudFoundryConfigFound = false;
+        private readonly bool _cloudFoundryConfigFound;
 
         public MongoDbConnectorOptions()
         {

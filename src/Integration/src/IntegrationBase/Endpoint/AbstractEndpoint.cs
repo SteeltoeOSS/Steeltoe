@@ -45,7 +45,7 @@ namespace Steeltoe.Integration.Endpoint
 
         public bool IsAutoStartup { get; set; } = true;
 
-        public bool IsRunning { get; set; } = false;
+        public bool IsRunning { get; set; }
 
         public int Phase { get; set; } = 0;
 

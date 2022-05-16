@@ -61,7 +61,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         private int _connectionLimit = int.MaxValue;
         private bool _publisherReturns;
         private ConfirmType _confirmType = ConfirmType.NONE;
-        private int _channelCheckoutTimeout = 0;
+        private int _channelCheckoutTimeout;
         private IConditionalExceptionLogger _closeExceptionLogger = new DefaultChannelCloseLogger();
         private bool _active = true;
 

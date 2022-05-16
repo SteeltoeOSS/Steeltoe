@@ -59,7 +59,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private int _activeTemplateCallbacks;
         private int _messageTagProvider;
         private int _containerInstance;
-        private bool _isListener = false;
+        private bool _isListener;
         private bool? _confirmsOrReturnsCapable;
         private bool _publisherConfirms;
         private string _replyAddress;
@@ -166,7 +166,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        public virtual int ReceiveTimeout { get; set; } = 0;
+        public virtual int ReceiveTimeout { get; set; }
 
         public virtual int ReplyTimeout { get; set; } = DEFAULT_REPLY_TIMEOUT;
 

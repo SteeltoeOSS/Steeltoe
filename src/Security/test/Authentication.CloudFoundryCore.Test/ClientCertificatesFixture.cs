@@ -26,7 +26,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         #region IDisposable Support
-        private bool disposedValue = false;
+        private bool disposedValue;
 
         void IDisposable.Dispose()
         {

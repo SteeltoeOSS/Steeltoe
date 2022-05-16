@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.CloudFoundry
     public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
     {
         private static readonly object _lock = new ();
-        private static CloudFoundryServiceInfoCreator _me = null;
+        private static CloudFoundryServiceInfoCreator _me;
 
         private CloudFoundryServiceInfoCreator(IConfiguration configuration)
             : base(configuration)

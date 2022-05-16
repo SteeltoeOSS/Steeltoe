@@ -1390,7 +1390,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             public string TagPrefix { get; } = Guid.NewGuid().ToString();
 
-            private int _increment = 0;
+            private int _increment;
 
             public string ServiceName { get; set; }
 

@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     internal class TestDiscoveryClient : IDiscoveryClient
     {
-        internal bool HasShutdown = false;
+        internal bool HasShutdown;
 
         public string Description => throw new NotImplementedException();
 

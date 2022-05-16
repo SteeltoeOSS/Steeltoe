@@ -16,7 +16,7 @@ namespace Steeltoe.Messaging.Converter
 
         private IContentTypeResolver _contentTypeResolver = new DefaultContentTypeResolver();
 
-        private bool _strictContentTypeMatch = false;
+        private bool _strictContentTypeMatch;
 
         private Type _serializedPayloadClass = typeof(byte[]);
 

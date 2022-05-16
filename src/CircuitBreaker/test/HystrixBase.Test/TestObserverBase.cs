@@ -16,9 +16,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         public const int STABLE_TICK_COUNT = 2;
 
-        public volatile int TickCount = 0;
+        public volatile int TickCount;
 
-        public volatile bool StreamRunning = false;
+        public volatile bool StreamRunning;
 
         private readonly CountdownEvent latch;
         private readonly ITestOutputHelper output;

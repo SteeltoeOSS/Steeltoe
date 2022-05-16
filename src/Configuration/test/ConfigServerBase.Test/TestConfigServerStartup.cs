@@ -24,7 +24,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
         public static HttpRequestInfo LastRequest { get; set; }
 
-        public static int RequestCount { get; set; } = 0;
+        public static int RequestCount { get; set; }
 
         public static string Label { get; set; } = string.Empty;
 

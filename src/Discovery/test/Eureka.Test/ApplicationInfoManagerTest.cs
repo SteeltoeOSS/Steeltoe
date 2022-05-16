@@ -10,7 +10,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class ApplicationInfoManagerTest : AbstractBaseTest
     {
-        private StatusChangedArgs eventArg = null;
+        private StatusChangedArgs eventArg;
 
         public ApplicationInfoManagerTest()
             : base()

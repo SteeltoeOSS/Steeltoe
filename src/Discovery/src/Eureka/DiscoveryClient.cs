@@ -21,13 +21,13 @@ namespace Steeltoe.Discovery.Eureka
         protected Timer _heartBeatTimer;
         protected Timer _cacheRefreshTimer;
         protected volatile Applications _localRegionApps;
-        protected long _registryFetchCounter = 0;
+        protected long _registryFetchCounter;
         protected IEurekaHttpClient _httpClient;
         protected Random _random = new ();
         protected ILogger _logger;
         protected ILogger _regularLogger;
         protected ILogger _startupLogger;
-        protected int _shutdown = 0;
+        protected int _shutdown;
         protected ApplicationInfoManager _appInfoManager;
 
         public long LastGoodHeartbeatTimestamp { get; internal set; }

@@ -117,7 +117,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
             }
         }
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Remove all heart beats from scheduler

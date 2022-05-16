@@ -4215,7 +4215,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             });
         }
 
-        private int uniqueNameCounter = 0;
+        private int uniqueNameCounter;
 
         protected override TestHystrixCommand<int> GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         {
@@ -5115,7 +5115,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
     internal class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
     {
-        public volatile bool Executed = false;
+        public volatile bool Executed;
         private readonly bool cacheEnabled;
         private readonly T value;
 
@@ -5157,7 +5157,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
     internal class SlowCacheableCommand : TestHystrixCommand<string>
     {
-        public volatile bool Executed = false;
+        public volatile bool Executed;
         private readonly string value;
         private readonly int duration;
 
@@ -5191,7 +5191,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
     internal class SuccessfulCacheableCommandViaSemaphore : TestHystrixCommand<string>
     {
-        public volatile bool Executed = false;
+        public volatile bool Executed;
         private readonly bool cacheEnabled;
         private readonly string value;
 

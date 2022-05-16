@@ -2168,8 +2168,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public readonly TestTimerListener Task;
 
             // our relative time that we'll use
-            public volatile int Time = 0;
-            public volatile int ExecutionCount = 0;
+            public volatile int Time;
+            public volatile int ExecutionCount;
             private readonly int delay = 10;
             private readonly object _lock = new ();
             private readonly ITestOutputHelper output;
@@ -2458,7 +2458,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             private readonly CountdownEvent latch = new (1);
             private readonly ITestOutputHelper output;
-            private int completions = 0;
+            private int completions;
 
             public TestSubscriber(ITestOutputHelper output)
             {
@@ -2496,7 +2496,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             public List<Exception> OnErrorEvents { get; private set; }
 
-            public bool IsUnsubscribed { get; set; } = false;
+            public bool IsUnsubscribed { get; set; }
 
             public IDisposable Subscription { get; set; }
 

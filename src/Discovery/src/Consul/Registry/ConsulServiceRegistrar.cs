@@ -15,7 +15,7 @@ namespace Steeltoe.Discovery.Consul.Registry
     /// </summary>
     public class ConsulServiceRegistrar : IConsulServiceRegistrar
     {
-        internal int _running = 0;
+        internal int _running;
 
         private const int NOT_RUNNING = 0;
         private const int RUNNING = 1;
@@ -156,7 +156,7 @@ namespace Steeltoe.Discovery.Consul.Registry
             while (true);
         }
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <inheritdoc/>
         public void Dispose()

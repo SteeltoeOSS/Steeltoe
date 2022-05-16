@@ -799,7 +799,7 @@ namespace Steeltoe.Discovery.Client.Test
 
         internal class TestClientHandlerProvider : IHttpClientHandlerProvider
         {
-            public bool Called { get; set; } = false;
+            public bool Called { get; set; }
 
             public HttpClientHandler GetHttpClientHandler()
             {

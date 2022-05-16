@@ -428,7 +428,7 @@ namespace Steeltoe.Integration.Handler
 
         public class OverloadedMethodService
         {
-            public volatile object _lastArg = null;
+            public volatile object _lastArg;
 
             public void Foo(bool b)
             {

@@ -222,7 +222,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
         public class Collapser : HystrixCollapser<List<int>, int, int>
         {
-            public bool CommandCreated = false;
+            public bool CommandCreated;
 
             private readonly int arg;
             private readonly ITestOutputHelper output;

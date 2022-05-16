@@ -489,7 +489,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public class TestCircuitBreaker : ICircuitBreaker
         {
             private readonly HystrixCommandMetrics metrics;
-            private bool forceShortCircuit = false;
+            private bool forceShortCircuit;
 
             public TestCircuitBreaker()
             {

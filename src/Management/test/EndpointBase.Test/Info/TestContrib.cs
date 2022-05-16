@@ -9,8 +9,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 {
     internal class TestContrib : IInfoContributor
     {
-        public bool Called = false;
-        public bool Throws = false;
+        public bool Called;
+        public bool Throws;
 
         public TestContrib()
         {

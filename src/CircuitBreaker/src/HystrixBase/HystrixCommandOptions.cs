@@ -33,7 +33,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected const string HYSTRIX_COMMAND_PREFIX = "hystrix:command";
 
-        protected IHystrixCommandOptions defaults = null;
+        protected IHystrixCommandOptions defaults;
 
         public HystrixCommandOptions(
             IHystrixCommandGroupKey groupKey,

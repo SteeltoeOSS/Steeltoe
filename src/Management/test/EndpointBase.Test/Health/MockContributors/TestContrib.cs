@@ -9,8 +9,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 {
     internal class TestContrib : IHealthContributor
     {
-        public bool Called = false;
-        public bool Throws = false;
+        public bool Called;
+        public bool Throws;
 
         public TestContrib(string id)
         {

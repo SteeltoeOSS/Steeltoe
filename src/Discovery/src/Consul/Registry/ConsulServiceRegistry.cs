@@ -213,7 +213,7 @@ namespace Steeltoe.Discovery.Consul.Registry
             return (S)result;
         }
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <inheritdoc/>
         public void Dispose()

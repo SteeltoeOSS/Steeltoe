@@ -16,11 +16,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         private readonly int? _varargsPosition;
 
-        private bool _computedPublicDeclaringClass = false;
+        private bool _computedPublicDeclaringClass;
 
         private Type _publicDeclaringClass;
 
-        private bool _argumentConversionOccurred = false;
+        private bool _argumentConversionOccurred;
 
         public ReflectiveMethodExecutor(MethodInfo method)
         {

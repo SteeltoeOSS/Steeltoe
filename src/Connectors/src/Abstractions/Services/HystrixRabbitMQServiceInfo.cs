@@ -42,6 +42,6 @@ namespace Steeltoe.Connector.Services
 
         public string Password => RabbitInfo.Password;
 
-        public bool IsSslEnabled { get; } = false;
+        public bool IsSslEnabled { get; }
     }
 }

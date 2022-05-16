@@ -197,8 +197,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected internal readonly HystrixConcurrencyStrategy _concurrencyStrategy;
         protected internal long _commandStartTimestamp = -1L;
         protected internal long _threadStartTimestamp = -1L;
-        protected internal volatile bool _isResponseFromCache = false;
-        protected internal Task _execThreadTask = null;
+        protected internal volatile bool _isResponseFromCache;
+        protected internal Task _execThreadTask;
         protected internal CancellationTokenSource _timeoutTcs;
         protected internal CancellationToken _token;
         protected internal CancellationToken _usersToken;
@@ -1593,7 +1593,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         #region Properties
 
-        protected bool _isFallbackUserDefined = false;
+        protected bool _isFallbackUserDefined;
 
         public virtual bool IsFallbackUserDefined
         {

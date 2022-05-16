@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class TestLifecyecle : IApplicationLifetime
 #pragma warning restore CS0618 // Type or member is obsolete
         {
-            public bool Registered = false;
+            public bool Registered;
 
             private readonly CancellationTokenSource _stoppingSource = new ();
 

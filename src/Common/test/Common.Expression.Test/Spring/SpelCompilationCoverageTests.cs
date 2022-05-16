@@ -5857,8 +5857,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class TestClass5
         {
-            public static int _I = 0;
-            public static string _S = null;
+            public static int _I;
+            public static string _S;
 
             public static short S1 = (short)1;
             public static short S2 = (short)2;
@@ -5884,12 +5884,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public static string[] StringArray = new string[] { "aaa", "bbb", "ccc" };
             public static int[] IntArray = new int[] { 11, 22, 33 };
 
-            public int I = 0;
-            public string S = null;
+            public int I;
+            public string S;
 
-            public object Obj = null;
+            public object Obj;
 
-            public string Field = null;
+            public string Field;
 
             public static void Two()
             {
@@ -6162,7 +6162,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class TestClass10
         {
-            public string S = null;
+            public string S;
 
             public void Reset()
             {
@@ -6340,7 +6340,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Apple : IComparable
         {
-            public object GotComparedTo = null;
+            public object GotComparedTo;
             public int I;
 
             public Apple(int i)

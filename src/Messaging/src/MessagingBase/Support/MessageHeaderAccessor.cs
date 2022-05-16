@@ -25,7 +25,7 @@ namespace Steeltoe.Messaging.Support
             new MimeType("application", "*+xml")
         };
 
-        private bool _leaveMutable = false;
+        private bool _leaveMutable;
 
         public MessageHeaderAccessor()
         : this((IMessage)null)

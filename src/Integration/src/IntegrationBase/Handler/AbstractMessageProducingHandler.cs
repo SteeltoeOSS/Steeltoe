@@ -23,9 +23,9 @@ namespace Steeltoe.Integration.Handler
 
         private List<string> _notPropagatedHeaders = new ();
 
-        private bool _noHeadersPropagation = false;
+        private bool _noHeadersPropagation;
 
-        private bool _selectiveHeaderPropagation = false;
+        private bool _selectiveHeaderPropagation;
 
         protected AbstractMessageProducingHandler(IApplicationContext context)
             : base(context)

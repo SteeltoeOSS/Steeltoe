@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class ConstructorReference : SpelNode
     {
-        private readonly bool _isArrayConstructor = false;
+        private readonly bool _isArrayConstructor;
 
         private readonly SpelNode[] _dimensions;
 

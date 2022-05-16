@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
     {
         protected internal IObservable<string> SampleStream { get; set; }
 
-        protected internal IDisposable SampleSubscription { get; set; } = null;
+        protected internal IDisposable SampleSubscription { get; set; }
 
         public HystrixStreamBaseController(IObservable<string> observable)
         {

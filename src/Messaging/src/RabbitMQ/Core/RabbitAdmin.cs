@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         private readonly object _lifecycleMonitor = new ();
         private ILogger _logger;
-        private int _initializing = 0;
+        private int _initializing;
 
         [ActivatorUtilitiesConstructor]
         public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger = null)

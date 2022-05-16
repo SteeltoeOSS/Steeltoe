@@ -186,7 +186,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
             }
         }
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Dispose of the client and also the Consul service registrar if provided

@@ -26,7 +26,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
     {
         private const string TEST_PREFIX = "bindertest.";
         private static readonly string _bigExceptionMessage = new ('x', 10_000);
-        private bool _disposed = false;
+        private bool _disposed;
 
         private RabbitTestBinder _testBinder;
 

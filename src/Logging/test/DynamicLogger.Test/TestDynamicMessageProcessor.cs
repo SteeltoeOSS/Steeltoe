@@ -6,7 +6,7 @@ namespace Steeltoe.Extensions.Logging.Test
 {
     public class TestDynamicMessageProcessor : IDynamicMessageProcessor
     {
-        public bool ProcessCalled { get; set; } = false;
+        public bool ProcessCalled { get; set; }
 
         public string Process(string input)
         {

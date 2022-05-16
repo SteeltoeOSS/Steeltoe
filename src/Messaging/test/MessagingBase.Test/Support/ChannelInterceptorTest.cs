@@ -197,8 +197,8 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class PostSendInterceptorMessageWasNotSentInterceptor : AbstractChannelInterceptor
         {
-            public bool PreSendInvoked = false;
-            public bool CompletionInvoked = false;
+            public bool PreSendInvoked;
+            public bool CompletionInvoked;
             public IMessageChannel _expectedChannel;
 
             public PostSendInterceptorMessageWasNotSentInterceptor(IMessageChannel expectedChannel)
@@ -231,8 +231,8 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class PostSendInterceptorMessageWasSentChannelInterceptor : AbstractChannelInterceptor
         {
-            public bool PreSendInvoked = false;
-            public bool CompletionInvoked = false;
+            public bool PreSendInvoked;
+            public bool CompletionInvoked;
             public IMessageChannel _expectedChannel;
 
             public PostSendInterceptorMessageWasSentChannelInterceptor(IMessageChannel expectedChannel)

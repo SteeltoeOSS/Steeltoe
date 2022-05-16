@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Test
         {
             private string name = string.Empty;
             private bool required = true;
-            private string defaultValue = null;
+            private string defaultValue;
 
             public HeaderPredicate Name(string name)
             {

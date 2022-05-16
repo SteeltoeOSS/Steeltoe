@@ -14,8 +14,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         protected TimeSpan keepAliveTime;
         protected int maximumPoolSize;
         protected int runningThreads = 0;
-        protected int queueSizeRejectionThreshold = 0;
-        protected bool shutdown = false;
+        protected int queueSizeRejectionThreshold;
+        protected bool shutdown;
         protected int queueSize;
         protected int runningTasks = 0;
         protected int completedTasks = 0;

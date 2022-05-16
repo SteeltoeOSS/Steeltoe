@@ -195,7 +195,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private class TestAdmin : RabbitAdmin
         {
-            public int InstanceCounter = 0;
+            public int InstanceCounter;
 
             public TestAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
                 : base(connectionFactory, logger)

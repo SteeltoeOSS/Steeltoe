@@ -269,7 +269,7 @@ namespace Steeltoe.Integration.Channel
                 }
             }
 
-            public int Count { get; private set; } = 0;
+            public int Count { get; private set; }
 
             public bool Add(IChannelInterceptor interceptor)
             {

@@ -20,8 +20,8 @@ namespace Steeltoe.Common.Diagnostics
         internal IList<IRuntimeDiagnosticSource> _sources;
         internal IList<EventListener> _eventListeners;
 
-        internal bool _workerThreadShutdown = false;
-        internal int _started = 0;
+        internal bool _workerThreadShutdown;
+        internal int _started;
         private static readonly Lazy<DiagnosticsManager> AsSingleton = new (() => new DiagnosticsManager());
 
         public static DiagnosticsManager Instance => AsSingleton.Value;
@@ -93,7 +93,7 @@ namespace Steeltoe.Common.Diagnostics
             }
         }
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         public void Dispose()
         {

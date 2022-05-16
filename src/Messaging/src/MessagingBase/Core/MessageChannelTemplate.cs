@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.Core
 
         private string _receiveTimeoutHeader = DEFAULT_RECEIVE_TIMEOUT_HEADER;
 
-        private volatile bool _throwExceptionOnLateReply = false;
+        private volatile bool _throwExceptionOnLateReply;
 
         public MessageChannelTemplate(ILogger logger = null)
             : base(null)

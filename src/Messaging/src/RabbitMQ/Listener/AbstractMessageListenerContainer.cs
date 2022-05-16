@@ -162,9 +162,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         // Remove public string ErrorHandlerLoggerName { get; set; }
         public virtual IBatchingStrategy BatchingStrategy { get; set; }
 
-        public virtual bool IsRunning { get; private set; } = false;
+        public virtual bool IsRunning { get; private set; }
 
-        public virtual bool IsActive { get; private set; } = false;
+        public virtual bool IsActive { get; private set; }
 
         public virtual bool IsLazyLoad { get; private set; }
 

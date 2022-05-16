@@ -1799,7 +1799,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public string Bar = "Key";
 
-            public string Value = null;
+            public string Value;
 
             public string Wibble = "wobble";
 

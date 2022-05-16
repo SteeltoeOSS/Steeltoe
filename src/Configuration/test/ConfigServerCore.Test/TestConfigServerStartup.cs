@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
         public static HttpRequest LastRequest { get; set; }
 
-        public static int RequestCount { get; set; } = 0;
+        public static int RequestCount { get; set; }
 
         public void Configure(IApplicationBuilder app)
         {

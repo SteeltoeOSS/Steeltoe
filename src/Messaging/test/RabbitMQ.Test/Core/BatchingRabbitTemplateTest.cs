@@ -648,7 +648,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         private class TestConditionalRejectingErrorHandler : ConditionalRejectingErrorHandler
         {
-            public bool HandleErrorCalled = false;
+            public bool HandleErrorCalled;
 
             public override bool HandleError(Exception exception)
             {

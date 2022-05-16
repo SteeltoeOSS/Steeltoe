@@ -63,7 +63,7 @@ namespace Steeltoe.Common.Util
 
         public virtual bool TrimTokens { get; set; } = false;
 
-        public virtual bool? CachePatterns { get; set; } = null;
+        public virtual bool? CachePatterns { get; set; }
 
         public virtual bool IsPattern(string path)
         {

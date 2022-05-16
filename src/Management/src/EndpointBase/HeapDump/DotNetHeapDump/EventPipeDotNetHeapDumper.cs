@@ -25,8 +25,8 @@ namespace Microsoft.Diagnostics.Tools.GCDump
     [ExcludeFromCodeCoverageAttribute()]
     internal static class EventPipeDotNetHeapDumper
     {
-        internal static volatile bool eventPipeDataPresent = false;
-        internal static volatile bool dumpComplete = false;
+        internal static volatile bool eventPipeDataPresent;
+        internal static volatile bool dumpComplete;
 
         /// <summary>
         /// Given a factory for creating an EventPipe session with the appropriate provider and keywords turned on,
@@ -249,7 +249,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {

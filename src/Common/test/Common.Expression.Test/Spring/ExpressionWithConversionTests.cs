@@ -17,8 +17,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
     {
         private static readonly List<string> ListOfString = new ();
         private static readonly List<int> ListOfInteger = new ();
-        private static Type typeDescriptorForListOfInteger = null;
-        private static Type typeDescriptorForListOfString = null;
+        private static Type typeDescriptorForListOfInteger;
+        private static Type typeDescriptorForListOfString;
 
         static ExpressionWithConversionTests()
         {

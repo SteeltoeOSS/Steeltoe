@@ -39,9 +39,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private int _consumersPerQueue = 1;
         private long _monitorInterval = DEFAULT_MONITOR_INTERVAL;
-        private volatile bool _started = false;
-        private volatile bool _aborted = false;
-        private volatile bool _hasStopped = false;
+        private volatile bool _started;
+        private volatile bool _aborted;
+        private volatile bool _hasStopped;
         private long _lastAlertAt;
         private Task _consumerMonitorTask;
         private CancellationTokenSource _consumerMonitorCancelationToken;

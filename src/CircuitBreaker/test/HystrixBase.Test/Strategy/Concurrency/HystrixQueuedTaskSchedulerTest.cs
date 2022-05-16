@@ -86,7 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         private class TaskActionClass
         {
             public int Value;
-            public bool Stop = false;
+            public bool Stop;
             public ITestOutputHelper Output;
 
             public TaskActionClass(ITestOutputHelper output, int val)

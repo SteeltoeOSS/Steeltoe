@@ -20,7 +20,7 @@ namespace Steeltoe.Stream.StubBinder1
 
         public IConfiguration Configuration { get; }
 
-        public bool ConfigureServicesInvoked { get; set; } = false;
+        public bool ConfigureServicesInvoked { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
