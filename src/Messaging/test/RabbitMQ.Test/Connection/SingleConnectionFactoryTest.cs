@@ -67,7 +67,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory)
+        protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory = null)
         {
             var scf = new SingleConnectionFactory(mockConnectionFactory, loggerFactory);
             return scf;

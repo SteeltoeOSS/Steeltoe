@@ -194,7 +194,7 @@ namespace Steeltoe.Messaging.Core.Test
                 return Task.FromResult(ReceiveMessage);
             }
 
-            protected override Task<IMessage> DoSendAndReceiveAsync(string destination, IMessage requestMessage, CancellationToken cancellationToken)
+            protected override Task<IMessage> DoSendAndReceiveAsync(string destination, IMessage requestMessage, CancellationToken cancellationToken = default)
             {
                 Destination = destination;
                 return Task.FromResult((IMessage)null);
