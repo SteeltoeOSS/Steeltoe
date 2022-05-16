@@ -49,11 +49,6 @@ namespace Steeltoe.Integration
             set => base.DefaultSendDestination = DefaultReceiveDestination = value;
         }
 
-        public override IMessage SendAndReceive(IMessageChannel destination, IMessage requestMessage)
-        {
-            return base.SendAndReceive(destination, requestMessage);
-        }
-
         public object ReceiveAndConvert(IMessageChannel destination, int timeout)
         {
             var message = DoReceive(destination, timeout);

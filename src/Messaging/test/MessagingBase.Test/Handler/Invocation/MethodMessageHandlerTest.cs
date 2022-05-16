@@ -163,11 +163,6 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
                 RegisterHandlerMethod(handler, method, mapping);
             }
 
-            protected override void RegisterHandlerMethod(object handler, MethodInfo method, string mapping)
-            {
-                base.RegisterHandlerMethod(handler, method, mapping);
-            }
-
             protected override IList<IHandlerMethodArgumentResolver> InitArgumentResolvers()
             {
                 var resolvers = new List<IHandlerMethodArgumentResolver>

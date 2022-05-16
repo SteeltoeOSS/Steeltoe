@@ -14,11 +14,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 {
     public abstract class CommandStreamTest : HystrixTestBase
     {
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
         private static readonly AtomicInteger UniqueId = new (0);
 
         public class Command : HystrixCommand<int>

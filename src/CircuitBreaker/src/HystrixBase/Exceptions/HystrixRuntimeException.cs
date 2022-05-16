@@ -50,10 +50,5 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
         public Exception FallbackException { get; }
 
         public Type ImplementingClass { get; }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
     }
 }

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -22,16 +21,6 @@ namespace Steeltoe.Integration.Channel
         }
 
         protected QueueChannel Channel { get; }
-
-        public override IAsyncEnumerable<IMessage> ReadAllAsync(CancellationToken cancellationToken = default)
-        {
-            return base.ReadAllAsync(cancellationToken);
-        }
-
-        public override ValueTask<IMessage> ReadAsync(CancellationToken cancellationToken = default)
-        {
-            return base.ReadAsync(cancellationToken);
-        }
 
         public override bool TryRead(out IMessage item)
         {

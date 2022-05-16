@@ -42,10 +42,5 @@ namespace Steeltoe.Messaging.Support
 
             return new ValueTask<bool>(false);
         }
-
-        public override ValueTask WriteAsync(IMessage message, CancellationToken cancellationToken = default)
-        {
-            return base.WriteAsync(message, cancellationToken);
-        }
     }
 }
