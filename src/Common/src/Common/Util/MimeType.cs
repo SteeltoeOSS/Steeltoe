@@ -144,7 +144,7 @@ namespace Steeltoe.Common.Util
             if (PARAM_CHARSET.Equals(attribute))
             {
                 value = Unquote(value);
-                Encoding.GetEncoding(value);
+                _ = Encoding.GetEncoding(value);
             }
             else if (!IsQuotedstring(value))
             {

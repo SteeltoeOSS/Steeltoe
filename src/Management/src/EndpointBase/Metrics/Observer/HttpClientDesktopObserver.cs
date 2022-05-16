@@ -121,13 +121,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
         {
-            return new Dictionary<string, object>()
-                    {
-                        { _uriTagKey, request.RequestUri.ToString() },
-                        { _statusTagKey, statusCode.ToString() },
-                        { _clientTagKey, request.RequestUri.Host },
-                        { _methodTagKey, request.Method }
-                    }.ToList();
+            var uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
+            var status = ((int)statusCode).ToString();
+            var clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
+
+            return new Dictionary<string, object>
+            {
+                { _uriTagKey, uri },
+                { _statusTagKey, status },
+                { _clientTagKey, clientName },
+                { _methodTagKey, request.Method }
+            };
         }
     }
 }
