@@ -98,7 +98,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             var logger = host.Services.GetService(typeof(ILogger<SerilogDynamicWebhostBuilderTest>));
             var sinks = SerilogDynamicWebhostBuilderTest.GetSinks(logger);
             Assert.NotNull(sinks);
-            var testSink = sinks.Where(x => x.GetType() == typeof(TestSink)).FirstOrDefault() as TestSink;
+            var testSink = sinks.FirstOrDefault(x => x.GetType() == typeof(TestSink)) as TestSink;
 
             var logs = testSink.GetLogs();
             Assert.NotEmpty(logs);
