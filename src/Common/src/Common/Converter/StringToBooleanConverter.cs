@@ -10,9 +10,9 @@ namespace Steeltoe.Common.Converter
 {
     public class StringToBooleanConverter : AbstractGenericConditionalConverter
     {
-        private static readonly ISet<string> _trueValues = new HashSet<string>() { "true", "on", "yes", "1" };
+        private static readonly ISet<string> _trueValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "true", "on", "yes", "1" };
 
-        private static readonly ISet<string> _falseValues = new HashSet<string>() { "false", "off", "no", "0" };
+        private static readonly ISet<string> _falseValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "false", "off", "no", "0" };
 
         public StringToBooleanConverter()
             : base(null)
@@ -38,11 +38,11 @@ namespace Steeltoe.Common.Converter
                 return null;
             }
 
-            if (_trueValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
+            if (_trueValues.Contains(value))
             {
                 return true;
             }
-            else if (_falseValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
+            else if (_falseValues.Contains(value))
             {
                 return false;
             }
