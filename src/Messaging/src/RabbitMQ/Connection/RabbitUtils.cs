@@ -236,11 +236,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             RC.ShutdownEventArgs cause = null;
             switch (exception)
             {
-                case ShutdownSignalException:
-                    cause = ((ShutdownSignalException)exception).Args;
+                case ShutdownSignalException shutdownSignalException:
+                    cause = shutdownSignalException.Args;
                     break;
-                case ProtocolException:
-                    cause = ((ProtocolException)exception).ShutdownReason;
+                case ProtocolException protocolException:
+                    cause = protocolException.ShutdownReason;
                     break;
             }
 

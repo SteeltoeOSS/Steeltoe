@@ -85,7 +85,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             return payload switch
             {
                 null => true,
-                byte[] => ((byte[])payload).Length == 0,
+                byte[] bytes => bytes.Length == 0,
                 string sPayload => string.IsNullOrEmpty(sPayload),
                 _ => false
             };

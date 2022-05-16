@@ -315,7 +315,7 @@ namespace Steeltoe.Common.Util
             }
 
             return Type.Equals(otherType.Type, StringComparison.InvariantCultureIgnoreCase) &&
-                Subtype.Equals(otherType.Subtype, StringComparison.InvariantCultureIgnoreCase) && 
+                Subtype.Equals(otherType.Subtype, StringComparison.InvariantCultureIgnoreCase) &&
                 ParametersAreEqual(otherType);
         }
 

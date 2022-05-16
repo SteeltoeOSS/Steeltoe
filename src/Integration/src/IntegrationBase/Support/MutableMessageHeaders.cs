@@ -47,8 +47,8 @@ namespace Steeltoe.Integration.Support
                 var id = headers[ID];
                 switch (id)
                 {
-                    case string:
-                        return id as string;
+                    case string idAsString:
+                        return idAsString;
                     case byte[] v:
                         return new Guid(v).ToString();
                     case Guid guid:

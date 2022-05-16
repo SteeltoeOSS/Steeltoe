@@ -78,11 +78,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             {
                 switch (delegateListener)
                 {
-                    case IChannelAwareMessageListener listener:
-                        listener.OnMessage(message, channel);
+                    case IChannelAwareMessageListener channelAwareMessageListener:
+                        channelAwareMessageListener.OnMessage(message, channel);
                         return;
-                    case IMessageListener:
-                        ((IMessageListener)delegateListener).OnMessage(message);
+                    case IMessageListener messageListener:
+                        messageListener.OnMessage(message);
                         return;
                 }
             }
