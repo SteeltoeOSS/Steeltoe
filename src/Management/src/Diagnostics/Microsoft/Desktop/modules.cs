@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public int Revision { get; set; }
 
-        public DesktopBaseModule(DesktopRuntimeBase runtime)
+        protected DesktopBaseModule(DesktopRuntimeBase runtime)
         {
             _runtime = runtime;
         }

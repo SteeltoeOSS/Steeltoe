@@ -10,7 +10,7 @@ namespace Steeltoe.Management
     {
         protected IEndpointOptions options;
 
-        public AbstractEndpoint(IEndpointOptions options)
+        protected AbstractEndpoint(IEndpointOptions options)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
         }
@@ -30,7 +30,7 @@ namespace Steeltoe.Management
     /// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
     public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
     {
-        public AbstractEndpoint(IEndpointOptions options)
+        protected AbstractEndpoint(IEndpointOptions options)
             : base(options)
         {
         }
@@ -52,7 +52,7 @@ namespace Steeltoe.Management
         /// Initializes a new instance of the <see cref="AbstractEndpoint{TResult, TRequest}"/> class.
         /// </summary>
         /// <param name="options">Endpoint configuration options</param>
-        public AbstractEndpoint(IEndpointOptions options)
+        protected AbstractEndpoint(IEndpointOptions options)
             : base(options)
         {
         }

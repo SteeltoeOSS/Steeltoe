@@ -9,12 +9,12 @@ namespace Steeltoe.Connector.Services
 {
     public abstract class ServiceInfo : IServiceInfo
     {
-        public ServiceInfo(string id)
+        protected ServiceInfo(string id)
             : this(id, null)
         {
         }
 
-        public ServiceInfo(string id, IApplicationInstanceInfo info)
+        protected ServiceInfo(string id, IApplicationInstanceInfo info)
         {
             if (string.IsNullOrEmpty(id))
             {

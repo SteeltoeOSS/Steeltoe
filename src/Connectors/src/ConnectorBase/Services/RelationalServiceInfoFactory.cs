@@ -8,12 +8,12 @@ namespace Steeltoe.Connector.Services
 {
     public abstract class RelationalServiceInfoFactory : ServiceInfoFactory
     {
-        public RelationalServiceInfoFactory(Tags tags, string scheme)
+        protected RelationalServiceInfoFactory(Tags tags, string scheme)
             : base(tags, scheme)
         {
         }
 
-        public RelationalServiceInfoFactory(Tags tags, string[] schemes)
+        protected RelationalServiceInfoFactory(Tags tags, string[] schemes)
             : base(tags, schemes)
         {
         }

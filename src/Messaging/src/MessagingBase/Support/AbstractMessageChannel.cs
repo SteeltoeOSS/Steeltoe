@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging.Support
         private object _lock = new ();
         private List<IChannelInterceptor> _interceptors = new ();
 
-        public AbstractMessageChannel(ILogger logger = null)
+        protected AbstractMessageChannel(ILogger logger = null)
         {
             ServiceName = GetType().Name + "@" + GetHashCode();
             Logger = logger;

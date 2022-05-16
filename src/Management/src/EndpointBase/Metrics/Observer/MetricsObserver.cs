@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             _pathMatcher = value;
         }
 
-        public MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
+        protected MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
             : base(observerName, diagnosticName, logger)
         {
             Options = options;

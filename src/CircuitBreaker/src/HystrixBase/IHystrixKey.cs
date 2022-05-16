@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
     public abstract class HystrixKeyDefault : IHystrixKey
     {
-        public HystrixKeyDefault(string name)
+        protected HystrixKeyDefault(string name)
         {
             Name = name;
         }

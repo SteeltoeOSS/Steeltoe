@@ -789,7 +789,7 @@ namespace Microsoft.Diagnostics.Runtime
         private bool _canWalkHeap;
         private int _pointerSize;
 
-        public HeapBase(RuntimeBase runtime)
+        protected HeapBase(RuntimeBase runtime)
         {
             _canWalkHeap = runtime.CanWalkHeap;
             MemoryReader = new MemoryReader(runtime.DataReader, 0x10000);

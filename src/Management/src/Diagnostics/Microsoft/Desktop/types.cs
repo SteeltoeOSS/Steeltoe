@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public bool Shared { get; internal set; }
 
-        public BaseDesktopHeapType(ulong mt, DesktopGCHeap heap, DesktopBaseModule module, uint token)
+        protected BaseDesktopHeapType(ulong mt, DesktopGCHeap heap, DesktopBaseModule module, uint token)
         {
             _constructedMT = mt;
             DesktopHeap = heap;

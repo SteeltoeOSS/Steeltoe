@@ -23,7 +23,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         private const int DEFAULT_MIN_WORKTHREADS = 50;
 
-        public HystrixTaskScheduler(IHystrixThreadPoolOptions options)
+        protected HystrixTaskScheduler(IHystrixThreadPoolOptions options)
         {
             if (options.MaximumSize < 1)
             {

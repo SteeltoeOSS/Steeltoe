@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Endpoint
     {
         public Dictionary<string, IExpression> HeaderExpressions { get; set; }
 
-        public AbstractMessageSource(IApplicationContext context)
+        protected AbstractMessageSource(IApplicationContext context)
             : base(context)
         {
         }

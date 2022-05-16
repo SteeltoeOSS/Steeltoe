@@ -6,7 +6,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public abstract class AbstractBaseTest
     {
-        public AbstractBaseTest()
+        protected AbstractBaseTest()
         {
             ApplicationInfoManager.Instance.InstanceInfo = null;
             ApplicationInfoManager.Instance.InstanceConfig = null;

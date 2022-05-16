@@ -16,11 +16,11 @@ namespace Steeltoe.Management
 
         protected string _path;
 
-        public AbstractEndpointOptions()
+        protected AbstractEndpointOptions()
         {
         }
 
-        public AbstractEndpointOptions(string sectionName, IConfiguration config)
+        protected AbstractEndpointOptions(string sectionName, IConfiguration config)
         {
             if (sectionName == null)
             {

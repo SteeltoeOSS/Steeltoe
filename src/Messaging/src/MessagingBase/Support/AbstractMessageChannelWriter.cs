@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.Support
         protected AbstractMessageChannel channel;
         protected ILogger logger;
 
-        public AbstractMessageChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
+        protected AbstractMessageChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
         {
             this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
             this.logger = logger;

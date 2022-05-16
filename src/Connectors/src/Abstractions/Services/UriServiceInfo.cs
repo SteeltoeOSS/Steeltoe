@@ -8,19 +8,19 @@ namespace Steeltoe.Connector.Services
 {
     public abstract class UriServiceInfo : ServiceInfo
     {
-        public UriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path)
+        protected UriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path)
             : base(id)
         {
             Info = new UriInfo(scheme, host, port, username, password, path);
         }
 
-        public UriServiceInfo(string id, string uriString, string username, string password)
+        protected UriServiceInfo(string id, string uriString, string username, string password)
             : base(id)
         {
             Info = new UriInfo(uriString, username, password);
         }
 
-        public UriServiceInfo(string id, string uriString)
+        protected UriServiceInfo(string id, string uriString)
             : base(id)
         {
             Info = new UriInfo(uriString);

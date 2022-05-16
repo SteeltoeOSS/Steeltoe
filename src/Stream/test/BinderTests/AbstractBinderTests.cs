@@ -47,7 +47,7 @@ namespace Steeltoe.Stream.Binder
 
         protected virtual ConfigurationBuilder ConfigBuilder { get; set; }
 
-        public AbstractBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
+        protected AbstractBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
         {
             MessageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             LoggerFactory = loggerFactory;

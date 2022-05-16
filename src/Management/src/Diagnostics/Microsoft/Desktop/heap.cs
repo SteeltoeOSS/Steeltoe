@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 {
     internal abstract class DesktopGCHeap : HeapBase
     {
-        public DesktopGCHeap(DesktopRuntimeBase runtime)
+        protected DesktopGCHeap(DesktopRuntimeBase runtime)
             : base(runtime)
         {
             DesktopRuntime = runtime;

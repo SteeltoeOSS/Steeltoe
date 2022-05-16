@@ -12,7 +12,7 @@ namespace Steeltoe.Messaging.Support
         internal HashSet<IMessageHandler> _handlers = new ();
         private object _lock = new ();
 
-        public AbstractSubscribableChannel(ILogger logger = null)
+        protected AbstractSubscribableChannel(ILogger logger = null)
             : base(logger)
         {
         }

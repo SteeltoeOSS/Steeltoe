@@ -831,7 +831,7 @@ namespace Microsoft.Diagnostics.Runtime
         //    }
         //}
 
-        public RuntimeBase(ClrInfo info, DataTargetImpl dataTarget, DacLibrary lib)
+        protected RuntimeBase(ClrInfo info, DataTargetImpl dataTarget, DacLibrary lib)
         {
             Debug.Assert(lib != null);
             Debug.Assert(lib.DacInterface != null);

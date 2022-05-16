@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging.Core
         private readonly IApplicationContext _context;
         private IDestinationResolver<D> _destinationResolver;
 
-        public AbstractDestinationResolvingMessagingTemplate(IApplicationContext context)
+        protected AbstractDestinationResolvingMessagingTemplate(IApplicationContext context)
         {
             _context = context;
         }
