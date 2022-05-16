@@ -774,10 +774,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         private void ReportPerformance(string title, long interpretedTotalTicks, long compiledTotalTicks)
         {
-            var interpretedTotal = interpretedTotalTicks / 10000;
-            var compiledTotal = compiledTotalTicks / 10000;
-            double averageInterpreted = interpretedTotal / _iterations;
-            double averageCompiled = compiledTotal / _iterations;
+            var interpretedTotal = (double)interpretedTotalTicks / 10000;
+            var compiledTotal = (double)compiledTotalTicks / 10000;
+            var averageInterpreted = interpretedTotal / _iterations;
+            var averageCompiled = compiledTotal / _iterations;
             var ratio = (averageCompiled / averageInterpreted) * 100.0d;
 
             LogLn(">>" + title + ": average for " + _count + ": compiled=" + averageCompiled +
