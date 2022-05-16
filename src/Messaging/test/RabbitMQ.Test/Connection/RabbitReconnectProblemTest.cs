@@ -48,7 +48,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 // The available permits should always be == 2.
                 Thread.Sleep(2000);
                 CheckIt(template, i++, myQueue.ActualName);
-                var values = ccf._checkoutPermits.Values.GetEnumerator();
+                using var values = ccf._checkoutPermits.Values.GetEnumerator();
                 values.MoveNext();
                 var availablePermits = values.Current.CurrentCount;
                 output.WriteLine("Permits after test: " + availablePermits);

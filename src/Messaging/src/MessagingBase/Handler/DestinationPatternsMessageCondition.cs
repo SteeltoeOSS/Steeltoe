@@ -129,8 +129,8 @@ namespace Steeltoe.Messaging.Handler
             }
 
             var patternComparator = GetPatternComparer(destination);
-            var iterator = Patterns.GetEnumerator();
-            var iteratorOther = other.Patterns.GetEnumerator();
+            using var iterator = Patterns.GetEnumerator();
+            using var iteratorOther = other.Patterns.GetEnumerator();
             while (iterator.MoveNext() && iteratorOther.MoveNext())
             {
                 var result = patternComparator.Compare(iterator.Current, iteratorOther.Current);

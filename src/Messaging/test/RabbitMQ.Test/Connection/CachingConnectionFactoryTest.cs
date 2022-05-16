@@ -1132,7 +1132,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             // verify(mockChannels.get(1), never()).close();
             Assert.Equal(2, ccf._idleConnections.Count);
-            var idleEnumerator = ccf._idleConnections.GetEnumerator();
+            using var idleEnumerator = ccf._idleConnections.GetEnumerator();
             Assert.True(idleEnumerator.MoveNext());
             VerifyConnectionIs(mockConnections[1].Object, idleEnumerator.Current);
             Assert.True(idleEnumerator.MoveNext());

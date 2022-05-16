@@ -88,8 +88,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             IList<string> names,
             IDictionary<string, object> labels)
         {
-            var nameEnumerator = names.GetEnumerator();
-            var payloadEnumerator = payload.GetEnumerator();
+            using var nameEnumerator = names.GetEnumerator();
+            using var payloadEnumerator = payload.GetEnumerator();
 
             while (nameEnumerator.MoveNext())
             {

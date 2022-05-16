@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             var list = new List<IMessagePostProcessor>();
             list.AddRange(pps);
             var sorted = MessagePostProcessorUtils.Sort(list);
-            var iterator = sorted.GetEnumerator();
+            using var iterator = sorted.GetEnumerator();
 
             iterator.MoveNext();
             Assert.IsType<POMPP>(iterator.Current);

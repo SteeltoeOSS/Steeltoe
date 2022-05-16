@@ -364,8 +364,8 @@ namespace Steeltoe.Common.Util
             var thisAttributes = new SortedSet<string>(Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
             var otherAttributes = new SortedSet<string>(other.Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
 
-            var thisAttributesIterator = thisAttributes.GetEnumerator();
-            var otherAttributesIterator = otherAttributes.GetEnumerator();
+            using var thisAttributesIterator = thisAttributes.GetEnumerator();
+            using var otherAttributesIterator = otherAttributes.GetEnumerator();
             var comparer = StringComparer.InvariantCultureIgnoreCase;
 
             while (thisAttributesIterator.MoveNext())
