@@ -2484,7 +2484,7 @@ internal class GraphSampler
                     // for long chains of objects.  
                     VisitNode(nodeIdx, true, true);
                 }
-                            }
+            }
         }
         else
         {

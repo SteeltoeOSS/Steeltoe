@@ -478,7 +478,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                                 }
                             }
                         }
-                    NextStatic:;
+                        NextStatic:;
                     }
 
                     // Thread statics

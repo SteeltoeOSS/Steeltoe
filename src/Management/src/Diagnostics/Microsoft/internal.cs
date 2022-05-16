@@ -336,9 +336,9 @@ namespace Microsoft.Diagnostics.Runtime
                 ulong offset = addr - _currPageStart;
                 fixed (byte* b = &_data[offset])
                     if (_ptr.Length == 4)
-                    value = *((uint*)b);
-                else
-                    value = *((ulong*)b);
+                        value = *((uint*)b);
+                    else
+                        value = *((ulong*)b);
 
                 return true;
             }
@@ -401,9 +401,9 @@ namespace Microsoft.Diagnostics.Runtime
             // that the read won't fall off of the end of the page.
             fixed (byte* b = &_data[offset])
                 if (_ptr.Length == 4)
-                value = *((uint*)b);
-            else
-                value = *((ulong*)b);
+                    value = *((uint*)b);
+                else
+                    value = *((ulong*)b);
 
             return true;
         }
@@ -426,9 +426,9 @@ namespace Microsoft.Diagnostics.Runtime
             bool res = _dataReader.ReadMemory(addr, _ptr, _ptr.Length, out int size);
             fixed (byte* b = _ptr)
                 if (_ptr.Length == 4)
-                value = *((uint*)b);
-            else
-                value = *((ulong*)b);
+                    value = *((uint*)b);
+                else
+                    value = *((ulong*)b);
             return res;
         }
 
