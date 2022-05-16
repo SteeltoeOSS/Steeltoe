@@ -320,7 +320,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                 ((DesktopGCHeap)_runtime.Heap).InitLockInspection();
 
                 if (_blockingObjs == null)
-                    return new BlockingObject[0];
+                    return Array.Empty<BlockingObject>();
                 return _blockingObjs;
             }
         }

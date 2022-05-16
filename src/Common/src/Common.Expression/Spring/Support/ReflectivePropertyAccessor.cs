@@ -122,7 +122,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 {
                     try
                     {
-                        var value = method.Invoke(target, new object[0]);
+                        var value = method.Invoke(target, Array.Empty<object>());
                         return new TypedValue(value, value != null ? value.GetType() : invoker.TypeDescriptor);
                     }
                     catch (Exception ex)
@@ -639,7 +639,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 {
                     try
                     {
-                        var value = method.Invoke(target, new object[0]);
+                        var value = method.Invoke(target, Array.Empty<object>());
                         return new TypedValue(value, (value != null) ? value.GetType() : _typeDescriptor);
                     }
                     catch (Exception ex)

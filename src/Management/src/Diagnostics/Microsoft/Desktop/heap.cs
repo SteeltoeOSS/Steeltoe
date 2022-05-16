@@ -408,7 +408,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                 }
             }
             
-            return new ClrRoot[0];
+            return Array.Empty<ClrRoot>();
         }
 
         private IEnumerable<ClrRoot> EnumerateStackRootsWorker()
@@ -951,7 +951,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         private ClrType[] _basicTypes;
         private bool _loadedTypes = false;
 
-        internal readonly ClrInterface[] EmptyInterfaceList = new ClrInterface[0];
+        internal readonly ClrInterface[] EmptyInterfaceList = Array.Empty<ClrInterface>();
         internal Dictionary<string, ClrInterface> Interfaces = new Dictionary<string, ClrInterface>();
         private Lazy<ClrType> _arrayType,  _exceptionType;
         private ClrType _free;
@@ -1721,7 +1721,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         private BlockingReason _reason;
         private ClrThread[] _owners;
 
-        private static readonly ClrThread[] s_emptyWaiters = new ClrThread[0];
+        private static readonly ClrThread[] s_emptyWaiters = Array.Empty<ClrThread>();
 
         internal void SetOwners(ClrThread[] owners)
         {
@@ -1730,7 +1730,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         internal void SetOwner(ClrThread owner)
         {
-            _owners = new ClrThread[0];
+            _owners = Array.Empty<ClrThread>();
             _owners[0] = owner;
         }
 
@@ -1831,7 +1831,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         {
             get
             {
-                return _owners ?? new ClrThread[0];
+                return _owners ?? Array.Empty<ClrThread>();
             }
         }
     }

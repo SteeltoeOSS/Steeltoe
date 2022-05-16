@@ -812,7 +812,7 @@ namespace Microsoft.Diagnostics.Runtime
 
     internal abstract class RuntimeBase : ClrRuntime
     {
-        private static ulong[] s_emptyPointerArray = new ulong[0];
+        private static ulong[] s_emptyPointerArray = Array.Empty<ulong>();
         protected DacLibrary _library;
         protected IXCLRDataProcess _dacInterface;
         private MemoryReader _cache;

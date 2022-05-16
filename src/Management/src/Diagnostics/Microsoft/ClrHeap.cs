@@ -779,7 +779,7 @@ namespace Microsoft.Diagnostics.Runtime
 
     internal abstract class HeapBase : ClrHeap
     {
-        static protected readonly ClrObject[] s_emptyObjectSet = new ClrObject[0];
+        static protected readonly ClrObject[] s_emptyObjectSet = Array.Empty<ClrObject>();
         private ulong _minAddr;          // Smallest and largest segment in the GC heap.  Used to make SegmentForObject faster.  
         private ulong _maxAddr;
         private ClrSegment[] _segments;
@@ -913,7 +913,7 @@ namespace Microsoft.Diagnostics.Runtime
             }
             else
             {
-                _segments = new ClrSegment[0];
+                _segments = Array.Empty<ClrSegment>();
             }
         }
 

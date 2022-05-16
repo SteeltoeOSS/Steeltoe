@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
     {
         protected SpelNode[] _children = SpelNode.NO_CHILDREN;
         protected volatile TypeDescriptor _exitTypeDescriptor;
-        private static readonly SpelNode[] NO_CHILDREN = new SpelNode[0];
+        private static readonly SpelNode[] NO_CHILDREN = Array.Empty<SpelNode>();
         private readonly int _startPos;
         private readonly int _endPos;
         private SpelNode _parent;

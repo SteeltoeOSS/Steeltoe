@@ -367,7 +367,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         {
             get
             {
-                return new ClrAppDomain[0];
+                return Array.Empty<ClrAppDomain>();
             }
         }
 
@@ -408,7 +408,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override IEnumerable<ClrType> EnumerateTypes()
         {
-            return new ClrType[0];
+            return Array.Empty<ClrType>();
         }
 
         public override ulong MetadataAddress

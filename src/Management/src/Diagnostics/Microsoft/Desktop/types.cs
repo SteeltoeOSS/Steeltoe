@@ -334,13 +334,13 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         override public bool IsPointer { get { return true; } }
 
-        override public IList<ClrInstanceField> Fields { get { return new ClrInstanceField[0]; } }
+        override public IList<ClrInstanceField> Fields { get { return Array.Empty<ClrInstanceField>(); } }
 
-        override public IList<ClrStaticField> StaticFields { get { return new ClrStaticField[0]; } }
+        override public IList<ClrStaticField> StaticFields { get { return Array.Empty<ClrStaticField>(); } }
 
-        override public IList<ClrThreadStaticField> ThreadStaticFields { get { return new ClrThreadStaticField[0]; } }
+        override public IList<ClrThreadStaticField> ThreadStaticFields { get { return Array.Empty<ClrThreadStaticField>(); } }
 
-        override public IList<ClrMethod> Methods { get { return new ClrMethod[0]; } }
+        override public IList<ClrMethod> Methods { get { return Array.Empty<ClrMethod>(); } }
 
         public override ulong GetSize(ulong objRef)
         {
@@ -361,7 +361,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override IList<ClrInterface> Interfaces
         {
-            get { return new ClrInterface[0]; }
+            get { return Array.Empty<ClrInterface>(); }
         }
 
         public override bool IsFinalizable
@@ -609,13 +609,13 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         override public bool IsArray { get { return true; } }
 
-        override public IList<ClrInstanceField> Fields { get { return new ClrInstanceField[0]; } }
+        override public IList<ClrInstanceField> Fields { get { return Array.Empty<ClrInstanceField>(); } }
 
-        override public IList<ClrStaticField> StaticFields { get { return new ClrStaticField[0]; } }
+        override public IList<ClrStaticField> StaticFields { get { return Array.Empty<ClrStaticField>(); } }
 
-        override public IList<ClrThreadStaticField> ThreadStaticFields { get { return new ClrThreadStaticField[0]; } }
+        override public IList<ClrThreadStaticField> ThreadStaticFields { get { return Array.Empty<ClrThreadStaticField>(); } }
 
-        override public IList<ClrMethod> Methods { get { return new ClrMethod[0]; } }
+        override public IList<ClrMethod> Methods { get { return Array.Empty<ClrMethod>(); } }
 
         public override ulong GetSize(ulong objRef)
         {
@@ -636,7 +636,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override IList<ClrInterface> Interfaces
         { // todo
-            get { return new ClrInterface[0]; }
+            get { return Array.Empty<ClrInterface>(); }
         }
 
         public override bool IsFinalizable
@@ -1442,7 +1442,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                 }
                 else
                 {
-                    _methods = new ClrMethod[0];
+                    _methods = Array.Empty<ClrMethod>();
                 }
 
                 return _methods;
@@ -1919,8 +1919,8 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        private static ClrStaticField[] s_emptyStatics = new ClrStaticField[0];
-        private static ClrThreadStaticField[] s_emptyThreadStatics = new ClrThreadStaticField[0];
+        private static ClrStaticField[] s_emptyStatics = Array.Empty<ClrStaticField>();
+        private static ClrThreadStaticField[] s_emptyThreadStatics = Array.Empty<ClrThreadStaticField>();
         #endregion
     }
 }

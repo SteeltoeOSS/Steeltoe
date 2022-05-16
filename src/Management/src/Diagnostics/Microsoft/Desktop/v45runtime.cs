@@ -262,7 +262,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             if (count <= 0)
             {
                 if (_sos.GetAssemblyList(appDomain, 0, null, out needed) < 0)
-                    return new ulong[0];
+                    return Array.Empty<ulong>();
 
                 count = needed;
             }
@@ -282,7 +282,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             if (count <= 0)
             {
                 if (_sos.GetAssemblyModuleList(assembly, 0, null, out needed) < 0)
-                    return new ulong[0];
+                    return Array.Empty<ulong>();
             }
 
             // We ignore the return value here since modules might be partially

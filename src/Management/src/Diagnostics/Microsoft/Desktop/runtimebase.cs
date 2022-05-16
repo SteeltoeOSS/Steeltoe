@@ -118,7 +118,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override IEnumerable<ClrException> EnumerateSerializedExceptions()
         {
-            return new ClrException[0];
+            return Array.Empty<ClrException>();
         }
 
         public override IEnumerable<int> EnumerateGCThreads()
@@ -330,7 +330,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                 }
                 else
                 {
-                    heaps = new IHeapDetails[0];
+                    heaps = Array.Empty<IHeapDetails>();
                 }
             }
             else

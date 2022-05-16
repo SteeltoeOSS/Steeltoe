@@ -817,7 +817,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         {
             get
             {
-                return new ClrInterface[0];
+                return Array.Empty<ClrInterface>();
             }
         }
 
@@ -911,7 +911,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override IEnumerable<ulong> EnumerateMethodTables()
         {
-            return new ulong[0];
+            return Array.Empty<ulong>();
         }
 
         public override void EnumerateRefsOfObject(ulong objRef, Action<ulong, int> action)
@@ -964,6 +964,6 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             return 0;
         }
 
-        public override IList<ClrInstanceField> Fields => new ClrInstanceField[0];
+        public override IList<ClrInstanceField> Fields => Array.Empty<ClrInstanceField>();
     }
 }

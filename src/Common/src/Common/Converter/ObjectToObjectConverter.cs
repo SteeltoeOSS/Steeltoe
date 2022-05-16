@@ -36,7 +36,7 @@ namespace Steeltoe.Common.Converter
                 if (member is MethodInfo method)
                 {
                     return !method.IsStatic
-                        ? method.Invoke(source, new object[0])
+                        ? method.Invoke(source, Array.Empty<object>())
                         : method.Invoke(null, new object[1] { source });
                 }
                 else if (member is ConstructorInfo ctor)

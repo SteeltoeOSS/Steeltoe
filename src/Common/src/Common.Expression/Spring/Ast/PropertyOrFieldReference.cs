@@ -214,7 +214,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                         if (IsWritableProperty(_name, contextObject, evalContext))
                         {
                             var clazz = result.TypeDescriptor;
-                            var newObject = ReflectionHelper.GetAccessibleConstructor(clazz).Invoke(new object[0]);
+                            var newObject = ReflectionHelper.GetAccessibleConstructor(clazz).Invoke(Array.Empty<object>());
                             WriteProperty(contextObject, evalContext, _name, newObject);
                             result = ReadProperty(contextObject, evalContext, _name);
                         }
