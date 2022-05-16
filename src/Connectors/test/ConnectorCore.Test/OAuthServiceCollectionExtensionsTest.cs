@@ -25,10 +25,10 @@ namespace Steeltoe.Connector.OAuth.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -38,10 +38,10 @@ namespace Steeltoe.Connector.OAuth.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -52,7 +52,7 @@ namespace Steeltoe.Connector.OAuth.Test
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -62,7 +62,7 @@ namespace Steeltoe.Connector.OAuth.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config);
+            services.AddOAuthServiceOptions(config);
 
             var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
             Assert.NotNull(service);
@@ -74,7 +74,7 @@ namespace Steeltoe.Connector.OAuth.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -120,7 +120,7 @@ namespace Steeltoe.Connector.OAuth.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(config));
             Assert.Contains("Multiple", ex.Message);
         }
 
@@ -153,7 +153,7 @@ namespace Steeltoe.Connector.OAuth.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config);
+            services.AddOAuthServiceOptions(config);
 
             var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
             Assert.NotNull(service);

@@ -22,9 +22,9 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator(config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddLoggersActuator(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
 

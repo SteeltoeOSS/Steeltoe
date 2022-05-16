@@ -19,16 +19,16 @@ namespace Steeltoe.Connector.Oracle.EFCore.Test
             DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config));
             Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
         }
 
@@ -39,16 +39,16 @@ namespace Steeltoe.Connector.Oracle.EFCore.Test
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config));
             Assert.Contains(nameof(config), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => OracleDbContextOptionsExtensions.UseOracle<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
         }
 
@@ -60,10 +60,10 @@ namespace Steeltoe.Connector.Oracle.EFCore.Test
             var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
-            var ex2 = Assert.Throws<ArgumentException>(() => OracleDbContextOptionsExtensions.UseOracle(optionsBuilder, config, serviceName));
+            var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseOracle(config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
-            var ex4 = Assert.Throws<ArgumentException>(() => OracleDbContextOptionsExtensions.UseOracle<GoodDbContext>(goodBuilder, config, serviceName));
+            var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseOracle<GoodDbContext>(config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
         }
     }

@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.Mappings
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMappingsActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMappingsActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMappingsActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

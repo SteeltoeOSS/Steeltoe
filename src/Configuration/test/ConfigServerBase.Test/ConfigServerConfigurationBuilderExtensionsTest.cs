@@ -44,7 +44,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             IConfigurationBuilder configurationBuilder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, new ConfigServerClientSettings()));
+            var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(new ConfigServerClientSettings()));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
         }
 
@@ -54,7 +54,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             ConfigServerClientSettings defaultSettings = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, defaultSettings));
+            var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(defaultSettings));
             Assert.Contains(nameof(defaultSettings), ex.Message);
         }
 

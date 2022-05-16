@@ -27,10 +27,10 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             WebApplicationBuilder webAppBuilder = null;
 #endif
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(builder));
-            ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(webHostBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => builder.AddSpringBootConfiguration());
+            ex = Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddSpringBootConfiguration());
 #if NET6_0_OR_GREATER
-            ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(webAppBuilder));
+            ex = Assert.Throws<ArgumentNullException>(() => webAppBuilder.AddSpringBootConfiguration());
 #endif
         }
 

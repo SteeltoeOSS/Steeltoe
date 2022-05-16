@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.Env
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddEnvActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddEnvActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddEnvActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

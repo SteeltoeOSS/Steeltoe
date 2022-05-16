@@ -23,7 +23,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             IApplicationBuilder builder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => HystrixApplicationBuilderExtensions.UseHystrixRequestContext(builder));
+            var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixRequestContext());
             Assert.Contains(nameof(builder), ex.Message);
         }
     }

@@ -21,9 +21,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddTraceActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddTraceActuator(config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddTraceActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddTraceActuator(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
 

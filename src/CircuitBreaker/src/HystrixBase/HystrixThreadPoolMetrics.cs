@@ -59,7 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             foreach (var eventType in ALL_COMMAND_EVENT_TYPES)
             {
                 long eventCount = eventCounts.GetCount(eventType);
-                var threadPoolEventType = ThreadPoolEventTypeHelper.From(eventType);
+                var threadPoolEventType = eventType.From();
                 if (threadPoolEventType != ThreadPoolEventType.UNKNOWN)
                 {
                     var ordinal = (long)threadPoolEventType;

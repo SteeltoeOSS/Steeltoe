@@ -19,10 +19,10 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -32,10 +32,10 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -46,7 +46,7 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 

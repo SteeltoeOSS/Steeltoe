@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.Info
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddInfoActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddInfoActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddInfoActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddInfoActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

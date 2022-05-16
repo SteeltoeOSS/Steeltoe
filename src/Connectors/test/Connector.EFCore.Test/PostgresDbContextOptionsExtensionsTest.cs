@@ -29,16 +29,16 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql<GoodDbContext>(config));
             Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql<GoodDbContext>(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
         }
 
@@ -49,16 +49,16 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql<GoodDbContext>(config));
             Assert.Contains(nameof(config), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql<GoodDbContext>(config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
         }
 
@@ -70,10 +70,10 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
-            var ex2 = Assert.Throws<ArgumentException>(() => PostgresDbContextOptionsExtensions.UseNpgsql(optionsBuilder, config, serviceName));
+            var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseNpgsql(config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
-            var ex4 = Assert.Throws<ArgumentException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config, serviceName));
+            var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseNpgsql<GoodDbContext>(config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
         }
 

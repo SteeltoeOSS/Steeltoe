@@ -28,10 +28,10 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -41,10 +41,10 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -55,7 +55,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -65,7 +65,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config);
+            services.AddPostgresHealthContributor(config);
 
             var service = services.BuildServiceProvider().GetService<IHealthContributor>();
             Assert.NotNull(service);
@@ -77,7 +77,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresHealthContributor(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -89,7 +89,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config);
+            services.AddPostgresHealthContributor(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.NotNull(healthContributor);

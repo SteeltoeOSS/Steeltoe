@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
             Assert.Contains(nameof(services), ex.Message);
         }
 
@@ -29,7 +29,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
 
@@ -41,7 +41,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             var builder = new ConfigurationBuilder().AddCloudFoundry();
             var config = builder.Build();
-            CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config);
+            services.ConfigureCloudFoundryOptions(config);
 
             var serviceProvider = services.BuildServiceProvider();
             var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
@@ -58,7 +58,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "foobar"));
+            Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "foobar"));
+            Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
         }
 
         [Fact]
@@ -76,8 +76,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            Assert.Throws<ArgumentException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, null));
-            Assert.Throws<ArgumentException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, string.Empty));
+            Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, null));
+            Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, string.Empty));
         }
 
         [Fact]
@@ -133,7 +133,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var services = new ServiceCollection();
             services.AddOptions();
 
-            CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "mySql2");
+            services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "mySql2");
 
             var serviceProvider = services.BuildServiceProvider();
             var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
@@ -202,7 +202,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var services = new ServiceCollection();
             services.AddOptions();
 
-            CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryServices<MySqlServiceOption>(services, config, "p-mysql");
+            services.ConfigureCloudFoundryServices<MySqlServiceOption>(config, "p-mysql");
 
             var serviceProvider = services.BuildServiceProvider();
             var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();

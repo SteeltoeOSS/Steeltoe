@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Hosting.Test
         {
             IWebHostBuilder webHostBuilder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => HostBuilderExtensions.UseCloudHosting(webHostBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => webHostBuilder.UseCloudHosting());
             Assert.Contains(nameof(webHostBuilder), ex.Message);
         }
 

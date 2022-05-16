@@ -253,7 +253,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                  }
              });
 
-            var checkZippedEqual = Observable.Zip(fast, slow, (HystrixConfiguration payload, HystrixConfiguration payload2) =>
+            var checkZippedEqual = fast.Zip(slow, (HystrixConfiguration payload, HystrixConfiguration payload2) =>
             {
                 return payload == payload2;
             });

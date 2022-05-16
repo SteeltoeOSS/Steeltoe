@@ -28,16 +28,16 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config));
             Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
         }
 
@@ -48,16 +48,16 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config));
             Assert.Contains(nameof(config), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
         }
 
@@ -69,10 +69,10 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
-            var ex2 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, serviceName));
+            var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseSqlServer(config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
-            var ex4 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, serviceName));
+            var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
         }
 

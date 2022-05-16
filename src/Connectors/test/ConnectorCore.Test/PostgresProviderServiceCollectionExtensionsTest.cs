@@ -30,10 +30,10 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -43,10 +43,10 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -67,7 +67,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            services.AddPostgresConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
@@ -79,7 +79,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -94,7 +94,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(config));
             Assert.Contains("Multiple", ex.Message);
         }
 
@@ -109,7 +109,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            services.AddPostgresConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
@@ -135,7 +135,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            services.AddPostgresConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
@@ -161,7 +161,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            services.AddPostgresConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
@@ -183,7 +183,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            services.AddPostgresConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.NotNull(healthContributor);
@@ -201,7 +201,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             var ci = cm.Get<PostgresConnectionInfo>();
             services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
 
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            services.AddPostgresConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.Null(healthContributor);
@@ -219,7 +219,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             var ci = cm.Get<PostgresConnectionInfo>();
             services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
 
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, addSteeltoeHealthChecks: true);
+            services.AddPostgresConnection(config, addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.NotNull(healthContributor);

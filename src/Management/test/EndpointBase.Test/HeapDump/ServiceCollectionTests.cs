@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.HeapDump
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHeapDumpActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddHeapDumpActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHeapDumpActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHeapDumpActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

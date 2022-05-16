@@ -15,7 +15,7 @@ namespace Steeltoe.Security.DataProtection.Redis.Test
         {
             IDataProtectionBuilder builder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => RedisDataProtectionBuilderExtensions.PersistKeysToRedis(builder));
+            var ex = Assert.Throws<ArgumentNullException>(() => builder.PersistKeysToRedis());
             Assert.Contains(nameof(builder), ex.Message);
         }
     }

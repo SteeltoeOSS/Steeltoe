@@ -28,12 +28,12 @@ namespace Steeltoe.Connector.RabbitMQ.Test
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
+                    () => services.AddRabbitMQConnection(config));
             Assert.Contains(nameof(services), ex.Message);
 
             var ex2 =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "foobar"));
+                    () => services.AddRabbitMQConnection(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -45,12 +45,12 @@ namespace Steeltoe.Connector.RabbitMQ.Test
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
+                    () => services.AddRabbitMQConnection(config));
             Assert.Contains(nameof(config), ex.Message);
 
             var ex2 =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "foobar"));
+                    () => services.AddRabbitMQConnection(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -63,7 +63,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, serviceName));
+                    () => services.AddRabbitMQConnection(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -73,7 +73,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
+            services.AddRabbitMQConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>();
             Assert.NotNull(service);
@@ -87,7 +87,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
 
             var ex =
                 Assert.Throws<ConnectorException>(
-                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "foobar"));
+                    () => services.AddRabbitMQConnection(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -137,7 +137,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
 
             var ex =
                 Assert.Throws<ConnectorException>(
-                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
+                    () => services.AddRabbitMQConnection(config));
             Assert.Contains("Multiple", ex.Message);
         }
 
@@ -185,7 +185,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "myRabbitMQService2");
+            services.AddRabbitMQConnection(config, "myRabbitMQService2");
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
             Assert.NotNull(service);
             Assert.Equal("asdf", service.VirtualHost);
@@ -225,7 +225,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
+            services.AddRabbitMQConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
             Assert.NotNull(service);
@@ -244,7 +244,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
+            services.AddRabbitMQConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
             Assert.NotNull(healthContributor);
@@ -262,7 +262,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             var ci = cm.Get<RabbitMQConnectionInfo>();
             services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
-            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
+            services.AddRabbitMQConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
             Assert.Null(healthContributor);
@@ -280,7 +280,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             var ci = cm.Get<RabbitMQConnectionInfo>();
             services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
-            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, addSteeltoeHealthChecks: true);
+            services.AddRabbitMQConnection(config, addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
             Assert.NotNull(healthContributor);

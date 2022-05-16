@@ -27,12 +27,12 @@ namespace Steeltoe.Connector.Hystrix.Test
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config));
+                    () => services.AddHystrixConnection(config));
             Assert.Contains(nameof(services), ex.Message);
 
             var ex2 =
                 Assert.Throws<ArgumentNullException>(
-                    () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config, "foobar"));
+                    () => services.AddHystrixConnection(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -44,12 +44,12 @@ namespace Steeltoe.Connector.Hystrix.Test
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config));
+                    () => services.AddHystrixConnection(config));
             Assert.Contains(nameof(config), ex.Message);
 
             var ex2 =
                 Assert.Throws<ArgumentNullException>(
-                    () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config, "foobar"));
+                    () => services.AddHystrixConnection(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -62,7 +62,7 @@ namespace Steeltoe.Connector.Hystrix.Test
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config, serviceName));
+                    () => services.AddHystrixConnection(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -72,7 +72,7 @@ namespace Steeltoe.Connector.Hystrix.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);
+            services.AddHystrixConnection(config);
 
             var service = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();
             Assert.NotNull(service);
@@ -86,7 +86,7 @@ namespace Steeltoe.Connector.Hystrix.Test
 
             var ex =
                 Assert.Throws<ConnectorException>(
-                    () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config, "foobar"));
+                    () => services.AddHystrixConnection(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -216,7 +216,7 @@ namespace Steeltoe.Connector.Hystrix.Test
 
             var ex =
                 Assert.Throws<ConnectorException>(
-                    () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config));
+                    () => services.AddHystrixConnection(config));
             Assert.Contains("Multiple", ex.Message);
         }
 
@@ -290,7 +290,7 @@ namespace Steeltoe.Connector.Hystrix.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);
+            services.AddHystrixConnection(config);
 
             var hystrixService = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();
             Assert.NotNull(hystrixService);

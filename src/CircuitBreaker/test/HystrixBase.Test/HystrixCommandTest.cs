@@ -946,7 +946,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.NotNull(command3.ExecutionException);
 
             AssertCommandExecutionEvents(command3, HystrixEventType.THREAD_POOL_REJECTED, HystrixEventType.FALLBACK_SUCCESS);
-            Observable.Merge(result1, result2).ToList().SingleAsync().Wait(); // await the 2 latent commands
+            result1.Merge(result2).ToList().SingleAsync().Wait(); // await the 2 latent commands
 
             Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
 
@@ -1389,7 +1389,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.False(true, "We should have received a fallback response");
             }
 
-            var blockingList = Observable.Merge(results).ToList().SingleAsync().Wait();
+            var blockingList = results.Merge().ToList().SingleAsync().Wait();
 
             // both threads should have returned values
             Assert.Equal(2, blockingList.Count);
@@ -3572,7 +3572,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // the zip operator will subscribe to each observable.  there is a race between the error of the first
             // zipped observable terminating the zip and the subscription to the command's observable
-            var zipped = Observable.Zip(error, cmdResult, (s, integer) =>
+            var zipped = error.Zip(cmdResult, (s, integer) =>
             {
                 return s + integer;
             });

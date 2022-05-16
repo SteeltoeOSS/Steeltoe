@@ -25,8 +25,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => PlaceholderResolverExtensions.ConfigurePlaceholderResolver(services, config));
-            ex = Assert.Throws<ArgumentNullException>(() => PlaceholderResolverExtensions.ConfigurePlaceholderResolver(new ServiceCollection(), config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(config));
+            ex = Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(config));
         }
 
         [Fact]

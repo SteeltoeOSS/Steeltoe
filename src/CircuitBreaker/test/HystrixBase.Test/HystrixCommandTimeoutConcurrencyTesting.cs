@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         observables.Add(new TestCommand().Observe());
                     }
 
-                    var overall = Observable.Merge(observables);
+                    var overall = observables.Merge();
 
                     var results = await overall.ToList().FirstAsync(); // wait for all commands to complete
 

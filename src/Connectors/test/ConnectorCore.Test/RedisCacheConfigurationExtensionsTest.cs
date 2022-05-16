@@ -26,13 +26,13 @@ namespace Steeltoe.Connector.Redis.Test
             var connectorConfiguration = new ConfigurationBuilder().Build();
             var connectorOptions = new RedisCacheConnectorOptions();
 
-            var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, "foobar"));
+            var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory("foobar"));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorConfiguration, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorOptions, "foobar"));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
             Assert.Contains(nameof(config), ex3.Message);
         }
 
@@ -42,7 +42,7 @@ namespace Steeltoe.Connector.Redis.Test
             var config = new ConfigurationBuilder().Build();
             IConfigurationRoot connectorConfiguration = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorConfiguration, "foobar"));
+            var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
             Assert.Contains(nameof(connectorConfiguration), ex.Message);
         }
 
@@ -52,7 +52,7 @@ namespace Steeltoe.Connector.Redis.Test
             var config = new ConfigurationBuilder().Build();
             RedisCacheConnectorOptions connectorOptions = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorOptions, "foobar"));
+            var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
             Assert.Contains(nameof(connectorOptions), ex.Message);
         }
 
@@ -63,13 +63,13 @@ namespace Steeltoe.Connector.Redis.Test
             var config = new ConfigurationBuilder().Build();
             var connectorOptions = new RedisCacheConnectorOptions();
 
-            var ex = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory("foobar"));
             Assert.Contains("foobar", ex.Message);
 
-            var ex2 = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, config, "foobar"));
+            var ex2 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(config, "foobar"));
             Assert.Contains("foobar", ex2.Message);
 
-            var ex3 = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorOptions, "foobar"));
+            var ex3 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
             Assert.Contains("foobar", ex3.Message);
         }
 
@@ -89,9 +89,9 @@ namespace Steeltoe.Connector.Redis.Test
             var config = configurationBuilder.Build();
             var connectorOptions = new RedisCacheConnectorOptions(config);
 
-            Assert.NotNull(RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config));
-            Assert.NotNull(RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(new ConfigurationBuilder().Build(), config));
-            Assert.NotNull(RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(new ConfigurationBuilder().Build(), connectorOptions));
+            Assert.NotNull(config.CreateRedisServiceConnectorFactory());
+            Assert.NotNull(new ConfigurationBuilder().Build().CreateRedisServiceConnectorFactory(config));
+            Assert.NotNull(new ConfigurationBuilder().Build().CreateRedisServiceConnectorFactory(connectorOptions));
         }
 
         [Fact]
@@ -107,13 +107,13 @@ namespace Steeltoe.Connector.Redis.Test
             var config = builder.Build();
             var connectorOptions = new RedisCacheConnectorOptions();
 
-            var ex = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config));
+            var ex = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory());
             Assert.Contains("Multiple", ex.Message);
 
-            var ex2 = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, config));
+            var ex2 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(config));
             Assert.Contains("Multiple", ex2.Message);
 
-            var ex3 = Assert.Throws<ConnectorException>(() => RedisCacheConfigurationExtensions.CreateRedisServiceConnectorFactory(config, connectorOptions));
+            var ex3 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions));
             Assert.Contains("Multiple", ex3.Message);
         }
     }

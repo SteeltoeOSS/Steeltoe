@@ -20,9 +20,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddThreadDumpActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddThreadDumpActuator(config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddThreadDumpActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddThreadDumpActuator(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
 

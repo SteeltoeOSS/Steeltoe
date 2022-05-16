@@ -67,7 +67,7 @@ namespace Steeltoe.Connector.SqlServer.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
+            services.AddSqlServerConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);

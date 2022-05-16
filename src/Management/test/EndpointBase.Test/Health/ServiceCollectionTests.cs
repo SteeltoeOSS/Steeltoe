@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.Health
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHealthActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHealthActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHealthActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

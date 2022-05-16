@@ -47,21 +47,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IConfiguration config = new ConfigurationBuilder().Build();
             var stringKey = "DummyCommand";
 
-            var ex = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, (IHystrixCommandGroupKey)null, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>((IHystrixCommandGroupKey)null, null));
             Assert.Contains(nameof(groupKey), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, (IHystrixCommandGroupKey)null, null));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>((IHystrixCommandGroupKey)null, null));
             Assert.Contains(nameof(groupKey), ex2.Message);
-            var ex3 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, (string)null, null));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>((string)null, null));
             Assert.Contains(nameof(groupKey), ex3.Message);
-            var ex4 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, (string)null, null));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>((string)null, null));
             Assert.Contains(nameof(groupKey), ex4.Message);
-            var ex5 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, null, commandKey, null));
+            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(null, commandKey, null));
             Assert.Contains(nameof(groupKey), ex5.Message);
-            var ex6 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, null, commandKey, null));
+            var ex6 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(null, commandKey, null));
             Assert.Contains(nameof(groupKey), ex6.Message);
-            var ex7 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, null, stringKey, null));
+            var ex7 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(null, stringKey, null));
             Assert.Contains(nameof(groupKey), ex7.Message);
-            var ex8 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, null, stringKey, null));
+            var ex8 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, null));
             Assert.Contains(nameof(groupKey), ex8.Message);
         }
 
@@ -72,21 +72,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IConfiguration config = new ConfigurationBuilder().Build();
             var stringKey = "DummyCommand";
 
-            var ex = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, groupKey, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(groupKey, null));
             Assert.Contains(nameof(config), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, groupKey, null));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(groupKey, null));
             Assert.Contains(nameof(config), ex2.Message);
-            var ex3 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, stringKey, null));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(stringKey, null));
             Assert.Contains(nameof(config), ex3.Message);
-            var ex4 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, stringKey, null));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(stringKey, null));
             Assert.Contains(nameof(config), ex4.Message);
-            var ex5 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, groupKey, commandKey, null));
+            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(groupKey, commandKey, null));
             Assert.Contains(nameof(config), ex5.Message);
-            var ex6 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, groupKey, commandKey, null));
+            var ex6 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(groupKey, commandKey, null));
             Assert.Contains(nameof(config), ex6.Message);
-            var ex7 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, stringKey, stringKey, null));
+            var ex7 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(stringKey, stringKey, null));
             Assert.Contains(nameof(config), ex7.Message);
-            var ex8 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, stringKey, stringKey, null));
+            var ex8 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(stringKey, stringKey, null));
             Assert.Contains(nameof(config), ex8.Message);
         }
 
@@ -97,13 +97,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IConfiguration config = new ConfigurationBuilder().Build();
             var stringKey = "DummyCommand";
 
-            var ex5 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, groupKey, null, null));
+            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(groupKey, null, null));
             Assert.Contains(nameof(commandKey), ex5.Message);
-            var ex6 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, groupKey, null, null));
+            var ex6 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(groupKey, null, null));
             Assert.Contains(nameof(commandKey), ex6.Message);
-            var ex7 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, stringKey, null, null));
+            var ex7 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(stringKey, null, null));
             Assert.Contains(nameof(commandKey), ex7.Message);
-            var ex8 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, stringKey, null, null));
+            var ex8 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(stringKey, null, null));
             Assert.Contains(nameof(commandKey), ex8.Message);
         }
 
@@ -112,7 +112,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             IServiceCollection services = new ServiceCollection();
             IConfiguration config = new ConfigurationBuilder().Build();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, groupKey, config);
+            services.AddHystrixCommand<DummyCommand>(groupKey, config);
             var provider = services.BuildServiceProvider();
             var command = provider.GetService<DummyCommand>();
             Assert.NotNull(command);
@@ -130,7 +130,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, groupKey, config);
+            services.AddHystrixCommand<IDummyCommand, DummyCommand>(groupKey, config);
             provider = services.BuildServiceProvider();
             var icommand = provider.GetService<IDummyCommand>();
             Assert.NotNull(icommand);
@@ -148,7 +148,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, "GroupKey", config);
+            services.AddHystrixCommand<DummyCommand>("GroupKey", config);
             provider = services.BuildServiceProvider();
             command = provider.GetService<DummyCommand>();
             Assert.NotNull(command);
@@ -166,7 +166,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, "GroupKey", config);
+            services.AddHystrixCommand<IDummyCommand, DummyCommand>("GroupKey", config);
             provider = services.BuildServiceProvider();
             icommand = provider.GetService<IDummyCommand>();
             Assert.NotNull(icommand);
@@ -185,7 +185,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, groupKey, commandKey, config);
+            services.AddHystrixCommand<DummyCommand>(groupKey, commandKey, config);
             provider = services.BuildServiceProvider();
             command = provider.GetService<DummyCommand>();
             Assert.NotNull(command);
@@ -202,7 +202,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, groupKey, commandKey, config);
+            services.AddHystrixCommand<IDummyCommand, DummyCommand>(groupKey, commandKey, config);
             provider = services.BuildServiceProvider();
             icommand = provider.GetService<IDummyCommand>();
             Assert.NotNull(icommand);
@@ -220,7 +220,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, "GroupKey", "CommandKey", config);
+            services.AddHystrixCommand<DummyCommand>("GroupKey", "CommandKey", config);
             provider = services.BuildServiceProvider();
             command = provider.GetService<DummyCommand>();
             Assert.NotNull(command);
@@ -237,7 +237,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(services, "GroupKey", "CommandKey", config);
+            services.AddHystrixCommand<IDummyCommand, DummyCommand>("GroupKey", "CommandKey", config);
             provider = services.BuildServiceProvider();
             icommand = provider.GetService<IDummyCommand>();
             Assert.NotNull(icommand);
@@ -274,7 +274,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IServiceCollection services = new ServiceCollection();
             IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, groupKey, config);
+            services.AddHystrixCommand<DummyCommand>(groupKey, config);
             var provider = services.BuildServiceProvider();
             var command = provider.GetService<DummyCommand>();
             Assert.NotNull(command);

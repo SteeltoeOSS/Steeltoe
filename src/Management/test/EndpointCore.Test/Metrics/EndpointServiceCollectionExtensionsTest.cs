@@ -24,9 +24,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             IServiceCollection services2 = new ServiceCollection();
             IConfiguration config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddMetricsActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator(config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddMetricsActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMetricsActuator(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
 

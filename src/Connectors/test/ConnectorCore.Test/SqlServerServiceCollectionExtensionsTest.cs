@@ -28,10 +28,10 @@ namespace Steeltoe.Connector.SqlServer.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -41,10 +41,10 @@ namespace Steeltoe.Connector.SqlServer.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -55,7 +55,7 @@ namespace Steeltoe.Connector.SqlServer.Test
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -65,7 +65,7 @@ namespace Steeltoe.Connector.SqlServer.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config);
+            services.AddSqlServerHealthContributor(config);
 
             var service = services.BuildServiceProvider().GetService<IHealthContributor>();
             Assert.NotNull(service);
@@ -77,7 +77,7 @@ namespace Steeltoe.Connector.SqlServer.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerHealthContributor(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -89,7 +89,7 @@ namespace Steeltoe.Connector.SqlServer.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config);
+            services.AddSqlServerHealthContributor(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.NotNull(healthContributor);

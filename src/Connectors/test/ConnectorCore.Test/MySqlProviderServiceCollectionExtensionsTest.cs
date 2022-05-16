@@ -30,10 +30,10 @@ namespace Steeltoe.Connector.MySql.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -43,10 +43,10 @@ namespace Steeltoe.Connector.MySql.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.Connector.MySql.Test
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -67,7 +67,7 @@ namespace Steeltoe.Connector.MySql.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+            services.AddMySqlConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
@@ -79,7 +79,7 @@ namespace Steeltoe.Connector.MySql.Test
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -95,7 +95,7 @@ namespace Steeltoe.Connector.MySql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(config));
             Assert.Contains("Multiple", ex.Message);
         }
 
@@ -130,7 +130,7 @@ namespace Steeltoe.Connector.MySql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+            services.AddMySqlConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
@@ -154,7 +154,7 @@ namespace Steeltoe.Connector.MySql.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+            services.AddMySqlConnection(config);
 
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
@@ -174,7 +174,7 @@ namespace Steeltoe.Connector.MySql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+            services.AddMySqlConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.NotNull(healthContributor);
@@ -192,7 +192,7 @@ namespace Steeltoe.Connector.MySql.Test
             var ci = cm.Get<MySqlConnectionInfo>();
             services.AddHealthChecks().AddMySql(ci.ConnectionString, name: ci.Name);
 
-            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+            services.AddMySqlConnection(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.Null(healthContributor);
@@ -210,7 +210,7 @@ namespace Steeltoe.Connector.MySql.Test
             var ci = cm.Get<MySqlConnectionInfo>();
             services.AddHealthChecks().AddMySql(ci.ConnectionString, name: ci.Name);
 
-            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, addSteeltoeHealthChecks: true);
+            services.AddMySqlConnection(config, addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.NotNull(healthContributor);

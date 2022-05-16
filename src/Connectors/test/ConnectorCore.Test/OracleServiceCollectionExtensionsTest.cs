@@ -19,10 +19,10 @@ namespace Steeltoe.Connector.Oracle.Test
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleHealthContributor(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOracleHealthContributor(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -32,10 +32,10 @@ namespace Steeltoe.Connector.Oracle.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleHealthContributor(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOracleHealthContributor(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -46,7 +46,7 @@ namespace Steeltoe.Connector.Oracle.Test
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleHealthContributor(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -58,7 +58,7 @@ namespace Steeltoe.Connector.Oracle.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config);
+            services.AddOracleHealthContributor(config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             Assert.NotNull(healthContributor);

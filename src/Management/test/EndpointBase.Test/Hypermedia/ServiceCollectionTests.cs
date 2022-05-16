@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.Hypermedia
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHypermediaActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddHypermediaActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHypermediaActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHypermediaActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

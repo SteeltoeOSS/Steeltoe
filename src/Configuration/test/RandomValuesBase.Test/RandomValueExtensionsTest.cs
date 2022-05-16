@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             IConfigurationBuilder configurationBuilder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => RandomValueExtensions.AddRandomValueSource(configurationBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource());
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             string prefix = null;
 
-            var ex = Assert.Throws<ArgumentException>(() => RandomValueExtensions.AddRandomValueSource(new ConfigurationBuilder(), prefix));
+            var ex = Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddRandomValueSource(prefix));
         }
 
         [Fact]

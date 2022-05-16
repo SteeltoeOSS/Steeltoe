@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         {
             IConfigurationBuilder configurationBuilder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SpringBootConfigurationBuilderExtensions.AddSpringBootEnv(configurationBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootEnv());
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
 
             var ex = Assert.Throws<ArgumentNullException>(() => SpringBootConfigurationBuilderExtensions.AddSpringBootCmd(null, configurationBuilder.Build()));
             Assert.Equal("builder", ex.ParamName);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SpringBootConfigurationBuilderExtensions.AddSpringBootCmd(configurationBuilder, null));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootCmd(null));
             Assert.Equal("configuration", ex2.ParamName);
         }
 

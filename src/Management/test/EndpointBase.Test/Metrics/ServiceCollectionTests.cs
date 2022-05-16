@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMetricsActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMetricsActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMetricsActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -32,10 +32,10 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddPrometheusActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddPrometheusActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddPrometheusActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddPrometheusActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

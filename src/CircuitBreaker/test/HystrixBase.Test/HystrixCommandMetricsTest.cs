@@ -174,7 +174,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(8, metrics.CurrentConcurrentExecutionCount);
 
             var latch = new CountdownEvent(1);
-            Observable.Merge(cmdResults).Subscribe(
+            cmdResults.Merge().Subscribe(
                 (n) =>
                 {
                 },

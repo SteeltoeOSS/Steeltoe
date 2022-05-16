@@ -20,9 +20,9 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddRefreshActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuator(config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddRefreshActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddRefreshActuator(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
 

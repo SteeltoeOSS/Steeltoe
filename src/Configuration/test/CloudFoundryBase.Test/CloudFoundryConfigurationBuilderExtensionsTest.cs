@@ -15,10 +15,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             IConfigurationBuilder configurationBuilder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(configurationBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddCloudFoundry());
             Assert.Contains(nameof(configurationBuilder), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(configurationBuilder, null));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddCloudFoundry(null));
             Assert.Contains(nameof(configurationBuilder), ex2.Message);
         }
 

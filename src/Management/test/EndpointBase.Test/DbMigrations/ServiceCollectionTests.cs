@@ -18,10 +18,10 @@ namespace Steeltoe.Management.Endpoint.Test.DbMigrations
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddDbMigrationsActuatorServices(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbMigrationsActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddDbMigrationsActuatorServices(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddDbMigrationsActuatorServices(config));
             Assert.Contains(nameof(config), ex2.Message);
         }
     }

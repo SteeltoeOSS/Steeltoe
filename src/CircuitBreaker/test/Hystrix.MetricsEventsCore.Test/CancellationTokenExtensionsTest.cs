@@ -13,7 +13,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         public void GetAwaiter_WithCancel_IsCompleted()
         {
             var tokenSource = new CancellationTokenSource();
-            var awaiter = CancellationTokenExtensions.GetAwaiter(tokenSource.Token);
+            var awaiter = tokenSource.Token.GetAwaiter();
             Assert.False(awaiter.IsCompleted);
             tokenSource.Cancel();
             Assert.True(awaiter.IsCompleted);
