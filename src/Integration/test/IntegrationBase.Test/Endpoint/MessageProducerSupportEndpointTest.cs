@@ -144,10 +144,6 @@ namespace Steeltoe.Integration.Endpoint.Test
         {
             public volatile IMessage LastMessage;
 
-            public SuccessfulErrorService()
-            {
-            }
-
             public object ProcessMessage(IMessage message)
             {
                 LastMessage = message;

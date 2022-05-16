@@ -218,10 +218,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         private class TestAsyncDelegate
         {
-            public TestAsyncDelegate()
-            {
-            }
-
             public Task<string> MyPojoMessageMethod(string input)
             {
                 return Task.Run(() =>

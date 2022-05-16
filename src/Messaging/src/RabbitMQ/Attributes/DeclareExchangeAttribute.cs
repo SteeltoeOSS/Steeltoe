@@ -10,10 +10,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
     public class DeclareExchangeAttribute : Attribute
     {
-        public DeclareExchangeAttribute()
-        {
-        }
-
         public string Name { get; set; }
 
         public string Type { get; set; } = ExchangeType.DIRECT;

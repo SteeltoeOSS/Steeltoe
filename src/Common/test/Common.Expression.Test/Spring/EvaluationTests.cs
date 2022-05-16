@@ -1434,10 +1434,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public class Foo
         {
             public string Bar = "hello";
-
-            public Foo()
-            {
-            }
         }
 
         public class TestClass

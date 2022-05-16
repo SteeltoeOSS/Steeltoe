@@ -314,10 +314,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             public object Payload;
             public List<object> BatchPayloads;
 
-            public SampleBean()
-            {
-            }
-
             public IMessage<string> Echo(IMessage<string> input)
             {
                 return (IMessage<string>)RabbitMessageBuilder.WithPayload(input.Payload)

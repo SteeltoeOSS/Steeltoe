@@ -11,10 +11,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
     {
         private string _bindingName;
 
-        public DeclareQueueBindingAttribute()
-        {
-        }
-
         public string Name
         {
             get

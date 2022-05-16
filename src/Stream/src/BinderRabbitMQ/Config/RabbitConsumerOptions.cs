@@ -11,11 +11,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 {
     public class RabbitConsumerOptions : RabbitCommonOptions
     {
-        public RabbitConsumerOptions()
-            : base()
-        {
-        }
-
         public bool? Transacted { get; set; }
 
         public RabbitCore.AcknowledgeMode? AcknowledgeMode { get; set; }

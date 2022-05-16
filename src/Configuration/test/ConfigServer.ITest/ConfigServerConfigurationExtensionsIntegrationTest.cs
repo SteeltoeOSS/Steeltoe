@@ -23,10 +23,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
     //              mvn spring-boot:run
     public class ConfigServerConfigurationExtensionsIntegrationTest
     {
-        public ConfigServerConfigurationExtensionsIntegrationTest()
-        {
-        }
-
         [Fact]
         [Trait("Category", "Integration")]
         public void SpringCloudConfigServer_ReturnsExpectedDefaultData()

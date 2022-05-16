@@ -523,10 +523,6 @@ namespace Steeltoe.Stream.Binder
 
             public class Readings : ISerializable
             {
-                public Readings()
-                {
-                }
-
                 public string StationId { get; set; }
 
                 public string CustomerId { get; set; }

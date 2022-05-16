@@ -14,9 +14,5 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _executionSemaphorePerCircuit = new ();
         protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _fallbackSemaphorePerCircuit = new ();
-
-        protected AbstractCommandBase()
-        {
-        }
     }
 }

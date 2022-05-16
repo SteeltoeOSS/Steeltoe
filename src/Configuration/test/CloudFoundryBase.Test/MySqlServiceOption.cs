@@ -6,10 +6,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
     public class MySqlServiceOption : CloudFoundryServicesOptions
     {
-        public MySqlServiceOption()
-        {
-        }
-
         public MySqlCredentials Credentials { get; set; }
     }
 }

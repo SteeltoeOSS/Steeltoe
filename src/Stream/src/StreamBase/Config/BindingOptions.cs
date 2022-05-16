@@ -8,10 +8,6 @@ namespace Steeltoe.Stream.Config
 {
     public class BindingOptions : IBindingOptions
     {
-        public BindingOptions()
-        {
-        }
-
         public static readonly MimeType DEFAULT_CONTENT_TYPE = MimeTypeUtils.APPLICATION_JSON;
 
         public string Destination { get; set; }

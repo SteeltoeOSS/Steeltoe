@@ -1689,10 +1689,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             public class Inner
             {
-                public Inner()
-                {
-                }
-
                 public static int Run() => 12;
 
                 public int Run2() => 13;

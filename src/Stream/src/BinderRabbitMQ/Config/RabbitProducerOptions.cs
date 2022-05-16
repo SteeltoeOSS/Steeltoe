@@ -9,10 +9,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 {
     public class RabbitProducerOptions : RabbitCommonOptions
     {
-        public RabbitProducerOptions()
-        {
-        }
-
         public bool? Compress { get; set; }
 
         public bool? BatchingEnabled { get; set; }

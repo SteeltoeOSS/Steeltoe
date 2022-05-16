@@ -21,8 +21,5 @@ namespace Steeltoe.Connector.Test
 
     internal class MyOption
     {
-        public MyOption()
-        {
-        }
     }
 }

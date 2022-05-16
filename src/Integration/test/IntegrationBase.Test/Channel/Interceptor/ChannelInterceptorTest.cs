@@ -262,10 +262,6 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             public int Counter;
             public volatile bool AfterCompletionInvoked;
 
-            public PreSendReturnsMessageInterceptor()
-            {
-            }
-
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {
                 Assert.NotNull(message);
@@ -285,10 +281,6 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         {
             public int Counter;
 
-            public PreSendReturnsNullInterceptor()
-            {
-            }
-
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {
                 Assert.NotNull(message);
@@ -302,10 +294,6 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             public Exception ExceptionToRaise;
             public int Counter;
             public volatile bool AfterCompletionInvoked;
-
-            public AfterCompletionTestInterceptor()
-            {
-            }
 
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {
@@ -331,10 +319,6 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             public int Counter;
             public volatile bool AfterCompletionInvoked;
 
-            public PreReceiveReturnsTrueInterceptor()
-            {
-            }
-
             public override bool PreReceive(IMessageChannel channel)
             {
                 Interlocked.Increment(ref Counter);
@@ -355,10 +339,6 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         private class PreReceiveReturnsFalseInterceptor : AbstractChannelInterceptor
         {
             public int Counter;
-
-            public PreReceiveReturnsFalseInterceptor()
-            {
-            }
 
             public override bool PreReceive(IMessageChannel channel)
             {

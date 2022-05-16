@@ -13,11 +13,6 @@ namespace Steeltoe.Stream.Binding
     {
         private readonly ConcurrentDictionary<string, IBinding> _outputBindings = new ();
 
-        public DynamicDestinationsBindable()
-            : base()
-        {
-        }
-
         public override Type BindingType => typeof(DynamicDestinationsBindable);
 
         public override ICollection<string> Outputs

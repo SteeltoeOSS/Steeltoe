@@ -11,10 +11,6 @@ namespace Steeltoe.Stream.Config
         private const bool InheritEnvironment_Default = true;
         private const bool DefaultCandidate_Default = true;
 
-        public BinderOptions()
-        {
-        }
-
         public string ConfigureClass { get; set; }
 
         public string ConfigureAssembly { get; set; }

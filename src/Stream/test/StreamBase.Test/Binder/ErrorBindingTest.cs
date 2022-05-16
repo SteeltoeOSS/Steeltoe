@@ -97,10 +97,6 @@ namespace Steeltoe.Stream.Binder
 
         public class ErrorConfigurationDefault
         {
-            public ErrorConfigurationDefault()
-            {
-            }
-
             public int Counter;
 
             [StreamListener("input")]
@@ -113,10 +109,6 @@ namespace Steeltoe.Stream.Binder
 
         public class ErrorConfigurationWithCustomErrorHandler
         {
-            public ErrorConfigurationWithCustomErrorHandler()
-            {
-            }
-
             public int Counter;
 
             [StreamListener("input")]

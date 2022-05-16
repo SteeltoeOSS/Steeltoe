@@ -15,10 +15,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         internal Delegate InitDelegate { get; set; }
 
-        protected CompiledExpression()
-        {
-        }
-
         public virtual object GetValue(object target, IEvaluationContext context)
         {
             return null;

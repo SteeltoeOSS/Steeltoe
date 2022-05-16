@@ -18,10 +18,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Label = AppName = Env = string.Empty;
         }
 
-        public TestConfigServerStartup()
-        {
-        }
-
         public static string Response { get; set; }
 
         public static int[] ReturnStatus { get; set; } = new int[1] { 200 };

@@ -8,10 +8,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public class HystrixCachedTask<T>
     {
-        public HystrixCachedTask()
-        {
-        }
-
         public Task<T> CachedTask
         {
             get; set;

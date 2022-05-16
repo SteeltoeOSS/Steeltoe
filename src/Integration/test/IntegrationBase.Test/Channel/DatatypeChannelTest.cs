@@ -164,32 +164,19 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class Foo
         {
-            public Foo()
-            {
-            }
         }
 
         private class Bar : Foo
         {
-            public Bar()
-            {
-            }
         }
 
         private class Baz : Foo
         {
-            public Baz()
-            {
-            }
         }
 
         private class StringToBarConverter : IGenericConverter
         {
             private readonly ISet<(Type, Type)> _types = new HashSet<(Type, Type)>() { (typeof(string), typeof(Foo)), (typeof(string), typeof(Bar)) };
-
-            public StringToBarConverter()
-            {
-            }
 
             public ISet<(Type Source, Type Target)> ConvertibleTypes => _types;
 
@@ -202,10 +189,6 @@ namespace Steeltoe.Integration.Channel.Test
         private class IntegerToBazConverter : IGenericConverter
         {
             private readonly ISet<(Type, Type)> _types = new HashSet<(Type, Type)>() { (typeof(int), typeof(Foo)), (typeof(int), typeof(Baz)) };
-
-            public IntegerToBazConverter()
-            {
-            }
 
             public ISet<(Type Source, Type Target)> ConvertibleTypes => _types;
 

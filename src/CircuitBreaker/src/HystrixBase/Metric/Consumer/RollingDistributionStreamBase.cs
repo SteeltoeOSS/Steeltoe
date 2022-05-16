@@ -11,10 +11,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public abstract class RollingDistributionStreamBase
     {
-        protected RollingDistributionStreamBase()
-        {
-        }
-
         protected static Func<LongHistogram, LongHistogram, LongHistogram> DistributionAggregator { get; } = (initialDistribution, distributionToAdd) =>
         {
             initialDistribution.Add(distributionToAdd);

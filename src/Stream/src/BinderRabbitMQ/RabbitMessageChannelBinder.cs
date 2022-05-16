@@ -699,10 +699,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             private readonly SimpleMessageConverter _converter = new ();
 
-            public SimplePassthroughMessageConverter()
-            {
-            }
-
             public override string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             public override object FromMessage(IMessage message, Type targetClass, object conversionHint)

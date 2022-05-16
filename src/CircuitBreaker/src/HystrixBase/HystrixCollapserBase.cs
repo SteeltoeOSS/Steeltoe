@@ -12,9 +12,5 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         // this is a micro-optimization but saves about 1-2microseconds (on 2011 MacBook Pro)
         // on the repetitive string processing that will occur on the same classes over and over again
         protected static readonly ConcurrentDictionary<Type, string> _defaultNameCache = new ();
-
-        protected HystrixCollapserBase()
-        {
-        }
     }
 }

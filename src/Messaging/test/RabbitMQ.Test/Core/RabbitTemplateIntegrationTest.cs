@@ -1517,10 +1517,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         private class Foo
         {
-            public Foo()
-            {
-            }
-
             public override string ToString()
             {
                 return "FooAsAString";
