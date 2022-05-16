@@ -31,7 +31,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
 
             // Ensure any admins in the container get initialized
             var admins = _applicationContext.GetServices<IRabbitAdmin>();
-            if (admins == null || admins.Count() == 0)
+            if (admins == null || !admins.Any())
             {
                 _logger?.LogInformation("Found no IRabbitAdmin services to initialize");
             }

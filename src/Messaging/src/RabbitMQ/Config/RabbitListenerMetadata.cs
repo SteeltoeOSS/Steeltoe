@@ -69,7 +69,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 if (classLevelListeners.Count > 0)
                 {
                     var handlerAttributes = m.GetCustomAttributes<RabbitHandlerAttribute>();
-                    if (handlerAttributes.Count() > 0)
+                    if (handlerAttributes.Any())
                     {
                         multiMethods.Add(m);
                     }
