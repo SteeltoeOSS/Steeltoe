@@ -19,10 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         private readonly IObservable<int> _rollingMaxStream;
         private readonly AtomicReference<IDisposable> _rollingMaxSubscription = new (null);
 
-        private static Func<int, int, int> ReduceToMax { get; } = (a, b) =>
-       {
-           return Math.Max(a, b);
-       };
+        private static Func<int, int, int> ReduceToMax { get; } = Math.Max;
 
         private static Func<IObservable<int>, IObservable<int>> ReduceStreamToMax { get; } = (observedConcurrency) =>
         {

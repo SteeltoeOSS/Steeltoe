@@ -142,7 +142,7 @@ namespace Steeltoe.Common.Contexts
 
         public object GetService(Type serviceType)
         {
-            var result = _instances.Values.LastOrDefault(instance => serviceType.IsInstanceOfType(instance));
+            var result = _instances.Values.LastOrDefault(serviceType.IsInstanceOfType);
             if (result != null)
             {
                 return result;
@@ -173,7 +173,7 @@ namespace Steeltoe.Common.Contexts
                 }
             }
 
-            var results = _instances.Values.Where(instance => serviceType.IsInstanceOfType(instance));
+            var results = _instances.Values.Where(serviceType.IsInstanceOfType);
             foreach (var result in results)
             {
                 services.Add(result);

@@ -23,7 +23,7 @@ namespace Steeltoe.Stream.Binding
             }
 
             var generator = new ProxyGenerator();
-            Func<MethodInfo, object> del = (m) => factory.Invoke(m);
+            Func<MethodInfo, object> del = factory.Invoke;
             var proxy = generator.CreateInterfaceProxyWithoutTarget(factory.BindingType, new BindingInterceptor(del));
             return proxy;
         }

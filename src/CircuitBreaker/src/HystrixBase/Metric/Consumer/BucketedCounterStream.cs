@@ -27,7 +27,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             this.bucketSizeInMs = bucketSizeInMs;
             _reduceBucketToSummary = (eventsObservable) =>
             {
-                var result = eventsObservable.Aggregate(EmptyBucketSummary, (arg1, arg2) => appendRawEventToBucket(arg1, arg2)).Select(n => n);
+                var result = eventsObservable.Aggregate(EmptyBucketSummary, appendRawEventToBucket).Select(n => n);
                 return result;
             };
 

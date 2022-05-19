@@ -1061,7 +1061,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     {
                         if (options.ExecutionTimeoutEnabled)
                         {
-                            var timerTask = new Task(() => { TimeoutThreadAction(); }, TaskCreationOptions.LongRunning);
+                            var timerTask = new Task(TimeoutThreadAction, TaskCreationOptions.LongRunning);
                             timerTask.Start(TaskScheduler.Default);
                         }
 
@@ -1144,7 +1144,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 if (options.ExecutionTimeoutEnabled)
                 {
-                    var timerTask = new Task(() => { TimeoutThreadAction(); }, TaskCreationOptions.LongRunning);
+                    var timerTask = new Task(TimeoutThreadAction, TaskCreationOptions.LongRunning);
                     timerTask.Start(TaskScheduler.Default);
                 }
 

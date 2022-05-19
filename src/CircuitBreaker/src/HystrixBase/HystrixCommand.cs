@@ -65,7 +65,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             if (run == null)
             {
-                _run = () => Run();
+                _run = Run;
             }
             else
             {
@@ -74,7 +74,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             if (fallback == null)
             {
-                _fallback = () => RunFallback();
+                _fallback = RunFallback;
             }
             else
             {
@@ -166,7 +166,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             if (run == null)
             {
-                _run = () => Run();
+                _run = Run;
             }
             else
             {
@@ -175,7 +175,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             if (fallback == null)
             {
-                _fallback = () => RunFallback();
+                _fallback = RunFallback;
             }
             else
             {

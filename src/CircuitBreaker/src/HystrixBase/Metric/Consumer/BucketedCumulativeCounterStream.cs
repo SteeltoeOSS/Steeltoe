@@ -23,7 +23,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             _counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
             _sourceStream = bucketedStream
-                    .Scan(EmptyOutputValue, (arg1, arg2) => reduceBucket(arg1, arg2))
+                    .Scan(EmptyOutputValue, reduceBucket)
                     .Skip(numBuckets)
                     .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
                     .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })

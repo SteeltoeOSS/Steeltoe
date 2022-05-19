@@ -20,10 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
         }
 
         private HystrixRequestEventStreamController(IObservable<HystrixRequestEvents> observable)
-            : base(observable.Map((requestEvents) =>
-            {
-                return SerialHystrixRequestEvents.ToJsonString(requestEvents);
-            }))
+            : base(observable.Map(SerialHystrixRequestEvents.ToJsonString))
         {
         }
 

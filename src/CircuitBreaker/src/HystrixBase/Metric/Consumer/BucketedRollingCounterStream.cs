@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             Func<IObservable<Bucket>, IObservable<Output>> reduceWindowToSummary = (window) =>
             {
-                var result = window.Aggregate(EmptyOutputValue, (arg1, arg2) => reduceBucket(arg1, arg2)).Select(n => n);
+                var result = window.Aggregate(EmptyOutputValue, reduceBucket).Select(n => n);
                 return result;
             };
             counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);

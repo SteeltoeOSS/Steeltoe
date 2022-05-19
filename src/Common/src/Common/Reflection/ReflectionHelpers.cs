@@ -111,7 +111,7 @@ namespace Steeltoe.Common.Reflection
             where TTypeAttribute : Attribute
             where TAssemblyAttribute : AssemblyContainsTypeAttribute
                 => FindAssembliesWithAttribute<TAssemblyAttribute>()
-                    .SelectMany(assemblies => FindTypesWithAttribute<TTypeAttribute>(assemblies));
+                    .SelectMany(FindTypesWithAttribute<TTypeAttribute>);
 
         /// <summary>
         /// Finds a list of types with the attributed identified by <typeparamref name="T"/><para></para>

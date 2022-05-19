@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 #pragma warning restore CS0618 // Type or member is obsolete
         {
             _next = next;
-            applicationLifetime.ApplicationStopping.Register(() => HystrixShutdown.ShutdownThreads());
+            applicationLifetime.ApplicationStopping.Register(HystrixShutdown.ShutdownThreads);
         }
 
         public async Task Invoke(HttpContext context)

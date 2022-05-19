@@ -31,7 +31,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
             Func<IObservable<Event>, IObservable<LongHistogram>> reduceBucketToSingleDistribution = (bucket) =>
             {
-                var result = bucket.Aggregate(CachedValuesHistogram.GetNewHistogram(), (arg1, arg2) => addValuesToBucket(arg1, arg2)).Select(n => n);
+                var result = bucket.Aggregate(CachedValuesHistogram.GetNewHistogram(), addValuesToBucket).Select(n => n);
                 return result;
             };
 

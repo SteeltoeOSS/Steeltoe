@@ -23,10 +23,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             return result;
         };
 
-        protected static Func<LongHistogram, CachedValuesHistogram> CacheHistogramValues { get; } = (histogram) =>
-        {
-            return CachedValuesHistogram.BackedBy(histogram);
-        };
+        protected static Func<LongHistogram, CachedValuesHistogram> CacheHistogramValues { get; } = CachedValuesHistogram.BackedBy;
 
         protected static Func<IObservable<CachedValuesHistogram>, IObservable<IList<CachedValuesHistogram>>> ConvertToList { get; } = (windowOf2) => windowOf2.ToList();
     }

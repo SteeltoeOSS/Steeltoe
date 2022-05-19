@@ -114,10 +114,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitQueue(this IServiceCollection services, Func<IServiceProvider, IQueue> factory)
         {
-            services.AddSingleton<IQueue>(p =>
-            {
-                return factory(p);
-            });
+            services.AddSingleton<IQueue>(factory);
 
             return services;
         }
@@ -151,10 +148,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitExchange(this IServiceCollection services, Func<IServiceProvider, IExchange> factory)
         {
-            services.AddSingleton<IExchange>(p =>
-            {
-                return factory(p);
-            });
+            services.AddSingleton<IExchange>(factory);
 
             return services;
         }
@@ -202,10 +196,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitBinding(this IServiceCollection services, Func<IServiceProvider, IBinding> factory)
         {
-            services.AddSingleton<IBinding>(p =>
-            {
-                return factory(p);
-            });
+            services.AddSingleton<IBinding>(factory);
 
             return services;
         }
@@ -657,10 +648,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitListenerContainer<C>(this IServiceCollection services, Func<IServiceProvider, C> factory)
             where C : AbstractMessageListenerContainer
         {
-            services.AddSingleton<ISmartLifecycle>((p) =>
-            {
-                return factory(p);
-            });
+            services.AddSingleton<ISmartLifecycle>(factory);
 
             return services;
         }

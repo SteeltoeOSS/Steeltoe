@@ -90,6 +90,6 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
         }
 
         private static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from) =>
-            from?.ToList().ForEach(item => to.Add(item));
+            from?.ToList().ForEach(to.Add);
     }
 }

@@ -39,7 +39,7 @@ namespace Steeltoe.Discovery.Consul
             services
                 .AddOptions<ConsulOptions>()
                 .Configure<IConfiguration>((options, config) => config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX).Bind(options))
-                .PostConfigure(options => ConsulPostConfigurer.ValidateConsulOptions(options));
+                .PostConfigure(ConsulPostConfigurer.ValidateConsulOptions);
 
             services
                 .AddOptions<ConsulDiscoveryOptions>()

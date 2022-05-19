@@ -175,7 +175,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             // }
             public ResolvableMethod Build()
             {
-                var methods = objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).Where(m => IsMatch(m)).ToList();
+                var methods = objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).Where(IsMatch).ToList();
                 if (methods.Count == 0)
                 {
                     throw new InvalidOperationException("No matching method: " + this);
@@ -251,7 +251,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             //        }
             private void AddFilter(string message, IPredicate<MethodInfo> filter)
             {
-                Func<MethodInfo, bool> func = (m) => filter.Test(m);
+                Func<MethodInfo, bool> func = filter.Test;
                 filters.Add(new LabeledPredicate<MethodInfo>(message, func));
             }
 

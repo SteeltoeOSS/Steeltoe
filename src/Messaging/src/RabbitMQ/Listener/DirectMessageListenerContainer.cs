@@ -372,7 +372,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             // Assert.state(getTaskExecutor() != null, "Cannot shut down if not initialized");
             _logger?.LogDebug("Shutting down");
-            consumers.ForEach((c) => CancelConsumer(c));
+            consumers.ForEach(CancelConsumer);
             _consumers.Clear();
             _consumersByQueue.Clear();
             _logger?.LogDebug("All consumers canceled");
@@ -731,7 +731,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                                 _aborted = true;
                                 Shutdown();
                                 _logger?.LogError(e, "Failed to start container - fatal error or backOffs exhausted");
-                                Task.Run(() => Stop());
+                                Task.Run(Stop);
 
                                 // this.taskScheduler.schedule(this::stop, new Date());
                                 break;

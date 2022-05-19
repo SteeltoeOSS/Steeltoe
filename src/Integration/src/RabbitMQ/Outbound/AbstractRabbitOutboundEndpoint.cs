@@ -207,7 +207,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             EndpointInit();
         }
 
-        Task ILifecycle.Start() => Task.Run(() => Start());
+        Task ILifecycle.Start() => Task.Run(Start);
 
         Task ILifecycle.Stop()
         {
