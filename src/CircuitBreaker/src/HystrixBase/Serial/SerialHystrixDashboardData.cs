@@ -34,7 +34,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
                 WriteCommandMetrics(writer, commandMetrics);
             }
             catch (Exception)
-            { 
+            {
+                // failing to write metrics should not crash the app
             }
 
             return sw.ToString();
@@ -50,6 +51,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             }
             catch (Exception)
             {
+                // failing to write metrics should not crash the app
             }
 
             return sw.ToString();
@@ -65,6 +67,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             }
             catch (Exception)
             {
+                // failing to write metrics should not crash the app
             }
 
             return sw.ToString();
