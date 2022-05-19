@@ -5869,13 +5869,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
     internal class AsyncCacheableCommand : HystrixCommand<object>
     {
-        private readonly string arg;
         private readonly AtomicBoolean cancelled = new (false);
 
         public AsyncCacheableCommand(string arg)
          : base(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
         {
-            this.arg = arg;
+            this.CacheKey = arg;
         }
 
         public bool IsCancelled
@@ -5898,10 +5897,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        protected override string CacheKey
-        {
-            get { return arg; }
-        }
+        protected override string CacheKey { get; }
     }
 
     internal class BasicDelayCommand : HystrixCommand<int>

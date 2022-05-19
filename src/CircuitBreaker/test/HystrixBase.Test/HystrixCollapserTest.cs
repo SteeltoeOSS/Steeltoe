@@ -2247,13 +2247,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class TestCollapserWithVoidResponseType : HystrixCollapser<object, object, int>
         {
-            private readonly int value;
             private readonly ITestOutputHelper output;
 
             public TestCollapserWithVoidResponseType(ITestOutputHelper output, ICollapserTimer timer, int value)
                 : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
             {
-                this.value = value;
+                this.RequestArgument = value;
                 this.output = output;
             }
 
@@ -2267,7 +2266,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 return opts;
             }
 
-            public override int RequestArgument => value;
+            public override int RequestArgument { get; }
 
             protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
             {
@@ -2291,17 +2290,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests : HystrixCollapser<object, object, int>
         {
-            private readonly int value;
             private readonly ITestOutputHelper output;
 
             public TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(ITestOutputHelper output, ICollapserTimer timer, int value)
                 : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
             {
-                this.value = value;
+                this.RequestArgument = value;
                 this.output = output;
             }
 
-            public override int RequestArgument => value;
+            public override int RequestArgument { get; }
 
             protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
             {

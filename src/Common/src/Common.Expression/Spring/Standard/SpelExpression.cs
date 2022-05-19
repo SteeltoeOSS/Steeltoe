@@ -22,7 +22,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         internal volatile CompiledExpression _compiledAst;
 
         private readonly object _lock = new ();
-        private readonly string _expression;
         private readonly SpelNode _ast;
         private readonly SpelParserOptions _configuration;
 
@@ -39,7 +38,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         public SpelExpression(string expression, SpelNode ast, SpelParserOptions configuration)
         {
-            _expression = expression;
+            ExpressionString = expression;
             _ast = ast;
             _configuration = configuration;
         }
@@ -60,7 +59,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         }
 
         // implementing Expression
-        public string ExpressionString => _expression;
+        public string ExpressionString { get; }
 
         public object GetValue()
         {

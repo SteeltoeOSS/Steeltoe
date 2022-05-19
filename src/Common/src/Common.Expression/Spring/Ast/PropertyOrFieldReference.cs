@@ -14,8 +14,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class PropertyOrFieldReference : SpelNode
     {
-        private readonly bool _nullSafe;
-        private readonly string _name;
         private TypeDescriptor _originalPrimitiveExitTypeDescriptor;
         private volatile IPropertyAccessor _cachedReadAccessor;
         private volatile IPropertyAccessor _cachedWriteAccessor;
@@ -23,13 +21,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public PropertyOrFieldReference(bool nullSafe, string propertyOrFieldName, int startPos, int endPos)
         : base(startPos, endPos)
         {
-            _nullSafe = nullSafe;
-            _name = propertyOrFieldName;
+            IsNullSafe = nullSafe;
+            Name = propertyOrFieldName;
         }
 
-        public bool IsNullSafe => _nullSafe;
+        public bool IsNullSafe { get; }
 
-        public string Name => _name;
+        public string Name { get; }
 
         public override ITypedValue GetValueInternal(ExpressionState state)
         {
@@ -46,17 +44,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override void SetValue(ExpressionState state, object newValue)
         {
-            WriteProperty(state.GetActiveContextObject(), state.EvaluationContext, _name, newValue);
+            WriteProperty(state.GetActiveContextObject(), state.EvaluationContext, Name, newValue);
         }
 
         public override bool IsWritable(ExpressionState state)
         {
-            return IsWritableProperty(_name, state.GetActiveContextObject(), state.EvaluationContext);
+            return IsWritableProperty(Name, state.GetActiveContextObject(), state.EvaluationContext);
         }
 
         public override string ToStringAST()
         {
-            return _name;
+            return Name;
         }
 
         public bool IsWritableProperty(string name, ITypedValue contextObject, IEvaluationContext evalContext)
@@ -98,7 +96,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             Label? skipIfNullLabel = null;
-            if (_nullSafe)
+            if (IsNullSafe)
             {
                 skipIfNullLabel = gen.DefineLabel();
                 gen.Emit(OpCodes.Dup);
@@ -107,7 +105,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 gen.Emit(OpCodes.Brfalse, skipIfNullLabel.Value);
             }
 
-            accessorToUse.GenerateCode(_name, gen, cf);
+            accessorToUse.GenerateCode(Name, gen, cf);
             cf.PushDescriptor(_exitTypeDescriptor);
             if (_originalPrimitiveExitTypeDescriptor != null)
             {
@@ -143,7 +141,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             // If this property or field access would return a primitive - and yet
             // it is also marked null safe - then the exit type descriptor must be
             // promoted to the box type to allow a null value to be passed on
-            if (_nullSafe && CodeFlow.IsValueType(descriptor))
+            if (IsNullSafe && CodeFlow.IsValueType(descriptor))
             {
                 _originalPrimitiveExitTypeDescriptor = descriptor;
                 _exitTypeDescriptor = CodeFlow.ToBoxedDescriptor(descriptor);
@@ -156,7 +154,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         private ITypedValue GetValueInternal(ITypedValue contextObject, IEvaluationContext evalContext, bool isAutoGrowNullReferences)
         {
-            var result = ReadProperty(contextObject, evalContext, _name);
+            var result = ReadProperty(contextObject, evalContext, Name);
 
             // Dynamically create the objects if the user has requested that optional behavior
             if (result.Value == null && isAutoGrowNullReferences && NextChildIs(typeof(Indexer), typeof(PropertyOrFieldReference)))
@@ -170,40 +168,40 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 // Create a new collection or map ready for the indexer
                 if (typeof(List<>) == resultDescriptor || typeof(IList<>) == resultDescriptor)
                 {
-                    if (IsWritableProperty(_name, contextObject, evalContext))
+                    if (IsWritableProperty(Name, contextObject, evalContext))
                     {
                         var newList = Activator.CreateInstance(typeof(List<>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
-                        WriteProperty(contextObject, evalContext, _name, newList);
-                        result = ReadProperty(contextObject, evalContext, _name);
+                        WriteProperty(contextObject, evalContext, Name, newList);
+                        result = ReadProperty(contextObject, evalContext, Name);
                     }
                 }
                 else if (typeof(Dictionary<,>) == resultDescriptor || typeof(IDictionary<,>) == resultDescriptor)
                 {
-                    if (IsWritableProperty(_name, contextObject, evalContext))
+                    if (IsWritableProperty(Name, contextObject, evalContext))
                     {
                         var newMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
-                        WriteProperty(contextObject, evalContext, _name, newMap);
-                        result = ReadProperty(contextObject, evalContext, _name);
+                        WriteProperty(contextObject, evalContext, Name, newMap);
+                        result = ReadProperty(contextObject, evalContext, Name);
                     }
                 }
                 else if (typeof(IDictionary) == resultDescriptor)
                 {
-                    if (IsWritableProperty(_name, contextObject, evalContext))
+                    if (IsWritableProperty(Name, contextObject, evalContext))
                     {
                         var newMap = new Dictionary<object, object>();
-                        WriteProperty(contextObject, evalContext, _name, newMap);
-                        result = ReadProperty(contextObject, evalContext, _name);
+                        WriteProperty(contextObject, evalContext, Name, newMap);
+                        result = ReadProperty(contextObject, evalContext, Name);
                     }
                 }
                 else if (typeof(IList) == resultDescriptor)
                 {
-                    if (IsWritableProperty(_name, contextObject, evalContext))
+                    if (IsWritableProperty(Name, contextObject, evalContext))
                     {
                         var newList = new ArrayList();
-                        WriteProperty(contextObject, evalContext, _name, newList);
-                        result = ReadProperty(contextObject, evalContext, _name);
+                        WriteProperty(contextObject, evalContext, Name, newList);
+                        result = ReadProperty(contextObject, evalContext, Name);
                     }
                 }
                 else
@@ -211,12 +209,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     // 'simple' object
                     try
                     {
-                        if (IsWritableProperty(_name, contextObject, evalContext))
+                        if (IsWritableProperty(Name, contextObject, evalContext))
                         {
                             var clazz = result.TypeDescriptor;
                             var newObject = ReflectionHelper.GetAccessibleConstructor(clazz).Invoke(Array.Empty<object>());
-                            WriteProperty(contextObject, evalContext, _name, newObject);
-                            result = ReadProperty(contextObject, evalContext, _name);
+                            WriteProperty(contextObject, evalContext, Name, newObject);
+                            result = ReadProperty(contextObject, evalContext, Name);
                         }
                     }
                     catch (TargetInvocationException ex)
@@ -236,7 +234,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         private ITypedValue ReadProperty(ITypedValue contextObject, IEvaluationContext evalContext, string name)
         {
             var targetObject = contextObject.Value;
-            if (targetObject == null && _nullSafe)
+            if (targetObject == null && IsNullSafe)
             {
                 return TypedValue.NULL;
             }
@@ -293,13 +291,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
             else
             {
-                throw new SpelEvaluationException(StartPosition, SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE, _name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
+                throw new SpelEvaluationException(StartPosition, SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE, Name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
             }
         }
 
         private void WriteProperty(ITypedValue contextObject, IEvaluationContext evalContext, string name, object newValue)
         {
-            if (contextObject.Value == null && _nullSafe)
+            if (contextObject.Value == null && IsNullSafe)
             {
                 return;
             }
@@ -420,14 +418,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             public void SetValue(object newValue)
             {
-                _ref.WriteProperty(_contextObject, _evalContext, _ref._name, newValue);
+                _ref.WriteProperty(_contextObject, _evalContext, _ref.Name, newValue);
             }
 
             public bool IsWritable
             {
                 get
                 {
-                    return _ref.IsWritableProperty(_ref._name, _contextObject, _evalContext);
+                    return _ref.IsWritableProperty(_ref.Name, _contextObject, _evalContext);
                 }
             }
         }

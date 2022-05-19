@@ -14,8 +14,6 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         private readonly object value;
 
-        private readonly List<ParameterInfo> resolvedParameters = new ();
-
         public StubArgumentResolver(object value)
         : this(value.GetType(), value)
         {
@@ -32,10 +30,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             this.value = value;
         }
 
-        public List<ParameterInfo> ResolvedParameters
-        {
-            get { return resolvedParameters; }
-        }
+        public List<ParameterInfo> ResolvedParameters { get; } = new ();
 
         public bool SupportsParameter(ParameterInfo parameter)
         {
@@ -44,7 +39,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
-            resolvedParameters.Add(parameter);
+            ResolvedParameters.Add(parameter);
             return value;
         }
     }

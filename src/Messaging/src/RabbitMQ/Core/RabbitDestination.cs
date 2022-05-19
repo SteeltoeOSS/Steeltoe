@@ -10,52 +10,37 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class RabbitDestination
     {
-        private string _item1;
-        private string _item2;
-
-        public string QueueName
-        {
-            get
-            {
-                return _item2;
-            }
-        }
+        public string QueueName { get; }
 
         public string RoutingKey
         {
             get
             {
-                return _item2;
+                return QueueName;
             }
         }
 
-        public string ExchangeName
-        {
-            get
-            {
-                return _item1;
-            }
-        }
+        public string ExchangeName { get; }
 
         public RabbitDestination(string queueName)
         {
-            _item2 = queueName;
+            QueueName = queueName;
         }
 
         public RabbitDestination(string exchangeName, string routingKey)
         {
-            _item1 = exchangeName;
-            _item2 = routingKey;
+            ExchangeName = exchangeName;
+            QueueName = routingKey;
         }
 
         public static implicit operator string(RabbitDestination destination)
         {
-            if (string.IsNullOrEmpty(destination._item1))
+            if (string.IsNullOrEmpty(destination.ExchangeName))
             {
-                return destination._item2;
+                return destination.QueueName;
             }
 
-            return destination._item1 + "/" + destination._item2;
+            return destination.ExchangeName + "/" + destination.QueueName;
         }
 
         public static implicit operator RabbitDestination(string destination)

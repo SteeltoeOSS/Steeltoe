@@ -284,31 +284,19 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class BeforeHandleInterceptor : AbstractTestInterceptor
         {
-            private IMessage messageToReturn;
+            public IMessage MessageToReturn { get; set; }
 
-            private Exception exceptionToRaise;
-
-            public IMessage MessageToReturn
-            {
-                get { return messageToReturn; }
-                set { messageToReturn = value; }
-            }
-
-            public Exception ExceptionToRaise
-            {
-                get { return exceptionToRaise; }
-                set { exceptionToRaise = value; }
-            }
+            public Exception ExceptionToRaise { get; set; }
 
             public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
             {
                 base.BeforeHandled(message, channel, handler);
-                if (exceptionToRaise != null)
+                if (ExceptionToRaise != null)
                 {
-                    throw exceptionToRaise;
+                    throw ExceptionToRaise;
                 }
 
-                return messageToReturn ?? message;
+                return MessageToReturn ?? message;
             }
         }
 

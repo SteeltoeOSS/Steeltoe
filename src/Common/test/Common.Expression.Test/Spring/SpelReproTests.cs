@@ -1771,11 +1771,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class ResourceSummary
         {
-            private readonly Resource resource;
+            public ResourceSummary() => Resource = new Resource();
 
-            public ResourceSummary() => resource = new Resource();
-
-            public Resource Resource => resource;
+            public Resource Resource { get; }
         }
 
         public class Foo

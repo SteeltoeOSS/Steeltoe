@@ -294,32 +294,28 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class ListTestBean
         {
-            private readonly List<int> _integers = new ();
-
             public ListTestBean()
             {
                 for (var i = 0; i < 10; i++)
                 {
-                    _integers.Add(i);
+                    Integers.Add(i);
                 }
             }
 
-            public List<int> Integers => _integers;
+            public List<int> Integers { get; } = new ();
         }
 
         public class SetTestBean
         {
-            private readonly ISet<int> _integers = new HashSet<int>();
-
             public SetTestBean()
             {
                 for (var i = 0; i < 10; i++)
                 {
-                    _integers.Add(i);
+                    Integers.Add(i);
                 }
             }
 
-            public ISet<int> Integers => _integers;
+            public ISet<int> Integers { get; } = new HashSet<int>();
         }
 
         public class IEnumerableTestBean
@@ -339,51 +335,45 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class ArrayTestBean
         {
-            private readonly int[] _ints = new int[10];
-
             public ArrayTestBean()
             {
                 for (var i = 0; i < 10; i++)
                 {
-                    _ints[i] = i;
+                    Ints[i] = i;
                 }
             }
 
-            public int[] Ints => _ints;
+            public int[] Ints { get; } = new int[10];
         }
 
         public class MapTestBean
         {
-            private readonly Dictionary<string, string> _colors = new ();
-
             public MapTestBean()
             {
                 // colors.put("black", "schwarz");
-                _colors.Add("red", "rot");
-                _colors.Add("brown", "braun");
-                _colors.Add("blue", "blau");
-                _colors.Add("yellow", "gelb");
-                _colors.Add("beige", "beige");
+                Colors.Add("red", "rot");
+                Colors.Add("brown", "braun");
+                Colors.Add("blue", "blau");
+                Colors.Add("yellow", "gelb");
+                Colors.Add("beige", "beige");
             }
 
-            public Dictionary<string, string> Colors => _colors;
+            public Dictionary<string, string> Colors { get; } = new ();
         }
 
         public class IntegerTestBean
         {
-            private readonly IntegerWrapper _wrapper;
-
             public IntegerTestBean(float value)
             {
-                _wrapper = new IntegerWrapper(value);
+                Wrapper = new IntegerWrapper(value);
             }
 
             public IntegerTestBean(int value)
             {
-                _wrapper = new IntegerWrapper(value);
+                Wrapper = new IntegerWrapper(value);
             }
 
-            public IntegerWrapper Wrapper => _wrapper;
+            public IntegerWrapper Wrapper { get; }
 
             public static List<IntegerTestBean> CreateList()
             {

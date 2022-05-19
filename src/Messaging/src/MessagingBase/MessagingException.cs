@@ -8,53 +8,48 @@ namespace Steeltoe.Messaging
 {
     public class MessagingException : Exception
     {
-        private readonly IMessage _failedMessage;
-
         public MessagingException(IMessage message)
         : base(null, null)
         {
-            _failedMessage = message;
+            FailedMessage = message;
         }
 
         public MessagingException(string description)
         : base(description)
         {
-            _failedMessage = null;
+            FailedMessage = null;
         }
 
         public MessagingException(string description, Exception cause)
         : base(description, cause)
         {
-            _failedMessage = null;
+            FailedMessage = null;
         }
 
         public MessagingException(IMessage message, string description)
         : base(description)
         {
-            _failedMessage = message;
+            FailedMessage = message;
         }
 
         public MessagingException(IMessage message, Exception cause)
         : base(null, cause)
         {
-            _failedMessage = message;
+            FailedMessage = message;
         }
 
         public MessagingException(IMessage message, string description, Exception cause)
         : base(description, cause)
         {
-            _failedMessage = message;
+            FailedMessage = message;
         }
 
-        public IMessage FailedMessage
-        {
-            get { return _failedMessage; }
-        }
+        public IMessage FailedMessage { get; }
 
         public override string ToString()
         {
-            return base.ToString() + (_failedMessage == null ? string.Empty
-                    : (", failedMessage=" + _failedMessage));
+            return base.ToString() + (FailedMessage == null ? string.Empty
+                    : (", failedMessage=" + FailedMessage));
         }
     }
 }

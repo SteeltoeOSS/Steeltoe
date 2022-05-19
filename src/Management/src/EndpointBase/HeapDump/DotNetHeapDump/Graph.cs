@@ -1655,7 +1655,7 @@ internal class SpanningTree
 {
     public SpanningTree(Graph graph, TextWriter log)
     {
-        m_graph = graph;
+        Graph = graph;
         m_log = log;
         m_nodeStorage = graph.AllocNodeStorage();
         m_childStorage = graph.AllocNodeStorage();
@@ -1666,7 +1666,7 @@ internal class SpanningTree
         // The +1 is for orphan node support.  
         m_parent = new NodeIndex[(int)graph.NodeIndexLimit + 1];
     }
-    public Graph Graph { get { return m_graph; } }
+    public Graph Graph { get; }
 
     /// <summary>
     /// Every type is given a priority of 0 unless the type name matches one of 
@@ -1730,7 +1730,7 @@ internal class SpanningTree
 
         // Initialize the breadth-first work queue.
         var nodesToVisit = new PriorityQueue(1024);
-        nodesToVisit.Enqueue(m_graph.RootIndex, 0.0F);
+        nodesToVisit.Enqueue(Graph.RootIndex, 0.0F);
 
         // reset the visited information.
         for (int i = 0; i < m_parent.Length; i++)
@@ -1767,7 +1767,7 @@ internal class SpanningTree
             nodeIndex = nodesToVisit.Dequeue(out nodePriority);
 
             // Insert any children that have not already been visited (had a parent assigned) into the work queue). 
-            var node = m_graph.GetNode(nodeIndex, m_nodeStorage);
+            var node = Graph.GetNode(nodeIndex, m_nodeStorage);
             var parentPriority = nodePriorities[(int)node.Index];
             for (var childIndex = node.GetFirstChildIndex(); childIndex != NodeIndex.Invalid; childIndex = node.GetNextChildIndex())
             {
@@ -1776,7 +1776,7 @@ internal class SpanningTree
                     m_parent[(int)childIndex] = nodeIndex;
 
                     // the priority of the child is determined by its type and 1/10 by its parent.  
-                    var child = m_graph.GetNode(childIndex, m_childStorage);
+                    var child = Graph.GetNode(childIndex, m_childStorage);
                     var childPriority = m_typePriorities[(int)child.TypeIndex] + parentPriority / 10;
                     nodePriorities[(int)childIndex] = childPriority;
 
@@ -1802,7 +1802,7 @@ internal class SpanningTree
     private void AddOrphansToQueue(PriorityQueue nodesToVisit)
     {
 
-        for (int i = 0; i < (int)m_graph.NodeIndexLimit; i++)
+        for (int i = 0; i < (int)Graph.NodeIndexLimit; i++)
         {
             if (m_parent[i] == NodeIndex.Invalid)
             {
@@ -1812,7 +1812,7 @@ internal class SpanningTree
 
         // Collect up all the nodes that are not reachable from other nodes as the roots of the
         // orphans.  Also reset orphanVisitedMarker back to NodeIndex.Invalid.
-        for (int i = 0; i < (int)m_graph.NodeIndexLimit; i++)
+        for (int i = 0; i < (int)Graph.NodeIndexLimit; i++)
         {
             var nodeIndex = (NodeIndex)i;
             var parent = m_parent[(int)nodeIndex];
@@ -1821,12 +1821,12 @@ internal class SpanningTree
                 if (parent == NodeIndex.Invalid)
                 {
                     // Thr root index has no parent but is reachable from the root. 
-                    if (nodeIndex != m_graph.RootIndex)
+                    if (nodeIndex != Graph.RootIndex)
                     {
-                        var node = m_graph.GetNode(nodeIndex, m_nodeStorage);
+                        var node = Graph.GetNode(nodeIndex, m_nodeStorage);
                         var priority = m_typePriorities[(int)node.TypeIndex];
                         nodesToVisit.Enqueue(nodeIndex, priority);
-                        m_parent[(int)nodeIndex] = m_graph.NodeIndexLimit;               // This is the 'not reachable' parent. 
+                        m_parent[(int)nodeIndex] = Graph.NodeIndexLimit;               // This is the 'not reachable' parent. 
                     }
                 }
                 else
@@ -1863,7 +1863,7 @@ internal class SpanningTree
         m_parent[(int)nodeIndex] = orphanVisitingMarker;        // We are now visitING
 
         // Mark all nodes as being visited.  
-        var node = m_graph.GetNode(nodeIndex, AllocNodeStorage());
+        var node = Graph.GetNode(nodeIndex, AllocNodeStorage());
         for (var childIndex = node.GetFirstChildIndex(); childIndex != NodeIndex.Invalid; childIndex = node.GetNextChildIndex())
         {
             // Has this child not been seen at all?  If so mark it.  
@@ -1898,7 +1898,7 @@ internal class SpanningTree
         var ret = m_cachedNodeStorage;                // See if we have a free node. 
         if (ret == null)
         {
-            ret = m_graph.AllocNodeStorage();
+            ret = Graph.AllocNodeStorage();
         }
         else
         {
@@ -1935,7 +1935,7 @@ internal class SpanningTree
     {
         if (m_typePriorities == null)
         {
-            m_typePriorities = new float[(int)m_graph.NodeTypeIndexLimit];
+            m_typePriorities = new float[(int)Graph.NodeTypeIndexLimit];
         }
 
         string[] priorityPatArray = priorityPats.Split(';');
@@ -1960,10 +1960,10 @@ internal class SpanningTree
         }
 
         // Assign every type index a priority in m_typePriorities based on if they match a pattern.  
-        NodeType typeStorage = m_graph.AllocTypeNodeStorage();
-        for (NodeTypeIndex typeIdx = 0; typeIdx < m_graph.NodeTypeIndexLimit; typeIdx++)
+        NodeType typeStorage = Graph.AllocTypeNodeStorage();
+        for (NodeTypeIndex typeIdx = 0; typeIdx < Graph.NodeTypeIndexLimit; typeIdx++)
         {
-            var type = m_graph.GetType(typeIdx, typeStorage);
+            var type = Graph.GetType(typeIdx, typeStorage);
 
             var fullName = type.FullName;
             for (int regExIdx = 0; regExIdx < priorityRegExArray.Length; regExIdx++)
@@ -1985,7 +1985,6 @@ internal class SpanningTree
         }
     }
 
-    private Graph m_graph;
     private NodeIndex[] m_parent;               // We keep track of the parents of each node in our breadth-first scan. 
 
     // We give each type a priority (using the m_priority Regular expressions) which guide the breadth-first scan. 
@@ -2010,10 +2009,11 @@ internal class PriorityQueue
     {
         m_heap = new DataItem[initialSize];
     }
-    public int Count { get { return m_count; } }
+    public int Count { get; private set; }
+
     public void Enqueue(NodeIndex item, float priority)
     {
-        var idx = m_count;
+        var idx = Count;
         if (idx >= m_heap.Length)
         {
             var newArray = new DataItem[m_heap.Length * 3 / 2 + 8];
@@ -2022,7 +2022,7 @@ internal class PriorityQueue
         }
         m_heap[idx].value = item;
         m_heap[idx].priority = priority;
-        m_count = idx + 1;
+        Count = idx + 1;
         for (; ; )
         {
             var parent = idx / 2;
@@ -2051,8 +2051,8 @@ internal class PriorityQueue
 
         var ret = m_heap[0].value;
         priority = m_heap[0].priority;
-        --m_count;
-        m_heap[0] = m_heap[m_count];
+        --Count;
+        m_heap[0] = m_heap[Count];
         var idx = 0;
         for (; ; )
         {
@@ -2090,11 +2090,11 @@ internal class PriorityQueue
     public override string ToString()
     {
         var sb = new StringBuilder();
-        sb.AppendLine("<PriorityQueue Count=\"").Append(m_count).Append("\">").AppendLine();
+        sb.AppendLine("<PriorityQueue Count=\"").Append(Count).Append("\">").AppendLine();
 
         // Sort the items in descending order 
-        var items = new List<DataItem>(m_count);
-        for (int i = 0; i < m_count; i++)
+        var items = new List<DataItem>(Count);
+        for (int i = 0; i < Count; i++)
             items.Add(m_heap[i]);
         items.Sort((x, y) => y.priority.CompareTo(x.priority));
         if (items.Count > 0)
@@ -2126,7 +2126,7 @@ internal class PriorityQueue
     // In this array form a tree where each child of i is at 2i and 2i+1.   Each child is 
     // less than or equal to its parent.  
     private DataItem[] m_heap;
-    private int m_count;
+
     #endregion
 }
 

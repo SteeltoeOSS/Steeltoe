@@ -15,25 +15,24 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
     public class SimpleConnection : IConnection, RC.NetworkConnection
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
-        private readonly RC.IConnection _connection;
         private readonly int _closeTimeout;
         private readonly ILogger _logger;
 
-        public int LocalPort => _connection.LocalPort;
+        public int LocalPort => Connection.LocalPort;
 
-        public RC.IConnection Connection => _connection;
+        public RC.IConnection Connection { get; }
 
-        public bool IsOpen => _connection.IsOpen;
+        public bool IsOpen => Connection.IsOpen;
 
-        public string Address => _connection.Endpoint.HostName;
+        public string Address => Connection.Endpoint.HostName;
 
-        public int Port => _connection.Endpoint.Port;
+        public int Port => Connection.Endpoint.Port;
 
-        public int RemotePort => _connection.Endpoint.Port;
+        public int RemotePort => Connection.Endpoint.Port;
 
         public SimpleConnection(RC.IConnection connection, int closeTimeout, ILogger logger = null)
         {
-            _connection = connection;
+            Connection = connection;
             _closeTimeout = closeTimeout;
             _logger = logger;
         }
@@ -42,7 +41,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             try
             {
-                var result = _connection.CreateModel();
+                var result = Connection.CreateModel();
                 if (result == null)
                 {
                     throw new RabbitResourceNotAvailableException("The channelMax limit is reached. Try later.");
@@ -68,7 +67,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 // _explicitlyClosed = true;
 
                 // let the physical close time out if necessary
-                _connection.Close(_closeTimeout);
+                Connection.Close(_closeTimeout);
             }
             catch (AlreadyClosedException)
             {
@@ -82,19 +81,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public void Dispose()
         {
-            _connection.Dispose();
+            Connection.Dispose();
         }
 
         public void AddBlockedListener(IBlockedListener listener)
         {
-            _connection.ConnectionBlocked += listener.HandleBlocked;
-            _connection.ConnectionUnblocked += listener.HandleUnblocked;
+            Connection.ConnectionBlocked += listener.HandleBlocked;
+            Connection.ConnectionUnblocked += listener.HandleUnblocked;
         }
 
         public bool RemoveBlockedListener(IBlockedListener listener)
         {
-            _connection.ConnectionBlocked -= listener.HandleBlocked;
-            _connection.ConnectionUnblocked -= listener.HandleUnblocked;
+            Connection.ConnectionBlocked -= listener.HandleBlocked;
+            Connection.ConnectionUnblocked -= listener.HandleUnblocked;
             return true;
         }
     }

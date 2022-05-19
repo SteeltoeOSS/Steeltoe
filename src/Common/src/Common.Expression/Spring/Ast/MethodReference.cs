@@ -13,8 +13,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class MethodReference : SpelNode
     {
-        private readonly string _name;
-
         private readonly bool _nullSafe;
 
         private TypeDescriptor _originalPrimitiveExitTypeDescriptor;
@@ -24,11 +22,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public MethodReference(bool nullSafe, string methodName, int startPos, int endPos, params SpelNode[] arguments)
         : base(startPos, endPos, arguments)
         {
-            _name = methodName;
+            Name = methodName;
             _nullSafe = nullSafe;
         }
 
-        public string Name => _name;
+        public string Name { get; }
 
         public override ITypedValue GetValueInternal(ExpressionState state)
         {
@@ -49,7 +47,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 sj.Add(GetChild(i).ToStringAST());
             }
 
-            return _name + "(" + string.Join(",", sj) + ")";
+            return Name + "(" + string.Join(",", sj) + ")";
         }
 
         public override bool IsCompilable()
@@ -273,7 +271,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 // Same unwrapping exception handling as above in above catch block
                 ThrowSimpleExceptionIfPossible(value, ex);
-                throw new SpelEvaluationException(StartPosition, ex, SpelMessage.EXCEPTION_DURING_METHOD_INVOCATION, _name, value.GetType().FullName, ex.Message);
+                throw new SpelEvaluationException(StartPosition, ex, SpelMessage.EXCEPTION_DURING_METHOD_INVOCATION, Name, value.GetType().FullName, ex.Message);
             }
         }
 
@@ -281,7 +279,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             if (!_nullSafe)
             {
-                throw new SpelEvaluationException(StartPosition, SpelMessage.METHOD_CALL_ON_NULL_OBJECT_NOT_ALLOWED, FormatHelper.FormatMethodForMessage(_name, argumentTypes));
+                throw new SpelEvaluationException(StartPosition, SpelMessage.METHOD_CALL_ON_NULL_OBJECT_NOT_ALLOWED, FormatHelper.FormatMethodForMessage(Name, argumentTypes));
             }
         }
 
@@ -295,7 +293,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     throw exception;
                 }
 
-                throw new ExpressionInvocationTargetException(StartPosition, "A problem occurred when trying to execute method '" + _name + "' on object of type [" + value.GetType().FullName + "]", rootCause);
+                throw new ExpressionInvocationTargetException(StartPosition, "A problem occurred when trying to execute method '" + Name + "' on object of type [" + value.GetType().FullName + "]", rootCause);
             }
         }
 
@@ -357,7 +355,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 try
                 {
-                    var methodExecutor = methodResolver.Resolve(evaluationContext, targetObject, _name, argumentTypes);
+                    var methodExecutor = methodResolver.Resolve(evaluationContext, targetObject, Name, argumentTypes);
                     if (methodExecutor != null)
                     {
                         return methodExecutor;
@@ -370,7 +368,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 }
             }
 
-            var method = FormatHelper.FormatMethodForMessage(_name, argumentTypes);
+            var method = FormatHelper.FormatMethodForMessage(Name, argumentTypes);
             var className = FormatHelper.FormatClassNameForMessage(targetObject is Type type ? type : targetObject.GetType());
             if (accessException != null)
             {

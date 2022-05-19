@@ -228,11 +228,10 @@ namespace Microsoft.Diagnostics.Tools.GCDump
         private List<EventPipeProvider> _providers;
         private DiagnosticsClient _client;
         private EventPipeSession _session;
-        private EventPipeEventSource _source;
         private int _pid;
 
         public IReadOnlyList<EventPipeProvider> Providers => _providers.AsReadOnly();
-        public EventPipeEventSource Source => _source;
+        public EventPipeEventSource Source { get; }
 
         public EventPipeSessionController(int pid, List<EventPipeProvider> providers, bool requestRundown = true)
         {
@@ -240,7 +239,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
             _providers = providers;
             _client = new DiagnosticsClient(pid);
             _session = _client.StartEventPipeSession(providers, requestRundown, 1024);
-            _source = new EventPipeEventSource(_session.EventStream);
+            Source = new EventPipeEventSource(_session.EventStream);
         }
 
         public void EndSession()
@@ -258,7 +257,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
                 if (disposing)
                 {
                     _session?.Dispose();
-                    _source?.Dispose();
+                    Source?.Dispose();
                 }
                 disposedValue = true;
             }

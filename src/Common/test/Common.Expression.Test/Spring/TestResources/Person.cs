@@ -6,26 +6,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 {
     public class Person
     {
-        private string privateName;
-        private Company company;
-
         public Person(string name)
         {
-            privateName = name;
+            Name = name;
         }
 
         public Person(string name, Company company)
         {
-            privateName = name;
-            this.company = company;
+            Name = name;
+            this.Company = company;
         }
 
-        public string Name
-        {
-            get => privateName;
-            set => privateName = value;
-        }
+        public string Name { get; set; }
 
-        public Company Company => company;
+        public Company Company { get; }
     }
 }

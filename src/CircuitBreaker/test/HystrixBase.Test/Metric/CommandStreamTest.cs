@@ -19,7 +19,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         public class Command : HystrixCommand<int>
         {
             private readonly int executionLatency;
-            private readonly string arg;
             private readonly HystrixEventType executionResult2;
             private readonly HystrixEventType fallbackExecutionResult;
             private readonly int fallbackExecutionLatency;
@@ -37,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 this.executionLatency = executionLatency;
                 this.fallbackExecutionResult = fallbackExecutionResult;
                 this.fallbackExecutionLatency = fallbackExecutionLatency;
-                this.arg = arg;
+                this.CacheKey = arg;
                 _isFallbackUserDefined = true;
             }
 
@@ -209,10 +208,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 };
             }
 
-            protected override string CacheKey
-            {
-                get { return arg; }
-            }
+            protected override string CacheKey { get; }
         }
 
         public class Collapser : HystrixCollapser<List<int>, int, int>

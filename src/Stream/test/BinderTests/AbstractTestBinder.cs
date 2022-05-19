@@ -18,15 +18,13 @@ namespace Steeltoe.Stream.Binder
 
         protected HashSet<string> _exchanges = new ();
 
-        private C _binder;
-
         public Type TargetType => typeof(IMessageChannel);
 
-        public C CoreBinder => _binder;
+        public C CoreBinder { get; private set; }
 
         public C Binder
         {
-            get => _binder;
+            get => CoreBinder;
             set
             {
                 try
@@ -39,7 +37,7 @@ namespace Steeltoe.Stream.Binder
                     throw;
                 }
 
-                _binder = value;
+                CoreBinder = value;
             }
         }
 
@@ -59,7 +57,7 @@ namespace Steeltoe.Stream.Binder
         public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
         {
             _queues.Add(name);
-            return _binder.BindConsumer(name, group, inboundTarget, consumerOptions);
+            return CoreBinder.BindConsumer(name, group, inboundTarget, consumerOptions);
         }
 
         public virtual IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
@@ -70,7 +68,7 @@ namespace Steeltoe.Stream.Binder
         public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
         {
             _queues.Add(name);
-            return _binder.BindProducer(name, outboundTarget, producerOptions);
+            return CoreBinder.BindProducer(name, outboundTarget, producerOptions);
         }
 
         public abstract void Cleanup();

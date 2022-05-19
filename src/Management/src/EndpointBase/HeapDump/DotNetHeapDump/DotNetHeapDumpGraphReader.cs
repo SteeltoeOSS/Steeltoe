@@ -74,11 +74,7 @@ internal class DotNetHeapDumpGraphReader
     /// <summary>
     /// If set before Read or Append is called, keep track of the additional information about GC generations associated with .NET Heaps.  
     /// </summary>
-    public DotNetHeapInfo DotNetHeapInfo
-    {
-        get { return m_dotNetHeapInfo; }
-        set { m_dotNetHeapInfo = value; }
-    }
+    public DotNetHeapInfo DotNetHeapInfo { get; set; }
 
     #region private
     /// <summary>
@@ -448,7 +444,7 @@ internal class DotNetHeapDumpGraphReader
                 return;
             }
 
-            if (m_dotNetHeapInfo == null)
+            if (DotNetHeapInfo == null)
             {
                 return;
             }
@@ -462,9 +458,9 @@ internal class DotNetHeapDumpGraphReader
             Address start = data.RangeStart;
             Address end = start + data.RangeUsedLength;
 
-            if (m_dotNetHeapInfo.Segments == null)
+            if (DotNetHeapInfo.Segments == null)
             {
-                m_dotNetHeapInfo.Segments = new List<GCHeapDumpSegment>();
+                DotNetHeapInfo.Segments = new List<GCHeapDumpSegment>();
             }
 
             GCHeapDumpSegment segment = new GCHeapDumpSegment();
@@ -488,7 +484,7 @@ internal class DotNetHeapDumpGraphReader
                 default:
                     throw new Exception("Invalid generation in GCGenerationRangeTraceData");
             }
-            m_dotNetHeapInfo.Segments.Add(segment);
+            DotNetHeapInfo.Segments.Add(segment);
         };
     }
 
@@ -994,6 +990,6 @@ internal class DotNetHeapDumpGraphReader
     private MemoryNodeBuilder m_root;       // Used to create pseduo-nodes for the roots of the graph.  
 
     // Heap information for .NET heaps.
-    private DotNetHeapInfo m_dotNetHeapInfo;
+
     #endregion
 }

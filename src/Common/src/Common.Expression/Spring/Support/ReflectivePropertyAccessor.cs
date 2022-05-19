@@ -512,18 +512,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public class InvokerPair
         {
-            private readonly MemberInfo _member;
+            public Type TypeDescriptor { get; }
 
-            private readonly Type _typeDescriptor;
-
-            public Type TypeDescriptor => _typeDescriptor;
-
-            public MemberInfo Member => _member;
+            public MemberInfo Member { get; }
 
             public InvokerPair(MemberInfo member, Type typeDescriptor)
             {
-                _member = member;
-                _typeDescriptor = typeDescriptor;
+                Member = member;
+                TypeDescriptor = typeDescriptor;
             }
         }
 
@@ -583,19 +579,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public class OptimalPropertyAccessor : ICompilablePropertyAccessor
         {
-            private readonly MemberInfo _member;
-
-            private readonly Type _typeDescriptor;
-
             public OptimalPropertyAccessor(InvokerPair target)
             {
-                _member = target.Member;
-                _typeDescriptor = target.TypeDescriptor;
+                Member = target.Member;
+                TypeDescriptor = target.TypeDescriptor;
             }
 
-            public MemberInfo Member => _member;
+            public MemberInfo Member { get; }
 
-            public Type TypeDescriptor => _typeDescriptor;
+            public Type TypeDescriptor { get; }
 
             public IList<Type> GetSpecificTargetClasses()
             {
@@ -615,7 +607,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     return false;
                 }
 
-                if (_member is MethodInfo method)
+                if (Member is MethodInfo method)
                 {
                     var getterName = "get_" + ReflectivePropertyAccessor.Capitalize(name);
                     if (getterName.Equals(method.Name))
@@ -627,19 +619,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 }
                 else
                 {
-                    var field = (FieldInfo)_member;
+                    var field = (FieldInfo)Member;
                     return field.Name.Equals(name);
                 }
             }
 
             public ITypedValue Read(IEvaluationContext context, object target, string name)
             {
-                if (_member is MethodInfo method)
+                if (Member is MethodInfo method)
                 {
                     try
                     {
                         var value = method.Invoke(target, Array.Empty<object>());
-                        return new TypedValue(value, (value != null) ? value.GetType() : _typeDescriptor);
+                        return new TypedValue(value, (value != null) ? value.GetType() : TypeDescriptor);
                     }
                     catch (Exception ex)
                     {
@@ -648,11 +640,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 }
                 else
                 {
-                    var field = (FieldInfo)_member;
+                    var field = (FieldInfo)Member;
                     try
                     {
                         var value = field.GetValue(target);
-                        return new TypedValue(value, (value != null) ? value.GetType() : _typeDescriptor);
+                        return new TypedValue(value, (value != null) ? value.GetType() : TypeDescriptor);
                     }
                     catch (Exception ex)
                     {
@@ -673,42 +665,42 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             public bool IsCompilable()
             {
-                if (!ReflectionHelper.IsPublic(_member.DeclaringType))
+                if (!ReflectionHelper.IsPublic(Member.DeclaringType))
                 {
                     return false;
                 }
 
-                if (_member is MethodInfo info)
+                if (Member is MethodInfo info)
                 {
                     return info.IsPublic;
                 }
                 else
                 {
-                    return ((FieldInfo)_member).IsPublic;
+                    return ((FieldInfo)Member).IsPublic;
                 }
             }
 
             public Type GetPropertyType()
             {
-                if (_member is MethodInfo info)
+                if (Member is MethodInfo info)
                 {
                     return info.ReturnType;
                 }
                 else
                 {
-                    return ((FieldInfo)_member).FieldType;
+                    return ((FieldInfo)Member).FieldType;
                 }
             }
 
             public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)
             {
-                if (_member is MethodInfo info)
+                if (Member is MethodInfo info)
                 {
                     GenerateCode(info, gen, cf);
                 }
                 else
                 {
-                    GenerateCode((FieldInfo)_member, gen, cf);
+                    GenerateCode((FieldInfo)Member, gen, cf);
                 }
             }
 

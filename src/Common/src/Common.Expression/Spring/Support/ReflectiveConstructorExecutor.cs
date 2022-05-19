@@ -10,15 +10,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class ReflectiveConstructorExecutor : IConstructorExecutor
     {
-        private readonly ConstructorInfo _ctor;
-
         private readonly int? _varargsPosition;
 
-        public ConstructorInfo Constructor => _ctor;
+        public ConstructorInfo Constructor { get; }
 
         public ReflectiveConstructorExecutor(ConstructorInfo ctor)
         {
-            _ctor = ctor;
+            Constructor = ctor;
             if (ctor.IsVarArgs())
             {
                 _varargsPosition = ctor.GetParameters().Length - 1;
@@ -33,17 +31,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         {
             try
             {
-                ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, _ctor, _varargsPosition);
-                if (_ctor.IsVarArgs())
+                ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, Constructor, _varargsPosition);
+                if (Constructor.IsVarArgs())
                 {
-                    arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(_ctor), arguments);
+                    arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(Constructor), arguments);
                 }
 
-                return new TypedValue(_ctor.Invoke(arguments));
+                return new TypedValue(Constructor.Invoke(arguments));
             }
             catch (Exception ex)
             {
-                throw new AccessException("Problem invoking constructor: " + _ctor, ex);
+                throw new AccessException("Problem invoking constructor: " + Constructor, ex);
             }
         }
     }

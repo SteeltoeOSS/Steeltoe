@@ -27,25 +27,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
         public ArrayContainer ArrayContainer;
         public bool PublicBoolean;
 
-        private string name;
         private PlaceOfBirth placeOfBirth;
-
-        private DateTime birthdate;
-        private string nationality;
-        private string[] inventions;
-        private bool wonNobelPrize;
-        private PlaceOfBirth[] placesLived;
-        private List<PlaceOfBirth> placesLivedList = new ();
-        private bool accessedThroughGetSet;
-        private string foo;
 
         public Inventor(string name, DateTime birthdate, string nationality)
         {
-            this.name = name;
+            this.Name = name;
             _name = name;
             _name_ = name;
-            this.birthdate = birthdate;
-            this.nationality = nationality;
+            this.BirthDate = birthdate;
+            this.Nationality = nationality;
             ArrayContainer = new ArrayContainer();
             TestDictionary = new Dictionary<string, string>
             {
@@ -83,11 +73,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
             MapOfNumbersUpToTen.Add(10, "ten");
         }
 
-        public string[] Inventions
-        {
-            get => inventions;
-            set => inventions = value;
-        }
+        public string[] Inventions { get; set; }
 
         public PlaceOfBirth PlaceOfBirth
         {
@@ -95,8 +81,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
             set
             {
                 placeOfBirth = value;
-                placesLived = new PlaceOfBirth[] { value };
-                placesLivedList.Add(value);
+                PlacesLived = new PlaceOfBirth[] { value };
+                PlacesLivedList.Add(value);
             }
         }
 
@@ -126,25 +112,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
             return pob.City;
         }
 
-        public string Name => name;
+        public string Name { get; }
 
-        public bool WonNobelPrize
-        {
-            get => wonNobelPrize;
-            set => wonNobelPrize = value;
-        }
+        public bool WonNobelPrize { get; set; }
 
-        public PlaceOfBirth[] PlacesLived
-        {
-            get => placesLived;
-            set => placesLived = value;
-        }
+        public PlaceOfBirth[] PlacesLived { get; set; }
 
-        public List<PlaceOfBirth> PlacesLivedList
-        {
-            get => placesLivedList;
-            set => placesLivedList = value;
-        }
+        public List<PlaceOfBirth> PlacesLivedList { get; set; } = new ();
 
         public string Echo(object o)
         {
@@ -205,21 +179,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
         {
         }
 
-        public bool SomeProperty
-        {
-            get => accessedThroughGetSet;
-            set => accessedThroughGetSet = value;
-        }
+        public bool SomeProperty { get; set; }
 
-        public DateTime BirthDate => birthdate;
+        public DateTime BirthDate { get; }
 
-        public string Foo
-        {
-            get => foo;
-            set => foo = value;
-        }
+        public string Foo { get; set; }
 
-        public string Nationality => nationality;
+        public string Nationality { get; }
 
         public class TestException : Exception
         {

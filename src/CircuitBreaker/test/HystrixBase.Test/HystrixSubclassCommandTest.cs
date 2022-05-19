@@ -111,13 +111,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class SuperCommand : HystrixCommand<int>
         {
-            private readonly string uniqueArg;
             private readonly bool shouldSucceed;
 
             public SuperCommand(string uniqueArg, bool shouldSucceed)
             : base(GroupKey)
             {
-                this.uniqueArg = uniqueArg;
+                this.CacheKey = uniqueArg;
                 this.shouldSucceed = shouldSucceed;
                 IsFallbackUserDefined = true;
             }
@@ -139,10 +138,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 return 2;
             }
 
-            protected override string CacheKey
-            {
-                get { return uniqueArg; }
-            }
+            protected override string CacheKey { get; }
         }
 
         private class SubCommandNoOverride : SuperCommand

@@ -46,19 +46,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         private static readonly Dictionary<string, SpelTypeCode> _names;
         private static readonly Dictionary<Type, SpelTypeCode> _types;
 
-        private readonly Type _type;
-        private readonly string _name;
-
         private SpelTypeCode(string name, Type type)
         {
-            _type = type;
-            _name = name;
+            Type = type;
+            Name = name;
             _names.Add(Name, this);
         }
 
-        public Type Type => _type;
+        public Type Type { get; }
 
-        public string Name => _name;
+        public string Name { get; }
 
         public static SpelTypeCode ForName(string name)
         {

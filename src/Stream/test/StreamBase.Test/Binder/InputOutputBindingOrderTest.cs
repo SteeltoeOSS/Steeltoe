@@ -50,8 +50,6 @@ namespace Steeltoe.Stream.Binder
                 Processor = procesor;
             }
 
-            private bool running;
-
             public Task Start()
             {
                 var binder = Factory.GetBinder(null, typeof(IMessageChannel));
@@ -59,13 +57,13 @@ namespace Steeltoe.Stream.Binder
                 var mock = Mock.Get(binder);
                 mock.Verify(b => b.BindProducer("output", Processor.Output, It.IsAny<ProducerOptions>()));
 
-                running = true;
+                IsRunning = true;
                 return Task.CompletedTask;
             }
 
             public Task Stop()
             {
-                running = false;
+                IsRunning = false;
                 return Task.CompletedTask;
             }
 
@@ -75,10 +73,7 @@ namespace Steeltoe.Stream.Binder
                 callback?.Invoke();
             }
 
-            public bool IsRunning
-            {
-                get { return running; }
-            }
+            public bool IsRunning { get; private set; }
 
             public IBinderFactory Factory { get; }
 

@@ -265,18 +265,13 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class TestMessageHandler : IMessageHandler
         {
-            private readonly List<IMessage> messages = new ();
-
-            public List<IMessage> Messages
-            {
-                get { return messages; }
-            }
+            public List<IMessage> Messages { get; } = new ();
 
             public string ServiceName { get; set; } = nameof(TestMessageHandler);
 
             public void HandleMessage(IMessage message)
             {
-                messages.Add(message);
+                Messages.Add(message);
                 return;
             }
         }
@@ -313,31 +308,19 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class PreSendInterceptor : AbstractTestInterceptor
         {
-            private IMessage messageToReturn;
+            public IMessage MessageToReturn { get; set; }
 
-            private Exception exceptionToRaise;
-
-            public IMessage MessageToReturn
-            {
-                get { return messageToReturn; }
-                set { messageToReturn = value; }
-            }
-
-            public Exception ExceptionToRaise
-            {
-                get { return exceptionToRaise; }
-                set { exceptionToRaise = value; }
-            }
+            public Exception ExceptionToRaise { get; set; }
 
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {
                 base.PreSend(message, channel);
-                if (exceptionToRaise != null)
+                if (ExceptionToRaise != null)
                 {
-                    throw exceptionToRaise;
+                    throw ExceptionToRaise;
                 }
 
-                return messageToReturn ?? message;
+                return MessageToReturn ?? message;
             }
         }
 

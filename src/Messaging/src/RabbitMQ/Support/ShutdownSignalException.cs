@@ -10,30 +10,28 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public class ShutdownSignalException : Exception
     {
-        private RC.ShutdownEventArgs _args;
-
         public ShutdownSignalException(RC.ShutdownEventArgs args)
         {
-            _args = args;
+            Args = args;
         }
 
-        public ushort ClassId => _args.ClassId;
+        public ushort ClassId => Args.ClassId;
 
-        public ushort MethodId => _args.MethodId;
+        public ushort MethodId => Args.MethodId;
 
-        public ushort ReplyCode => _args.ReplyCode;
+        public ushort ReplyCode => Args.ReplyCode;
 
-        public string ReplyText => _args.ReplyText;
+        public string ReplyText => Args.ReplyText;
 
-        public RC.ShutdownInitiator Initiator => _args.Initiator;
+        public RC.ShutdownInitiator Initiator => Args.Initiator;
 
-        public object Cause => _args.Cause;
+        public object Cause => Args.Cause;
 
-        public RC.ShutdownEventArgs Args => _args;
+        public RC.ShutdownEventArgs Args { get; }
 
         public override string ToString()
         {
-            return _args.ToString();
+            return Args.ToString();
         }
     }
 }

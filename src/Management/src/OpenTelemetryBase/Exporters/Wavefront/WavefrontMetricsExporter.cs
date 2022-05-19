@@ -18,32 +18,31 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
     {
         private readonly ILogger<WavefrontMetricsExporter> _logger;
         private IWavefrontMetricSender _wavefrontSender;
-        private WavefrontExporterOptions _options;
 
-        internal WavefrontExporterOptions Options => _options;
+        internal WavefrontExporterOptions Options { get; }
 
         public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
         {
-            _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
+            Options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
 
             var token = string.Empty;
-            var uri = _options.Uri;
-            if (_options.Uri.StartsWith("proxy://"))
+            var uri = Options.Uri;
+            if (Options.Uri.StartsWith("proxy://"))
             {
-                uri = "http" + _options.Uri.Substring("proxy".Length); // Proxy reporting is now http on newer proxies.
+                uri = "http" + Options.Uri.Substring("proxy".Length); // Proxy reporting is now http on newer proxies.
             }
             else
             {
                 // Token is required for Direct Ingestion
-                token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
+                token = Options.ApiToken ?? throw new ArgumentNullException(nameof(Options.ApiToken));
             }
 
-            var flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
+            var flushInterval = Math.Max(Options.Step / 1000, 1); // Minimum of 1 second
 
             _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token)
-                                    .MaxQueueSize(_options.MaxQueueSize)
-                                    .BatchSize(_options.BatchSize)
+                                    .MaxQueueSize(Options.MaxQueueSize)
+                                    .BatchSize(Options.BatchSize)
                                     .FlushIntervalSeconds(flushInterval)
                                     .Build();
         }
@@ -75,7 +74,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
                             var tags = GetTags(metricPoint.Tags);
 
-                            _wavefrontSender.SendMetric(metric.Name.ToLower(), doubleValue, timestamp, _options.Source, tags);
+                            _wavefrontSender.SendMetric(metric.Name.ToLower(), doubleValue, timestamp, Options.Source, tags);
                             metricCount++;
                         }
                     }
@@ -88,8 +87,8 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                             // TODO: Setup custom aggregations to compute distributions
                             var tags = GetTags(metricPoint.Tags);
 
-                            _wavefrontSender.SendMetric(metric.Name.ToLower() + "_count", metricPoint.GetHistogramCount(), timestamp, _options.Source, tags);
-                            _wavefrontSender.SendMetric(metric.Name.ToLower() + "_sum", metricPoint.GetHistogramSum(), timestamp, _options.Source, tags);
+                            _wavefrontSender.SendMetric(metric.Name.ToLower() + "_count", metricPoint.GetHistogramCount(), timestamp, Options.Source, tags);
+                            _wavefrontSender.SendMetric(metric.Name.ToLower() + "_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
                             metricCount += 2;
                         }
                     }
@@ -100,15 +99,15 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                 }
             }
 
-            _logger?.LogTrace($"Exported {metricCount} metrics to {_options.Uri}");
+            _logger?.LogTrace($"Exported {metricCount} metrics to {Options.Uri}");
             return ExportResult.Success;
         }
 
         private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
         {
             var tags = inputTags.AsDictionary();
-            tags.Add("application", _options.Name.ToLower());
-            tags.Add("service", _options.Service.ToLower());
+            tags.Add("application", Options.Name.ToLower());
+            tags.Add("service", Options.Service.ToLower());
             tags.Add("component", "wavefront-metrics-exporter");
             return tags;
         }

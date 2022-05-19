@@ -16,14 +16,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         protected SpelNode[] _children = SpelNode.NO_CHILDREN;
         protected volatile TypeDescriptor _exitTypeDescriptor;
         private static readonly SpelNode[] NO_CHILDREN = Array.Empty<SpelNode>();
-        private readonly int _startPos;
-        private readonly int _endPos;
         private SpelNode _parent;
 
         protected SpelNode(int startPos, int endPos, params SpelNode[] operands)
         {
-            _startPos = startPos;
-            _endPos = endPos;
+            StartPosition = startPos;
+            EndPosition = endPos;
             if (!ObjectUtils.IsEmpty(operands))
             {
                 _children = operands;
@@ -41,9 +39,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public virtual TypeDescriptor ExitDescriptor => _exitTypeDescriptor;
 
-        public virtual int StartPosition => _startPos;
+        public virtual int StartPosition { get; }
 
-        public virtual int EndPosition => _endPos;
+        public virtual int EndPosition { get; }
 
         public virtual int ChildCount => _children.Length;
 

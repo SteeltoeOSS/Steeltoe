@@ -8,19 +8,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 {
     public class TestAddress
     {
-        private string street;
-        private List<string> crossStreets;
+        public string Street { get; set; }
 
-        public string Street
-        {
-            get => street;
-            set => street = value;
-        }
-
-        public List<string> CrossStreets
-        {
-            get => crossStreets;
-            set => crossStreets = value;
-        }
+        public List<string> CrossStreets { get; set; }
     }
 }

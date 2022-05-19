@@ -1445,26 +1445,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public List<string> List;
             public IList List2;
 
-            private IDictionary _map2 = null;
-            private Foo _wibble2 = null;
-            private List<string> _foo;
-            private IList<string> _fooIList;
+            public List<string> Foo { get; set; }
 
-            public List<string> Foo
-            {
-                get => _foo;
-                set => _foo = value;
-            }
+            public IList<string> FooIList { get; set; }
 
-            public IList<string> FooIList
-            {
-                get => _fooIList;
-                set => _fooIList = value;
-            }
+            public IDictionary Map2 { get; } = null;
 
-            public IDictionary Map2 => _map2;
-
-            public Foo Wibble2 => _wibble2;
+            public Foo Wibble2 { get; } = null;
         }
 
         #pragma warning restore IDE0044 // Add readonly modifier

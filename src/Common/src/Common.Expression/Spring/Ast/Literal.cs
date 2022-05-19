@@ -9,15 +9,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public abstract class Literal : SpelNode
     {
-        private readonly string _originalValue;
-
         protected Literal(string originalValue, int startPos, int endPos)
             : base(startPos, endPos)
         {
-            _originalValue = originalValue;
+            OriginalValue = originalValue;
         }
 
-        public string OriginalValue => _originalValue;
+        public string OriginalValue { get; }
 
         public static Literal GetIntLiteral(string numberToken, int startPos, int endPos, NumberStyles radix)
         {

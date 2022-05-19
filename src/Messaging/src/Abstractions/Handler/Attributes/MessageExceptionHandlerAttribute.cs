@@ -12,23 +12,18 @@ namespace Steeltoe.Messaging.Handler.Attributes
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class MessageExceptionHandlerAttribute : Attribute
     {
-        private readonly Type[] _exceptions;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageExceptionHandlerAttribute"/> class.
         /// </summary>
         /// <param name="exceptions">the exceptions handled by this method</param>
         public MessageExceptionHandlerAttribute(params Type[] exceptions)
         {
-            _exceptions = exceptions;
+            Exceptions = exceptions;
         }
 
         /// <summary>
         /// Gets the exceptions handled by this method
         /// </summary>
-        public virtual Type[] Exceptions
-        {
-            get { return _exceptions; }
-        }
+        public virtual Type[] Exceptions { get; }
     }
 }

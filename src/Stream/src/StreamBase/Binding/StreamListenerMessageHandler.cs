@@ -15,13 +15,11 @@ namespace Steeltoe.Stream.Binding
     {
         private readonly IInvocableHandlerMethod _invocableHandlerMethod;
 
-        private readonly bool _copyHeaders;
-
         public StreamListenerMessageHandler(IApplicationContext context, IInvocableHandlerMethod invocableHandlerMethod, bool copyHeaders, IList<string> notPropagatedHeaders)
             : base(context)
         {
             _invocableHandlerMethod = invocableHandlerMethod;
-            _copyHeaders = copyHeaders;
+            ShouldCopyRequestHeaders = copyHeaders;
             NotPropagatedHeaders = notPropagatedHeaders;
         }
 
@@ -30,10 +28,7 @@ namespace Steeltoe.Stream.Binding
             get { return _invocableHandlerMethod.IsVoid; }
         }
 
-        protected override bool ShouldCopyRequestHeaders
-        {
-            get { return _copyHeaders; }
-        }
+        protected override bool ShouldCopyRequestHeaders { get; }
 
         public override void Initialize()
         {

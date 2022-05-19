@@ -12,8 +12,6 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
     {
         private const string _environmentName = "configuration";
 
-        private readonly IApplicationContext _applicationContext;
-
         public ServiceExpressionContext(IApplicationContext applicationContext)
         {
             if (applicationContext == null)
@@ -21,10 +19,10 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 throw new ArgumentNullException(nameof(applicationContext));
             }
 
-            _applicationContext = applicationContext;
+            ApplicationContext = applicationContext;
         }
 
-        public IApplicationContext ApplicationContext => _applicationContext;
+        public IApplicationContext ApplicationContext { get; }
 
         public bool ContainsService(string serviceName, Type serviceType)
         {
@@ -33,7 +31,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 return true;
             }
 
-            return _applicationContext.ContainsService(serviceName, serviceType);
+            return ApplicationContext.ContainsService(serviceName, serviceType);
         }
 
         public bool ContainsService(string serviceName)
@@ -43,19 +41,19 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 return true;
             }
 
-            return _applicationContext.ContainsService(serviceName);
+            return ApplicationContext.ContainsService(serviceName);
         }
 
         public object GetService(string serviceName)
         {
             if (serviceName == _environmentName)
             {
-                return _applicationContext.Configuration;
+                return ApplicationContext.Configuration;
             }
 
-            if (_applicationContext.ContainsService(serviceName))
+            if (ApplicationContext.ContainsService(serviceName))
             {
-                return _applicationContext.GetService(serviceName);
+                return ApplicationContext.GetService(serviceName);
             }
 
             return null;
@@ -65,12 +63,12 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
         {
             if (serviceName == _environmentName)
             {
-                return _applicationContext.Configuration;
+                return ApplicationContext.Configuration;
             }
 
-            if (_applicationContext.ContainsService(serviceName, serviceType))
+            if (ApplicationContext.ContainsService(serviceName, serviceType))
             {
-                return _applicationContext.GetService(serviceName, serviceType);
+                return ApplicationContext.GetService(serviceName, serviceType);
             }
 
             return null;
@@ -88,12 +86,12 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 return false;
             }
 
-            return _applicationContext == otherContext._applicationContext;
+            return ApplicationContext == otherContext.ApplicationContext;
         }
 
         public override int GetHashCode()
         {
-            return _applicationContext.GetHashCode();
+            return ApplicationContext.GetHashCode();
         }
     }
 }

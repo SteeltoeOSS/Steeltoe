@@ -16,21 +16,14 @@ namespace Steeltoe.Messaging.Core
         IDestinationResolvingMessageReceivingOperations<D>,
         IDestinationResolvingMessageRequestReplyOperations<D>
     {
-        private readonly IApplicationContext _context;
         private IDestinationResolver<D> _destinationResolver;
 
         protected AbstractDestinationResolvingMessagingTemplate(IApplicationContext context)
         {
-            _context = context;
+            ApplicationContext = context;
         }
 
-        public virtual IApplicationContext ApplicationContext
-        {
-            get
-            {
-                return _context;
-            }
-        }
+        public virtual IApplicationContext ApplicationContext { get; }
 
         public IDestinationResolver<D> DestinationResolver
         {

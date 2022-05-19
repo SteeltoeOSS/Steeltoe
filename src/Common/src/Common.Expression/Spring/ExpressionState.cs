@@ -9,12 +9,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class ExpressionState
     {
-        private readonly IEvaluationContext _relatedContext;
-
-        private readonly ITypedValue _rootObject;
-
-        private readonly SpelParserOptions _configuration;
-
         private Stack<ITypedValue> _contextObjects;
 
         private Stack<VariableScope> _variableScopes;
@@ -48,28 +42,28 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            _relatedContext = context;
-            _rootObject = rootObject;
-            _configuration = configuration;
+            EvaluationContext = context;
+            RootContextObject = rootObject;
+            Configuration = configuration;
         }
 
-        public List<IPropertyAccessor> PropertyAccessors => _relatedContext.PropertyAccessors;
+        public List<IPropertyAccessor> PropertyAccessors => EvaluationContext.PropertyAccessors;
 
-        public IEvaluationContext EvaluationContext => _relatedContext;
+        public IEvaluationContext EvaluationContext { get; }
 
-        public SpelParserOptions Configuration => _configuration;
+        public SpelParserOptions Configuration { get; }
 
-        public ITypedValue RootContextObject => _rootObject;
+        public ITypedValue RootContextObject { get; }
 
-        public ITypeComparator TypeComparator => _relatedContext.TypeComparator;
+        public ITypeComparator TypeComparator => EvaluationContext.TypeComparator;
 
-        public ITypeConverter TypeConverter => _relatedContext.TypeConverter;
+        public ITypeConverter TypeConverter => EvaluationContext.TypeConverter;
 
         public ITypedValue GetActiveContextObject()
         {
             if (_contextObjects == null || _contextObjects.Count == 0)
             {
-                return _rootObject;
+                return RootContextObject;
             }
 
             return _contextObjects.Peek();
@@ -99,7 +93,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             if (_scopeRootObjects == null || _scopeRootObjects.Count == 0)
             {
-                return _rootObject;
+                return RootContextObject;
             }
 
             return _scopeRootObjects.Peek();
@@ -107,23 +101,23 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public void SetVariable(string name, object value)
         {
-            _relatedContext.SetVariable(name, value);
+            EvaluationContext.SetVariable(name, value);
         }
 
         public ITypedValue LookupVariable(string name)
         {
-            var value = _relatedContext.LookupVariable(name);
+            var value = EvaluationContext.LookupVariable(name);
             return value != null ? new TypedValue(value) : TypedValue.NULL;
         }
 
         public Type FindType(string type)
         {
-            return _relatedContext.TypeLocator.FindType(type);
+            return EvaluationContext.TypeLocator.FindType(type);
         }
 
         public object ConvertValue(object value, Type targetTypeDescriptor)
         {
-            var result = _relatedContext.TypeConverter.ConvertValue(value, value?.GetType(), targetTypeDescriptor);
+            var result = EvaluationContext.TypeConverter.ConvertValue(value, value?.GetType(), targetTypeDescriptor);
             if (result == null)
             {
                 throw new InvalidOperationException("Null conversion result for value [" + value + "]");
@@ -135,7 +129,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public object ConvertValue(ITypedValue value, Type targetTypeDescriptor)
         {
             var val = value.Value;
-            return _relatedContext.TypeConverter.ConvertValue(val, val?.GetType(), targetTypeDescriptor);
+            return EvaluationContext.TypeConverter.ConvertValue(val, val?.GetType(), targetTypeDescriptor);
         }
 
         public void EnterScope(Dictionary<string, object> argMap)
@@ -182,7 +176,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public ITypedValue Operate(Operation op, object left, object right)
         {
-            var overloader = _relatedContext.OperatorOverloader;
+            var overloader = EvaluationContext.OperatorOverloader;
             if (overloader.OverridesOperation(op, left, right))
             {
                 var returnValue = overloader.Operate(op, left, right);

@@ -51,16 +51,14 @@ namespace Steeltoe.Discovery.Eureka
             internal set => _localRegionApps = value;
         }
 
-        private readonly IEurekaClientConfig _config;
-
-        public virtual IEurekaClientConfig ClientConfig => _config;
+        public virtual IEurekaClientConfig ClientConfig { get; }
 
         public IHealthCheckHandler HealthCheckHandler { get; set; }
 
         public DiscoveryClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
             : this(ApplicationInfoManager.Instance, logFactory)
         {
-            _config = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
+            ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
 
             _httpClient = httpClient;
 

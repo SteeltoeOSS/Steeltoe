@@ -28,7 +28,6 @@ namespace Steeltoe.Integration.Handler
         private readonly IMessageHandlerMethodFactory _messageHandlerMethodFactory;
         private readonly IInvocableHandlerMethod _invocableHandlerMethod;
         private IConversionService _conversionService;
-        private bool _isRunning;
 
         public MethodInvokingMessageProcessor(IApplicationContext context, object targetObject, MethodInfo method)
             : base(context)
@@ -66,17 +65,17 @@ namespace Steeltoe.Integration.Handler
             }
         }
 
-        public bool IsRunning => _isRunning;
+        public bool IsRunning { get; private set; }
 
         public Task Start()
         {
-            _isRunning = true;
+            IsRunning = true;
             return Task.CompletedTask;
         }
 
         public Task Stop()
         {
-            _isRunning = false;
+            IsRunning = false;
             return Task.CompletedTask;
         }
 

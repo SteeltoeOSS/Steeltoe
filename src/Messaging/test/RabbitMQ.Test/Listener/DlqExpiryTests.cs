@@ -47,11 +47,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
     public class Listener
     {
-        private int counter;
-
         public CountdownEvent Latch { get; set; } = new CountdownEvent(2);
 
-        public int Counter { get => counter; set => counter = value; }
+        public int Counter { get; set; }
 
         [RabbitListener("test.expiry.main")]
         public Task Listen(string foo)

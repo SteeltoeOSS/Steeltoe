@@ -151,9 +151,7 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class BoolToIntConverter : IGenericConverter
         {
-            private readonly ISet<(Type, Type)> _types = new HashSet<(Type, Type)>() { (typeof(bool), typeof(int)) };
-
-            public ISet<(Type Source, Type Target)> ConvertibleTypes => _types;
+            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>() { (typeof(bool), typeof(int)) };
 
             public object Convert(object source, Type sourceType, Type targetType)
             {
@@ -176,9 +174,7 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class StringToBarConverter : IGenericConverter
         {
-            private readonly ISet<(Type, Type)> _types = new HashSet<(Type, Type)>() { (typeof(string), typeof(Foo)), (typeof(string), typeof(Bar)) };
-
-            public ISet<(Type Source, Type Target)> ConvertibleTypes => _types;
+            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>() { (typeof(string), typeof(Foo)), (typeof(string), typeof(Bar)) };
 
             public object Convert(object source, Type sourceType, Type targetType)
             {
@@ -188,9 +184,7 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class IntegerToBazConverter : IGenericConverter
         {
-            private readonly ISet<(Type, Type)> _types = new HashSet<(Type, Type)>() { (typeof(int), typeof(Foo)), (typeof(int), typeof(Baz)) };
-
-            public ISet<(Type Source, Type Target)> ConvertibleTypes => _types;
+            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>() { (typeof(int), typeof(Foo)), (typeof(int), typeof(Baz)) };
 
             public object Convert(object source, Type sourceType, Type targetType)
             {

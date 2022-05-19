@@ -5648,54 +5648,45 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Reg
         {
-            private int _value;
-            private int _value2;
-            private long _valueL;
-            private long _valueL2;
-            private double _valueD;
-            private double _valueD2;
-            private float _valueF;
-            private float _valueF2;
-
             public Reg(int v)
             {
-                _value = v;
-                _valueL = (long)v;
-                _valueD = (double)v;
-                _valueF = (float)v;
+                Value = v;
+                ValueL = (long)v;
+                ValueD = (double)v;
+                ValueF = (float)v;
             }
 
             public void SetValue(object value)
             {
-                _value = value == null ? default : (int)value;
-                _valueL = value == null ? default : (long)(int)value;
-                _valueD = value == null ? default : (double)(int)value;
-                _valueF = value == null ? default : (float)(int)value;
+                Value = value == null ? default : (int)value;
+                ValueL = value == null ? default : (long)(int)value;
+                ValueD = value == null ? default : (double)(int)value;
+                ValueF = value == null ? default : (float)(int)value;
             }
 
-            public int Value => _value;
+            public int Value { get; private set; }
 
-            public long ValueL => _valueL;
+            public long ValueL { get; private set; }
 
-            public double ValueD => _valueD;
+            public double ValueD { get; private set; }
 
-            public float ValueF => _valueF;
+            public float ValueF { get; private set; }
 
             public void SetValue2(object value)
             {
-                _value2 = value == null ? default : (int)value;
-                _valueL2 = value == null ? default : (long)(int)value;
-                _valueD2 = value == null ? default : (double)(int)value;
-                _valueF2 = value == null ? default : (float)(int)value;
+                Value2 = value == null ? default : (int)value;
+                ValueL2 = value == null ? default : (long)(int)value;
+                ValueD2 = value == null ? default : (double)(int)value;
+                ValueF2 = value == null ? default : (float)(int)value;
             }
 
-            public int Value2 => _value2;
+            public int Value2 { get; private set; }
 
-            public long ValueL2 => _valueL2;
+            public long ValueL2 { get; private set; }
 
-            public double ValueD2 => _valueD2;
+            public double ValueD2 { get; private set; }
 
-            public float ValueF2 => _valueF2;
+            public float ValueF2 { get; private set; }
         }
 
         public class LongHolder
@@ -5795,16 +5786,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Payload2
         {
-            private string _var1 = "abc";
             private string _var2 = "def";
 
-            public string Var1 => _var1;
+            public string Var1 { get; } = "abc";
 
             public object GetField(string name)
             {
                 if (name.Equals("Var1"))
                 {
-                    return _var1;
+                    return Var1;
                 }
                 else if (name.Equals("Var2"))
                 {
@@ -6375,14 +6365,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         // For OpNe_SPR14863
         public class MyContext
         {
-            private readonly Dictionary<string, string> data;
-
             public MyContext(Dictionary<string, string> data)
             {
-                this.data = data;
+                this.Data = data;
             }
 
-            public Dictionary<string, string> Data => data;
+            public Dictionary<string, string> Data { get; }
         }
 
         public class TestClass7

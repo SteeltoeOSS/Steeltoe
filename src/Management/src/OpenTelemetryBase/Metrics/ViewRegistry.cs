@@ -9,18 +9,16 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     public class ViewRegistry : IViewRegistry
     {
-        private List<KeyValuePair<string, MetricStreamConfiguration>> _views;
-
         public ViewRegistry()
         {
-            _views = new List<KeyValuePair<string, MetricStreamConfiguration>>();
+            Views = new List<KeyValuePair<string, MetricStreamConfiguration>>();
         }
 
-        public List<KeyValuePair<string, MetricStreamConfiguration>> Views { get => _views; }
+        public List<KeyValuePair<string, MetricStreamConfiguration>> Views { get; }
 
         public void AddView(string instrumentName, MetricStreamConfiguration viewConfig)
         {
-            _views.Add(new KeyValuePair<string, MetricStreamConfiguration>(instrumentName, viewConfig));
+            Views.Add(new KeyValuePair<string, MetricStreamConfiguration>(instrumentName, viewConfig));
         }
     }
 }

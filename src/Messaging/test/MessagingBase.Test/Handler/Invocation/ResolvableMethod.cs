@@ -12,8 +12,6 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 {
     internal class ResolvableMethod
     {
-        private readonly MethodInfo method;
-
         public ResolvableMethod(MethodInfo method)
         {
             if (method == null)
@@ -21,7 +19,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
                 throw new ArgumentNullException(nameof(method));
             }
 
-            this.method = method;
+            this.Method = method;
         }
 
         public static Builder<T> On<T>()
@@ -29,14 +27,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             return new Builder<T>();
         }
 
-        public MethodInfo Method
-        {
-            get { return method; }
-        }
+        public MethodInfo Method { get; }
 
         public ParameterInfo ReturnType
         {
-            get { return method.ReturnParameter; }
+            get { return Method.ReturnParameter; }
         }
 
         public ParameterInfo Arg(Type type)
@@ -61,7 +56,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         public override string ToString()
         {
-            return "ResolvableMethod=" + method.ToString();
+            return "ResolvableMethod=" + Method.ToString();
         }
 
         internal class Builder<T>
@@ -362,12 +357,12 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
                 var matches = ApplyFilters();
                 if (matches.Count == 0)
                 {
-                    throw new InvalidOperationException("No matching arg in method: " + resolvable.method.ToString());
+                    throw new InvalidOperationException("No matching arg in method: " + resolvable.Method.ToString());
                 }
 
                 if (matches.Count > 1)
                 {
-                    throw new InvalidOperationException("Multiple matching args in method: " + resolvable.method.ToString() + " " + string.Join(",", matches));
+                    throw new InvalidOperationException("Multiple matching args in method: " + resolvable.Method.ToString() + " " + string.Join(",", matches));
                 }
 
                 return matches[0];
@@ -376,9 +371,9 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             private List<ParameterInfo> ApplyFilters()
             {
                 var matches = new List<ParameterInfo>();
-                for (var i = 0; i < resolvable.method.GetParameters().Length; i++)
+                for (var i = 0; i < resolvable.Method.GetParameters().Length; i++)
                 {
-                    var param = resolvable.method.GetParameters()[i];
+                    var param = resolvable.Method.GetParameters()[i];
 
                     // param.initParameterNameDiscovery(nameDiscoverer);
                     var allFiltersMatch = true;

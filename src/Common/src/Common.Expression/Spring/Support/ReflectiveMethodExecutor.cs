@@ -10,8 +10,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class ReflectiveMethodExecutor : IMethodExecutor
     {
-        private readonly MethodInfo _originalMethod;
-
         private readonly MethodInfo _methodToInvoke;
 
         private readonly int? _varargsPosition;
@@ -20,11 +18,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         private Type _publicDeclaringClass;
 
-        private bool _argumentConversionOccurred;
-
         public ReflectiveMethodExecutor(MethodInfo method)
         {
-            _originalMethod = method;
+            Method = method;
             _methodToInvoke = ClassUtils.GetInterfaceMethodIfPossible(method);
             if (method.IsVarArgs())
             {
@@ -36,13 +32,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             }
         }
 
-        public MethodInfo Method => _originalMethod;
+        public MethodInfo Method { get; }
 
         public Type GetPublicDeclaringClass()
         {
             if (!_computedPublicDeclaringClass)
             {
-                _publicDeclaringClass = DiscoverPublicDeclaringClass(_originalMethod, _originalMethod.DeclaringType);
+                _publicDeclaringClass = DiscoverPublicDeclaringClass(Method, Method.DeclaringType);
                 _computedPublicDeclaringClass = true;
             }
 
@@ -72,20 +68,20 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             return null;
         }
 
-        public bool DidArgumentConversionOccur => _argumentConversionOccurred;
+        public bool DidArgumentConversionOccur { get; private set; }
 
         public ITypedValue Execute(IEvaluationContext context, object target, params object[] arguments)
         {
             try
             {
-                _argumentConversionOccurred = ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, _originalMethod, _varargsPosition);
-                if (_originalMethod.IsVarArgs())
+                DidArgumentConversionOccur = ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, Method, _varargsPosition);
+                if (Method.IsVarArgs())
                 {
-                    arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(_originalMethod), arguments);
+                    arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(Method), arguments);
                 }
 
                 var value = _methodToInvoke.Invoke(target, arguments);
-                return new TypedValue(value, value?.GetType() ?? _originalMethod.ReturnType);
+                return new TypedValue(value, value?.GetType() ?? Method.ReturnType);
             }
             catch (Exception ex)
             {

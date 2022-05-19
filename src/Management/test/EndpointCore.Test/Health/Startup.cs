@@ -73,15 +73,13 @@ namespace Steeltoe.Management.Endpoint.Health.Test
     public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 #pragma warning restore SA1402 // File may only contain a single type
     {
-        private HealthCheckServiceOptions serviceOptions;
-
         public TestServiceOptions()
         {
-            serviceOptions = new HealthCheckServiceOptions();
-            serviceOptions.Registrations.Add(new HealthCheckRegistration("test", (provider) => new TestHealthCheck(), HealthStatus.Unhealthy, new string[] { "tags" }.ToList()));
+            CurrentValue = new HealthCheckServiceOptions();
+            CurrentValue.Registrations.Add(new HealthCheckRegistration("test", (provider) => new TestHealthCheck(), HealthStatus.Unhealthy, new string[] { "tags" }.ToList()));
         }
 
-        public HealthCheckServiceOptions CurrentValue => serviceOptions;
+        public HealthCheckServiceOptions CurrentValue { get; }
 
         public void Dispose()
         {
@@ -89,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public HealthCheckServiceOptions Get(string name)
         {
-            return serviceOptions;
+            return CurrentValue;
         }
 
         public IDisposable OnChange(Action<HealthCheckServiceOptions, string> listener)

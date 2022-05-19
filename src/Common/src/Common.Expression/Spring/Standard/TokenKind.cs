@@ -117,21 +117,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         private static readonly Dictionary<string, TokenKind> _kinds;
 
-        private readonly char[] _tokenChars;
-
-        private readonly bool _hasPayload;  // is there more to this token than simply the kind
-
-        private readonly string _name;
-
-        private readonly int _order;
-
         private TokenKind(int order, string name, string tokenString)
         {
-            _order = order;
-            _name = name;
-            _tokenChars = tokenString?.ToCharArray();
-            _hasPayload = _tokenChars?.Length == 0;
-            _kinds.Add(_name, this);
+            Ordinal = order;
+            Name = name;
+            TokenChars = tokenString?.ToCharArray();
+            HasPayload = TokenChars?.Length == 0;
+            _kinds.Add(Name, this);
         }
 
         private TokenKind(int order, string name)
@@ -139,15 +131,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         {
         }
 
-        public bool HasPayload => _hasPayload;
+        public bool HasPayload { get; }
 
-        public int Length => _tokenChars.Length;
+        public int Length => TokenChars.Length;
 
-        public string Name => _name;
+        public string Name { get; }
 
-        public char[] TokenChars => _tokenChars;
+        public char[] TokenChars { get; }
 
-        public int Ordinal => _order;
+        public int Ordinal { get; }
 
         public override bool Equals(object obj)
         {
@@ -166,7 +158,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         public override string ToString()
         {
-            return Name + (_tokenChars.Length != 0 ? "(" + new string(_tokenChars) + ")" : string.Empty);
+            return Name + (TokenChars.Length != 0 ? "(" + new string(TokenChars) + ")" : string.Empty);
         }
 
         internal static TokenKind ValueOf(string name)

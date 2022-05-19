@@ -6,19 +6,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 {
     public class TestPerson
     {
-        private string name;
-        private TestAddress address;
+        public string Name { get; set; }
 
-        public string Name
-        {
-            get => name;
-            set => name = value;
-        }
-
-        public TestAddress Address
-        {
-            get => address;
-            set => address = value;
-        }
+        public TestAddress Address { get; set; }
     }
 }

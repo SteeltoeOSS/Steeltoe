@@ -33,13 +33,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             CollectionManager = new PullmetricsCollectionManager(this);
         }
 
-        private Func<int, bool> _collect;
-
-        public override Func<int, bool> Collect
-        {
-            get => _collect;
-            set => _collect = value;
-        }
+        public override Func<int, bool> Collect { get; set; }
 
         public override ExportResult Export(in Batch<Metric> metrics)
         {

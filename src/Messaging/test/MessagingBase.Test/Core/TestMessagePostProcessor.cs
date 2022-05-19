@@ -6,16 +6,11 @@ namespace Steeltoe.Messaging.Core.Test
 {
     internal class TestMessagePostProcessor : IMessagePostProcessor
     {
-        private IMessage message;
-
-        public IMessage Message
-        {
-            get { return message; }
-        }
+        public IMessage Message { get; private set; }
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            this.message = message;
+            this.Message = message;
             return message;
         }
     }

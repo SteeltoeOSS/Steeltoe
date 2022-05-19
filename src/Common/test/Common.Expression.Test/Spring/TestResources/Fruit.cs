@@ -8,29 +8,27 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
     {
         public string Name; // accessible as property field
         public string ColorName; // accessible as property through getter/setter
-        private Color _color; // accessible as property through getter/setter
-        private int stringscount = -1;
 
         public Fruit(string name, Color color, string colorName)
         {
             Name = name;
-            _color = color;
+            Color = color;
             ColorName = colorName;
         }
 
-        public Color Color => _color;
+        public Color Color { get; }
 
         public Fruit(params string[] strings)
         {
-            stringscount = strings.Length;
+            StringsCount = strings.Length;
         }
 
         public Fruit(int i, params string[] strings)
         {
-            stringscount = i + strings.Length;
+            StringsCount = i + strings.Length;
         }
 
-        public int StringsCount => stringscount;
+        public int StringsCount { get; } = -1;
 
         public override string ToString()
         {

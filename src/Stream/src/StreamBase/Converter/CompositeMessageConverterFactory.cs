@@ -11,8 +11,6 @@ namespace Steeltoe.Stream.Converter
 {
     public class CompositeMessageConverterFactory : IMessageConverterFactory
     {
-        private readonly IList<IMessageConverter> _converters;
-
         public CompositeMessageConverterFactory()
             : this(null)
         {
@@ -20,12 +18,12 @@ namespace Steeltoe.Stream.Converter
 
         public CompositeMessageConverterFactory(IEnumerable<IMessageConverter> converters)
         {
-            _converters = converters == null ? new List<IMessageConverter>() : new List<IMessageConverter>(converters);
+            AllRegistered = converters == null ? new List<IMessageConverter>() : new List<IMessageConverter>(converters);
 
             InitDefaultConverters();
 
             var resolver = new DefaultContentTypeResolver { DefaultMimeType = BindingOptions.DEFAULT_CONTENT_TYPE };
-            foreach (var mc in _converters)
+            foreach (var mc in AllRegistered)
             {
                 if (mc is AbstractMessageConverter converter)
                 {
@@ -37,7 +35,7 @@ namespace Steeltoe.Stream.Converter
         public IMessageConverter GetMessageConverterForType(MimeType mimeType)
         {
             var converters = new List<IMessageConverter>();
-            foreach (var converter in _converters)
+            foreach (var converter in AllRegistered)
             {
                 if (converter is AbstractMessageConverter abstractMessageConverter)
                 {
@@ -59,19 +57,19 @@ namespace Steeltoe.Stream.Converter
             };
         }
 
-        public ISmartMessageConverter MessageConverterForAllRegistered => new CompositeMessageConverter(new List<IMessageConverter>(_converters));
+        public ISmartMessageConverter MessageConverterForAllRegistered => new CompositeMessageConverter(new List<IMessageConverter>(AllRegistered));
 
-        public IList<IMessageConverter> AllRegistered => _converters;
+        public IList<IMessageConverter> AllRegistered { get; }
 
         private void InitDefaultConverters()
         {
             var applicationJsonConverter = new ApplicationJsonMessageMarshallingConverter();
 
-            _converters.Add(applicationJsonConverter);
+            AllRegistered.Add(applicationJsonConverter);
 
             // TODO: TupleJsonConverter????
-            _converters.Add(new ObjectSupportingByteArrayMessageConverter());
-            _converters.Add(new ObjectStringMessageConverter());
+            AllRegistered.Add(new ObjectSupportingByteArrayMessageConverter());
+            AllRegistered.Add(new ObjectStringMessageConverter());
         }
     }
 }

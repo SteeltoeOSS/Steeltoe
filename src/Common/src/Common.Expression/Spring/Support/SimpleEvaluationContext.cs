@@ -11,40 +11,33 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
     public class SimpleEvaluationContext : IEvaluationContext
     {
         private static readonly List<IConstructorResolver> _emptyConstrResolver = new ();
-        private readonly ITypeLocator _typeNotFoundLocator = new TypeNotFoundTypeLocator();
-        private readonly ITypedValue _rootObject;
-        private readonly List<IPropertyAccessor> _propertyAccessors;
-        private readonly List<IMethodResolver> _methodResolvers;
-        private readonly ITypeConverter _typeConverter;
-        private readonly ITypeComparator _typeComparator = new StandardTypeComparator();
-        private readonly IOperatorOverloader _operatorOverloader = new StandardOperatorOverloader();
         private readonly Dictionary<string, object> _variables = new ();
 
         private SimpleEvaluationContext(List<IPropertyAccessor> accessors, List<IMethodResolver> resolvers, ITypeConverter converter, ITypedValue rootObject)
         {
-            _propertyAccessors = accessors;
-            _methodResolvers = resolvers;
-            _typeConverter = converter ?? new StandardTypeConverter();
-            _rootObject = rootObject ?? TypedValue.NULL;
+            PropertyAccessors = accessors;
+            MethodResolvers = resolvers;
+            TypeConverter = converter ?? new StandardTypeConverter();
+            RootObject = rootObject ?? TypedValue.NULL;
         }
 
-        public ITypedValue RootObject => _rootObject;
+        public ITypedValue RootObject { get; }
 
-        public List<IPropertyAccessor> PropertyAccessors => _propertyAccessors;
+        public List<IPropertyAccessor> PropertyAccessors { get; }
 
         public List<IConstructorResolver> ConstructorResolvers => _emptyConstrResolver;
 
-        public List<IMethodResolver> MethodResolvers => _methodResolvers;
+        public List<IMethodResolver> MethodResolvers { get; }
 
         public IServiceResolver ServiceResolver => null;
 
-        public ITypeLocator TypeLocator => _typeNotFoundLocator;
+        public ITypeLocator TypeLocator { get; } = new TypeNotFoundTypeLocator();
 
-        public ITypeConverter TypeConverter => _typeConverter;
+        public ITypeConverter TypeConverter { get; }
 
-        public ITypeComparator TypeComparator => _typeComparator;
+        public ITypeComparator TypeComparator { get; } = new StandardTypeComparator();
 
-        public IOperatorOverloader OperatorOverloader => _operatorOverloader;
+        public IOperatorOverloader OperatorOverloader { get; } = new StandardOperatorOverloader();
 
         public static Builder ForPropertyAccessors(params IPropertyAccessor[] accessors)
         {

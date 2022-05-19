@@ -11,7 +11,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     public class TestHystrixCommand<T> : HystrixCommand<T>
     {
         public ITestOutputHelper _output;
-        private readonly TestCommandBuilder builder;
 
         public TestHystrixCommand(TestCommandBuilder builder)
             : base(
@@ -30,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                   null,
                   null)
         {
-            this.builder = builder;
+            this.Builder = builder;
         }
 
         public TestHystrixCommand(TestCommandBuilder builder, HystrixCommandExecutionHook executionHook)
@@ -50,13 +49,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                   null,
                   null)
         {
-            this.builder = builder;
+            this.Builder = builder;
         }
 
-        public virtual TestCommandBuilder Builder
-        {
-            get { return builder; }
-        }
+        public virtual TestCommandBuilder Builder { get; }
 
         public static TestCommandBuilder TestPropsBuilder()
         {

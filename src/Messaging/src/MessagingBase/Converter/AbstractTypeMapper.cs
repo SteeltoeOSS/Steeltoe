@@ -14,11 +14,9 @@ namespace Steeltoe.Messaging.Converter
         public const string DEFAULT_CONTENT_CLASSID_FIELD_NAME = MessageHeaders.CONTENT_TYPE_ID;
         public const string DEFAULT_KEY_CLASSID_FIELD_NAME = MessageHeaders.KEY_TYPE_ID;
 
-        private readonly Dictionary<string, Type> _idClassMapping = new ();
-
         private readonly Dictionary<Type, string> _classIdMapping = new ();
 
-        public Dictionary<string, Type> IdClassMapping => _idClassMapping;
+        public Dictionary<string, Type> IdClassMapping { get; } = new ();
 
         public string ClassIdFieldName { get; internal set; } = DEFAULT_CLASSID_FIELD_NAME;
 
@@ -30,7 +28,7 @@ namespace Steeltoe.Messaging.Converter
         {
             foreach (var entry in mapping)
             {
-                _idClassMapping[entry.Key] = entry.Value;
+                IdClassMapping[entry.Key] = entry.Value;
             }
 
             CreateReverseMap();
@@ -147,7 +145,7 @@ namespace Steeltoe.Messaging.Converter
         private void CreateReverseMap()
         {
             _classIdMapping.Clear();
-            foreach (var entry in _idClassMapping)
+            foreach (var entry in IdClassMapping)
             {
                 var id = entry.Key;
                 var clazz = entry.Value;

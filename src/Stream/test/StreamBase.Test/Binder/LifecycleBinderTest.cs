@@ -32,24 +32,19 @@ namespace Steeltoe.Stream.Binder
 
         public class SimpleLifecycle : ILifecycle
         {
-            private bool running;
-
             public Task Start()
             {
-                running = true;
+                IsRunning = true;
                 return Task.CompletedTask;
             }
 
             public Task Stop()
             {
-                running = false;
+                IsRunning = false;
                 return Task.CompletedTask;
             }
 
-            public bool IsRunning
-            {
-                get { return running; }
-            }
+            public bool IsRunning { get; private set; }
         }
     }
 }

@@ -8,17 +8,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
     {
         public string Country;
 
-        private string city;
+        public override string ToString() => City;
 
-        public override string ToString() => city;
+        public string City { get; set; }
 
-        public string City
-        {
-            get => city;
-            set => city = value;
-        }
-
-        public PlaceOfBirth(string str) => city = str;
+        public PlaceOfBirth(string str) => City = str;
 
         public int DoubleIt(int i) => i * 2;
 
@@ -29,9 +23,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
                 return false;
             }
 
-            return city.Equals(oPob.city);
+            return City.Equals(oPob.City);
         }
 
-        public override int GetHashCode() => city.GetHashCode();
+        public override int GetHashCode() => City.GetHashCode();
     }
 }

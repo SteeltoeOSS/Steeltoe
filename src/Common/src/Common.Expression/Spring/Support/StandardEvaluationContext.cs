@@ -13,8 +13,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
     {
         private readonly ConcurrentDictionary<string, object> _variables = new ();
 
-        private ITypedValue _rootObject;
-
         private volatile List<IPropertyAccessor> _propertyAccessors;
 
         private volatile List<IConstructorResolver> _constructorResolvers;
@@ -22,8 +20,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         private volatile List<IMethodResolver> _methodResolvers;
 
         private volatile ReflectiveMethodResolver _reflectiveMethodResolver;
-
-        private IServiceResolver _serviceResolver;
 
         private ITypeLocator _typeLocator;
 
@@ -35,21 +31,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public StandardEvaluationContext()
         {
-            _rootObject = TypedValue.NULL;
+            RootObject = TypedValue.NULL;
         }
 
         public StandardEvaluationContext(object rootObject)
         {
-            _rootObject = new TypedValue(rootObject);
+            RootObject = new TypedValue(rootObject);
         }
 
-        public ITypedValue RootObject => _rootObject;
+        public ITypedValue RootObject { get; private set; }
 
-        public IServiceResolver ServiceResolver
-        {
-            get => _serviceResolver;
-            set => _serviceResolver = value;
-        }
+        public IServiceResolver ServiceResolver { get; set; }
 
         public List<IPropertyAccessor> PropertyAccessors
         {
@@ -214,12 +206,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public void SetRootObject(object rootObject, Type typeDescriptor)
         {
-            _rootObject = new TypedValue(rootObject, typeDescriptor);
+            RootObject = new TypedValue(rootObject, typeDescriptor);
         }
 
         public void SetRootObject(object rootObject)
         {
-            _rootObject = rootObject != null ? new TypedValue(rootObject) : TypedValue.NULL;
+            RootObject = rootObject != null ? new TypedValue(rootObject) : TypedValue.NULL;
         }
 
         public void AddPropertyAccessor(IPropertyAccessor accessor)

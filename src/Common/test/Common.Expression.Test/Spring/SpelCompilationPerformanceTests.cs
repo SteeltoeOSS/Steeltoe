@@ -834,30 +834,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Payload
         {
-            private Two[] _dir = new Two[] { new Two() };
-
-            public Two[] DR => _dir;
+            public Two[] DR { get; } = new Two[] { new Two() };
         }
 
         public class Two
         {
-            private Three _three = new ();
-
-            public Three DRFixedSection => _three;
+            public Three DRFixedSection { get; } = new ();
         }
 
         public class Three
         {
-            private double _duration = 0.4d;
-
-            public double Duration
-            {
-                get => _duration;
-                set
-                {
-                    _duration = value;
-                }
-            }
+            public double Duration { get; set; } = 0.4d;
         }
 
         public class NumberHolder
@@ -883,13 +870,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             public Bar Bar = new ();
 
-            private Bar b = new ();
-
-            public Bar Baz => b;
+            public Bar Baz { get; } = new ();
 
             public Bar Bay()
             {
-                return b;
+                return Baz;
             }
         }
 
