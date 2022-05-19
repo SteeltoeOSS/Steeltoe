@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                     OperationInterruptedException => new RabbitIOException(exception),
                     IOException => new RabbitIOException(exception),
                     TimeoutException => new RabbitTimeoutException(exception),
-                    ConsumerCancelledException => throw exception,
+                    ConsumerCancelledException => exception,
                     _ => new RabbitUncategorizedException(exception)
                 };
     }
