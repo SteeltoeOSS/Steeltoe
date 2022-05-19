@@ -40,10 +40,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     tc.AdditionalServices = (services, configuration) =>
                     {
                         services.AddHeapDumpActuatorServices(configuration);
-                        services.AddSingleton<IHeapDumper>(sp =>
-                        {
-                            return new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>());
-                        });
+                        services.AddSingleton<IHeapDumper>(sp => new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
                     };
 
                     var ep = tc.GetService<IHeapDumpEndpoint>();
@@ -63,10 +60,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                         tc.AdditionalServices = (services, configuration) =>
                         {
                             services.AddHeapDumpActuatorServices(configuration);
-                            services.AddSingleton<IHeapDumper>(sp =>
-                            {
-                                return new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>());
-                            });
+                            services.AddSingleton<IHeapDumper>(sp => new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
                         };
 
                         var ep = tc.GetService<IHeapDumpEndpoint>();

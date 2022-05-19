@@ -250,7 +250,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     try
                     {
-                        Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 10000);
+                        Time.WaitUntil(() => _token.IsCancellationRequested, 10000);
                         _token.ThrowIfCancellationRequested();
 
                         // output.WriteLine("Woke up from sleep!");

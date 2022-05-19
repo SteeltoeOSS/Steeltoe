@@ -264,7 +264,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 {
                     // the rare scenario where multiple threads raced to create the very first bucket
                     // wait slightly and then use recursion while the other thread finishes creating a bucket
-                    if (Time.WaitUntil(() => { return _buckets.PeekLast != null; }, 500))
+                    if (Time.WaitUntil(() => _buckets.PeekLast != null, 500))
                     {
                         return _buckets.PeekLast;
                     }

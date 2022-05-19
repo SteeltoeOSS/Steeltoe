@@ -18,13 +18,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
 
         private static Func<long, HystrixConfiguration> AllConfig { get; } =
-            (long timestamp) =>
-            {
-                return HystrixConfiguration.From(
-                        AllCommandConfig(timestamp),
-                        AllThreadPoolConfig(timestamp),
-                        AllCollapserConfig(timestamp));
-            };
+            (long timestamp) => HystrixConfiguration.From(
+                AllCommandConfig(timestamp),
+                AllThreadPoolConfig(timestamp),
+                AllCollapserConfig(timestamp));
 
         public HystrixConfigurationStream(int intervalInMilliseconds)
         {
@@ -145,21 +142,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             };
 
         private static Func<HystrixConfiguration, Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>> OnlyCommandConfig { get; } =
-            (HystrixConfiguration hystrixConfiguration) =>
-            {
-                return hystrixConfiguration.CommandConfig;
-            };
+            (HystrixConfiguration hystrixConfiguration) => hystrixConfiguration.CommandConfig;
 
         private static Func<HystrixConfiguration, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>> OnlyThreadPoolConfig { get; } =
-            (HystrixConfiguration hystrixConfiguration) =>
-            {
-                return hystrixConfiguration.ThreadPoolConfig;
-            };
+            (HystrixConfiguration hystrixConfiguration) => hystrixConfiguration.ThreadPoolConfig;
 
         private static Func<HystrixConfiguration, Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>> OnlyCollapserConfig { get; } =
-            (HystrixConfiguration hystrixConfiguration) =>
-            {
-                return hystrixConfiguration.CollapserConfig;
-            };
+            (HystrixConfiguration hystrixConfiguration) => hystrixConfiguration.CollapserConfig;
     }
 }

@@ -770,10 +770,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual Task<T> ReceiveAndConvertAsync<T>(string queueName, int timeoutMillis, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() =>
-            {
-                return (T)DoReceiveAndConvert(queueName, timeoutMillis, typeof(T), cancellationToken);
-            });
+            return Task.Run(() => (T)DoReceiveAndConvert(queueName, timeoutMillis, typeof(T), cancellationToken));
         }
 
         public virtual Task<object> ReceiveAndConvertAsync(Type type, CancellationToken cancellation = default)
@@ -793,10 +790,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual Task<object> ReceiveAndConvertAsync(string queueName, int timeoutMillis, Type type, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() =>
-            {
-                return DoReceiveAndConvert(queueName, timeoutMillis, type, cancellationToken);
-            });
+            return Task.Run(() => DoReceiveAndConvert(queueName, timeoutMillis, type, cancellationToken));
         }
 
         #endregion RabbitReceiveAndConvert
@@ -996,10 +990,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
         {
             return Task.Run(
-            () =>
-            {
-                return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T));
-            }, cancellationToken);
+            () => (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T)), cancellationToken);
         }
 
         public virtual object ConvertSendAndReceiveAsType(object message, Type type)
@@ -1565,10 +1556,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
 
             return Execute(
-                channel =>
-                {
-                    return DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel, cancellationToken);
-                }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
+                channel => DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel, cancellationToken), ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
         }
 
         protected virtual IMessage DoSendAndReceiveWithDirect(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)

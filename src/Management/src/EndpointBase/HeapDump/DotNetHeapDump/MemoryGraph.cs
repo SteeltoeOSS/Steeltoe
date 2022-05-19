@@ -35,8 +35,8 @@ namespace Graphs
         {
             Deserializer deserializer = new Deserializer(inputFileName);
             deserializer.TypeResolver = typeName => System.Type.GetType(typeName);  // resolve types in this assembly (and mscorlib)
-            deserializer.RegisterFactory(typeof(MemoryGraph), delegate () { return new MemoryGraph(1); });
-            deserializer.RegisterFactory(typeof(Graphs.Module), delegate () { return new Graphs.Module(0); });
+            deserializer.RegisterFactory(typeof(MemoryGraph), () => new MemoryGraph(1));
+            deserializer.RegisterFactory(typeof(Graphs.Module), () => new Graphs.Module(0));
             return (MemoryGraph)deserializer.GetEntryObject();
         }
 

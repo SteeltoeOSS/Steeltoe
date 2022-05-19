@@ -32,7 +32,7 @@ namespace Steeltoe.Common.Util
         {
             while (!tokenSource.IsCancellationRequested)
             {
-                Time.WaitUntil(() => { return tokenSource.IsCancellationRequested; }, (int)_period.TotalMilliseconds);
+                Time.WaitUntil(() => tokenSource.IsCancellationRequested, (int)_period.TotalMilliseconds);
 
                 if (!tokenSource.IsCancellationRequested)
                 {

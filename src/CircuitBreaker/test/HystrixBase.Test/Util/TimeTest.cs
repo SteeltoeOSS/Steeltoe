@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            Time.WaitUntil(() => { return false; }, 1000);
+            Time.WaitUntil(() => false, 1000);
             stopWatch.Stop();
             Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - GRACE, 1000 + GRACE);
         }

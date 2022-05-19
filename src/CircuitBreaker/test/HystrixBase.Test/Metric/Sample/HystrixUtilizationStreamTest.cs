@@ -254,10 +254,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test
                 }
             });
 
-            var checkZippedEqual = fast.Zip(slow, (payload, payload2) =>
-            {
-                return payload == payload2;
-            });
+            var checkZippedEqual = fast.Zip(slow, (payload, payload2) => payload == payload2);
 
             var s1 = checkZippedEqual
                     .Take(10000)

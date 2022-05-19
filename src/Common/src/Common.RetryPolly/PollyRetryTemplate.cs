@@ -134,10 +134,7 @@ namespace Steeltoe.Common.Retry
         private Policy<T> BuildPolicy<T>()
         {
             var delay = Backoff.ExponentialBackoff(TimeSpan.FromMilliseconds(_backOffInitialInterval), _maxAttempts - 1, _backOffMultiplier, true);
-            var retryPolicy = Policy<T>.HandleInner<Exception>((e) =>
-            {
-                return _retryableExceptions.Classify(e);
-            })
+            var retryPolicy = Policy<T>.HandleInner<Exception>((e) => _retryableExceptions.Classify(e))
             .WaitAndRetry(delay, (delegateResult, time, count, context) => OnRetry(delegateResult, time, count, context));
 
             var fallbackPolicy = Policy<T>.Handle<Exception>()

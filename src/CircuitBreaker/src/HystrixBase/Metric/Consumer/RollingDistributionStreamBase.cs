@@ -28,9 +28,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             return CachedValuesHistogram.BackedBy(histogram);
         };
 
-        protected static Func<IObservable<CachedValuesHistogram>, IObservable<IList<CachedValuesHistogram>>> ConvertToList { get; } = (windowOf2) =>
-        {
-            return windowOf2.ToList();
-        };
+        protected static Func<IObservable<CachedValuesHistogram>, IObservable<IList<CachedValuesHistogram>>> ConvertToList { get; } = (windowOf2) => windowOf2.ToList();
     }
 }

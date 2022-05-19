@@ -170,7 +170,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 try
                 {
                     // sw.Start();
-                    Time.WaitUntil(() => { return _token.IsCancellationRequested; }, executionLatency);
+                    Time.WaitUntil(() => _token.IsCancellationRequested, executionLatency);
 
                     // sw.Stop();
                     _token.ThrowIfCancellationRequested();

@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         public HystrixRequestVariableDefault(T value)
         {
-            _valueFactory = () => { return value; };
+            _valueFactory = () => value;
         }
 
         public HystrixRequestVariableDefault(Func<T> valueFactory, Action<T> disposeAction)

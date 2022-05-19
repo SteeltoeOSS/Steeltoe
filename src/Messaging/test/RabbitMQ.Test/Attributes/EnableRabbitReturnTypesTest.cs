@@ -233,10 +233,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             services.AddRabbitListenerEndpointRegistry();
             services.AddRabbitListenerEndpointRegistrar();
             services.AddRabbitListenerAttributeProcessor();
-            services.AddSingleton<IConnectionFactory>((p) =>
-            {
-                return new CachingConnectionFactory("localhost");
-            });
+            services.AddSingleton<IConnectionFactory>((p) => new CachingConnectionFactory("localhost"));
 
             services.AddRabbitListenerContainerFactory((p, f) =>
             {

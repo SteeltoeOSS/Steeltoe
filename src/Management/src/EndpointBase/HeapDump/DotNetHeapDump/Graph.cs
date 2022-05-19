@@ -379,10 +379,7 @@ namespace Graphs
                 sizeAndCount.Size += node.Size;
             }
 
-            Array.Sort(ret, delegate (SizeAndCount x, SizeAndCount y)
-            {
-                return y.Size.CompareTo(x.Size);
-            });
+            Array.Sort(ret, (x, y) => y.Size.CompareTo(x.Size));
 #if DEBUG
             int totalCount = 0;
             long totalSize = 0;

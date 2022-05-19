@@ -20,7 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             var timerReference = new TimerReference(listener, TimeSpan.FromMilliseconds(1000));
             stopWatch.Start();
             timerReference.Start();
-            Time.WaitUntil(() => { return !stopWatch.IsRunning; }, 2000);
+            Time.WaitUntil(() => !stopWatch.IsRunning, 2000);
             Assert.InRange(stopWatch.ElapsedMilliseconds, 950, 1000 + 200);
         }
 

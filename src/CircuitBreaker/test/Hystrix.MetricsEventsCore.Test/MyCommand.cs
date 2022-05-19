@@ -9,8 +9,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         public MyCommand()
             : base(
                 HystrixCommandGroupKeyDefault.AsKey("MyCommandGroup"),
-                () => { return 1; },
-                () => { return 2; })
+                () => 1,
+                () => 2)
         {
         }
     }

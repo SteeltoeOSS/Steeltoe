@@ -109,10 +109,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static Func<int> GetCurrentConcurrencyThunk(IHystrixThreadPoolKey threadPoolKey)
         {
-            return () =>
-            {
-                return GetInstance(threadPoolKey)._concurrentExecutionCount.Value;
-            };
+            return () => GetInstance(threadPoolKey)._concurrentExecutionCount.Value;
         }
 
         public IHystrixTaskScheduler TaskScheduler { get; }

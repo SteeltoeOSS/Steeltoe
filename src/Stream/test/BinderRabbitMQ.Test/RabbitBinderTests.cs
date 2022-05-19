@@ -812,10 +812,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             moduleInputChannel.Subscribe(new TestMessageHandler()
             {
-                OnHandleMessage = (message) =>
-                {
-                    throw new Exception("foo");
-                }
+                OnHandleMessage = (message) => throw new Exception("foo")
             });
 
             var consumerBinding = binder.BindConsumer("durabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -863,10 +860,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             moduleInputChannel.ComponentName = "nondurabletest";
             moduleInputChannel.Subscribe(new TestMessageHandler()
             {
-                OnHandleMessage = (message) =>
-                {
-                    throw new Exception("foo");
-                }
+                OnHandleMessage = (message) => throw new Exception("foo")
             });
 
             var consumerBinding = binder.BindConsumer("nondurabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -892,10 +886,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             moduleInputChannel.ComponentName = "dlqTest";
             moduleInputChannel.Subscribe(new TestMessageHandler()
             {
-                OnHandleMessage = (message) =>
-                {
-                    throw new Exception("foo");
-                }
+                OnHandleMessage = (message) => throw new Exception("foo")
             });
             consumerProperties.Multiplex = true;
             var consumerBinding = binder.BindConsumer("dlqtest,dlqtest2", "default", moduleInputChannel, consumerProperties);
@@ -1816,10 +1807,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     inboundBindTarget.Poll(new TestMessageHandler()
                     {
-                        OnHandleMessage = (m) =>
-                        {
-                            throw new Exception("test DLQ");
-                        }
+                        OnHandleMessage = (m) => throw new Exception("test DLQ")
                     });
                     Thread.Sleep(100);
                 }
@@ -1856,10 +1844,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     inboundBindTarget.Poll(new TestMessageHandler()
                     {
-                        OnHandleMessage = (m) =>
-                        {
-                            throw new Exception("test DLQ");
-                        }
+                        OnHandleMessage = (m) => throw new Exception("test DLQ")
                     });
 
                     Thread.Sleep(100);
@@ -1898,10 +1883,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 Thread.Sleep(100);
                 polled = inboundBindTarget.Poll(new TestMessageHandler()
                 {
-                    OnHandleMessage = (m) =>
-                    {
-                        throw new Exception("test DLQ");
-                    }
+                    OnHandleMessage = (m) => throw new Exception("test DLQ")
                 });
             }
 

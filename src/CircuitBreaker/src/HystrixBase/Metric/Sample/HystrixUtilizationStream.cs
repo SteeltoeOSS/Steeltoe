@@ -18,12 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
 
         private static Func<long, HystrixUtilization> AllUtilization { get; } =
-          (long timestamp) =>
-        {
-            return HystrixUtilization.From(
-                    AllCommandUtilization(timestamp),
-                    AllThreadPoolUtilization(timestamp));
-        };
+            (long timestamp) => HystrixUtilization.From(AllCommandUtilization(timestamp), AllThreadPoolUtilization(timestamp));
 
         public HystrixUtilizationStream(int intervalInMilliseconds)
         {
@@ -115,15 +110,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
             };
 
         private static Func<HystrixUtilization, Dictionary<IHystrixCommandKey, HystrixCommandUtilization>> OnlyCommandUtilization { get; } =
-            (HystrixUtilization hystrixUtilization) =>
-            {
-                return hystrixUtilization.CommandUtilizationMap;
-            };
+            (HystrixUtilization hystrixUtilization) => hystrixUtilization.CommandUtilizationMap;
 
         private static Func<HystrixUtilization, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>> OnlyThreadPoolUtilization { get; } =
-            (HystrixUtilization hystrixUtilization) =>
-            {
-                return hystrixUtilization.ThreadPoolUtilizationMap;
-            };
+            (HystrixUtilization hystrixUtilization) => hystrixUtilization.ThreadPoolUtilizationMap;
     }
 }

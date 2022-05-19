@@ -16,10 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         private class HystrixRequestCacheVariable : HystrixRequestVariableDefault<ConcurrentDictionary<ValueCacheKey, object>>
         {
             public HystrixRequestCacheVariable()
-                : base(() =>
-                {
-                    return new ConcurrentDictionary<ValueCacheKey, object>();
-                })
+                : base(() => new ConcurrentDictionary<ValueCacheKey, object>())
             {
             }
         }

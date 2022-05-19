@@ -34,15 +34,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             var services = CreateServiceCollection();
             services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, false, false, true));
-            services.AddSingleton((p) =>
-            {
-                return CreateMessageListenerContainer(p, TEST_MISMATCH);
-            });
+            services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
-            services.AddSingleton<ILifecycle>(p =>
-            {
-                return p.GetService<DirectMessageListenerContainer>();
-            });
+            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
 
             provider = services.BuildServiceProvider();
             try
@@ -60,15 +54,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public async Task TestMismatchedQueue()
         {
             var services = CreateServiceCollection();
-            services.AddSingleton((p) =>
-            {
-                return CreateMessageListenerContainer(p, TEST_MISMATCH);
-            });
+            services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
-            services.AddSingleton<ILifecycle>(p =>
-            {
-                return p.GetService<DirectMessageListenerContainer>();
-            });
+            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
             services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, false, false, true));
             services.AddRabbitAdmin();
 
@@ -88,15 +76,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public async Task TestMismatchedQueueDuringRestart()
         {
             var services = CreateServiceCollection();
-            services.AddSingleton((p) =>
-            {
-                return CreateMessageListenerContainer(p, TEST_MISMATCH);
-            });
+            services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
-            services.AddSingleton<ILifecycle>(p =>
-            {
-                return p.GetService<DirectMessageListenerContainer>();
-            });
+            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
             services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, true, false, false));
             services.AddRabbitAdmin();
             provider = services.BuildServiceProvider();
@@ -127,15 +109,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public async Task TestMismatchedQueueDuringRestartMultiQueue()
         {
             var services = CreateServiceCollection();
-            services.AddSingleton((p) =>
-            {
-                return CreateMessageListenerContainer(p, TEST_MISMATCH, TEST_MISMATCH2);
-            });
+            services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH, TEST_MISMATCH2));
 
-            services.AddSingleton<ILifecycle>(p =>
-            {
-                return p.GetService<DirectMessageListenerContainer>();
-            });
+            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
             services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, true, false, false));
             services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH2, true, false, false));
             services.AddRabbitAdmin();

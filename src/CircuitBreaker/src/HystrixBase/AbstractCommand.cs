@@ -982,7 +982,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void TimeoutThreadAction()
         {
-            if (!Time.WaitUntil(() => { return isCommandTimedOut.Value == TimedOutStatus.COMPLETED; }, options.ExecutionTimeoutInMilliseconds))
+            if (!Time.WaitUntil(() => isCommandTimedOut.Value == TimedOutStatus.COMPLETED, options.ExecutionTimeoutInMilliseconds))
             {
 #pragma warning disable S1066 // Collapsible "if" statements should be merged
                 if (isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.TIMED_OUT))

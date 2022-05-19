@@ -14,10 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         private static readonly int NUM_EVENT_TYPES = HystrixEventTypeHelper.Values.Count;
 
-        private static Func<HealthCounts, long[], HealthCounts> HealthCheckAccumulator { get; } = (healthCounts, bucketEventCounts) =>
-       {
-           return healthCounts.Plus(bucketEventCounts);
-       };
+        private static Func<HealthCounts, long[], HealthCounts> HealthCheckAccumulator { get; } = (healthCounts, bucketEventCounts) => healthCounts.Plus(bucketEventCounts);
 
         public static HealthCountsStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
         {

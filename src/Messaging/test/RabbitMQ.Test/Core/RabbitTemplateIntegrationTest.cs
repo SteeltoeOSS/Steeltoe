@@ -1326,7 +1326,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 {
                     template.ReceiveAndReply<IMessage, IMessage>(
                         message => message,
-                        (request, reply) => { throw new PlannedException(); });
+                        (request, reply) => throw new PlannedException());
                 });
             }
             catch (Exception e)

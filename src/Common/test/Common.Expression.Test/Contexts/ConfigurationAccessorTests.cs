@@ -27,10 +27,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 .Build();
             var collection = new ServiceCollection();
             collection.AddSingleton<IConfiguration>(config);
-            collection.AddSingleton<IApplicationContext>((p) =>
-            {
-                return new GenericApplicationContext(p, config);
-            });
+            collection.AddSingleton<IApplicationContext>((p) => new GenericApplicationContext(p, config));
 
             serviceProvider = collection.BuildServiceProvider();
         }

@@ -906,10 +906,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
                 services.AddRabbitListenerErrorHandler<UpcaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
                 services.AddRabbitListenerErrorHandler<AlwaysBarListenerErrorHandler>("alwaysBARHandler");
-                services.AddRabbitListenerErrorHandler<ThrowANewExceptionErrorHandler>("throwANewException", p =>
-                {
-                    return new ThrowANewExceptionErrorHandler(ErrorHandlerChannel);
-                });
+                services.AddRabbitListenerErrorHandler<ThrowANewExceptionErrorHandler>("throwANewException", p => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
                 return services;
             }
 

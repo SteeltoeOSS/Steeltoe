@@ -2493,7 +2493,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             protected override string Run()
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 3000);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 3000);
                 _token.ThrowIfCancellationRequested();
                 return "hello";
             }
@@ -3572,10 +3572,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // the zip operator will subscribe to each observable.  there is a race between the error of the first
             // zipped observable terminating the zip and the subscription to the command's observable
-            var zipped = error.Zip(cmdResult, (s, integer) =>
-            {
-                return s + integer;
-            });
+            var zipped = error.Zip(cmdResult, (s, integer) => s + integer);
 
             var latch = new CountdownEvent(1);
 
@@ -3637,10 +3634,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestExecutionHookThreadSuccess()
         {
             AssertHooksOnSuccess(
-            () =>
-            {
-                return GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
-            },
+            () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS),
             (command) =>
             {
                 var hook = command.Builder.ExecutionHook;
@@ -3659,10 +3653,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestExecutionHookThreadBadRequestException()
         {
             AssertHooksOnFailure(
-            () =>
-            {
-                return GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.BAD_REQUEST);
-            },
+            () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.BAD_REQUEST),
             (command) =>
             {
                 var hook = command.Builder.ExecutionHook;
@@ -3682,10 +3673,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestExecutionHookThreadExceptionNoFallback()
         {
             AssertHooksOnFailure(
-            () =>
-            {
-                return GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, 0, FallbackResultTest.UNIMPLEMENTED);
-            },
+            () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, 0, FallbackResultTest.UNIMPLEMENTED),
             (command) =>
             {
                 var hook = command.Builder.ExecutionHook;
@@ -3756,10 +3744,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestExecutionHookThreadTimeoutNoFallbackRunSuccess()
         {
             AssertHooksOnFailure(
-            () =>
-            {
-                return GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, 200);
-            },
+            () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, 200),
             (command) =>
             {
                 var hook = command.Builder.ExecutionHook;
@@ -3829,10 +3814,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestExecutionHookThreadTimeoutNoFallbackRunFailure()
         {
             AssertHooksOnFailure(
-            () =>
-            {
-                return GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, 500, FallbackResultTest.UNIMPLEMENTED, 200);
-            },
+            () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, 500, FallbackResultTest.UNIMPLEMENTED, 200),
             (command) =>
             {
                 var hook = command.Builder.ExecutionHook;
@@ -4133,10 +4115,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestExecutionHookThreadShortCircuitNoFallback()
         {
             AssertHooksOnFailFast(
-            () =>
-            {
-                return GetCircuitOpenCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.UNIMPLEMENTED);
-            },
+            () => GetCircuitOpenCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.UNIMPLEMENTED),
             (command) =>
             {
                 var hook = command.Builder.ExecutionHook;
@@ -4200,10 +4179,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             GetCommand(key, ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 0, FallbackResultTest.UNIMPLEMENTED, 0, new TestCircuitBreaker(), null, 100, CacheEnabledTest.YES, 42, 10, 10).Observe();
 
             AssertHooksOnSuccess(
-            () =>
-            {
-                return GetCommand(key, ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 0, FallbackResultTest.UNIMPLEMENTED, 0, new TestCircuitBreaker(), null, 100, CacheEnabledTest.YES, 42, 10, 10);
-            },
+            () => GetCommand(key, ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 0, FallbackResultTest.UNIMPLEMENTED, 0, new TestCircuitBreaker(), null, 100, CacheEnabledTest.YES, 42, 10, 10),
             (command) =>
             {
                 var hook = command.Builder.ExecutionHook;
@@ -4552,7 +4528,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 try
                 {
                     _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " About to sleep for : " + latency);
-                    Time.WaitUntil(() => { return _token.IsCancellationRequested; }, latency);
+                    Time.WaitUntil(() => _token.IsCancellationRequested, latency);
                     _token.ThrowIfCancellationRequested();
 
                     _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Woke up from sleep!");
@@ -4652,7 +4628,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output?.WriteLine(">>> TestCommandRejection running " + sleepTime);
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, sleepTime);
+                Time.WaitUntil(() => _token.IsCancellationRequested, sleepTime);
                 _token.ThrowIfCancellationRequested();
                 output?.WriteLine(">>> TestCommandRejection finished " + (Time.CurrentTimeMillis - start));
             }
@@ -5251,7 +5227,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
                 _token.ThrowIfCancellationRequested();
             }
             catch (Exception e)
@@ -5289,7 +5265,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
                 _token.ThrowIfCancellationRequested();
             }
             catch (Exception)
@@ -5330,7 +5306,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
                 _token.ThrowIfCancellationRequested();
             }
             catch (Exception e)
@@ -5547,7 +5523,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 2000);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 2000);
                 _token.ThrowIfCancellationRequested();
             }
             catch (Exception)
@@ -5585,7 +5561,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 // _output?.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In fallback => " + ExecutionEvents)
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 30000);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 30000);
                 _token.ThrowIfCancellationRequested();
             }
             catch (Exception)
@@ -5701,7 +5677,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 1500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 1500);
                 _token.ThrowIfCancellationRequested();
 
                 return 1;
@@ -5830,7 +5806,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
                 _token.ThrowIfCancellationRequested();
                 return true;
             }
@@ -5853,7 +5829,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
                 _token.ThrowIfCancellationRequested();
                 return true;
             }
@@ -5880,7 +5856,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
                 _token.ThrowIfCancellationRequested();
                 return false;
             }
@@ -5911,7 +5887,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
                 _token.ThrowIfCancellationRequested();
                 return true;
             }

@@ -218,13 +218,13 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
 
     private GCHeapDump(Deserializer deserializer)
     {
-        deserializer.RegisterFactory(typeof(MemoryGraph), delegate () { return new MemoryGraph(1); });
-        deserializer.RegisterFactory(typeof(Graphs.Module), delegate () { return new Graphs.Module(0); });
-        deserializer.RegisterFactory(typeof(InteropInfo), delegate () { return new InteropInfo(); });
-        deserializer.RegisterFactory(typeof(GCHeapDump), delegate () { return this; });
-        deserializer.RegisterFactory(typeof(GCHeapDumpSegment), delegate () { return new GCHeapDumpSegment(); });
-        deserializer.RegisterFactory(typeof(JSHeapInfo), delegate () { return new JSHeapInfo(); });
-        deserializer.RegisterFactory(typeof(DotNetHeapInfo), delegate () { return new DotNetHeapInfo(); });
+        deserializer.RegisterFactory(typeof(MemoryGraph), () => new MemoryGraph(1));
+        deserializer.RegisterFactory(typeof(Graphs.Module), () => new Graphs.Module(0));
+        deserializer.RegisterFactory(typeof(InteropInfo), () => new InteropInfo());
+        deserializer.RegisterFactory(typeof(GCHeapDump), () => this);
+        deserializer.RegisterFactory(typeof(GCHeapDumpSegment), () => new GCHeapDumpSegment());
+        deserializer.RegisterFactory(typeof(JSHeapInfo), () => new JSHeapInfo());
+        deserializer.RegisterFactory(typeof(DotNetHeapInfo), () => new DotNetHeapInfo());
 
         try
         {

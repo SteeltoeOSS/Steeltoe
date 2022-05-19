@@ -436,14 +436,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     .Take(10)
                     .ObserveOn(TaskPoolScheduler.Default);
 
-            var zipped = o1.Zip(o2, (healthCounts, healthCounts2) =>
-                    {
-                        return healthCounts == healthCounts2;  // we want object equality
-                    });
-            var reduced = zipped.Aggregate(true, (a, b) =>
-                    {
-                        return a && b;
-                    }).Select(n => n);
+            var zipped = o1.Zip(o2, (healthCounts, healthCounts2) => healthCounts == healthCounts2);
+            var reduced = zipped.Aggregate(true, (a, b) => a && b).Select(n => n);
 
             var rdisp = reduced.Subscribe(
                 (b) =>

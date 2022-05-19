@@ -29,10 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             return observedConcurrency.Aggregate(0, (arg1, arg2) => ReduceToMax(arg1, arg2)).Select(n => n);
         };
 
-        private static Func<HystrixCommandExecutionStarted, int> GetConcurrencyCountFromEvent { get; } = (@event) =>
-        {
-            return @event.CurrentConcurrency;
-        };
+        private static Func<HystrixCommandExecutionStarted, int> GetConcurrencyCountFromEvent { get; } = (@event) => @event.CurrentConcurrency;
 
         protected RollingConcurrencyStream(IHystrixEventStream<HystrixCommandExecutionStarted> inputEventStream, int numBuckets, int bucketSizeInMs)
         {

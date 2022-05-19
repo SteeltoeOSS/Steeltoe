@@ -139,10 +139,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             try
             {
                 var declareOk = RabbitTemplate.Execute(
-                    channel =>
-                    {
-                        return RC.IModelExensions.QueueDeclare(channel);
-                    });
+                    channel => RC.IModelExensions.QueueDeclare(channel));
                 return new Queue(declareOk.QueueName, false, true, true); // NOSONAR never null
             }
             catch (RabbitException e)

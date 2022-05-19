@@ -32,10 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             this.logger = logger;
             this.options = options.Value;
 
-            observable = stream.Observe().Map((data) =>
-            {
-                return Serialize.ToJsonList(data, this.discoveryClient);
-            });
+            observable = stream.Observe().Map((data) => Serialize.ToJsonList(data, this.discoveryClient));
 
             StartMetricsPublishing();
         }

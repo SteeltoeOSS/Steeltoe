@@ -564,7 +564,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             protected override bool Run()
             {
-                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, latencyToAdd);
+                Time.WaitUntil(() => _token.IsCancellationRequested, latencyToAdd);
                 _token.ThrowIfCancellationRequested();
 
                 if (shouldFail)

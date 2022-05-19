@@ -94,7 +94,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 throw new ArgumentNullException(nameof(app));
             }
 
-            ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (key, existing) => { return app; });
+            ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (key, existing) => app);
             AddInstances(app);
         }
 

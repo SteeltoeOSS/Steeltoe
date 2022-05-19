@@ -158,7 +158,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             Assert.False(ex.IsCanceled);
 
-            Time.WaitUntil(() => { return ex.Status == TaskStatus.Running; }, 200);
+            Time.WaitUntil(() => ex.Status == TaskStatus.Running, 200);
 
             // perform reset which should shut it down
             HystrixTimer.Reset();

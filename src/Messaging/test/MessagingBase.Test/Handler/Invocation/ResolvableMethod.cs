@@ -157,10 +157,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             public Builder<T> Returning(Type returnType)
             {
                 var message = "returnType=" + returnType.ToString();
-                AddFilter(message, method =>
-                {
-                    return method.ReturnType == returnType;
-                });
+                AddFilter(message, method => method.ReturnType == returnType);
                 return this;
             }
 
@@ -345,10 +342,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             public ParameterInfo Arg(Type type)
             {
-                filters.Add(new FuncPredicate(param =>
-                {
-                    return param.ParameterType == type;
-                }));
+                filters.Add(new FuncPredicate(param => param.ParameterType == type));
 
                 return Arg();
             }

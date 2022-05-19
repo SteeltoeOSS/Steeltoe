@@ -639,10 +639,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
         private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new ()
         {
-            OnCertificateValidated = context =>
-            {
-                return Task.CompletedTask;
-            }
+            OnCertificateValidated = context => Task.CompletedTask
         };
 
         private static class Certificates

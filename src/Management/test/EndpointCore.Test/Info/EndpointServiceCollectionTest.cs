@@ -48,13 +48,10 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             Assert.Equal(4, listOfContribs.Count);
 
             Assert.Contains(contribs, (item) =>
-            {
-                return
                 item.GetType() == typeof(GitInfoContributor) ||
                 item.GetType() == typeof(AppSettingsInfoContributor) ||
                 item.GetType() == typeof(BuildInfoContributor) ||
-                item.GetType() == typeof(TestInfoContributor);
-            });
+                item.GetType() == typeof(TestInfoContributor));
 
             var ep = serviceProvider.GetService<InfoEndpoint>();
             Assert.NotNull(ep);

@@ -37,10 +37,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
             services.TryAddSingleton<Connection.IConnectionFactory, CachingConnectionFactory>();
             services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
-            services.AddSingleton((p) =>
-            {
-                return CreateDMLCContainer(p, latch3, latch4, message);
-            });
+            services.AddSingleton((p) => CreateDMLCContainer(p, latch3, latch4, message));
             services.AddRabbitAdmin();
             services.AddRabbitTemplate();
             var provider = services.BuildServiceProvider();
