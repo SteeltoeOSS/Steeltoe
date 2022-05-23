@@ -74,10 +74,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 
             var req = GetHttpRequestMessage();
             var labels = observer.GetLabels(req, HttpStatusCode.InternalServerError).ToList();
-            labels.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"));
-            labels.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"));
-            labels.Contains(KeyValuePair.Create("status", (object)"500"));
-            labels.Contains(KeyValuePair.Create("method", (object)"GET"));
+
+            Assert.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"), labels);
+            Assert.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"), labels);
+            Assert.Contains(KeyValuePair.Create("status", (object)"500"), labels);
+            Assert.Contains(KeyValuePair.Create("method", (object)"GET"), labels);
         }
 
         [Fact]

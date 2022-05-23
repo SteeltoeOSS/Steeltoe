@@ -105,11 +105,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
             context.Response.StatusCode = 404;
 
-            var tagContext = observer.GetLabelSets(context);
-            tagContext.Contains(KeyValuePair.Create("exception", (object)"ArgumentNullException"));
-            tagContext.Contains(KeyValuePair.Create("uri", (object)"/foobar"));
-            tagContext.Contains(KeyValuePair.Create("status", (object)"404"));
-            tagContext.Contains(KeyValuePair.Create("method", (object)"GET"));
+            var tagContext = observer.GetLabelSets(context).ToList();
+
+            Assert.Contains(KeyValuePair.Create("exception", (object)"ArgumentNullException"), tagContext);
+            Assert.Contains(KeyValuePair.Create("uri", (object)"/foobar"), tagContext);
+            Assert.Contains(KeyValuePair.Create("status", (object)"404"), tagContext);
+            Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagContext);
         }
 
         [Fact]
