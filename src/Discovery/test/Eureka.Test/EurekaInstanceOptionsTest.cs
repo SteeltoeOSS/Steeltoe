@@ -250,7 +250,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfigurationUsesDefaultsWhenNoUrl()
         {
-            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { }).Build();
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
             var instOpts = new EurekaInstanceOptions();
 
             instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);

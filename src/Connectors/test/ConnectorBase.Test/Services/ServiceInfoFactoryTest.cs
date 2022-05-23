@@ -147,9 +147,7 @@ namespace Steeltoe.Connector.Services.Test
             uname = sif.GetUsernameFromCredentials(credentials);
             Assert.Equal("username", uname);
 
-            credentials = new Dictionary<string, Credential>()
-            {
-            };
+            credentials = new Dictionary<string, Credential>();
             uname = sif.GetUsernameFromCredentials(credentials);
             Assert.Null(uname);
         }
@@ -167,9 +165,7 @@ namespace Steeltoe.Connector.Services.Test
             var sif = new TestServiceInfoFactory(tags, scheme);
             var pwd = sif.GetPasswordFromCredentials(credentials);
             Assert.Equal("password", pwd);
-            credentials = new Dictionary<string, Credential>()
-            {
-            };
+            credentials = new Dictionary<string, Credential>();
             pwd = sif.GetPasswordFromCredentials(credentials);
             Assert.Null(pwd);
         }
@@ -187,9 +183,7 @@ namespace Steeltoe.Connector.Services.Test
             var sif = new TestServiceInfoFactory(tags, scheme);
             var port = sif.GetPortFromCredentials(credentials);
             Assert.Equal(123, port);
-            credentials = new Dictionary<string, Credential>()
-            {
-            };
+            credentials = new Dictionary<string, Credential>();
             port = sif.GetPortFromCredentials(credentials);
             Assert.Equal(0, port);
         }
@@ -215,9 +209,7 @@ namespace Steeltoe.Connector.Services.Test
             host = sif.GetHostFromCredentials(credentials);
             Assert.Equal("hostname", host);
 
-            credentials = new Dictionary<string, Credential>()
-            {
-            };
+            credentials = new Dictionary<string, Credential>();
             host = sif.GetHostFromCredentials(credentials);
             Assert.Null(host);
         }
@@ -243,9 +235,7 @@ namespace Steeltoe.Connector.Services.Test
             uri = sif.GetUriFromCredentials(credentials);
             Assert.Equal("https://boo:222", uri);
 
-            credentials = new Dictionary<string, Credential>()
-            {
-            };
+            credentials = new Dictionary<string, Credential>();
             uri = sif.GetUriFromCredentials(credentials);
             Assert.Null(uri);
         }
