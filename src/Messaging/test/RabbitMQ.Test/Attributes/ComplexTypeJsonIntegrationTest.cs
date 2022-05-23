@@ -150,11 +150,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             public ServiceCollection CreateContainer(IConfiguration config = null)
             {
                 var services = new ServiceCollection();
-                if (config == null)
-                {
-                    config = new ConfigurationBuilder()
-                        .Build();
-                }
+                config ??= new ConfigurationBuilder()
+                    .Build();
 
                 services.AddLogging(b =>
                 {

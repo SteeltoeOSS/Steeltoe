@@ -43,65 +43,18 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         internal void PostProcess(RabbitProducerOptions defaultOptions = null)
         {
-            if (!Compress.HasValue)
-            {
-                Compress = defaultOptions != null ? defaultOptions.Compress : false;
-            }
-
-            if (!BatchingEnabled.HasValue)
-            {
-                BatchingEnabled = defaultOptions?.BatchingEnabled ?? false;
-            }
-
-            if (!BatchSize.HasValue)
-            {
-                BatchSize = defaultOptions?.BatchSize ?? 100;
-            }
-
-            if (!BatchBufferLimit.HasValue)
-            {
-                BatchBufferLimit = defaultOptions?.BatchBufferLimit ?? 10000;
-            }
-
-            if (!BatchTimeout.HasValue)
-            {
-                BatchTimeout = defaultOptions?.BatchTimeout ?? 5000;
-            }
-
-            if (!Transacted.HasValue)
-            {
-                Transacted = defaultOptions?.Transacted ?? false;
-            }
-
-            if (!DeliveryMode.HasValue)
-            {
-                DeliveryMode = defaultOptions?.DeliveryMode ?? MessageDeliveryMode.PERSISTENT;
-            }
-
-            if (HeaderPatterns == null)
-            {
-                HeaderPatterns = defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
-            }
-
-            if (DelayExpression == null)
-            {
-                DelayExpression = defaultOptions?.DelayExpression;
-            }
-
-            if (RoutingKeyExpression == null)
-            {
-                RoutingKeyExpression = defaultOptions?.RoutingKeyExpression;
-            }
-
-            if (ConfirmAckChannel == null)
-            {
-                ConfirmAckChannel = defaultOptions?.ConfirmAckChannel;
-            }
-
-            if (!UseConfirmHeader.HasValue)
-            {
-                UseConfirmHeader = defaultOptions?.UseConfirmHeader ?? false;
-            }
+            Compress ??= defaultOptions != null ? defaultOptions.Compress : false;
+            BatchingEnabled ??= defaultOptions?.BatchingEnabled ?? false;
+            BatchSize ??= defaultOptions?.BatchSize ?? 100;
+            BatchBufferLimit ??= defaultOptions?.BatchBufferLimit ?? 10000;
+            BatchTimeout ??= defaultOptions?.BatchTimeout ?? 5000;
+            Transacted ??= defaultOptions?.Transacted ?? false;
+            DeliveryMode ??= defaultOptions?.DeliveryMode ?? MessageDeliveryMode.PERSISTENT;
+            HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
+            DelayExpression ??= defaultOptions?.DelayExpression;
+            RoutingKeyExpression ??= defaultOptions?.RoutingKeyExpression;
+            ConfirmAckChannel ??= defaultOptions?.ConfirmAckChannel;
+            UseConfirmHeader ??= defaultOptions?.UseConfirmHeader ?? false;
 
             base.PostProcess(defaultOptions);
         }

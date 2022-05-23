@@ -91,31 +91,11 @@ namespace Steeltoe.Stream.Config
         internal void PostProcess(string name, ConsumerOptions @default = null)
         {
             BindingName = name;
-
-            if (!Multiplex.HasValue)
-            {
-                Multiplex = (@default != null) ? @default.Multiplex : Multiplex_Default;
-            }
-
-            if (!UseNativeDecoding.HasValue)
-            {
-                UseNativeDecoding = (@default != null) ? @default.UseNativeDecoding : UseNativeDecoding_Default;
-            }
-
-            if (!HeaderMode.HasValue)
-            {
-                HeaderMode = (@default != null) ? @default.HeaderMode : Config.HeaderMode.None;
-            }
-
-            if (RetryableExceptions == null)
-            {
-                RetryableExceptions = (@default != null) ? @default.RetryableExceptions : new List<string>();
-            }
-
-            if (!DefaultRetryable.HasValue)
-            {
-                DefaultRetryable = (@default != null) ? @default.DefaultRetryable : DefaultRetryable_Default;
-            }
+            Multiplex ??= (@default != null) ? @default.Multiplex : Multiplex_Default;
+            UseNativeDecoding ??= (@default != null) ? @default.UseNativeDecoding : UseNativeDecoding_Default;
+            HeaderMode ??= (@default != null) ? @default.HeaderMode : Config.HeaderMode.None;
+            RetryableExceptions ??= (@default != null) ? @default.RetryableExceptions : new List<string>();
+            DefaultRetryable ??= (@default != null) ? @default.DefaultRetryable : DefaultRetryable_Default;
 
             if (double.IsNaN(BackOffMultiplier))
             {
@@ -147,25 +127,15 @@ namespace Steeltoe.Stream.Config
                 InstanceCount = (@default != null) ? @default.InstanceCount : InstanceCount_Default;
             }
 
-            if (InstanceIndexList == null)
-            {
-                InstanceIndexList = (@default != null) ? @default.InstanceIndexList : new List<int>();
-            }
-
-            if (!Partitioned.HasValue)
-            {
-                Partitioned = (@default != null) ? @default.Partitioned : IsPartitioned_Default;
-            }
+            InstanceIndexList ??= (@default != null) ? @default.InstanceIndexList : new List<int>();
+            Partitioned ??= (@default != null) ? @default.Partitioned : IsPartitioned_Default;
 
             if (Concurrency == int.MinValue)
             {
                 Concurrency = (@default != null) ? @default.Concurrency : Concurrency_Default;
             }
 
-            if (!AutoStartup.HasValue)
-            {
-                AutoStartup = (@default != null) ? @default.AutoStartup : AutoStartup_Default;
-            }
+            AutoStartup ??= (@default != null) ? @default.AutoStartup : AutoStartup_Default;
         }
     }
 }

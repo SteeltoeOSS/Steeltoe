@@ -52,15 +52,9 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             MessageConverter = converter;
             CustomArgumentResolvers = resolvers;
 
-            if (ConversionService == null)
-            {
-                ConversionService = new GenericConversionService();
-            }
+            ConversionService ??= new GenericConversionService();
 
-            if (MessageConverter == null)
-            {
-                MessageConverter = new GenericMessageConverter(ConversionService);
-            }
+            MessageConverter ??= new GenericMessageConverter(ConversionService);
 
             if (_argumentResolvers.Resolvers.Count == 0)
             {
@@ -99,15 +93,9 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         {
             _argumentResolvers.Clear();
 
-            if (ConversionService == null)
-            {
-                ConversionService = new GenericConversionService();
-            }
+            ConversionService ??= new GenericConversionService();
 
-            if (MessageConverter == null)
-            {
-                MessageConverter = new GenericMessageConverter(ConversionService);
-            }
+            MessageConverter ??= new GenericMessageConverter(ConversionService);
 
             if (_argumentResolvers.Resolvers.Count == 0)
             {

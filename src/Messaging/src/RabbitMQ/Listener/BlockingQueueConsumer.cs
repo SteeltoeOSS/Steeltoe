@@ -553,10 +553,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                         throw new RabbitIOException(e);
                     }
 
-                    if (failures == null)
-                    {
-                        failures = new DeclarationException(e);
-                    }
+                    failures ??= new DeclarationException(e);
 
                     failures.AddFailedQueue(queueName);
                 }

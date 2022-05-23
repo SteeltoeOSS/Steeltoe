@@ -218,10 +218,7 @@ namespace Steeltoe.Common.Util
                 var parameter = mimeType.Substring(index + 1, nextIndex - index - 1).Trim();
                 if (parameter.Length > 0)
                 {
-                    if (parameters == null)
-                    {
-                        parameters = new Dictionary<string, string>(4);
-                    }
+                    parameters ??= new Dictionary<string, string>(4);
 
                     var eqIndex = parameter.IndexOf('=');
                     if (eqIndex >= 0)

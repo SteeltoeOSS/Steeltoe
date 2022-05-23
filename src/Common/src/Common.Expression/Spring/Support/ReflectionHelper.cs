@@ -228,10 +228,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public static ConstructorInfo GetAccessibleConstructor(Type clazz, params Type[] paramTypes)
         {
-            if (paramTypes == null)
-            {
-                paramTypes = Type.EmptyTypes;
-            }
+            paramTypes ??= Type.EmptyTypes;
 
             return clazz.GetConstructor(paramTypes);
         }

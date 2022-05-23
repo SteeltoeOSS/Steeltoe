@@ -77,10 +77,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 if (t.Kind == TokenKind.ASSIGN)
                 {
                     // a=b
-                    if (expr == null)
-                    {
-                        expr = new NullLiteral(t.StartPos - 1, t.EndPos - 1);
-                    }
+                    expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 1);
 
                     NextToken();
                     var assignedValue = EatLogicalOrExpression();
@@ -90,10 +87,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 if (t.Kind == TokenKind.ELVIS)
                 {
                     // a?:b (a if it isn't null, otherwise b)
-                    if (expr == null)
-                    {
-                        expr = new NullLiteral(t.StartPos - 1, t.EndPos - 2);
-                    }
+                    expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 2);
 
                     NextToken();  // elvis has left the building
                     var valueIfNull = EatExpression();
@@ -108,10 +102,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 if (t.Kind == TokenKind.QMARK)
                 {
                     // a?b:c
-                    if (expr == null)
-                    {
-                        expr = new NullLiteral(t.StartPos - 1, t.EndPos - 1);
-                    }
+                    expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 1);
 
                     NextToken();
                     var ifTrueExprValue = EatExpression();
@@ -350,13 +341,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             var node = EatNode();
             while (node != null)
             {
-                if (nodes == null)
+                nodes ??= new List<SpelNode>(4)
                 {
-                    nodes = new List<SpelNode>(4)
-                    {
-                        start
-                    };
-                }
+                    start
+                };
 
                 nodes.Add(node);
                 node = EatNode();

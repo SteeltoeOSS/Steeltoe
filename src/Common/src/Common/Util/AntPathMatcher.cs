@@ -724,11 +724,7 @@ namespace Steeltoe.Common.Util
                 {
                     get
                     {
-                        if (_length == null)
-                        {
-                            _length = _pattern != null ?
-                                    VARIABLE_PATTERN.Replace(_pattern, "#").Length : 0;
-                        }
+                        _length ??= _pattern != null ? VARIABLE_PATTERN.Replace(_pattern, "#").Length : 0;
 
                         return _length.Value;
                     }

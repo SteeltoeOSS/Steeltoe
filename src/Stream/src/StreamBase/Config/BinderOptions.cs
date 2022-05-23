@@ -27,20 +27,9 @@ namespace Steeltoe.Stream.Config
 
         internal void PostProcess()
         {
-            if (Environment == null)
-            {
-                Environment = new Dictionary<string, object>();
-            }
-
-            if (!InheritEnvironment.HasValue)
-            {
-                InheritEnvironment = InheritEnvironment_Default;
-            }
-
-            if (!DefaultCandidate.HasValue)
-            {
-                DefaultCandidate = DefaultCandidate_Default;
-            }
+            Environment ??= new Dictionary<string, object>();
+            InheritEnvironment ??= InheritEnvironment_Default;
+            DefaultCandidate ??= DefaultCandidate_Default;
         }
     }
 }

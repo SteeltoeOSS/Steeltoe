@@ -39,10 +39,7 @@ namespace Steeltoe.Integration.Support.Converter
         {
             if (_registerDefaults)
             {
-                if (_conversionService == null)
-                {
-                    _conversionService = DefaultConversionService.Singleton;
-                }
+                _conversionService ??= DefaultConversionService.Singleton;
 
                 Converters.Add(new GenericMessageConverter(_conversionService));
             }

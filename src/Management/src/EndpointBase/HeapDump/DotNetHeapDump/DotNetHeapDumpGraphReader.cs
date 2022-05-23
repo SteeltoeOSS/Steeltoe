@@ -458,10 +458,7 @@ internal class DotNetHeapDumpGraphReader
             Address start = data.RangeStart;
             Address end = start + data.RangeUsedLength;
 
-            if (DotNetHeapInfo.Segments == null)
-            {
-                DotNetHeapInfo.Segments = new List<GCHeapDumpSegment>();
-            }
+            DotNetHeapInfo.Segments ??= new List<GCHeapDumpSegment>();
 
             GCHeapDumpSegment segment = new GCHeapDumpSegment();
             segment.Start = start;

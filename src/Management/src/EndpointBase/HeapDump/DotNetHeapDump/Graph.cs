@@ -470,10 +470,7 @@ namespace Graphs
         private void ClearWorker()
         {
             RootIndex = NodeIndex.Invalid;
-            if (m_writer == null)
-            {
-                m_writer = new SegmentedMemoryStreamWriter(m_expectedNodeCount * 8);
-            }
+            m_writer ??= new SegmentedMemoryStreamWriter(m_expectedNodeCount * 8);
 
             m_totalSize = 0;
             m_totalRefs = 0;
@@ -792,10 +789,7 @@ namespace Graphs
         public virtual void WriteXml(TextWriter writer, bool includeChildren = true, string prefix = "", NodeType typeStorage = null, string additinalAttribs = "")
         {
             Debug.Assert(Index != NodeIndex.Invalid);
-            if (typeStorage == null)
-            {
-                typeStorage = m_graph.AllocTypeNodeStorage();
-            }
+            typeStorage ??= m_graph.AllocTypeNodeStorage();
 
             if (m_graph.m_nodes[(int)Index] == StreamLabel.Invalid)
             {
@@ -955,10 +949,7 @@ namespace Graphs
 
                         m_graph.m_types.UnderlyingArray[(int)m_index].Name = ret;
                     }
-                    if (ret == null)
-                    {
-                        ret = "TypeID(0x" + info.TypeID.ToString("x") + ")";
-                    }
+                    ret ??= "TypeID(0x" + info.TypeID.ToString("x") + ")";
                 }
                 return ret;
             }
@@ -1933,10 +1924,7 @@ internal class SpanningTree
 
     private void SetTypePriorities(string priorityPats)
     {
-        if (m_typePriorities == null)
-        {
-            m_typePriorities = new float[(int)Graph.NodeTypeIndexLimit];
-        }
+        m_typePriorities ??= new float[(int)Graph.NodeTypeIndexLimit];
 
         string[] priorityPatArray = priorityPats.Split(';');
         Regex[] priorityRegExArray = new Regex[priorityPatArray.Length];

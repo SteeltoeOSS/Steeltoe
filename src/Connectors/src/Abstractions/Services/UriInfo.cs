@@ -33,10 +33,7 @@ namespace Steeltoe.Connector.Services
             if (uri != null)
             {
                 Scheme = uri.Scheme;
-                if (Host == null)
-                {
-                    Host = uri.Host;
-                }
+                Host ??= uri.Host;
 
                 Port = uri.Port;
                 Path = GetPath(uri.PathAndQuery);
@@ -56,10 +53,7 @@ namespace Steeltoe.Connector.Services
             if (uri != null)
             {
                 Scheme = uri.Scheme;
-                if (Host == null)
-                {
-                    Host = uri.Host;
-                }
+                Host ??= uri.Host;
 
                 Port = uri.Port;
                 Path = GetPath(uri.PathAndQuery);

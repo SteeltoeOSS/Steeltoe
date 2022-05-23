@@ -57,10 +57,7 @@ namespace Steeltoe.Common.Http
             {
                 if (!validateCertificates)
                 {
-                    if (handler == null)
-                    {
-                        handler = new HttpClientHandler();
-                    }
+                    handler ??= new HttpClientHandler();
 
                     handler.ServerCertificateCustomValidationCallback = GetDisableDelegate();
                     handler.SslProtocols = SslProtocols.Tls12;
@@ -137,15 +134,9 @@ namespace Steeltoe.Common.Http
 
         public static string GetEncodedUserPassword(string user, string password)
         {
-            if (user == null)
-            {
-                user = string.Empty;
-            }
+            user ??= string.Empty;
 
-            if (password == null)
-            {
-                password = string.Empty;
-            }
+            password ??= string.Empty;
 
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }

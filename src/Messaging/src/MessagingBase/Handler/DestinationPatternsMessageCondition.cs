@@ -102,10 +102,7 @@ namespace Steeltoe.Messaging.Handler
             {
                 if (pattern.Equals(destination) || MatchPattern(pattern, destination))
                 {
-                    if (matches == null)
-                    {
-                        matches = new List<string>();
-                    }
+                    matches ??= new List<string>();
 
                     matches.Add(pattern);
                 }

@@ -28,10 +28,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             // At this point, .NET will only ever has one context and it must be named "dispatcherServlets"
             // For .NET, the mappingDict contains keys that represent the type name of the controller and then a
             // list of MappingDescriptions for that controller.
-            if (mappingDict is null)
-            {
-                mappingDict = new Dictionary<string, IList<MappingDescription>>();
-            }
+            mappingDict ??= new Dictionary<string, IList<MappingDescription>>();
 
             if (mappingDict.Count == 0)
             {

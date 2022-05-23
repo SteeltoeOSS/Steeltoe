@@ -145,10 +145,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                     resourceHolderToUse.AddConnection(connection);
                 }
 
-                if (channel == null)
-                {
-                    channel = resourceFactory.CreateChannel(connection);
-                }
+                channel ??= resourceFactory.CreateChannel(connection);
 
                 resourceHolderToUse.AddChannel(channel, connection);
 

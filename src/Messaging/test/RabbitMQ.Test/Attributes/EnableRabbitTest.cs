@@ -368,10 +368,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitExchange(bar);
                 services.AddRabbitBinding(binding);
 
-                if (listenerBeanType == null)
-                {
-                    listenerBeanType = typeof(SampleBean);
-                }
+                listenerBeanType ??= typeof(SampleBean);
 
                 services.AddSingleton(listenerBeanType);
                 services.AddSingleton<Listener>();

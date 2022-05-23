@@ -13,10 +13,7 @@ namespace Steeltoe.Messaging.RabbitMQ
         protected virtual ServiceCollection CreateContainer(ConfigurationBuilder configurationBuilder = null)
         {
             var services = new ServiceCollection();
-            if (configurationBuilder == null)
-            {
-                configurationBuilder = new ConfigurationBuilder();
-            }
+            configurationBuilder ??= new ConfigurationBuilder();
 
             var configuration = configurationBuilder.Build();
             services.AddSingleton<IConfiguration>(configuration);

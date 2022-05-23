@@ -1063,10 +1063,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     ConsumerChannelRegistry.RegisterConsumerChannel(Model, ConnectionFactory);
                 }
 
-                if (TransactionTemplate == null)
-                {
-                    TransactionTemplate = new TransactionTemplate(TransactionManager, TransactionAttribute, _logger);
-                }
+                TransactionTemplate ??= new TransactionTemplate(TransactionManager, TransactionAttribute, _logger);
 
                 TransactionTemplate.Execute<object>(s =>
                 {

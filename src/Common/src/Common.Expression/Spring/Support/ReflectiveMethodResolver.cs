@@ -25,10 +25,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public virtual void RegisterMethodFilter(Type type, IMethodFilter filter)
         {
-            if (_filters == null)
-            {
-                _filters = new Dictionary<Type, IMethodFilter>();
-            }
+            _filters ??= new Dictionary<Type, IMethodFilter>();
 
             if (filter != null)
             {

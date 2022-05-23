@@ -68,29 +68,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         internal void PostProcess()
         {
-            if (Default == null)
-            {
-                Default = new RabbitBindingOptions();
-            }
-
-            if (Default.Consumer == null)
-            {
-                Default.Consumer = new RabbitConsumerOptions();
-            }
-
+            Default ??= new RabbitBindingOptions();
+            Default.Consumer ??= new RabbitConsumerOptions();
             Default.Consumer.PostProcess();
-
-            if (Default.Producer == null)
-            {
-                Default.Producer = new RabbitProducerOptions();
-            }
-
+            Default.Producer ??= new RabbitProducerOptions();
             Default.Producer.PostProcess();
-
-            if (Bindings == null)
-            {
-                Bindings = new Dictionary<string, RabbitBindingOptions>();
-            }
+            Bindings ??= new Dictionary<string, RabbitBindingOptions>();
 
             foreach (var binding in Bindings)
             {

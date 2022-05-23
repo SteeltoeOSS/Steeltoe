@@ -76,15 +76,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public ServiceCollection CreateContainer(IConfiguration config = null)
         {
             var services = new ServiceCollection();
-            if (config == null)
-            {
-                config = new ConfigurationBuilder()
-                    .AddInMemoryCollection(new Dictionary<string, string>()
-                    {
-                            { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
-                    })
-                    .Build();
-            }
+            config ??= new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>()
+                {
+                    { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
+                })
+                .Build();
 
             services.AddLogging(b =>
             {

@@ -34,30 +34,11 @@ namespace Steeltoe.Stream.Config
                 BindingRetryInterval = BindingRetryInterval_Default;
             }
 
-            if (!OverrideCloudConnectors.HasValue)
-            {
-                OverrideCloudConnectors = OverrideCloudConnectors_Default;
-            }
-
-            if (DynamicDestinations == null)
-            {
-                DynamicDestinations = new List<string>();
-            }
-
-            if (Binders == null)
-            {
-                Binders = new Dictionary<string, BinderOptions>();
-            }
-
-            if (Bindings == null)
-            {
-                Bindings = new Dictionary<string, BindingOptions>();
-            }
-
-            if (Default == null)
-            {
-                Default = new BindingOptions();
-            }
+            OverrideCloudConnectors ??= OverrideCloudConnectors_Default;
+            DynamicDestinations ??= new List<string>();
+            Binders ??= new Dictionary<string, BinderOptions>();
+            Bindings ??= new Dictionary<string, BindingOptions>();
+            Default ??= new BindingOptions();
 
             if (Default != null)
             {
@@ -141,10 +122,7 @@ namespace Steeltoe.Stream.Config
         {
             MakeBindingIfNecessary(name);
             var options = Bindings[name];
-            if (options.Destination == null)
-            {
-                options.Destination = name;
-            }
+            options.Destination ??= name;
 
             return options;
         }

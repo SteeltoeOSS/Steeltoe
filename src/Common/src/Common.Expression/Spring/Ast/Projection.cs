@@ -88,10 +88,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
                 if (operandAsArray != null)
                 {
-                    if (arrayElementType == null)
-                    {
-                        arrayElementType = typeof(object);
-                    }
+                    arrayElementType ??= typeof(object);
 
                     var resultArray = Array.CreateInstance(arrayElementType, result.Count);
                     Array.Copy(result.ToArray(), 0, resultArray, 0, result.Count);

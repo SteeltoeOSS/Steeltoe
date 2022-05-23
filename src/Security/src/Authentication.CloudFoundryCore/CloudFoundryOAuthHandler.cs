@@ -60,15 +60,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         protected internal string GetEncoded(string user, string password)
         {
-            if (user == null)
-            {
-                user = string.Empty;
-            }
-
-            if (password == null)
-            {
-                password = string.Empty;
-            }
+            user ??= string.Empty;
+            password ??= string.Empty;
 
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }

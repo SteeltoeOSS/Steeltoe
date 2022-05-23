@@ -83,10 +83,7 @@ namespace Steeltoe.Integration.Dispatcher
                 catch (Exception e)
                 {
                     var runtimeException = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "Dispatcher failed to deliver Message", e);
-                    if (exceptions == null)
-                    {
-                        exceptions = new List<Exception>();
-                    }
+                    exceptions ??= new List<Exception>();
 
                     exceptions.Add(runtimeException);
 

@@ -109,10 +109,7 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            if (builderAction is null)
-            {
-                builderAction = (builder) => builder.Extensions.Add(new NoOpDiscoveryClientExtension());
-            }
+            builderAction ??= builder => builder.Extensions.Add(new NoOpDiscoveryClientExtension());
 
             serviceCollection.RegisterDefaultApplicationInstanceInfo();
             ApplyDiscoveryOptions(serviceCollection, builderAction);

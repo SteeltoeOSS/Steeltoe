@@ -1662,15 +1662,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var exch = exchangeArg;
             var rKey = routingKeyArg;
-            if (exch == null)
-            {
-                exch = GetDefaultExchange();
-            }
-
-            if (rKey == null)
-            {
-                rKey = GetDefaultRoutingKey();
-            }
+            exch ??= GetDefaultExchange();
+            rKey ??= GetDefaultRoutingKey();
 
             _logger?.LogTrace("Original message to publish: {message}", message);
 

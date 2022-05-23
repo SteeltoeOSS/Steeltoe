@@ -53,100 +53,25 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         internal void PostProcess(RabbitConsumerOptions defaultOptions = null)
         {
-            if (!Transacted.HasValue)
-            {
-                Transacted = defaultOptions?.Transacted ?? false;
-            }
-
-            if (!AcknowledgeMode.HasValue)
-            {
-                AcknowledgeMode = defaultOptions?.AcknowledgeMode ?? RabbitCore.AcknowledgeMode.AUTO;
-            }
-
-            if (!MaxConcurrency.HasValue)
-            {
-                MaxConcurrency = defaultOptions?.MaxConcurrency ?? 1;
-            }
-
-            if (!Prefetch.HasValue)
-            {
-                Prefetch = defaultOptions?.Prefetch ?? 1;
-            }
-
-            if (!BatchSize.HasValue)
-            {
-                BatchSize = defaultOptions?.BatchSize ?? 1;
-            }
-
-            if (!DurableSubscription.HasValue)
-            {
-                DurableSubscription = defaultOptions?.DurableSubscription ?? true;
-            }
-
-            if (!RepublishToDlq.HasValue)
-            {
-                RepublishToDlq = defaultOptions?.RepublishToDlq ?? true;
-            }
-
-            if (!RepublishDeliveryMode.HasValue)
-            {
-                RepublishDeliveryMode = defaultOptions?.RepublishDeliveryMode ?? RabbitCore.MessageDeliveryMode.PERSISTENT;
-            }
-
-            if (!RequeueRejected.HasValue)
-            {
-                RequeueRejected = defaultOptions?.RequeueRejected ?? false;
-            }
-
-            if (HeaderPatterns == null)
-            {
-                HeaderPatterns = defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
-            }
-
-            if (!RecoveryInterval.HasValue)
-            {
-                RecoveryInterval = defaultOptions?.RecoveryInterval ?? 5000;
-            }
-
-            if (!Exclusive.HasValue)
-            {
-                Exclusive = defaultOptions?.Exclusive ?? false;
-            }
-
-            if (!MissingQueuesFatal.HasValue)
-            {
-                MissingQueuesFatal = defaultOptions?.MissingQueuesFatal ?? false;
-            }
-
-            if (!QueueDeclarationRetries.HasValue)
-            {
-                QueueDeclarationRetries = defaultOptions?.QueueDeclarationRetries;
-            }
-
-            if (!FailedDeclarationRetryInterval.HasValue)
-            {
-                FailedDeclarationRetryInterval = defaultOptions?.FailedDeclarationRetryInterval;
-            }
-
-            if (ConsumerTagPrefix == null)
-            {
-                ConsumerTagPrefix = defaultOptions?.ConsumerTagPrefix;
-            }
-
-            if (!FrameMaxHeadroom.HasValue)
-            {
-                FrameMaxHeadroom = defaultOptions?.FrameMaxHeadroom ?? 20_000;
-            }
-
-            if (AnonymousGroupPrefix == null)
-            {
-                AnonymousGroupPrefix = defaultOptions?.AnonymousGroupPrefix ?? "anonymous.";
-            }
-
-            if (!IsEnableBatching.HasValue)
-            {
-                IsEnableBatching = defaultOptions?.IsEnableBatching ?? false;
-            }
+            Transacted ??= defaultOptions?.Transacted ?? false;
+            AcknowledgeMode ??= defaultOptions?.AcknowledgeMode ?? RabbitCore.AcknowledgeMode.AUTO;
+            MaxConcurrency ??= defaultOptions?.MaxConcurrency ?? 1;
+            Prefetch ??= defaultOptions?.Prefetch ?? 1;
+            BatchSize ??= defaultOptions?.BatchSize ?? 1;
+            DurableSubscription ??= defaultOptions?.DurableSubscription ?? true;
+            RepublishToDlq ??= defaultOptions?.RepublishToDlq ?? true;
+            RepublishDeliveryMode ??= defaultOptions?.RepublishDeliveryMode ?? RabbitCore.MessageDeliveryMode.PERSISTENT;
+            RequeueRejected ??= defaultOptions?.RequeueRejected ?? false;
+            HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
+            RecoveryInterval ??= defaultOptions?.RecoveryInterval ?? 5000;
+            Exclusive ??= defaultOptions?.Exclusive ?? false;
+            MissingQueuesFatal ??= defaultOptions?.MissingQueuesFatal ?? false;
+            QueueDeclarationRetries ??= defaultOptions?.QueueDeclarationRetries;
+            FailedDeclarationRetryInterval ??= defaultOptions?.FailedDeclarationRetryInterval;
+            ConsumerTagPrefix ??= defaultOptions?.ConsumerTagPrefix;
+            FrameMaxHeadroom ??= defaultOptions?.FrameMaxHeadroom ?? 20_000;
+            AnonymousGroupPrefix ??= defaultOptions?.AnonymousGroupPrefix ?? "anonymous.";
+            IsEnableBatching ??= defaultOptions?.IsEnableBatching ?? false;
 
             base.PostProcess();
         }

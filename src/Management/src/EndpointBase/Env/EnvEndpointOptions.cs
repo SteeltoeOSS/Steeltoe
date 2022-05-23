@@ -31,10 +31,7 @@ namespace Steeltoe.Management.Endpoint.Env
                 RequiredPermissions = Permissions.RESTRICTED;
             }
 
-            if (KeysToSanitize == null)
-            {
-                KeysToSanitize = KEYS_TO_SANITIZE;
-            }
+            KeysToSanitize ??= KEYS_TO_SANITIZE;
         }
 
         public string[] KeysToSanitize { get; set; }

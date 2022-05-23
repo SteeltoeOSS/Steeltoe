@@ -71,20 +71,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public void PushActiveContextObject(ITypedValue obj)
         {
-            if (_contextObjects == null)
-            {
-                _contextObjects = new Stack<ITypedValue>();
-            }
+            _contextObjects ??= new Stack<ITypedValue>();
 
             _contextObjects.Push(obj);
         }
 
         public void PopActiveContextObject()
         {
-            if (_contextObjects == null)
-            {
-                _contextObjects = new Stack<ITypedValue>();
-            }
+            _contextObjects ??= new Stack<ITypedValue>();
 
             _contextObjects.Pop();
         }

@@ -87,10 +87,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
                 _delegates.TryGetValue(contentType, out d);
             }
 
-            if (d == null)
-            {
-                d = _defaultConverter;
-            }
+            d ??= _defaultConverter;
 
             if (d == null)
             {

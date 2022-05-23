@@ -2213,10 +2213,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
                     lock (_targetMonitor)
                     {
-                        if (_target == null)
-                        {
-                            _target = _factory.CreateBareChannel(_theConnection, _transactional);
-                        }
+                        _target ??= _factory.CreateBareChannel(_theConnection, _transactional);
                     }
                 }
             }
@@ -2241,10 +2238,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
                 lock (_targetMonitor)
                 {
-                    if (_target == null)
-                    {
-                        _target = _factory.CreateBareChannel(_theConnection, _transactional);
-                    }
+                    _target ??= _factory.CreateBareChannel(_theConnection, _transactional);
                 }
             }
 

@@ -38,10 +38,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (configuration is null)
-            {
-                configuration = builder.ApplicationServices.GetRequiredService<IConfiguration>();
-            }
+            configuration ??= builder.ApplicationServices.GetRequiredService<IConfiguration>();
 
             var logger = builder.ApplicationServices.GetService<ILogger<SpringBootAdminClientOptions>>();
             var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();

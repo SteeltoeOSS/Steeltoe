@@ -152,10 +152,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             for (var i = 0; i < 8; i++)
             {
                 HystrixCommand<bool> cmd = new SuccessCommand(key, 900);
-                if (metrics == null)
-                {
-                    metrics = cmd._metrics;
-                }
+                metrics ??= cmd._metrics;
 
                 var eagerObservable = cmd.Observe();
                 cmdResults.Add(eagerObservable);

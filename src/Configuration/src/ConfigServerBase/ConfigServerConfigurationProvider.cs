@@ -846,14 +846,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         protected internal virtual void RenewToken(string token)
         {
-            if (_tokenRenewTimer == null)
-            {
-                _tokenRenewTimer = new Timer(
-                    RefreshVaultTokenAsync,
-                    null,
-                    TimeSpan.FromMilliseconds(_settings.TokenRenewRate),
-                    TimeSpan.FromMilliseconds(_settings.TokenRenewRate));
-            }
+            _tokenRenewTimer ??= new Timer(
+                RefreshVaultTokenAsync,
+                null,
+                TimeSpan.FromMilliseconds(_settings.TokenRenewRate),
+                TimeSpan.FromMilliseconds(_settings.TokenRenewRate));
         }
 
         /// <summary>

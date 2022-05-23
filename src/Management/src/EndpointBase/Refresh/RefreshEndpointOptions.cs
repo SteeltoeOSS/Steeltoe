@@ -31,10 +31,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
                 RequiredPermissions = Permissions.RESTRICTED;
             }
 
-            if (!_returnConfiguration.HasValue)
-            {
-                _returnConfiguration = RETURN_CONFIGURATION;
-            }
+            _returnConfiguration ??= RETURN_CONFIGURATION;
         }
 
         private bool? _returnConfiguration;

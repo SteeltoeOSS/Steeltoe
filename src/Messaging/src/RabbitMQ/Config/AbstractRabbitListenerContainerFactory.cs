@@ -60,10 +60,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         {
             get
             {
-                if (_messageConverter == null)
-                {
-                    _messageConverter = ApplicationContext?.GetService<ISmartMessageConverter>();
-                }
+                _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>();
 
                 if (_messageConverter == null)
                 {

@@ -91,10 +91,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
                 }
             }
 
-            if (headers.DeliveryMode == null)
-            {
-                headers.DeliveryMode = DeliveryMode;
-            }
+            headers.DeliveryMode ??= DeliveryMode;
 
             if (ErrorExchangeName != null)
             {

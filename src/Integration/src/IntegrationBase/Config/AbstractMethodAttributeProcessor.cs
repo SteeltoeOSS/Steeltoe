@@ -156,10 +156,7 @@ namespace Steeltoe.Integration.Config
             var name = MessagingAttributeUtils.EndpointIdValue(method);
             if (string.IsNullOrEmpty(name))
             {
-                if (originalServiceName == null)
-                {
-                    originalServiceName = method.DeclaringType.Name;
-                }
+                originalServiceName ??= method.DeclaringType.Name;
 
                 var baseName = originalServiceName + "." + method.Name + "." + AnnotationType.Name;
                 name = baseName;

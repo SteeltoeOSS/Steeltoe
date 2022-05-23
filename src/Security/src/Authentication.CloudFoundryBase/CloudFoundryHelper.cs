@@ -50,15 +50,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public static TokenValidationParameters GetTokenValidationParameters(TokenValidationParameters parameters, string keyUrl, HttpMessageHandler handler, bool validateCertificates, AuthServerOptions options = null)
         {
-            if (parameters == null)
+            parameters ??= new TokenValidationParameters
             {
-                parameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false,
-                    ValidateIssuer = true,
-                    ValidateLifetime = true
-                };
-            }
+                ValidateAudience = false,
+                ValidateIssuer = true,
+                ValidateLifetime = true
+            };
 
             var tokenValidator = new CloudFoundryTokenValidator(options ?? new AuthServerOptions());
             parameters.IssuerValidator = tokenValidator.ValidateIssuer;

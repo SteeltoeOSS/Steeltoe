@@ -28,25 +28,10 @@ namespace Steeltoe.Stream.Config
 
         internal void PostProcess(string name, BindingOptions @default)
         {
-            if (Destination == null)
-            {
-                Destination = @default?.Destination;
-            }
-
-            if (Group == null)
-            {
-                Group = @default?.Group;
-            }
-
-            if (ContentType == null)
-            {
-                ContentType = (@default != null) ? @default.ContentType : DEFAULT_CONTENT_TYPE.ToString();
-            }
-
-            if (Binder == null)
-            {
-                Binder = @default?.Binder;
-            }
+            Destination ??= @default?.Destination;
+            Group ??= @default?.Group;
+            ContentType ??= (@default != null) ? @default.ContentType : DEFAULT_CONTENT_TYPE.ToString();
+            Binder ??= @default?.Binder;
 
             Consumer?.PostProcess(name, @default?.Consumer);
             Producer?.PostProcess(name, @default?.Producer);

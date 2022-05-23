@@ -78,56 +78,21 @@ namespace Steeltoe.Stream.Config
         internal void PostProcess(string name, ProducerOptions @default = null)
         {
             BindingName = name;
-
-            if (!ErrorChannelEnabled.HasValue)
-            {
-                ErrorChannelEnabled = (@default != null) ? @default.ErrorChannelEnabled : IsErrorChannelEnabled_Default;
-            }
-
-            if (!UseNativeEncoding.HasValue)
-            {
-                UseNativeEncoding = (@default != null) ? @default.UseNativeEncoding : UseNativeEncoding_Default;
-            }
-
-            if (!HeaderMode.HasValue)
-            {
-                HeaderMode = (@default != null) ? @default.HeaderMode : Config.HeaderMode.None;
-            }
-
-            if (RequiredGroups == null)
-            {
-                RequiredGroups = (@default != null) ? @default.RequiredGroups : new List<string>();
-            }
+            ErrorChannelEnabled ??= (@default != null) ? @default.ErrorChannelEnabled : IsErrorChannelEnabled_Default;
+            UseNativeEncoding ??= (@default != null) ? @default.UseNativeEncoding : UseNativeEncoding_Default;
+            HeaderMode ??= (@default != null) ? @default.HeaderMode : Config.HeaderMode.None;
+            RequiredGroups ??= (@default != null) ? @default.RequiredGroups : new List<string>();
 
             if (PartitionCount == int.MinValue)
             {
                 PartitionCount = (@default != null) ? @default.PartitionCount : PartitionCount_Default;
             }
 
-            if (PartitionSelectorExpression == null)
-            {
-                PartitionSelectorExpression = @default?.PartitionSelectorExpression;
-            }
-
-            if (PartitionSelectorName == null)
-            {
-                PartitionSelectorName = @default?.PartitionSelectorName;
-            }
-
-            if (PartitionKeyExtractorName == null)
-            {
-                PartitionKeyExtractorName = @default?.PartitionKeyExtractorName;
-            }
-
-            if (PartitionKeyExpression == null)
-            {
-                PartitionKeyExpression = @default?.PartitionKeyExpression;
-            }
-
-            if (!AutoStartup.HasValue)
-            {
-                AutoStartup = (@default != null) ? @default.AutoStartup : AutoStartup_Default;
-            }
+            PartitionSelectorExpression ??= @default?.PartitionSelectorExpression;
+            PartitionSelectorName ??= @default?.PartitionSelectorName;
+            PartitionKeyExtractorName ??= @default?.PartitionKeyExtractorName;
+            PartitionKeyExpression ??= @default?.PartitionKeyExpression;
+            AutoStartup ??= (@default != null) ? @default.AutoStartup : AutoStartup_Default;
         }
     }
 }
