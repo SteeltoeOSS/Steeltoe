@@ -2577,14 +2577,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             protected override void OnErrorCore(Exception error)
             {
-                output.WriteLine("OnError @ " + Time.CurrentTimeMillis + " : " + error.Message.ToString());
+                output.WriteLine("OnError @ " + Time.CurrentTimeMillis + " : " + error.Message);
                 OnErrorEvents.Add(error);
                 latch.SignalEx();
             }
 
             protected override void OnNextCore(T value)
             {
-                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + value.ToString());
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + value);
                 OnNextEvents.Add(value);
             }
         }

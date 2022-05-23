@@ -574,7 +574,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <returns></returns>
         public override string ToString()
         {
-            return HandleType.ToString() + " " + (Type != null ? Type.Name : "");
+            return HandleType + " " + (Type != null ? Type.Name : "");
         }
 
         #region Internal

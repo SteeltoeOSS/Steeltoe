@@ -47,7 +47,9 @@ namespace Steeltoe.Management.Tracing
                 sb.Append(currentSpan.IsRecording ? "true" : "false");
 
                 sb.Append("] ");
-                return sb.ToString() + inputLogMessage;
+                sb.Append(inputLogMessage);
+
+                return sb.ToString();
             }
 
             return inputLogMessage;

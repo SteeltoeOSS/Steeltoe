@@ -192,7 +192,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     }
                     else
                     {
-                        sb.Append(obj.ToString());
+                        sb.Append(obj);
                         sb.Append(',');
                     }
                 }

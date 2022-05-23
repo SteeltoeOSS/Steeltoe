@@ -553,7 +553,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 if (message is not MessagingSupport.ErrorMessage errorMessage)
                 {
-                    _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType().ToString() + " for: " + message);
+                    _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
                     throw new ListenerExecutionFailedException($"Unexpected error message {message}", new RabbitRejectAndDontRequeueException(string.Empty), null);
                 }
 
@@ -593,7 +593,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 if (message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] is not IMessage errorMessage)
                 {
-                    _logger.LogError("Expected an ErrorMessage, not a " + message.GetType().ToString() + " for: " + message);
+                    _logger.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
                     return;
                 }
 

@@ -58,7 +58,7 @@ namespace Steeltoe.Messaging.Handler
             var joiner = new StringBuilder("[");
             foreach (var expression in GetContent())
             {
-                joiner.Append(expression.ToString() + infix);
+                joiner.Append(expression + infix);
             }
 
             return $"{joiner.ToString(0, joiner.Length - 1)}]";

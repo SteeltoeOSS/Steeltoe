@@ -189,8 +189,8 @@ namespace Steeltoe.Stream.Binding
             var bindServiceOptions = provider.GetService<IOptionsMonitor<BindingServiceOptions>>();
             var bindings = bindServiceOptions.CurrentValue.Bindings;
 
-            Assert.Equal("application/json", bindings["input1"].ContentType.ToString());
-            Assert.Equal("text/plain", bindings["input2"].ContentType.ToString());
+            Assert.Equal("application/json", bindings["input1"].ContentType);
+            Assert.Equal("text/plain", bindings["input2"].ContentType);
             Assert.Equal("foo", bindings["input1"].Group);
             Assert.Equal("bar", bindings["input2"].Group);
             Assert.Equal(5, bindings["input1"].Consumer.Concurrency);
@@ -199,10 +199,10 @@ namespace Steeltoe.Stream.Binding
             Assert.False(bindings["input2"].Consumer.Partitioned);
             Assert.Equal(10, bindings["output1"].Producer.PartitionCount);
             Assert.Equal(1, bindings["output2"].Producer.PartitionCount);
-            Assert.Equal("application/json", bindings["inputXyz"].ContentType.ToString());
-            Assert.Equal("application/avro", bindings["inputFooBar"].ContentType.ToString());
-            Assert.Equal("text/plain", bindings["inputFooBarBuzz"].ContentType.ToString());
-            Assert.Equal("application/avro", bindings["input_snake_case"].ContentType.ToString());
+            Assert.Equal("application/json", bindings["inputXyz"].ContentType);
+            Assert.Equal("application/avro", bindings["inputFooBar"].ContentType);
+            Assert.Equal("text/plain", bindings["inputFooBarBuzz"].ContentType);
+            Assert.Equal("application/avro", bindings["input_snake_case"].ContentType);
         }
 
         [Fact]

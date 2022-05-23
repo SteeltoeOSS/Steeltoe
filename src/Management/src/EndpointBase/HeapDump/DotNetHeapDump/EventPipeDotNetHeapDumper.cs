@@ -213,7 +213,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
             }
             catch (Exception e)
             {
-                log.WriteLine($"{getElapsed().TotalSeconds,5:n1}s: [Error] Exception during gcdump: {e.ToString()}");
+                log.WriteLine($"{getElapsed().TotalSeconds,5:n1}s: [Error] Exception during gcdump: {e}");
             }
 
             log.WriteLine("[{0,5:n1}s: Done Dumping .NET heap success={1}]", getElapsed().TotalSeconds, dumpComplete);

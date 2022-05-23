@@ -62,7 +62,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             var sb = new StringBuilder("Applications[");
             foreach (var kvp in ApplicationMap)
             {
-                sb.Append(kvp.Value.ToString());
+                sb.Append(kvp.Value);
             }
 
             sb.Append("]");

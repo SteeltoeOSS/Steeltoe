@@ -34,7 +34,7 @@ namespace Steeltoe.Stream.Binder
             Assert.NotNull(bindingServiceProperties.Value);
             var bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
             Assert.NotNull(bindingProperties);
-            Assert.Equal("application/json", bindingProperties.ContentType.ToString());
+            Assert.Equal("application/json", bindingProperties.ContentType);
             Assert.NotNull(bindingProperties.Producer);
             Assert.Equal("key", bindingProperties.Producer.PartitionKeyExpression);
         }

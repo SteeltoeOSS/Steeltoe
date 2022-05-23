@@ -327,7 +327,7 @@ namespace Steeltoe.Messaging
         {
             if (id == null)
             {
-                headers[ID] = IdGenerator.GenerateId().ToString();
+                headers[ID] = IdGenerator.GenerateId();
             }
             else if (id == ID_VALUE_NONE)
             {

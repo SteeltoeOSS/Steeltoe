@@ -66,7 +66,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         public override string ToString()
         {
             var s = new StringBuilder();
-            s.Append('[').Append(Kind.ToString());
+            s.Append('[').Append(Kind);
             if (Kind.HasPayload)
             {
                 s.Append(':').Append(Data);

@@ -65,7 +65,7 @@ namespace Steeltoe.Common.Converter
             foreach (var sourceElement in collection)
             {
                 var targetElement = conversionService.Convert(sourceElement, sourceElement.GetType(), targetType);
-                sj.Append(targetElement.ToString());
+                sj.Append(targetElement);
                 sj.Append(DELIMITER);
             }
 

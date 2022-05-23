@@ -30,7 +30,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             sb.Append(",Instances=");
             foreach (var inst in Instances)
             {
-                sb.Append(inst.ToString());
+                sb.Append(inst);
                 sb.Append(',');
             }
 

@@ -488,7 +488,7 @@ namespace Steeltoe.Messaging.Support
                 if (Id == null)
                 {
                     var idGenerator = accessor.IdGenerator ?? IdGenerator;
-                    var id = idGenerator.GenerateId().ToString();
+                    var id = idGenerator.GenerateId();
                     if (id != ID_VALUE_NONE)
                     {
                         RawHeaders[ID] = id;

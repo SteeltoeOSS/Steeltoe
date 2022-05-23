@@ -317,7 +317,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 Bean = message.Headers.Target();
                 Method = message.Headers.TargetMethod();
-                return foo2.ToString() + Method.Name + Bean.GetType().Name;
+                return foo2 + Method.Name + Bean.GetType().Name;
             }
 
             [RabbitListener("test.notconverted.message")]

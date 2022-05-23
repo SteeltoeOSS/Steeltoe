@@ -102,7 +102,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : required updates received");
                 }
 
-                output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : " + item.ToString());
+                output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : " + item);
                 output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {

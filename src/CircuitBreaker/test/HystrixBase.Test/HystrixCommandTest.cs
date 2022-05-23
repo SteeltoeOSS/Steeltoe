@@ -4535,7 +4535,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
                 catch (Exception e)
                 {
-                    _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + e.ToString());
+                    _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + e);
 
                     // ignore and sleep some more to simulate a dependency that doesn't obey interrupts
                     try
@@ -4635,7 +4635,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 output?.WriteLine(">>> TestCommandRejection finished " + (Time.CurrentTimeMillis - start));
-                output?.WriteLine(">>> TestCommandRejection exception: " + e.ToString());
+                output?.WriteLine(">>> TestCommandRejection exception: " + e);
             }
 
             return true;

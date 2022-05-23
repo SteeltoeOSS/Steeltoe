@@ -73,7 +73,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var sb = new StringBuilder("[");
             foreach (var val in array)
             {
-                sb.Append(val.ToString());
+                sb.Append(val);
                 sb.Append(v);
             }
 

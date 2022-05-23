@@ -1363,7 +1363,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Equal("test11,test12,test21,test22", res);
 
             res = parser.ParseExpression("#root.![Values]").GetValue<string>(context);
-            Assert.Equal("test11,test12,test21,test22", res.ToString());
+            Assert.Equal("test11,test12,test21,test22", res);
         }
 
         [Fact]

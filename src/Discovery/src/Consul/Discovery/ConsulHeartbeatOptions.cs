@@ -39,7 +39,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         {
             get
             {
-                return TtlValue.ToString() + TtlUnit;
+                return TtlValue + TtlUnit;
             }
         }
 

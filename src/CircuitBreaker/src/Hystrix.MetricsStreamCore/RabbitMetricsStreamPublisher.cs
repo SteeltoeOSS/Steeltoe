@@ -73,7 +73,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                 {
                     if (!string.IsNullOrEmpty(sampleDataAsString))
                     {
-                        logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString.ToString());
+                        logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString);
 
                         var body = Encoding.UTF8.GetBytes(sampleDataAsString);
                         var props = Channel.CreateBasicProperties();

@@ -116,7 +116,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
@@ -147,7 +147,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
@@ -173,7 +173,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
@@ -219,7 +219,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
@@ -245,7 +245,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
             var inst = new InstanceInfo()
             {
@@ -284,7 +284,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var inst = new InstanceInfo()
@@ -324,7 +324,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
             var inst = new InstanceInfo()
             {
@@ -365,7 +365,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var inst = new InstanceInfo()
@@ -399,7 +399,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var inst = new InstanceInfo()
@@ -740,7 +740,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = uri.ToString()
+                EurekaServerServiceUrls = uri
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());

@@ -84,7 +84,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         {
             public string Foo(IDictionary props)
             {
-                return props["x"]?.ToString() + props["y"]?.ToString() + props["z"]?.ToString();
+                return props["x"]?.ToString() + props["y"] + props["z"];
             }
         }
 

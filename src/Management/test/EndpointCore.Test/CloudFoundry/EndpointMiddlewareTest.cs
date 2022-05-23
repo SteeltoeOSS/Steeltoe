@@ -75,9 +75,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
             Assert.NotNull(links);
             Assert.True(links._links.ContainsKey("self"));
-            Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href.ToString());
+            Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href);
             Assert.True(links._links.ContainsKey("info"));
-            Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href.ToString());
+            Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href);
         }
 
         [Fact]

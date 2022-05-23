@@ -5423,16 +5423,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 foreach (DictionaryEntry kvp in dict)
                 {
                     s.Append('{');
-                    s.Append(kvp.Key.ToString());
+                    s.Append(kvp.Key);
                     s.Append('=');
-                    s.Append(kvp.Value.ToString());
+                    s.Append(kvp.Value);
                     s.Append('}');
                     s.Append(' ');
                 }
             }
             else
             {
-                s.Append(obj.ToString());
+                s.Append(obj);
             }
 
             return s.ToString().Trim();
@@ -6478,7 +6478,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 var b = new StringBuilder();
                 foreach (var obj in objects)
                 {
-                    b.Append(obj.ToString());
+                    b.Append(obj);
                 }
 
                 return b.ToString();

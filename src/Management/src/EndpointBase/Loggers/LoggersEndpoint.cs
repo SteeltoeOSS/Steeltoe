@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 var loggers = new Dictionary<string, LoggerLevels>();
                 foreach (var c in configuration.OrderBy(entry => entry.Name))
                 {
-                    _logger.LogTrace("Adding " + c.ToString());
+                    _logger.LogTrace("Adding " + c);
                     var lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);
                     loggers.Add(c.Name, lv);
                 }

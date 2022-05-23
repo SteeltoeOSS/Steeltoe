@@ -504,10 +504,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             var provider = services.BuildServiceProvider();
             var rabbitOptions = provider.GetService<IOptions<RabbitOptions>>().Value;
 
-            Assert.Equal(appsettings[hostPrefix], rabbitOptions.Host.ToString());
+            Assert.Equal(appsettings[hostPrefix], rabbitOptions.Host);
             Assert.Equal(appsettings[portPrefix], rabbitOptions.Port.ToString());
-            Assert.Equal(appsettings[usernamePrefix], rabbitOptions.Username.ToString());
-            Assert.Equal(appsettings[passwordPrefix], rabbitOptions.Password.ToString());
+            Assert.Equal(appsettings[usernamePrefix], rabbitOptions.Username);
+            Assert.Equal(appsettings[passwordPrefix], rabbitOptions.Password);
         }
 
         [Fact]

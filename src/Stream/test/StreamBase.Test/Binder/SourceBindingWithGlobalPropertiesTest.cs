@@ -39,7 +39,7 @@ namespace Steeltoe.Stream.Binder
             Assert.NotNull(bindingServiceProperties.Value);
             var bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
             Assert.NotNull(bindingProperties);
-            Assert.Equal("application/json", bindingProperties.ContentType.ToString());
+            Assert.Equal("application/json", bindingProperties.ContentType);
             Assert.Equal("ticktock", bindingProperties.Destination);
             Assert.NotNull(bindingProperties.Producer);
             Assert.Single(bindingProperties.Producer.RequiredGroups);

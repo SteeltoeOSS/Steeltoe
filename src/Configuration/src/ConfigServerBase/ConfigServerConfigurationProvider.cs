@@ -359,7 +359,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 error = e;
             }
 
-            _logger.LogWarning("Could not locate PropertySource: " + error?.ToString());
+            _logger.LogWarning("Could not locate PropertySource: " + error);
 
             if (_settings.FailFast)
             {
