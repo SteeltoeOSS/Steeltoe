@@ -248,19 +248,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
                 else if (timeout)
                 {
-                    try
-                    {
-                        Time.WaitUntil(() => _token.IsCancellationRequested, 10000);
-                        _token.ThrowIfCancellationRequested();
+                    Time.WaitUntil(() => _token.IsCancellationRequested, 10000);
+                    _token.ThrowIfCancellationRequested();
 
-                        // output.WriteLine("Woke up from sleep!");
-                        // token.ThrowIfCancellationRequested();
-                    }
-                    catch (Exception)
-                    {
-                        // output.WriteLine(Task.CurrentId + " Interrupted by timeout");
-                        throw;
-                    }
+                    // output.WriteLine("Woke up from sleep!");
+                    // token.ThrowIfCancellationRequested();
                 }
 
                 return value;

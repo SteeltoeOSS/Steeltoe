@@ -15,58 +15,50 @@ namespace Steeltoe.Stream.Binder
     {
         public static byte[] EmbedHeaders(MessageValues original, params string[] headers)
         {
-            try
+            var headerValues = new byte[headers.Length][];
+            var n = 0;
+            var headerCount = 0;
+            var headersLength = 0;
+            foreach (var header in headers)
             {
-                var headerValues = new byte[headers.Length][];
-                var n = 0;
-                var headerCount = 0;
-                var headersLength = 0;
-                foreach (var header in headers)
+                original.TryGetValue(header, out var value);
+                if (value != null)
                 {
-                    original.TryGetValue(header, out var value);
-                    if (value != null)
-                    {
-                        var json = JsonConvert.SerializeObject(value);
-                        headerValues[n] = Encoding.UTF8.GetBytes(json);
-                        headerCount++;
-                        headersLength += header.Length + headerValues[n++].Length;
-                    }
-                    else
-                    {
-                        headerValues[n++] = null;
-                    }
+                    var json = JsonConvert.SerializeObject(value);
+                    headerValues[n] = Encoding.UTF8.GetBytes(json);
+                    headerCount++;
+                    headersLength += header.Length + headerValues[n++].Length;
                 }
-
-                // 0xff, n(1), [ [lenHdr(1), hdr, lenValue(4), value] ... ]
-                var byteBuffer = new MemoryStream();
-                byteBuffer.WriteByte((byte)0xff); // signal new format
-                byteBuffer.WriteByte((byte)headerCount);
-                for (var i = 0; i < headers.Length; i++)
+                else
                 {
-                    if (headerValues[i] != null)
-                    {
-                        byteBuffer.WriteByte((byte)headers[i].Length);
-
-                        var buffer = Encoding.UTF8.GetBytes(headers[i]);
-                        byteBuffer.Write(buffer, 0, buffer.Length);
-
-                        buffer = GetBigEndianBytes(headerValues[i].Length);
-                        byteBuffer.Write(buffer, 0, buffer.Length);
-
-                        byteBuffer.Write(headerValues[i], 0, headerValues[i].Length);
-                    }
+                    headerValues[n++] = null;
                 }
-
-                var payloadBuffer = (byte[])original.Payload;
-                byteBuffer.Write(payloadBuffer, 0, payloadBuffer.Length);
-
-                return byteBuffer.ToArray();
             }
-            catch (Exception)
+
+            // 0xff, n(1), [ [lenHdr(1), hdr, lenValue(4), value] ... ]
+            var byteBuffer = new MemoryStream();
+            byteBuffer.WriteByte((byte)0xff); // signal new format
+            byteBuffer.WriteByte((byte)headerCount);
+            for (var i = 0; i < headers.Length; i++)
             {
-                // Log
-                throw;
+                if (headerValues[i] != null)
+                {
+                    byteBuffer.WriteByte((byte)headers[i].Length);
+
+                    var buffer = Encoding.UTF8.GetBytes(headers[i]);
+                    byteBuffer.Write(buffer, 0, buffer.Length);
+
+                    buffer = GetBigEndianBytes(headerValues[i].Length);
+                    byteBuffer.Write(buffer, 0, buffer.Length);
+
+                    byteBuffer.Write(headerValues[i], 0, headerValues[i].Length);
+                }
             }
+
+            var payloadBuffer = (byte[])original.Payload;
+            byteBuffer.Write(payloadBuffer, 0, payloadBuffer.Length);
+
+            return byteBuffer.ToArray();
         }
 
         public static bool MayHaveEmbeddedHeaders(byte[] bytes)

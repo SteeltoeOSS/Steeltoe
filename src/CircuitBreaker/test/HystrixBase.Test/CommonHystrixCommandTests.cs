@@ -32,14 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             if (isSuccess)
             {
-                try
-                {
-                    command.Observe().ToList().SingleAsync().Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                command.Observe().ToList().SingleAsync().Wait();
             }
             else
             {
@@ -74,26 +67,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch.SignalEx();
                 });
 
-            try
-            {
-                latch.Wait(3000);
-                assertion(command);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            latch.Wait(3000);
+            assertion(command);
 
             if (isSuccess)
             {
-                try
-                {
-                    o.ToList().SingleAsync().Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                o.ToList().SingleAsync().Wait();
             }
             else
             {
@@ -112,19 +91,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var currentRequestLog = HystrixRequestLog.CurrentRequestLog;
 
-            try
-            {
-                Assert.Equal(numCommands, currentRequestLog.AllExecutedCommands.Count);
-                Assert.DoesNotContain("Executed", currentRequestLog.GetExecutedCommandsAsString());
-                Assert.True(currentRequestLog.AllExecutedCommands.First().ExecutionEvents.Count >= 1);
+            Assert.Equal(numCommands, currentRequestLog.AllExecutedCommands.Count);
+            Assert.DoesNotContain("Executed", currentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(currentRequestLog.AllExecutedCommands.First().ExecutionEvents.Count >= 1);
 
-                // Most commands should have 1 execution event, but fallbacks / responses from cache can cause more than 1.  They should never have 0
-            }
-            catch (Exception)
-            {
-                // output.WriteLine("Problematic Request log : " + currentRequestLog.GetExecutedCommandsAsString() + " , expected : " + numCommands);
-                throw;
-            }
+            // Most commands should have 1 execution event, but fallbacks / responses from cache can cause more than 1.  They should never have 0
         }
 
         protected void AssertCommandExecutionEvents(IHystrixInvokableInfo command, params HystrixEventType[] expectedEventTypes)

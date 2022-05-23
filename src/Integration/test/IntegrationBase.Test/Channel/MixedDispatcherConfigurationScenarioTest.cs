@@ -96,14 +96,7 @@ namespace Steeltoe.Integration.Channel.Test
 
             void MessageSenderTask()
             {
-                try
-                {
-                    start.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start.Wait();
 
                 var sent = false;
                 try
@@ -159,14 +152,7 @@ namespace Steeltoe.Integration.Channel.Test
 
             void MessageSenderTask()
             {
-                try
-                {
-                    start.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start.Wait();
 
                 channel.Send(message);
             }
@@ -253,14 +239,7 @@ namespace Steeltoe.Integration.Channel.Test
             var failed1 = 0;
             void MessageSenderTask()
             {
-                try
-                {
-                    start1.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start1.Wait();
 
                 var sent = false;
                 try
@@ -331,14 +310,7 @@ namespace Steeltoe.Integration.Channel.Test
 
             void MessageSenderTask()
             {
-                try
-                {
-                    start1.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start1.Wait();
 
                 channel.Send(message);
             }
@@ -412,14 +384,7 @@ namespace Steeltoe.Integration.Channel.Test
 
             void MessageSenderTask()
             {
-                try
-                {
-                    start1.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start1.Wait();
 
                 var sent = false;
                 try
@@ -479,14 +444,7 @@ namespace Steeltoe.Integration.Channel.Test
 
             void MessageSenderTask()
             {
-                try
-                {
-                    start.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start.Wait();
 
                 channel.Send(message);
             }

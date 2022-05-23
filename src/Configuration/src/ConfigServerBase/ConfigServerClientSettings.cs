@@ -415,18 +415,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetUserInfo(string uri)
         {
-            try
+            if (!string.IsNullOrEmpty(uri))
             {
-                if (!string.IsNullOrEmpty(uri))
-                {
-                    var u = new System.Uri(uri);
-                    return u.UserInfo;
-                }
-            }
-            catch (UriFormatException)
-            {
-                // Log
-                throw;
+                var u = new System.Uri(uri);
+                return u.UserInfo;
             }
 
             return null;

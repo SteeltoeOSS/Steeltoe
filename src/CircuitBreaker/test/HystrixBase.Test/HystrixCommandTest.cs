@@ -4272,14 +4272,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("Running command.queue(), immediately blocking and then running assertions...");
             if (isSuccess)
             {
-                try
-                {
-                    var rest = command.ExecuteAsync().GetAwaiter().GetResult();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                var rest = command.ExecuteAsync().GetAwaiter().GetResult();
             }
             else
             {
@@ -4323,14 +4316,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             else
             {
-                try
-                {
-                    f = command.ExecuteAsync();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                f = command.ExecuteAsync();
             }
 
             AwaitCommandCompletion(command);
@@ -4339,14 +4325,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             if (isSuccess)
             {
-                try
-                {
-                    var res = f.Result;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                var res = f.Result;
             }
             else
             {
@@ -5263,15 +5242,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override bool Run()
         {
-            try
-            {
-                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
-                _token.ThrowIfCancellationRequested();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Time.WaitUntil(() => _token.IsCancellationRequested, 500);
+            _token.ThrowIfCancellationRequested();
 
             return true;
         }
@@ -5413,16 +5385,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override bool Run()
         {
-            try
+            if (completionLatch.Wait(1000))
             {
-                if (completionLatch.Wait(1000))
-                {
-                    throw new Exception("timed out waiting on completionLatch");
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                throw new Exception("timed out waiting on completionLatch");
             }
 
             return true;
@@ -5804,16 +5769,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override bool Run()
         {
-            try
-            {
-                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
-                _token.ThrowIfCancellationRequested();
-                return true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Time.WaitUntil(() => _token.IsCancellationRequested, 500);
+            _token.ThrowIfCancellationRequested();
+            return true;
         }
     }
 
@@ -5827,16 +5785,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override bool Run()
         {
-            try
-            {
-                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
-                _token.ThrowIfCancellationRequested();
-                return true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Time.WaitUntil(() => _token.IsCancellationRequested, 500);
+            _token.ThrowIfCancellationRequested();
+            return true;
         }
     }
 
@@ -5854,16 +5805,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override bool RunFallback()
         {
-            try
-            {
-                Time.WaitUntil(() => _token.IsCancellationRequested, 500);
-                _token.ThrowIfCancellationRequested();
-                return false;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Time.WaitUntil(() => _token.IsCancellationRequested, 500);
+            _token.ThrowIfCancellationRequested();
+            return false;
         }
     }
 

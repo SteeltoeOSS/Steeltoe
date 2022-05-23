@@ -166,38 +166,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             // public Stopwatch sw = new Stopwatch();
             protected override int Run()
             {
-                try
-                {
-                    // sw.Start();
-                    Time.WaitUntil(() => _token.IsCancellationRequested, executionLatency);
+                // sw.Start();
+                Time.WaitUntil(() => _token.IsCancellationRequested, executionLatency);
 
-                    // sw.Stop();
-                    _token.ThrowIfCancellationRequested();
+                // sw.Stop();
+                _token.ThrowIfCancellationRequested();
 
-                    return executionResult2 switch
-                    {
-                        HystrixEventType.SUCCESS => 1,
-                        HystrixEventType.FAILURE => throw new Exception("induced failure"),
-                        HystrixEventType.BAD_REQUEST => throw new HystrixBadRequestException("induced bad request"),
-                        _ => throw new Exception($"unhandled HystrixEventType : {_executionResult}"),
-                    };
-                }
-                catch (Exception)
+                return executionResult2 switch
                 {
-                    throw;
-                }
+                    HystrixEventType.SUCCESS => 1,
+                    HystrixEventType.FAILURE => throw new Exception("induced failure"),
+                    HystrixEventType.BAD_REQUEST => throw new HystrixBadRequestException("induced bad request"),
+                    _ => throw new Exception($"unhandled HystrixEventType : {_executionResult}"),
+                };
             }
 
             protected override int RunFallback()
             {
-                try
-                {
-                    Time.Wait(fallbackExecutionLatency);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                Time.Wait(fallbackExecutionLatency);
 
                 return fallbackExecutionResult switch
                 {

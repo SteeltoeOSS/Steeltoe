@@ -27,15 +27,7 @@ namespace Steeltoe.Stream.Binder
             get => CoreBinder;
             set
             {
-                try
-                {
-                    // value.Initialize();
-                }
-                catch (Exception)
-                {
-                    // TODO: Log
-                    throw;
-                }
+                // value.Initialize();
 
                 CoreBinder = value;
             }

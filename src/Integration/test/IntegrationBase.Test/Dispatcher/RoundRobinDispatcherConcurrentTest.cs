@@ -61,14 +61,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             var failed = false;
             void MessageSenderTask()
             {
-                try
-                {
-                    start.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start.Wait();
 
                 if (!dispatcher.Dispatch(message))
                 {
@@ -101,14 +94,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             var message = messageMock.Object;
             void MessageSenderTask()
             {
-                try
-                {
-                    start.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start.Wait();
 
                 try
                 {
@@ -144,14 +130,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             var failed = false;
             void MessageSenderTask()
             {
-                try
-                {
-                    start.Wait();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                start.Wait();
 
                 if (!dispatcher.Dispatch(message))
                 {

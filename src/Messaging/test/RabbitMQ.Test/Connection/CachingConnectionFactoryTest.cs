@@ -1807,14 +1807,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public void OnCreate(IConnection connection)
             {
-                try
-                {
-                    connection.CreateChannel(false).Close();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                connection.CreateChannel(false).Close();
             }
 
             public void OnShutDown(RC.ShutdownEventArgs args)

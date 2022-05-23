@@ -58,44 +58,36 @@ namespace Steeltoe.Stream.Binding
 
         private void InvokeStreamListenerResultAdapter(MethodInfo method, Type implementation, string outboundName, params object[] arguments)
         {
-            try
+            var bean = ActivatorUtilities.CreateInstance(_context.ServiceProvider, implementation);
+            if (typeof(void).Equals(method.ReturnType))
             {
-                var bean = ActivatorUtilities.CreateInstance(_context.ServiceProvider, implementation);
-                if (typeof(void).Equals(method.ReturnType))
-                {
-                    method.Invoke(bean, arguments);
-                }
-                else
-                {
-                    var result = method.Invoke(bean, arguments);
-                    if (string.IsNullOrEmpty(outboundName))
-                    {
-                        var parameters = method.GetParameters();
-                        foreach (var methodParameter in parameters)
-                        {
-                            var attr = methodParameter.GetCustomAttribute<OutputAttribute>();
-                            if (attr != null)
-                            {
-                                outboundName = attr.Name;
-                            }
-                        }
-                    }
-
-                    var targetBean = BindingHelpers.GetBindableTarget(_context, outboundName);
-                    foreach (var streamListenerResultAdapter in _streamListenerResultAdapters)
-                    {
-                        if (streamListenerResultAdapter.Supports(result.GetType(), targetBean.GetType()))
-                        {
-                            streamListenerResultAdapter.Adapt(result, targetBean);
-                            break;
-                        }
-                    }
-                }
+                method.Invoke(bean, arguments);
             }
-            catch (Exception)
+            else
             {
-                // Log
-                throw;
+                var result = method.Invoke(bean, arguments);
+                if (string.IsNullOrEmpty(outboundName))
+                {
+                    var parameters = method.GetParameters();
+                    foreach (var methodParameter in parameters)
+                    {
+                        var attr = methodParameter.GetCustomAttribute<OutputAttribute>();
+                        if (attr != null)
+                        {
+                            outboundName = attr.Name;
+                        }
+                    }
+                }
+
+                var targetBean = BindingHelpers.GetBindableTarget(_context, outboundName);
+                foreach (var streamListenerResultAdapter in _streamListenerResultAdapters)
+                {
+                    if (streamListenerResultAdapter.Supports(result.GetType(), targetBean.GetType()))
+                    {
+                        streamListenerResultAdapter.Adapt(result, targetBean);
+                        break;
+                    }
+                }
             }
         }
 

@@ -753,16 +753,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // increment past batch time so it executes
             timer.IncrementTime(15);
 
-            try
-            {
-                Assert.Equal("A", GetResult(f1, 1000));
-                Assert.Equal("B", GetResult(f2, 1000));
-                Assert.Equal("B", GetResult(f3, 1000));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Assert.Equal("A", GetResult(f1, 1000));
+            Assert.Equal("B", GetResult(f2, 1000));
+            Assert.Equal("B", GetResult(f3, 1000));
 
             var f4 = command1.ExecuteAsync();
             var f5 = command2.ExecuteAsync();
@@ -771,16 +764,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // increment past batch time so it executes
             timer.IncrementTime(15);
 
-            try
-            {
-                Assert.Equal("A", GetResult(f4, 1000));
-                Assert.Equal("B", GetResult(f5, 1000));
-                Assert.Equal("B", GetResult(f6, 1000));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Assert.Equal("A", GetResult(f4, 1000));
+            Assert.Equal("B", GetResult(f5, 1000));
+            Assert.Equal("B", GetResult(f6, 1000));
 
             // we should still have executed only one command
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
@@ -808,16 +794,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // increment past batch time so it executes
             timer.IncrementTime(15);
 
-            try
-            {
-                Assert.Equal("A", GetResult(f1, 1000));
-                Assert.Equal("B", GetResult(f2, 1000));
-                Assert.Equal("B", GetResult(f3, 1000));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Assert.Equal("A", GetResult(f1, 1000));
+            Assert.Equal("B", GetResult(f2, 1000));
+            Assert.Equal("B", GetResult(f3, 1000));
 
             var f4 = command1.ExecuteAsync();
             var f5 = command2.ExecuteAsync();
@@ -826,16 +805,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // increment past batch time so it executes
             timer.IncrementTime(15);
 
-            try
-            {
-                Assert.Equal("A", GetResult(f4, 1000));
-                Assert.Equal("B", GetResult(f5, 1000));
-                Assert.Equal("B", GetResult(f6, 1000));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Assert.Equal("A", GetResult(f4, 1000));
+            Assert.Equal("B", GetResult(f5, 1000));
+            Assert.Equal("B", GetResult(f6, 1000));
 
             // request caching is turned off on this so we expect 2 command executions
             Assert.Equal(2, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
