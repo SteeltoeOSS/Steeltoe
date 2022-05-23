@@ -227,8 +227,10 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void ApplySequenceEnabled()
         {
-            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-            dispatcher.ApplySequence = true;
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>())
+            {
+                ApplySequence = true
+            };
             var messages = new ConcurrentQueue<IMessage>();
             var target1 = new MessageStoringTestEndpoint(messages);
             var target2 = new MessageStoringTestEndpoint(messages);

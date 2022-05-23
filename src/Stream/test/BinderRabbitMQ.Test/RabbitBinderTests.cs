@@ -1348,8 +1348,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
             // verify(logger).trace(captor.capture());
             // assertThat(captor.getValue().toString()).contains(("Compressed 14 to "));
-            var input = new QueueChannel();
-            input.ComponentName = "batchingConsumer";
+            var input = new QueueChannel { ComponentName = "batchingConsumer" };
             var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
             var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
             var consumerBinding = binder.BindConsumer("batching.0", "test", input, consumerProperties);
@@ -1385,8 +1384,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             output.ComponentName = "propagate.out";
             var producerBinding = binder.BindProducer("propagate.1", output, producerProperties);
 
-            var input = new QueueChannel();
-            input.ComponentName = "propagate.in";
+            var input = new QueueChannel { ComponentName = "propagate.in" };
 
             var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
             var consumerBinding = binder.BindConsumer("propagate.0", "propagate", input, consumerProperties);

@@ -132,8 +132,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
                 public IBinding Matches(object value)
                 {
-                    var map = new Dictionary<string, object>();
-                    map[_key] = value;
+                    var map = new Dictionary<string, object>
+                    {
+                        [_key] = value
+                    };
                     var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
                     return Binding.Create(
                         bindingName,
@@ -187,8 +189,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                         throw new ArgumentException(nameof(headerMap));
                     }
 
-                    _headerMap = new Dictionary<string, object>(headerMap);
-                    _headerMap["x-match"] = matchAll ? "all" : "any";
+                    _headerMap = new Dictionary<string, object>(headerMap)
+                    {
+                        ["x-match"] = matchAll ? "all" : "any"
+                    };
                     _configurer = configurer;
                 }
 

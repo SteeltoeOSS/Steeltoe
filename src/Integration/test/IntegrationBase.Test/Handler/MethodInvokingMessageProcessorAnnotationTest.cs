@@ -139,9 +139,11 @@ namespace Steeltoe.Integration.Handler
             var method = _testService.GetType().GetMethod("MapPayload");
             var context = GetDefaultContext();
             var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-            var payload = new Dictionary<string, int>();
-            payload.Add("attrib1", 88);
-            payload.Add("attrib2", 99);
+            var payload = new Dictionary<string, int>
+            {
+                { "attrib1", 88 },
+                { "attrib2", 99 }
+            };
             var message = MessageBuilder.WithPayload(payload)
                 .SetHeader("attrib1", 123)
                 .SetHeader("attrib2", 456)

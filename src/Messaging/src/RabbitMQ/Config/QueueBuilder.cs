@@ -52,9 +52,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public static QueueBuilder Durable(string name)
         {
-            var builder = new QueueBuilder(name);
-            builder._durable = true;
-            return builder;
+            return new QueueBuilder(name)
+            {
+                _durable = true
+            };
         }
 
         public static QueueBuilder NonDurable()

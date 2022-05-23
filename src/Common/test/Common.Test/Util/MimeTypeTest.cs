@@ -304,11 +304,7 @@ namespace Steeltoe.Common.Util.Test
 
             Assert.True(audioBasicLevel.CompareTo(audio) > 0);
 
-            var expected = new List<MimeType>();
-            expected.Add(audio);
-            expected.Add(audioBasic);
-            expected.Add(audioBasicLevel);
-            expected.Add(audioWave);
+            var expected = new List<MimeType> { audio, audioBasic, audioBasicLevel, audioWave };
 
             var result = new List<MimeType>(expected);
             var rnd = new Random();

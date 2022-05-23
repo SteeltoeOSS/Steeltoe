@@ -87,8 +87,11 @@ namespace Steeltoe.Messaging.Converter
             var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(List<>).FullName);
             accessor.SetHeader("__ContentTypeId__", "trade");
-            var mapping = new Dictionary<string, Type>() { { "trade", typeof(SimpleTrade) } };
-            mapping.Add(typeMapper.ClassIdFieldName, typeof(List<>));
+            var mapping = new Dictionary<string, Type>
+            {
+                { "trade", typeof(SimpleTrade) },
+                { typeMapper.ClassIdFieldName, typeof(List<>) }
+            };
             typeMapper.SetIdClassMapping(mapping);
 
             var type = typeMapper.ToType(accessor.MessageHeaders);
@@ -138,9 +141,12 @@ namespace Steeltoe.Messaging.Converter
             accessor.SetHeader(typeMapper.ContentClassIdFieldName, typeof(string).ToString());
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
 
-            var mapping = new Dictionary<string, Type>() { { "trade", typeof(SimpleTrade) } };
-            mapping.Add(typeMapper.ClassIdFieldName, typeof(Dictionary<,>));
-            mapping.Add(typeMapper.ContentClassIdFieldName, typeof(string));
+            var mapping = new Dictionary<string, Type>
+            {
+                { "trade", typeof(SimpleTrade) },
+                { typeMapper.ClassIdFieldName, typeof(Dictionary<,>) },
+                { typeMapper.ContentClassIdFieldName, typeof(string) }
+            };
             typeMapper.SetIdClassMapping(mapping);
 
             var type = typeMapper.ToType(accessor.MessageHeaders);

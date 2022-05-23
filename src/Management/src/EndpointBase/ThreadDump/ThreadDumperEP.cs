@@ -126,7 +126,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                         foreach (var (threadId, samples) in samplesForThread)
                         {
                             _logger?.LogDebug("Found {0} stacks for thread {1}", samples.Count, threadId);
-                            var threadInfo = new ThreadInfo()
+                            var threadInfo = new ThreadInfo
                             {
                                 ThreadId = threadId,
                                 ThreadName = "Thread-" + threadId,
@@ -134,9 +134,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                                 IsInNative = false,
                                 IsSuspended = false,
                                 LockedMonitors = new List<MonitorInfo>(),
-                                LockedSynchronizers = new List<LockInfo>()
+                                LockedSynchronizers = new List<LockInfo>(),
+                                StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader)
                             };
-                            threadInfo.StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader);
                             threadInfo.ThreadState = GetThreadState(threadInfo.StackTrace);
                             threadInfo.IsInNative = IsThreadInNative(threadInfo.StackTrace);
                             results.Add(threadInfo);

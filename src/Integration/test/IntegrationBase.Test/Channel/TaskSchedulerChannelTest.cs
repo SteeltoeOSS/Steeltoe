@@ -147,8 +147,7 @@ namespace Steeltoe.Integration.Channel.Test
             var mockHandler = new Mock<IMessageHandler>();
             var mockExpected = new Mock<IMessage>();
             var latch = new CountdownEvent(2);
-            var interceptor = new BeforeHandleInterceptor(latch);
-            interceptor.MessageToReturn = mockExpected.Object;
+            var interceptor = new BeforeHandleInterceptor(latch) { MessageToReturn = mockExpected.Object };
             channel.AddInterceptor(interceptor);
             channel.Subscribe(mockHandler.Object);
             channel.Send(Message.Create("foo"));

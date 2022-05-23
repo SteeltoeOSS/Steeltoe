@@ -139,8 +139,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // Members List
             var societyContext = new StandardEvaluationContext();
-            var ieee = new IEEE();
-            ieee.Members[0] = Tesla;
+            var ieee = new IEEE { Members = { [0] = Tesla } };
             societyContext.SetRootObject(ieee);
 
             // Evaluates to "Nikola Tesla"

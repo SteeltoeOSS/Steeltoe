@@ -439,8 +439,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public IDictionary<string, object> GetCacheProperties()
         {
-            var props = new Dictionary<string, object>();
-            props.Add("cacheMode", CacheMode.ToString());
+            var props = new Dictionary<string, object>
+            {
+                { "cacheMode", CacheMode.ToString() }
+            };
             lock (_connectionMonitor)
             {
                 props.Add("channelCacheSize", _channelCacheSize);

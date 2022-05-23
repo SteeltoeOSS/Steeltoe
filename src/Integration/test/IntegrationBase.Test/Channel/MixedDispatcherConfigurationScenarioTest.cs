@@ -54,8 +54,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancing()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null);
-            channel.Failover = false;
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null)
+            {
+                Failover = false
+            };
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
@@ -83,8 +85,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null);
-            channel.Failover = false;
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null)
+            {
+                Failover = false
+            };
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
@@ -137,8 +141,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor", null);
-            channel.Failover = false;
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor", null)
+            {
+                Failover = false
+            };
             handlerA.Setup((h) => h.HandleMessage(message)).Callback(() =>
             {
                 var e = new Exception();
@@ -183,8 +189,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancing()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null);
-            channel.Failover = false;
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null)
+            {
+                Failover = false
+            };
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
@@ -229,8 +237,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null);
-            channel.Failover = false;
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null)
+            {
+                Failover = false
+            };
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
@@ -288,8 +298,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null);
-            channel.Failover = false;
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null)
+            {
+                Failover = false
+            };
 
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
@@ -348,8 +360,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancing()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "loadBalancerNoFailover", null);
-            channel.Failover = true;
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "loadBalancerNoFailover", null)
+            {
+                Failover = true
+            };
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
@@ -381,8 +395,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerFailover", null);
-            channel.Failover = true;
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerFailover", null)
+            {
+                Failover = true
+            };
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
@@ -440,8 +456,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, null);
-            channel.Failover = true;
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, null)
+            {
+                Failover = true
+            };
 
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);

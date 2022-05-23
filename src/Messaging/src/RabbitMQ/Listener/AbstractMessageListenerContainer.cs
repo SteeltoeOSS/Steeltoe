@@ -662,8 +662,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
                 if (bindChannel)
                 {
-                    var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>());
-                    resourceHolder.SynchronizedWithTransaction = true;
+                    var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>())
+                    {
+                        SynchronizedWithTransaction = true
+                    };
                     TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
                 }
 
@@ -698,8 +700,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
                 if (bindChannel)
                 {
-                    var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>());
-                    resourceHolder.SynchronizedWithTransaction = true;
+                    var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>())
+                    {
+                        SynchronizedWithTransaction = true
+                    };
                     TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
                 }
 
@@ -826,8 +830,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 // if locally transacted, bind the current channel to make it available to RabbitTemplate
                 if (IsChannelLocallyTransacted)
                 {
-                    var localResourceHolder = new RabbitResourceHolder(channelToUse, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>());
-                    localResourceHolder.SynchronizedWithTransaction = true;
+                    var localResourceHolder = new RabbitResourceHolder(channelToUse, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>())
+                    {
+                        SynchronizedWithTransaction = true
+                    };
                     TransactionSynchronizationManager.BindResource(ConnectionFactory, localResourceHolder);
                     boundHere = true;
                 }

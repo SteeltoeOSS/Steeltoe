@@ -41,8 +41,10 @@ namespace Steeltoe.Integration.Dispatcher.Test
             services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             provider = services.BuildServiceProvider();
-            dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
-            dispatcher.LoadBalancingStrategy = new RoundRobinLoadBalancingStrategy();
+            dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>())
+            {
+                LoadBalancingStrategy = new RoundRobinLoadBalancingStrategy()
+            };
         }
 
         [Fact]

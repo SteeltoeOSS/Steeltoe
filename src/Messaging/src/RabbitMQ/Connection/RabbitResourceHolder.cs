@@ -160,8 +160,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
             else
             {
-                tags = new List<ulong>();
-                tags.Add(deliveryTag);
+                tags = new List<ulong> { deliveryTag };
                 _deliveryTags.Add(channel, tags);
             }
         }

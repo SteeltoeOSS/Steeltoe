@@ -5041,13 +5041,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Equal(3L, _expression.GetValue(rh));
 
             _expression = sep.ParseExpression("Record['abc']?:Record.Add('abc',Expression.SomeLong)");
-            rh = new RecordHolder();
-            rh.Expression.SomeLong = 6L;
+            rh = new RecordHolder { Expression = { SomeLong = 6L } };
             Assert.Null(_expression.GetValue(rh));
             Assert.Equal(6L, rh.Get("abc"));
             AssertCanCompile(_expression);
-            rh = new RecordHolder();
-            rh.Expression.SomeLong = 10L;
+            rh = new RecordHolder { Expression = { SomeLong = 10L } };
             Assert.Null(_expression.GetValue(rh));
             Assert.Equal(10L, rh.Get("abc"));
         }

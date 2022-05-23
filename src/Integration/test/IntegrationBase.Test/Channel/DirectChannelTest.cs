@@ -152,8 +152,7 @@ namespace Steeltoe.Integration.Channel.Test
             var target = new ThreadNameExtractingTestTarget(latch);
             channel.Subscribe(target);
             var message = Message.Create("test");
-            var thread = new Thread(() => channel.Send(message));
-            thread.Name = "test-thread";
+            var thread = new Thread(() => channel.Send(message)) { Name = "test-thread" };
             thread.Start();
             latch.Wait(1000);
             Assert.Equal("test-thread", target.ThreadName);

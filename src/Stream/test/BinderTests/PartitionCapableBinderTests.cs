@@ -185,13 +185,11 @@ namespace Steeltoe.Stream.Binder
             var input0Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input0, consumerProperties);
 
             consumerProperties.InstanceIndex = 1;
-            var input1 = new QueueChannel();
-            input1.ComponentName = "test.input1S";
+            var input1 = new QueueChannel { ComponentName = "test.input1S" };
             var input1Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input1, consumerProperties);
 
             consumerProperties.InstanceIndex = 2;
-            var input2 = new QueueChannel();
-            input2.ComponentName = "test.input2S";
+            var input2 = new QueueChannel { ComponentName = "test.input2S" };
             var input2Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input2, consumerProperties);
 
             var producerProperties = GetProducerOptions("output", bindingsOptions);

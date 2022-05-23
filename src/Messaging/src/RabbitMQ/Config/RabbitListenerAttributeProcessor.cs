@@ -203,8 +203,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         private void ProcessAmqpListener(RabbitListenerAttribute rabbitListener, MethodInfo method, object bean, string beanName)
         {
             _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method.ToString(), method.DeclaringType);
-            var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory);
-            endpoint.Method = method;
+            var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory)
+            {
+                Method = method
+            };
             ProcessListener(endpoint, rabbitListener, bean, method, beanName);
         }
 

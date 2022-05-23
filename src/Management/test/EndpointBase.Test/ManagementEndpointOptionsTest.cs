@@ -51,8 +51,13 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void IsExposedCorrectly()
         {
-            var mgmtOptions = new ActuatorManagementOptions();
-            mgmtOptions.Exposure.Exclude = new string[] { "*" }.ToList();
+            var mgmtOptions = new ActuatorManagementOptions
+            {
+                Exposure =
+                {
+                    Exclude = new string[] { "*" }.ToList()
+                }
+            };
 
             var options = new InfoEndpointOptions();
             Assert.False(options.IsExposed(mgmtOptions));

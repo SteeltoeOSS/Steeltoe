@@ -157,10 +157,13 @@ internal class DotNetHeapDumpGraphReader
                 return;
             }
 
-            Module module = new Module(data.ImageBase);
-            module.Path = data.FileName;
-            module.Size = data.ImageSize;
-            module.BuildTime = data.BuildTime;
+            Module module = new Module(data.ImageBase)
+            {
+                Path = data.FileName,
+                Size = data.ImageSize,
+                BuildTime = data.BuildTime
+            };
+
             if (lastDbgData != null && data.TimeStampRelativeMSec == lastDbgData.TimeStampRelativeMSec)
             {
                 module.PdbGuid = lastDbgData.GuidSig;
@@ -460,9 +463,7 @@ internal class DotNetHeapDumpGraphReader
 
             DotNetHeapInfo.Segments ??= new List<GCHeapDumpSegment>();
 
-            GCHeapDumpSegment segment = new GCHeapDumpSegment();
-            segment.Start = start;
-            segment.End = end;
+            GCHeapDumpSegment segment = new GCHeapDumpSegment { Start = start, End = end };
 
             switch (data.Generation)
             {

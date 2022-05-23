@@ -235,8 +235,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             var queues = new List<Queue>();
             foreach (var q in declareQueues)
             {
-                var queue = new Queue(q.Name, false, true, true);
-                queue.ServiceName = q.Id;
+                var queue = new Queue(q.Name, false, true, true) { ServiceName = q.Id };
                 UpdateQueue(queue, q, config);
                 services.AddRabbitQueue(queue);
                 queues.Add(queue);

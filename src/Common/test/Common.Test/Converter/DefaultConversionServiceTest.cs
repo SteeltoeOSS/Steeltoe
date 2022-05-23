@@ -679,10 +679,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCollectionToCollectionWithElementConversion()
         {
-            var foo = new Collection<string>();
-            foo.Add("1");
-            foo.Add("2");
-            foo.Add("3");
+            var foo = new Collection<string> { "1", "2", "3" };
 
             var result = ConversionService.Convert<List<int>>(foo);
             Assert.Equal(3, result.Count);
@@ -716,10 +713,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCollectionToCollectionNotGeneric()
         {
-            var foo = new Collection<string>();
-            foo.Add("1");
-            foo.Add("2");
-            foo.Add("3");
+            var foo = new Collection<string> { "1", "2", "3" };
             var result = ConversionService.Convert<IList>(foo);
             Assert.Equal(3, result.Count);
             Assert.Equal("1", result[0]);
@@ -730,9 +724,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void CollectionToCollectionEnumerableWithElementConversion()
         {
-            var strings = new ArrayList();
-            strings.Add("3");
-            strings.Add("9");
+            var strings = new ArrayList { "3", "9" };
 
             var result = ConversionService.Convert<IEnumerable<int>>(strings);
             Assert.Contains(3, result);
@@ -743,9 +735,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void CollectionToCollectionEnumerableString()
         {
-            var strings = new ArrayList();
-            strings.Add("3");
-            strings.Add("9");
+            var strings = new ArrayList { "3", "9" };
 
             var result = ConversionService.Convert<IEnumerable<string>>(strings);
             Assert.Contains("3", result);
@@ -756,9 +746,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void CollectionToCollectionStringCollection()
         {
-            var strings = new ArrayList();
-            strings.Add("3");
-            strings.Add("9");
+            var strings = new ArrayList { "3", "9" };
 
             var result = ConversionService.Convert<StringCollection>(strings);
             Assert.Contains("3", result[0]);
@@ -769,9 +757,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertDictToDictWithElementConversion()
         {
-            var foo = new Dictionary<string, string>();
-            foo.Add("1", "BAR");
-            foo.Add("2", "BAZ");
+            var foo = new Dictionary<string, string> { { "1", "BAR" }, { "2", "BAZ" } };
 
             var map = ConversionService.Convert<Dictionary<int, Foo>>(foo);
             Assert.Equal(Foo.BAR, map[1]);
@@ -792,9 +778,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertDictionaryBothElementConvertion()
         {
-            var strings = new Dictionary<string, string>();
-            strings.Add("3", "9");
-            strings.Add("6", "31");
+            var strings = new Dictionary<string, string> { { "3", "9" }, { "6", "31" } };
             var integers = ConversionService.Convert<IDictionary<int, int>>(strings);
             Assert.Equal(9, integers[3]);
             Assert.Equal(31, integers[6]);
@@ -803,9 +787,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertHashtableToDictionary()
         {
-            var strings = new Hashtable();
-            strings.Add("3", "9");
-            strings.Add("6", "31");
+            var strings = new Hashtable { { "3", "9" }, { "6", "31" } };
             var integers = ConversionService.Convert<IDictionary<int, int>>(strings);
             Assert.Equal(9, integers[3]);
             Assert.Equal(31, integers[6]);
@@ -814,9 +796,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertHashtableToSortedList()
         {
-            var strings = new Hashtable();
-            strings.Add("3", "9");
-            strings.Add("6", "31");
+            var strings = new Hashtable { { "3", "9" }, { "6", "31" } };
             var integers = ConversionService.Convert<SortedList>(strings);
             Assert.Equal("9", integers["3"]);
             Assert.Equal("31", integers["6"]);
@@ -825,9 +805,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertDictionaryConcurrentDictionary()
         {
-            var strings = new Dictionary<string, string>();
-            strings.Add("3", "9");
-            strings.Add("6", "31");
+            var strings = new Dictionary<string, string> { { "3", "9" }, { "6", "31" } };
             var integers = ConversionService.Convert<ConcurrentDictionary<int, int>>(strings);
             Assert.Equal(9, integers[3]);
             Assert.Equal(31, integers[6]);

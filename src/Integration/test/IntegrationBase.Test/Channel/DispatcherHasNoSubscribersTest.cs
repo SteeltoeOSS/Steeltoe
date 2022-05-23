@@ -53,8 +53,7 @@ namespace Steeltoe.Integration.Channel.Test
             var provider = services.BuildServiceProvider();
             var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var subscribedChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var bridgeHandler = new BridgeHandler(provider.GetService<IApplicationContext>());
-            bridgeHandler.OutputChannel = noSubscribersChannel;
+            var bridgeHandler = new BridgeHandler(provider.GetService<IApplicationContext>()) { OutputChannel = noSubscribersChannel };
             subscribedChannel.Subscribe(bridgeHandler);
             try
             {

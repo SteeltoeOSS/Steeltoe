@@ -40,9 +40,10 @@ namespace Steeltoe.Integration.Endpoint.Test
             var handler = new ExceptionHandler();
             outChannel.Subscribe(handler);
 
-            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
-
-            mps.OutputChannel = outChannel;
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
+            {
+                OutputChannel = outChannel
+            };
 
             await mps.Start();
             Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(Message.Create("hello")));
@@ -58,10 +59,11 @@ namespace Steeltoe.Integration.Endpoint.Test
             var errorChannel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             errorChannel.Subscribe(handler);
 
-            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
-
-            mps.OutputChannel = outChannel;
-            mps.ErrorChannel = errorChannel;
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
+            {
+                OutputChannel = outChannel,
+                ErrorChannel = errorChannel
+            };
 
             await mps.Start();
             Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(Message.Create("hello")));
@@ -79,10 +81,11 @@ namespace Steeltoe.Integration.Endpoint.Test
             var errorHandler = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), errorService);
             errorChannel.Subscribe(errorHandler);
 
-            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
-
-            mps.OutputChannel = outChannel;
-            mps.ErrorChannel = errorChannel;
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
+            {
+                OutputChannel = outChannel,
+                ErrorChannel = errorChannel
+            };
 
             await mps.Start();
             var message = Message.Create("hello");
@@ -98,8 +101,10 @@ namespace Steeltoe.Integration.Endpoint.Test
         {
             services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
             var provider = services.BuildServiceProvider();
-            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
-            mps.OutputChannelName = "foo";
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
+            {
+                OutputChannelName = "foo"
+            };
             await mps.Start();
             Assert.NotNull(mps.OutputChannel);
             Assert.Equal("foo", mps.OutputChannel.ServiceName);

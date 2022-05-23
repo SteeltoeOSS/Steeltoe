@@ -48,8 +48,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         [Fact]
         public void NestedBean()
         {
-            var bar = new Bar();
-            bar.Foo.Name = "spam";
+            var bar = new Bar { Foo = { Name = "spam" } };
 
             var message = converter.ToMessage(bar, new MessageHeaders());
 

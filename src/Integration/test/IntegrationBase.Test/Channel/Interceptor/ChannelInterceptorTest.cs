@@ -121,8 +121,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         public void AfterCompletionWithPreSendException()
         {
             var interceptor1 = new AfterCompletionTestInterceptor();
-            var interceptor2 = new AfterCompletionTestInterceptor();
-            interceptor2.ExceptionToRaise = new Exception("Simulated exception");
+            var interceptor2 = new AfterCompletionTestInterceptor { ExceptionToRaise = new Exception("Simulated exception") };
             channel.AddInterceptor(interceptor1);
             channel.AddInterceptor(interceptor2);
             try
@@ -181,8 +180,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         public void AfterCompletionWithReceiveException()
         {
             var interceptor1 = new PreReceiveReturnsTrueInterceptor();
-            var interceptor2 = new PreReceiveReturnsTrueInterceptor();
-            interceptor2.ExceptionToRaise = new Exception("Simulated exception");
+            var interceptor2 = new PreReceiveReturnsTrueInterceptor { ExceptionToRaise = new Exception("Simulated exception") };
             channel.AddInterceptor(interceptor1);
             channel.AddInterceptor(interceptor2);
 

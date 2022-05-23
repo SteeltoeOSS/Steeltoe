@@ -381,12 +381,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Label = "testlabel";
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
-            var settings = new ConfigServerClientSettings()
+            var settings = new ConfigServerClientSettings
             {
                 Name = "myName",
-                PollingInterval = TimeSpan.FromMilliseconds(300)
+                PollingInterval = TimeSpan.FromMilliseconds(300),
+                Label = "label,testlabel"
             };
-            settings.Label = "label,testlabel";
             using var client = server.CreateClient();
             var provider = new ConfigServerConfigurationProvider(settings, client);
             var token = provider.GetReloadToken();

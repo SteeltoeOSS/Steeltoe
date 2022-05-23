@@ -126,8 +126,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             container.Exclusive = Exclusive;
             if (Priority.HasValue)
             {
-                var args = new Dictionary<string, object>();
-                args.Add("x-priority", Priority.Value);
+                var args = new Dictionary<string, object>
+                {
+                    { "x-priority", Priority.Value }
+                };
                 container.ConsumerArguments = args;
             }
 

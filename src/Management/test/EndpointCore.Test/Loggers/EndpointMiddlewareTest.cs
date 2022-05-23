@@ -117,8 +117,10 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public async Task LoggersActuator_AcceptsPost_When_ManagementPath_Is_Slash()
         {
-            var appSettings = new Dictionary<string, string>(AppSettings);
-            appSettings["management:endpoints:path"] = "/";
+            var appSettings = new Dictionary<string, string>(AppSettings)
+            {
+                ["management:endpoints:path"] = "/"
+            };
             appSettings.Add("Management:Endpoints:Actuator:Exposure:Include:0", "*");
 
             var builder = new WebHostBuilder()

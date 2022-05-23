@@ -125,7 +125,6 @@ namespace Steeltoe.Discovery.Consul.Registry
             }
 
             var service = new AgentServiceRegistration();
-
             service.ID = GetInstanceId(options, applicationInfo);
 
             if (!options.PreferAgentAddress)

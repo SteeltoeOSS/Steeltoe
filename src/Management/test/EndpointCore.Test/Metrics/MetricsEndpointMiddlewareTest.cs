@@ -94,8 +94,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = new ActuatorManagementOptions();
-            mopts.Path = "/";
+            var mopts = new ActuatorManagementOptions { Path = "/" };
 
             mopts.EndpointOptions.Add(opts);
 

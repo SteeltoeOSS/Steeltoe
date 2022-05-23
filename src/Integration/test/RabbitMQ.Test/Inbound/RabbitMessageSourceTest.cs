@@ -40,8 +40,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             connectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
 
             var ccf = new CachingConnectionFactory(connectionFactory.Object);
-            var source = new RabbitMessageSource(context, ccf, "foo");
-            source.RawMessageHeader = true;
+            var source = new RabbitMessageSource(context, ccf, "foo") { RawMessageHeader = true };
             var received = source.Receive();
             var rawMessage = received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE);
             var sourceData = received.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
@@ -81,8 +80,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
         public void TestBatch()
         {
             var bs = new SimpleBatchingStrategy(2, 10_000, 10_000L);
-            var headers = new RabbitHeaderAccessor();
-            headers.ContentType = "test/plain";
+            var headers = new RabbitHeaderAccessor { ContentType = "test/plain" };
             var message = Message.Create(Encoding.UTF8.GetBytes("test1"), headers.MessageHeaders);
             bs.AddToBatch("foo", "bar", message);
             message = Message.Create(Encoding.UTF8.GetBytes("test2"), headers.MessageHeaders);

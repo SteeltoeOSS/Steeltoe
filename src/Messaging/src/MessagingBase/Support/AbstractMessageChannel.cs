@@ -42,8 +42,7 @@ namespace Steeltoe.Messaging.Support
         {
             lock (_lock)
             {
-                var interceptors = new List<IChannelInterceptor>(_interceptors);
-                interceptors.Add(interceptor);
+                var interceptors = new List<IChannelInterceptor>(_interceptors) { interceptor };
                 _interceptors = interceptors;
             }
         }

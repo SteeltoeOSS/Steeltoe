@@ -74,8 +74,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public object Clone()
         {
-            var queue = new Queue(QueueName, IsDurable, IsExclusive, IsAutoDelete, new Dictionary<string, object>(Arguments));
-            queue.ActualName = ActualName;
+            var queue = new Queue(QueueName, IsDurable, IsExclusive, IsAutoDelete, new Dictionary<string, object>(Arguments))
+            {
+                ActualName = ActualName
+            };
             return queue;
         }
 

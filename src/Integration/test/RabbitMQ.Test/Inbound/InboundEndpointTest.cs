@@ -48,8 +48,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             var container = new DirectMessageListenerContainer();
             container.ConnectionFactory = connectionFactory.Object;
             container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.MANUAL;
-            var adapter = new RabbitInboundChannelAdapter(context, container);
-            adapter.MessageConverter = new JsonMessageConverter();
+            var adapter = new RabbitInboundChannelAdapter(context, container) { MessageConverter = new JsonMessageConverter() };
             var qchannel = new QueueChannel(context);
             adapter.OutputChannel = qchannel;
             adapter.BindSourceMessage = true;
@@ -126,8 +125,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             adapter.ErrorChannel = errorChannel;
             adapter.MessageConverter = new ThrowingMessageConverter();
 
-            var accessor = new RabbitHeaderAccessor();
-            accessor.DeliveryTag = 123ul;
+            var accessor = new RabbitHeaderAccessor { DeliveryTag = 123ul };
             var headers = accessor.MessageHeaders;
             var message = Message.Create(string.Empty, headers);
             var listener = container.MessageListener as IChannelAwareMessageListener;
@@ -158,13 +156,13 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
             var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
             var container = new DirectMessageListenerContainer();
-            var adapter = new RabbitInboundChannelAdapter(context, container);
+            var adapter = new RabbitInboundChannelAdapter(context, container)
+            {
+                OutputChannel = new DirectChannel(context), RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1)
+            };
 
-            adapter.OutputChannel = new DirectChannel(context);
-            adapter.RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1);
             var errors = new QueueChannel(context);
-            var recoveryCallback = new ErrorMessageSendingRecoverer(context, errors);
-            recoveryCallback.ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
+            var recoveryCallback = new ErrorMessageSendingRecoverer(context, errors) { ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy() };
             adapter.RecoveryCallback = recoveryCallback;
             var listener = container.MessageListener as IChannelAwareMessageListener;
             var message = MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes("foo")).CopyHeaders(new MessageHeaders()).Build();
@@ -196,8 +194,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             adapter.OutputChannel = outchan;
             var listener = container.MessageListener as IChannelAwareMessageListener;
             var bs = new SimpleBatchingStrategy(2, 10_000, 10_000L);
-            var accessor = new MessageHeaderAccessor();
-            accessor.ContentType = "text/plain";
+            var accessor = new MessageHeaderAccessor { ContentType = "text/plain" };
             var message = Message.Create(Encoding.UTF8.GetBytes("test1"), accessor.MessageHeaders);
             bs.AddToBatch("foo", "bar", message);
             message = Message.Create(Encoding.UTF8.GetBytes("test2"), accessor.MessageHeaders);

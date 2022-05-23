@@ -79,8 +79,10 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<DefaultDatatypeChannelMessageConverter>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel");
-            channel.DataTypes = new List<Type>() { typeof(int), typeof(DateTime) };
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
+            {
+                DataTypes = new List<Type>() { typeof(int), typeof(DateTime) }
+            };
             Assert.True(channel.Send(Message.Create(true)));
             Assert.Equal(1, channel.Receive().Payload);
         }
@@ -144,8 +146,10 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel");
-            channel.DataTypes = new List<Type>(datatypes);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
+            {
+                DataTypes = new List<Type>(datatypes)
+            };
             return channel;
         }
 

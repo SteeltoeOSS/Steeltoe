@@ -137,8 +137,7 @@ namespace Steeltoe.Messaging.Support
                 SetHeader(NATIVE_HEADERS, map);
             }
 
-            var values = new List<string>();
-            values.Add(value);
+            var values = new List<string> { value };
             if (!values.Equals(GetHeader(name)))
             {
                 IsModified = true;

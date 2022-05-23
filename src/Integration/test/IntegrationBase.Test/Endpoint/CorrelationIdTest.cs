@@ -41,8 +41,10 @@ namespace Steeltoe.Integration.Endpoint.Test
             var message = Support.IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
             var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase());
-            serviceActivator.OutputChannel = outputChannel;
+            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
+            {
+                OutputChannel = outputChannel
+            };
             var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
             await endpoint.Start();
             Assert.True(inputChannel.Send(message));
@@ -58,8 +60,10 @@ namespace Steeltoe.Integration.Endpoint.Test
             var message = Support.IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
             var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase());
-            serviceActivator.OutputChannel = outputChannel;
+            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
+            {
+                OutputChannel = outputChannel
+            };
             var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
             await endpoint.Start();
             Assert.True(inputChannel.Send(message));
@@ -76,8 +80,10 @@ namespace Steeltoe.Integration.Endpoint.Test
             var message = Support.IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
             var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanCreateMessage());
-            serviceActivator.OutputChannel = outputChannel;
+            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
+            {
+                OutputChannel = outputChannel
+            };
             var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
             await endpoint.Start();
             Assert.True(inputChannel.Send(message));
@@ -92,8 +98,10 @@ namespace Steeltoe.Integration.Endpoint.Test
             IMessage message = Message.Create("test");
             var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanCreateMessage());
-            serviceActivator.OutputChannel = outputChannel;
+            var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
+            {
+                OutputChannel = outputChannel
+            };
             var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
             await endpoint.Start();
             Assert.True(inputChannel.Send(message));

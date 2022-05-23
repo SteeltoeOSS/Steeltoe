@@ -369,16 +369,20 @@ namespace Steeltoe.Stream.Binder
 
         protected BindingOptions CreateConsumerBindingOptions(ConsumerOptions consumerOptions)
         {
-            var bindingOptions = new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
-            bindingOptions.Consumer = consumerOptions;
-            return bindingOptions;
+            return new BindingOptions
+            {
+                ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString(),
+                Consumer = consumerOptions
+            };
         }
 
         protected BindingOptions CreateProducerBindingOptions(ProducerOptions producerOptions)
         {
-            var bindingOptions = new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
-            bindingOptions.Producer = producerOptions;
-            return bindingOptions;
+            return new BindingOptions
+            {
+                ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString(),
+                Producer = producerOptions
+            };
         }
 
         protected IMessage Receive(IPollableChannel channel)

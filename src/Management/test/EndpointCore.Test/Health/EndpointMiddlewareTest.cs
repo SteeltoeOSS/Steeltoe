@@ -40,8 +40,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             mgmtOptions.EndpointOptions.Add(opts);
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointMiddleware(null, mgmtOptions);
-            middle.Endpoint = ep;
+            var middle = new HealthEndpointMiddleware(null, mgmtOptions) { Endpoint = ep };
 
             var context = CreateRequest("GET", "/health");
             await middle.HandleHealthRequestAsync(context);

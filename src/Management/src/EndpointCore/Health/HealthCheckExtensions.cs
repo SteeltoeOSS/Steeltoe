@@ -36,9 +36,11 @@ namespace Steeltoe.Management.Endpoint.Health
                 var status = res.Status.ToHealthStatus();
                 healthCheckResult.Status = status; // Only used for aggregate doesn't get reported
                 healthCheckResult.Description = res.Description;
-                healthCheckResult.Details = new Dictionary<string, object>(res.Data);
-                healthCheckResult.Details.Add("status", status.ToString());
-                healthCheckResult.Details.Add("description", res.Description);
+                healthCheckResult.Details = new Dictionary<string, object>(res.Data)
+                {
+                    { "status", status.ToString() },
+                    { "description", res.Description }
+                };
 
                 if (res.Exception != null && !string.IsNullOrEmpty(res.Exception.Message))
                 {

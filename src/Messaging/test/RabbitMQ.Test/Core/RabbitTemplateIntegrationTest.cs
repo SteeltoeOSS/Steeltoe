@@ -555,8 +555,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             container.MessageListener = template;
             container.Initialize();
             container.Start();
-            var headers = new RabbitHeaderAccessor(new MessageHeaders());
-            headers.CorrelationId = "myCorrelationId";
+            var headers = new RabbitHeaderAccessor(new MessageHeaders()) { CorrelationId = "myCorrelationId" };
             var message = Message.Create(Encoding.UTF8.GetBytes("test-message"), headers.MessageHeaders);
             var reply = template.SendAndReceive(message);
             Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
@@ -916,8 +915,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 {
                     var random = new Random();
                     var request = random.NextDouble() * 100;
-                    var messageHeaders = new RabbitHeaderAccessor(new MessageHeaders());
-                    messageHeaders.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
+                    var messageHeaders = new RabbitHeaderAccessor(new MessageHeaders()) { ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT };
                     var formatter = new BinaryFormatter();
                     var stream = new MemoryStream(512);
 
@@ -959,10 +957,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
 
             var messageId = Guid.NewGuid().ToString();
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.MessageId = messageId;
-            messageProperties.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
-            messageProperties.ReplyTo = REPLY_QUEUE_NAME;
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                MessageId = messageId,
+                ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN,
+                ReplyTo = REPLY_QUEUE_NAME
+            };
             template.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("test"), messageProperties.MessageHeaders));
             template.ReceiveAndReply<string, string>((str) => str.ToUpper());
 
@@ -1012,8 +1012,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var template = CreateSendAndReceiveRabbitTemplate(this.template.ConnectionFactory);
             try
             {
-                var props = new RabbitHeaderAccessor();
-                props.ContentType = "text/plain";
+                var props = new RabbitHeaderAccessor { ContentType = "text/plain" };
                 var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props.MessageHeaders);
                 var reply = template.SendAndReceive(string.Empty, ROUTE, message);
                 Assert.NotNull(reply);
@@ -1186,8 +1185,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 container.SetQueueNames(ROUTE);
                 var replyToWas = new AtomicReference<string>();
                 var delgate = new TestMessageHandler(replyToWas);
-                var messageListenerAdapter = new MessageListenerAdapter(null, delgate);
-                messageListenerAdapter.MessageConverter = null;
+                var messageListenerAdapter = new MessageListenerAdapter(null, delgate) { MessageConverter = null };
                 container.MessageListener = messageListenerAdapter;
                 container.Start().Wait();
                 template.DefaultReceiveQueue = ROUTE;
@@ -1280,8 +1278,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             received = template.ReceiveAndReply<IMessage, IMessage>(
                 message =>
             {
-                var messageProperties = new RabbitHeaderAccessor(new MessageHeaders());
-                messageProperties.ContentType = message.Headers.ContentType();
+                var messageProperties = new RabbitHeaderAccessor(new MessageHeaders()) { ContentType = message.Headers.ContentType() };
                 messageProperties.SetHeader("testReplyTo", new Address(string.Empty, ROUTE));
                 return Message.Create(message.Payload, messageProperties.MessageHeaders, message.Payload.GetType());
             },
