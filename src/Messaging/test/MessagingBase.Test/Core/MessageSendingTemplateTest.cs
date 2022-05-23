@@ -314,7 +314,6 @@ namespace Steeltoe.Messaging.Core.Test
             {
                 Destination = destination;
                 Message = message;
-                return;
             }
         }
     }

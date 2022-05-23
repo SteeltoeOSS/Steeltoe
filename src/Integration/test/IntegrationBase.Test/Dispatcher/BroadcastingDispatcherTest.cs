@@ -390,7 +390,6 @@ namespace Steeltoe.Integration.Dispatcher.Test
                     if (failures[val])
                     {
                         TryExecuteTask(task);
-                        return;
                     }
                 }
             }

@@ -210,14 +210,12 @@ namespace Steeltoe.Messaging.Support.Test
             {
                 AssertInput(message, channel, sent);
                 PreSendInvoked = true;
-                return;
             }
 
             public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
             {
                 AssertInput(message, channel, sent);
                 CompletionInvoked = true;
-                return;
             }
 
             private void AssertInput(IMessage message, IMessageChannel channel, bool sent)
@@ -244,14 +242,12 @@ namespace Steeltoe.Messaging.Support.Test
             {
                 AssertInput(message, channel, sent);
                 PreSendInvoked = true;
-                return;
             }
 
             public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
             {
                 AssertInput(message, channel, sent);
                 CompletionInvoked = true;
-                return;
             }
 
             private void AssertInput(IMessage message, IMessageChannel channel, bool sent)
@@ -272,7 +268,6 @@ namespace Steeltoe.Messaging.Support.Test
             public void HandleMessage(IMessage message)
             {
                 Messages.Add(message);
-                return;
             }
         }
 
@@ -302,7 +297,6 @@ namespace Steeltoe.Messaging.Support.Test
             public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
             {
                 afterCompletionInvoked = true;
-                return;
             }
         }
 

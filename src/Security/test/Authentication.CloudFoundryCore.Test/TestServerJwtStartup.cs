@@ -57,7 +57,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             app.Run(async context =>
             {
                 await context.ChallengeAsync();
-                return;
             });
         }
     }

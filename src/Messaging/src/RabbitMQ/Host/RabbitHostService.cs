@@ -57,8 +57,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
             {
                 _logger?.LogInformation("Found no ILifecycleProcessor service to initialize");
             }
-
-            return;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

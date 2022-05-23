@@ -656,7 +656,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 /* executionHook for all errors */
                 e = WrapWithOnErrorHook(failureType, e);
                 tcs.TrySetException(new HystrixRuntimeException(failureType, GetType(), $"{LogMessagePrefix} {message} and encountered unrecoverable error.", e, null));
-                return;
             }
             else
             {
@@ -1093,7 +1092,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 {
                     // command has already been unsubscribed, so return immediately
                     tcs.TrySetException(new Exception("unsubscribed before executing run()"));
-                    return;
                 }
             }
             finally

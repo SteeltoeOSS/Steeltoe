@@ -77,8 +77,6 @@ namespace Steeltoe.Integration.Handler
                 default:
                     break;
             }
-
-            return;
         }
 
         protected virtual string CreateLogMessage(IMessage message)

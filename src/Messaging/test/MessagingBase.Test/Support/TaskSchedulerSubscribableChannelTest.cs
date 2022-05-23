@@ -225,7 +225,6 @@ namespace Steeltoe.Messaging.Support.Test
             {
                 _test?._channel.Unsubscribe(_test._handler);
                 _test2?._channel.Unsubscribe(_test2._handler);
-                return;
             }
         }
 
@@ -278,7 +277,6 @@ namespace Steeltoe.Messaging.Support.Test
             public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception ex)
             {
                 afterHandledInvoked = true;
-                return;
             }
         }
 

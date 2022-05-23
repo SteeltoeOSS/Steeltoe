@@ -267,7 +267,6 @@ namespace Steeltoe.Messaging.Core.Test
 
             protected override void DoSend(string destination, IMessage message)
             {
-                return;
             }
 
             protected override IMessage DoReceive(string destination)

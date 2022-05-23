@@ -38,8 +38,6 @@ namespace Steeltoe.Stream.Binding
                     binding.Unbind();
                 }
             }
-
-            return;
         }
     }
 }

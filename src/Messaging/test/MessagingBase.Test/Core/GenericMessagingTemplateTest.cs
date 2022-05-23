@@ -354,8 +354,6 @@ namespace Steeltoe.Messaging.Core.Test
                 {
                     _latch.Signal();
                 }
-
-                return;
             }
         }
 
@@ -367,7 +365,6 @@ namespace Steeltoe.Messaging.Core.Test
             {
                 var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
                 replyChannel.Send(Message.Create("response"));
-                return;
             }
         }
 

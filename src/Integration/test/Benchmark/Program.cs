@@ -201,7 +201,6 @@ public class Program
         public void HandleMessage(IMessage message)
         {
             Count++;
-            return;
         }
     }
 }

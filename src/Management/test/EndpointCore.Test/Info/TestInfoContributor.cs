@@ -10,7 +10,6 @@ namespace Steeltoe.Management.Endpoint.Info.Test
     {
         public void Contribute(IInfoBuilder builder)
         {
-            return;
         }
     }
 }
