@@ -17,7 +17,7 @@ namespace Steeltoe.Integration.Handler
         private readonly IMessageProcessor _processor;
 
         public ServiceActivatingHandler(IApplicationContext context, object instance, MethodInfo method)
-        : this(context, (IMessageProcessor)new MethodInvokingMessageProcessor<object>(context, instance, method))
+        : this(context, new MethodInvokingMessageProcessor<object>(context, instance, method))
         {
         }
 

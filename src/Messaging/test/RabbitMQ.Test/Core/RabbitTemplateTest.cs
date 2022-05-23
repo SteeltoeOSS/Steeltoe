@@ -360,7 +360,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     // Ignore
                 }
 
-                listener.Value.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, (ushort)RabbitUtils.NotFound, string.Empty));
+                listener.Value.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty));
             });
             try
             {

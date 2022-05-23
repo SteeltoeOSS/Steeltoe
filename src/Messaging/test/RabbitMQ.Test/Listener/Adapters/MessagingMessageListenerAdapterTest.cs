@@ -361,7 +361,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 BatchPayloads = new List<object>();
                 foreach (var m in messageBatch)
                 {
-                    BatchPayloads.Add(EncodingUtils.GetDefaultEncoding().GetString((byte[])m.Payload));
+                    BatchPayloads.Add(EncodingUtils.GetDefaultEncoding().GetString(m.Payload));
                 }
             }
 

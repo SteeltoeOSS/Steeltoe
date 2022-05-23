@@ -154,18 +154,18 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
 
             var ordinal = (ushort)value[0];
 
-            if (ordinal >= (ushort)'0' && ordinal <= (ushort)'9')
+            if (ordinal >= '0' && ordinal <= '9')
             {
                 buffer[cursor++] = unchecked((byte)'_');
             }
 
             foreach (var ch in value)
             {
-                ordinal = (ushort)ch;
+                ordinal = ch;
 
-                if ((ordinal >= (ushort)'A' && ordinal <= (ushort)'Z') ||
-                    (ordinal >= (ushort)'a' && ordinal <= (ushort)'z') ||
-                    (ordinal >= (ushort)'0' && ordinal <= (ushort)'9'))
+                if ((ordinal >= 'A' && ordinal <= 'Z') ||
+                    (ordinal >= 'a' && ordinal <= 'z') ||
+                    (ordinal >= '0' && ordinal <= '9'))
                 {
                     buffer[cursor++] = unchecked((byte)ordinal);
                 }
@@ -251,9 +251,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
                 {
                     var ordinal = (ushort)ch;
 
-                    if ((ordinal >= (ushort)'A' && ordinal <= (ushort)'Z') ||
-                        (ordinal >= (ushort)'a' && ordinal <= (ushort)'z') ||
-                        (ordinal >= (ushort)'0' && ordinal <= (ushort)'9'))
+                    if ((ordinal >= 'A' && ordinal <= 'Z') ||
+                        (ordinal >= 'a' && ordinal <= 'z') ||
+                        (ordinal >= '0' && ordinal <= '9'))
                     {
                         buffer[cursor++] = unchecked((byte)ordinal);
                     }

@@ -37,7 +37,7 @@ namespace Steeltoe.Stream.Binder
 
             // 0xff, n(1), [ [lenHdr(1), hdr, lenValue(4), value] ... ]
             var byteBuffer = new MemoryStream();
-            byteBuffer.WriteByte((byte)0xff); // signal new format
+            byteBuffer.WriteByte(0xff); // signal new format
             byteBuffer.WriteByte((byte)headerCount);
             for (var i = 0; i < headers.Length; i++)
             {

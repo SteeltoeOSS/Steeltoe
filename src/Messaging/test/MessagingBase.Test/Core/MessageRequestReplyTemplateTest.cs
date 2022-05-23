@@ -194,7 +194,7 @@ namespace Steeltoe.Messaging.Core.Test
         {
             var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
-            var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", (IMessagePostProcessor)postProcessor);
+            var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", postProcessor);
             Assert.Equal("somewhere", template.Destination);
             Assert.Same("request", template.RequestMessage.Payload);
             Assert.Same("response", response);
@@ -206,7 +206,7 @@ namespace Steeltoe.Messaging.Core.Test
         {
             var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
-            var response = template.ConvertSendAndReceive<string>("somewhere", "request", (IMessagePostProcessor)postProcessor);
+            var response = template.ConvertSendAndReceive<string>("somewhere", "request", postProcessor);
             Assert.Equal("somewhere", template.Destination);
             Assert.Same("request", template.RequestMessage.Payload);
             Assert.Same("response", response);

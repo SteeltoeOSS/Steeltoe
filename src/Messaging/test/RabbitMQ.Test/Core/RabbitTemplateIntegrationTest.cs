@@ -840,7 +840,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 return this.template.MessageConverter.FromMessage<string>(message);
             });
             var template = CreateSendAndReceiveRabbitTemplate(connectionFactory);
-            var result = template.ConvertSendAndReceive<string>(string.Empty, ROUTE, (object)"message", new PostProcessor3());
+            var result = template.ConvertSendAndReceive<string>(string.Empty, ROUTE, "message", new PostProcessor3());
             Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
             Assert.Equal("MESSAGE", received.Result);
             Assert.Equal("MESSAGE", result);
@@ -1233,14 +1233,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Assert.NotNull(receive);
             Assert.Equal("bar", receive.Headers.Get<string>("foo"));
 
-            template.ConvertAndSend(ROUTE, (object)1);
+            template.ConvertAndSend(ROUTE, 1);
             received = template.ReceiveAndReply<int, int>(ROUTE, (payload) => payload + 1);
             Assert.True(received);
 
             var result = template.ReceiveAndConvert<int>(ROUTE);
             Assert.Equal(2, result);
 
-            template.ConvertAndSend(ROUTE, (object)2);
+            template.ConvertAndSend(ROUTE, 2);
             received = template.ReceiveAndReply<int, int>(ROUTE, (payload) => payload * 2);
             Assert.True(received);
 

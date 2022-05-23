@@ -111,7 +111,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.TOTAL);
             Assert.NotNull(sample);
-            Assert.Equal((double)allKeyssum, sample.Value);
+            Assert.Equal(allKeyssum, sample.Value);
 
             Assert.NotNull(resp.AvailableTags);
             Assert.Equal(3, resp.AvailableTags.Count);
@@ -387,7 +387,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(4, measurement.Count);
 
             var sample = measurement[0];
-            Assert.Equal((double)allKeyssum, sample.Value);
+            Assert.Equal(allKeyssum, sample.Value);
             Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
             var atags = new List<KeyValuePair<string, string>>()

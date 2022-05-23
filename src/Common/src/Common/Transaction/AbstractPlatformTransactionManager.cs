@@ -166,7 +166,7 @@ namespace Steeltoe.Common.Transaction
             if (status.IsNewSynchronization)
             {
                 TransactionSynchronizationManager.SetActualTransactionActive(status.HasTransaction);
-                TransactionSynchronizationManager.SetCurrentTransactionIsolationLevel(definition.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT ? definition.IsolationLevel : (int?)null);
+                TransactionSynchronizationManager.SetCurrentTransactionIsolationLevel(definition.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT ? definition.IsolationLevel : null);
                 TransactionSynchronizationManager.SetCurrentTransactionReadOnly(definition.IsReadOnly);
                 TransactionSynchronizationManager.SetCurrentTransactionName(definition.Name);
                 TransactionSynchronizationManager.InitSynchronization();

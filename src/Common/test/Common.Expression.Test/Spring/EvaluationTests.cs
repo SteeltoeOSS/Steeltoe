@@ -1374,7 +1374,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public float Fff = 3.0f;
             public long Lll = 66666L;
             public int Iii = 42;
-            public short Sss = (short)15;
+            public short Sss = 15;
             public Spr9751_2 Foo = new ();
 
             public int[] IntArray = new[] { 1, 2, 3, 4, 5 };

@@ -66,7 +66,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         private bool _active = true;
 
         public CachingConnectionFactory(ILoggerFactory loggerFactory = null)
-            : this((string)null, -1, loggerFactory)
+            : this(null, -1, loggerFactory)
         {
         }
 

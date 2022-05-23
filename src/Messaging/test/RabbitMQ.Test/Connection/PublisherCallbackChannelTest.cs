@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 {
                     try
                     {
-                        handler.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, (ushort)RabbitUtils.NotFound, string.Empty));
+                        handler.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty));
                     }
                     catch (NullReferenceException)
                     {

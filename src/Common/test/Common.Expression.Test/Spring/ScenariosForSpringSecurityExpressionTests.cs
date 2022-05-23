@@ -81,12 +81,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             ctx.SetVariable("a", 1.0d); // referenced as #a in the expression
             ctx.SetRootObject(new Supervisor("Ben")); // so non-qualified references 'hasRole()' 'hasIpAddress()' are invoked against it
             value = expr.GetValue<bool>(ctx);
-            Assert.True((bool)value);
+            Assert.True(value);
 
             ctx.SetRootObject(new Manager("Luke"));
             ctx.SetVariable("a", 1.043d);
             value = expr.GetValue<bool>(ctx);
-            Assert.False((bool)value);
+            Assert.False(value);
         }
 
         // Here i'm going to change which hasRole() executes and make it one of my own Java methods
@@ -110,7 +110,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             ctx.SetVariable("a", 1.0d); // referenced as #a in the expression
             value = expr.GetValue<bool>(ctx);
-            Assert.True((bool)value);
+            Assert.True(value);
 
             // ctx.setRootObject(new Manager("Luke"));
             // ctx.setVariable("a",1.043d);

@@ -495,7 +495,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             expression = Parse("#root or #root");
             var resultI2 = expression.GetValue<bool>(b);
             AssertCanCompile(expression);
-            Assert.False((bool)resultI2);
+            Assert.False(resultI2);
             Assert.False(expression.GetValue<bool>(b));
         }
 
@@ -557,7 +557,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             expression = Parse("#root and #root");
             var resultI2 = expression.GetValue<bool>(b);
             AssertCanCompile(expression);
-            Assert.True((bool)resultI2);
+            Assert.True(resultI2);
             Assert.True(expression.GetValue<bool>(b));
         }
 
@@ -5649,9 +5649,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public Reg(int v)
             {
                 Value = v;
-                ValueL = (long)v;
-                ValueD = (double)v;
-                ValueF = (float)v;
+                ValueL = v;
+                ValueD = v;
+                ValueF = v;
             }
 
             public void SetValue(object value)
@@ -5848,9 +5848,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public static int _I;
             public static string _S;
 
-            public static short S1 = (short)1;
-            public static short S2 = (short)2;
-            public static short S3 = (short)3;
+            public static short S1 = 1;
+            public static short S2 = 2;
+            public static short S3 = 3;
 
             public static long L1 = 1L;
 
@@ -5865,9 +5865,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public static char C2 = 'b';
             public static char C3 = 'c';
 
-            public static byte B1 = (byte)65;
-            public static byte B2 = (byte)66;
-            public static byte B3 = (byte)67;
+            public static byte B1 = 65;
+            public static byte B2 = 66;
+            public static byte B3 = 67;
 
             public static string[] StringArray = new[] { "aaa", "bbb", "ccc" };
             public static int[] IntArray = new[] { 11, 22, 33 };
@@ -6432,17 +6432,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public object valueFB = 120F;
             public object valueFB58 = 58F;
             public object valueFB60 = 60F;
-            public byte valueB = (byte)120;
-            public byte valueB18 = (byte)18;
-            public byte valueB20 = (byte)20;
+            public byte valueB = 120;
+            public byte valueB18 = 18;
+            public byte valueB20 = 20;
             public object valueBB = (byte)120;
             public object valueBB18 = (byte)18;
             public object valueBB20 = (byte)20;
             public char valueC = (char)120;
             public object valueCB = (char)120;
-            public short valueS = (short)120;
-            public short valueS18 = (short)18;
-            public short valueS20 = (short)20;
+            public short valueS = 120;
+            public short valueS18 = 18;
+            public short valueS20 = 20;
             public object valueSB = (short)120;
             public object valueSB18 = (short)18;
             public object valueSB20 = (short)20;

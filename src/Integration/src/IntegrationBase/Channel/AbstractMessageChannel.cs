@@ -337,7 +337,7 @@ namespace Steeltoe.Integration.Channel
                     message = interceptor.PreSend(message, channel);
                     if (message == null)
                     {
-                        AfterSendCompletion(previous, channel, false, (Exception)null, interceptorStack);
+                        AfterSendCompletion(previous, channel, false, null, interceptorStack);
                         return null;
                     }
 
@@ -385,7 +385,7 @@ namespace Steeltoe.Integration.Channel
                 {
                     if (!interceptor.PreReceive(channel))
                     {
-                        AfterReceiveCompletion((IMessage)null, channel, (Exception)null, interceptorStack);
+                        AfterReceiveCompletion(null, channel, null, interceptorStack);
                         return false;
                     }
 

@@ -332,7 +332,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Assert.Empty(queue.DeclaringAdmins);
             queue.SetAdminsThatShouldDeclare(admin1, admin2);
             Assert.Equal(2, queue.DeclaringAdmins.Count);
-            queue.SetAdminsThatShouldDeclare((object[])null);
+            queue.SetAdminsThatShouldDeclare(null);
             Assert.Empty(queue.DeclaringAdmins);
             Assert.Throws<InvalidOperationException>(() => queue.SetAdminsThatShouldDeclare(null, admin1));
         }

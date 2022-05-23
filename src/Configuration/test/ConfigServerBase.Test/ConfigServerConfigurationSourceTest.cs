@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerClientSettings settings = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
-            ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, (IConfiguration)null, null));
+            ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, null, null));
             ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IList<IConfigurationSource>)null, null));
             ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, new List<IConfigurationSource>(), null));
         }

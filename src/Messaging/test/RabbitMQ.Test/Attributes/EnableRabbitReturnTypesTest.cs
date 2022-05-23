@@ -208,11 +208,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 _output.WriteLine("Listen4 " + input);
                 if ("3".Equals(input))
                 {
-                    return (IOne)new Three();
+                    return new Three();
                 }
                 else
                 {
-                    return (IOne)new Four();
+                    return new Four();
                 }
             }
         }

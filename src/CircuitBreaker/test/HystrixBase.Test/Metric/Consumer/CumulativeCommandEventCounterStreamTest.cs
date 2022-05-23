@@ -82,7 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
             var expected = new long[HystrixEventTypeHelper.Values.Count];
-            expected[(int)(int)HystrixEventType.SUCCESS] = 1;
+            expected[(int)HystrixEventType.SUCCESS] = 1;
             Assert.Equal(expected, stream.Latest);
         }
 
