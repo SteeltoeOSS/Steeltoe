@@ -42,7 +42,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             try
             {
                 var typeConverter = context.TypeConverter;
-                var type = targetObject is Type type1 ? type1 : targetObject.GetType();
+                var type = targetObject as Type ?? targetObject.GetType();
                 var methods = new List<MethodInfo>(GetMethods(type, targetObject));
 
                 // If a filter is registered for this type, call it

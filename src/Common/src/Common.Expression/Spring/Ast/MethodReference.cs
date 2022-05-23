@@ -255,7 +255,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             // either there was no accessor or it no longer existed
             executorToUse = FindAccessorForMethod(argumentTypes, value, evaluationContext);
-            _cachedExecutor = new CachedMethodExecutor(executorToUse, value is Type type ? type : null, targetType, argumentTypes);
+            _cachedExecutor = new CachedMethodExecutor(executorToUse, value as Type, targetType, argumentTypes);
             try
             {
                 return executorToUse.Execute(evaluationContext, value, arguments);
@@ -362,7 +362,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             var method = FormatHelper.FormatMethodForMessage(Name, argumentTypes);
-            var className = FormatHelper.FormatClassNameForMessage(targetObject is Type type ? type : targetObject.GetType());
+            var className = FormatHelper.FormatClassNameForMessage(targetObject as Type ?? targetObject.GetType());
             if (accessException != null)
             {
                 throw new SpelEvaluationException(StartPosition, accessException, SpelMessage.PROBLEM_LOCATING_METHOD, method, className);

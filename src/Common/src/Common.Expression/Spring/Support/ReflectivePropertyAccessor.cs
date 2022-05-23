@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 return false;
             }
 
-            var type = target is Type type1 ? type1 : target.GetType();
+            var type = target as Type ?? target.GetType();
             if (type.IsArray && name.Equals("Length"))
             {
                 return true;
@@ -85,7 +85,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 throw new ArgumentNullException(nameof(target));
             }
 
-            var type = target is Type type1 ? type1 : target.GetType();
+            var type = target as Type ?? target.GetType();
 
             if (type.IsArray && name.Equals("Length"))
             {
@@ -169,7 +169,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 return false;
             }
 
-            var type = target is Type type1 ? type1 : target.GetType();
+            var type = target as Type ?? target.GetType();
             var cacheKey = new PropertyCacheKey(type, name, target is Type);
             if (_writerCache.ContainsKey(cacheKey))
             {
@@ -212,7 +212,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 throw new ArgumentNullException(nameof(target));
             }
 
-            var type = target is Type type1 ? type1 : target.GetType();
+            var type = target as Type ?? target.GetType();
 
             var possiblyConvertedNewValue = newValue;
             var typeDescriptor = GetTypeDescriptor(context, target, name);
@@ -297,7 +297,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 return this;
             }
 
-            var clazz = target is Type type ? type : target.GetType();
+            var clazz = target as Type ?? target.GetType();
             if (clazz.IsArray)
             {
                 return this;
@@ -460,7 +460,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         private Type GetTypeDescriptor(IEvaluationContext context, object target, string name)
         {
-            var type = target is Type type1 ? type1 : target.GetType();
+            var type = target as Type ?? target.GetType();
 
             if (type.IsArray && name.Equals("Length"))
             {
@@ -601,7 +601,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     return false;
                 }
 
-                var type = target is Type type1 ? type1 : target.GetType();
+                var type = target as Type ?? target.GetType();
                 if (type.IsArray)
                 {
                     return false;

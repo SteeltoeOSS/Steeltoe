@@ -102,7 +102,7 @@ namespace Steeltoe.Stream.Binder
                 this,
                 name,
                 subscribableChannel,
-                producerMessageHandler is ILifecycle lifecycle ? lifecycle : null,
+                producerMessageHandler as ILifecycle,
                 producerOptions,
                 producerDestination,
                 _logger);
@@ -162,7 +162,7 @@ namespace Steeltoe.Stream.Binder
                             name,
                             group,
                             inputTarget,
-                            consumerEndpoint is ILifecycle consumerEpLifeCycle ? consumerEpLifeCycle : null,
+                            consumerEndpoint as ILifecycle,
                             consumerOptions,
                             destination,
                             _logger);

@@ -42,7 +42,7 @@ namespace Steeltoe.Integration.Transformer
                     return null;
                 }
 
-                return (result is IMessage iMessage) ? iMessage : MessageBuilderFactory.WithPayload(result).CopyHeaders(message.Headers).Build();
+                return result as IMessage ?? MessageBuilderFactory.WithPayload(result).CopyHeaders(message.Headers).Build();
             }
             catch (MessageTransformationException)
             {

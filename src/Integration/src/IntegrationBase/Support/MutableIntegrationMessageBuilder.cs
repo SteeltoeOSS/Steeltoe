@@ -26,9 +26,7 @@ namespace Steeltoe.Integration.Support
                 throw new ArgumentNullException(nameof(message));
             }
 
-            _mutableMessage = message is MutableMessage mutableMessage
-                ? mutableMessage
-                : new MutableMessage(message.Payload, message.Headers);
+            _mutableMessage = message as MutableMessage ?? new MutableMessage(message.Payload, message.Headers);
 
             _headers = _mutableMessage.RawHeaders;
         }
@@ -230,9 +228,7 @@ namespace Steeltoe.Integration.Support
                 throw new ArgumentNullException(nameof(message));
             }
 
-            _mutableMessage = message is MutableMessage<T> mutableMessage
-                ? mutableMessage
-                : new MutableMessage<T>(message.Payload, message.Headers);
+            _mutableMessage = message as MutableMessage<T> ?? new MutableMessage<T>(message.Payload, message.Headers);
 
             _headers = _mutableMessage.RawHeaders;
         }

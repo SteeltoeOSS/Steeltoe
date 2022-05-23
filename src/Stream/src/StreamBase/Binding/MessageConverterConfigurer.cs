@@ -350,7 +350,7 @@ namespace Steeltoe.Stream.Binding
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            var objMessage = message is IMessage<object> msg ? msg : Message.Create(message.Payload, message.Headers); // Primitives are not covariant with out T, so box the primitive ...
+            var objMessage = message as IMessage<object> ?? Message.Create(message.Payload, message.Headers); // Primitives are not covariant with out T, so box the primitive ...
 
             if (!message.Headers.ContainsKey(BinderHeaders.PARTITION_OVERRIDE))
             {

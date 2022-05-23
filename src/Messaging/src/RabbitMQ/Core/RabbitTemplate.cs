@@ -1946,9 +1946,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         private ISmartMessageConverter GetRequiredSmartMessageConverter()
-            => GetRequiredMessageConverter() is not ISmartMessageConverter converter
-                ? throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter")
-                : converter;
+            => GetRequiredMessageConverter() as ISmartMessageConverter ?? throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter");
 
         private string GetRequiredQueue()
         {

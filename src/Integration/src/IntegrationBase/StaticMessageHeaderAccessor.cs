@@ -41,7 +41,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is MimeType mimeValue ? mimeValue : MimeType.ToMimeType(value.ToString());
+            return value as MimeType ?? MimeType.ToMimeType(value.ToString());
         }
 
         public static long? GetExpirationDate(IMessage message)

@@ -225,13 +225,11 @@ namespace Steeltoe.Integration.Channel
                     var converted = MessageConverter.FromMessage(message, datatype);
                     if (converted != null)
                     {
-                        return converted is IMessage msg
-                            ? msg
-                            : IntegrationServices
-                                .MessageBuilderFactory
-                                .WithPayload(converted)
-                                .CopyHeaders(message.Headers)
-                                .Build();
+                        return converted as IMessage ?? IntegrationServices
+                            .MessageBuilderFactory
+                            .WithPayload(converted)
+                            .CopyHeaders(message.Headers)
+                            .Build();
                     }
                 }
             }
