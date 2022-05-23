@@ -396,7 +396,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             var tempNetTraceFilename = Path.GetRandomFileName() + ".nettrace";
             try
             {
-                using (var fs = File.OpenWrite(tempNetTraceFilename))
+                await using (var fs = File.OpenWrite(tempNetTraceFilename))
                 {
                     var copyTask = session.EventStream.CopyToAsync(fs);
                     await Task.Delay(_options.Duration);

@@ -55,10 +55,10 @@ namespace Steeltoe.Management.Endpoint
         {
             try
             {
-                using (var input = new FileStream(filename, FileMode.Open))
+                await using (var input = new FileStream(filename, FileMode.Open))
                 {
-                    using var output = new FileStream(gzFilename, FileMode.CreateNew);
-                    using var gzipStream = new GZipStream(output, CompressionLevel.Fastest);
+                    await using var output = new FileStream(gzFilename, FileMode.CreateNew);
+                    await using var gzipStream = new GZipStream(output, CompressionLevel.Fastest);
                     await input.CopyToAsync(gzipStream).ConfigureAwait(false);
                 }
 

@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
             if (result != null)
             {
-                using (result)
+                await using (result)
                 {
                     context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
                     context.Response.StatusCode = StatusCodes.Status200OK;
