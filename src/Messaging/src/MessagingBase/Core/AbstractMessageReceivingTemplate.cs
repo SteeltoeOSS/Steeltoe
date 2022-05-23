@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.Core
             }
         }
 
-        public virtual bool ThrowReceivedExceptions { get; set; } = false;
+        public virtual bool ThrowReceivedExceptions { get; set; }
 
         public virtual Task<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
         {

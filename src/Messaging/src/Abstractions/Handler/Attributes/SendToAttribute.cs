@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
     ///  Attribute that indicates a method's return value should be converted to a
     ///  message if necessary and sent to the specified destination.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public class SendToAttribute : Attribute
     {
         /// <summary>

@@ -17,7 +17,7 @@ namespace Steeltoe.Common.Net
 
         public string IgnoredInterfaces { get; set; }
 
-        public bool UseOnlySiteLocalInterfaces { get; set; } = false;
+        public bool UseOnlySiteLocalInterfaces { get; set; }
 
         public string PreferredNetworks { get; set; }
 

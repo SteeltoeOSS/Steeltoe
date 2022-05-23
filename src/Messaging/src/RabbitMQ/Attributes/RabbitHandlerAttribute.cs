@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class RabbitHandlerAttribute : Attribute
     {
         public RabbitHandlerAttribute(bool isDefault = false)

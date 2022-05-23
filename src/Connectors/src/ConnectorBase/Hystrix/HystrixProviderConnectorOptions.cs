@@ -32,7 +32,7 @@ namespace Steeltoe.Connector.Hystrix
             section.Bind(this);
         }
 
-        public bool SslEnabled { get; set; } = false;
+        public bool SslEnabled { get; set; }
 
         public string Uri { get; set; }
 

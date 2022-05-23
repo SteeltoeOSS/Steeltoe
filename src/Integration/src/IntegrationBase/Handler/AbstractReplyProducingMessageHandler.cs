@@ -14,7 +14,7 @@ namespace Steeltoe.Integration.Handler
         {
         }
 
-        public bool RequiresReply { get; set; } = false;
+        public bool RequiresReply { get; set; }
 
         protected override void HandleMessageInternal(IMessage message)
         {

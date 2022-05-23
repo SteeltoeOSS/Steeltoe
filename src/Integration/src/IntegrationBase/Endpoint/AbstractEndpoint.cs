@@ -43,7 +43,7 @@ namespace Steeltoe.Integration.Endpoint
 
         public bool IsRunning { get; set; }
 
-        public int Phase { get; set; } = 0;
+        public int Phase { get; set; }
 
         public Task Start()
         {

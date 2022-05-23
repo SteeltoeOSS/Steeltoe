@@ -61,7 +61,7 @@ namespace Steeltoe.Common.Util
 
         public virtual bool CaseSensitive { get; set; } = true;
 
-        public virtual bool TrimTokens { get; set; } = false;
+        public virtual bool TrimTokens { get; set; }
 
         public virtual bool? CachePatterns { get; set; }
 

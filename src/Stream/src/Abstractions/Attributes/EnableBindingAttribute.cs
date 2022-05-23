@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Stream.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class EnableBindingAttribute : Attribute
     {
         public EnableBindingAttribute(params Type[] bindings)

@@ -9,7 +9,7 @@ namespace Steeltoe.Stream.Attributes
     /// <summary>
     /// Annotation that marks a method to be a listener to inputs declared via EnableBinding
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class StreamListenerAttribute : Attribute
     {
         /// <summary>

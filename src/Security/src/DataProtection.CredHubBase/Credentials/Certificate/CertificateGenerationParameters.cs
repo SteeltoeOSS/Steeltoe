@@ -74,7 +74,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         ///  Gets or sets a value indicating whether whether to generate credential value as a certificate authority
         /// </summary>
         [JsonPropertyName("is_ca")]
-        public bool IsCertificateAuthority { get; set; } = false;
+        public bool IsCertificateAuthority { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether whether to self-sign generated credential value

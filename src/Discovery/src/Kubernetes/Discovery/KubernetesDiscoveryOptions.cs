@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         /// <summary>
         /// Gets or sets a value indicating whether the client is discovering all namespaces
         /// </summary>
-        public bool AllNamespaces { get; set; } = false;
+        public bool AllNamespaces { get; set; }
 
         /// <summary>
         /// Gets or sets a value representing the namespace the service is being deployed to.

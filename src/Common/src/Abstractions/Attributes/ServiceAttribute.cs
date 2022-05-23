@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class ServiceAttribute : Attribute
     {
         public ServiceAttribute()

@@ -63,7 +63,7 @@ namespace Steeltoe.Connector.Redis
 
         public string ServiceName { get; set; }
 
-        public bool Ssl { get; set; } = false;
+        public bool Ssl { get; set; }
 
         public string SslHost { get; set; }
 

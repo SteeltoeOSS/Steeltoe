@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Integration.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
     public class PayloadsAttribute : Attribute
     {
         public PayloadsAttribute()

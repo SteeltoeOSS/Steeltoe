@@ -141,7 +141,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public virtual bool MissingQueuesFatal { get; set; } = true;
 
-        public virtual bool MismatchedQueuesFatal { get; set; } = false;
+        public virtual bool MismatchedQueuesFatal { get; set; }
 
         public virtual bool PossibleAuthenticationFailureFatal { get; set; } = true;
 

@@ -84,7 +84,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public RetryTemplate RetryTemplate { get; set; }
 
-        public bool RetryDisabled { get; set; } = false;
+        public bool RetryDisabled { get; set; }
 
         public void DeclareBinding(IBinding binding)
         {

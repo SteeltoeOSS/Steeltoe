@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Steeltoe.Integration.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class EndpointIdAttribute : Attribute
     {
         public EndpointIdAttribute()

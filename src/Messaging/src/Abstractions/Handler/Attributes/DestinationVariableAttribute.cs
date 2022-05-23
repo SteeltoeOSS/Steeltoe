@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
     /// in a destination template string. Supported on message handling methods such as
     /// those attributed with MessageMapping
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public class DestinationVariableAttribute : Attribute
     {
         /// <summary>

@@ -36,7 +36,7 @@ namespace Steeltoe.Connector.RabbitMQ
             sectionMQ.Bind(this);
         }
 
-        public bool SslEnabled { get; set; } = false;
+        public bool SslEnabled { get; set; }
 
         public string Uri { get; set; }
 

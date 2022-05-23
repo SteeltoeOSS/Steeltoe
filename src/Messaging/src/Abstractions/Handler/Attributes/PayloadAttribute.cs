@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
     ///  Attribute that binds a method parameter to the payload of a message. Can also
     ///  be used to associate a payload to a method invocation.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
     public class PayloadAttribute : Attribute
     {
         /// <summary>

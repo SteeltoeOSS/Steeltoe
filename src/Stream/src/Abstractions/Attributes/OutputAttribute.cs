@@ -9,7 +9,7 @@ namespace Steeltoe.Stream.Attributes
     /// <summary>
     /// Indicates that an output binding target will be created by the framework.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
     public class OutputAttribute : Attribute
     {
         /// <summary>

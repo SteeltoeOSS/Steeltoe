@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Integration.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class ServiceActivatorAttribute : Attribute
     {
         public ServiceActivatorAttribute()

@@ -58,7 +58,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public string[] Bindings { get; set; } = Array.Empty<string>();
 
-        public bool Exclusive { get; set; } = false;
+        public bool Exclusive { get; set; }
 
         public string Priority { get; set; } = string.Empty;
 

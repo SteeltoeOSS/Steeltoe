@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Stream.Attributes
 {
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Assembly)]
     public class BinderAttribute : Attribute
     {
         public BinderAttribute()

@@ -106,7 +106,7 @@ namespace Steeltoe.Messaging.Support
             return messageHeaderAccessor;
         }
 
-        public virtual bool EnableTimestamp { get; set; } = false;
+        public virtual bool EnableTimestamp { get; set; }
 
         public virtual IIDGenerator IdGenerator { get; set; }
 
