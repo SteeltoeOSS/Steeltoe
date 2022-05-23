@@ -69,7 +69,8 @@ namespace Steeltoe.Connector.Oracle.Test
 
             var configurer = new OracleProviderConfigurer();
             var opts = configurer.Configure(null, config);
-            var connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};Connection Timeout={5}", config.Username, config.Password, config.Server, config.Port, config.ServiceName, config.ConnectionTimeout);
+            var connectionString =
+                $"User Id={config.Username};Password={config.Password};Data Source={config.Server}:{config.Port}/{config.ServiceName};Connection Timeout={config.ConnectionTimeout}";
             Assert.StartsWith(connectionString, opts);
         }
 

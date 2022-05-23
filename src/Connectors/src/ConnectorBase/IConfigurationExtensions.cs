@@ -66,7 +66,8 @@ namespace Steeltoe.Connector
             {
                 if (results.Count() != 1)
                 {
-                    throw new ConnectorException(string.Format("Multiple services of type: {0}, bound to application.", typeof(TServiceInfo)));
+                    throw new ConnectorException(
+                        $"Multiple services of type: {typeof(TServiceInfo)}, bound to application.");
                 }
 
                 return results.First();
@@ -89,7 +90,7 @@ namespace Steeltoe.Connector
             var serviceInfo = GetServiceInfo<TServiceInfo>(configuration, serviceName);
             if (serviceInfo == null)
             {
-                throw new ConnectorException(string.Format("No service with name: {0} found.", serviceName));
+                throw new ConnectorException($"No service with name: {serviceName} found.");
             }
 
             return serviceInfo;

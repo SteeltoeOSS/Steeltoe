@@ -37,7 +37,7 @@ namespace Steeltoe.Connector.PostgreSql
 
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+                throw new ConnectorException($"Unable to create instance of '{_type}'");
             }
 
             return result;

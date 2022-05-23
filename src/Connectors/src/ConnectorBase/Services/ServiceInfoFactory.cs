@@ -203,7 +203,8 @@ namespace Steeltoe.Connector.Services
                     {
                         if (kvp.Value.Count != 0 || string.IsNullOrEmpty(kvp.Value.Value))
                         {
-                            throw new ConnectorException(string.Format("Unable to extract list from credentials: key={0}, value={1}/{2}", key, kvp.Key, kvp.Value));
+                            throw new ConnectorException(
+                                $"Unable to extract list from credentials: key={key}, value={kvp.Key}/{kvp.Value}");
                         }
                         else
                         {

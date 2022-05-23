@@ -201,7 +201,7 @@ namespace Steeltoe.Connector.MySql.EFCore
             var result = ReflectionHelpers.Invoke(useMethod, null, parms);
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Failed to invoke UseMySql extension, connection: {0}", connection));
+                throw new ConnectorException($"Failed to invoke UseMySql extension, connection: {connection}");
             }
 
             return (DbContextOptionsBuilder)result;

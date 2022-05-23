@@ -296,7 +296,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                         {
                             canceledConsumers.ForEach(consumer =>
                             {
-                                var eventMessage = string.Format("Closing channel for unresponsive consumer: {0} ", consumer);
+                                var eventMessage = $"Closing channel for unresponsive consumer: {consumer} ";
                                 _logger?.LogWarning(eventMessage);
                                 consumer.CancelConsumer(eventMessage);
                             });

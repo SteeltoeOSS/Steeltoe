@@ -93,7 +93,7 @@ namespace Steeltoe.Common.Net
 
             var userName = string.IsNullOrEmpty(credentials.Domain)
                 ? credentials.UserName
-                : string.Format(@"{0}\{1}", credentials.Domain, credentials.UserName);
+                : $@"{credentials.Domain}\{credentials.UserName}";
 
             var result = _mpr.UseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
 

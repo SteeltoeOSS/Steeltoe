@@ -705,7 +705,7 @@ internal class DotNetHeapDumpGraphReader
             if (m_graph.NodeCount >= maxNodeCount)
             {
                 doCompletionCheck = false;
-                var userMessage = string.Format("Exceeded max node count {0}", maxNodeCount);
+                var userMessage = $"Exceeded max node count {maxNodeCount}";
                 m_log.WriteLine("[WARNING: ]", userMessage);
                 break;
             }
@@ -822,7 +822,7 @@ internal class DotNetHeapDumpGraphReader
         if (!m_typeID2TypeIndex.TryGetValue(typeID, out ret))
         {
             m_log.WriteLine("Error: Did not have a type definition for typeID 0x{0:x}", typeID);
-            Trace.WriteLine(string.Format("Error: Did not have a type definition for typeID 0x{0:x}", typeID));
+            Trace.WriteLine($"Error: Did not have a type definition for typeID 0x{typeID:x}");
 
             var typeName = "UNKNOWN 0x" + typeID.ToString("x");
             ret = CreateType(typeName);

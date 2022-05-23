@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             }
             catch (DiagnosticsClientException dcex)
             {
-                _logger?.LogError(string.Format("Could not create core dump to process. Error {0}.", dcex));
+                _logger?.LogError($"Could not create core dump to process. Error {dcex}.");
                 return null;
             }
         }

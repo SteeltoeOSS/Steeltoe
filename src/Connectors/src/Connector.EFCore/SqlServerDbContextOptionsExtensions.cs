@@ -141,7 +141,7 @@ namespace Steeltoe.Connector.SqlServer.EFCore
             var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, sqlServerOptionsAction });
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));
+                throw new ConnectorException($"Failed to invoke UseSqlServer extension, connection: {connection}");
             }
 
             return (DbContextOptionsBuilder)result;

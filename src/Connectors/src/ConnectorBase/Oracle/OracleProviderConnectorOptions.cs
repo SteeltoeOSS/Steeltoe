@@ -56,7 +56,8 @@ namespace Steeltoe.Connector.Oracle
                 return ConnectionString;
             }
 
-            return string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};Connection Timeout={5}", Username, Password, Server, Port, ServiceName, ConnectionTimeout);
+            return
+                $"User Id={Username};Password={Password};Data Source={Server}:{Port}/{ServiceName};Connection Timeout={ConnectionTimeout}";
         }
     }
 }

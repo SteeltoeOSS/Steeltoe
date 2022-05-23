@@ -133,12 +133,12 @@ namespace Steeltoe.Discovery.Client
             var info = config.GetServiceInfo(serviceName);
             if (info == null)
             {
-                throw new ConnectorException(string.Format("No service with name: {0} found.", serviceName));
+                throw new ConnectorException($"No service with name: {serviceName} found.");
             }
 
             if (!IsRecognizedDiscoveryService(info))
             {
-                throw new ConnectorException(string.Format("Service with name: {0} unrecognized Discovery ServiceInfo.", serviceName));
+                throw new ConnectorException($"Service with name: {serviceName} unrecognized Discovery ServiceInfo.");
             }
 
             return info;

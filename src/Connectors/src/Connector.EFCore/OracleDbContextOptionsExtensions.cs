@@ -107,7 +107,7 @@ namespace Steeltoe.Connector.Oracle.EFCore
             var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { optionsBuilder, connection, oracleOptionsAction });
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Failed to invoke UseOracle extension, connection: {0}", connection));
+                throw new ConnectorException($"Failed to invoke UseOracle extension, connection: {connection}");
             }
 
             return (DbContextOptionsBuilder)result;

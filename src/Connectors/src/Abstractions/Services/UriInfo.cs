@@ -227,8 +227,7 @@ namespace Steeltoe.Connector.Services
             var split = userPass.Split(_colon);
             if (split.Length != 2)
             {
-                throw new ArgumentException(
-                    string.Format("Bad user/password in URI: {0}", userPass));
+                throw new ArgumentException($"Bad user/password in URI: {userPass}");
             }
 
             return split;

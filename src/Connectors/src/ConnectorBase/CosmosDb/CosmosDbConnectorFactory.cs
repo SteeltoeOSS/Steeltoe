@@ -38,7 +38,7 @@ namespace Steeltoe.Connector.CosmosDb
 
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
+                throw new ConnectorException($"Unable to create instance of '{ConnectorType}'");
             }
 
             return result;

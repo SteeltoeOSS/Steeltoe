@@ -140,7 +140,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore
             var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, npgsqlOptionsAction });
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Failed to invoke UseNpgsql extension, connection: {0}", connection));
+                throw new ConnectorException($"Failed to invoke UseNpgsql extension, connection: {connection}");
             }
 
             return (DbContextOptionsBuilder)result;
