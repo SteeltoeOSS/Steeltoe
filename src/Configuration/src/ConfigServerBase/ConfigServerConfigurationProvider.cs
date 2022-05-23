@@ -559,8 +559,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 var request = GetRequestMessage(path, username, password);
 
                 // If certificate validation is disabled, inject a callback to handle properly
-                var prevProtocols = (SecurityProtocolType)0;
-                HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out prevProtocols, out var prevValidator);
+                HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out var prevProtocols, out var prevValidator);
 
                 // Invoke config server
                 try
