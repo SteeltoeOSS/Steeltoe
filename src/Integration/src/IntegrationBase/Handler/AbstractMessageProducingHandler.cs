@@ -111,7 +111,7 @@ namespace Steeltoe.Integration.Handler
 
             if (hasAsterisk)
             {
-                _notPropagatedHeaders = new List<string>() { "*" };
+                _notPropagatedHeaders = new List<string> { "*" };
                 _noHeadersPropagation = true;
             }
 

@@ -33,7 +33,7 @@ namespace Steeltoe.Messaging.Core.Test
                 DestinationResolver = resolver
             };
 
-            headers = new Dictionary<string, object>() { { "key", "value" } };
+            headers = new Dictionary<string, object> { { "key", "value" } };
 
             postProcessor = new TestMessagePostProcessor();
         }

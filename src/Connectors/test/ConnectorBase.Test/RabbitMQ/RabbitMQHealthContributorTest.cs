@@ -19,7 +19,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void GetRabbitMQContributor_ReturnsContributor()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["rabbit:client:server"] = "localhost",
                 ["rabbit:client:port"] = "1234",

@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["cosmosdb:client:host"] = "https://localhost:443",
                 ["cosmosdb:client:masterkey"] = "masterKey",
@@ -52,7 +52,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
 
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["cosmosdb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
             };
@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void ConnectionString_Overridden_By_CosmosDbInCloudFoundryConfig()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["cosmosdb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
             };

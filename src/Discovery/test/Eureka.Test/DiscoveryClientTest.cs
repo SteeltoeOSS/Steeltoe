@@ -91,7 +91,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Constructor_TimersNotStarted()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldRegisterWithEureka = false,
                 ShouldFetchRegistry = false
@@ -112,7 +112,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -143,7 +143,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -169,7 +169,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -180,7 +180,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var client = new DiscoveryClient(config, httpClient);
             var apps = new Applications();
             var app = new Application("FOO");
-            var inst = new InstanceInfo()
+            var inst = new InstanceInfo
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -215,7 +215,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -241,13 +241,13 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri
             };
-            var inst = new InstanceInfo()
+            var inst = new InstanceInfo
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -280,14 +280,14 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri
             };
 
-            var inst = new InstanceInfo()
+            var inst = new InstanceInfo
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -320,13 +320,13 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri
             };
-            var inst = new InstanceInfo()
+            var inst = new InstanceInfo
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -361,14 +361,14 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri
             };
 
-            var inst = new InstanceInfo()
+            var inst = new InstanceInfo
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -395,14 +395,14 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri
             };
 
-            var inst = new InstanceInfo()
+            var inst = new InstanceInfo
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -426,7 +426,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetNextServerFromEureka_Throws_WhenVIPAddressNull()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -439,7 +439,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesByVipAddress_Throws_WhenVIPAddressNull()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -453,18 +453,18 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void GetInstancesByVipAddress_ReturnsExpected()
         {
             var app1 = new Application("app1");
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
             var app2 = new Application("app2");
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
             var apps = new Applications();
             apps.Add(app1);
             apps.Add(app2);
 
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -494,18 +494,18 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void GetNextServerFromEureka_ReturnsExpected()
         {
             var app1 = new Application("app1");
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
             var app2 = new Application("app2");
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
             var apps = new Applications();
             apps.Add(app1);
             apps.Add(app2);
 
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -530,7 +530,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesById_Throws_WhenIdNull()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -543,7 +543,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesById_Returns_EmptyListWhenNoApps()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -558,18 +558,18 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void GetInstanceById_ReturnsExpected()
         {
             var app1 = new Application("app1");
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
             var app2 = new Application("app2");
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
             var apps = new Applications();
             apps.Add(app1);
             apps.Add(app2);
 
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -594,7 +594,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetApplication_Throws_WhenAppNameNull()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -608,18 +608,18 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void GetApplication_ReturnsExpected()
         {
             var app1 = new Application("app1");
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-            app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+            app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
             var app2 = new Application("app2");
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-            app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
+            app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
             var apps = new Applications();
             apps.Add(app1);
             apps.Add(app2);
 
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -640,7 +640,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesByVipAddressAndAppName_Throws_WhenAddressAndAppnameNull()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -653,7 +653,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -674,7 +674,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StartTimer_StartsTimer()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -691,7 +691,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StartTimer_StartsTimer_KeepsRunningOnExceptions()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -708,7 +708,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StartTimer_StartsTimer_StopsAfterDispose()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
@@ -736,7 +736,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,

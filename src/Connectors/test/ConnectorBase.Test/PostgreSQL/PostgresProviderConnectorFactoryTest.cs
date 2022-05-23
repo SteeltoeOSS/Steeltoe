@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void Create_ReturnsPostgresConnection()
         {
-            var config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions
             {
                 Host = "localhost",
                 Port = 3306,

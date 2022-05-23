@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void Constructor_SetsValues()
         {
-            var properties = new Dictionary<string, PropertyValueDescriptor>()
+            var properties = new Dictionary<string, PropertyValueDescriptor>
             {
                 { "key1", new PropertyValueDescriptor("value") },
                 { "key2", new PropertyValueDescriptor(false) },
@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void JsonSerialization_ReturnsExpected()
         {
-            var properties = new Dictionary<string, PropertyValueDescriptor>()
+            var properties = new Dictionary<string, PropertyValueDescriptor>
             {
                 { "key1", new PropertyValueDescriptor("value") },
                 { "key2", new PropertyValueDescriptor(false) },

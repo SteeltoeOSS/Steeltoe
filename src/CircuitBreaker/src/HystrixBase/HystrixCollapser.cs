@@ -177,7 +177,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> ShardRequests(ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> requests)
         {
-            return new List<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>>() { requests };
+            return new List<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> { requests };
         }
 
         protected bool AddCacheEntryIfAbsent(string cacheKey, out HystrixCachedTask<RequestResponseType> entry)

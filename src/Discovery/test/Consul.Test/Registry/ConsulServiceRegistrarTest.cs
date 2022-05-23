@@ -51,7 +51,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Register_DoesNotCallRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            var options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions
             {
                 Register = false
             };
@@ -66,7 +66,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Deregister_DoesNotCallRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            var options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions
             {
                 Deregister = false
             };
@@ -81,7 +81,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Start_DoesNotStart()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            var options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions
             {
                 Enabled = false
             };

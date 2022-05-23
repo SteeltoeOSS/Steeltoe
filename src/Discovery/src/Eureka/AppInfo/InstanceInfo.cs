@@ -327,7 +327,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
                 Actiontype = Actiontype,
                 AsgName = AsgName,
-                Metadata = (Metadata.Count == 0) ? new Dictionary<string, string>() { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
+                Metadata = (Metadata.Count == 0) ? new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
             };
 
             return jinfo;

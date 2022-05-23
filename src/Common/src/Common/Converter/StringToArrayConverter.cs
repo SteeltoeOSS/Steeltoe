@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Converter
         private readonly IConversionService _conversionService;
 
         public StringToArrayConverter(IConversionService conversionService)
-            : base(new HashSet<(Type Source, Type Target)>() { (typeof(string), typeof(object[])) })
+            : base(new HashSet<(Type Source, Type Target)> { (typeof(string), typeof(object[])) })
         {
             _conversionService = conversionService;
         }

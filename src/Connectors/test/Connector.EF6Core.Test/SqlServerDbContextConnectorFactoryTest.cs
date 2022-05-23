@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void Create_ReturnsDbContext()
         {
-            var config = new SqlServerProviderConnectorOptions()
+            var config = new SqlServerProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1433,

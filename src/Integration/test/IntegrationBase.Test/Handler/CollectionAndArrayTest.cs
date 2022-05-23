@@ -36,7 +36,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void ListWithRequestReplyHandler()
         {
-            handler.ReturnValue = new List<string>() { "foo", "bar" };
+            handler.ReturnValue = new List<string> { "foo", "bar" };
             var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
             handler.HandleMessage(message);

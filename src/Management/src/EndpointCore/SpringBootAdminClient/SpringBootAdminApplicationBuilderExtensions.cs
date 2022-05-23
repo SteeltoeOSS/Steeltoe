@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             var basePath = options.BasePath.TrimEnd('/');
             httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, ConnectionTimeoutMs);
 
-            var app = new Application()
+            var app = new Application
             {
                 Name = options.ApplicationName ?? "Steeltoe",
                 HealthUrl = new Uri($"{basePath}{mgmtOptions.Path}/{healthOptions.Path}"),

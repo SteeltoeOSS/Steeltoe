@@ -505,7 +505,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 var address = new Address(ReplyAddress);
                 if (address.ExchangeName == string.Empty)
                 {
-                    replyQueue = new List<string>() { address.RoutingKey };
+                    replyQueue = new List<string> { address.RoutingKey };
                 }
                 else
                 {

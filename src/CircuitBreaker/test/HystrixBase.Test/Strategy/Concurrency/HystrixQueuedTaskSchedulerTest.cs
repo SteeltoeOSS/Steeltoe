@@ -21,8 +21,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         [Fact]
         public void TestContinuationTasks_DoNotCauseDeadlocks()
         {
-            var dummyCommand = new DummyCommand(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("foobar") });
-            var options = new HystrixThreadPoolOptions()
+            var dummyCommand = new DummyCommand(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("foobar") });
+            var options = new HystrixThreadPoolOptions
             {
                 CoreSize = 2,
                 MaxQueueSize = 2,

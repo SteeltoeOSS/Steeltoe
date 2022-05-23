@@ -38,7 +38,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void Constructor_Throws_IfServiceUrlBad()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "foobar\\foobar"
             };
@@ -58,7 +58,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async System.Threading.Tasks.Task RegisterAsync_ThrowsHttpRequestException_ServerTimeout()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://localhost:9999/",
                 EurekaServerRetryCount = 0
@@ -81,7 +81,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var config = new EurekaInstanceConfig();
             var info = InstanceInfo.FromInstanceConfig(config);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
@@ -104,14 +104,14 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaInstanceConfig()
+            var config = new EurekaInstanceConfig
             {
                 AppName = "foobar"
             };
 
             var info = InstanceInfo.FromInstanceConfig(config);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
@@ -173,14 +173,14 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var config = new EurekaInstanceConfig()
+            var config = new EurekaInstanceConfig
             {
                 AppName = "foo",
                 InstanceId = "id1"
             };
             var info = InstanceInfo.FromInstanceConfig(config);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
@@ -241,7 +241,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
@@ -341,7 +341,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
@@ -412,7 +412,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
             };
@@ -511,7 +511,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
@@ -576,7 +576,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
             };
@@ -628,7 +628,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
@@ -683,14 +683,14 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             var now = DateTime.UtcNow.Ticks;
             var javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
-            var resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.DOWN, new InstanceInfo() { LastDirtyTimestamp = now });
+            var resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.DOWN, new InstanceInfo { LastDirtyTimestamp = now });
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
@@ -740,14 +740,14 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            var cconfig = new EurekaClientConfig()
+            var cconfig = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             var now = DateTime.UtcNow.Ticks;
             var javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
-            var resp = await client.DeleteStatusOverrideAsync("foo", "bar", new InstanceInfo() { LastDirtyTimestamp = now });
+            var resp = await client.DeleteStatusOverrideAsync("foo", "bar", new InstanceInfo { LastDirtyTimestamp = now });
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
@@ -783,11 +783,11 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetRequestMessage_ReturnsCorrectMesssage_WithAdditionalHeaders()
         {
-            var headers = new Dictionary<string, string>()
+            var headers = new Dictionary<string, string>
             {
                 { "foo", "bar" }
             };
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://boo:123/eureka/"
             };
@@ -801,7 +801,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetRequestMessage_No_Auth_When_Creds_Not_In_Url()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://boo:123/eureka/"
             };
@@ -825,7 +825,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetRequestMessage_Adds_Auth_When_Creds_In_Url()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/"
             };
@@ -849,7 +849,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetRequestMessage_Adds_Auth_When_JustPassword_In_Url()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://:pass@boo:123/eureka/"
             };
@@ -873,12 +873,12 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetRequestUri_ReturnsCorrect_WithQueryArguments()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://boo:123/eureka/"
             };
             var client = new EurekaHttpClient(config, new HttpClient());
-            var queryArgs = new Dictionary<string, string>()
+            var queryArgs = new Dictionary<string, string>
             {
                 { "foo", "bar" },
                 { "bar", "foo" }
@@ -891,7 +891,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetServiceUrlCandidates_NoFailingUrls_ReturnsExpected()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
             };
@@ -904,7 +904,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetServiceUrlCandidates_WithFailingUrls_ReturnsExpected()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/,https://user:pass@foo:123/eureka,https://user:pass@blah:123/eureka,https://user:pass@blah.blah:123/eureka"
             };
@@ -921,7 +921,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetServiceUrlCandidates_ThresholdHit_ReturnsExpected()
         {
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
             };

@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mysql:client:server"] = "localhost",
                 ["mysql:client:port"] = "1234",
@@ -49,7 +49,7 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mysql:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };
@@ -66,7 +66,7 @@ namespace Steeltoe.Connector.MySql.Test
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
             // simulate an appsettings file
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mysql:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };

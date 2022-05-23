@@ -94,7 +94,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_NoBaseUri_Throws()
         {
-            var settings = new ConfigServerClientSettings() { Name = "myName", Environment = "Production" };
+            var settings = new ConfigServerClientSettings { Name = "myName", Environment = "Production" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             Assert.Throws<ArgumentException>(() => provider.GetConfigServerUri(null, null));
@@ -103,7 +103,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_NoLabel()
         {
-            var settings = new ConfigServerClientSettings() { Name = "myName", Environment = "Production" };
+            var settings = new ConfigServerClientSettings { Name = "myName", Environment = "Production" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
@@ -113,7 +113,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_WithLabel()
         {
-            var settings = new ConfigServerClientSettings() { Name = "myName", Environment = "Production", Label = "myLabel" };
+            var settings = new ConfigServerClientSettings { Name = "myName", Environment = "Production", Label = "myLabel" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
@@ -123,7 +123,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_WithLabelContainingSlash()
         {
-            var settings = new ConfigServerClientSettings() { Name = "myName", Environment = "Production", Label = "myLabel/version" };
+            var settings = new ConfigServerClientSettings { Name = "myName", Environment = "Production", Label = "myLabel/version" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
@@ -133,7 +133,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_WithExtraPathInfo()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "http://localhost:9999/myPath/path/", Name = "myName", Environment = "Production" };
+            var settings = new ConfigServerClientSettings { Uri = "http://localhost:9999/myPath/path/", Name = "myName", Environment = "Production" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
@@ -143,7 +143,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_WithExtraPathInfo_NoEndingSlash()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "http://localhost:9999/myPath/path", Name = "myName", Environment = "Production" };
+            var settings = new ConfigServerClientSettings { Uri = "http://localhost:9999/myPath/path", Name = "myName", Environment = "Production" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
@@ -153,7 +153,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_NoEndingSlash()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "http://localhost:9999", Name = "myName", Environment = "Production" };
+            var settings = new ConfigServerClientSettings { Uri = "http://localhost:9999", Name = "myName", Environment = "Production" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
@@ -163,7 +163,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerUri_WithEndingSlash()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "http://localhost:9999/", Name = "myName", Environment = "Production" };
+            var settings = new ConfigServerClientSettings { Uri = "http://localhost:9999/", Name = "myName", Environment = "Production" };
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
@@ -306,7 +306,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public async Task RemoteLoadAsync_HostTimesOut()
         {
-            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings() { Timeout = 100 });
+            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings { Timeout = 100 });
 
             try
             {
@@ -951,7 +951,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 Name = "foo",
                 Environment = "development",
-                Headers = new Dictionary<string, string>()
+                Headers = new Dictionary<string, string>
                 {
                     { "foo", "bar" },
                     { "bar", "foo" }
@@ -978,7 +978,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
             Assert.True(provider.IsDiscoveryFirstEnabled());
 
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:discovery:enabled", "True" }
             };
@@ -1001,7 +1001,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void UpdateSettingsFromDiscovery_UpdatesSettingsCorrectly()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:discovery:enabled", "True" }
             };
@@ -1024,19 +1024,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Null(settings.Password);
             Assert.Equal("http://localhost:8888/", settings.Uri);
 
-            var metadata1 = new Dictionary<string, string>()
+            var metadata1 = new Dictionary<string, string>
             {
                 { "password", "firstPassword" }
             };
 
-            var metadata2 = new Dictionary<string, string>()
+            var metadata2 = new Dictionary<string, string>
             {
                 { "password", "secondPassword" },
                 { "user", "secondUser" },
                 { "configPath", "configPath" }
             };
 
-            var instances = new List<IServiceInstance>()
+            var instances = new List<IServiceInstance>
             {
                 new TestServiceInfo(new Uri("https://foo.bar:8888/"), metadata1),
                 new TestServiceInfo(new Uri("https://foo.bar.baz:9999/"), metadata2)
@@ -1051,7 +1051,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void DiscoverServerInstances_FailsFast()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:discovery:enabled", "True" },
                 { "spring:cloud:config:failFast", "True" },

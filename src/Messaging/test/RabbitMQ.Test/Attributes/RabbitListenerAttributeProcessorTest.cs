@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task SimpleMessageListener()
         {
-            var queues = new List<IQueue>()
+            var queues = new List<IQueue>
             {
                 QueueBuilder.Durable("testQueue").Build(),
                 QueueBuilder.Durable("secondQueue").Build()
@@ -56,12 +56,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         public async Task SimpleMessageListenerWithMixedAnnotations()
         {
             var configBuilder = new ConfigurationBuilder();
-            configBuilder.AddInMemoryCollection(new Dictionary<string, string>()
-                {
+            configBuilder.AddInMemoryCollection(new Dictionary<string, string>
+            {
                     { "rabbit:myQueue", "secondQueue" }
                 });
             var config = configBuilder.Build();
-            var queues = new List<IQueue>()
+            var queues = new List<IQueue>
             {
                 QueueBuilder.Durable("testQueue").Build(),
                 QueueBuilder.Durable("secondQueue").Build()
@@ -93,7 +93,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task MultipleQueueNamesTestBeanTest()
         {
-            var queues = new List<IQueue>()
+            var queues = new List<IQueue>
             {
                 QueueBuilder.Durable("metaTestQueue").Build(),
                 QueueBuilder.Durable("metaTestQueue2").Build()
@@ -120,7 +120,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var queue2 = QueueBuilder.Durable("metaTestQueue2").Build();
             queue2.ServiceName = "queue2";
 
-            var queues = new List<IQueue>() { queue1, queue2 };
+            var queues = new List<IQueue> { queue1, queue2 };
             var provider = await Config.CreateAndStartServices(null, queues, typeof(MultipleQueuesTestBean));
             var context = provider.GetService<IApplicationContext>();
             var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
@@ -142,7 +142,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             queue1.ServiceName = "queue1";
             var queue2 = QueueBuilder.Durable("metaTestQueue2").Build();
 
-            var queues = new List<IQueue>() { queue1, queue2 };
+            var queues = new List<IQueue> { queue1, queue2 };
             var provider = await Config.CreateAndStartServices(null, queues, typeof(MixedQueuesAndQueueNamesTestBean));
             var context = provider.GetService<IApplicationContext>();
             var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
@@ -161,8 +161,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         public async Task PropertyPlaceholderResolvingToQueueTestBeanTest()
         {
             var configBuilder = new ConfigurationBuilder();
-            configBuilder.AddInMemoryCollection(new Dictionary<string, string>()
-                {
+            configBuilder.AddInMemoryCollection(new Dictionary<string, string>
+            {
                     { "rabbit:myQueue", "#{@queue1}" }
                 });
             var config = configBuilder.Build();
@@ -172,7 +172,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var queue2 = QueueBuilder.Durable("metaTestQueue2").Build();
             queue2.ServiceName = "queue2";
 
-            var queues = new List<IQueue>() { queue1, queue2 };
+            var queues = new List<IQueue> { queue1, queue2 };
             var provider = await Config.CreateAndStartServices(config, queues, typeof(PropertyPlaceholderResolvingToQueueTestBean));
             var context = provider.GetService<IApplicationContext>();
             var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
@@ -195,7 +195,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var queue2 = QueueBuilder.Durable("metaTestQueue2").Build();
             queue2.ServiceName = "queue2";
 
-            var queues = new List<IQueue>() { queue1, queue2 };
+            var queues = new List<IQueue> { queue1, queue2 };
             var excep = await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
         }
 

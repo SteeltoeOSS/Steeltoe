@@ -38,7 +38,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
             _logger?.LogDebug("GetTokenInfoRequestParameters() using token: {token}", tokens.AccessToken);
 
-            return new Dictionary<string, string>()
+            return new Dictionary<string, string>
             {
                 { "token", tokens.AccessToken }
             };

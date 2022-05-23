@@ -158,7 +158,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
                 }
             }
 
-            return new List<string>() { stackTraceAsString, truncated ? truncatedExceptionMessage : null };
+            return new List<string> { stackTraceAsString, truncated ? truncatedExceptionMessage : null };
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         public void TestNoRequestContextOnSimpleConcurencyStrategyWithoutException()
         {
             Dispose();
-            var opts = new HystrixCommandOptions()
+            var opts = new HystrixCommandOptions
             {
                 RequestLogEnabled = false,
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("SimpleCommand")
@@ -105,7 +105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
 
             private static IHystrixCommandOptions GetCommandOptions()
             {
-                var opts = new HystrixCommandOptions()
+                var opts = new HystrixCommandOptions
                 {
                     GroupKey = HystrixCommandGroupKeyDefault.AsKey("TimeoutTest"),
                     ExecutionTimeoutInMilliseconds = 50

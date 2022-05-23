@@ -506,7 +506,7 @@ namespace Microsoft.Diagnostics.Runtime
 
                 if (file.GetPdbSignature(out string pdbName, out Guid guid, out int age))
                 {
-                    _pdb = new PdbInfo()
+                    _pdb = new PdbInfo
                     {
                         FileName = pdbName,
                         Guid = guid,

@@ -63,10 +63,10 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             var json = await reader.ReadToEndAsync();
 
             var expected = Serialize(
-                new Dictionary<string, DbMigrationsDescriptor>()
+                new Dictionary<string, DbMigrationsDescriptor>
                 {
                     {
-                        nameof(MockDbContext), new DbMigrationsDescriptor()
+                        nameof(MockDbContext), new DbMigrationsDescriptor
                         {
                             AppliedMigrations = new List<string> { "applied" },
                             PendingMigrations = new List<string> { "pending" }
@@ -93,10 +93,10 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var json = await result.Content.ReadAsStringAsync();
             var expected = Serialize(
-                new Dictionary<string, DbMigrationsDescriptor>()
+                new Dictionary<string, DbMigrationsDescriptor>
                 {
                     {
-                        nameof(MockDbContext), new DbMigrationsDescriptor()
+                        nameof(MockDbContext), new DbMigrationsDescriptor
                         {
                             AppliedMigrations = new List<string> { "applied" },
                             PendingMigrations = new List<string> { "pending" }

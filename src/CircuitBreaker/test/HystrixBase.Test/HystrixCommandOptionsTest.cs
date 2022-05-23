@@ -15,7 +15,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         public static HystrixCommandOptions GetUnitTestOptions()
         {
-            return new HystrixCommandOptions()
+            return new HystrixCommandOptions
             {
                 ExecutionTimeoutInMilliseconds = 1000, // when an execution will be timed out
                 ExecutionTimeoutEnabled = true,
@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var properties = new HystrixCommandOptions(
                 HystrixCommandKeyDefault.AsKey("TEST"),
-                new HystrixCommandOptions() { CircuitBreakerForceClosed = true });
+                new HystrixCommandOptions { CircuitBreakerForceClosed = true });
 
             // the builder override should take precedence over the default
             Assert.True(properties.CircuitBreakerForceClosed);
@@ -57,7 +57,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var properties = new HystrixCommandOptions(
                 HystrixCommandKeyDefault.AsKey("TEST"),
-                new HystrixCommandOptions() { CircuitBreakerForceClosed = false });
+                new HystrixCommandOptions { CircuitBreakerForceClosed = false });
 
             // the builder override should take precedence over the default
             Assert.False(properties.CircuitBreakerForceClosed);
@@ -119,7 +119,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             builder.Add(new JsonStreamConfigurationSource(memStream));
             var config = builder.Build();
             var dynamics = new HystrixDynamicOptionsDefault(config);
-            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { CircuitBreakerForceClosed = true }, dynamics);
+            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { CircuitBreakerForceClosed = true }, dynamics);
 
             // the builder injected should take precedence over the global dynamic property
             Assert.True(properties.CircuitBreakerForceClosed);
@@ -146,7 +146,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             builder.Add(new JsonStreamConfigurationSource(memStream));
             var config = builder.Build();
             var dynamics = new HystrixDynamicOptionsDefault(config);
-            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { CircuitBreakerForceClosed = false }, dynamics);
+            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { CircuitBreakerForceClosed = false }, dynamics);
 
             // the builder injected should take precedence over the global dynamic property
             Assert.False(properties.CircuitBreakerForceClosed);
@@ -179,7 +179,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var config = builder.Build();
             var dynamics = new HystrixDynamicOptionsDefault(config);
 
-            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { CircuitBreakerForceClosed = false }, dynamics);
+            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { CircuitBreakerForceClosed = false }, dynamics);
 
             // the instance specific dynamic property should take precedence over everything
             Assert.True(properties.CircuitBreakerForceClosed);
@@ -190,7 +190,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var properties = new HystrixCommandOptions(
                 HystrixCommandKeyDefault.AsKey("TEST"),
-                new HystrixCommandOptions() { MetricsRollingStatisticalWindowInMilliseconds = 5000 });
+                new HystrixCommandOptions { MetricsRollingStatisticalWindowInMilliseconds = 5000 });
 
             // the builder override should take precedence over the default
             Assert.Equal(5000, properties.MetricsRollingStatisticalWindowInMilliseconds);
@@ -258,7 +258,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var config = builder.Build();
             var dynamics = new HystrixDynamicOptionsDefault(config);
 
-            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { MetricsRollingStatisticalWindowInMilliseconds = 5000 }, dynamics);
+            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { MetricsRollingStatisticalWindowInMilliseconds = 5000 }, dynamics);
 
             // the builder injected should take precedence over the global dynamic property
             Assert.Equal(5000, properties.MetricsRollingStatisticalWindowInMilliseconds);
@@ -295,7 +295,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var config = builder.Build();
             var dynamics = new HystrixDynamicOptionsDefault(config);
 
-            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { MetricsRollingStatisticalWindowInMilliseconds = 5000 }, dynamics);
+            var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { MetricsRollingStatisticalWindowInMilliseconds = 5000 }, dynamics);
 
             // the instance specific dynamic property should take precedence over everything
             Assert.Equal(3456, properties.MetricsRollingStatisticalWindowInMilliseconds);

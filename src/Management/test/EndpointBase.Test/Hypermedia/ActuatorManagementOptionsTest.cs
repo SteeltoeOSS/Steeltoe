@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/management",
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly_OnCF()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/management",
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [Fact]
         public void Constructor_OverridesInvalidConfiguration_OnCF()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
             };

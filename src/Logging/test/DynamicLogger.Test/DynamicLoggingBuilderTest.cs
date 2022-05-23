@@ -29,7 +29,7 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void OnlyApplicableFilters_AreApplied()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["Logging:IncludeScopes"] = "false",
                 ["Logging:LogLevel:Default"] = "Information",

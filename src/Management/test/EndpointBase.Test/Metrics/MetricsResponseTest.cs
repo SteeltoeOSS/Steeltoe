@@ -14,14 +14,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Constructor_SetsValues()
         {
-            var samples = new List<MetricSample>()
+            var samples = new List<MetricSample>
             {
                 new MetricSample(MetricStatistic.TOTAL_TIME, 100.00)
             };
 
-            var tags = new List<MetricTag>()
+            var tags = new List<MetricTag>
             {
-                new MetricTag("tag", new HashSet<string>() { "tagValue" })
+                new MetricTag("tag", new HashSet<string> { "tagValue" })
             };
 
             var resp = new MetricsResponse("foo.bar", samples, tags);
@@ -33,14 +33,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void JsonSerialization_ReturnsExpected()
         {
-            var samples = new List<MetricSample>()
+            var samples = new List<MetricSample>
             {
                 new MetricSample(MetricStatistic.TOTAL_TIME, 100.1)
             };
 
-            var tags = new List<MetricTag>()
+            var tags = new List<MetricTag>
             {
-                new MetricTag("tag", new HashSet<string>() { "tagValue" })
+                new MetricTag("tag", new HashSet<string> { "tagValue" })
             };
 
             var resp = new MetricsResponse("foo.bar", samples, tags);

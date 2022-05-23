@@ -299,7 +299,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             };
             var admin = new RabbitAdmin(rabbitTemplate);
             var mockContext = new Mock<IApplicationContext>();
-            mockContext.Setup((c) => c.GetServices<IQueue>()).Returns(new List<IQueue>() { new Queue("foo") });
+            mockContext.Setup((c) => c.GetServices<IQueue>()).Returns(new List<IQueue> { new Queue("foo") });
             admin.ApplicationContext = mockContext.Object;
             var templateChannel = new AtomicReference<RC.IModel>();
             var transTemplate = new TransactionTemplate(new TestTransactionManager());

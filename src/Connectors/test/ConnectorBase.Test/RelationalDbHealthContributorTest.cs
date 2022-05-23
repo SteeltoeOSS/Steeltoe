@@ -21,7 +21,7 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void GetMySqlContributor_ReturnsContributor()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mysql:client:server"] = "localhost",
                 ["mysql:client:port"] = "1234",
@@ -43,7 +43,7 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void GetPostgreSqlContributor_ReturnsContributor()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["postgres:client:host"] = "localhost",
                 ["postgres:client:port"] = "1234",
@@ -64,7 +64,7 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void GetSqlServerContributor_ReturnsContributor()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["sqlserver:credentials:timeout"] = "1",
                 ["sqlserver:credentials:uid"] = "username",
@@ -85,7 +85,7 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void GetOracleContributor_ReturnsContributor()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["oracle:client:server"] = "localhost",
                 ["oracle:client:port"] = "1234",
@@ -108,7 +108,7 @@ namespace Steeltoe.Connector.Test
         public void Sql_Not_Connected_Returns_Down_Status()
         {
             var implementationType = SqlServerTypeLocator.SqlConnection;
-            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
+            var sqlConfig = new SqlServerProviderConnectorOptions { Timeout = 1 };
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
@@ -124,7 +124,7 @@ namespace Steeltoe.Connector.Test
         public void Sql_Is_Connected_Returns_Up_Status()
         {
             var implementationType = SqlServerTypeLocator.SqlConnection;
-            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1, ConnectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true" };
+            var sqlConfig = new SqlServerProviderConnectorOptions { Timeout = 1, ConnectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true" };
             var sInfo = new SqlServerServiceInfo("MyId", string.Empty);
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
@@ -139,7 +139,7 @@ namespace Steeltoe.Connector.Test
         public void MySql_Not_Connected_Returns_Down_Status()
         {
             var implementationType = MySqlTypeLocator.MySqlConnection;
-            var sqlConfig = new MySqlProviderConnectorOptions() { ConnectionTimeout = 1 };
+            var sqlConfig = new MySqlProviderConnectorOptions { ConnectionTimeout = 1 };
             var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
             var logrFactory = new LoggerFactory();
             var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
@@ -155,7 +155,7 @@ namespace Steeltoe.Connector.Test
         public void MySql_Is_Connected_Returns_Up_Status()
         {
             var implementationType = MySqlTypeLocator.MySqlConnection;
-            var sqlConfig = new MySqlProviderConnectorOptions() { ConnectionTimeout = 1 };
+            var sqlConfig = new MySqlProviderConnectorOptions { ConnectionTimeout = 1 };
             var sInfo = new MySqlServiceInfo("MyId", "mysql://steeltoe:steeltoe@localhost:3306");
             var logrFactory = new LoggerFactory();
             var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
@@ -170,7 +170,7 @@ namespace Steeltoe.Connector.Test
         public void PostgreSql_Not_Connected_Returns_Down_Status()
         {
             var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
-            var sqlConfig = new PostgresProviderConnectorOptions() { Timeout = 1 };
+            var sqlConfig = new PostgresProviderConnectorOptions { Timeout = 1 };
             var sInfo = new PostgresServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var logrFactory = new LoggerFactory();
             var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
@@ -201,7 +201,7 @@ namespace Steeltoe.Connector.Test
         public void Oracle_Not_Connected_Returns_Down_Status()
         {
             var implementationType = OracleTypeLocator.OracleConnection;
-            var sqlConfig = new OracleProviderConnectorOptions() { ConnectionTimeout = 1 };
+            var sqlConfig = new OracleProviderConnectorOptions { ConnectionTimeout = 1 };
             var sInfo = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/someService");
             var logrFactory = new LoggerFactory();
             var connFactory = new OracleProviderConnectorFactory(sInfo, sqlConfig, implementationType);

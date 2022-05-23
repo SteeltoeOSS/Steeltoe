@@ -55,7 +55,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         {
             var hostBuilder = RabbitMQHost.CreateDefaultBuilder();
 
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 [$"{RabbitOptions.PREFIX}:host"] = "ThisIsATest",
                 [$"{RabbitOptions.PREFIX}:port"] = "1234",

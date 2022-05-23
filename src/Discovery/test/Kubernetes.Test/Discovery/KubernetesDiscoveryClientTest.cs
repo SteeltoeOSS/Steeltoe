@@ -74,7 +74,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
             {
                 AllNamespaces = true
             });
@@ -126,7 +126,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
             {
                 Namespace = "test"
             });
@@ -167,7 +167,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
             {
                 Namespace = "test"
             });
@@ -209,7 +209,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
             {
                 Namespace = "test"
             });
@@ -248,7 +248,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
             {
                 Namespace = "test"
             });
@@ -288,7 +288,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
             {
                 Namespace = "test"
             });
@@ -330,7 +330,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var k8sOptions = new KubernetesDiscoveryOptions() { Enabled = false, Namespace = "test" };
+            var k8sOptions = new KubernetesDiscoveryOptions { Enabled = false, Namespace = "test" };
             var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(k8sOptions);
 
             var discoveryClient = new KubernetesDiscoveryClient(

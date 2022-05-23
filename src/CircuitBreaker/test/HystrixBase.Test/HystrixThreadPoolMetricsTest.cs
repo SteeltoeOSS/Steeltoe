@@ -85,7 +85,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixCommandOptions GetCommandOptions()
             {
-                var opts = new HystrixCommandOptions()
+                var opts = new HystrixCommandOptions
                 {
                     GroupKey = GroupKey,
                     ThreadPoolKey = TpKey,

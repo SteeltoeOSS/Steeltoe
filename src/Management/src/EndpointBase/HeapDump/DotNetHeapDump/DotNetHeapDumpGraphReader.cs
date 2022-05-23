@@ -24,7 +24,7 @@ using Address = System.UInt64;
 /// <summary>
 /// Reads a .NET Heap dump generated from ETW
 /// </summary>
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class DotNetHeapDumpGraphReader
 {
     /// <summary>

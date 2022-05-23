@@ -139,7 +139,7 @@ namespace Steeltoe.Connector.Services
             => GetStringFromCredentials(credentials, "access_token_uri");
 
         protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, string key)
-            => GetStringFromCredentials(credentials, new List<string>() { key });
+            => GetStringFromCredentials(credentials, new List<string> { key });
 
         protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
         {
@@ -170,7 +170,7 @@ namespace Steeltoe.Connector.Services
 
         protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
-            return GetIntFromCredentials(credentials, new List<string>() { key });
+            return GetIntFromCredentials(credentials, new List<string> { key });
         }
 
         protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)

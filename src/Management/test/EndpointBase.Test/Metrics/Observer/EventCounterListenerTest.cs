@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
     public class EventCounterListenerTest : BaseTest
     {
-        private readonly PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
+        private readonly PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 500 };
 
         private readonly string[] _metrics = new string[]
             {

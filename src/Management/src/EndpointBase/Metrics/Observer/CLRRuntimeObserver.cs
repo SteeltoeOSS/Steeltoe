@@ -98,7 +98,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                     count = count - _previous.CollectionCounts[i];
                 }
 
-                var tags = new Dictionary<string, object>() { { GENERATION_KEY, GENERATION_TAGVALUE_NAME + i } };
+                var tags = new Dictionary<string, object> { { GENERATION_KEY, GENERATION_TAGVALUE_NAME + i } };
 
                 yield return new Measurement<long>(count, tags.AsReadonlySpan());
             }

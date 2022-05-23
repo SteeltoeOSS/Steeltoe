@@ -199,7 +199,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             private readonly bool useCache;
 
             public TestCommand(string commandName, string value, bool fail, bool failOnFallback)
-                : base(new HystrixCommandOptions()
+                : base(new HystrixCommandOptions
                 {
                     GroupKey = HystrixCommandGroupKeyDefault.AsKey("RequestLogTestCommand"),
                     CommandKey = HystrixCommandKeyDefault.AsKey(commandName)
@@ -225,7 +225,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             public TestCommand(string value, bool fail, bool failOnFallback, bool timeout)
-                : base(new HystrixCommandOptions()
+                : base(new HystrixCommandOptions
                 {
                     GroupKey = HystrixCommandGroupKeyDefault.AsKey("RequestLogTestCommand"),
                     ExecutionTimeoutInMilliseconds = 500

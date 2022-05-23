@@ -136,7 +136,7 @@ namespace Steeltoe.Integration.Handler
             var payloadsArgumentResolver = new PayloadsArgumentResolver(ApplicationContext);
             var nullResolver = new NullAwarePayloadArgumentResolver(messageConverter);
 
-            var customArgumentResolvers = new List<IHandlerMethodArgumentResolver>()
+            var customArgumentResolvers = new List<IHandlerMethodArgumentResolver>
             {
                 payloadExpressionArgumentResolver, nullResolver, payloadsArgumentResolver
             };

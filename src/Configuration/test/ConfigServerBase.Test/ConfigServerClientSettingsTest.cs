@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetRawUris_GoodWithUserPass()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/" };
 
             Assert.Equal("https://localhost:8888/", settings.RawUris[0]);
         }
@@ -27,7 +27,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetRawUris_MultipleUris_GoodWithUserPass()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/, https://user:pass@localhost:9999/" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/, https://user:pass@localhost:9999/" };
 
             Assert.Equal("https://localhost:8888/", settings.RawUris[0]);
             Assert.Equal("https://localhost:9999/", settings.RawUris[1]);
@@ -36,7 +36,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetRawUris_Bad()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "blahblah" };
+            var settings = new ConfigServerClientSettings { Uri = "blahblah" };
 
             Assert.Empty(settings.RawUris);
         }
@@ -44,7 +44,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetUserName_GoodWithUserPassOnUri()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/" };
 
             Assert.Equal("user", settings.Username);
         }
@@ -52,7 +52,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetUserName_MultipleUrisWithUserPass_ReturnsNull()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
 
             Assert.Null(settings.Username);
         }
@@ -60,7 +60,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetUserName_MultipleUrisWithUserPass_ReturnsUserNameSetting()
         {
-            var settings = new ConfigServerClientSettings()
+            var settings = new ConfigServerClientSettings
             {
                 Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
                 Username = "user"
@@ -72,7 +72,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetPassword_GoodWithUserPassOnUri()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/" };
 
             Assert.Equal("pass", settings.Password);
         }
@@ -80,7 +80,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetPassword_MultipleUrisWithUserPass_ReturnsNull()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
 
             Assert.Null(settings.Password);
         }
@@ -88,7 +88,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetPassword_MultipleUrisWithUserPass_ReturnsPasswordSetting()
         {
-            var settings = new ConfigServerClientSettings()
+            var settings = new ConfigServerClientSettings
             {
                 Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
                 Password = "password"
@@ -100,7 +100,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetUserName_GoodWithUserPassOnUri_SettingsOverrides()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/", Username = "explicitOverrides" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/", Username = "explicitOverrides" };
 
             Assert.Equal("explicitOverrides", settings.Username);
             Assert.Equal("pass", settings.Password);
@@ -109,7 +109,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetPassword_GoodWithUserPassOnUri_SettingsOverrides()
         {
-            var settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/", Password = "explicitOverrides" };
+            var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/", Password = "explicitOverrides" };
 
             Assert.Equal("explicitOverrides", settings.Password);
             Assert.Equal("user", settings.Username);
@@ -118,7 +118,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetUserName_MultipleUrisWithUserPass_SettingsUsed()
         {
-            var settings = new ConfigServerClientSettings()
+            var settings = new ConfigServerClientSettings
             {
                 Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
                 Username = "explicitOverrides"
@@ -131,7 +131,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetPassword_MultipleUrisWithUserPass_SettingsOverrides()
         {
-            var settings = new ConfigServerClientSettings()
+            var settings = new ConfigServerClientSettings
             {
                 Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
                 Password = "explicitOverrides"

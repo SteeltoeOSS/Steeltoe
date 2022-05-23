@@ -293,7 +293,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 {
                     ConnectionFactory = connectionFactory
                 };
-                var headers = new MessageHeaders(new Dictionary<string, object>() { { RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4 } });
+                var headers = new MessageHeaders(new Dictionary<string, object> { { RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4 } });
                 var message = Message.Create(Encoding.UTF8.GetBytes("\u0000\u0000\u0000\u0004foo"), headers);
                 template.Send(string.Empty, ROUTE, message);
                 Thread.Sleep(1000);

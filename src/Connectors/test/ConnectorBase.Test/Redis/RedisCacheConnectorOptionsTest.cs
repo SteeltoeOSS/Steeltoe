@@ -25,7 +25,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:host"] = "localhost",
                 ["redis:client:port"] = "1234",
@@ -76,7 +76,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };
@@ -93,7 +93,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
             // simulate an appsettings file
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };

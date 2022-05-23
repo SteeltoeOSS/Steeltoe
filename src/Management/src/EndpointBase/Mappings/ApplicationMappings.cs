@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
         public ApplicationMappings(ContextMappings contextMappings)
         {
             // At this point, .NET will only ever has one application => "application"
-            ContextMappings = new Dictionary<string, ContextMappings>()
+            ContextMappings = new Dictionary<string, ContextMappings>
             {
                 { "application", contextMappings }
             };

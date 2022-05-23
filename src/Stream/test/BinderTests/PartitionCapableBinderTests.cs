@@ -109,7 +109,7 @@ namespace Steeltoe.Stream.Binder
             var consumerOptions = GetConsumerOptions("output", bindingsOptions);
 
             var testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
-            producerOptions.RequiredGroups = new List<string>() { "test1" };
+            producerOptions.RequiredGroups = new List<string> { "test1" };
             var producerBinding = binder.BindProducer(testDestination, output, producerOptions);
             var testPayload = $"foo-{Guid.NewGuid()}";
 
@@ -135,7 +135,7 @@ namespace Steeltoe.Stream.Binder
             var output = CreateBindableChannel("output", producerBindingOptions);
 
             var testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
-            producerOptions.RequiredGroups = new List<string>() { "test1", "test2" };
+            producerOptions.RequiredGroups = new List<string> { "test1", "test2" };
 
             var producerBinding = binder.BindProducer(testDestination, output, producerOptions);
 
@@ -241,7 +241,7 @@ namespace Steeltoe.Stream.Binder
             }
             else
             {
-                var receivedMessages = new List<IMessage>() { receive0, receive1, receive2 };
+                var receivedMessages = new List<IMessage> { receive0, receive1, receive2 };
                 Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "0");
                 Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "1");
                 Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "2");

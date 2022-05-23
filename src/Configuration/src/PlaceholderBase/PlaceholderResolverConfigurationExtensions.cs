@@ -75,7 +75,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             }
 
             var root = configuration as IConfigurationRoot;
-            return new ConfigurationRoot(new List<IConfigurationProvider>() { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers), loggerFactory) });
+            return new ConfigurationRoot(new List<IConfigurationProvider> { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers), loggerFactory) });
         }
     }
 }

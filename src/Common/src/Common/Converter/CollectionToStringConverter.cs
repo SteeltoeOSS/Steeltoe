@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Converter
         private readonly IConversionService _conversionService;
 
         public CollectionToStringConverter(IConversionService conversionService)
-            : base(new HashSet<(Type Source, Type Target)>() { (typeof(ICollection), typeof(string)) })
+            : base(new HashSet<(Type Source, Type Target)> { (typeof(ICollection), typeof(string)) })
         {
             _conversionService = conversionService;
         }

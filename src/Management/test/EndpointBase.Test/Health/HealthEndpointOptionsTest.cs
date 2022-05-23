@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -71,7 +71,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_BindsClaimCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:health:claim:type"] = "claimtype",
                 ["management:endpoints:health:claim:value"] = "claimvalue",
@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_BindsRoleCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:health:role"] = "roleclaimvalue"
             };

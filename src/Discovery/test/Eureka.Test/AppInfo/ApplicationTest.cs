@@ -25,11 +25,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void InstancesConstructor_InitializedCorrectly()
         {
-            var infos = new List<InstanceInfo>()
+            var infos = new List<InstanceInfo>
             {
-                new InstanceInfo() { InstanceId = "1" },
-                new InstanceInfo() { InstanceId = "2" },
-                new InstanceInfo() { InstanceId = "2" } // Note duplicate
+                new InstanceInfo { InstanceId = "1" },
+                new InstanceInfo { InstanceId = "2" },
+                new InstanceInfo { InstanceId = "2" } // Note duplicate
             };
 
             var app = new Application("foobar", infos);
@@ -47,7 +47,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         public void Add_Adds()
         {
             var app = new Application("foobar");
-            var info = new InstanceInfo()
+            var info = new InstanceInfo
             {
                 InstanceId = "1"
             };
@@ -65,7 +65,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         public void Add_Add_Updates()
         {
             var app = new Application("foobar");
-            var info = new InstanceInfo()
+            var info = new InstanceInfo
             {
                 InstanceId = "1",
                 Status = InstanceStatus.DOWN
@@ -76,7 +76,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.NotNull(app.GetInstance("1"));
             Assert.Equal(InstanceStatus.DOWN, app.GetInstance("1").Status);
 
-            var info2 = new InstanceInfo()
+            var info2 = new InstanceInfo
             {
                 InstanceId = "1",
                 Status = InstanceStatus.UP
@@ -91,7 +91,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromJsonApplication_Correct()
         {
-            var jinfo = new JsonInstanceInfo()
+            var jinfo = new JsonInstanceInfo
             {
                 InstanceId = "InstanceId",
                 AppName = "myApp",
@@ -111,7 +111,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 HostName = "HostName",
                 Status = InstanceStatus.DOWN,
                 OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
-                LeaseInfo = new JsonLeaseInfo()
+                LeaseInfo = new JsonLeaseInfo
                 {
                     RenewalIntervalInSecs = 1,
                     DurationInSecs = 2,
@@ -122,14 +122,14 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                     ServiceUpTimestamp = 1457973741708
                 },
                 IsCoordinatingDiscoveryServer = false,
-                Metadata = new Dictionary<string, string>() { { "@class", "java.util.Collections$EmptyMap" } },
+                Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
                 LastUpdatedTimestamp = 1457973741708,
                 LastDirtyTimestamp = 1457973741708,
                 Actiontype = ActionType.ADDED,
                 AsgName = "AsgName"
             };
 
-            var japp = new JsonApplication()
+            var japp = new JsonApplication
             {
                 Name = "myApp",
                 Instances = new List<JsonInstanceInfo> { jinfo }

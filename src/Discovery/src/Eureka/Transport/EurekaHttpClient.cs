@@ -176,7 +176,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             InstanceInfo info,
             InstanceStatus overriddenStatus)
         {
-            var queryArgs = new Dictionary<string, string>()
+            var queryArgs = new Dictionary<string, string>
             {
                 { "status", info.Status.ToString() },
                 { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
@@ -496,7 +496,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         private async Task<EurekaHttpResponse> DeleteStatusOverrideAsyncInternal(string appName, string id, InstanceInfo info)
         {
-            var queryArgs = new Dictionary<string, string>()
+            var queryArgs = new Dictionary<string, string>
             {
                 { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
             };
@@ -572,7 +572,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         private async Task<EurekaHttpResponse> StatusUpdateAsyncInternal(string appName, string id, InstanceStatus newStatus, InstanceInfo info)
         {
-            var queryArgs = new Dictionary<string, string>()
+            var queryArgs = new Dictionary<string, string>
             {
                 { "value", newStatus.ToString() },
                 { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }

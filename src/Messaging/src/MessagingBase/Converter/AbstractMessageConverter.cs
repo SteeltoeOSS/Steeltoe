@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.Converter
                 throw new ArgumentNullException(nameof(supportedMimeType));
             }
 
-            _supportedMimeTypes = new List<MimeType>() { supportedMimeType };
+            _supportedMimeTypes = new List<MimeType> { supportedMimeType };
         }
 
         protected AbstractMessageConverter(ICollection<MimeType> supportedMimeTypes)

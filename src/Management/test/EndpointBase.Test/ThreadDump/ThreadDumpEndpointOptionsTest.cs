@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:loggers:enabled"] = "false",

@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         public void UpdateConfiguration_WithNullHystrixRabbitMQServiceInfo_ReturnsInitialConfiguration()
         {
             var configurer = new HystrixProviderConfigurer();
-            var config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         public void UpdateConfiguration_WithHystrixRabbitMQServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
             var configurer = new HystrixProviderConfigurer();
-            var config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -59,7 +59,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         public void UpdateConfiguration_WithHystrixRabbitMQSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
             var configurer = new HystrixProviderConfigurer();
-            var config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -82,7 +82,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsProvidedConnectorOptions()
         {
-            var config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -106,7 +106,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
         {
-            var config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -131,7 +131,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void Configure_SSLServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
         {
-            var config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,

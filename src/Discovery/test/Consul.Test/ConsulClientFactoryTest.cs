@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Consul.Client.Test
         [Fact]
         public void CreateClient_Succeeds()
         {
-            var opts = new ConsulOptions()
+            var opts = new ConsulOptions
             {
                 Host = "foobar",
                 Datacenter = "datacenter",

@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetString_NoResolveFromConfig()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "astring" }
             };
@@ -27,7 +27,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetInt_ReturnsValue()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "100" }
             };
@@ -41,7 +41,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetDouble_ReturnsValue()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "100.00" }
             };
@@ -55,7 +55,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetBoolean_ReturnsValue()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "True" }
             };
@@ -69,7 +69,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetInt_NotFoundReturnsDefault()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "astring" }
             };
@@ -83,7 +83,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetDouble_NotFoundReturnsDefault()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "astring" }
             };
@@ -97,7 +97,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetBoolean_NotFoundReturnsDefault()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "astring" }
             };
@@ -111,7 +111,7 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetString_NotFoundReturnsDefault()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "astring" }
             };
@@ -125,11 +125,11 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetString_ResolvesReference()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "${a:b:c}" }
             };
-            var dict2 = new Dictionary<string, string>()
+            var dict2 = new Dictionary<string, string>
             {
                 { "a:b:c", "astring" }
             };
@@ -144,11 +144,11 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetString_ResolveNotFoundReturnsNotResolvedValue()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "${a:b:c}" }
             };
-            var dict2 = new Dictionary<string, string>()
+            var dict2 = new Dictionary<string, string>
             {
                 { "a:b:d", "astring" }
             };
@@ -163,11 +163,11 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetString_ResolveNotFoundReturnsPlaceholderDefault()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "${a:b:c?placeholderdefault}" }
             };
-            var dict2 = new Dictionary<string, string>()
+            var dict2 = new Dictionary<string, string>
             {
                 { "a:b:d", "astring" }
             };
@@ -182,11 +182,11 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetSetting_GetsFromFirst()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b", "setting1" }
             };
-            var dict2 = new Dictionary<string, string>()
+            var dict2 = new Dictionary<string, string>
             {
                 { "a:b", "setting2" }
             };
@@ -201,11 +201,11 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void GetSetting_GetsFromSecond()
         {
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "a:b:c", "setting1" }
             };
-            var dict2 = new Dictionary<string, string>()
+            var dict2 = new Dictionary<string, string>
             {
                 { "a:b", "setting2" }
             };

@@ -62,7 +62,7 @@ namespace Steeltoe.Common.Converter
 
         internal static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass) => GetValidatedMember(targetClass, sourceClass) != null;
 
-        private static ISet<(Type Source, Type Target)> GetConvertiblePairs() => new HashSet<(Type Source, Type Target)>() { (typeof(object), typeof(object)) };
+        private static ISet<(Type Source, Type Target)> GetConvertiblePairs() => new HashSet<(Type Source, Type Target)> { (typeof(object), typeof(object)) };
 
         private static MemberInfo GetValidatedMember(Type targetClass, Type sourceClass)
         {

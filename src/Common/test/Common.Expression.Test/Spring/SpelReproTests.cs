@@ -1667,7 +1667,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class MapAccessor : IPropertyAccessor
         {
-            public IList<Type> GetSpecificTargetClasses() => new List<Type>() { typeof(IDictionary) };
+            public IList<Type> GetSpecificTargetClasses() => new List<Type> { typeof(IDictionary) };
 
             public bool CanRead(IEvaluationContext context, object target, string name) => ((IDictionary)target).Contains(name);
 
@@ -1924,7 +1924,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public bool CanWrite(IEvaluationContext context, object target, string name) => GetMap(target).ContainsKey(name);
 
-            public IList<Type> GetSpecificTargetClasses() => new List<Type>() { typeof(ContextObject) };
+            public IList<Type> GetSpecificTargetClasses() => new List<Type> { typeof(ContextObject) };
 
             public ITypedValue Read(IEvaluationContext context, object target, string name) => new TypedValue(GetMap(target)[name]);
 

@@ -15,7 +15,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         public void InitializeAll_FromConfigValues()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:cloud:stream:rabbit:binder:adminAddresses:0", "adminAddresses0" },
                 { "spring:cloud:stream:rabbit:binder:adminAddresses:1", "adminAddresses1" },

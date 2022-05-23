@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.Oracle.Test
         public void UpdateConfiguration_WithNullOracleServiceInfo_ReturnsExpected()
         {
             var configurer = new OracleProviderConfigurer();
-            var config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.Oracle.Test
         public void UpdateConfiguration_WithOracleServiceInfo_ReturnsExpected()
         {
             var configurer = new OracleProviderConfigurer();
-            var config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -57,7 +57,7 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            var config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -77,7 +77,7 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            var config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,

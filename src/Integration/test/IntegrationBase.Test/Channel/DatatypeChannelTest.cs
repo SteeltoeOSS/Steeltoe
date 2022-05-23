@@ -81,7 +81,7 @@ namespace Steeltoe.Integration.Channel.Test
             var provider = services.BuildServiceProvider();
             var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
             {
-                DataTypes = new List<Type>() { typeof(int), typeof(DateTime) }
+                DataTypes = new List<Type> { typeof(int), typeof(DateTime) }
             };
             Assert.True(channel.Send(Message.Create(true)));
             Assert.Equal(1, channel.Receive().Payload);
@@ -155,7 +155,7 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class BoolToIntConverter : IGenericConverter
         {
-            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>() { (typeof(bool), typeof(int)) };
+            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(bool), typeof(int)) };
 
             public object Convert(object source, Type sourceType, Type targetType)
             {
@@ -178,7 +178,7 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class StringToBarConverter : IGenericConverter
         {
-            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>() { (typeof(string), typeof(Foo)), (typeof(string), typeof(Bar)) };
+            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(string), typeof(Foo)), (typeof(string), typeof(Bar)) };
 
             public object Convert(object source, Type sourceType, Type targetType)
             {
@@ -188,7 +188,7 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class IntegerToBazConverter : IGenericConverter
         {
-            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>() { (typeof(int), typeof(Foo)), (typeof(int), typeof(Baz)) };
+            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(int), typeof(Foo)), (typeof(int), typeof(Baz)) };
 
             public object Convert(object source, Type sourceType, Type targetType)
             {

@@ -19,7 +19,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void GetMongoDbContributor_ReturnsContributor()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mongodb:client:server"] = "localhost",
                 ["mongodb:client:port"] = "27018",

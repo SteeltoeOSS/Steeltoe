@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             var mgmtOptions = new CloudFoundryManagementOptions();
             mgmtOptions.EndpointOptions.AddRange(options);
-            return new List<IManagementOptions>() { mgmtOptions };
+            return new List<IManagementOptions> { mgmtOptions };
         }
     }
 

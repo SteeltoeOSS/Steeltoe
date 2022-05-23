@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Runtime
             {
                 ulong start = _heap.Segments[i].Start;
                 ulong end = _heap.Segments[i].End;
-                _segments[i] = new HeapHashSegment()
+                _segments[i] = new HeapHashSegment
                 {
                     StartAddress = start,
                     EndAddress = end,

@@ -22,7 +22,7 @@ using Address = System.UInt64;
 /// Represents a .GCDump file.  You can open it for reading with the construtor
 /// and you can write one with WriteMemoryGraph 
 /// </summary>
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
 {
     public GCHeapDump(string inputFileName) :
@@ -420,7 +420,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
     #endregion
 }
 
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 public class JSHeapInfo : IFastSerializable
 {
     #region private
@@ -433,7 +433,7 @@ public class JSHeapInfo : IFastSerializable
     #endregion
 }
 
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 public class InteropInfo : IFastSerializable
 {
     public class RCWInfo
@@ -720,12 +720,12 @@ public class InteropInfo : IFastSerializable
 /// </graph>
 /// 
 /// </summary>
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class XmlGcHeapDump
 {
     public static GCHeapDump ReadGCHeapDumpFromXml(string fileName)
     {
-        XmlReaderSettings settings = new XmlReaderSettings() { IgnoreWhitespace = true, IgnoreComments = true };
+        XmlReaderSettings settings = new XmlReaderSettings { IgnoreWhitespace = true, IgnoreComments = true };
         using XmlReader reader = XmlReader.Create(fileName, settings);
         reader.ReadToDescendant("GCHeapDump");
         return ReadGCHeapDumpFromXml(reader);

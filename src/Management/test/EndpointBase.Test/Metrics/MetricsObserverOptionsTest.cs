@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:metrics:observer:ingressIgnorePattern"] = "pattern",
                 ["management:metrics:observer:egressIgnorePattern"] = "pattern",

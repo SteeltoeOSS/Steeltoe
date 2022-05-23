@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var opts = new HealthEndpointOptions();
             var mgmtOptions = new CloudFoundryManagementOptions();
             mgmtOptions.EndpointOptions.Add(opts);
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
+            var contribs = new List<IHealthContributor> { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var middle = new HealthEndpointMiddleware(null, mgmtOptions) { Endpoint = ep };
 

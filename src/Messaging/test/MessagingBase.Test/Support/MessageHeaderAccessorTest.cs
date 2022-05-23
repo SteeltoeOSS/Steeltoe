@@ -283,7 +283,7 @@ namespace Steeltoe.Messaging.Support.Test
             var id = Guid.NewGuid();
             var accessor = new MessageHeaderAccessor
             {
-                IdGenerator = new TestIdGenerator()
+                IdGenerator = new TestIdGenerator
                 {
                     Id = id.ToString()
                 }
@@ -303,7 +303,7 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var accessor = new MessageHeaderAccessor
             {
-                IdGenerator = new TestIdGenerator()
+                IdGenerator = new TestIdGenerator
                 {
                     Id = MessageHeaders.ID_VALUE_NONE
                 },
@@ -316,7 +316,7 @@ namespace Steeltoe.Messaging.Support.Test
             Assert.Null(headers.Timestamp);
 
             var id = Guid.NewGuid();
-            accessor.IdGenerator = new TestIdGenerator()
+            accessor.IdGenerator = new TestIdGenerator
             {
                 Id = id.ToString()
             };
@@ -330,7 +330,7 @@ namespace Steeltoe.Messaging.Support.Test
 
         private static IDictionary<string, object> SingletonMap(string key, object value)
         {
-            return new Dictionary<string, object>() { { key, value } };
+            return new Dictionary<string, object> { { key, value } };
         }
 
         private class TestIdGenerator : IIDGenerator

@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         public void Invoke_CallsAllContributors()
         {
             using var tc = new TestContext(_output);
-            var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(), new TestContrib() };
+            var contributors = new List<IInfoContributor> { new TestContrib(), new TestContrib(), new TestContrib() };
 
             tc.AdditionalServices = (services, configuration) =>
             {
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         public void Invoke_HandlesExceptions()
         {
             using var tc = new TestContext(_output);
-            var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(true), new TestContrib() };
+            var contributors = new List<IInfoContributor> { new TestContrib(), new TestContrib(true), new TestContrib() };
 
             tc.AdditionalServices = (services, configuration) =>
             {

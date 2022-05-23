@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["postgres:client:host"] = "localhost",
                 ["postgres:client:port"] = "1234",
@@ -49,7 +49,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password;"
             };
@@ -65,7 +65,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void ConnectionString_Returned_BuildFromConfig()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["postgres:client:Host"] = "fake-db.host",
                 ["postgres:client:Port"] = "3000",
@@ -88,7 +88,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
             // simulate an appsettings file
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password;"
             };
@@ -113,7 +113,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void ConnectionString_Overridden_By_CloudFoundryConfig_Use_SearchPath()
         {
             // simulate an appsettings file
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password;",
                 ["postgres:client:SearchPath"] = "SomeSchema"

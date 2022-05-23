@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Tracing.Test
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif
             var services = new ServiceCollection()
-                .AddSingleton(GetConfiguration(new Dictionary<string, string>()
+                .AddSingleton(GetConfiguration(new Dictionary<string, string>
                 {
                     { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
                     { "management:metrics:export:wavefront:apiToken", "fakeSecret" }

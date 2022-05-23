@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestTimestampProvidedNullValue()
         {
-            var input = new Dictionary<string, object>() { { MessageHeaders.TIMESTAMP, 1L } };
+            var input = new Dictionary<string, object> { { MessageHeaders.TIMESTAMP, 1L } };
             var headers = new MessageHeaders(input, null, null);
             Assert.NotNull(headers.Timestamp);
         }
@@ -76,7 +76,7 @@ namespace Steeltoe.Messaging.Test
         public void TestIdProvidedNullValue()
         {
             var id = Guid.NewGuid();
-            var input = new Dictionary<string, object>() { { MessageHeaders.ID, id } };
+            var input = new Dictionary<string, object> { { MessageHeaders.ID, id } };
             var headers = new MessageHeaders(input, null, null);
             Assert.NotNull(headers.Id);
         }

@@ -14,7 +14,7 @@ namespace Steeltoe.Stream.Config
         public void Initialize_ConfiguresOptionsCorrectly()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:cloud:stream:instanceCount", "100" },
                 { "spring:cloud:stream:instanceIndex", "1" },
@@ -156,7 +156,7 @@ namespace Steeltoe.Stream.Config
         public void NonDefaults_ConfiguresOptionsCorrectly()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:cloud:stream:instanceCount", "100" },
                 { "spring:cloud:stream:instanceIndex", "1" },
@@ -191,7 +191,7 @@ namespace Steeltoe.Stream.Config
         public void Mixture_Default_NonDefault_ConfiguresOptionsCorrectly()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:cloud:stream:instanceIndex", "2" },
                 { "spring:cloud:stream:dynamicDestinations:0", "dynamicDestinations" },

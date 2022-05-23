@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
         [Fact]
         public void Create_ReturnsDbContext()
         {
-            var config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1521,

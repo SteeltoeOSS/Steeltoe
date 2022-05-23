@@ -113,7 +113,7 @@ namespace Steeltoe.Stream.TestBinder
             {
                 var message = Message.Create(
                     "polled data",
-                    new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, "text/plain" } }));
+                    new MessageHeaders(new Dictionary<string, object> { { MessageHeaders.CONTENT_TYPE, "text/plain" } }));
                 return message;
             }
         }

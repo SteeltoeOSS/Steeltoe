@@ -81,7 +81,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void OnlyApplicableFilters_AreApplied_via_Options()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 { "Serilog:Using:0", "Steeltoe.Extensions.Logging.DynamicSerilogCore.Test" },
                 { "Serilog:MinimumLevel:Default", "Error" },

@@ -23,7 +23,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
         {
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(
-                new Dictionary<string, string>() { { "code", "123" } })
+                new Dictionary<string, string> { { "code", "123" } })
                 .Build();
             var collection = new ServiceCollection();
             collection.AddSingleton<IConfiguration>(config);

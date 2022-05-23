@@ -151,7 +151,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public IList<Type> GetSpecificTargetClasses()
             {
-                return new List<Type>() { typeof(IDictionary) };
+                return new List<Type> { typeof(IDictionary) };
             }
         }
     }

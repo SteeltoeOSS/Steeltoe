@@ -30,7 +30,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var result = handler.DoHealthChecks(new List<IHealthContributor>());
             Assert.Empty(result);
 
-            result = handler.DoHealthChecks(new List<IHealthContributor>() { new TestContributor() });
+            result = handler.DoHealthChecks(new List<IHealthContributor> { new TestContributor() });
             Assert.Empty(result);
         }
 
@@ -42,64 +42,64 @@ namespace Steeltoe.Discovery.Eureka.Test
             var results = new List<HealthCheckResult>();
             Assert.Equal(HealthStatus.UNKNOWN, handler.AggregateStatus(results));
 
-            results = new List<HealthCheckResult>()
+            results = new List<HealthCheckResult>
             {
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.DOWN
                 },
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.UP
                 }
             };
             Assert.Equal(HealthStatus.DOWN, handler.AggregateStatus(results));
-            results = new List<HealthCheckResult>()
+            results = new List<HealthCheckResult>
             {
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.UP
                 },
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.DOWN
                 }
             };
             Assert.Equal(HealthStatus.DOWN, handler.AggregateStatus(results));
 
-            results = new List<HealthCheckResult>()
+            results = new List<HealthCheckResult>
             {
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.UP
                 },
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.OUT_OF_SERVICE
                 }
             };
             Assert.Equal(HealthStatus.OUT_OF_SERVICE, handler.AggregateStatus(results));
 
-            results = new List<HealthCheckResult>()
+            results = new List<HealthCheckResult>
             {
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.UP
                 },
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.WARNING
                 }
             };
 
             Assert.Equal(HealthStatus.UP, handler.AggregateStatus(results));
-            results = new List<HealthCheckResult>()
+            results = new List<HealthCheckResult>
             {
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.WARNING
                 },
-                new HealthCheckResult()
+                new HealthCheckResult
                 {
                     Status = HealthStatus.WARNING
                 }

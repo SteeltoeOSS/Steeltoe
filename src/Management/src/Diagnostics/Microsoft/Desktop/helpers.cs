@@ -207,7 +207,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             if (!GetMethodTables(obj, out ulong mt, out ulong cmt))
                 return _max-- > 0 ? 1 : 0;
 
-            ClrHandle handle = new ClrHandle()
+            ClrHandle handle = new ClrHandle
             {
                 Address = addr,
                 Object = obj,

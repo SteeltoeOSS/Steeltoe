@@ -11,11 +11,11 @@ namespace Steeltoe.Management.Endpoint.Mappings
     {
         public ContextMappings()
         {
-            var mappingList = new Dictionary<string, IList<MappingDescription>>()
+            var mappingList = new Dictionary<string, IList<MappingDescription>>
             {
                 { "dispatcherServlet", new List<MappingDescription>() }
             };
-            Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>()
+            Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>
             {
                 { "dispatcherServlets", mappingList }
             };
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 mappingDict.Add("dispatcherServlet", new List<MappingDescription>());
             }
 
-            Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>()
+            Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>
             {
                 { "dispatcherServlets", mappingDict }
             };

@@ -248,7 +248,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
         {
             if (!string.IsNullOrEmpty(desc.HttpMethod))
             {
-                return new List<string>() { desc.HttpMethod };
+                return new List<string> { desc.HttpMethod };
             }
 
             return null;

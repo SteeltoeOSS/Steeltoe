@@ -46,7 +46,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal static LeaseInfo FromConfig(IEurekaInstanceConfig config)
         {
-            var info = new LeaseInfo()
+            var info = new LeaseInfo
             {
                 RenewalIntervalInSecs = config.LeaseRenewalIntervalInSeconds,
                 DurationInSecs = config.LeaseExpirationDurationInSeconds
@@ -62,7 +62,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal JsonLeaseInfo ToJson()
         {
-            var jinfo = new JsonLeaseInfo()
+            var jinfo = new JsonLeaseInfo
             {
                 RenewalIntervalInSecs = RenewalIntervalInSecs,
                 DurationInSecs = DurationInSecs,

@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new List<Type>() { typeof(IConfiguration) };
+            return new List<Type> { typeof(IConfiguration) };
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)

@@ -29,7 +29,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         public MessageListenerAdapterTest()
         {
-            var headers = new Dictionary<string, object>()
+            var headers = new Dictionary<string, object>
             {
                 { MessageHeaders.CONTENT_TYPE,  MimeTypeUtils.TEXT_PLAIN_VALUE }
             };

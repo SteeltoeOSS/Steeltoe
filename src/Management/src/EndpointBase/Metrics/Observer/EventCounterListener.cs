@@ -70,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (_eventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
             {
-                var refreshInterval = new Dictionary<string, string>() { { "EventCounterIntervalSec", "1" } }; // TODO: Make it configurable
+                var refreshInterval = new Dictionary<string, string> { { "EventCounterIntervalSec", "1" } }; // TODO: Make it configurable
                 try
                 {
                     EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, refreshInterval);

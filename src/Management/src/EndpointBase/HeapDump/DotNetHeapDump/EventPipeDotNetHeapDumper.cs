@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.GCDump
 {
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal static class EventPipeDotNetHeapDumper
     {
         internal static volatile bool eventPipeDataPresent;
@@ -222,7 +222,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
         }
     }
 
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal class EventPipeSessionController : IDisposable
     {
         private List<EventPipeProvider> _providers;

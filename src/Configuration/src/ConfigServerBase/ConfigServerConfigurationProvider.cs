@@ -985,7 +985,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return configuration;
             }
 
-            return new ConfigurationRoot(new List<IConfigurationProvider>() { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers)) });
+            return new ConfigurationRoot(new List<IConfigurationProvider> { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers)) });
         }
 
         private bool IsContinueExceptionType(Exception e)

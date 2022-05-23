@@ -565,7 +565,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddWavefront_IWebHostBuilder()
         {
-            var wfSettings = new Dictionary<string, string>()
+            var wfSettings = new Dictionary<string, string>
             {
                 { "management:metrics:export:wavefront:uri", "https://wavefront.vmware.com" },
                 { "management:metrics:export:wavefront:apiToken", "testToken" }
@@ -589,7 +589,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddWavefront_ProxyConfigIsValid()
         {
-            var wfSettings = new Dictionary<string, string>()
+            var wfSettings = new Dictionary<string, string>
             {
                 { "management:metrics:export:wavefront:uri", "proxy://wavefront.vmware.com" },
                 { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw

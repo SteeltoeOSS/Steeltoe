@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void AddHealthActuator_AddsCorrectServicesWithDefaultHealthAggregator()
         {
             var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void AddHealthActuator_AddsCorrectServices()
         {
             var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",

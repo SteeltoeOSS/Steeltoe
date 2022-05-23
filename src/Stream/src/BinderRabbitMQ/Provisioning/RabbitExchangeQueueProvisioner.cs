@@ -408,7 +408,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     return null;
                 }
 
-                return new List<string>() { extendedProperties.BindingRoutingKey.Trim() };
+                return new List<string> { extendedProperties.BindingRoutingKey.Trim() };
             }
 
             if (extendedProperties.BindingRoutingKey == null)

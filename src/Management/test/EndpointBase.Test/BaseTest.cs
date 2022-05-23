@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public JsonSerializerOptions GetSerializerOptions()
         {
-            var options = new JsonSerializerOptions()
+            var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull

@@ -39,7 +39,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
                     Enum.TryParse(strMinLevel, out defaultLevel);
                 }
 
-                MinimumLevel = new MinimumLevel()
+                MinimumLevel = new MinimumLevel
                 {
                     Default = defaultLevel,
                 };
@@ -65,7 +65,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
                 overrideLevels.Add(overrideSwitch.Key, overrideSwitch.Value.MinimumLevel);
             }
 
-            MinimumLevel = new MinimumLevel()
+            MinimumLevel = new MinimumLevel
             {
                 Default = minimumLevel,
                 Override = overrideLevels ?? new Dictionary<string, LogEventLevel>()

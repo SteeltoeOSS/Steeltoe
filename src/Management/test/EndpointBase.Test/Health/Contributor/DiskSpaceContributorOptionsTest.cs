@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:health:enabled"] = "true",
                 ["management:endpoints:health:diskspace:path"] = "foobar",

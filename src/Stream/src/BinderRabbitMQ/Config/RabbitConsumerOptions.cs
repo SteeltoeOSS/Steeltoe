@@ -62,7 +62,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             RepublishToDlq ??= defaultOptions?.RepublishToDlq ?? true;
             RepublishDeliveryMode ??= defaultOptions?.RepublishDeliveryMode ?? RabbitCore.MessageDeliveryMode.PERSISTENT;
             RequeueRejected ??= defaultOptions?.RequeueRejected ?? false;
-            HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
+            HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string> { "*" };
             RecoveryInterval ??= defaultOptions?.RecoveryInterval ?? 5000;
             Exclusive ??= defaultOptions?.Exclusive ?? false;
             MissingQueuesFatal ??= defaultOptions?.MissingQueuesFatal ?? false;

@@ -76,7 +76,7 @@ namespace Steeltoe.Common.Util
         }
 
         public MimeType(string type, string subtype, Encoding charset)
-        : this(type, subtype, new Dictionary<string, string>() { { PARAM_CHARSET, charset.BodyName } })
+        : this(type, subtype, new Dictionary<string, string> { { PARAM_CHARSET, charset.BodyName } })
         {
         }
 

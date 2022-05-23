@@ -29,10 +29,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var settings = new ConfigServerClientSettings();
             var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+            IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
             ILoggerFactory factory = new LoggerFactory();
 
-            var source = new ConfigServerConfigurationSource(settings, sources, new Dictionary<string, object>() { { "foo", "bar" } }, factory);
+            var source = new ConfigServerConfigurationSource(settings, sources, new Dictionary<string, object> { { "foo", "bar" } }, factory);
             Assert.Equal(settings, source.DefaultSettings);
             Assert.Equal(factory, source.LogFactory);
             Assert.Null(source.Configuration);
@@ -57,7 +57,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var settings = new ConfigServerClientSettings();
             var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+            IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
             ILoggerFactory factory = new LoggerFactory();
 
             var source = new ConfigServerConfigurationSource(settings, sources);

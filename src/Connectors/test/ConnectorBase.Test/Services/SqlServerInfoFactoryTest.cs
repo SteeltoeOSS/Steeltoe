@@ -12,13 +12,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "sqlserver",
                 Tags = new[] { "sqlserver", "relational" },
                 Name = "sqlserverService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("1433") },
@@ -36,13 +36,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidCUPServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "user-provided",
                 Tags = System.Array.Empty<string>(),
                 Name = "sqlserverService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "uid", new Credential("u79024cecd1c8460ab7befc45c1de57ae") },
                     { "pw", new Credential("P39d904d42d4647878e8a29db9c4b1ce0") },
@@ -56,10 +56,10 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Name = "sqlserverService",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("1433") },
@@ -77,12 +77,12 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "sqlserver",
                 Name = "sqlserverService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("1433") },
@@ -100,13 +100,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-foobar",
                 Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("1433") },
@@ -124,13 +124,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "sqlserver",
                 Tags = new[] { "sqlserver", "relational" },
                 Name = "sqlserverService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("1433") },
@@ -156,13 +156,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding_NoUri()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "sqlserver",
                 Tags = new[] { "sqlserver", "relational" },
                 Name = "sqlserverService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("1433") },

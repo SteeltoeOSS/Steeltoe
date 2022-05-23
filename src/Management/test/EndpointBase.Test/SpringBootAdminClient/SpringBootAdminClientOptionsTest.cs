@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
         [Fact]
         public void Constructor_BindsConfiguration()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:health:path"] = "myhealth",

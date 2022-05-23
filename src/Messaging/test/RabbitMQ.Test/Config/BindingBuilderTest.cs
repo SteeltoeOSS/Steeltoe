@@ -89,7 +89,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                     Bind(queue).
                     To(customExchange).
                     With(routingKey).
-                    And(new Dictionary<string, object>() { { "k", argumentobject } });
+                    And(new Dictionary<string, object> { { "k", argumentobject } });
             Assert.NotNull(binding);
             Assert.Equal(argumentobject, binding.Arguments["k"]);
             Assert.Equal(customExchange.ExchangeName, binding.Exchange);

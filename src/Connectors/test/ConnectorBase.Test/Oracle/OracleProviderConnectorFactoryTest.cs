@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void Create_ReturnsMySqlConnection()
         {
-            var config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 3306,

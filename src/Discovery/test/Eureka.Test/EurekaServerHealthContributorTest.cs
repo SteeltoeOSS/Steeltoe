@@ -28,14 +28,14 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             var contrib = new EurekaServerHealthContributor();
             var app1 = new Application("app1");
-            app1.Add(new InstanceInfo() { InstanceId = "id1" });
-            app1.Add(new InstanceInfo() { InstanceId = "id2" });
+            app1.Add(new InstanceInfo { InstanceId = "id1" });
+            app1.Add(new InstanceInfo { InstanceId = "id2" });
 
             var app2 = new Application("app2");
-            app2.Add(new InstanceInfo() { InstanceId = "id1" });
-            app2.Add(new InstanceInfo() { InstanceId = "id2" });
+            app2.Add(new InstanceInfo { InstanceId = "id1" });
+            app2.Add(new InstanceInfo { InstanceId = "id2" });
 
-            var apps = new Applications(new List<Application>() { app1, app2 });
+            var apps = new Applications(new List<Application> { app1, app2 });
             var result = new HealthCheckResult();
             contrib.AddApplications(apps, result);
             var details = result.Details;
@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("Not fetching", results.Details["fetchStatus"]);
 
             results = new HealthCheckResult();
-            var config = new EurekaClientConfig()
+            var config = new EurekaClientConfig
             {
                 ShouldFetchRegistry = true
             };
@@ -97,7 +97,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
 
             results = new HealthCheckResult();
-            var clientconfig = new EurekaClientConfig()
+            var clientconfig = new EurekaClientConfig
             {
                 ShouldRegisterWithEureka = true
             };

@@ -54,7 +54,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.NotFound);
 
             using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
-            var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings() { ConfigMaps = true, Period = 0 });
+            var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings { ConfigMaps = true, Period = 0 });
             var provider = new KubernetesConfigMapProvider(client, settings);
 
             provider.Load();
@@ -115,7 +115,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
                 .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey3\":\"UpdatedAgain\"}}\n"));
 
             using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
-            var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings() { Period = 1, ConfigMaps = true });
+            var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings { Period = 1, ConfigMaps = true });
             var provider = new KubernetesConfigMapProvider(client, settings, new CancellationTokenSource(20000).Token);
 
             provider.Load();

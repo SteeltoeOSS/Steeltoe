@@ -33,7 +33,7 @@ namespace Steeltoe.Integration.Transformer
                     ProcessDictionaryKeys = false
                 }
             };
-            Settings = new JsonSerializerSettings()
+            Settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,

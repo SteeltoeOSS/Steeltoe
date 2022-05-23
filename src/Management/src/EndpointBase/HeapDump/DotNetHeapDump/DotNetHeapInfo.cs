@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using Address = System.UInt64;
 
 // Copy of version in Microsoft/Diagnostics
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class DotNetHeapInfo : IFastSerializable
 {
     /// <summary>
@@ -114,7 +114,7 @@ internal class DotNetHeapInfo : IFastSerializable
     private GCHeapDumpSegment m_lastSegment;    // cache for GenerationFor
     #endregion
 }
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 public class GCHeapDumpSegment : IFastSerializable
 {
     public Address Start { get; internal set; }

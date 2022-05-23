@@ -32,7 +32,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -46,7 +46,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -60,7 +60,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -74,7 +74,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -88,7 +88,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -104,7 +104,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -120,7 +120,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -134,7 +134,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });
@@ -150,7 +150,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         {
             var builder = new ConfigurationBuilder()
                 .AddRandomValueSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "foo:bar", "value" }
                 });

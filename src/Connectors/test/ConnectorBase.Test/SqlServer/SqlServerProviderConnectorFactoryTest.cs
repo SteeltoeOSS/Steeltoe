@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void Create_ReturnsSqlConnection()
         {
-            var config = new SqlServerProviderConnectorOptions()
+            var config = new SqlServerProviderConnectorOptions
             {
                 Server = "servername",
                 Password = "password",

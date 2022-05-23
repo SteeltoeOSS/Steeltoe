@@ -33,7 +33,7 @@ namespace Steeltoe.Integration.Handler
 
             serviceCollection.AddServiceActivators<MyConfiguration>();
             var f = new DefaultMessageHandlerMethodFactory();
-            f.SetArgumentResolvers(new List<IHandlerMethodArgumentResolver>() { new TestHandlerMethodArgumentResolver() });
+            f.SetArgumentResolvers(new List<IHandlerMethodArgumentResolver> { new TestHandlerMethodArgumentResolver() });
             serviceCollection.AddSingleton<IMessageHandlerMethodFactory>(f);
 
             var container = serviceCollection.BuildServiceProvider();

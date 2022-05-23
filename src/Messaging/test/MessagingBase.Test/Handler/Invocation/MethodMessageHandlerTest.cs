@@ -23,7 +23,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         public MethodMessageHandlerTest()
         {
-            var destinationPrefixes = new List<string>() { "/test" };
+            var destinationPrefixes = new List<string> { "/test" };
 
             _messageHandler = new TestMethodMessageHandler
             {

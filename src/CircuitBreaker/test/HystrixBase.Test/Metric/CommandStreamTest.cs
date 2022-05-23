@@ -101,14 +101,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 HystrixEventType desiredFallbackEventType,
                 int fallbackLatency)
             {
-                var topts = new HystrixThreadPoolOptions()
+                var topts = new HystrixThreadPoolOptions
                 {
                     CoreSize = 10,
                     MaxQueueSize = -1,
                     ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name)
                 };
 
-                var setter = new HystrixCommandOptions()
+                var setter = new HystrixCommandOptions
                 {
                     GroupKey = groupKey,
                     CommandKey = key,

@@ -672,7 +672,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             if (domains == null)
                 return new DomainContainer();
 
-            return new DomainContainer()
+            return new DomainContainer
             {
                 Domains = domains.Select(ad=>(ClrAppDomain)InitDomain(ad)).Where(ad => ad != null).ToList(),
                 Shared = InitDomain(ads.SharedDomain, "Shared Domain"),

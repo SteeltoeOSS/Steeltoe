@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Runtime
 
         internal static ClrObject Create(ulong address, ClrType type)
         {
-            ClrObject obj = new ClrObject()
+            ClrObject obj = new ClrObject
             {
                 _address = address,
                 _type = type

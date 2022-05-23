@@ -61,7 +61,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void CanConvertFromStrictContentTypeMatch()
         {
-            var converter = new TestMessageConverter(new List<MimeType>() { MimeTypeUtils.TEXT_PLAIN })
+            var converter = new TestMessageConverter(new List<MimeType> { MimeTypeUtils.TEXT_PLAIN })
             {
                 StrictContentTypeMatch = true
             };

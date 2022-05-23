@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ToMessageWithPayloadAndHeaders()
         {
-            var headers = new MessageHeaders(new Dictionary<string, object>() { { "foo", "bar" } });
+            var headers = new MessageHeaders(new Dictionary<string, object> { { "foo", "bar" } });
             var converter = new SimpleMessageConverter();
             var message = converter.ToMessage("payload", headers);
 

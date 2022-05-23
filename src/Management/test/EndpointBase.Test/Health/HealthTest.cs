@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             {
                 Status = HealthStatus.OUT_OF_SERVICE,
                 Description = "Test",
-                Details = new Dictionary<string, object>()
+                Details = new Dictionary<string, object>
                 {
                     { "item1", new HealthData() },
                     { "item2", "String" },
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             try
             {
-                var options = new JsonSerializerOptions()
+                var options = new JsonSerializerOptions
                 {
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

@@ -57,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void Invoke_CallsAllContributors()
         {
             using var tc = new TestContext(_output);
-            var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
+            var contributors = new List<IHealthContributor> { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
 
             tc.AdditionalServices = (services, configuration) =>
             {
@@ -80,7 +80,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void Invoke_HandlesExceptions_ReturnsExpectedHealth()
         {
             using var tc = new TestContext(_output);
-            var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
+            var contributors = new List<IHealthContributor> { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
 
             tc.AdditionalServices = (services, configuration) =>
             {
@@ -113,7 +113,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void GetStatusCode_ReturnsExpected()
         {
             using var tc = new TestContext(_output);
-            var contributors = new List<IHealthContributor>() { new DiskSpaceContributor() };
+            var contributors = new List<IHealthContributor> { new DiskSpaceContributor() };
 
             tc.AdditionalServices = (services, configuration) =>
             {
@@ -135,7 +135,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             using var tc = new TestContext(_output);
             var appAvailability = new ApplicationAvailability();
-            var contributors = new List<IHealthContributor>() { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
+            var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
 
             tc.AdditionalServices = (services, configuration) =>
             {
@@ -162,7 +162,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             using var tc = new TestContext(_output);
             var appAvailability = new ApplicationAvailability();
-            var contributors = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
+            var contributors = new List<IHealthContributor> { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
 
             tc.AdditionalServices = (services, configuration) =>
             {
@@ -189,7 +189,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             using var tc = new TestContext(_output);
             var appAvailability = new ApplicationAvailability();
-            var contributors = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
+            var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
 
             tc.AdditionalServices = (services, configuration) =>
             {

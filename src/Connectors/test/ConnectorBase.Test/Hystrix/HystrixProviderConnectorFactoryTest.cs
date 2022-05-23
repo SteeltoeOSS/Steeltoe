@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void Create_ReturnsRabbitMQConnection()
         {
-            var config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 5672,

@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Thread.Sleep((int)_sleepyTime);
             }
 
-            return new HealthCheckResult()
+            return new HealthCheckResult
             {
                 Status = HealthStatus.UP
             };

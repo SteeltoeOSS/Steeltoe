@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
         {
-            serializerOptions ??= new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            serializerOptions ??= new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             serializerOptions.IgnoreNullValues = true;
             if (serializerOptions.Converters?.Any(c => c is HealthConverter) != true)
             {

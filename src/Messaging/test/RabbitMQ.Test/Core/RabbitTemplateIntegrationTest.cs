@@ -855,7 +855,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             template.DefaultReceiveQueue = ROUTE;
             template.RoutingKey = ROUTE;
-            var headers = new MessageHeaders(new Dictionary<string, object>() { { "baz", "bar" } });
+            var headers = new MessageHeaders(new Dictionary<string, object> { { "baz", "bar" } });
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"), headers);
             template.Send(ROUTE, message);
             template.CorrelationKey = "baz";
@@ -1130,7 +1130,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public void WaitForConfirms()
         {
             connectionFactory.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
-            var messages = new List<string>() { "foo", "bar" };
+            var messages = new List<string> { "foo", "bar" };
             var result = template.Invoke(t =>
             {
                 messages.ForEach(m => t.ConvertAndSend(string.Empty, ROUTE, m));

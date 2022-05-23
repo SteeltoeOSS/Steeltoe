@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
         [Obsolete]
         public void SpringBootAdminClient_EndToEnd()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:health:path"] = "myhealth",

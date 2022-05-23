@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var config = new EurekaClientConfig();
             var apps = contrib.GetApplicationsFromConfig(config);
             Assert.Null(apps);
-            config = new EurekaClientConfig()
+            config = new EurekaClientConfig
             {
                 HealthMonitoredApps = "foo,bar, boo "
             };
@@ -35,12 +35,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             var contrib = new EurekaApplicationsHealthContributor();
             var app1 = new Application("app1");
-            app1.Add(new InstanceInfo() { InstanceId = "id1", Status = InstanceStatus.UP });
-            app1.Add(new InstanceInfo() { InstanceId = "id2", Status = InstanceStatus.UP });
+            app1.Add(new InstanceInfo { InstanceId = "id1", Status = InstanceStatus.UP });
+            app1.Add(new InstanceInfo { InstanceId = "id2", Status = InstanceStatus.UP });
 
             var app2 = new Application("app2");
-            app2.Add(new InstanceInfo() { InstanceId = "id1", Status = InstanceStatus.DOWN });
-            app2.Add(new InstanceInfo() { InstanceId = "id2", Status = InstanceStatus.STARTING });
+            app2.Add(new InstanceInfo { InstanceId = "id1", Status = InstanceStatus.DOWN });
+            app2.Add(new InstanceInfo { InstanceId = "id2", Status = InstanceStatus.STARTING });
 
             var result = new HealthCheckResult();
             contrib.AddApplicationHealthStatus("app1", null, result);

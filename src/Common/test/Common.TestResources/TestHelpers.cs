@@ -83,7 +83,7 @@ namespace Steeltoe
                 ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
             }";
 
-        public static readonly ImmutableDictionary<string, string> _fastTestsConfiguration = new Dictionary<string, string>()
+        public static readonly ImmutableDictionary<string, string> _fastTestsConfiguration = new Dictionary<string, string>
         {
             { "spring:cloud:config:enabled", "false" },
             { "eureka:client:serviceUrl", "http://127.0.0.1" },
@@ -95,7 +95,7 @@ namespace Steeltoe
             { "sqlserver:credentials:timeout", "1" },
         }.ToImmutableDictionary();
 
-        public static readonly ImmutableDictionary<string, string> _wavefrontConfiguration = new Dictionary<string, string>()
+        public static readonly ImmutableDictionary<string, string> _wavefrontConfiguration = new Dictionary<string, string>
         {
              { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
         }.ToImmutableDictionary();

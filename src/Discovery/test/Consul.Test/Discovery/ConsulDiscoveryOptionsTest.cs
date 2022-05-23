@@ -52,9 +52,9 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         public void Options_DontUseInetUtilsByDefault()
         {
             var mockNetUtils = new Mock<InetUtils>(null, null);
-            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo() { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
+            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
             var config = new ConfigurationBuilder().Build();
-            var opts = new ConsulDiscoveryOptions() { NetUtils = mockNetUtils.Object };
+            var opts = new ConsulDiscoveryOptions { NetUtils = mockNetUtils.Object };
             config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(opts);
 
             opts.ApplyNetUtils();
@@ -66,10 +66,10 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         public void Options_CanUseInetUtils()
         {
             var mockNetUtils = new Mock<InetUtils>(null, null);
-            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo() { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
+            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
             var appSettings = new Dictionary<string, string> { { "consul:discovery:UseNetUtils", "true" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var opts = new ConsulDiscoveryOptions() { NetUtils = mockNetUtils.Object };
+            var opts = new ConsulDiscoveryOptions { NetUtils = mockNetUtils.Object };
             config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(opts);
 
             opts.ApplyNetUtils();
@@ -85,7 +85,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         {
             var appSettings = new Dictionary<string, string> { { "consul:discovery:UseNetUtils", "true" }, { "spring:cloud:inet:SkipReverseDnsLookup", "true" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var opts = new ConsulDiscoveryOptions() { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
+            var opts = new ConsulDiscoveryOptions { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
             config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(opts);
 
             var noSlowReverseDNSQuery = new Stopwatch();

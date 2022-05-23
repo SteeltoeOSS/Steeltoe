@@ -12,13 +12,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-db2",
                 Tags = new[] { "db2", "relational" },
                 Name = "db2Service",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -36,13 +36,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-msql",
                 Tags = new[] { "foobar", "relational" },
                 Name = "mysqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -60,13 +60,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-db2",
                 Tags = new[] { "db2", "relational" },
                 Name = "db2Service",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },

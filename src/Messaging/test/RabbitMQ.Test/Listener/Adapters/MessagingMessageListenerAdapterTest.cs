@@ -221,7 +221,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
-            listener.OnMessageBatch(new List<IMessage>() { message }, mockChannel.Object);
+            listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
             Assert.IsType<string>(sample.BatchPayloads[0]);
         }
 
@@ -235,7 +235,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
-            listener.OnMessageBatch(new List<IMessage>() { message }, mockChannel.Object);
+            listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
             Assert.IsType<Foo>(sample.BatchPayloads[0]);
         }
 
@@ -249,7 +249,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
-            listener.OnMessageBatch(new List<IMessage>() { message }, mockChannel.Object);
+            listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
             Assert.IsType<Foo>(sample.BatchPayloads[0]);
         }
 

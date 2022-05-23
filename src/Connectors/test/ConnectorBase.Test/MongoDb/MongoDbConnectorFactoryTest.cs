@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Create_ReturnsMongoDbConnection()
         {
-            var config = new MongoDbConnectorOptions()
+            var config = new MongoDbConnectorOptions
             {
                 Server = "localhost",
                 Port = 27016,
@@ -40,7 +40,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         public void UpdateConfiguration_WithNullMongoDbServiceInfo_ReturnsExpected()
         {
             var configurer = new MongoDbProviderConfigurer();
-            var config = new MongoDbConnectorOptions()
+            var config = new MongoDbConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -62,7 +62,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         public void UpdateConfiguration_WithMongoDbServiceInfo_ReturnsExpected()
         {
             var configurer = new MongoDbProviderConfigurer();
-            var config = new MongoDbConnectorOptions()
+            var config = new MongoDbConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -84,7 +84,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            var config = new MongoDbConnectorOptions()
+            var config = new MongoDbConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -101,7 +101,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            var config = new MongoDbConnectorOptions()
+            var config = new MongoDbConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public void AddLoggersActuator_AddsCorrectServices()
         {
             var services = new ServiceCollection();
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",

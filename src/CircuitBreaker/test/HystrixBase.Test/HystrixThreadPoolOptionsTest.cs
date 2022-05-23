@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         public static HystrixThreadPoolOptions GetUnitTestPropertiesBuilder()
         {
-            return new HystrixThreadPoolOptions()
+            return new HystrixThreadPoolOptions
             {
                 CoreSize = 10,   // core size of thread pool
                 MaximumSize = 15,  // maximum size of thread pool
@@ -36,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSetCoreSizeOnly()
         {
-            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { CoreSize = 14 });
+            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { CoreSize = 14 });
 
             Assert.Equal(14, properties.CoreSize);
             Assert.Equal(HystrixThreadPoolOptions.Default_MaximumSize, properties.MaximumSize);
@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSetMaximumSizeOnlyLowerThanDefaultCoreSize()
         {
-            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { MaximumSize = 3 });
+            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { MaximumSize = 3 });
             Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
             Assert.Equal(3, properties.MaximumSize);
         }
@@ -55,7 +55,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSetMaximumSizeOnlyGreaterThanDefaultCoreSize()
         {
-            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { MaximumSize = 21 });
+            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { MaximumSize = 21 });
             Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
             Assert.Equal(21, properties.MaximumSize);
         }
@@ -64,7 +64,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSetCoreSizeLessThanMaximumSize()
         {
-            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { CoreSize = 2, MaximumSize = 8 });
+            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { CoreSize = 2, MaximumSize = 8 });
             Assert.Equal(2, properties.CoreSize);
             Assert.Equal(8, properties.MaximumSize);
         }
@@ -73,7 +73,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSetCoreSizeEqualToMaximumSize()
         {
-            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { CoreSize = 7, MaximumSize = 7 });
+            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { CoreSize = 7, MaximumSize = 7 });
             Assert.Equal(7, properties.CoreSize);
             Assert.Equal(7, properties.MaximumSize);
         }
@@ -82,7 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSetCoreSizeGreaterThanMaximumSize()
         {
-            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { CoreSize = 12, MaximumSize = 8 });
+            var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { CoreSize = 12, MaximumSize = 8 });
             Assert.Equal(12, properties.CoreSize);
             Assert.Equal(8, properties.MaximumSize);
         }

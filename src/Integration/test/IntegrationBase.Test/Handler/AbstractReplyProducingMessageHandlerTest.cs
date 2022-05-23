@@ -58,9 +58,9 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void TestNotPropagate()
         {
-            handler.ReturnValue = Message.Create("world", new Dictionary<string, object>() { { "bar", "RAB" } });
+            handler.ReturnValue = Message.Create("world", new Dictionary<string, object> { { "bar", "RAB" } });
             Assert.Empty(handler.NotPropagatedHeaders);
-            handler.NotPropagatedHeaders = new List<string>() { "f*", "*r" };
+            handler.NotPropagatedHeaders = new List<string> { "f*", "*r" };
             handler.OutputChannel = mockChannel.Object;
             IMessage captor = null;
             mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
@@ -81,7 +81,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void TestNotPropagateAddWhenNonExist()
         {
-            handler.ReturnValue = Message.Create("world", new Dictionary<string, object>() { { "bar", "RAB" } });
+            handler.ReturnValue = Message.Create("world", new Dictionary<string, object> { { "bar", "RAB" } });
             Assert.Empty(handler.NotPropagatedHeaders);
             handler.AddNotPropagatedHeaders("boom");
             handler.OutputChannel = mockChannel.Object;
@@ -104,9 +104,9 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void TestNotPropagateAdd()
         {
-            handler.ReturnValue = Message.Create("world", new Dictionary<string, object>() { { "bar", "RAB" } });
+            handler.ReturnValue = Message.Create("world", new Dictionary<string, object> { { "bar", "RAB" } });
             Assert.Empty(handler.NotPropagatedHeaders);
-            handler.NotPropagatedHeaders = new List<string>() { "foo" };
+            handler.NotPropagatedHeaders = new List<string> { "foo" };
             handler.AddNotPropagatedHeaders("b*r");
             handler.OutputChannel = mockChannel.Object;
             IMessage captor = null;

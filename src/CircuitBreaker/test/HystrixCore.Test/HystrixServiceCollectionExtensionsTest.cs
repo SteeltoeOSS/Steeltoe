@@ -258,7 +258,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void AddHystrixCommand_WithConfiguration_ConfiguresSettings()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["hystrix:command:default:metrics:rollingStats:timeInMilliseconds"] = "5555",
                 ["hystrix:command:default:circuitBreaker:errorThresholdPercentage"] = "55",

@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_SingleContributor_ReturnsExpectedHealth()
         {
-            var contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>
             {
                 new UpContributor()
             };
@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_MultipleContributor_ReturnsExpectedHealth()
         {
-            var contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>
             {
                 new DownContributor(),
                 new UpContributor(),
@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_MultipleContributor_OrderDoesntMatter_ReturnsExpectedHealth()
         {
-            var contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>
             {
                 new UpContributor(),
                 new OutOfSserviceContributor(),
@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void AggregatesInParallel()
         {
             var t = new Stopwatch();
-            var contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>
             {
                 new UpContributor(500),
                 new UpContributor(500),

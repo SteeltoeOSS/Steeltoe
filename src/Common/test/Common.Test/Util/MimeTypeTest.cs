@@ -365,7 +365,7 @@ namespace Steeltoe.Common.Util.Test
 
         private IDictionary<string, string> SingletonMap(string key, string value)
         {
-            return new Dictionary<string, string>() { { key, value } };
+            return new Dictionary<string, string> { { key, value } };
         }
 
         private void Shuffle<T>(IList<T> list, Random rnd)

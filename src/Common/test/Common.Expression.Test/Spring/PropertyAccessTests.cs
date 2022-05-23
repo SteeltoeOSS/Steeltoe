@@ -128,11 +128,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var expression = parser.ParseExpression("name");
 
             var context = new StandardEvaluationContext();
-            context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object>() { { "name", "Ollie" } }));
+            context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object> { { "name", "Ollie" } }));
             Assert.Equal("Ollie", expression.GetValue(context));
 
             context = new StandardEvaluationContext();
-            context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object>() { { "name", "Jens" } }));
+            context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object> { { "name", "Jens" } }));
             Assert.Equal("Jens", expression.GetValue(context));
         }
 

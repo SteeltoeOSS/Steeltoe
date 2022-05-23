@@ -25,7 +25,7 @@ namespace Steeltoe.Common.Test.Options
         public void Constructors_BindsValues()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "foo", "bar" }
             });
@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Test.Options
             Assert.Equal("bar", opt2.Foo);
 
             var builder2 = new ConfigurationBuilder();
-            builder2.AddInMemoryCollection(new Dictionary<string, string>()
+            builder2.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "prefix:foo", "bar" }
             });

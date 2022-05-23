@@ -28,7 +28,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void UpdateConfiguration_WithInstDefaults_UpdatesCorrectly()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:application:name", "bar" },
                 { "spring:application:instance_id", "instance" },
@@ -51,7 +51,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void UpdateConfiguration_UpdatesCorrectly()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:application:name", "bar" },
                 { "spring:application:instance_id", "instance" },
@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var root = builder.Build();
 
-            var instOpts = new EurekaInstanceOptions()
+            var instOpts = new EurekaInstanceOptions
             {
                 AppName = "dontChange",
                 InstanceId = "dontChange",
@@ -80,7 +80,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void UpdateConfiguration_UpdatesCorrectly2()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:application:name", "bar" },
                 { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
@@ -103,7 +103,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void UpdateConfiguration_UpdatesCorrectly3()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            builder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:application:instance_id", "instance" },
                 { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
@@ -111,7 +111,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var root = builder.Build();
 
-            var instOpts = new EurekaInstanceOptions()
+            var instOpts = new EurekaInstanceOptions
             {
                 AppName = "dontChange",
                 InstanceId = "dontChange",
@@ -891,7 +891,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfigurationFindsUrls()
         {
-            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
             var instOpts = new EurekaInstanceOptions();
             var appInfo = new ApplicationInstanceInfo(config);
 

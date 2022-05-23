@@ -487,7 +487,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             var passwordPrefix = "spring:rabbitmq:password";
             var services = new ServiceCollection();
 
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 [hostPrefix] = "this.is.test",
                 [portPrefix] = "12345",
@@ -520,7 +520,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
 
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 [usernamePrefix] = "fakeusername",
                 [passwordPrefix] = "CHANGEME",

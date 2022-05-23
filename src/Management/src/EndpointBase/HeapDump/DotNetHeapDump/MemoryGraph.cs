@@ -16,7 +16,7 @@ using Address = System.UInt64;
 
 namespace Graphs
 {
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal class MemoryGraph : Graph, IFastSerializable
     {
         public MemoryGraph(int expectedSize)
@@ -166,7 +166,7 @@ namespace Graphs
     /// <summary>
     /// Support class for code:MemoryGraph
     /// </summary>
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal class MemoryNode : Node
     {
         public Address Address { get { return m_memoryGraph.GetAddress(Index); } }
@@ -194,7 +194,7 @@ namespace Graphs
     /// you create the node.  Instead you can keep adding children to it incrementally
     /// and when you are done you call Build() which finalizes it (and all its children)
     /// </summary>
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal class MemoryNodeBuilder
     {
         public MemoryNodeBuilder(MemoryGraph graph, string typeName, string moduleName = null, NodeIndex nodeIndex = NodeIndex.Invalid)

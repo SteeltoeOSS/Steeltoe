@@ -32,16 +32,16 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsNoLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Name = "myHystrixService",
                 Plan = "standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     {
-                        "amqp", new Credential()
+                        "amqp", new Credential
                         {
                             { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                             { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
@@ -59,16 +59,16 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsNoLabelNoTagsSecureUriServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Name = "myHystrixService",
                 Plan = "standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     {
-                        "amqp", new Credential()
+                        "amqp", new Credential
                         {
                             { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                             { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
@@ -85,17 +85,17 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsWithLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-circuit-breaker-dashboard",
                 Name = "myHystrixService",
                 Plan = "standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     {
-                        "amqp", new Credential()
+                        "amqp", new Credential
                         {
                             { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                             { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
@@ -113,13 +113,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsMySQLServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-mysql",
                 Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -137,13 +137,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsRabbitMQServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "rabbitmq",
                 Tags = new[] { "rabbitmq", "rabbit" },
                 Name = "myService",
                 Plan = "Standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },

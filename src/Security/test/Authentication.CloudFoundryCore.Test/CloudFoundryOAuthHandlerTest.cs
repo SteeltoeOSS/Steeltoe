@@ -32,7 +32,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             var client = new HttpClient(handler);
 
-            var opts = new CloudFoundryOAuthOptions()
+            var opts = new CloudFoundryOAuthOptions
             {
                 Backchannel = client
             };
@@ -62,7 +62,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             handler.Response = response;
 
             var client = new HttpClient(handler);
-            var opts = new CloudFoundryOAuthOptions()
+            var opts = new CloudFoundryOAuthOptions
             {
                 Backchannel = client
             };
@@ -91,7 +91,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             var client = new HttpClient(handler);
 
-            var opts = new CloudFoundryOAuthOptions()
+            var opts = new CloudFoundryOAuthOptions
             {
                 Backchannel = client
             };
@@ -106,7 +106,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetTokenInfoRequestParameters_ReturnsCorrectly()
         {
             var client = new HttpClient(new TestMessageHandler());
-            var opts = new CloudFoundryOAuthOptions()
+            var opts = new CloudFoundryOAuthOptions
             {
                 Backchannel = client
             };
@@ -125,7 +125,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetTokenInfoRequestMessage_ReturnsCorrectly()
         {
             var client = new HttpClient(new TestMessageHandler());
-            var opts = new CloudFoundryOAuthOptions()
+            var opts = new CloudFoundryOAuthOptions
             {
                 Backchannel = client
             };
@@ -154,7 +154,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             handler.Response = response;
 
             var client = new HttpClient(handler);
-            var opts = new CloudFoundryOAuthOptions()
+            var opts = new CloudFoundryOAuthOptions
             {
                 Backchannel = client
             };

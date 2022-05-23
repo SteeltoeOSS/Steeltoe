@@ -28,7 +28,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new List<Type>() { typeof(IApplicationContext) };
+            return new List<Type> { typeof(IApplicationContext) };
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)

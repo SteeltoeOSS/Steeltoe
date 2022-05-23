@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Net.Test
         [Trait("Category", "SkipOnMacOS")] // TODO: revisit running this on the MSFT-hosted MacOS agent
         public void TestGetFirstNonLoopbackAddress()
         {
-            var utils = new InetUtils(new InetOptions() { UseOnlySiteLocalInterfaces = true }, GetLogger());
+            var utils = new InetUtils(new InetOptions { UseOnlySiteLocalInterfaces = true }, GetLogger());
             Assert.NotNull(utils.FindFirstNonLoopbackAddress());
         }
 
@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestIgnoreInterface()
         {
-            var properties = new InetOptions()
+            var properties = new InetOptions
             {
                 IgnoredInterfaces = "docker0,veth.*"
             };
@@ -67,7 +67,7 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestSiteLocalAddresses()
         {
-            var properties = new InetOptions()
+            var properties = new InetOptions
             {
                 UseOnlySiteLocalInterfaces = true
             };
@@ -80,7 +80,7 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestPreferredNetworksRegex()
         {
-            var properties = new InetOptions()
+            var properties = new InetOptions
             {
                 PreferredNetworks = "192.168.*,10.0.*"
             };
@@ -95,7 +95,7 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestPreferredNetworksSimple()
         {
-            var properties = new InetOptions()
+            var properties = new InetOptions
             {
                 PreferredNetworks = "192,10.0"
             };

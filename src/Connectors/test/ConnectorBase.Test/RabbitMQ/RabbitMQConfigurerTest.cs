@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void UpdateConfiguration_WithNullRabbitMQServiceInfo_ReturnsInitialConfiguration()
         {
             var configurer = new RabbitMQProviderConfigurer();
-            var config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void UpdateConfiguration_WithRabbitMQServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
             var configurer = new RabbitMQProviderConfigurer();
-            var config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -59,7 +59,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void UpdateConfiguration_WithRabbitMQSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
             var configurer = new RabbitMQProviderConfigurer();
-            var config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -82,7 +82,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsProvidedConnectorOptions()
         {
-            var config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -106,7 +106,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
         {
-            var config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -131,7 +131,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Configure_SSLServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
         {
-            var config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,

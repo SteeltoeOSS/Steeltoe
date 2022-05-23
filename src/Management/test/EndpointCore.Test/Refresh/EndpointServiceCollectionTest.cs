@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         public void AddRefreshActuator_AddsCorrectServices()
         {
             var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication"

@@ -4950,7 +4950,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             AssertIsCompiled(exp);
 
             var context = new StandardEvaluationContext();
-            context.SetVariable("map", new Dictionary<string, string>() { { "foo", "qux" } });
+            context.SetVariable("map", new Dictionary<string, string> { { "foo", "qux" } });
 
             exp = new SpelExpressionParser(configuration).ParseExpression("Bar(#map['foo'])") as SpelExpression;
             Assert.Equal("QUX", exp.GetValue<string>(context, new Foo()));
@@ -5103,7 +5103,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var configuration = new SpelParserOptions(SpelCompilerMode.IMMEDIATE);
             var context = new StandardEvaluationContext();
-            context.SetVariable("map", new Dictionary<string, string>() { { "foo", "qux" } });
+            context.SetVariable("map", new Dictionary<string, string> { { "foo", "qux" } });
 
             var exp = new SpelExpressionParser(configuration).ParseExpression("Bar(#map['foo'] != null ? #map['foo'] : 'qux')") as SpelExpression;
             Assert.Equal("QUX", exp.GetValue<string>(context, new Foo()));
@@ -5552,7 +5552,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public IList<Type> GetSpecificTargetClasses()
             {
-                return new List<Type>() { typeof(Payload2) };
+                return new List<Type> { typeof(Payload2) };
             }
 
             public bool IsCompilable()
@@ -5618,7 +5618,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public IList<Type> GetSpecificTargetClasses()
             {
-                return new List<Type>() { typeof(IDictionary) };
+                return new List<Type> { typeof(IDictionary) };
             }
 
             public bool IsCompilable()

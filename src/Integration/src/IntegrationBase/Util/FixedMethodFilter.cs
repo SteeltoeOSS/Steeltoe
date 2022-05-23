@@ -27,7 +27,7 @@ namespace Steeltoe.Integration.Util
         {
             if (methods != null && methods.Contains(_method))
             {
-                return new List<MethodInfo>() { _method };
+                return new List<MethodInfo> { _method };
             }
 
             return new List<MethodInfo>();

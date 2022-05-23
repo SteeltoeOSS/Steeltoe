@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Env
 
         public EnvironmentDescriptor DoInvoke(IConfiguration configuration)
         {
-            IList<string> activeProfiles = new List<string>() { _env.EnvironmentName };
+            IList<string> activeProfiles = new List<string> { _env.EnvironmentName };
             var propertySources = GetPropertySources(configuration);
             return new EnvironmentDescriptor(activeProfiles, propertySources);
         }

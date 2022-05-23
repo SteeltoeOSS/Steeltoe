@@ -91,7 +91,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
             long allKeyssum = 0;
-            var labelsKvps = new Dictionary<string, object>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
+            var labelsKvps = new Dictionary<string, object> { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
             for (var i = 0; i < 10; i++)
             {
@@ -259,14 +259,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var ep = tc.GetService<MetricsEndpoint>();
             var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test2");
 
-            var v1Tags = new Dictionary<string, object>()
+            var v1Tags = new Dictionary<string, object>
             {
                 { "a", "v1" },
                 { "b", "v1" },
                 { "c", "v1" }
             };
 
-            var v2Tags = new Dictionary<string, object>()
+            var v2Tags = new Dictionary<string, object>
             {
                 { "a", "v2" },
                 { "b", "v2" },
@@ -325,21 +325,21 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var ep = tc.GetService<MetricsEndpoint>();
 
             var testMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("test.test1");
-            var context1 = new Dictionary<string, object>()
+            var context1 = new Dictionary<string, object>
             {
                 { "a", "v1" },
                 { "b", "v1" },
                 { "c", "v1" }
             };
-            var context2 = new Dictionary<string, object>()
+            var context2 = new Dictionary<string, object>
             {
                 { "a", "v1" },
             };
-            var context3 = new Dictionary<string, object>()
+            var context3 = new Dictionary<string, object>
             {
                 { "b", "v1" },
             };
-            var context4 = new Dictionary<string, object>()
+            var context4 = new Dictionary<string, object>
             {
                 { "c", "v1" },
             };
@@ -372,7 +372,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 testMeasure.Record(i, context4.AsReadonlySpan());
             }
 
-            var alltags = new List<KeyValuePair<string, string>>()
+            var alltags = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("a", "v1"),
                 new KeyValuePair<string, string>("b", "v1"),
@@ -390,7 +390,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(allKeyssum, sample.Value);
             Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
-            var atags = new List<KeyValuePair<string, string>>()
+            var atags = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("a", "v1"),
             };
@@ -403,7 +403,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(allKeyssum + asum, sample.Value);
             Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
-            var btags = new List<KeyValuePair<string, string>>()
+            var btags = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("b", "v1"),
             };
@@ -418,7 +418,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(allKeyssum + bsum, sample.Value);
             Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
-            var ctags = new List<KeyValuePair<string, string>>()
+            var ctags = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("c", "v1"),
             };
@@ -431,7 +431,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(allKeyssum + csum, sample.Value);
             Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
-            var abtags = new List<KeyValuePair<string, string>>()
+            var abtags = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("a", "v1"),
                 new KeyValuePair<string, string>("b", "v1"),
@@ -446,7 +446,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(allKeyssum, sample.Value);
             Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
-            var actags = new List<KeyValuePair<string, string>>()
+            var actags = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("a", "v1"),
                 new KeyValuePair<string, string>("c", "v1"),
@@ -461,7 +461,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(allKeyssum, sample.Value);
             Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
 
-            var bctags = new List<KeyValuePair<string, string>>()
+            var bctags = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("b", "v1"),
                 new KeyValuePair<string, string>("c", "v1"),
@@ -489,7 +489,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var ep = tc.GetService<IMetricsEndpoint>();
 
             var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");
-            var labels = new Dictionary<string, object>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
+            var labels = new Dictionary<string, object> { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
             double allKeyssum = 0;
             for (double i = 0; i < 10; i++)

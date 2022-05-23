@@ -25,7 +25,7 @@ namespace Steeltoe.Integration.Config
         public ServiceActivatorAttributeProcessor(IApplicationContext applicationContext, IEnumerable<IServiceActivatorMethod> methods, ILogger<ServiceActivatorAttributeProcessor> logger)
             : base(applicationContext, logger)
         {
-            MessageHandlerProperties.AddRange(new List<string>() { "OutputChannel", "RequiresReply" });
+            MessageHandlerProperties.AddRange(new List<string> { "OutputChannel", "RequiresReply" });
             _serviceActivatorMethods = methods.ToList();
         }
 

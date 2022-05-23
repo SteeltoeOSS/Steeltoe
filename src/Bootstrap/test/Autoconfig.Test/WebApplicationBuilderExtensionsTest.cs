@@ -177,7 +177,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         {
             var webAppBuilder = WebApplication.CreateBuilder();
             webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers._wavefrontConfiguration);
-            var exclusions = new List<string>() { SteeltoeAssemblies.Steeltoe_Management_EndpointCore };
+            var exclusions = new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore };
             webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
             webAppBuilder.WebHost.UseTestServer();
             var webApp = webAppBuilder.Build();
@@ -194,7 +194,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         {
             var webAppBuilder = WebApplication.CreateBuilder();
             webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers._wavefrontConfiguration);
-            var exclusions = new List<string>() { SteeltoeAssemblies.Steeltoe_Management_TracingCore };
+            var exclusions = new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingCore };
             webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
             webAppBuilder.WebHost.UseTestServer();
             var webApp = webAppBuilder.Build();

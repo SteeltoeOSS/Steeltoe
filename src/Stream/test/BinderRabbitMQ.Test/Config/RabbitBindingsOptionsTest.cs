@@ -65,7 +65,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         public void InitializeAll_FromConfigValues()
         {
             var builder = new ConfigurationBuilder();
-            var dict = new Dictionary<string, string>()
+            var dict = new Dictionary<string, string>
             {
                 { "spring:cloud:stream:rabbit:default:consumer:autoBindDlq", "true" },
                 { "spring:cloud:stream:rabbit:default:consumer:dlqMaxLength", "10000" },

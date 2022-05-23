@@ -129,8 +129,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             DlqOverflowBehavior ??= defaultOptions?.DlqOverflowBehavior;
             SingleActiveConsumer ??= defaultOptions != null ? defaultOptions.SingleActiveConsumer : false;
             DlqSingleActiveConsumer ??= defaultOptions != null ? defaultOptions.DlqSingleActiveConsumer : false;
-            Quorum ??= defaultOptions != null ? defaultOptions.Quorum : new QuorumConfig() { Enabled = false };
-            DlqQuorum ??= defaultOptions != null ? defaultOptions.DlqQuorum : new QuorumConfig() { Enabled = false };
+            Quorum ??= defaultOptions != null ? defaultOptions.Quorum : new QuorumConfig { Enabled = false };
+            DlqQuorum ??= defaultOptions != null ? defaultOptions.DlqQuorum : new QuorumConfig { Enabled = false };
 
             QueueBindingArguments ??=
                 defaultOptions != null ? defaultOptions.QueueBindingArguments : new Dictionary<string, string>();

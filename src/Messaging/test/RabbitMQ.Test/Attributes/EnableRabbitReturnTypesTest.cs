@@ -34,7 +34,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task TestInterfaceReturn()
         {
-            var queues = new List<IQueue>()
+            var queues = new List<IQueue>
             {
                 new Queue(Q1),
                 new Queue(Q2),
@@ -66,7 +66,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task TestAbstractReturn()
         {
-            var queues = new List<IQueue>()
+            var queues = new List<IQueue>
             {
                 new Queue(Q1),
                 new Queue(Q2),
@@ -101,7 +101,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task TestListOfThree()
         {
-            var queues = new List<IQueue>()
+            var queues = new List<IQueue>
             {
                 new Queue(Q1),
                 new Queue(Q2),
@@ -131,7 +131,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task TestGenericInterfaceReturn()
         {
-            var queues = new List<IQueue>()
+            var queues = new List<IQueue>
             {
                 new Queue(Q1),
                 new Queue(Q2),

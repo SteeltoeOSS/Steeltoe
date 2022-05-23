@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Create_ReturnsRabbitMQConnection()
         {
-            var config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 5672,

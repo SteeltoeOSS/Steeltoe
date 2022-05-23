@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void Create_CanReturnRedisCache()
         {
-            var config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -34,7 +34,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void Create_CanReturnConnectionMultiplexer()
         {
-            var config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,

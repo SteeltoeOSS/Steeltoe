@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Kubernetes
             }
 
             // BuildDefaultConfig() doesn't set a host if KubeConfigException is thrown
-            k8sConfig ??= new KubernetesClientConfiguration() { Host = "http://localhost:8080" };
+            k8sConfig ??= new KubernetesClientConfiguration { Host = "http://localhost:8080" };
             kubernetesClientConfiguration?.Invoke(k8sConfig);
 
             return new k8s.Kubernetes(k8sConfig);

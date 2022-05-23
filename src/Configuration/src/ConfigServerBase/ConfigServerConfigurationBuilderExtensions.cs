@@ -30,7 +30,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
-            var settings = new ConfigServerClientSettings()
+            var settings = new ConfigServerClientSettings
             {
                 Name = applicationName ?? Assembly.GetEntryAssembly()?.GetName().Name,
 

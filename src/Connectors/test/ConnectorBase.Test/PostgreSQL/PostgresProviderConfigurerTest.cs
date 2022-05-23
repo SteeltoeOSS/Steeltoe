@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void UpdateConfiguration_WithNullPostgresServiceInfo_ReturnsExpected()
         {
             var configurer = new PostgresProviderConfigurer();
-            var config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void UpdateConfiguration_WithPostgresServiceInfo_ReturnsExpected()
         {
             var configurer = new PostgresProviderConfigurer();
-            var config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -58,7 +58,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void UpdateConfiguration_WithPostgresServiceInfo_UriEncoded_ReturnsExpected()
         {
             var configurer = new PostgresProviderConfigurer();
-            var config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -80,7 +80,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            var config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -101,7 +101,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            var config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,

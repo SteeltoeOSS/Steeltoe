@@ -52,8 +52,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
 
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
             var builder = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-            {
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
                     { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
@@ -95,8 +95,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
 
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
             var builder = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-            {
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
                     { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
@@ -140,8 +140,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             var sch = new TtlScheduler(opts, clientMoq.Object);
 
             var builder = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-            {
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
                 { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
@@ -163,8 +163,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             var sch = new TtlScheduler(opts, clientMoq.Object);
 
             var builder = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-            {
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
                 { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
@@ -197,23 +197,23 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         {
             var opts = new ConsulDiscoveryOptions();
             var builder = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "spring:application:name", "foobar" }
                 });
             var config = builder.Build();
             var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
-            var queryResult = new QueryResult<HealthCheck[]>()
+            var queryResult = new QueryResult<HealthCheck[]>
             {
                 Response = new[]
                 {
-                    new HealthCheck()
+                    new HealthCheck
                     {
                         ServiceID = registration.InstanceId,
                         Name = "Service Maintenance Mode"
                     },
-                    new HealthCheck()
+                    new HealthCheck
                     {
                         ServiceID = "foobar",
                         Name = "Service Maintenance Mode"

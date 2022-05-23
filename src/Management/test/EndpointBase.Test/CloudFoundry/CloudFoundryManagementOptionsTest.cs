@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/management",
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
 
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/management",

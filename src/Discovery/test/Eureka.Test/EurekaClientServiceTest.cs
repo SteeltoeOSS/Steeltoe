@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void ConfigureClientOptions_ConfiguresCorrectly()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
@@ -30,7 +30,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetLookupClient_ConfiguresClient()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
@@ -53,7 +53,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstances_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
@@ -68,7 +68,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetServices_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };

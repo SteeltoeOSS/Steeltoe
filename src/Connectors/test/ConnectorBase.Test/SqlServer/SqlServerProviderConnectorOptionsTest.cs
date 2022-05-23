@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["sqlserver:credentials:uid"] = "username",
                 ["sqlserver:credentials:uri"] = "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e",
@@ -47,7 +47,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };
@@ -64,7 +64,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
             // simulate an appsettings file
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };
@@ -129,7 +129,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         public void ConnectionString_Overridden_By_CloudFoundryConfig_CredsInUrl()
         {
             // simulate an appsettings file
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };

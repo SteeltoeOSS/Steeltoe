@@ -66,7 +66,7 @@ namespace Steeltoe.Integration.Support
             if (incomingCorrelationId != null)
             {
                 incomingSequenceDetails = incomingSequenceDetails == null ? new List<List<object>>() : new List<List<object>>(incomingSequenceDetails);
-                incomingSequenceDetails.Add(new List<object>() { incomingCorrelationId, SequenceNumber, SequenceSize });
+                incomingSequenceDetails.Add(new List<object> { incomingCorrelationId, SequenceNumber, SequenceSize });
             }
 
             if (incomingSequenceDetails != null)

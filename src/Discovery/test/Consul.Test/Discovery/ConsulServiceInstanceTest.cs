@@ -13,9 +13,9 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Fact]
         public void Constructor_Initializes()
         {
-            var healthService = new ServiceEntry()
+            var healthService = new ServiceEntry
             {
-                Service = new AgentService()
+                Service = new AgentService
                 {
                     Service = "ServiceId",
                     Address = "foo.bar.com",

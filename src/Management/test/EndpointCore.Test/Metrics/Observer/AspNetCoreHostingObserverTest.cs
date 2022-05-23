@@ -79,7 +79,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             Assert.Equal("None", exception);
 
             context = GetHttpRequestMessage();
-            var exceptionHandlerFeature = new ExceptionHandlerFeature()
+            var exceptionHandlerFeature = new ExceptionHandlerFeature
             {
                 Error = new ArgumentNullException()
             };
@@ -97,7 +97,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
             var context = GetHttpRequestMessage();
-            var exceptionHandlerFeature = new ExceptionHandlerFeature()
+            var exceptionHandlerFeature = new ExceptionHandlerFeature
             {
                 Error = new ArgumentNullException()
             };
@@ -122,7 +122,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
             var context = GetHttpRequestMessage();
-            var exceptionHandlerFeature = new ExceptionHandlerFeature()
+            var exceptionHandlerFeature = new ExceptionHandlerFeature
             {
                 Error = new ArgumentNullException()
             };

@@ -232,7 +232,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_ClearsSources()
         {
-            var settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -255,7 +255,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_WithConfiguration_ReturnsNewConfiguration()
         {
-            var settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },

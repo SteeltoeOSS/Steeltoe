@@ -12,13 +12,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "elephantsql",
                 Tags = new[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -36,10 +36,10 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Name = "postgresService",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -57,12 +57,12 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "elephantsql",
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -80,13 +80,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-foobar",
                 Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -104,13 +104,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "elephantsql",
                 Tags = new[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -136,13 +136,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding_NoUri()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "elephantsql",
                 Tags = new[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },

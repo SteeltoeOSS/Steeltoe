@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromJson_Correct()
         {
-            var jinfo = new JsonLeaseInfo()
+            var jinfo = new JsonLeaseInfo
             {
                 RenewalIntervalInSecs = 100,
                 DurationInSecs = 200,
@@ -47,7 +47,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void ToJson_Correct()
         {
-            var jinfo = new JsonLeaseInfo()
+            var jinfo = new JsonLeaseInfo
             {
                 RenewalIntervalInSecs = 100,
                 DurationInSecs = 200,

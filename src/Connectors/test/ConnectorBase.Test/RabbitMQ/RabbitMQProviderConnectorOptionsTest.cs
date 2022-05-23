@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Constructor_Binds_Rabbit_Values()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["rabbit:client:server"] = "localhost",
                 ["rabbit:client:port"] = "1234",
@@ -49,7 +49,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Constructor_Binds_RabbitMQ_Values()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["rabbitmq:client:server"] = "localhost",
                 ["rabbitmq:client:port"] = "1234",
@@ -75,7 +75,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void ToString_ReturnsValid()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["rabbit:client:server"] = "localhost",
                 ["rabbit:client:port"] = "1234",

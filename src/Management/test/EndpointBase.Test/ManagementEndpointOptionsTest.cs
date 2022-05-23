@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/management",

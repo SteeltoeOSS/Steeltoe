@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["hystrix:client:server"] = "localhost",
                 ["hystrix:client:port"] = "1234",
@@ -49,7 +49,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void ToString_ReturnsValid()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["hystrix:client:server"] = "localhost",
                 ["hystrix:client:port"] = "1234",

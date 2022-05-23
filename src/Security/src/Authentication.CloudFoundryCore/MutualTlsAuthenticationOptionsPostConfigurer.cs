@@ -27,7 +27,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public void PostConfigure(string name, MutualTlsAuthenticationOptions options)
         {
             options.IssuerChain = _containerIdentityOptions.CurrentValue.IssuerChain;
-            options.Events = new CertificateAuthenticationEvents()
+            options.Events = new CertificateAuthenticationEvents
             {
                 OnCertificateValidated = context =>
                 {

@@ -62,7 +62,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
         {
             var configurationBuilder = new ConfigurationBuilder();
-            var settings = new ConfigServerClientSettings() { Timeout = 10 };
+            var settings = new ConfigServerClientSettings { Timeout = 10 };
 
             configurationBuilder
                 .AddPemFiles("instance.crt", "instance.key")
@@ -436,7 +436,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapservices);
-            var settings = new ConfigServerClientSettings() { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
+            var settings = new ConfigServerClientSettings { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
 
             configurationBuilder
                 .AddEnvironmentVariables()
@@ -458,7 +458,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_PaysAttentionToSettings()
         {
-            var configServerClientSettings = new ConfigServerClientSettings()
+            var configServerClientSettings = new ConfigServerClientSettings
             {
                 Name = "testConfigName",
                 Label = "testConfigLabel",

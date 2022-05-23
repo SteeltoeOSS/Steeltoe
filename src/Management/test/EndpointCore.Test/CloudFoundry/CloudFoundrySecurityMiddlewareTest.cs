@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public async Task CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             }
 
-            var appSettings2 = new Dictionary<string, string>()
+            var appSettings2 = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",
@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             }
 
-            var appSettings3 = new Dictionary<string, string>()
+            var appSettings3 = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",
@@ -109,7 +109,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             }
 
-            var appSettings4 = new Dictionary<string, string>()
+            var appSettings4 = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",
@@ -140,7 +140,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public async Task CloudFoundrySecurityMiddleware_ReturnsWithStatusOverride()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",
@@ -167,7 +167,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
 
-            var appSettings3 = new Dictionary<string, string>()
+            var appSettings3 = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",
@@ -199,7 +199,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public async Task CloudFoundrySecurityMiddleware_ReturnsSecurityException()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
 
@@ -245,7 +245,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalse()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
 
@@ -279,7 +279,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvVariables()
         {
             Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",

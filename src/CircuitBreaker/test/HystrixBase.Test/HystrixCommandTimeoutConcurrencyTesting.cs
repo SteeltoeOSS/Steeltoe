@@ -114,7 +114,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixCommandOptions GetOptions()
             {
-                var opts = new HystrixCommandOptions()
+                var opts = new HystrixCommandOptions
                 {
                     GroupKey = HystrixCommandGroupKeyDefault.AsKey("testTimeoutConcurrency"),
                     CommandKey = HystrixCommandKeyDefault.AsKey("testTimeoutConcurrencyCommand"),
@@ -128,7 +128,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixThreadPoolOptions GetThreadPoolOptions()
             {
-                var opts = new HystrixThreadPoolOptions()
+                var opts = new HystrixThreadPoolOptions
                 {
                     CoreSize = NUM_CONCURRENT_COMMANDS,
                     MaxQueueSize = NUM_CONCURRENT_COMMANDS,

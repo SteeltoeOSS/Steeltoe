@@ -158,7 +158,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncNoMatchingConverter()
         {
-            var converter = new CompositeMessageConverter(new List<IMessageConverter>() { new NewtonJsonMessageConverter() });
+            var converter = new CompositeMessageConverter(new List<IMessageConverter> { new NewtonJsonMessageConverter() });
             _template.MessageConverter = converter;
 
             _headers.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_XML);
@@ -290,7 +290,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendNoMatchingConverter()
         {
-            var converter = new CompositeMessageConverter(new List<IMessageConverter>() { new NewtonJsonMessageConverter() });
+            var converter = new CompositeMessageConverter(new List<IMessageConverter> { new NewtonJsonMessageConverter() });
             _template.MessageConverter = converter;
 
             _headers.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_XML);

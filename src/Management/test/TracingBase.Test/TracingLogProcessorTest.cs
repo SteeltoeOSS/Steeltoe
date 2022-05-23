@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void Process_UseShortTraceIds()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:tracing:name"] = "foobar",
                 ["management:tracing:useShortTraceIds"] = "true",

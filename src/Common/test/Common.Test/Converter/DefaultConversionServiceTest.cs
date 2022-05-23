@@ -493,7 +493,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCollectionToString()
         {
-            var list = new List<string>() { "foo", "bar" };
+            var list = new List<string> { "foo", "bar" };
             var result = ConversionService.Convert<string>(list);
             Assert.Equal("foo,bar", result);
         }
@@ -501,7 +501,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCollectionToStringWithElementConversion()
         {
-            var list = new List<int>() { 3, 5 };
+            var list = new List<int> { 3, 5 };
             var result = ConversionService.Convert<string>(list);
             Assert.Equal("3,5", result);
         }
@@ -556,7 +556,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCollectionToObject()
         {
-            var list = new List<long>() { 3L };
+            var list = new List<long> { 3L };
             var result = ConversionService.Convert<long>(list);
             Assert.Equal(3L, result);
         }
@@ -564,7 +564,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCollectionToObjectWithElementConversion()
         {
-            var list = new List<string>() { "3" };
+            var list = new List<string> { "3" };
             var result = ConversionService.Convert<int>(list);
             Assert.Equal(3, result);
         }
@@ -572,7 +572,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCollectionToObjectAssignableTarget()
         {
-            IList<string> source = new List<string>() { "foo" };
+            IList<string> source = new List<string> { "foo" };
             var result = ConversionService.Convert<object>(source);
             Assert.Same(source, result);
         }
@@ -580,7 +580,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertListToDictionaryAssignableTarget()
         {
-            IList<object> source = new List<object>() { new Dictionary<string, object>() { ["test"] = 3 } };
+            IList<object> source = new List<object> { new Dictionary<string, object> { ["test"] = 3 } };
             var result = ConversionService.Convert<IDictionary<string, object>>(source);
             Assert.Equal(3, result["test"]);
         }
@@ -661,7 +661,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertListOfStringToString()
         {
-            var list = new List<string>() { "Foo", "Bar" };
+            var list = new List<string> { "Foo", "Bar" };
             var result = ConversionService.Convert<string>(list);
             Assert.Equal("Foo,Bar", result);
         }
@@ -669,9 +669,9 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertListOfListToString()
         {
-            var list1 = new List<string>() { "Foo", "Bar" };
-            var list2 = new List<string>() { "Baz", "Boop" };
-            var list = new List<List<string>>() { list1, list2 };
+            var list1 = new List<string> { "Foo", "Bar" };
+            var list2 = new List<string> { "Baz", "Boop" };
+            var list = new List<List<string>> { list1, list2 };
             var result = ConversionService.Convert<string>(list);
             Assert.Equal("Foo,Bar,Baz,Boop", result);
         }

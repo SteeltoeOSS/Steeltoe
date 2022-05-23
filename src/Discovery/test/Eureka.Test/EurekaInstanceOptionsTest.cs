@@ -160,9 +160,9 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void Options_DontUseInetUtilsByDefault()
         {
             var mockNetUtils = new Mock<InetUtils>(null, null);
-            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo() { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
+            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
             var config = new ConfigurationBuilder().Build();
-            var opts = new EurekaInstanceOptions() { NetUtils = mockNetUtils.Object };
+            var opts = new EurekaInstanceOptions { NetUtils = mockNetUtils.Object };
 
             config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
 
@@ -173,10 +173,10 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void Options_CanUseInetUtils()
         {
             var mockNetUtils = new Mock<InetUtils>(null, null);
-            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo() { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
+            mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
             var appSettings = new Dictionary<string, string> { { "eureka:instance:UseNetUtils", "true" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var opts = new EurekaInstanceOptions() { NetUtils = mockNetUtils.Object };
+            var opts = new EurekaInstanceOptions { NetUtils = mockNetUtils.Object };
             config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
 
             opts.ApplyNetUtils();
@@ -192,7 +192,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             var appSettings = new Dictionary<string, string> { { "eureka:instance:UseNetUtils", "true" }, { "spring:cloud:inet:SkipReverseDnsLookup", "true" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var opts = new EurekaInstanceOptions() { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
+            var opts = new EurekaInstanceOptions { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
             config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
 
             var noSlowReverseDNSQuery = new Stopwatch();
@@ -207,7 +207,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfigurationFindsHttpUrl()
         {
-            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "http://myapp:1233" } }).Build();
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "http://myapp:1233" } }).Build();
             var instOpts = new EurekaInstanceOptions();
 
             instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
@@ -221,7 +221,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfigurationFindsUrlsPicksHttps()
         {
-            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
             var instOpts = new EurekaInstanceOptions();
 
             instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
@@ -236,7 +236,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfigurationHandlesPlus()
         {
-            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://+:443;http://+:80" } }).Build();
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "https://+:443;http://+:80" } }).Build();
             var instOpts = new EurekaInstanceOptions();
 
             instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);

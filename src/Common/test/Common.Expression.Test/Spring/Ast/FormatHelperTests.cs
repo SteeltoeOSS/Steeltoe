@@ -14,14 +14,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         [Fact]
         public void FormatMethodWithSingleArgumentForMessage()
         {
-            var message = FormatHelper.FormatMethodForMessage("foo", new List<Type>() { typeof(string) });
+            var message = FormatHelper.FormatMethodForMessage("foo", new List<Type> { typeof(string) });
             Assert.Equal("foo(System.String)", message);
         }
 
         [Fact]
         public void FormatMethodWithMultipleArgumentsForMessage()
         {
-            var message = FormatHelper.FormatMethodForMessage("foo", new List<Type>() { typeof(string), typeof(int) });
+            var message = FormatHelper.FormatMethodForMessage("foo", new List<Type> { typeof(string), typeof(int) });
             Assert.Equal("foo(System.String,System.Int32)", message);
         }
     }

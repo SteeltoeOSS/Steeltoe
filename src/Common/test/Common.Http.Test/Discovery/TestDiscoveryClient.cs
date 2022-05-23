@@ -39,7 +39,7 @@ namespace Steeltoe.Common.Http.Test
         {
             if (_instance != null)
             {
-                return new List<IServiceInstance>() { _instance };
+                return new List<IServiceInstance> { _instance };
             }
 
             return new List<IServiceInstance>();

@@ -448,7 +448,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
                 var services = new ServiceCollection();
                 var configBuilder = new ConfigurationBuilder();
-                configBuilder.AddInMemoryCollection(new Dictionary<string, string>()
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "rabbit:listener:id", "listener1" },
                     { "rabbit:listener:containerFactory", "simpleFactory" },

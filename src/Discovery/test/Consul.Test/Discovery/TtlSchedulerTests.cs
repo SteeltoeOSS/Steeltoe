@@ -27,7 +27,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         {
             var clientMoq = new Mock<IConsulClient>();
             var client = clientMoq.Object;
-            var opts = new ConsulDiscoveryOptions() { Heartbeat = null };
+            var opts = new ConsulDiscoveryOptions { Heartbeat = null };
             var sch = new TtlScheduler(opts, client);
             sch.Add("foobar");
             Assert.Empty(sch._serviceHeartbeats);
@@ -41,7 +41,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
 
             clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
             var client = clientMoq.Object;
-            var opts = new ConsulDiscoveryOptions()
+            var opts = new ConsulDiscoveryOptions
             {
                 Heartbeat = new ConsulHeartbeatOptions()
             };
@@ -81,7 +81,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
 
             clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
             var client = clientMoq.Object;
-            var opts = new ConsulDiscoveryOptions()
+            var opts = new ConsulDiscoveryOptions
             {
                 Heartbeat = new ConsulHeartbeatOptions()
             };
@@ -101,9 +101,9 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var agentMoq = new Mock<IAgentEndpoint>();
             clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
             var client = clientMoq.Object;
-            var opts = new ConsulDiscoveryOptions()
+            var opts = new ConsulDiscoveryOptions
             {
-                Heartbeat = new ConsulHeartbeatOptions() { TtlValue = 2 }
+                Heartbeat = new ConsulHeartbeatOptions { TtlValue = 2 }
             };
             var sch = new TtlScheduler(opts, client);
             sch.Add("foobar");

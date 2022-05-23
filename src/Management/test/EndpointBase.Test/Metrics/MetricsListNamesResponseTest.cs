@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Constructor_SetsValues()
         {
-            var names = new HashSet<string>()
+            var names = new HashSet<string>
             {
                 "foo.bar",
                 "bar.foo"
@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void JsonSerialization_ReturnsExpected()
         {
-            var names = new HashSet<string>()
+            var names = new HashSet<string>
             {
                 "foo.bar",
                 "bar.foo"

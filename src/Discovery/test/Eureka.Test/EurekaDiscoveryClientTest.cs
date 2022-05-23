@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Constructor_Initializes_Correctly()
         {
-            var clientConfig = new EurekaClientOptions()
+            var clientConfig = new EurekaClientOptions
             {
                 ShouldRegisterWithEureka = false,
                 ShouldFetchRegistry = false

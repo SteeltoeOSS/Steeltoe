@@ -382,7 +382,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         public class Foo1ToFoo2Converter : AbstractGenericConverter
         {
             public Foo1ToFoo2Converter()
-                : base(new HashSet<(Type, Type)>() { (typeof(Foo1), typeof(Foo2)) })
+                : base(new HashSet<(Type, Type)> { (typeof(Foo1), typeof(Foo2)) })
             {
             }
 

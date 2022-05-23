@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.Core.Test
         {
             template = new TestMessagingTemplate();
             postProcessor = new TestMessagePostProcessor();
-            headers = new Dictionary<string, object>() { { "key", "value" } };
+            headers = new Dictionary<string, object> { { "key", "value" } };
         }
 
         [Fact]

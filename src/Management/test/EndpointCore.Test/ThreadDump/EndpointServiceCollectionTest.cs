@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         public void AddThreadDumpActuator_AddsCorrectServices()
         {
             var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",

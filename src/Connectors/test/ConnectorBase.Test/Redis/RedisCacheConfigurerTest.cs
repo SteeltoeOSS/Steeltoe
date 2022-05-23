@@ -61,7 +61,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
             var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -81,7 +81,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
             var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -100,7 +100,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void ConfigureConnection_NoServiceInfo_ReturnsExpected()
         {
             var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,
@@ -122,7 +122,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void ConfigureConnection_ServiceInfoOveridesConfig_ReturnsExpected()
         {
             var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions
             {
                 Host = "localhost",
                 Port = 1234,

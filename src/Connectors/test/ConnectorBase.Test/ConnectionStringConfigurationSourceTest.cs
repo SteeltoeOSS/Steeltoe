@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.Test
         public void Constructor_InitializesProperties()
         {
             var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+            IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
 
             var source = new ConnectionStringConfigurationSource(sources);
             Assert.NotNull(source._sources);
@@ -36,7 +36,7 @@ namespace Steeltoe.Connector.Test
         public void Build_ReturnsProvider()
         {
             var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+            IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
 
             var source = new ConnectionStringConfigurationSource(sources);
             var provider = source.Build(new ConfigurationBuilder());

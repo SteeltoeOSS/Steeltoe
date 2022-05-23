@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["security:oauth2:client:oauthServiceUrl"] = "https://foo.bar",
                 ["security:oauth2:client:clientid"] = "clientid",
@@ -60,7 +60,7 @@ namespace Steeltoe.Connector.OAuth.Test
         public void ValidateCertificates_Binds()
         {
             // arrange a configuration with validateCertificates=false
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["security:oauth2:client:validateCertificates"] = "false",
             };
@@ -77,7 +77,7 @@ namespace Steeltoe.Connector.OAuth.Test
         public void Validate_Certificates_Binds()
         {
             // arrange a configuration with validateCertificates=false
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["security:oauth2:client:validate_certificates"] = "false",
             };

@@ -22,7 +22,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Constructor_FindsConfigServerProvider()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -43,7 +43,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void FindProvider_FindsProvider()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -63,7 +63,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetTimeToLive_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -84,7 +84,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void IsEnabled_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -105,7 +105,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void IsCacheStale_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -132,7 +132,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void GetPropertySources_ReturnsExpected()
         {
             // this test does NOT expect to find a running config server
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8887/" },
                 { "spring:cloud:config:name", "myName" },
@@ -162,7 +162,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Health_NoProvider_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -186,7 +186,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Health_NotEnabled_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -211,7 +211,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Health_NoPropertySources_ReturnsExpected()
         {
             // this test does NOT expect to find a running config server
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8887/" },
                 { "spring:cloud:config:name", "myName" },
@@ -236,7 +236,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void UpdateHealth_WithPropertySources_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
@@ -252,7 +252,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             var contributor = new ConfigServerHealthContributor(config);
             var health = new HealthCheckResult();
-            var sources = new List<PropertySource>()
+            var sources = new List<PropertySource>
             {
                 new PropertySource("foo", new Dictionary<string, object>()),
                 new PropertySource("bar", new Dictionary<string, object>()),

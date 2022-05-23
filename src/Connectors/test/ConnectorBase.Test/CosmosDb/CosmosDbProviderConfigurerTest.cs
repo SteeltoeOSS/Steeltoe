@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
         public void UpdateConfiguration_WithNullCosmosDbServiceInfo_ReturnsExpected()
         {
             var configurer = new CosmosDbProviderConfigurer();
-            var config = new CosmosDbConnectorOptions()
+            var config = new CosmosDbConnectorOptions
             {
                 Host = "https://someHost:443",
                 MasterKey = "masterKey",
@@ -34,7 +34,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            var config = new CosmosDbConnectorOptions()
+            var config = new CosmosDbConnectorOptions
             {
                 Host = "https://someHost:443",
                 MasterKey = "masterKey",
@@ -53,7 +53,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            var config = new CosmosDbConnectorOptions()
+            var config = new CosmosDbConnectorOptions
             {
                 Host = "https://someHost:443",
                 MasterKey = "masterKey",

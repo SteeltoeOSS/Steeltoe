@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
         {
             _logger.LogInformation("Registering with Spring Boot Admin Server at {0}", _options.Url);
             var basePath = _options.BasePath.TrimEnd('/');
-            var app = new Application()
+            var app = new Application
             {
                 Name = _options.ApplicationName ?? "Steeltoe",
                 HealthUrl = new Uri($"{basePath}{_mgmtOptions.Path}/{_healthOptions.Path}"),

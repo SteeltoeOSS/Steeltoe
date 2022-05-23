@@ -12,13 +12,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-mongodb",
                 Tags = new[] { "mongodb" },
                 Name = "mongoService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("27017") },
@@ -35,13 +35,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = string.Empty,
                 Tags = System.Array.Empty<string>(),
                 Name = "mongoService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("27017") },
@@ -58,13 +58,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-mysql",
                 Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("27017") },
@@ -82,13 +82,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-mongodb",
                 Tags = new[] { "mongodb" },
                 Name = "mongodbService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("27017") },

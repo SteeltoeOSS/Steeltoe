@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void Create_ReturnsMySqlConnection()
         {
-            var config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 3306,

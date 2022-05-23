@@ -71,7 +71,7 @@ namespace Steeltoe.Common.Converter
 
         private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
         {
-            return new HashSet<(Type Source, Type Target)>()
+            return new HashSet<(Type Source, Type Target)>
             {
                 (typeof(object[]), typeof(ICollection)),
                 (typeof(object[]), typeof(ICollection<>)),

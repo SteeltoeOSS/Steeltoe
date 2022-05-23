@@ -43,7 +43,7 @@ namespace Steeltoe.Stream.Binding
                 {
                     if (info.GetCustomAttribute(typeof(InputAttribute)) is InputAttribute attribute)
                     {
-                        var target = new Bindable()
+                        var target = new Bindable
                         {
                             IsInput = true,
                             Name = attribute.Name ?? info.Name,
@@ -56,7 +56,7 @@ namespace Steeltoe.Stream.Binding
 
                     if (info.GetCustomAttribute(typeof(OutputAttribute)) is OutputAttribute attribute2)
                     {
-                        var target = new Bindable()
+                        var target = new Bindable
                         {
                             IsInput = false,
                             Name = attribute2.Name ?? info.Name,
@@ -82,7 +82,7 @@ namespace Steeltoe.Stream.Binding
             {
                 if (meth.GetCustomAttribute(typeof(InputAttribute)) is InputAttribute attribute)
                 {
-                    var target = new Bindable()
+                    var target = new Bindable
                     {
                         IsInput = true,
                         Name = attribute.Name ?? meth.Name,
@@ -95,7 +95,7 @@ namespace Steeltoe.Stream.Binding
 
                 if (meth.GetCustomAttribute(typeof(OutputAttribute)) is OutputAttribute attribute2)
                 {
-                    var target = new Bindable()
+                    var target = new Bindable
                     {
                         IsInput = false,
                         Name = attribute2.Name ?? meth.Name,

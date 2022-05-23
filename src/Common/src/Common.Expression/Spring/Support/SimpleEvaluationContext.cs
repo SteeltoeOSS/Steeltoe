@@ -107,7 +107,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             public Builder WithInstanceMethods()
             {
-                _resolvers = new List<IMethodResolver>() { DataBindingMethodResolver.ForInstanceMethodInvocation() };
+                _resolvers = new List<IMethodResolver> { DataBindingMethodResolver.ForInstanceMethodInvocation() };
                 return this;
             }
 

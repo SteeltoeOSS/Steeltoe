@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
         [Fact]
         public async Task SpringBootAdminClient_RegistersAndDeletes()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:health:path"] = "myhealth",

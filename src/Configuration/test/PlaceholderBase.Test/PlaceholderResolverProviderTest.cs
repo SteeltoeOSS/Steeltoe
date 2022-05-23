@@ -65,7 +65,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void TryGet_ReturnsResolvedValues()
         {
-            var settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -93,7 +93,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Set_SetsValues_ReturnsResolvedValues()
         {
-            var settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -190,7 +190,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Load_CreatesConfiguration()
         {
-            var settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -293,7 +293,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void GetChildKeys_ReturnsResolvableSection()
         {
-            var settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>
             {
                 { "spring:bar:name", "myName" },
                 { "spring:cloud:name", "${spring:bar:name?noname}" },

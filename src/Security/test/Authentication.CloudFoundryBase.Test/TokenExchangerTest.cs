@@ -76,7 +76,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public async Task ExchangeAuthCodeForClaimsIdentity_ExchangesCodeForIdentity()
         {
-            var options = new AuthServerOptions()
+            var options = new AuthServerOptions
             {
                 AuthorizationUrl = "http://localhost/tokenUrl"
             };
@@ -90,7 +90,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public async Task ExchangeAuthCodeForClaimsIdentity_ReturnsNullOnFailure()
         {
-            var options = new AuthServerOptions()
+            var options = new AuthServerOptions
             {
                 AuthorizationUrl = "http://localhost/tokenUrl"
             };

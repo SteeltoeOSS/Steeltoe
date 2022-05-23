@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.ClientBase.Test
         [Fact]
         public void NoOpDiscoveryClient_LooksForOtherClients()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
                 { "Consul:somekey", "somevalue" },

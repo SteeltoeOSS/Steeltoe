@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Env
             services.TryAddSingleton<IHostEnvironment>((provider) =>
             {
                 var service = provider.GetRequiredService<IWebHostEnvironment>();
-                return new GenericHostingEnvironment()
+                return new GenericHostingEnvironment
                 {
                     EnvironmentName = service.EnvironmentName,
                     ApplicationName = service.ApplicationName,

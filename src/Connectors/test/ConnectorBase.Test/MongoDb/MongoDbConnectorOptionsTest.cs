@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mongodb:client:server"] = "localhost",
                 ["mongodb:client:port"] = "1234",
@@ -47,7 +47,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Constructor_BindsOptions()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mongodb:client:options:someKey"] = "someValue",
                 ["mongodb:client:options:someOtherKey"] = "someOtherValue",
@@ -70,7 +70,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Options_Included_InConnectionString()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mongodb:client:options:someKey"] = "someValue",
                 ["mongodb:client:options:someOtherKey"] = "someOtherValue"
@@ -88,7 +88,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
             };
@@ -104,7 +104,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void ConnectionString_OverriddenByVCAP()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
             };
@@ -128,7 +128,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void ConnectionString_Overridden_By_EnterpriseMongoInCloudFoundryConfig()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
             };

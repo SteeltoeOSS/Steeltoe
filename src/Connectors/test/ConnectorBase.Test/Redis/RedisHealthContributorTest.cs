@@ -16,7 +16,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void GetRedisContributor_ReturnsContributor()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:host"] = "localhost",
                 ["redis:client:port"] = "1234",
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void StackExchange_Not_Connected_Returns_Down_Status()
         {
-            var redisOptions = new RedisCacheConnectorOptions() { ConnectTimeout = 1 };
+            var redisOptions = new RedisCacheConnectorOptions { ConnectTimeout = 1 };
             var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6378");
             var logrFactory = new LoggerFactory();
             var connFactory = new RedisServiceConnectorFactory(sInfo, redisOptions, RedisTypeLocator.StackExchangeImplementation, RedisTypeLocator.StackExchangeOptions, RedisTypeLocator.StackExchangeInitializer);
@@ -64,7 +64,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void Microsoft_Not_Connected_Returns_Down_Status()
         {
-            var redisOptions = new RedisCacheConnectorOptions() { ConnectTimeout = 1 };
+            var redisOptions = new RedisCacheConnectorOptions { ConnectTimeout = 1 };
             var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6378");
             var logrFactory = new LoggerFactory();
             var connFactory = new RedisServiceConnectorFactory(sInfo, redisOptions, RedisTypeLocator.MicrosoftImplementation, RedisTypeLocator.MicrosoftOptions, null);

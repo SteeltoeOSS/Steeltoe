@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void BindsConfigurationCorrectly()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["management:tracing:name"] = "foobar",
                 ["management:tracing:ingressIgnorePattern"] = "pattern",

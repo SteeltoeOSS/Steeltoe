@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.OAuth.Test
         public void Update_WithDefaultConnectorOptions_UpdatesOAuthOptions_AsExpected()
         {
             var opts = new OAuthServiceOptions();
-            var config = new OAuthConnectorOptions()
+            var config = new OAuthConnectorOptions
             {
                 ValidateCertificates = false
             };

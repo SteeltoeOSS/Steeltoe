@@ -30,7 +30,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void OnlyApplicableFilters_AreApplied()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["Serilog:MinimumLevel:Default"] = "Information"
             };

@@ -21,14 +21,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
     /// </summary>
     public class ThreadDumperEP : IThreadDumper
     {
-        private static readonly StackTraceElement _unknownStackTraceElement = new StackTraceElement()
+        private static readonly StackTraceElement _unknownStackTraceElement = new StackTraceElement
         {
             ClassName = "[UnknownClass]",
             MethodName = "[UnknownMethod]",
             IsNativeMethod = true
         };
 
-        private static readonly StackTraceElement _nativeStackTraceElement = new StackTraceElement()
+        private static readonly StackTraceElement _nativeStackTraceElement = new StackTraceElement
         {
             ClassName = "[NativeClasses]",
             MethodName = "[NativeMethods]",
@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 _logger?.LogDebug("Starting thread dump");
 
                 var client = new DiagnosticsClient(System.Diagnostics.Process.GetCurrentProcess().Id);
-                var providers = new List<EventPipeProvider>()
+                var providers = new List<EventPipeProvider>
                 {
                     new EventPipeProvider("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
                 };
@@ -116,7 +116,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                         }
                         else
                         {
-                            samplesForThread[threadId] = new List<StackSourceSample>() { sample };
+                            samplesForThread[threadId] = new List<StackSourceSample> { sample };
                         }
                     });
 
@@ -213,7 +213,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 return _nativeStackTraceElement;
             }
 
-            var result = new StackTraceElement()
+            var result = new StackTraceElement
             {
                 MethodName = "Unknown",
                 IsNativeMethod = false,

@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["oracle:client:server"] = "localhost",
                 ["oracle:client:port"] = "1234",
@@ -46,7 +46,7 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["oracle:client:ConnectionString"] = "Data Source=localhost:1521/orclpdb1;User Id=hr;Password=hr;"
             };

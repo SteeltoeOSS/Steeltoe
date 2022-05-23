@@ -27,7 +27,7 @@ namespace Steeltoe.Management.EndpointBase.Test
         [Fact]
         public void ExposureBindsToSteeltoeSettings()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:actuator:exposure:include:0"] = "httptrace",
                 ["management:endpoints:actuator:exposure:include:1"] = "dbmigrations",
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.EndpointBase.Test
         [Fact]
         public void ExposureBindsToSpringSettings()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:web:exposure:include"] = "heapdump,env",
                 ["management:endpoints:web:exposure:exclude"] = "dbmigrations,info"
@@ -65,7 +65,7 @@ namespace Steeltoe.Management.EndpointBase.Test
         [Fact]
         public void ExposureDoesntThrowOnInvalidSpringSettings()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:web:exposure:include"] = "heapdump;env"
             };

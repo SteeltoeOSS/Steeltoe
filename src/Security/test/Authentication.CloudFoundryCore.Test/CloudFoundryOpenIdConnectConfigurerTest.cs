@@ -18,7 +18,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             var oidcOptions = new OpenIdConnectOptions();
 
-            CloudFoundryOpenIdConnectConfigurer.Configure(null, oidcOptions, new CloudFoundryOpenIdConnectOptions() { ValidateCertificates = false });
+            CloudFoundryOpenIdConnectConfigurer.Configure(null, oidcOptions, new CloudFoundryOpenIdConnectOptions { ValidateCertificates = false });
 
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
             Assert.Equal(CloudFoundryDefaults.ClientId, oidcOptions.ClientId);

@@ -23,13 +23,13 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void JsonSerialization_ReturnsExpected()
         {
-            var profiles = new List<string>() { "foobar" };
-            var properties = new Dictionary<string, PropertyValueDescriptor>()
+            var profiles = new List<string> { "foobar" };
+            var properties = new Dictionary<string, PropertyValueDescriptor>
             {
                 { "key1", new PropertyValueDescriptor("value") },
                 { "key2", new PropertyValueDescriptor(false) },
             };
-            var propDescs = new List<PropertySourceDescriptor>()
+            var propDescs = new List<PropertySourceDescriptor>
             {
                 new PropertySourceDescriptor("name", properties)
             };

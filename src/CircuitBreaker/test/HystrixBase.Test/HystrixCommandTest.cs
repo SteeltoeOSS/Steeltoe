@@ -462,7 +462,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestCircuitBreakerReportsOpenIfForcedOpen()
         {
-            var opts = new HystrixCommandOptions()
+            var opts = new HystrixCommandOptions
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP"),
                 CircuitBreakerForceOpen = true
@@ -478,7 +478,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestCircuitBreakerReportsClosedIfForcedClosed()
         {
-            var opts = new HystrixCommandOptions()
+            var opts = new HystrixCommandOptions
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP"),
                 CircuitBreakerForceOpen = false,
@@ -2514,7 +2514,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestExecutionTimeoutValue()
         {
-            var properties = new HystrixCommandOptions()
+            var properties = new HystrixCommandOptions
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("TestKey"),
                 ExecutionTimeoutInMilliseconds = 50
@@ -4651,7 +4651,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public SingleThreadedPoolWithNoQueue()
         {
-            options = new HystrixThreadPoolOptions()
+            options = new HystrixThreadPoolOptions
             {
                 MaxQueueSize = 1,
                 CoreSize = 1,
@@ -4723,7 +4723,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public SingleThreadedPoolWithQueue(int queueSize, int rejectionQueueSizeThreshold)
         {
-            options = new HystrixThreadPoolOptions()
+            options = new HystrixThreadPoolOptions
             {
                 MaxQueueSize = queueSize,
                 CoreSize = 1,
@@ -5540,7 +5540,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private static HystrixCommandOptions GetTestOptions()
         {
-            var options = new HystrixCommandOptions()
+            var options = new HystrixCommandOptions
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("eventGroup"),
                 FallbackIsolationSemaphoreMaxConcurrentRequests = 3
@@ -5763,7 +5763,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     internal class TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand : HystrixCommand<bool>
     {
         public TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand()
-            : base(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
+            : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
         {
         }
 
@@ -5779,7 +5779,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         public TestEarlyUnsubscribeDuringExecutionViaObserveAsyncCommand()
 
-        : base(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
+        : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
         {
         }
 
@@ -5794,7 +5794,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     internal class TestEarlyUnsubscribeDuringFallbackAsyncCommand : HystrixCommand<bool>
     {
         public TestEarlyUnsubscribeDuringFallbackAsyncCommand()
-        : base(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
+        : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
         {
         }
 
@@ -5816,7 +5816,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private readonly AtomicBoolean cancelled = new (false);
 
         public AsyncCacheableCommand(string arg)
-         : base(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
+         : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
         {
             this.CacheKey = arg;
         }

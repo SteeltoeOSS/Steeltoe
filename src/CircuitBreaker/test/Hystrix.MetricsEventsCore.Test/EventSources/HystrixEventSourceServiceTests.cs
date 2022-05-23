@@ -63,11 +63,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
                 tpKey,
                 new HystrixSyncTaskScheduler(new HystrixThreadPoolOptions()),
                 new HystrixThreadPoolOptions());
-            var commandMetrics = new List<HystrixCommandMetrics>() { commandMetric };
+            var commandMetrics = new List<HystrixCommandMetrics> { commandMetric };
             var collapserOptions = new HystrixCollapserOptions(collapserKey);
-            var threadPoolMetrics = new List<HystrixThreadPoolMetrics>() { threadPoolMetric };
+            var threadPoolMetrics = new List<HystrixThreadPoolMetrics> { threadPoolMetric };
 
-            var collapserMetrics = new List<HystrixCollapserMetrics>() { HystrixCollapserMetrics.GetInstance(collapserKey, collapserOptions) };
+            var collapserMetrics = new List<HystrixCollapserMetrics> { HystrixCollapserMetrics.GetInstance(collapserKey, collapserOptions) };
             return new HystrixDashboardStream.DashboardData(commandMetrics, threadPoolMetrics, collapserMetrics);
         }
 

@@ -11,7 +11,7 @@ namespace Steeltoe.Common
     {
         public static IHostEnvironment GetHostingEnvironment(string environmentName = "EnvironmentName")
         {
-            return new HostingEnvironment() { EnvironmentName = environmentName };
+            return new HostingEnvironment { EnvironmentName = environmentName };
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                              _options.Source,
                              Guid.Parse(activity.TraceId.ToString()),
                              FromActivitySpanId(activity.SpanId),
-                             new List<Guid>() { FromActivitySpanId(activity.ParentSpanId) },
+                             new List<Guid> { FromActivitySpanId(activity.ParentSpanId) },
                              null,
                              GetTags(activity.Tags),
                              null);

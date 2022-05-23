@@ -67,7 +67,7 @@ namespace Steeltoe.Integration.Handler.Support
                 }
                 else
                 {
-                    return new List<object>() { value }.GetEnumerator();
+                    return new List<object> { value }.GetEnumerator();
                 }
             }
             else

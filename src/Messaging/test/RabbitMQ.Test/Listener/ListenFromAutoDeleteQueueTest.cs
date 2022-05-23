@@ -77,7 +77,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             listenerContainer2.AddQueueNames(Q3);
             listenerContainer2.MessageListener = adapter;
 
-            expiringQueue = new Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object>() { { "x-expires", 200 } });
+            expiringQueue = new Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object> { { "x-expires", 200 } });
             containerAdmin.DeclareQueue(expiringQueue);
             listenerContainer3 = new DirectMessageListenerContainer(null, connectionFactory, "container3");
             listenerContainer3.IsAutoStartup = false;

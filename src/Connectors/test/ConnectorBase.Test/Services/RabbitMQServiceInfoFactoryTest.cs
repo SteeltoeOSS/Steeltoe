@@ -32,11 +32,11 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Name = "rabbitMQService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -53,11 +53,11 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsSecureUriServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Name = "rabbitMQService",
                 Plan = "free",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -74,12 +74,12 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_WithLabelNoTagsServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "rabbitmq",
                 Name = "myService",
                 Plan = "Standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -97,13 +97,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-mysql",
                 Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -121,18 +121,18 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsHystrixServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-circuit-breaker-dashboard",
                 Tags = new[] { "circuit-breaker", "hystrix-amqp", "spring-cloud" },
                 Name = "myHystrixService",
                 Plan = "standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     {
-                        "amqp", new Credential()
+                        "amqp", new Credential
                         {
                             { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                             { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },

@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var called = new AtomicInteger(0);
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
             var listener = new TestListener(called);
-            connectionFactory.SetChannelListeners(new List<IChannelListener>() { listener });
+            connectionFactory.SetChannelListeners(new List<IChannelListener> { listener });
             var con = connectionFactory.CreateConnection();
             var channel = con.CreateChannel();
             Assert.Equal(1, called.Value);

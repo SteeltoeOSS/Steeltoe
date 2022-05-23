@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Fact]
         public void Constructor_Initializes()
         {
-            var serviceRegistration = new AgentServiceRegistration()
+            var serviceRegistration = new AgentServiceRegistration
             {
                 ID = "ID",
                 Name = "foobar",

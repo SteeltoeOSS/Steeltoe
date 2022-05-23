@@ -37,7 +37,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void ApplyServicesUsesManagementOptions()
         {
-            var appSettings = new Dictionary<string, string>() { { "management:endpoints:health:path", "/non-default" } };
+            var appSettings = new Dictionary<string, string> { { "management:endpoints:health:path", "/non-default" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(config);
@@ -57,7 +57,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void ApplyServicesUsesServerTimeout()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
                 { "Eureka:Client:EurekaServer:RetryCount", "1" }
@@ -106,7 +106,7 @@ namespace Steeltoe.Discovery.Eureka.Test
                 }";
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
-            var appSettings = new Dictionary<string, string>() { { "management:endpoints:health:path", "/non-default" } };
+            var appSettings = new Dictionary<string, string> { { "management:endpoints:health:path", "/non-default" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(config);
@@ -126,7 +126,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void ApplyServicesDoesntOverrideUserPathSettings()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 { "eureka:instance:healthcheckurlpath", "/customHealth" },
                 { "eureka:instance:statuspageurlpath", "/customStatus" }

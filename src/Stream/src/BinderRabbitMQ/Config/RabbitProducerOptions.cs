@@ -50,7 +50,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             BatchTimeout ??= defaultOptions?.BatchTimeout ?? 5000;
             Transacted ??= defaultOptions?.Transacted ?? false;
             DeliveryMode ??= defaultOptions?.DeliveryMode ?? MessageDeliveryMode.PERSISTENT;
-            HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
+            HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string> { "*" };
             DelayExpression ??= defaultOptions?.DelayExpression;
             RoutingKeyExpression ??= defaultOptions?.RoutingKeyExpression;
             ConfirmAckChannel ??= defaultOptions?.ConfirmAckChannel;

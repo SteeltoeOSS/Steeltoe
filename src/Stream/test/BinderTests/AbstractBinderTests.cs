@@ -108,7 +108,7 @@ namespace Steeltoe.Stream.Binder
 
             var latch = new CountdownEvent(1);
             var inboundMessageRef = new AtomicReference<IMessage>();
-            moduleInputChannel.Subscribe(new TestMessageHandler()
+            moduleInputChannel.Subscribe(new TestMessageHandler
             {
                 OnHandleMessage = (message) =>
                 {
@@ -193,7 +193,7 @@ namespace Steeltoe.Stream.Binder
             moduleOutputChannel.Send(message);
             var latch = new CountdownEvent(1);
             var inboundMessageRef = new AtomicReference<IMessage>();
-            moduleInputChannel.Subscribe(new TestMessageHandler()
+            moduleInputChannel.Subscribe(new TestMessageHandler
             {
                 OnHandleMessage = (message) =>
                 {
@@ -444,7 +444,7 @@ namespace Steeltoe.Stream.Binder
             bindingOptions.Consumer = rabbitConsumerOptions;
             bindingsOptions.Bindings.Add(bindingName, bindingOptions);
 
-            var consumerOptions = new ConsumerOptions() { BindingName = bindingName };
+            var consumerOptions = new ConsumerOptions { BindingName = bindingName };
             consumerOptions.PostProcess(bindingName);
             return consumerOptions;
         }
@@ -460,7 +460,7 @@ namespace Steeltoe.Stream.Binder
 
             bindingsOptions.Bindings.Add(bindingName, bindingOptions);
 
-            var producerOptions = new ProducerOptions() { BindingName = bindingName };
+            var producerOptions = new ProducerOptions { BindingName = bindingName };
             producerOptions.PostProcess(bindingName);
 
             return producerOptions;
@@ -468,7 +468,7 @@ namespace Steeltoe.Stream.Binder
 
         protected BindingOptions GetDefaultBindingOptions()
         {
-            return new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
+            return new BindingOptions { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
         }
 
         protected class TestMessageHandler : IMessageHandler

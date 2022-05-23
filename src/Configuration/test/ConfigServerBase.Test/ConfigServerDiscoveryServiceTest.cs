@@ -30,7 +30,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void ConfigServerDiscoveryService_FindsDiscoveryClient()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" }
             };
@@ -48,7 +48,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void InvokeGetInstances_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
                 { "eureka:client:eurekaServer:retryCount", "0" }
@@ -66,13 +66,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void InvokeGetInstances_RetryEnabled_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" },
                 { "eureka:client:eurekaServer:retryCount", "1" }
             };
             var config = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
-            var settings = new ConfigServerClientSettings()
+            var settings = new ConfigServerClientSettings
             {
                 RetryEnabled = true,
                 Timeout = 10,
@@ -86,7 +86,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerInstances_ReturnsExpected()
         {
-            var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>
             {
                 { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
                 { "eureka:client:eurekaServer:retryCount", "0" }
@@ -94,7 +94,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
             var config = builder.Build();
-            var settings = new ConfigServerClientSettings() { RetryEnabled = false, Timeout = 10 };
+            var settings = new ConfigServerClientSettings { RetryEnabled = false, Timeout = 10 };
 
             var service = new ConfigServerDiscoveryService(config, settings);
             var result = service.GetConfigServerInstances();

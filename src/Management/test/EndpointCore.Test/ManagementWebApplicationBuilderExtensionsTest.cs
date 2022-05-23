@@ -400,7 +400,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public async void AddWavefrontExporter()
         {
-            var settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>
             {
                 { "management:metrics:export:wavefront:apiToken", "test" },
                 { "management:metrics:export:wavefront:uri", "http://test.io" },

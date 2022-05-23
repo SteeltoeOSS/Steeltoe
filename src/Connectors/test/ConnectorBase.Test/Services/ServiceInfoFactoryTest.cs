@@ -37,7 +37,7 @@ namespace Steeltoe.Connector.Services.Test
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            var service1 = new Service()
+            var service1 = new Service
             {
                 Tags = new[] { "bar" }
             };
@@ -51,7 +51,7 @@ namespace Steeltoe.Connector.Services.Test
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            var service1 = new Service()
+            var service1 = new Service
             {
                 Tags = new[] { "noMatch" }
             };
@@ -65,7 +65,7 @@ namespace Steeltoe.Connector.Services.Test
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            var service1 = new Service()
+            var service1 = new Service
             {
                 Tags = new[] { "noMatch" },
                 Label = "foobarfoo"
@@ -80,7 +80,7 @@ namespace Steeltoe.Connector.Services.Test
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            var service1 = new Service()
+            var service1 = new Service
             {
                 Tags = new[] { "noMatch" },
                 Label = "baby"
@@ -95,11 +95,11 @@ namespace Steeltoe.Connector.Services.Test
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            var service1 = new Service()
+            var service1 = new Service
             {
                 Tags = new[] { "noMatch" },
                 Label = "noMatch",
-                Credentials = new Dictionary<string, Credential>()
+                Credentials = new Dictionary<string, Credential>
                 {
                     { "uri", new Credential("scheme://foo") }
                 }
@@ -114,11 +114,11 @@ namespace Steeltoe.Connector.Services.Test
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            var service1 = new Service()
+            var service1 = new Service
             {
                 Tags = new[] { "noMatch" },
                 Label = "noMatch",
-                Credentials = new Dictionary<string, Credential>()
+                Credentials = new Dictionary<string, Credential>
                 {
                     { "uri", new Credential("nomatch://foo") }
                 }
@@ -129,7 +129,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetUsernameFromCredentials_ReturnsCorrect()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 { "username", new Credential("username") }
             };
@@ -140,7 +140,7 @@ namespace Steeltoe.Connector.Services.Test
             var uname = sif.GetUsernameFromCredentials(credentials);
             Assert.Equal("username", uname);
 
-            credentials = new Dictionary<string, Credential>()
+            credentials = new Dictionary<string, Credential>
             {
                 { "user", new Credential("username") }
             };
@@ -155,7 +155,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetPasswordFromCredentials_ReturnsCorrect()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 { "password", new Credential("password") }
             };
@@ -173,7 +173,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetPortFromCredentials_ReturnsCorrect()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 { "port", new Credential("123") }
             };
@@ -191,7 +191,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetHostFromCredentials_ReturnsCorrect()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 { "host", new Credential("host") }
             };
@@ -202,7 +202,7 @@ namespace Steeltoe.Connector.Services.Test
             var host = sif.GetHostFromCredentials(credentials);
             Assert.Equal("host", host);
 
-            credentials = new Dictionary<string, Credential>()
+            credentials = new Dictionary<string, Credential>
             {
                 { "hostname", new Credential("hostname") }
             };
@@ -217,7 +217,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetUriFromCredentials_ReturnsCorrect()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 { "uri", new Credential("https://boo:222") }
             };
@@ -228,7 +228,7 @@ namespace Steeltoe.Connector.Services.Test
             var uri = sif.GetUriFromCredentials(credentials);
             Assert.Equal("https://boo:222", uri);
 
-            credentials = new Dictionary<string, Credential>()
+            credentials = new Dictionary<string, Credential>
             {
                 { "url", new Credential("https://boo:222") }
             };
@@ -243,11 +243,11 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetListFromCredentials_ReturnsCorrect()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 {
-                    "uris", new Credential()
-                        {
+                    "uris", new Credential
+                    {
                             { "0", new Credential("https://foo:11") },
                             { "1", new Credential("https://bar:11") }
                         }
@@ -267,13 +267,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetListFromCredentials_ThrowsWhenListNotPossible()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 {
-                    "foo", new Credential()
-                        {
+                    "foo", new Credential
+                    {
                             {
-                                "bar", new Credential()
+                                "bar", new Credential
                                 {
                                     { "bang", new Credential("badabing") }
                                 }
@@ -293,7 +293,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void GetIntFromCredentials_ThrowsFormatException()
         {
-            var credentials = new Dictionary<string, Credential>()
+            var credentials = new Dictionary<string, Credential>
             {
                 { "key", new Credential("foobar") }
             };

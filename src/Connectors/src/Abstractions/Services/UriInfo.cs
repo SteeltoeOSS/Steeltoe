@@ -94,7 +94,7 @@ namespace Steeltoe.Connector.Services
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
-                var builder = new UriBuilder()
+                var builder = new UriBuilder
                 {
                     Scheme = scheme,
                     Host = host,
@@ -107,7 +107,7 @@ namespace Steeltoe.Connector.Services
             }
             else
             {
-                var builder = new UriBuilder()
+                var builder = new UriBuilder
                 {
                     Scheme = scheme,
                     Host = host,

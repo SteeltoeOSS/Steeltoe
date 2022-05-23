@@ -38,7 +38,7 @@ namespace Steeltoe.Messaging.Converter
         {
             var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader("__TypeId__", "trade");
-            typeMapper.SetIdClassMapping(new Dictionary<string, Type>() { { "trade", typeof(SimpleTrade) } });
+            typeMapper.SetIdClassMapping(new Dictionary<string, Type> { { "trade", typeof(SimpleTrade) } });
 
             var type = typeMapper.ToType(accessor.MessageHeaders);
             Assert.Equal(typeof(SimpleTrade), type);
@@ -55,7 +55,7 @@ namespace Steeltoe.Messaging.Converter
         [Fact]
         public void ShouldUseSpecialNameForClassIfPresent()
         {
-            typeMapper.SetIdClassMapping(new Dictionary<string, Type>() { { "daytrade", typeof(SimpleTrade) } });
+            typeMapper.SetIdClassMapping(new Dictionary<string, Type> { { "daytrade", typeof(SimpleTrade) } });
             typeMapper.FromType(typeof(SimpleTrade), headers);
             var className = headers.Get<string>(typeMapper.ClassIdFieldName);
             Assert.Equal("daytrade", className);

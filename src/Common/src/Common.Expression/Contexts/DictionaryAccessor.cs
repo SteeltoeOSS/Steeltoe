@@ -32,7 +32,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new List<Type>() { typeof(IDictionary) };
+            return new List<Type> { typeof(IDictionary) };
         }
 
         public bool IsCompilable()

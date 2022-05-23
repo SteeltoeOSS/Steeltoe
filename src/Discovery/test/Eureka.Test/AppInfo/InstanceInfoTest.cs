@@ -33,7 +33,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromJsonInstance_Correct()
         {
-            var jinfo = new JsonInstanceInfo()
+            var jinfo = new JsonInstanceInfo
             {
                 InstanceId = "InstanceId",
                 AppName = "AppName",
@@ -53,7 +53,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 HostName = "HostName",
                 Status = InstanceStatus.DOWN,
                 OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
-                LeaseInfo = new JsonLeaseInfo()
+                LeaseInfo = new JsonLeaseInfo
                 {
                     RenewalIntervalInSecs = 1,
                     DurationInSecs = 2,
@@ -64,7 +64,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                     ServiceUpTimestamp = 1457973741708
                 },
                 IsCoordinatingDiscoveryServer = false,
-                Metadata = new Dictionary<string, string>() { { "@class", "java.util.Collections$EmptyMap" } },
+                Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
                 LastUpdatedTimestamp = 1457973741708,
                 LastDirtyTimestamp = 1457973741708,
                 Actiontype = ActionType.ADDED,
@@ -259,11 +259,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Equals_Equals()
         {
-            var info1 = new InstanceInfo()
+            var info1 = new InstanceInfo
             {
                 InstanceId = "foobar"
             };
-            var info2 = new InstanceInfo()
+            var info2 = new InstanceInfo
             {
                 InstanceId = "foobar"
             };
@@ -274,12 +274,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Equals_NotEqual()
         {
-            var info1 = new InstanceInfo()
+            var info1 = new InstanceInfo
             {
                 InstanceId = "foobar"
             };
 
-            var info2 = new InstanceInfo()
+            var info2 = new InstanceInfo
             {
                 InstanceId = "foobar2"
             };
@@ -289,7 +289,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Equals_NotEqual_DiffTypes()
         {
-            var info1 = new InstanceInfo()
+            var info1 = new InstanceInfo
             {
                 InstanceId = "foobar"
             };

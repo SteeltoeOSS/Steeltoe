@@ -128,7 +128,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var actual = converter.FromMessage(message, typeof(List<long>), info);
 
             Assert.NotNull(actual);
-            Assert.Equal(new List<long>() { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L }, actual);
+            Assert.Equal(new List<long> { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L }, actual);
         }
 
         [Fact]

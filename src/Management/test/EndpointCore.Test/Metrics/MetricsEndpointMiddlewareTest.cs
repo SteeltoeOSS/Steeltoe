@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
     public class MetricsEndpointMiddlewareTest : BaseTest
     {
-        private PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 500 };
+        private PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 500 };
 
         [Fact]
         public void ParseTag_ReturnsExpected()
@@ -121,7 +121,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var exporter = new SteeltoeExporter(_scraperOptions);
 
             using var meterProvider = GetTestMetrics(null, exporter, null);
-            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { exporter });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -140,7 +140,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
             var exporter = new SteeltoeExporter(_scraperOptions);
-            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { exporter });
 
             using var meterProvider = GetTestMetrics(null, exporter, null);
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
@@ -160,7 +160,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var exporter = new SteeltoeExporter(_scraperOptions);
             using var meterProvider = GetTestMetrics(null, exporter, null);
 
-            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter>() { exporter });
+            var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { exporter });
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             SetupTestView(exporter);
@@ -210,7 +210,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
 
-            var labels = new Dictionary<string, object>()
+            var labels = new Dictionary<string, object>
             {
                 { "a", "v1" },
                 { "b", "v1" },

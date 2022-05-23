@@ -82,7 +82,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue
         {
             if (string.IsNullOrEmpty(parentPath))
             {
-                var list = new List<string>() { _prefix.Substring(0, _prefix.Length - 1) };
+                var list = new List<string> { _prefix.Substring(0, _prefix.Length - 1) };
                 return list.Concat(earlierKeys)
                     .OrderBy(k => k, ConfigurationKeyComparer.Instance);
             }

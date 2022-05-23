@@ -17,7 +17,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         {
             var stream = HystrixDashboardStream.GetInstance();
             var factory = new HystrixConnectionFactory(new ConnectionFactory());
-            var options = new OptionsWrapper<HystrixMetricsStreamOptions>()
+            var options = new OptionsWrapper<HystrixMetricsStreamOptions>
             {
                 Value = new HystrixMetricsStreamOptions()
             };

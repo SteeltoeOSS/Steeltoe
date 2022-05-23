@@ -735,7 +735,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var called = new AtomicInteger(0);
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
-            connectionFactory.SetChannelListeners(new List<IChannelListener>() { new TestWithChannelListenerListener(called) });
+            connectionFactory.SetChannelListeners(new List<IChannelListener> { new TestWithChannelListenerListener(called) });
             ((CachingConnectionFactory)connectionFactory).ChannelCacheSize = 1;
 
             var con = connectionFactory.CreateConnection();
@@ -855,7 +855,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var createNotification = new AtomicReference<RC.IConnection>();
             var closedNotification = new AtomicReference<RC.IConnection>();
             ccf.SetConnectionListeners(
-                new List<IConnectionListener>() { new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification) });
+                new List<IConnectionListener> { new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification) });
 
             var con1 = ccf.CreateConnection();
             VerifyConnectionIs(mockConnections[0].Object, con1);
@@ -1038,7 +1038,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var createNotification = new AtomicReference<RC.IConnection>();
             var closedNotification = new AtomicReference<RC.IConnection>();
             ccf.SetConnectionListeners(
-                new List<IConnectionListener>() { new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification) });
+                new List<IConnectionListener> { new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification) });
 
             var con1 = ccf.CreateConnection();
             VerifyConnectionIs(mockConnections[0].Object, con1);
@@ -1614,7 +1614,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
             else
             {
-                mockChannel.Raise((m) => m.BasicAcks += null, new BasicAckEventArgs() { DeliveryTag = 1, Multiple = false });
+                mockChannel.Raise((m) => m.BasicAcks += null, new BasicAckEventArgs { DeliveryTag = 1, Multiple = false });
                 var ok = false;
                 while (!ok && n++ < 100)
                 {

@@ -75,7 +75,7 @@ namespace Graphs
     /// see code:Graph.SizeOfGraphDescription to determine the overhead for any particular graph.
     /// 
     /// </summary>
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal class Graph : IFastSerializable, IFastSerializableVersion
     {
         /// <summary>
@@ -319,10 +319,10 @@ namespace Graphs
 
             var ret = (NodeTypeIndex)m_types.Count;
             // We still use the m_types array for the size. 
-            m_types.Add(new TypeInfo() { Size = size });
+            m_types.Add(new TypeInfo { Size = size });
 
             // but we put the real information into the m_deferedTypes.  
-            m_deferedTypes.Add(new DeferedTypeInfo() { Module = module, TypeID = typeID, TypeNameSuffix = typeNameSuffix });
+            m_deferedTypes.Add(new DeferedTypeInfo { Module = module, TypeID = typeID, TypeNameSuffix = typeNameSuffix });
             Debug.Assert(m_deferedTypes.Count == m_types.Count);
             return ret;
         }
@@ -542,7 +542,7 @@ namespace Graphs
                 // it is create a deferred (lazy region).   The key is that ALL readers know how to skip this region, which allows
                 // you to add new fields 'at the end' of the region (just like for sealed objects).  
                 DeferedRegion expansion = new DeferedRegion();
-                expansion.Write(serializer, delegate ()
+                expansion.Write(serializer, delegate
                 {
                     // I don't need to use Tagged types for my 'first' version of this new region 
                     serializer.Write(m_deferedTypes.Count);
@@ -611,13 +611,13 @@ namespace Graphs
                 // it is create a deferred (lazy region).   The key is that ALL readers know how to skip this region, which allows
                 // you to add new fields 'at the end' of the region (just like for sealed objects).  
                 DeferedRegion expansion = new DeferedRegion();
-                expansion.Read(deserializer, delegate ()
+                expansion.Read(deserializer, delegate
                 {
                     // I don't need to use Tagged types for my 'first' version of this new region 
                     int count = deserializer.ReadInt();
                     for (int i = 0; i < count; i++)
                     {
-                        m_deferedTypes.Add(new DeferedTypeInfo()
+                        m_deferedTypes.Add(new DeferedTypeInfo
                         {
                             TypeID = deserializer.ReadInt(),
                             Module = (Module)deserializer.ReadObject(),
@@ -670,7 +670,7 @@ namespace Graphs
     /// 
     /// A node implicitly knows where the 'next' child is (that is it is an iterator).  
     /// </summary>
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal class Node
     {
         public int Size
@@ -925,7 +925,7 @@ namespace Graphs
     /// <summary>
     /// Represents the nodeId of a particular node in the graph.  
     /// </summary>
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal class NodeType
     {
         /// <summary>
@@ -1038,7 +1038,7 @@ namespace Graphs
     /// <summary>
     /// Holds all interesting data about a module (in particular enough to look up PDB information)
     /// </summary>
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     public class Module : IFastSerializable
     {
         /// <summary>
@@ -1123,7 +1123,7 @@ namespace Graphs
     /// <summary>
     /// Stuff that is useful but does not need to be in Graph.   
     /// </summary>
-    [ExcludeFromCodeCoverage()]
+    [ExcludeFromCodeCoverage]
     internal static class GraphUtils
     {
         /// <summary>
@@ -1343,7 +1343,7 @@ namespace Graphs
 /// 
 /// Thus this is a fairly expensive thing to create.  
 /// </summary>
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class RefGraph
 {
     public RefGraph(Graph graph)
@@ -1505,7 +1505,7 @@ internal class RefGraph
     #endregion
 }
 
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class RefNode
 {
     /// <summary>
@@ -1641,7 +1641,7 @@ internal class RefNode
 /// 
 /// This is just a first cut...
 /// </summary>
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class SpanningTree
 {
     public SpanningTree(Graph graph, TextWriter log)
@@ -1990,7 +1990,7 @@ internal class SpanningTree
 /// TODO FIX NOW put in its own file.  
 /// A priority queue, specialized to be a bit more efficient than a generic version would be. 
 /// </summary>
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class PriorityQueue
 {
     public PriorityQueue(int initialSize = 32)
@@ -2122,7 +2122,7 @@ internal class PriorityQueue
 ///     2) We try hard to keep scale each object type by the count by which the whole
 ///        graph was reduced.  
 /// </summary>
-[ExcludeFromCodeCoverage()]
+[ExcludeFromCodeCoverage]
 internal class GraphSampler
 {
     /// <summary>

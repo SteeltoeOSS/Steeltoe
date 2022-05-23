@@ -116,7 +116,7 @@ namespace Steeltoe.Stream.Config
                 {
                     if (!existingBinderConfigurations.Contains(binderEntry.Key))
                     {
-                        binderConfigurations.Add(binderEntry.Key, new BinderConfiguration(binderEntry.Value.ConfigureClass, binderEntry.Value.AssemblyPath, new BinderOptions() { DefaultCandidate = true, InheritEnvironment = true }));
+                        binderConfigurations.Add(binderEntry.Key, new BinderConfiguration(binderEntry.Value.ConfigureClass, binderEntry.Value.AssemblyPath, new BinderOptions { DefaultCandidate = true, InheritEnvironment = true }));
                     }
                 }
             }

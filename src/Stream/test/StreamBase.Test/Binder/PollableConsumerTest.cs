@@ -43,7 +43,7 @@ namespace Steeltoe.Stream.Binder
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
 
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 2,
                 BackOffInitialInterval = 0
@@ -78,7 +78,7 @@ namespace Steeltoe.Stream.Binder
             var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 2,
                 BackOffInitialInterval = 0
@@ -124,7 +124,7 @@ namespace Steeltoe.Stream.Binder
 
             var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 1,
                 BackOffInitialInterval = 0
@@ -167,7 +167,7 @@ namespace Steeltoe.Stream.Binder
             var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 1,
                 BackOffInitialInterval = 0
@@ -205,7 +205,7 @@ namespace Steeltoe.Stream.Binder
             var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 1,
                 BackOffInitialInterval = 0
@@ -243,7 +243,7 @@ namespace Steeltoe.Stream.Binder
             {
                 var original = new MessageValues(
                     Encoding.UTF8.GetBytes("foo"),
-                    new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, "application/octet-stream" } });
+                    new Dictionary<string, object> { { MessageHeaders.CONTENT_TYPE, "application/octet-stream" } });
                 var payload = Array.Empty<byte>();
                 try
                 {
@@ -297,11 +297,11 @@ namespace Steeltoe.Stream.Binder
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
 
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 2,
                 BackOffInitialInterval = 0,
-                RetryableExceptions = new List<string>() { "!System.InvalidOperationException" }
+                RetryableExceptions = new List<string> { "!System.InvalidOperationException" }
             };
             properties.PostProcess("testbinding");
 
@@ -352,7 +352,7 @@ namespace Steeltoe.Stream.Binder
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
 
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 1
             };
@@ -390,7 +390,7 @@ namespace Steeltoe.Stream.Binder
             var mockCallback = new Mock<IAcknowledgmentCallback>(MockBehavior.Default);
 
             pollableSource.AddInterceptor(new TestRequeueChannelInterceptor(mockCallback));
-            var properties = new ConsumerOptions()
+            var properties = new ConsumerOptions
             {
                 MaxAttempts = 2,
                 BackOffInitialInterval = 0

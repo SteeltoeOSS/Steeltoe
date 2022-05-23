@@ -13,12 +13,12 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void Constructor_SetsValues()
         {
-            var routeDetail = new TestRouteDetails()
+            var routeDetail = new TestRouteDetails
             {
-                HttpMethods = new List<string>() { "GET" },
+                HttpMethods = new List<string> { "GET" },
                 RouteTemplate = "/Home/Index",
-                Consumes = new List<string>() { "application/json" },
-                Produces = new List<string>() { "application/json" }
+                Consumes = new List<string> { "application/json" },
+                Produces = new List<string> { "application/json" }
             };
             var mapDesc = new MappingDescription("foobar", routeDetail);
 
@@ -30,12 +30,12 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void JsonSerialization_ReturnsExpected()
         {
-            var routeDetail = new TestRouteDetails()
+            var routeDetail = new TestRouteDetails
             {
-                HttpMethods = new List<string>() { "GET" },
+                HttpMethods = new List<string> { "GET" },
                 RouteTemplate = "/Home/Index",
-                Consumes = new List<string>() { "application/json" },
-                Produces = new List<string>() { "application/json" }
+                Consumes = new List<string> { "application/json" },
+                Produces = new List<string> { "application/json" }
             };
             var mapDesc = new MappingDescription("foobar", routeDetail);
 

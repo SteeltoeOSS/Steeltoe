@@ -1333,7 +1333,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             
             uint refCount = (uint)gcrefs.Count - offset;
             objmap.Add(obj, checked((int)objInfo.Count));
-            objInfo.Add(new ObjectInfo()
+            objInfo.Add(new ObjectInfo
             {
                 Type = type,
                 RefOffset = refCount != 0 ? offset : uint.MaxValue,
@@ -1532,7 +1532,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
             private Entry NewEntry(ulong obj)
             {
-                Entry result = new Entry() { Start = obj, End = obj, Dictionary = new SortedDictionary<ulong, int>() };
+                Entry result = new Entry { Start = obj, End = obj, Dictionary = new SortedDictionary<ulong, int>() };
                 _entries.Add(result);
                 return result;
             }

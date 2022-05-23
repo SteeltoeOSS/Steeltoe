@@ -294,10 +294,10 @@ namespace Steeltoe.Common.Util.Test
         public void ExtractUriTemplateVariables()
         {
             var result = pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}", "/hotels/1");
-            Assert.Equal(new Dictionary<string, string>() { { "hotel", "1" } }, result);
+            Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/h?tels/{hotel}", "/hotels/1");
-            Assert.Equal(new Dictionary<string, string>() { { "hotel", "1" } }, result);
+            Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}/bookings/{booking}", "/hotels/1/bookings/2");
             IDictionary<string, string> expected = new Dictionary<string, string>();
@@ -306,16 +306,16 @@ namespace Steeltoe.Common.Util.Test
             Assert.Equal(expected, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/**/hotels/**/{hotel}", "/foo/hotels/bar/1");
-            Assert.Equal(new Dictionary<string, string>() { { "hotel", "1" } }, result);
+            Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/{page}.html", "/42.html");
-            Assert.Equal(new Dictionary<string, string>() { { "page", "42" } }, result);
+            Assert.Equal(new Dictionary<string, string> { { "page", "42" } }, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/{page}.*", "/42.html");
-            Assert.Equal(new Dictionary<string, string>() { { "page", "42" } }, result);
+            Assert.Equal(new Dictionary<string, string> { { "page", "42" } }, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/A-{B}-C", "/A-b-C");
-            Assert.Equal(new Dictionary<string, string>() { { "B", "b" } }, result);
+            Assert.Equal(new Dictionary<string, string> { { "B", "b" } }, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/{name}.{extension}", "/test.html");
             expected.Clear();

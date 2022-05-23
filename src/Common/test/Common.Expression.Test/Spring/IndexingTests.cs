@@ -192,7 +192,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var property = new List<List<int>>
             {
-                new List<int>() { 3 }
+                new List<int> { 3 }
             };
             ParameterizedListOfList = property;
             var parser = new SpelExpressionParser();
@@ -390,7 +390,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public IList<Type> GetSpecificTargetClasses()
             {
-                return new List<Type>() { typeof(IDictionary) };
+                return new List<Type> { typeof(IDictionary) };
             }
         }
 

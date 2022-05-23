@@ -69,7 +69,7 @@ namespace Steeltoe.Stream.Binder
             var testChannel = new DirectChannel(context, "INPUT");
             var latch = new CountdownEvent(1);
             IList<IMessage> received = new List<IMessage>();
-            testChannel.Subscribe(new LatchedMessageHandler()
+            testChannel.Subscribe(new LatchedMessageHandler
             {
                 Latch = latch,
                 Received = received

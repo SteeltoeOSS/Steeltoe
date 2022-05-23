@@ -33,7 +33,7 @@ namespace Steeltoe.Discovery.Client.SimpleClients
             }
 
             // clients (and their config base paths) shipped with Steeltoe
-            var configurableClients = new List<Tuple<string, string, bool>>()
+            var configurableClients = new List<Tuple<string, string, bool>>
             {
                 new ("Consul", "consul", true),
                 new ("Eureka", "eureka", true),

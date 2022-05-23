@@ -27,13 +27,13 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         {
             var options = new ConsulDiscoveryOptions();
 
-            var queryResult = new QueryResult<ServiceEntry[]>()
+            var queryResult = new QueryResult<ServiceEntry[]>
             {
                 Response = new[]
                 {
-                    new ServiceEntry()
+                    new ServiceEntry
                     {
-                        Service = new AgentService()
+                        Service = new AgentService
                         {
                             Service = "ServiceId",
                             Address = "foo.bar.com",
@@ -41,9 +41,9 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                             Tags = new[] { "foo=bar", "secure=true" }
                         }
                     },
-                    new ServiceEntry()
+                    new ServiceEntry
                     {
-                        Service = new AgentService()
+                        Service = new AgentService
                         {
                             Service = "ServiceId",
                             Address = "foo1.bar1.com",
@@ -95,7 +95,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         {
             var options = new ConsulDiscoveryOptions();
 
-            var queryResult = new QueryResult<Dictionary<string, string[]>>()
+            var queryResult = new QueryResult<Dictionary<string, string[]>>
             {
                 Response = new Dictionary<string, string[]>
                 {
@@ -121,7 +121,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         {
             var options = new ConsulDiscoveryOptions();
 
-            var queryResult = new QueryResult<Dictionary<string, string[]>>()
+            var queryResult = new QueryResult<Dictionary<string, string[]>>
             {
                 Response = new Dictionary<string, string[]>
                 {
@@ -147,7 +147,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         {
             var options = new ConsulDiscoveryOptions();
 
-            var queryResult1 = new QueryResult<Dictionary<string, string[]>>()
+            var queryResult1 = new QueryResult<Dictionary<string, string[]>>
             {
                 Response = new Dictionary<string, string[]>
                 {
@@ -156,13 +156,13 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             };
             var result1 = Task.FromResult(queryResult1);
 
-            var queryResult2 = new QueryResult<ServiceEntry[]>()
+            var queryResult2 = new QueryResult<ServiceEntry[]>
             {
                 Response = new[]
                 {
-                    new ServiceEntry()
+                    new ServiceEntry
                     {
-                        Service = new AgentService()
+                        Service = new AgentService
                         {
                             Service = "ServiceId",
                             Address = "foo.bar.com",
@@ -170,9 +170,9 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                             Tags = new[] { "foo=bar", "secure=true" }
                         }
                     },
-                    new ServiceEntry()
+                    new ServiceEntry
                     {
-                        Service = new AgentService()
+                        Service = new AgentService
                         {
                             Service = "ServiceId",
                             Address = "foo1.bar1.com",

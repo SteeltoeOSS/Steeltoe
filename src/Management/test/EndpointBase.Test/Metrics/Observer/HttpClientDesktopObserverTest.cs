@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 
             OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-            var scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 10 };
+            var scraperOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 10 };
             var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
             var exporter = new SteeltoeExporter(scraperOptions);
 

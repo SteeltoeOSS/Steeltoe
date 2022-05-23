@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.Converter
         public NewtonJsonMessageConverter()
         : base(new MimeType("application", "json", Encoding.UTF8))
         {
-            Settings = new JsonSerializerSettings()
+            Settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,
@@ -35,7 +35,7 @@ namespace Steeltoe.Messaging.Converter
         public NewtonJsonMessageConverter(params MimeType[] supportedMimeTypes)
         : base(new List<MimeType>(supportedMimeTypes))
         {
-            Settings = new JsonSerializerSettings()
+            Settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,

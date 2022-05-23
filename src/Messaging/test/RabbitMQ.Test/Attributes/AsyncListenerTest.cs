@@ -126,7 +126,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 var services = new ServiceCollection();
                 config ??= new ConfigurationBuilder()
-                    .AddInMemoryCollection(new Dictionary<string, string>()
+                    .AddInMemoryCollection(new Dictionary<string, string>
                     {
                         { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
                     })
@@ -242,7 +242,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             [RabbitListener("queue3", Id = "baz")]
             public Task<List<string>> Listen3(string foo)
             {
-                return Task.FromResult(new List<string>() { foo.ToUpper() });
+                return Task.FromResult(new List<string> { foo.ToUpper() });
             }
 
             [RabbitListener("queue4", Id = "qux")]

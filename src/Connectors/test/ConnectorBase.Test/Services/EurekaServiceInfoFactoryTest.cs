@@ -12,13 +12,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-eureka",
                 Tags = new[] { "eureka", "discovery", "registry", "spring-cloud" },
                 Name = "eurekaService",
                 Plan = "standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },
@@ -33,13 +33,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-mysql",
                 Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "hostname", new Credential("192.168.0.90") },
                     { "port", new Credential("3306") },
@@ -57,13 +57,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-eureka",
                 Tags = new[] { "eureka", "discovery", "registry", "spring-cloud" },
                 Name = "eurekaService",
                 Plan = "standard",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },

@@ -295,7 +295,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     Events = successfulValidationEvents,
-                    IssuerChain = new List<X509Certificate2>() { Certificates.SelfSignedPrimaryRoot, Certificates.SignedSecondaryRoot }
+                    IssuerChain = new List<X509Certificate2> { Certificates.SelfSignedPrimaryRoot, Certificates.SignedSecondaryRoot }
                 }, Certificates.SignedClient);
 
             var response = await server.CreateClient().GetAsync("https://example.com/");

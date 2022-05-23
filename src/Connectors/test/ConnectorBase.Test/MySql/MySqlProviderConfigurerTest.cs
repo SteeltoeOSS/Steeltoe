@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.MySql.Test
         public void UpdateConfiguration_WithNullMySqlServiceInfo_ReturnsExpected()
         {
             var configurer = new MySqlProviderConfigurer();
-            var config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.MySql.Test
         public void UpdateConfiguration_WithMySqlServiceInfo_ReturnsExpected()
         {
             var configurer = new MySqlProviderConfigurer();
-            var config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -57,7 +57,7 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            var config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,
@@ -78,7 +78,7 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            var config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions
             {
                 Server = "localhost",
                 Port = 1234,

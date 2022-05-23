@@ -18,7 +18,7 @@ namespace Steeltoe.Stream.Tck
         [ServiceActivator(InputChannel = ISink.INPUT, OutputChannel = ISource.OUTPUT)]
         public IMessage<string> Echo(IMessage<string> value)
         {
-            var settings = new JsonSerializerSettings()
+            var settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,

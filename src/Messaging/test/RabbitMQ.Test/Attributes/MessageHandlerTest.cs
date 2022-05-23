@@ -29,7 +29,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var foo = new Foo();
             var invMethod = factory.CreateInvocableHandlerMethod(foo, typeof(Foo).GetMethod("Listen1"));
             var message = Message.Create("foo");
-            var list = new List<IMessage>() { message };
+            var list = new List<IMessage> { message };
             var mockChannel = new Mock<RC.IModel>();
             var adapter = new HandlerAdapter(invMethod);
             adapter.Invoke(Message.Create(list), mockChannel.Object);

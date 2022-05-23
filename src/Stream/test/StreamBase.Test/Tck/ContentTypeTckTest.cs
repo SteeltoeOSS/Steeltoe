@@ -453,7 +453,7 @@ namespace Steeltoe.Stream.Tck
             streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
-            var message = Message.Create(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
+            var message = Message.Create(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object> { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
             var outputMessage = DoSendReceive(provider, message);
 
             Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
@@ -682,7 +682,7 @@ namespace Steeltoe.Stream.Tck
 
             var payload = outputMessage.Payload as byte[];
             Assert.NotNull(payload);
-            var settings = new JsonSerializerSettings()
+            var settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,

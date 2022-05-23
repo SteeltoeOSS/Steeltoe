@@ -29,7 +29,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void Constructor_SetsProperties()
         {
-            var areg = new AgentServiceRegistration()
+            var areg = new AgentServiceRegistration
             {
                 ID = "id",
                 Name = "name",
@@ -54,9 +54,9 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void CreateTags_ReturnsExpected()
         {
-            var options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions
             {
-                Tags = new List<string>() { "foo=bar" },
+                Tags = new List<string> { "foo=bar" },
                 InstanceZone = "instancezone",
                 InstanceGroup = "instancegroup",
                 Scheme = "https"
@@ -115,7 +115,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         {
             // arrange some tags in configuration
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "consul:discovery:tags:0", "key0=value0" },
                     { "consul:discovery:tags:1", "key1=value1" },
@@ -142,7 +142,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void GetDefaultInstanceId_ReturnsExpected()
         {
             var options = new ConsulDiscoveryOptions();
-            var appsettings = new Dictionary<string, string>() { { "consul:discovery:serviceName", "serviceName" } };
+            var appsettings = new Dictionary<string, string> { { "consul:discovery:serviceName", "serviceName" } };
             var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
             var result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));
             Assert.StartsWith("serviceName:", result);
@@ -161,13 +161,13 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void GetInstanceId_ReturnsExpected()
         {
-            var options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions
             {
                 InstanceId = "instanceId"
             };
 
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "spring:application:name", "foobar" }
                 })
@@ -219,13 +219,13 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void CreateRegistration_ReturnsExpected()
         {
-            var options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions
             {
                 Port = 1100
             };
 
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "spring:application:name", "foobar" }
                 })

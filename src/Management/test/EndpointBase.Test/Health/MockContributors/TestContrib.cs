@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             }
 
             Called = true;
-            return new HealthCheckResult()
+            return new HealthCheckResult
             {
                 Status = HealthStatus.UP
             };

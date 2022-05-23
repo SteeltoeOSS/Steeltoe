@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var host = HostingHelpers.GetHostingEnvironment();
             services.AddSingleton(host);
 
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication"

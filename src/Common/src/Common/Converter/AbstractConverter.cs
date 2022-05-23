@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Converter
     public abstract class AbstractConverter<S, T> : AbstractGenericConditionalConverter, IConverter<S, T>
     {
         protected AbstractConverter()
-            : base(new HashSet<(Type Source, Type Target)>() { (typeof(S), typeof(T)) })
+            : base(new HashSet<(Type Source, Type Target)> { (typeof(S), typeof(T)) })
         {
         }
 

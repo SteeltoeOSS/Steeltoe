@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         public BytesToStringConverter(Encoding charset)
         {
             _charset = charset ?? EncodingUtils.Utf8;
-            ConvertibleTypes = new HashSet<(Type Source, Type Target)>() { (typeof(byte[]), typeof(string)) };
+            ConvertibleTypes = new HashSet<(Type Source, Type Target)> { (typeof(byte[]), typeof(string)) };
         }
 
         public ISet<(Type Source, Type Target)> ConvertibleTypes { get; }

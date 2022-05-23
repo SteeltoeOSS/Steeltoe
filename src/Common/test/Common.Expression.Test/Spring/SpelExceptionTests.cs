@@ -36,9 +36,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var parser = new SpelExpressionParser();
             var spelExpression = parser.ParseExpression("#aMap['one'] eq 1");
             var ctx = new StandardEvaluationContext();
-            var hmap = new Dictionary<string, object>()
+            var hmap = new Dictionary<string, object>
             {
-                { "aMap",  new Dictionary<string, int>() { { "one", 1 }, { "two", 2 }, { "three", 3 } } }
+                { "aMap",  new Dictionary<string, int> { { "one", 1 }, { "two", 2 }, { "three", 3 } } }
             };
             ctx.SetVariables(hmap);
 
@@ -69,9 +69,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var parser = new SpelExpressionParser();
             var spelExpression = parser.ParseExpression("#aList.Contains('one')");
             var ctx = new StandardEvaluationContext();
-            var hmap = new Dictionary<string, object>()
+            var hmap = new Dictionary<string, object>
             {
-                { "aList",  new List<string>() { "one", "two", "three" } }
+                { "aList",  new List<string> { "one", "two", "three" } }
             };
             ctx.SetVariables(hmap);
             var result = spelExpression.GetValue<bool>(ctx);
@@ -85,9 +85,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var parser = new SpelExpressionParser();
             var spelExpression = parser.ParseExpression("#aList[0] eq 'one'");
             var ctx = new StandardEvaluationContext();
-            var hmap = new Dictionary<string, object>()
+            var hmap = new Dictionary<string, object>
             {
-                { "aList",  new List<string>() { "one", "two", "three" } }
+                { "aList",  new List<string> { "one", "two", "three" } }
             };
             ctx.SetVariables(hmap);
             var result = spelExpression.GetValue<bool>(ctx);
@@ -109,7 +109,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var parser = new SpelExpressionParser();
             var spelExpression = parser.ParseExpression("#anArray[0] eq 1");
             var ctx = new StandardEvaluationContext();
-            var hmap = new Dictionary<string, object>()
+            var hmap = new Dictionary<string, object>
             {
                 { "anArray",  new[] { 1, 2, 3 } }
             };

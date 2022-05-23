@@ -39,7 +39,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Fact]
         public async Task GetCatalogServicesAsync_ReturnsExpected()
         {
-            var queryResult = new QueryResult<Dictionary<string, string[]>>()
+            var queryResult = new QueryResult<Dictionary<string, string[]>>
             {
                 Response = new Dictionary<string, string[]>
                 {
@@ -65,7 +65,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Fact]
         public void Health_ReturnsExpected()
         {
-            var queryResult = new QueryResult<Dictionary<string, string[]>>()
+            var queryResult = new QueryResult<Dictionary<string, string[]>>
             {
                 Response = new Dictionary<string, string[]>
                 {

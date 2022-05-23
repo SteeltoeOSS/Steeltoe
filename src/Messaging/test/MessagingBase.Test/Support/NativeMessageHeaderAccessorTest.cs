@@ -15,8 +15,8 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var inputNativeHeaders = new Dictionary<string, List<string>>
             {
-                { "foo", new List<string>() { "bar" } },
-                { "bar", new List<string>() { "baz" } }
+                { "foo", new List<string> { "bar" } },
+                { "bar", new List<string> { "baz" } }
             };
 
             var headerAccessor = new NativeMessageHeaderAccessor(inputNativeHeaders);
@@ -33,8 +33,8 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var inputNativeHeaders = new Dictionary<string, List<string>>
             {
-                { "foo", new List<string>() { "bar" } },
-                { "bar", new List<string>() { "baz" } }
+                { "foo", new List<string> { "bar" } },
+                { "bar", new List<string> { "baz" } }
             };
 
             var inputHeaders = new Dictionary<string, object>
@@ -71,8 +71,8 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var inputNativeHeaders = new Dictionary<string, List<string>>
             {
-                { "foo", new List<string>() { "bar" } },
-                { "bar", new List<string>() { "baz" } }
+                { "foo", new List<string> { "bar" } },
+                { "bar", new List<string> { "baz" } }
             };
 
             var nativeHeaders = new Dictionary<string, object>
@@ -96,8 +96,8 @@ namespace Steeltoe.Messaging.Support.Test
                 (IDictionary<string, List<string>>)actual[NativeMessageHeaderAccessor.NATIVE_HEADERS];
 
             Assert.NotNull(actualNativeHeaders);
-            Assert.Equal(new List<string>() { "BAR" }, actualNativeHeaders["foo"]);
-            Assert.Equal(new List<string>() { "baz" }, actualNativeHeaders["bar"]);
+            Assert.Equal(new List<string> { "BAR" }, actualNativeHeaders["foo"]);
+            Assert.Equal(new List<string> { "baz" }, actualNativeHeaders["bar"]);
         }
 
         [Fact]
@@ -105,13 +105,13 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var nativeHeaders = new Dictionary<string, List<string>>
             {
-                { "foo", new List<string>() { "bar" } }
+                { "foo", new List<string> { "bar" } }
             };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
             headers.SetNativeHeader("foo", "baz");
 
-            Assert.Equal(new List<string>() { "baz" }, headers.GetNativeHeader("foo"));
+            Assert.Equal(new List<string> { "baz" }, headers.GetNativeHeader("foo"));
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var nativeHeaders = new Dictionary<string, List<string>>
             {
-                { "foo", new List<string>() { "bar" } }
+                { "foo", new List<string> { "bar" } }
             };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
@@ -134,7 +134,7 @@ namespace Steeltoe.Messaging.Support.Test
             var headerAccessor = new NativeMessageHeaderAccessor();
             headerAccessor.SetNativeHeader("foo", "baz");
 
-            Assert.Equal(new List<string>() { "baz" }, headerAccessor.GetNativeHeader("foo"));
+            Assert.Equal(new List<string> { "baz" }, headerAccessor.GetNativeHeader("foo"));
         }
 
         [Fact]
@@ -162,13 +162,13 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var nativeHeaders = new Dictionary<string, List<string>>
             {
-                { "foo", new List<string>() { "bar" } }
+                { "foo", new List<string> { "bar" } }
             };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
             headers.AddNativeHeader("foo", "baz");
 
-            Assert.Equal(new List<string>() { "bar", "baz" }, headers.GetNativeHeader("foo"));
+            Assert.Equal(new List<string> { "bar", "baz" }, headers.GetNativeHeader("foo"));
         }
 
         [Fact]
@@ -176,13 +176,13 @@ namespace Steeltoe.Messaging.Support.Test
         {
             var nativeHeaders = new Dictionary<string, List<string>>
             {
-                { "foo", new List<string>() { "bar" } }
+                { "foo", new List<string> { "bar" } }
             };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
             headers.AddNativeHeader("foo", null);
 
-            Assert.Equal(new List<string>() { "bar" }, headers.GetNativeHeader("foo"));
+            Assert.Equal(new List<string> { "bar" }, headers.GetNativeHeader("foo"));
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace Steeltoe.Messaging.Support.Test
             var headerAccessor = new NativeMessageHeaderAccessor();
             headerAccessor.AddNativeHeader("foo", "bar");
 
-            Assert.Equal(new List<string>() { "bar" }, headerAccessor.GetNativeHeader("foo"));
+            Assert.Equal(new List<string> { "bar" }, headerAccessor.GetNativeHeader("foo"));
         }
 
         [Fact]

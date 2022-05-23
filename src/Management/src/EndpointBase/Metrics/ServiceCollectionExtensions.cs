@@ -51,7 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoeExporter>(provider =>
             {
                 var options = provider.GetService<IMetricsEndpointOptions>();
-                var exporterOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                var exporterOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
                 return new SteeltoeExporter(exporterOptions);
             }));
 
@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoePrometheusExporter>(provider =>
             {
                 var options = provider.GetService<IMetricsEndpointOptions>();
-                var exporterOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+                var exporterOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
                 return new SteeltoePrometheusExporter(exporterOptions);
             }));
             services.AddOpenTelemetryMetricsForSteeltoe();

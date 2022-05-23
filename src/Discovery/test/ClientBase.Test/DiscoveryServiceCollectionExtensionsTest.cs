@@ -140,7 +140,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
 #pragma warning restore SA1202 // Elements should be ordered by access
         {
-            var appsettings = new Dictionary<string, string>() { { "spring:application:name", "myName" } };
+            var appsettings = new Dictionary<string, string> { { "spring:application:name", "myName" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config);
 
@@ -588,7 +588,7 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_WithConsulConfiguration_AddsDiscoveryClient()
         {
-            var appSettings = new Dictionary<string, string>()
+            var appSettings = new Dictionary<string, string>
             {
                 { "spring:application:name", "myName" },
                 { "consul:host", "foo.bar" },

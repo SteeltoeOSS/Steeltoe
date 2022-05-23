@@ -209,7 +209,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_NoVCAPs_AddsConnectionMultiplexer()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:host"] = "127.0.0.1",
                 ["redis:client:port"] = "1234",
@@ -258,7 +258,7 @@ namespace Steeltoe.Connector.Redis.Test
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP);
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:AbortOnConnectFail"] = "false",
                 ["redis:client:connectTimeout"] = "1"
@@ -284,7 +284,7 @@ namespace Steeltoe.Connector.Redis.Test
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP_AzureBroker);
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:AbortOnConnectFail"] = "false",
             };
@@ -309,7 +309,7 @@ namespace Steeltoe.Connector.Redis.Test
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerEnterpriseVCAP);
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:AbortOnConnectFail"] = "false",
                 ["redis:client:connectTimeout"] = "1"
@@ -335,7 +335,7 @@ namespace Steeltoe.Connector.Redis.Test
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP_AzureBrokerSecure);
-            var appsettings = new Dictionary<string, string>() { ["redis:client:AbortOnConnectFail"] = "false" };
+            var appsettings = new Dictionary<string, string> { ["redis:client:AbortOnConnectFail"] = "false" };
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();

@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Converter
         private readonly IConversionService _conversionService;
 
         public ObjectToArrayConverter(IConversionService conversionService)
-            : base(new HashSet<(Type Source, Type Target)>() { (typeof(object), typeof(object[])) })
+            : base(new HashSet<(Type Source, Type Target)> { (typeof(object), typeof(object[])) })
         {
             _conversionService = conversionService;
         }

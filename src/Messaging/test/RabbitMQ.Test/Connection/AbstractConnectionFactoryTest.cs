@@ -23,7 +23,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             // var mockLogger = new Mock<ILoggerFactory>();
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
             var listener = new IncrementConnectionListener();
-            connectionFactory.SetConnectionListeners(new List<IConnectionListener>() { listener });
+            connectionFactory.SetConnectionListeners(new List<IConnectionListener> { listener });
             var con = connectionFactory.CreateConnection();
             Assert.Equal(1, listener.Called);
 
@@ -58,7 +58,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
             var con = connectionFactory.CreateConnection();
             Assert.Equal(0, listener.Called);
-            connectionFactory.SetConnectionListeners(new List<IConnectionListener>() { listener });
+            connectionFactory.SetConnectionListeners(new List<IConnectionListener> { listener });
             Assert.Equal(1, listener.Called);
             con.Close();
             Assert.Equal(1, listener.Called);

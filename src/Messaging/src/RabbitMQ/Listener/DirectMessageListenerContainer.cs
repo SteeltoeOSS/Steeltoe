@@ -654,7 +654,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 {
                     try
                     {
-                        RabbitUtils.CloseMessageConsumer(consumer.Model, new List<string>() { consumer.ConsumerTag }, IsChannelTransacted, _logger);
+                        RabbitUtils.CloseMessageConsumer(consumer.Model, new List<string> { consumer.ConsumerTag }, IsChannelTransacted, _logger);
                     }
                     catch (Exception e)
                     {

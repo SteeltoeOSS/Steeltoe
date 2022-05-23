@@ -97,7 +97,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
             }
             else
             {
-                return new List<MessageBatch>() { batch.Value };
+                return new List<MessageBatch> { batch.Value };
             }
         }
 

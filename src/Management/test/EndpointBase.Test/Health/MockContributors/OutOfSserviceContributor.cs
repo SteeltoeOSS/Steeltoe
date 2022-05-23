@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public HealthCheckResult Health()
         {
-            return new HealthCheckResult()
+            return new HealthCheckResult
             {
                 Status = HealthStatus.OUT_OF_SERVICE
             };

@@ -90,7 +90,7 @@ namespace Steeltoe.Discovery.Eureka
             if (InstanceInfo.LeaseInfo.DurationInSecs != InstanceConfig.LeaseExpirationDurationInSeconds ||
                 InstanceInfo.LeaseInfo.RenewalIntervalInSecs != InstanceConfig.LeaseRenewalIntervalInSeconds)
             {
-                var newLease = new LeaseInfo()
+                var newLease = new LeaseInfo
                 {
                     DurationInSecs = InstanceConfig.LeaseExpirationDurationInSeconds,
                     RenewalIntervalInSecs = InstanceConfig.LeaseRenewalIntervalInSeconds

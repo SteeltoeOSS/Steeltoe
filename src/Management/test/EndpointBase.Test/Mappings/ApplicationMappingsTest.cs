@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void Constructor_SetsValues()
         {
-            var mappingDict = new Dictionary<string, IList<MappingDescription>>()
+            var mappingDict = new Dictionary<string, IList<MappingDescription>>
             {
                 { "dispatcherServlet", new List<MappingDescription>() }
             };
@@ -29,20 +29,20 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void JsonSerialization_ReturnsExpected()
         {
-            var routeDetail = new TestRouteDetails()
+            var routeDetail = new TestRouteDetails
             {
-                HttpMethods = new List<string>() { "GET" },
+                HttpMethods = new List<string> { "GET" },
                 RouteTemplate = "/Home/Index",
-                Consumes = new List<string>() { "application/json" },
-                Produces = new List<string>() { "application/json" }
+                Consumes = new List<string> { "application/json" },
+                Produces = new List<string> { "application/json" }
             };
 
-            var mappDescs = new List<MappingDescription>()
+            var mappDescs = new List<MappingDescription>
             {
                 new MappingDescription("foobar", routeDetail)
             };
 
-            var mappingDict = new Dictionary<string, IList<MappingDescription>>()
+            var mappingDict = new Dictionary<string, IList<MappingDescription>>
             {
                 { "controllerTypeName", mappDescs }
             };

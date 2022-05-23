@@ -12,13 +12,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-redis",
                 Tags = new[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "host", new Credential("192.168.0.103") },
                     { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
@@ -32,13 +32,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-redis",
                 Tags = new[] { "foobar", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "host", new Credential("192.168.0.103") },
                     { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
@@ -52,13 +52,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p-redis",
                 Tags = new[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "host", new Credential("192.168.0.103") },
                     { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
@@ -78,13 +78,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBindingForTLS()
         {
-            var s = new Service()
+            var s = new Service
             {
                 Label = "p.redis",
                 Tags = new[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "cache-small",
-                Credentials = new Credential()
+                Credentials = new Credential
                 {
                     { "host", new Credential("192.168.0.103") },
                     { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },

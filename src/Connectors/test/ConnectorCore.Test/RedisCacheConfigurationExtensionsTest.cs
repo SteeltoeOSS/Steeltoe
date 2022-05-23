@@ -76,7 +76,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_NoVCAPs_CreatesFactory()
         {
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 ["redis:client:host"] = "127.0.0.1",
                 ["redis:client:port"] = "1234",

@@ -18,8 +18,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text = "foo=${foo}";
             var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "foo", "bar" }
                 };
             builder.AddInMemoryCollection(dic1);
@@ -34,8 +34,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text = "foo=${foo.bar}";
             var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "foo:bar", "bar" }
                 };
             builder.AddInMemoryCollection(dic1);
@@ -50,8 +50,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text = "foo=${foo},bar=${bar}";
             var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "foo", "bar" },
                     { "bar", "baz" }
                 };
@@ -66,8 +66,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text = "foo=${foo.boo},bar=${bar.far}";
             var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "foo:boo", "bar" },
                     { "bar:far", "baz" }
                 };
@@ -82,8 +82,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text = "foo=${bar}";
             var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "bar", "${baz}" },
                     { "baz", "bar" }
                 };
@@ -99,8 +99,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text = "foo=${bar.boo}";
             var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "bar:boo", "${baz.faz}" },
                     { "baz:faz", "bar" }
                 };
@@ -116,8 +116,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text1 = "foo=${b${inner}}";
             var builder1 = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "bar", "bar" },
                     { "inner", "ar" }
                 };
@@ -126,8 +126,8 @@ namespace Steeltoe.Common.Configuration.Test
 
             var text2 = "${top}";
             var builder2 = new ConfigurationBuilder();
-            var dic2 = new Dictionary<string, string>()
-                {
+            var dic2 = new Dictionary<string, string>
+            {
                     { "top", "${child}+${child}" },
                     { "child", "${${differentiator}.grandchild}" },
                     { "differentiator", "first" },
@@ -147,8 +147,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text1 = "foo=${b${inner.placeholder}}";
             var builder1 = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "bar", "bar" },
                     { "inner:placeholder", "ar" }
                 };
@@ -157,8 +157,8 @@ namespace Steeltoe.Common.Configuration.Test
 
             var text2 = "${top}";
             var builder2 = new ConfigurationBuilder();
-            var dic2 = new Dictionary<string, string>()
-                {
+            var dic2 = new Dictionary<string, string>
+            {
                     { "top", "${child}+${child}" },
                     { "child", "${${differentiator}.grandchild}" },
                     { "differentiator", "first" },
@@ -178,8 +178,8 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var text = "foo=${foo},bar=${bar}";
             var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
+            var dic1 = new Dictionary<string, string>
+            {
                     { "foo", "bar" }
                 };
             builder.AddInMemoryCollection(dic1);
@@ -240,7 +240,7 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(
-                new Dictionary<string, string>()
+                new Dictionary<string, string>
                 {
                     { "foo", "${bar}" },
                     { "bar", "baz" }
@@ -258,7 +258,7 @@ namespace Steeltoe.Common.Configuration.Test
         {
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(
-                new Dictionary<string, string>()
+                new Dictionary<string, string>
                 {
                     { "foo", "${bar}" }
                 });

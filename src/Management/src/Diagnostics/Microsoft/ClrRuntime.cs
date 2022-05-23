@@ -652,7 +652,7 @@ namespace Microsoft.Diagnostics.Runtime
             if (type == null)
                 return null;
 
-            ClrHandle result = new ClrHandle()
+            ClrHandle result = new ClrHandle
             {
                 Object = obj,
                 Type = type,

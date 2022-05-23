@@ -102,7 +102,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void TestConvert()
         {
             var root = new Foo("bar");
-            ICollection<string> foos = new List<string>() { "baz" };
+            ICollection<string> foos = new List<string> { "baz" };
 
             var context = new StandardEvaluationContext(root);
 
@@ -172,9 +172,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public ICollection<Foo> Foos { get; set; }
 
-            public ICollection<string> FoosAsStrings => new List<string>() { "baz" };
+            public ICollection<string> FoosAsStrings => new List<string> { "baz" };
 
-            public ICollection<object> FoosAsObjects => new List<object>() { "baz" };
+            public ICollection<object> FoosAsObjects => new List<object> { "baz" };
         }
     }
 }

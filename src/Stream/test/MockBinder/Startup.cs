@@ -24,7 +24,7 @@ namespace Steeltoe.Stream.MockBinder
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var mock = new Mock<IBinder<object>>() { DefaultValue = DefaultValue.Mock };
+            var mock = new Mock<IBinder<object>> { DefaultValue = DefaultValue.Mock };
             mock.Setup((b) => b.ServiceName).Returns("mock");
             services.AddSingleton(mock.Object);
             services.AddSingleton<IBinder>((p) => p.GetRequiredService<IBinder<object>>());

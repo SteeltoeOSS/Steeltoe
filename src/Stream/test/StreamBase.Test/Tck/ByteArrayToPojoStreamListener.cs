@@ -17,7 +17,7 @@ namespace Steeltoe.Stream.Tck
         [SendTo(ISource.OUTPUT)]
         public Person Echo(byte[] value)
         {
-            var settings = new JsonSerializerSettings()
+            var settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,

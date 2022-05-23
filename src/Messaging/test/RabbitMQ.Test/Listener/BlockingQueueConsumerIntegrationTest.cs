@@ -64,7 +64,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 }
 
                 Assert.Equal(2, consumers.Count);
-                var tags = new List<string>() { consumers[0].ConsumerTag, consumers[1].ConsumerTag };
+                var tags = new List<string> { consumers[0].ConsumerTag, consumers[1].ConsumerTag };
                 Assert.Contains($"{prefix}#{QUEUE1_NAME}", tags);
                 Assert.Contains($"{prefix}#{QUEUE2_NAME}", tags);
                 blockingQueueConsumer.Stop();

@@ -314,7 +314,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         public void EndpointWithHeader()
         {
             var template = context.GetRabbitTemplate();
-            var properties = new MessageHeaders(new Dictionary<string, object>() { { "prefix", "prefix-" } });
+            var properties = new MessageHeaders(new Dictionary<string, object> { { "prefix", "prefix-" } });
             var request = MessageTestUtils.CreateTextMessage("foo", properties);
             var reply = template.SendAndReceive("test.header", request);
             Assert.Equal("prefix-FOO", MessageTestUtils.ExtractText(reply));
@@ -327,7 +327,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         public void EndpointWithMessage()
         {
             var template = context.GetRabbitTemplate();
-            var properties = new MessageHeaders(new Dictionary<string, object>() { { "prefix", "prefix-" } });
+            var properties = new MessageHeaders(new Dictionary<string, object> { { "prefix", "prefix-" } });
             var request = MessageTestUtils.CreateTextMessage("foo", properties);
             var reply = template.SendAndReceive("test.message", request);
             Assert.Equal("prefix-FOO", MessageTestUtils.ExtractText(reply));
@@ -339,7 +339,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var template = this.context.GetRabbitTemplate();
             var context = this.context.GetService<IApplicationContext>();
             var strategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy") as ConsumerTagStrategy;
-            var properties = new MessageHeaders(new Dictionary<string, object>() { { "foo", "fooValue" } });
+            var properties = new MessageHeaders(new Dictionary<string, object> { { "foo", "fooValue" } });
             var request = MessageTestUtils.CreateTextMessage("content", properties);
             var reply = template.SendAndReceive("test.reply", request);
             Assert.Equal("content", MessageTestUtils.ExtractText(reply));
@@ -865,15 +865,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitQueue(new Queue("sendTo.replies.spel", false, false, false));
 
                 services.AddRabbitQueues(
-                    new Queue("auto.headers1", true, false, true, new Dictionary<string, object>() { { "x-message-ttl", 10000 } }),
-                    new Queue("auto.headers2", true, false, true, new Dictionary<string, object>() { { "x-message-ttl", 10000 } }));
+                    new Queue("auto.headers1", true, false, true, new Dictionary<string, object> { { "x-message-ttl", 10000 } }),
+                    new Queue("auto.headers2", true, false, true, new Dictionary<string, object> { { "x-message-ttl", 10000 } }));
                 services.AddRabbitExchange(new HeadersExchange("auto.headers", true, true));
                 services.AddRabbitBindings(
-                    new QueueBinding("auto.headers1.binding", "auto.headers1", "auto.headers", string.Empty, new Dictionary<string, object>() { { "x-match", "all" }, { "foo", "bar" }, { "baz", null } }),
-                    new QueueBinding("auto.headers2.binding", "auto.headers2", "auto.headers", string.Empty, new Dictionary<string, object>() { { "x-match", "any" }, { "foo", "bax" }, { "baz", "fiz" } }));
+                    new QueueBinding("auto.headers1.binding", "auto.headers1", "auto.headers", string.Empty, new Dictionary<string, object> { { "x-match", "all" }, { "foo", "bar" }, { "baz", null } }),
+                    new QueueBinding("auto.headers2.binding", "auto.headers2", "auto.headers", string.Empty, new Dictionary<string, object> { { "x-match", "any" }, { "foo", "bax" }, { "baz", "fiz" } }));
 
                 services.AddRabbitQueues(
-                    new Queue("amqp656", true, false, true, new Dictionary<string, object>()
+                    new Queue("amqp656", true, false, true, new Dictionary<string, object>
                     {
                         { "x-dead-letter-exchange", string.Empty },
                         { "x-dead-letter-routing-key", "amqp656dlq" },
@@ -1111,7 +1111,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 {
                     Field = input.ToUpper()
                 };
-                var headers = new MessageHeaders(new Dictionary<string, object>() { { "foo", "bar" } });
+                var headers = new MessageHeaders(new Dictionary<string, object> { { "foo", "bar" } });
                 return Message.Create(bar, headers);
             }
 

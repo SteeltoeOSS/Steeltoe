@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var opts = new InfoEndpointOptions();
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
-            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
+            var contribs = new List<IInfoContributor> { new GitInfoContributor() };
             var ep = new TestInfoEndpoint(opts, contribs);
             var middle = new InfoEndpointMiddleware(null, ep, mopts);
             var context = CreateRequest("GET", "/loggers");

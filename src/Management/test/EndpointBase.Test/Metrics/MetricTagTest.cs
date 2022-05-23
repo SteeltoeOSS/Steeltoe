@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Constructor_SetsValues()
         {
-            var tags = new HashSet<string>() { "tagValue" };
+            var tags = new HashSet<string> { "tagValue" };
             var mtag = new MetricTag("tagname", tags);
             Assert.Equal("tagname", mtag.Tag);
             Assert.Same(tags, mtag.Values);
@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void JsonSerialization_ReturnsExpected()
         {
-            var tags = new HashSet<string>() { "tagValue" };
+            var tags = new HashSet<string> { "tagValue" };
             var mtag = new MetricTag("tagname", tags);
             var result = Serialize(mtag);
             Assert.Equal("{\"tag\":\"tagname\",\"values\":[\"tagValue\"]}", result);
