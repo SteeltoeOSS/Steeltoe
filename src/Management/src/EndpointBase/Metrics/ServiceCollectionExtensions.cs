@@ -93,7 +93,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by Opentelemetry. 
+        /// Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by Opentelemetry.
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configure"></param>
@@ -105,18 +105,19 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (services.Any(sd => sd.ServiceType == typeof(MeterProvider)))
             {
-                throw new InvalidOperationException("Opentelemetry has already been configured!Use the configure method to customize your metrics pipeline instead");
+                throw new InvalidOperationException("OpenTelemetry has already been configured! Use the configure method provided by AddOpenTelemetryMetricsForSteeltoe to customize your metrics pipeline instead of configuring OpenTelemetry separately");
             }
 
             return services.AddOpenTelemetryMetrics(builder => builder.ConfigureSteeltoeMetrics());
         }
 
-        public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name=null, string version = null)
+        public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
         {
             if (configure != null)
             {
                 builder.Configure(configure);
             }
+
             builder.Configure((provider, deferredBuilder) =>
             {
                 var views = provider.GetService<IViewRegistry>();
