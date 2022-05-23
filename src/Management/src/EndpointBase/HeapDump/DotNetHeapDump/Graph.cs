@@ -2019,10 +2019,7 @@ internal class PriorityQueue
                 break;
             }
 
-            // swap parent and idx
-            var temp = m_heap[idx];
-            m_heap[idx] = m_heap[parent];
-            m_heap[parent] = temp;
+            (m_heap[idx], m_heap[parent]) = (m_heap[parent], m_heap[idx]);
 
             if (parent == 0)
             {
@@ -2062,10 +2059,7 @@ internal class PriorityQueue
                 break;
             }
 
-            // swap idx and smallestIdx
-            var temp = m_heap[idx];
-            m_heap[idx] = m_heap[largestIdx];
-            m_heap[largestIdx] = temp;
+            (m_heap[idx], m_heap[largestIdx]) = (m_heap[largestIdx], m_heap[idx]);
 
             idx = largestIdx;
         }

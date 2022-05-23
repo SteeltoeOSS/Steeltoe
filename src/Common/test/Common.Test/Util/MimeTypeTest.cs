@@ -378,9 +378,7 @@ namespace Steeltoe.Common.Util.Test
 
         private void Swap<T>(IList<T> list, int i, int j)
         {
-            var temp = list[i];
-            list[i] = list[j];
-            list[j] = temp;
+            (list[i], list[j]) = (list[j], list[i]);
         }
     }
 }

@@ -344,9 +344,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             for (var i = 0; i < (n - 1); i++)
             {
                 var r = i + _random.Next(n - i);
-                var t = array[r];
-                array[r] = array[i];
-                array[i] = t;
+                (array[r], array[i]) = (array[i], array[r]);
             }
         }
 
