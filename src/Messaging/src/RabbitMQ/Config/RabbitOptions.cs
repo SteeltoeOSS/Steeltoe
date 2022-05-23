@@ -149,7 +149,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             }
 
             var address = parsed[0];
-            return address.SecureConnection != null ? address.SecureConnection.Value : Ssl.Enabled;
+            return address.SecureConnection ?? Ssl.Enabled;
         }
 
         public TimeSpan? RequestedHeartbeat { get; set; }

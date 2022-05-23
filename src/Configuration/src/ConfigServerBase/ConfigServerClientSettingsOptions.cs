@@ -60,13 +60,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public bool RetryEnabled => Retry != null && Retry.Enabled;
 
-        public int RetryInitialInterval => Retry != null ? Retry.InitialInterval : ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
+        public int RetryInitialInterval => Retry?.InitialInterval ?? ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
 
-        public int RetryMaxInterval => Retry != null ? Retry.MaxInterval : ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL;
+        public int RetryMaxInterval => Retry?.MaxInterval ?? ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL;
 
-        public double RetryMultiplier => Retry != null ? Retry.Multiplier : ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER;
+        public double RetryMultiplier => Retry?.Multiplier ?? ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER;
 
-        public int RetryAttempts => Retry != null ? Retry.MaxAttempts : ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
+        public int RetryAttempts => Retry?.MaxAttempts ?? ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
 
         public bool DiscoveryEnabled => Discovery != null && Discovery.Enabled;
 
@@ -74,7 +74,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public bool HealthEnabled => Health == null || Health.Enabled;
 
-        public long HealthTimeToLive => Health != null ? Health.TimeToLive : ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE;
+        public long HealthTimeToLive => Health?.TimeToLive ?? ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE;
 
         public string Access_Token_Uri { get; set; }
 

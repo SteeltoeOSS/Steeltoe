@@ -28,7 +28,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public SpelParserOptions(SpelCompilerMode? compilerMode, bool autoGrowNullReferences, bool autoGrowCollections, int maximumAutoGrowSize)
         {
-            CompilerMode = compilerMode != null ? compilerMode.Value : SpelCompilerMode.OFF;
+            CompilerMode = compilerMode ?? SpelCompilerMode.OFF;
             AutoGrowNullReferences = autoGrowNullReferences;
             AutoGrowCollections = autoGrowCollections;
             MaximumAutoGrowSize = maximumAutoGrowSize;

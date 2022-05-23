@@ -271,9 +271,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 info.AppName = json.AppName;
                 info.AppGroupName = json.AppGroupName;
                 info.IpAddr = json.IpAddr;
-                info.Port = (json.Port == null) ? 0 : json.Port.Port;
+                info.Port = json.Port?.Port ?? 0;
                 info.IsUnsecurePortEnabled = json.Port != null && json.Port.Enabled;
-                info.SecurePort = (json.SecurePort == null) ? 0 : json.SecurePort.Port;
+                info.SecurePort = json.SecurePort?.Port ?? 0;
                 info.IsSecurePortEnabled = json.SecurePort != null && json.SecurePort.Enabled;
                 info.HomePageUrl = json.HomePageUrl;
                 info.StatusPageUrl = json.StatusPageUrl;
@@ -317,7 +317,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 VipAddress = VipAddress,
                 SecureVipAddress = SecureVipAddress,
                 CountryId = CountryId,
-                DataCenterInfo = (DataCenterInfo == null) ? null : ((DataCenterInfo)DataCenterInfo).ToJson(),
+                DataCenterInfo = ((DataCenterInfo)DataCenterInfo)?.ToJson(),
                 HostName = HostName,
                 Status = Status,
                 OverriddenStatus = OverriddenStatus,

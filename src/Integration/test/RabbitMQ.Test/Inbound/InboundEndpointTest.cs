@@ -295,7 +295,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
                 var foo = (Foo)obj;
 
-                return !(Bar != null ? !Bar.Equals(foo.Bar) : foo.Bar != null);
+                return !(!Bar?.Equals(foo.Bar) ?? foo.Bar != null);
             }
 
             public override int GetHashCode()

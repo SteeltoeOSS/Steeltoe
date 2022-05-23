@@ -94,32 +94,32 @@ namespace Steeltoe.Stream.Config
 
             if (double.IsNaN(BackOffMultiplier))
             {
-                BackOffMultiplier = (@default != null) ? @default.BackOffMultiplier : BackOffMultiplier_Default;
+                BackOffMultiplier = @default?.BackOffMultiplier ?? BackOffMultiplier_Default;
             }
 
             if (BackOffMaxInterval == int.MinValue)
             {
-                BackOffMaxInterval = (@default != null) ? @default.BackOffMaxInterval : BackOffMaxInterval_Default;
+                BackOffMaxInterval = @default?.BackOffMaxInterval ?? BackOffMaxInterval_Default;
             }
 
             if (BackOffInitialInterval == int.MinValue)
             {
-                BackOffInitialInterval = (@default != null) ? @default.BackOffInitialInterval : BackOffInitialInterval_Default;
+                BackOffInitialInterval = @default?.BackOffInitialInterval ?? BackOffInitialInterval_Default;
             }
 
             if (MaxAttempts == int.MinValue)
             {
-                MaxAttempts = (@default != null) ? @default.MaxAttempts : MaxAttempts_Default;
+                MaxAttempts = @default?.MaxAttempts ?? MaxAttempts_Default;
             }
 
             if (InstanceIndex == int.MinValue)
             {
-                InstanceIndex = (@default != null) ? @default.InstanceIndex : InstanceIndex_Default;
+                InstanceIndex = @default?.InstanceIndex ?? InstanceIndex_Default;
             }
 
             if (InstanceCount == int.MinValue)
             {
-                InstanceCount = (@default != null) ? @default.InstanceCount : InstanceCount_Default;
+                InstanceCount = @default?.InstanceCount ?? InstanceCount_Default;
             }
 
             InstanceIndexList ??= (@default != null) ? @default.InstanceIndexList : new List<int>();
@@ -127,7 +127,7 @@ namespace Steeltoe.Stream.Config
 
             if (Concurrency == int.MinValue)
             {
-                Concurrency = (@default != null) ? @default.Concurrency : Concurrency_Default;
+                Concurrency = @default?.Concurrency ?? Concurrency_Default;
             }
 
             AutoStartup ??= (@default != null) ? @default.AutoStartup : AutoStartup_Default;

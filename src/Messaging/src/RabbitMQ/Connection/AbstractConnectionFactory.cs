@@ -79,7 +79,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public virtual int Port
         {
-            get { return (RabbitConnectionFactory == null) ? -1 : RabbitConnectionFactory.Port; }
+            get { return RabbitConnectionFactory?.Port ?? -1; }
             set { RabbitConnectionFactory.Port = value; }
         }
 
@@ -97,7 +97,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public virtual int ConnectionTimeout
         {
-            get { return (RabbitConnectionFactory == null) ? 30000 : RabbitConnectionFactory.RequestedConnectionTimeout; }
+            get { return RabbitConnectionFactory?.RequestedConnectionTimeout ?? 30000; }
             set { RabbitConnectionFactory.RequestedConnectionTimeout = value; }
         }
 

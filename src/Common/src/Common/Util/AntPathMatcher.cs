@@ -665,7 +665,7 @@ namespace Steeltoe.Common.Util
 
                     if (UriVars == 0)
                     {
-                        _length = _pattern != null ? _pattern.Length : 0;
+                        _length = _pattern?.Length ?? 0;
                     }
                 }
 

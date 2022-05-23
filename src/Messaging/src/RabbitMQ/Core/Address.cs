@@ -73,12 +73,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var address = (Address)obj;
 
-            return !(ExchangeName != null
-                    ? !ExchangeName.Equals(ExchangeName)
-                    : address.ExchangeName != null)
-                    && !(RoutingKey != null
-                    ? !RoutingKey.Equals(address.RoutingKey)
-                    : address.RoutingKey != null);
+            return !(!ExchangeName?.Equals(ExchangeName) ?? address.ExchangeName != null) &&
+                !(!RoutingKey?.Equals(address.RoutingKey) ?? address.RoutingKey != null);
         }
 
         public override int GetHashCode()

@@ -80,7 +80,7 @@ namespace Steeltoe.Stream.Config
 
             if (PartitionCount == int.MinValue)
             {
-                PartitionCount = (@default != null) ? @default.PartitionCount : PartitionCount_Default;
+                PartitionCount = @default?.PartitionCount ?? PartitionCount_Default;
             }
 
             PartitionSelectorExpression ??= @default?.PartitionSelectorExpression;

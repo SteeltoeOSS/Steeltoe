@@ -79,10 +79,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public Limits Limits { get; set; }
 
-        public override int DiskLimit => Limits == null ? -1 : Limits.Disk;
+        public override int DiskLimit => Limits?.Disk ?? -1;
 
-        public override int MemoryLimit => Limits == null ? -1 : Limits.Mem;
+        public override int MemoryLimit => Limits?.Mem ?? -1;
 
-        public override int FileDescriptorLimit => Limits == null ? -1 : Limits.Fds;
+        public override int FileDescriptorLimit => Limits?.Fds ?? -1;
     }
 }

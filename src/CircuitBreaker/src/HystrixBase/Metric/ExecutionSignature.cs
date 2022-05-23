@@ -52,7 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                 return false;
             }
 
-            return !(_cacheKey != null ? !_cacheKey.Equals(that._cacheKey) : that._cacheKey != null);
+            return !(!_cacheKey?.Equals(that._cacheKey) ?? that._cacheKey != null);
         }
 
         public override int GetHashCode()
