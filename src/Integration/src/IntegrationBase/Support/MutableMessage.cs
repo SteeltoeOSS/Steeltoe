@@ -28,18 +28,8 @@ namespace Steeltoe.Integration.Support
 
         public MutableMessage(object payload, MutableMessageHeaders headers)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (headers == null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-
-            _payload = payload;
-            _headers = headers;
+            _payload = payload ?? throw new ArgumentNullException(nameof(payload));
+            _headers = headers ?? throw new ArgumentNullException(nameof(headers));
         }
 
         public IMessageHeaders Headers => _headers;

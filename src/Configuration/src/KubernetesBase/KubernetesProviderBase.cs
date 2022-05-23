@@ -26,18 +26,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         internal KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
         {
-            if (kubernetes is null)
-            {
-                throw new ArgumentNullException(nameof(kubernetes));
-            }
-
-            if (settings is null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            K8sClient = kubernetes;
-            Settings = settings;
+            K8sClient = kubernetes ?? throw new ArgumentNullException(nameof(kubernetes));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CancellationToken = token;
         }
 

@@ -333,12 +333,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             internal JsonStreamConfigurationSource(MemoryStream stream)
             {
-                if (stream == null)
-                {
-                    throw new ArgumentNullException(nameof(stream));
-                }
-
-                _stream = stream;
+                _stream = stream ?? throw new ArgumentNullException(nameof(stream));
             }
 
             public override IConfigurationProvider Build(IConfigurationBuilder builder)

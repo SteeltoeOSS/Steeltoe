@@ -40,14 +40,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             AbstractConnectionFactory publisherConnectionFactory,
             ILoggerFactory loggerFactory = null)
         {
-            if (rabbitConnectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(rabbitConnectionFactory));
-            }
-
             _loggerFactory = loggerFactory;
             _logger = _loggerFactory?.CreateLogger(GetType());
-            _rabbitConnectionFactory = rabbitConnectionFactory;
+            _rabbitConnectionFactory = rabbitConnectionFactory ?? throw new ArgumentNullException(nameof(rabbitConnectionFactory));
             _connectionListener = new CompositeConnectionListener(_loggerFactory?.CreateLogger<CompositeConnectionListener>());
             _channelListener = new CompositeChannelListener(_loggerFactory?.CreateLogger<CompositeConnectionListener>());
             PublisherConnectionFactory = publisherConnectionFactory;

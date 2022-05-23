@@ -46,20 +46,10 @@ namespace Steeltoe.Stream.Binding
             INewDestinationBindingCallback callback)
             : base(context)
         {
-            if (bindingService == null)
-            {
-                throw new ArgumentNullException(nameof(bindingService));
-            }
-
-            if (bindingTargetFactory == null)
-            {
-                throw new ArgumentNullException(nameof(bindingTargetFactory));
-            }
-
             _dynamicDestinationsBindable = dynamicDestinationsBindable;
             _optionsMonitor = optionsMonitor;
-            _bindingService = bindingService;
-            _bindingTargetFactory = bindingTargetFactory;
+            _bindingService = bindingService ?? throw new ArgumentNullException(nameof(bindingService));
+            _bindingTargetFactory = bindingTargetFactory ?? throw new ArgumentNullException(nameof(bindingTargetFactory));
             _newBindingCallback = callback;
         }
 

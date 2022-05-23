@@ -15,12 +15,7 @@ namespace Steeltoe.Messaging.Core
 
         public CachingDestinationResolverProxy(IDestinationResolver<D> targetDestinationResolver)
         {
-            if (targetDestinationResolver == null)
-            {
-                throw new ArgumentNullException(nameof(targetDestinationResolver));
-            }
-
-            _targetDestinationResolver = targetDestinationResolver;
+            _targetDestinationResolver = targetDestinationResolver ?? throw new ArgumentNullException(nameof(targetDestinationResolver));
         }
 
         public D ResolveDestination(string name)

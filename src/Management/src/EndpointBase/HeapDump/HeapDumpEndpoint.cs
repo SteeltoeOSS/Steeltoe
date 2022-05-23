@@ -15,12 +15,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         public HeapDumpEndpoint(IHeapDumpOptions options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
             : base(options)
         {
-            if (heapDumper == null)
-            {
-                throw new ArgumentNullException(nameof(heapDumper));
-            }
-
-            _heapDumper = heapDumper;
+            _heapDumper = heapDumper ?? throw new ArgumentNullException(nameof(heapDumper));
             _logger = logger;
         }
 

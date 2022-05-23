@@ -31,12 +31,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         public Queue(string queueName, bool durable, bool exclusive, bool autoDelete, Dictionary<string, object> arguments)
             : base(arguments)
         {
-            if (queueName == null)
-            {
-                throw new ArgumentNullException(nameof(queueName));
-            }
-
-            QueueName = queueName;
+            QueueName = queueName ?? throw new ArgumentNullException(nameof(queueName));
             ServiceName = !string.IsNullOrEmpty(queueName) ? queueName : "queue@" + RuntimeHelpers.GetHashCode(this);
             ActualName = !string.IsNullOrEmpty(queueName) ? queueName : (Base64UrlNamingStrategy.DEFAULT.GenerateName() + "_awaiting_declaration");
             IsDurable = durable;

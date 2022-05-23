@@ -21,12 +21,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         public PayloadMethodArgumentResolver(IMessageConverter messageConverter, bool useDefaultResolution)
         {
-            if (messageConverter == null)
-            {
-                throw new ArgumentNullException(nameof(messageConverter));
-            }
-
-            _converter = messageConverter;
+            _converter = messageConverter ?? throw new ArgumentNullException(nameof(messageConverter));
             _useDefaultResolution = useDefaultResolution;
         }
 

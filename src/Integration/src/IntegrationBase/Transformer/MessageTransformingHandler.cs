@@ -16,12 +16,7 @@ namespace Steeltoe.Integration.Transformer
         public MessageTransformingHandler(IApplicationContext context, ITransformer transformer)
             : base(context)
         {
-            if (transformer == null)
-            {
-                throw new ArgumentNullException(nameof(transformer));
-            }
-
-            Transformer = transformer;
+            Transformer = transformer ?? throw new ArgumentNullException(nameof(transformer));
             RequiresReply = true;
         }
 

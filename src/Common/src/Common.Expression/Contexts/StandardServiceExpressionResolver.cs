@@ -61,12 +61,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
             get => _expressionParser;
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentException("Expression parser must not be null");
-                }
-
-                _expressionParser = value;
+                _expressionParser = value ?? throw new ArgumentException("Expression parser must not be null");
             }
         }
 

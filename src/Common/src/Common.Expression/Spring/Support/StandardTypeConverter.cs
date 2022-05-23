@@ -16,12 +16,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public StandardTypeConverter(IConversionService conversionService)
         {
-            if (conversionService == null)
-            {
-                throw new ArgumentNullException(nameof(conversionService));
-            }
-
-            ConversionService = conversionService;
+            ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
         }
 
         public IConversionService ConversionService { get; set; }

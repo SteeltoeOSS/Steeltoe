@@ -42,17 +42,12 @@ namespace Steeltoe.Messaging.Handler
 
         public HandlerMethod(object handler, MethodInfo handlerMethod)
         {
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
             if (handlerMethod == null)
             {
                 throw new ArgumentNullException(nameof(handlerMethod));
             }
 
-            _handler = handler;
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             HandlerType = handler.GetType();
             Method = handlerMethod;
             _argCount = Method.GetParameters().Length;
@@ -61,17 +56,12 @@ namespace Steeltoe.Messaging.Handler
 
         public HandlerMethod(object handler, string handlerMethodName, params Type[] parameterTypes)
         {
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
             if (string.IsNullOrEmpty(nameof(handlerMethodName)))
             {
                 throw new ArgumentNullException(nameof(handlerMethodName));
             }
 
-            _handler = handler;
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             HandlerType = handler.GetType();
             Method = HandlerType.GetMethod(handlerMethodName, parameterTypes);
             _argCount = Method.GetParameters().Length;
@@ -85,12 +75,7 @@ namespace Steeltoe.Messaging.Handler
                 throw new ArgumentNullException(nameof(handlerMethod));
             }
 
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            _handler = handler;
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             HandlerType = handlerMethod.HandlerType;
             Method = handlerMethod.Method;
             _invoker = handlerMethod.HandlerInvoker;

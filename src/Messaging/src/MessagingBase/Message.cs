@@ -108,18 +108,8 @@ namespace Steeltoe.Messaging
 
         protected internal Message(P payload, IMessageHeaders headers)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (headers == null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-
-            this.payload = payload;
-            this.headers = headers;
+            this.payload = payload ?? throw new ArgumentNullException(nameof(payload));
+            this.headers = headers ?? throw new ArgumentNullException(nameof(headers));
         }
 
         public P Payload => payload;

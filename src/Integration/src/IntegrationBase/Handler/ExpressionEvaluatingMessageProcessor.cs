@@ -23,12 +23,7 @@ namespace Steeltoe.Integration.Handler
         public ExpressionEvaluatingMessageProcessor(IApplicationContext context, IExpression expression, Type expectedType)
             : base(context)
         {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
-
-            Expression = expression;
+            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
             ExpectedType = expectedType;
         }
 

@@ -25,12 +25,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// <param name="providers">The <see cref="IConfigurationProvider"/>s for this configuration.</param>
         public ConfigurationView(IList<IConfigurationProvider> providers)
         {
-            if (providers == null)
-            {
-                throw new ArgumentNullException(nameof(providers));
-            }
-
-            _providers = providers;
+            _providers = providers ?? throw new ArgumentNullException(nameof(providers));
         }
 
         /// <summary>

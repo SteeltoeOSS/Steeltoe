@@ -18,12 +18,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         public SpelExpressionParser(SpelParserOptions configuration)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            _configuration = configuration;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public IExpression ParseRaw(string expressionString)

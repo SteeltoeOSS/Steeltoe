@@ -42,15 +42,10 @@ namespace Steeltoe.Stream.Binder
 
         public DefaultBinderFactory(IApplicationContext context, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderConfigurations binderConfigurations, IEnumerable<IBinderFactoryListener> listeners = null)
         {
-            if (binderConfigurations == null)
-            {
-                throw new ArgumentNullException(nameof(binderConfigurations));
-            }
-
             _listeners = listeners?.ToList();
             _context = context;
             _optionsMonitor = optionsMonitor;
-            _binderConfigurations = binderConfigurations;
+            _binderConfigurations = binderConfigurations ?? throw new ArgumentNullException(nameof(binderConfigurations));
         }
 
         public void Dispose()

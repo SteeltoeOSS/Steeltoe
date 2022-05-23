@@ -277,12 +277,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             public ArgResolver(ResolvableMethod resolvable, params IPredicate<ParameterInfo>[] filters)
             {
-                if (resolvable == null)
-                {
-                    throw new ArgumentNullException(nameof(resolvable));
-                }
-
-                this.resolvable = resolvable;
+                this.resolvable = resolvable ?? throw new ArgumentNullException(nameof(resolvable));
                 this.filters.AddRange(filters);
             }
 
@@ -401,12 +396,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
                 public FuncPredicate(Func<ParameterInfo, bool> func)
                 {
-                    if (func == null)
-                    {
-                        throw new ArgumentNullException(nameof(func));
-                    }
-
-                    this.func = func;
+                    this.func = func ?? throw new ArgumentNullException(nameof(func));
                 }
 
                 public bool Test(ParameterInfo t)

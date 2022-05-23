@@ -13,12 +13,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
     {
         internal JsonStreamConfigurationSource(MemoryStream stream)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            Stream = stream;
+            Stream = stream ?? throw new ArgumentNullException(nameof(stream));
         }
 
         internal MemoryStream Stream { get; }

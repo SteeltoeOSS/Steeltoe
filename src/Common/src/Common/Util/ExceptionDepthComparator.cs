@@ -23,12 +23,7 @@ namespace Steeltoe.Common.Util
 
         public ExceptionDepthComparator(Type exceptionType)
         {
-            if (exceptionType == null)
-            {
-                throw new ArgumentNullException(nameof(exceptionType));
-            }
-
-            _targetException = exceptionType;
+            _targetException = exceptionType ?? throw new ArgumentNullException(nameof(exceptionType));
         }
 
         public int Compare(Type o1, Type o2)

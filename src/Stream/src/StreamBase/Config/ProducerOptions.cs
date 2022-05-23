@@ -20,12 +20,7 @@ namespace Steeltoe.Stream.Config
 
         public ProducerOptions(string bindingName)
         {
-            if (bindingName == null)
-            {
-                throw new ArgumentNullException(nameof(bindingName));
-            }
-
-            BindingName = bindingName;
+            BindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
         }
 
         public string BindingName { get; set; }

@@ -42,14 +42,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [ActivatorUtilitiesConstructor]
         public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
             _logger = logger;
             ApplicationContext = applicationContext;
-            ConnectionFactory = connectionFactory;
+            ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
             DoInitialize();
         }
@@ -61,19 +56,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
-
-            if (template.ConnectionFactory == null)
-            {
-                throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
-            }
-
             _logger = logger;
-            RabbitTemplate = template;
-            ConnectionFactory = template.ConnectionFactory;
+            RabbitTemplate = template ?? throw new ArgumentNullException(nameof(template));
+            ConnectionFactory = template.ConnectionFactory ?? throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
             DoInitialize();
         }
 

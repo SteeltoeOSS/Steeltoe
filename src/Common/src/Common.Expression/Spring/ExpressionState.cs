@@ -32,19 +32,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public ExpressionState(IEvaluationContext context, ITypedValue rootObject, SpelParserOptions configuration)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            EvaluationContext = context;
+            EvaluationContext = context ?? throw new ArgumentNullException(nameof(context));
             RootContextObject = rootObject;
-            Configuration = configuration;
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public List<IPropertyAccessor> PropertyAccessors => EvaluationContext.PropertyAccessors;

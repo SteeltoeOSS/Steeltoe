@@ -114,12 +114,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
                 public HeadersExchangeSingleValueBindingCreator(HeadersExchangeMapConfigurer configurer, string key)
                 {
-                    if (key == null)
-                    {
-                        throw new ArgumentNullException(nameof(key));
-                    }
-
-                    _key = key;
+                    _key = key ?? throw new ArgumentNullException(nameof(key));
                     _configurer = configurer;
                 }
 

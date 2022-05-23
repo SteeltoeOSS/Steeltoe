@@ -17,12 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public Base64UrlNamingStrategy(string prefix)
         {
-            if (prefix == null)
-            {
-                throw new ArgumentNullException(nameof(prefix));
-            }
-
-            Prefix = prefix;
+            Prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
         }
 
         public string Prefix { get; }

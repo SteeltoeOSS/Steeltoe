@@ -24,17 +24,12 @@ namespace Steeltoe.Common.Transaction
 
         public void InitApplicationException(Exception exception)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
             if (ApplicationException != null)
             {
                 throw new InvalidOperationException("Already holding an application exception: " + ApplicationException);
             }
 
-            ApplicationException = exception;
+            ApplicationException = exception ?? throw new ArgumentNullException(nameof(exception));
         }
 
         public bool Contains(Type exceptionType)

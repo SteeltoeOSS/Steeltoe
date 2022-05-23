@@ -22,12 +22,7 @@ namespace Steeltoe.Messaging.Converter
         public StringMessageConverter(Encoding defaultCharset)
         : base(new MimeType("text", "plain", defaultCharset))
         {
-            if (defaultCharset == null)
-            {
-                throw new ArgumentNullException(nameof(defaultCharset));
-            }
-
-            _defaultCharset = defaultCharset;
+            _defaultCharset = defaultCharset ?? throw new ArgumentNullException(nameof(defaultCharset));
         }
 
         public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;

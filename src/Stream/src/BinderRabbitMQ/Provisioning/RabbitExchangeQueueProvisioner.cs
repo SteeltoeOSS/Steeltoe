@@ -753,12 +753,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
             public RabbitProducerDestination(IExchange exchange, RabbitConfig.IBinding binding)
             {
-                if (exchange == null)
-                {
-                    throw new ArgumentNullException(nameof(exchange));
-                }
-
-                Exchange = exchange;
+                Exchange = exchange ?? throw new ArgumentNullException(nameof(exchange));
                 Binding = binding;
             }
 
@@ -781,12 +776,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
             public RabbitConsumerDestination(string queueName, RabbitConfig.IBinding binding)
             {
-                if (queueName == null)
-                {
-                    throw new ArgumentNullException(nameof(queueName));
-                }
-
-                Name = queueName;
+                Name = queueName ?? throw new ArgumentNullException(nameof(queueName));
                 Binding = binding;
             }
 

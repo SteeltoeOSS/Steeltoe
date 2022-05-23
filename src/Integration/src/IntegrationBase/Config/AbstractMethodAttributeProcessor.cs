@@ -40,12 +40,7 @@ namespace Steeltoe.Integration.Config
 
         protected AbstractMethodAttributeProcessor(IApplicationContext applicatonContext, ILogger logger)
         {
-            if (applicatonContext == null)
-            {
-                throw new ArgumentNullException(nameof(applicatonContext));
-            }
-
-            ApplicationContext = applicatonContext;
+            ApplicationContext = applicatonContext ?? throw new ArgumentNullException(nameof(applicatonContext));
             _logger = logger;
             MessageHandlerProperties.Add(SEND_TIMEOUT_PROPERTY);
             ConversionService = ApplicationContext.GetService<IConversionService>();

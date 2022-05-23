@@ -131,31 +131,16 @@ namespace Steeltoe.Messaging.Support
 
         protected internal AbstractMessageBuilder(MessageHeaderAccessor accessor)
         {
-            if (accessor == null)
-            {
-                throw new ArgumentNullException(nameof(accessor));
-            }
-
             payload = null;
             originalMessage = null;
-            headerAccessor = accessor;
+            headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
         }
 
         protected internal AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (accessor == null)
-            {
-                throw new ArgumentNullException(nameof(accessor));
-            }
-
-            this.payload = payload;
+            this.payload = payload ?? throw new ArgumentNullException(nameof(payload));
             originalMessage = null;
-            headerAccessor = accessor;
+            headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
         }
 
         public abstract AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor);
@@ -220,12 +205,7 @@ namespace Steeltoe.Messaging.Support
 
         public override AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor)
         {
-            if (accessor == null)
-            {
-                throw new ArgumentNullException(nameof(accessor));
-            }
-
-            headerAccessor = accessor;
+            headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             return this;
         }
 

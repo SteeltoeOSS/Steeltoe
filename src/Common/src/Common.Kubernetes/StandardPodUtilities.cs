@@ -20,19 +20,9 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         public StandardPodUtilities(KubernetesApplicationOptions kubernetesApplicationOptions, ILogger logger = null, IKubernetes kubernetes = null)
         {
-            if (kubernetesApplicationOptions is null)
-            {
-                throw new ArgumentNullException(nameof(kubernetesApplicationOptions));
-            }
-
-            if (kubernetes is null)
-            {
-                throw new ArgumentNullException(nameof(kubernetes), "A Kubernetes client is required");
-            }
-
-            _applicationOptions = kubernetesApplicationOptions;
+            _applicationOptions = kubernetesApplicationOptions ?? throw new ArgumentNullException(nameof(kubernetesApplicationOptions));
             _logger = logger;
-            _kubernetes = kubernetes;
+            _kubernetes = kubernetes ?? throw new ArgumentNullException(nameof(kubernetes), "A Kubernetes client is required");
         }
 
         public async Task<V1Pod> GetCurrentPodAsync()

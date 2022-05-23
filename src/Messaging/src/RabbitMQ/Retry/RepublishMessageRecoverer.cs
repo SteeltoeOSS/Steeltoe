@@ -38,12 +38,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
 
         public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, string errorRoutingKey, ILogger logger = null)
         {
-            if (errorTemplate == null)
-            {
-                throw new ArgumentNullException(nameof(errorTemplate));
-            }
-
-            ErrorTemplate = errorTemplate;
+            ErrorTemplate = errorTemplate ?? throw new ArgumentNullException(nameof(errorTemplate));
             ErrorExchangeName = errorExchange;
             ErrorRoutingKey = errorRoutingKey;
             MaxStackTraceLength = int.MaxValue;

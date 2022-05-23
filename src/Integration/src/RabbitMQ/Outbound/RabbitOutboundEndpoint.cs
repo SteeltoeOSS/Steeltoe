@@ -22,12 +22,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)
             : base(context, logger)
         {
-            if (rabbitTemplate == null)
-            {
-                throw new ArgumentNullException(nameof(rabbitTemplate));
-            }
-
-            Template = rabbitTemplate;
+            Template = rabbitTemplate ?? throw new ArgumentNullException(nameof(rabbitTemplate));
             ConnectionFactory = Template.ConnectionFactory;
         }
 

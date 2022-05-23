@@ -16,18 +16,13 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         public MappingDescription(string routeHandler, IRouteDetails routeDetails)
         {
-            if (routeHandler == null)
-            {
-                throw new ArgumentNullException(nameof(routeHandler));
-            }
-
             if (routeDetails == null)
             {
                 throw new ArgumentNullException(nameof(routeDetails));
             }
 
             Predicate = CreatePredicateString(routeDetails);
-            Handler = routeHandler;
+            Handler = routeHandler ?? throw new ArgumentNullException(nameof(routeHandler));
         }
 
         public MappingDescription(MethodInfo routeHandler, IRouteDetails routeDetails)

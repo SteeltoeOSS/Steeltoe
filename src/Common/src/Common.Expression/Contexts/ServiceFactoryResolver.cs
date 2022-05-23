@@ -13,12 +13,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ServiceFactoryResolver(IApplicationContext applicationContext)
         {
-            if (applicationContext == null)
-            {
-                throw new ArgumentNullException(nameof(applicationContext));
-            }
-
-            _applicationContext = applicationContext;
+            _applicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
         public static Type GetServiceNameAndType(IEvaluationContext context, string serviceName, out string name)

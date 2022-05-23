@@ -50,12 +50,7 @@ namespace Steeltoe.Integration.Channel
         public QueueChannel(IApplicationContext context, Channels.Channel<IMessage> channel, string name, ILogger logger = null)
             : base(context, name, logger)
         {
-            if (channel == null)
-            {
-                throw new ArgumentNullException(nameof(channel));
-            }
-
-            _channel = channel;
+            _channel = channel ?? throw new ArgumentNullException(nameof(channel));
             Writer = new QueueChannelWriter(this, logger);
             Reader = new QueueChannelReader(this, logger);
         }

@@ -20,12 +20,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Transaction
         public RabbitTransactionManager(IConnectionFactory connectionFactory, ILogger logger = null)
             : base(logger)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            ConnectionFactory = connectionFactory;
+            ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         public IConnectionFactory ConnectionFactory { get; set; }

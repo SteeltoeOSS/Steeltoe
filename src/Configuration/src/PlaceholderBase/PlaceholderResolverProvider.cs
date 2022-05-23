@@ -36,12 +36,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// <param name="logFactory">the logger factory to use</param>
         public PlaceholderResolverProvider(IConfigurationRoot configuration, ILoggerFactory logFactory = null)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            _configuration = configuration;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
@@ -54,12 +49,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         /// <param name="logFactory">the logger factory to use</param>
         public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory logFactory = null)
         {
-            if (providers == null)
-            {
-                throw new ArgumentNullException(nameof(providers));
-            }
-
-            _providers = providers;
+            _providers = providers ?? throw new ArgumentNullException(nameof(providers));
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 

@@ -13,34 +13,24 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
     {
         public Declarables(string name, params IDeclarable[] declarables)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
             if (declarables == null)
             {
                 throw new ArgumentNullException(nameof(declarables));
             }
 
             DeclarableList = new List<IDeclarable>(declarables);
-            ServiceName = name;
+            ServiceName = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         public Declarables(string name, List<IDeclarable> declarables)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
             if (declarables == null)
             {
                 throw new ArgumentNullException(nameof(declarables));
             }
 
             DeclarableList = new List<IDeclarable>(declarables);
-            ServiceName = name;
+            ServiceName = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         public List<IDeclarable> DeclarableList { get; }

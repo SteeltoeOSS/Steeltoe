@@ -18,12 +18,7 @@ namespace Steeltoe.Messaging.Converter
 
         public GenericMessageConverter(IConversionService conversionService)
         {
-            if (conversionService == null)
-            {
-                throw new ArgumentNullException(nameof(conversionService));
-            }
-
-            _conversionService = conversionService;
+            _conversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
         }
 
         public override object FromMessage(IMessage message, Type targetClass)

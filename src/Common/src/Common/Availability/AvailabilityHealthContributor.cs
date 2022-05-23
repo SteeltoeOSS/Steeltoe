@@ -18,12 +18,7 @@ namespace Steeltoe.Common.Availability
 
         protected AvailabilityHealthContributor(Dictionary<IAvailabilityState, HealthStatus> stateMappings, ILogger logger = null)
         {
-            if (stateMappings is null)
-            {
-                throw new ArgumentNullException(nameof(stateMappings));
-            }
-
-            _stateMappings = stateMappings;
+            _stateMappings = stateMappings ?? throw new ArgumentNullException(nameof(stateMappings));
             _logger = logger;
         }
 

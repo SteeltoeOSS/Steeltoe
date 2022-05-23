@@ -13,12 +13,7 @@ namespace Steeltoe.Messaging.Core
 
         public DefaultMessageChannelDestinationResolver(IApplicationContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            Context = context;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public virtual IMessageChannel ResolveDestination(string name)

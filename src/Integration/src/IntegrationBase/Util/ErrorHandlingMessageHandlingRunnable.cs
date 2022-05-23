@@ -16,18 +16,8 @@ namespace Steeltoe.Integration.Util
 
         public ErrorHandlingMessageHandlingRunnable(IMessageHandlingRunnable runnable, IErrorHandler errorHandler)
         {
-            if (runnable == null)
-            {
-                throw new ArgumentNullException(nameof(runnable));
-            }
-
-            if (errorHandler == null)
-            {
-                throw new ArgumentNullException(nameof(errorHandler));
-            }
-
-            _runnable = runnable;
-            _errorHandler = errorHandler;
+            _runnable = runnable ?? throw new ArgumentNullException(nameof(runnable));
+            _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         }
 
         public IMessage Message => _runnable.Message;

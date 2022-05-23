@@ -11,12 +11,7 @@ namespace Steeltoe.Common.Util
     {
         public SimpleRouteMatcher(IPathMatcher pathMatcher)
         {
-            if (pathMatcher == null)
-            {
-                throw new ArgumentNullException(nameof(pathMatcher));
-            }
-
-            PathMatcher = pathMatcher;
+            PathMatcher = pathMatcher ?? throw new ArgumentNullException(nameof(pathMatcher));
         }
 
         public IPathMatcher PathMatcher { get; }

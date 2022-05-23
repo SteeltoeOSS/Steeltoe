@@ -99,12 +99,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("TypeLocator can not be null");
-                }
-
-                _typeLocator = value;
+                _typeLocator = value ?? throw new ArgumentNullException("TypeLocator can not be null");
             }
         }
 
@@ -122,12 +117,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("TypeConverter can not be null");
-                }
-
-                _typeConverter = value;
+                _typeConverter = value ?? throw new ArgumentNullException("TypeConverter can not be null");
             }
         }
 
@@ -137,12 +127,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("TypeComparator can not be null");
-                }
-
-                _typeComparator = value;
+                _typeComparator = value ?? throw new ArgumentNullException("TypeComparator can not be null");
             }
         }
 
@@ -152,12 +137,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("OperatorOverloader can not be null");
-                }
-
-                _operatorOverloader = value;
+                _operatorOverloader = value ?? throw new ArgumentNullException("OperatorOverloader can not be null");
             }
         }
 

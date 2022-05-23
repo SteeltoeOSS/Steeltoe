@@ -30,24 +30,9 @@ namespace Steeltoe.Integration.Rabbit.Inbound
         public RabbitMessageSource(IApplicationContext context, IConnectionFactory connectionFactory, RabbitAckCallbackFactory ackCallbackFactory, string queueName)
             : base(context)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            if (ackCallbackFactory == null)
-            {
-                throw new ArgumentNullException(nameof(ackCallbackFactory));
-            }
-
-            if (queueName == null)
-            {
-                throw new ArgumentNullException(nameof(queueName));
-            }
-
-            ConnectionFactory = connectionFactory;
-            AckCallbackFactory = ackCallbackFactory;
-            QueueName = queueName;
+            ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            AckCallbackFactory = ackCallbackFactory ?? throw new ArgumentNullException(nameof(ackCallbackFactory));
+            QueueName = queueName ?? throw new ArgumentNullException(nameof(queueName));
         }
 
         public IConnectionFactory ConnectionFactory { get; }

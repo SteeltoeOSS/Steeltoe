@@ -16,12 +16,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public CloudFoundryConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
         {
-            if (settingsReader == null)
-            {
-                throw new ArgumentNullException(nameof(settingsReader));
-            }
-
-            _settingsReader = settingsReader;
+            _settingsReader = settingsReader ?? throw new ArgumentNullException(nameof(settingsReader));
         }
 
         internal IDictionary<string, string> Properties => Data;

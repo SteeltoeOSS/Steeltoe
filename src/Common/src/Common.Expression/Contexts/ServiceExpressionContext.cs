@@ -14,12 +14,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ServiceExpressionContext(IApplicationContext applicationContext)
         {
-            if (applicationContext == null)
-            {
-                throw new ArgumentNullException(nameof(applicationContext));
-            }
-
-            ApplicationContext = applicationContext;
+            ApplicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
         public IApplicationContext ApplicationContext { get; }

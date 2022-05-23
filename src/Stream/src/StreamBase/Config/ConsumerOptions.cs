@@ -28,12 +28,7 @@ namespace Steeltoe.Stream.Config
 
         public ConsumerOptions(string bindingName)
         {
-            if (bindingName == null)
-            {
-                throw new ArgumentNullException(nameof(bindingName));
-            }
-
-            BindingName = bindingName;
+            BindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
         }
 
         public string BindingName { get; set; }

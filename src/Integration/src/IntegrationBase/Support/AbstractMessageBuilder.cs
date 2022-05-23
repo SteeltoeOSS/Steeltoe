@@ -27,12 +27,7 @@ namespace Steeltoe.Integration.Support
 
         protected AbstractMessageBuilder(object payload, IMessage originalMessage)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            _payload = payload;
+            _payload = payload ?? throw new ArgumentNullException(nameof(payload));
             _originalMessage = originalMessage;
             _headerAccessor = new IntegrationMessageHeaderAccessor(originalMessage);
             if (originalMessage != null)

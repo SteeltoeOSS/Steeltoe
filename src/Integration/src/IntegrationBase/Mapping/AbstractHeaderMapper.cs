@@ -276,13 +276,8 @@ namespace Steeltoe.Integration.Mapping
 
             public ContentBasedHeaderMatcher(bool match, List<string> content)
             {
-                if (content == null)
-                {
-                    throw new ArgumentNullException(nameof(content));
-                }
-
                 Match = match;
-                Content = content;
+                Content = content ?? throw new ArgumentNullException(nameof(content));
             }
 
             public bool MatchHeader(string headerName)
