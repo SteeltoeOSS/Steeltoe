@@ -579,7 +579,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                         RC.IModel channelForCheck = null;
                         try
                         {
-                            channelForCheck = ConnectionFactory.CreateConnection().CreateChannel(false);
+                            channelForCheck = ConnectionFactory.CreateConnection().CreateChannel();
                             channelForCheck.QueueDeclarePassive(queueToCheck);
                             Logger?.LogInformation("Queue '{queue}' is now available", queueToCheck);
                         }

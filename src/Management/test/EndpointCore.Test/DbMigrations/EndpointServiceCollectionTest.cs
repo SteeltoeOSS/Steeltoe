@@ -19,11 +19,11 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         {
             var services = new ServiceCollection();
             ServiceCollection nullServices = null;
-            nullServices.Invoking(s => s.AddDbMigrationsActuator(null))
+            nullServices.Invoking(s => s.AddDbMigrationsActuator())
                 .Should()
                 .Throw<ArgumentNullException>()
                 .Where(x => x.ParamName == "services");
-            services.Invoking(s => s.AddDbMigrationsActuator(null))
+            services.Invoking(s => s.AddDbMigrationsActuator())
                 .Should()
                 .Throw<ArgumentNullException>()
                 .Where(x => x.ParamName == "config");

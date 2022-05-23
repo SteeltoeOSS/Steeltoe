@@ -175,7 +175,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             }
             catch (Exception)
             {
-                previousView = exporter.GetCollectionResponse(default);
+                previousView = exporter.GetCollectionResponse();
                 return ExportResult.Failure;
             }
         }

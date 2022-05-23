@@ -50,12 +50,12 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
             // make sure channel is not cached
             var conn = ccf.CreateConnection();
-            var notCached = conn.CreateChannel(false);
+            var notCached = conn.CreateChannel();
             connection.Verify(c => c.CreateModel(), Times.Exactly(2));
             var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK);
             callback.Acknowledge(Status.ACCEPT);
             channel.Verify(c => c.BasicAck(123ul, false));
-            var cached = conn.CreateChannel(false); // should have been "closed"
+            var cached = conn.CreateChannel(); // should have been "closed"
             connection.Verify(c => c.CreateModel(), Times.Exactly(2));
             notCached.Close();
             cached.Close();

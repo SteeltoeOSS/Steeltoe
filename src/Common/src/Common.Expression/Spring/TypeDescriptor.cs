@@ -68,7 +68,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             if (_unBoxed == null)
             {
-                _unBoxed = new TypeDescriptor(Value, false)
+                _unBoxed = new TypeDescriptor(Value)
                 {
                     _boxed = this
                 };

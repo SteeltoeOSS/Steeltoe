@@ -756,7 +756,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual object ReceiveAndConvert(string queueName, int timeoutMillis, Type type)
         {
-            return DoReceiveAndConvert(queueName, timeoutMillis, type, default);
+            return DoReceiveAndConvert(queueName, timeoutMillis, type);
         }
 
         public virtual Task<T> ReceiveAndConvertAsync<T>(int timeoutMillis, CancellationToken cancellationToken = default)
@@ -1260,7 +1260,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
                 try
                 {
-                    channel = connection.CreateChannel(false);
+                    channel = connection.CreateChannel();
                     if (channel == null)
                     {
                         throw new InvalidOperationException("Connection returned a null channel");
@@ -2425,7 +2425,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
                     try
                     {
-                        channel = connection.CreateChannel(false);
+                        channel = connection.CreateChannel();
                         if (channel == null)
                         {
                             throw new InvalidOperationException("Connection returned a null channel");

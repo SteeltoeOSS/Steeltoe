@@ -42,7 +42,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var memSource = new MemoryConfigurationSource();
             IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
 
-            var source = new PlaceholderResolverSource(sources, null);
+            var source = new PlaceholderResolverSource(sources);
             var provider = source.Build(new ConfigurationBuilder());
             Assert.IsType<PlaceholderResolverProvider>(provider);
         }

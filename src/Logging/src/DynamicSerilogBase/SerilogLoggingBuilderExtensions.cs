@@ -89,7 +89,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory  </param>
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
         [Obsolete("Please use AddDynamicSerilog instead")]
-        public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder) => builder.AddDynamicSerilog(false);
+        public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder) => builder.AddDynamicSerilog();
 
         /// <summary>
         /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports

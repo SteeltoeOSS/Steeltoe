@@ -26,11 +26,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
 
             var called = new AtomicInteger(0);
-            var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object, null);
+            var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
             var listener = new TestListener(called);
             connectionFactory.SetChannelListeners(new List<IChannelListener>() { listener });
             var con = connectionFactory.CreateConnection();
-            var channel = con.CreateChannel(false);
+            var channel = con.CreateChannel();
             Assert.Equal(1, called.Value);
 
             channel.Close();
@@ -39,7 +39,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             mockConnection.Verify((c) => c.Close(), Times.Never);
 
             con = connectionFactory.CreateConnection();
-            channel = con.CreateChannel(false);
+            channel = con.CreateChannel();
             Assert.Equal(2, called.Value);
 
             connectionFactory.Destroy();

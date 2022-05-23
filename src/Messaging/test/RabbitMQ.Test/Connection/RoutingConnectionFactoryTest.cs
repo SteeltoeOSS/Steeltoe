@@ -299,7 +299,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             private readonly SimpleRoutingConnectionFactory simpleFactory;
 
             public TestDirectReplyToMessageListenerContainer(SimpleRoutingConnectionFactory connectionFactory, AtomicReference<object> connectionMakerKey)
-                : base(null, connectionFactory, null, null)
+                : base(null, connectionFactory)
             {
                 this.connectionMakerKey = connectionMakerKey;
                 simpleFactory = connectionFactory;
@@ -317,7 +317,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             private readonly SimpleRoutingConnectionFactory simpleFactory;
 
             public TestDirectMessageListenerContainer(SimpleRoutingConnectionFactory connectionFactory, AtomicReference<object> connectionMakerKey2)
-                : base(null, connectionFactory, null, null)
+                : base(null, connectionFactory)
             {
                 this.connectionMakerKey2 = connectionMakerKey2;
                 simpleFactory = connectionFactory;

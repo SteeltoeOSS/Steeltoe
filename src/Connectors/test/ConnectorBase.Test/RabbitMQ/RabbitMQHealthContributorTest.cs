@@ -77,7 +77,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             mockConnFactory.Setup(s => s.CreateConnection()).Returns(mockConnection.Object);
             var mockProviderFactory = new Mock<RabbitMQProviderConnectorFactory>(null, new RabbitMQProviderConnectorOptions(), RabbitMQTypeLocator.ConnectionFactory);
             mockProviderFactory.Setup(a => a.Create(null)).Returns(mockConnFactory.Object);
-            var h = new RabbitMQHealthContributor(mockProviderFactory.Object, null);
+            var h = new RabbitMQHealthContributor(mockProviderFactory.Object);
 
             // check health, get object that is closed
             var status = h.Health();

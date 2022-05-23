@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
             var config = builder.Build();
-            var result = EurekaClientService.GetInstances(config, "testService", null);
+            var result = EurekaClientService.GetInstances(config, "testService");
             Assert.NotNull(result);
             Assert.Empty(result);
         }
@@ -75,7 +75,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
             var config = builder.Build();
-            var result = EurekaClientService.GetServices(config, null);
+            var result = EurekaClientService.GetServices(config);
             Assert.NotNull(result);
             Assert.Empty(result);
         }

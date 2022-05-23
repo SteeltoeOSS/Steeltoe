@@ -86,11 +86,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             };
             var channels = new List<RC.IModel>
             {
-                connections[0].CreateChannel(false)
+                connections[0].CreateChannel()
             };
             try
             {
-                channels.Add(connections[0].CreateChannel(false));
+                channels.Add(connections[0].CreateChannel());
                 throw new Exception("Exception expected");
             }
             catch (RabbitTimeoutException)
@@ -98,10 +98,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 // Ignore
             }
 
-            channels.Add(connections[1].CreateChannel(false));
+            channels.Add(connections[1].CreateChannel());
             try
             {
-                channels.Add(connections[1].CreateChannel(false));
+                channels.Add(connections[1].CreateChannel());
                 throw new Exception("Exception expected");
             }
             catch (RabbitTimeoutException)
@@ -112,8 +112,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channels[0].Close();
             channels[1].Close();
 
-            channels.Add(connections[0].CreateChannel(false));
-            channels.Add(connections[1].CreateChannel(false));
+            channels.Add(connections[0].CreateChannel());
+            channels.Add(connections[1].CreateChannel());
 
             Assert.Same(channels[2], channels[0]);
             Assert.Same(channels[3], channels[1]);
@@ -142,8 +142,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var channels = new List<RC.IModel>();
             for (var i = 0; i < 5; i++)
             {
-                channels.Add(connections[0].CreateChannel(false));
-                channels.Add(connections[1].CreateChannel(false));
+                channels.Add(connections[0].CreateChannel());
+                channels.Add(connections[1].CreateChannel());
                 channels.Add(connections[0].CreateChannel(true));
                 channels.Add(connections[1].CreateChannel(true));
             }
@@ -166,8 +166,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(3, cachedTxChannels[(ChannelCachingConnectionProxy)connections[1]].Count);
             for (var i = 0; i < 3; i++)
             {
-                Assert.Equal(channels[i * 4], connections[0].CreateChannel(false));
-                Assert.Equal(channels[(i * 4) + 1], connections[1].CreateChannel(false));
+                Assert.Equal(channels[i * 4], connections[0].CreateChannel());
+                Assert.Equal(channels[(i * 4) + 1], connections[1].CreateChannel());
                 Assert.Equal(channels[(i * 4) + 2], connections[0].CreateChannel(true));
                 Assert.Equal(channels[(i * 4) + 3], connections[1].CreateChannel(true));
             }
@@ -203,7 +203,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var rabbitConnection = connection.Connection;
             rabbitConnection.Close();
 
-            var channel = connection.CreateChannel(false);
+            var channel = connection.CreateChannel();
             allocatedConnections = connectionFactory._allocatedConnections;
             Assert.Equal(2, allocatedConnections.Count);
             props = connectionFactory.GetCacheProperties();
@@ -331,7 +331,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             connectionFactory.RabbitConnectionFactory.RequestedChannelMax = 1;
             var connection = connectionFactory.CreateConnection();
             connection.CreateChannel(true);
-            Assert.Throws<RabbitResourceNotAvailableException>(() => connection.CreateChannel(false));
+            Assert.Throws<RabbitResourceNotAvailableException>(() => connection.CreateChannel());
         }
     }
 }

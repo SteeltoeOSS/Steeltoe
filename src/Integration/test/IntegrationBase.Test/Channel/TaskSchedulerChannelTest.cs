@@ -112,7 +112,7 @@ namespace Steeltoe.Integration.Channel.Test
         public void VerifyFailoverWithoutLoadBalancing()
         {
             var numberOfMessages = 12;
-            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             var latch = new CountdownEvent(numberOfMessages);
             var handler1 = new TestHandler(latch);
             var handler2 = new TestHandler(latch);

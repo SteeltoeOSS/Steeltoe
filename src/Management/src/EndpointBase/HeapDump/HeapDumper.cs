@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 }
 
                 _logger?.LogInformation($"Attempting to create a '{dumpType}' dump");
-                new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump((DumpType)dumpType, fileName, false);
+                new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump((DumpType)dumpType, fileName);
                 return fileName;
             }
             catch (DiagnosticsClientException dcex)

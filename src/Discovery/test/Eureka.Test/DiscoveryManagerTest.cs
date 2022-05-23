@@ -26,14 +26,14 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Initialize_Throws_IfInstanceConfigNull()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(new EurekaClientConfig(), (EurekaInstanceConfig)null, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(new EurekaClientConfig(), (EurekaInstanceConfig)null));
             Assert.Contains("instanceConfig", ex.Message);
         }
 
         [Fact]
         public void Initialize_Throws_IfClientConfigNull()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(null, new EurekaInstanceConfig(), null));
+            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(null, new EurekaInstanceConfig()));
             Assert.Contains("clientConfig", ex.Message);
         }
 

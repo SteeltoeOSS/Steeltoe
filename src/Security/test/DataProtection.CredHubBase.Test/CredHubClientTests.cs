@@ -393,7 +393,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
                 .WithContent("{\"mode\":\"converge\",\"parameters\":{\"key_length\":2048},\"name\":\"example-rsa\",\"type\":\"RSA\"}")
                 .Respond("application/json", "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
-            var request = new RsaGenerationRequest("example-rsa", CertificateKeyLength.Length_2048);
+            var request = new RsaGenerationRequest("example-rsa");
 
             var response = await client.GenerateAsync<RsaCredential>(request);
 

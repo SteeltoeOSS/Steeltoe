@@ -74,7 +74,7 @@ namespace Steeltoe.Connector.Hystrix
 
         public virtual object CreateConnection(string connectionString)
         {
-            var inst = ReflectionHelpers.CreateInstance(_type, null);
+            var inst = ReflectionHelpers.CreateInstance(_type);
             if (inst == null)
             {
                 return null;

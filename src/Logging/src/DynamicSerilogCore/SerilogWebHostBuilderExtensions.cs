@@ -35,7 +35,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
                    }
                    else
                    {
-                       logBuilder.AddDynamicSerilog(null, false);
+                       logBuilder.AddDynamicSerilog(null);
                    }
                });
         }

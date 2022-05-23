@@ -55,7 +55,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var props = channel1.Channel.CreateBasicProperties();
             props.ReplyTo = Address.AMQ_RABBITMQ_REPLY_TO;
             RC.IModelExensions.BasicPublish(channel1.Channel, string.Empty, TEST_RELEASE_CONSUMER_Q, props, foobytes);
-            var replyChannel = connectionFactory.CreateConnection().CreateChannel(false);
+            var replyChannel = connectionFactory.CreateConnection().CreateChannel();
             var request = replyChannel.BasicGet(TEST_RELEASE_CONSUMER_Q, true);
             var n = 0;
             while (n++ < 100 && request == null)

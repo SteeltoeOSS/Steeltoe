@@ -104,7 +104,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 }
 
                 Assert.True(n < 100);
-                var channel = connectionFactory.CreateConnection().CreateChannel(false);
+                var channel = connectionFactory.CreateConnection().CreateChannel();
                 var consumer = new RC.DefaultBasicConsumer(channel);
                 RC.IModelExensions.BasicConsume(channel, queueName, true, consumer);
                 n = 0;

@@ -29,8 +29,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Constructor_ThrowsIfNulls()
         {
-            Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(new MetricsEndpointOptions(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null));
+            Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(new MetricsEndpointOptions(), null));
         }
 
         [Fact]

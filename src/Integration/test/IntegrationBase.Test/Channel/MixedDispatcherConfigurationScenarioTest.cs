@@ -54,7 +54,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancing()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null)
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover")
             {
                 Failover = false
             };
@@ -85,7 +85,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null)
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover")
             {
                 Failover = false
             };
@@ -134,7 +134,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor", null)
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor")
             {
                 Failover = false
             };
@@ -175,7 +175,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancing()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null)
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover")
             {
                 Failover = false
             };
@@ -223,7 +223,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null)
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover")
             {
                 Failover = false
             };
@@ -277,7 +277,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null)
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default)
             {
                 Failover = false
             };
@@ -332,7 +332,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancing()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "loadBalancerNoFailover", null)
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "loadBalancerNoFailover")
             {
                 Failover = true
             };
@@ -367,7 +367,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerFailover", null)
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerFailover")
             {
                 Failover = true
             };

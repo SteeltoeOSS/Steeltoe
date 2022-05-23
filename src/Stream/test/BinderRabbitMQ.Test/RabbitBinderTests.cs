@@ -158,7 +158,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var expression = GetPropertyValue<SpelExpression>(endpoint, "ConfirmCorrelationExpression");
             Assert.NotNull(expression);
             Assert.Equal("#root", GetPropertyValue<string>(expression, "ExpressionString"));
-            var template = new RabbitTemplate(null);
+            var template = new RabbitTemplate();
             var accessor = new WrapperAccessor(null, template);
             var correlationData = accessor.GetWrapper(message);
 

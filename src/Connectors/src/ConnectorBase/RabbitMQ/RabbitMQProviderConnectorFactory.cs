@@ -74,7 +74,7 @@ namespace Steeltoe.Connector.RabbitMQ
 
         public virtual object CreateConnection(string connectionString)
         {
-            var inst = ReflectionHelpers.CreateInstance(ConnectorType, null);
+            var inst = ReflectionHelpers.CreateInstance(ConnectorType);
             if (inst == null)
             {
                 return null;

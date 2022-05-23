@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             try
             {
                 // TODO: Honor option with respect to dump type (how? - IHeapDumpOptions don't seems to have the information)
-                new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump(DumpType.Full, fileName, false);
+                new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump(DumpType.Full, fileName);
                 return fileName;
             }
             catch (DiagnosticsClientException dcex)

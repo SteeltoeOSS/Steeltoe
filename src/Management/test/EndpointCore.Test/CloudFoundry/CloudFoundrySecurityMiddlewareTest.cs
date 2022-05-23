@@ -316,7 +316,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var opts = new CloudFoundryEndpointOptions();
             var mgmtOptions = new CloudFoundryManagementOptions();
             mgmtOptions.EndpointOptions.Add(opts);
-            var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
+            var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions);
             var context = CreateRequest("GET", "/");
             var token = middle.GetAccessToken(context.Request);
             Assert.Null(token);
@@ -333,7 +333,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var opts = new CloudFoundryEndpointOptions();
             var mgmtOptions = new CloudFoundryManagementOptions();
             mgmtOptions.EndpointOptions.Add(opts);
-            var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
+            var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions);
             var context = CreateRequest("GET", "/");
             var result = await middle.GetPermissions(context);
             Assert.NotNull(result);

@@ -194,7 +194,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public override void Load()
         {
-            LoadInternal(true);
+            LoadInternal();
         }
 
         [Obsolete("Will be removed in next release, use the ConfigServerConfigurationSource")]

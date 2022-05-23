@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
     {
         public static IServiceCollection AddRabbitTemplate(this IServiceCollection services)
         {
-            return services.AddRabbitTemplate(RabbitTemplate.DEFAULT_SERVICE_NAME, null);
+            return services.AddRabbitTemplate(RabbitTemplate.DEFAULT_SERVICE_NAME);
         }
 
         public static IServiceCollection AddRabbitTemplate(this IServiceCollection services, Action<IServiceProvider, RabbitTemplate> configure)
@@ -63,7 +63,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitAdmin(this IServiceCollection services)
         {
-            return services.AddRabbitAdmin(RabbitAdmin.DEFAULT_SERVICE_NAME, null);
+            return services.AddRabbitAdmin(RabbitAdmin.DEFAULT_SERVICE_NAME);
         }
 
         public static IServiceCollection AddRabbitAdmin(this IServiceCollection services, Action<IServiceProvider, RabbitAdmin> configure)

@@ -102,8 +102,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 ChannelCacheSize = 2
             };
             var con = ccf.CreateConnection();
-            var channel1 = con.CreateChannel(false);
-            var channel2 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
+            var channel2 = con.CreateChannel();
             var txChannel = (IChannelProxy)con.CreateChannel(true);
             Assert.True(txChannel.IsTransactional);
             mockTxChanel.Verify((c) => c.TxSelect(), Times.Once);
@@ -113,8 +113,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel1.Close(); // should be ignored, and add last into channel cache.
             channel2.Close(); // should be ignored, and add last into channel cache.
 
-            var ch1 = con.CreateChannel(false); // remove first entry in cache
-            var ch2 = con.CreateChannel(false); // remove first entry in cache
+            var ch1 = con.CreateChannel(); // remove first entry in cache
+            var ch2 = con.CreateChannel(); // remove first entry in cache
 
             Assert.NotSame(ch1, ch2);
             Assert.Same(ch1, channel1);
@@ -157,11 +157,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var con = ccf.CreateConnection();
 
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
 
             // cache size is 1, but the other connection is not released yet so this
             // creates a new one
-            var channel2 = con.CreateChannel(false);
+            var channel2 = con.CreateChannel();
             Assert.NotSame(channel1, channel2);
 
             // should be ignored, and added last into channel cache.
@@ -171,10 +171,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel2.Close();
 
             // remove first entry in cache (channel1)
-            var ch1 = con.CreateChannel(false);
+            var ch1 = con.CreateChannel();
 
             // create a new channel
-            var ch2 = con.CreateChannel(false);
+            var ch2 = con.CreateChannel();
 
             Assert.NotSame(ch1, ch2);
             Assert.Same(channel1, ch1);
@@ -212,10 +212,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var con = ccf.CreateConnection();
 
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
             try
             {
-                con.CreateChannel(false);
+                con.CreateChannel();
                 throw new Exception("Exception expected");
             }
             catch (RabbitTimeoutException)
@@ -226,7 +226,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel1.Close();
 
             // remove first entry in cache (channel1)
-            var ch1 = con.CreateChannel(false);
+            var ch1 = con.CreateChannel();
 
             Assert.Same(channel1, ch1);
             ch1.Close();
@@ -266,10 +266,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var con = ccf.CreateConnection(); // .Returns(mockConnection.Object)
 
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
             try
             {
-                con.CreateChannel(false);
+                con.CreateChannel();
                 throw new Exception("Exception expected");
             }
             catch (RabbitTimeoutException)
@@ -277,7 +277,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
 
             channel1.Close();
-            var ch1 = con.CreateChannel(false);
+            var ch1 = con.CreateChannel();
             Assert.Same(channel1, ch1);
 
             ch1.Close();
@@ -287,7 +287,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             try
             {
                 // .Throws(new AmqpConnectException(null)) thrown
-                con.CreateChannel(false);
+                con.CreateChannel();
                 throw new Exception("Exception expected");
             }
             catch (RabbitConnectException)
@@ -297,7 +297,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             brokerDown.Value = true;
 
             // Will try to create new connection and will succeed
-            ch1 = con.CreateChannel(false);
+            ch1 = con.CreateChannel();
             ch1.Close();
 
             ccf.Destroy();
@@ -390,7 +390,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var latch = new CountdownEvent(1);
             _ = Task.Run(async () =>
             {
-                var channel1 = con.CreateChannel(false);
+                var channel1 = con.CreateChannel();
                 latch.Signal();
                 channelOne.Value = channel1;
                 try
@@ -404,7 +404,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 }
             });
             Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
-            var channel2 = con.CreateChannel(false);
+            var channel2 = con.CreateChannel();
             Assert.Same(channelOne.Value, channel2);
 
             channel2.Close();
@@ -476,7 +476,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var con = ccf.CreateConnection();
 
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
 
             Assert.Single(ccf._checkoutPermits.Values);
             var slim = ccf._checkoutPermits.Values.Single();
@@ -486,7 +486,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             con.Close();
             Assert.Equal(1, slim.CurrentCount);
 
-            channel1 = con.CreateChannel(false);
+            channel1 = con.CreateChannel();
             RabbitUtils.SetPhysicalCloseRequired(channel1, true);
             Assert.Equal(0, slim.CurrentCount);
 
@@ -520,7 +520,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var con = ccf.CreateConnection();
 
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
 
             Assert.Single(ccf._checkoutPermits.Values);
             var slim = ccf._checkoutPermits.Values.Single();
@@ -561,18 +561,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var con = ccf.CreateConnection();
 
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
             channel1.Close();
 
-            var channel2 = con.CreateChannel(false);
+            var channel2 = con.CreateChannel();
             channel2.Close();
 
             Assert.Same(channel1, channel2);
 
-            var ch1 = con.CreateChannel(false); // remove first entry in cache
+            var ch1 = con.CreateChannel(); // remove first entry in cache
 
             // (channel1)
-            var ch2 = con.CreateChannel(false); // create new channel
+            var ch2 = con.CreateChannel(); // create new channel
 
             Assert.NotSame(ch1, ch2);
             Assert.Same(ch1, channel1);
@@ -613,12 +613,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel1.Close(); // should be ignored, and add last into channel cache.
 
             // When a channel is created as non-transactional we should create a new one.
-            var channel2 = con.CreateChannel(false);
+            var channel2 = con.CreateChannel();
             channel2.Close(); // should be ignored, and add last into channel cache.
             Assert.NotSame(channel1, channel2);
 
             var ch1 = con.CreateChannel(true); // remove first entry in cache (channel1)
-            var ch2 = con.CreateChannel(false); // create new channel
+            var ch2 = con.CreateChannel(); // create new channel
 
             Assert.NotSame(ch1, ch2);
             Assert.Same(channel1, ch1);
@@ -673,18 +673,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var con = ccf.CreateConnection();
 
             // This will return a proxy that surpresses calls to close
-            var channel1 = con.CreateChannel(false);
-            var channel2 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
+            var channel2 = con.CreateChannel();
 
             // Should be ignored, and add last into channel cache.
             channel1.Close();
             channel2.Close();
 
             // remove first entry in cache (channel1)
-            var ch1 = con.CreateChannel(false);
+            var ch1 = con.CreateChannel();
 
             // remove first entry in cache (channel2)
-            var ch2 = con.CreateChannel(false);
+            var ch2 = con.CreateChannel();
 
             Assert.Same(channel1, ch1);
             Assert.Same(channel2, ch2);
@@ -716,7 +716,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var conDelegate1 = asProxy1.TargetConnection.Connection;
             Assert.NotSame(conDelegate, conDelegate1);
 
-            var channel3 = con.CreateChannel(false);
+            var channel3 = con.CreateChannel();
 
             Assert.NotSame(channel1, channel3);
             Assert.NotSame(channel2, channel3);
@@ -739,7 +739,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             ((CachingConnectionFactory)connectionFactory).ChannelCacheSize = 1;
 
             var con = connectionFactory.CreateConnection();
-            var channel = con.CreateChannel(false);
+            var channel = con.CreateChannel();
             Assert.Equal(1, called.Value);
 
             channel.Close();
@@ -747,7 +747,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             mockConnection.Verify((c) => c.Close(), Times.Never);
             connectionFactory.CreateConnection();
-            con.CreateChannel(false);
+            con.CreateChannel();
             Assert.Equal(1, called.Value);
 
             connectionFactory.Destroy();
@@ -779,7 +779,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             connectionFactory.AddConnectionListener(new TestWithConnectionListenerListener(created, closed, timesClosed));
             ((CachingConnectionFactory)connectionFactory).ChannelCacheSize = 1;
             var con = connectionFactory.CreateConnection();
-            var channel = con.CreateChannel(false);
+            var channel = con.CreateChannel();
             Assert.Same(created.Value, con);
             channel.Close();
 
@@ -787,7 +787,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             mockConnection1.Verify((c) => c.Close(), Times.Never);
 
             var same = connectionFactory.CreateConnection();
-            channel = con.CreateChannel(false);
+            channel = con.CreateChannel();
             Assert.Same(same, con);
             channel.Close();
 
@@ -866,7 +866,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var val = createNotification.GetAndSet(null);
             Assert.Same(val, mockConnections[0].Object);
 
-            var channel1 = con1.CreateChannel(false);
+            var channel1 = con1.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel1);
             channel1.Close();
 
@@ -882,7 +882,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             // Will retrieve same connection that was just put into cache, and reuse single channel from cache as well
             var con2 = ccf.CreateConnection();
             VerifyConnectionIs(mockConnections[0].Object, con2);
-            var channel2 = con2.CreateChannel(false);
+            var channel2 = con2.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel2);
             channel2.Close();
             mockChannels[0].Verify((c) => c.Close(), Times.Never);
@@ -897,9 +897,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             VerifyConnectionIs(mockConnections[0].Object, con1);
             con2 = ccf.CreateConnection();
             VerifyConnectionIs(mockConnections[1].Object, con2);
-            channel1 = con1.CreateChannel(false);
+            channel1 = con1.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel1);
-            channel2 = con2.CreateChannel(false);
+            channel2 = con2.CreateChannel();
             VerifyChannelIs(mockChannels[1].Object, channel2);
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Empty(ccf._idleConnections);
@@ -919,7 +919,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var con3 = ccf.CreateConnection();
             Assert.Null(createNotification.Value);
             VerifyConnectionIs(mockConnections[0].Object, con3);
-            var channel3 = con3.CreateChannel(false);
+            var channel3 = con3.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel3);
 
             Assert.Equal(2, ccf._allocatedConnections.Count);
@@ -961,7 +961,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
             Assert.Equal(1, ccf.CountOpenConnections());
-            channel3 = con3.CreateChannel(false);
+            channel3 = con3.CreateChannel();
             VerifyChannelIs(mockChannels[2].Object, channel3);
             channel3.Close();
             con3.Close();
@@ -977,7 +977,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
             mockConnections[2].Setup((c) => c.IsOpen).Returns(false);
-            channel3 = con3.CreateChannel(false);
+            channel3 = con3.CreateChannel();
             val = closedNotification.GetAndSet(null);
             Assert.NotNull(val);
             val = createNotification.GetAndSet(null);
@@ -1049,7 +1049,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var val = createNotification.GetAndSet(null);
             Assert.Same(val, mockConnections[0].Object);
 
-            var channel1 = con1.CreateChannel(false);
+            var channel1 = con1.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel1);
             channel1.Close();
 
@@ -1067,7 +1067,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             // Will retrieve same connection that was just put into cache, and reuse single channel from cache as well
             var con2 = ccf.CreateConnection();
             VerifyConnectionIs(mockConnections[0].Object, con2);
-            var channel2 = con2.CreateChannel(false);
+            var channel2 = con2.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel2);
             channel2.Close();
             mockChannels[0].Verify((c) => c.Close(), Times.Never);
@@ -1082,9 +1082,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             VerifyConnectionIs(mockConnections[0].Object, con1);
             con2 = ccf.CreateConnection();
             VerifyConnectionIs(mockConnections[1].Object, con2);
-            channel1 = con1.CreateChannel(false);
+            channel1 = con1.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel1);
-            channel2 = con2.CreateChannel(false);
+            channel2 = con2.CreateChannel();
             VerifyChannelIs(mockChannels[1].Object, channel2);
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Empty(ccf._idleConnections);
@@ -1104,7 +1104,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var con3 = ccf.CreateConnection();
             Assert.Null(createNotification.Value);
             VerifyConnectionIs(mockConnections[0].Object, con3);
-            var channel3 = con3.CreateChannel(false);
+            var channel3 = con3.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel3);
 
             Assert.Equal(2, ccf._allocatedConnections.Count);
@@ -1148,7 +1148,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Null(createNotification.Value);
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
-            channel3 = con3.CreateChannel(false);
+            channel3 = con3.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel3);
             channel3.Close();
             con3.Close();
@@ -1163,7 +1163,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
             mockConnections[0].Setup((c) => c.IsOpen).Returns(false);
-            channel3 = con3.CreateChannel(false);
+            channel3 = con3.CreateChannel();
             val = closedNotification.GetAndSet(null);
             Assert.NotNull(val);
             val = createNotification.GetAndSet(null);
@@ -1179,9 +1179,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var con4 = ccf.CreateConnection();
             Assert.Same(con3, con4);
             Assert.Single(ccf._idleConnections);
-            var channelA = con4.CreateChannel(false);
-            var channelB = con4.CreateChannel(false);
-            var channelC = con4.CreateChannel(false);
+            var channelA = con4.CreateChannel();
+            var channelB = con4.CreateChannel();
+            var channelC = con4.CreateChannel();
             channelA.Close();
             var con4Proxy = con4 as CachingConnectionFactory.ChannelCachingConnectionProxy;
             Assert.Single(ccf._allocatedConnectionNonTransactionalChannels[con4Proxy]);
@@ -1355,11 +1355,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
             var con = ccf.CreateConnection();
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
             channel1.Close(); // should be ignored, and placed into channel cache.
             channel1.Close(); // physically closed, so remove from the cache.
             channel1.Close(); // physically closed and removed from the cache  before, so void "close".
-            var channel2 = con.CreateChannel(false);
+            var channel2 = con.CreateChannel();
             Assert.NotSame(channel1, channel2);
         }
 
@@ -1392,7 +1392,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 {
                     closeLatch.Signal();
                 });
-            var channel = ccf.CreateConnection().CreateChannel(false);
+            var channel = ccf.CreateConnection().CreateChannel();
             Task.Run(() =>
             {
                 RabbitUtils.SetPhysicalCloseRequired(channel, true);
@@ -1518,7 +1518,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 }
 
                 var con = ccf.CreateConnection();
-                var channel = con.CreateChannel(false);
+                var channel = con.CreateChannel();
                 RabbitUtils.SetPhysicalCloseRequired(channel, true);
                 mockChannel1.Setup((c) => c.IsOpen).Returns(true);
                 var physicalCloseLatch = new CountdownEvent(1);
@@ -1583,7 +1583,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var rabbitTemplate = new RabbitTemplate(ccf);
             if (physicalClose)
             {
-                var channel1 = con.CreateChannel(false);
+                var channel1 = con.CreateChannel();
                 RabbitUtils.SetPhysicalCloseRequired(channel1, physicalClose);
                 channel1.Close();
             }
@@ -1592,7 +1592,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 rabbitTemplate.ConvertAndSend("foo", "bar"); // pending confirm
             }
 
-            Assert.Throws<RabbitTimeoutException>(() => con.CreateChannel(false));
+            Assert.Throws<RabbitTimeoutException>(() => con.CreateChannel());
             var n = 0;
             if (physicalClose)
             {
@@ -1602,7 +1602,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 {
                     try
                     {
-                        channel2 = con.CreateChannel(false);
+                        channel2 = con.CreateChannel();
                     }
                     catch (Exception)
                     {
@@ -1667,7 +1667,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             ccf.AddConnectionListener(new TestCheckoutsWithRefreshedConnectionGutsListener());
             var con = ccf.CreateConnection();
-            var channel1 = con.CreateChannel(false);
+            var channel1 = con.CreateChannel();
 
             Assert.Single(ccf._checkoutPermits.Values);
             var slim = ccf._checkoutPermits.Values.Single();
@@ -1682,13 +1682,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             mockChannel1.Setup((c) => c.IsOpen).Returns(false);
             mockChanel2.Setup((c) => c.IsOpen).Returns(false);
 
-            con.CreateChannel(false).Close();
+            con.CreateChannel().Close();
             con = ccf.CreateConnection();
-            con.CreateChannel(false).Close();
-            con.CreateChannel(false).Close();
-            con.CreateChannel(false).Close();
-            con.CreateChannel(false).Close();
-            con.CreateChannel(false).Close();
+            con.CreateChannel().Close();
+            con.CreateChannel().Close();
+            con.CreateChannel().Close();
+            con.CreateChannel().Close();
+            con.CreateChannel().Close();
 
             mockConnection1.Verify((c) => c.CreateModel(), Times.Once);
             mockConnection2.Verify((c) => c.CreateModel(), Times.Exactly(2));
@@ -1807,7 +1807,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public void OnCreate(IConnection connection)
             {
-                connection.CreateChannel(false).Close();
+                connection.CreateChannel().Close();
             }
 
             public void OnShutDown(RC.ShutdownEventArgs args)

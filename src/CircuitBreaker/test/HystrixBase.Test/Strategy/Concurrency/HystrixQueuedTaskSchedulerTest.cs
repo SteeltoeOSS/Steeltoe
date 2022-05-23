@@ -77,7 +77,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         private class DummyCommand : HystrixCommand<int>
         {
             public DummyCommand(IHystrixCommandOptions commandOptions)
-                : base(commandOptions, null, null, null)
+                : base(commandOptions)
             {
             }
         }

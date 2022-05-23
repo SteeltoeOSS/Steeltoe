@@ -30,7 +30,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
         {
             IServiceCollection services2 = new ServiceCollection();
 
-            var ex = Assert.Throws<ArgumentNullException>(() => services2.AddCloudFoundryActuators(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => services2.AddCloudFoundryActuators());
 
             Assert.Equal("config", ex.ParamName);
         }

@@ -50,7 +50,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var settings = new ConfigServerClientSettings();
             HttpClient httpClient = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
             Assert.Contains(nameof(httpClient), ex.Message);
         }
 

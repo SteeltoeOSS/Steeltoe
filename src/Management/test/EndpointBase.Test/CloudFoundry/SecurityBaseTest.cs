@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
             var cloudOpts = new CloudFoundryEndpointOptions();
             var mgmtOpts = new CloudFoundryManagementOptions();
             mgmtOpts.EndpointOptions.Add(cloudOpts);
-            var securityBase = new SecurityBase(cloudOpts, mgmtOpts, null);
+            var securityBase = new SecurityBase(cloudOpts, mgmtOpts);
 
             Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication"));
             Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
             var cloudOpts = new CloudFoundryEndpointOptions();
             var mgmtOpts = new CloudFoundryManagementOptions();
             mgmtOpts.EndpointOptions.Add(cloudOpts);
-            var securityBase = new SecurityBase(cloudOpts, mgmtOpts, null);
+            var securityBase = new SecurityBase(cloudOpts, mgmtOpts);
             var result = await securityBase.GetPermissionsAsync("testToken");
             Assert.NotNull(result);
         }
@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
             var cloudOpts = new CloudFoundryEndpointOptions();
             var mgmtOpts = new CloudFoundryManagementOptions();
             mgmtOpts.EndpointOptions.Add(cloudOpts);
-            var securityBase = new SecurityBase(cloudOpts, mgmtOpts, null);
+            var securityBase = new SecurityBase(cloudOpts, mgmtOpts);
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             var perms = new Dictionary<string, object> { { "read_sensitive_data", true } };
 
