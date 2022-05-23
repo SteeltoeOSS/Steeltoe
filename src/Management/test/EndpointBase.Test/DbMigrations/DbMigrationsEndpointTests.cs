@@ -49,77 +49,71 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         [Fact]
         public void Invoke_WhenExistingDatabase_ReturnsExpected()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
+            helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+            helper.GetPendingMigrations(Arg.Any<object>()).Returns(new[] { "pending" });
+            helper.GetAppliedMigrations(Arg.Any<object>()).Returns(new[] { "applied" });
+
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
-                helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-                helper.GetPendingMigrations(Arg.Any<object>()).Returns(new[] { "pending" });
-                helper.GetAppliedMigrations(Arg.Any<object>()).Returns(new[] { "applied" });
+                services.AddScoped(_ => new MockDbContext());
+                services.AddScoped(_ => helper);
+                services.AddDbMigrationsActuatorServices(configuration);
+            };
 
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddScoped(_ => new MockDbContext());
-                    services.AddScoped(_ => helper);
-                    services.AddDbMigrationsActuatorServices(configuration);
-                };
+            var sut = tc.GetService<IDbMigrationsEndpoint>();
+            var result = sut.Invoke();
 
-                var sut = tc.GetService<IDbMigrationsEndpoint>();
-                var result = sut.Invoke();
-
-                var contextName = nameof(MockDbContext);
-                result.Should().ContainKey(contextName);
-                result[contextName].AppliedMigrations.Should().Equal("applied");
-                result[contextName].PendingMigrations.Should().Equal("pending");
-            }
+            var contextName = nameof(MockDbContext);
+            result.Should().ContainKey(contextName);
+            result[contextName].AppliedMigrations.Should().Equal("applied");
+            result[contextName].PendingMigrations.Should().Equal("pending");
         }
 
         [Fact]
         public void Invoke_NonExistingDatabase_ReturnsExpected()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
+            helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+            helper.GetPendingMigrations(Arg.Any<object>()).Throws(new SomeDbException("database doesn't exist"));
+            helper.GetMigrations(Arg.Any<object>()).Returns(new[] { "migration" });
+
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
-                helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-                helper.GetPendingMigrations(Arg.Any<object>()).Throws(new SomeDbException("database doesn't exist"));
-                helper.GetMigrations(Arg.Any<object>()).Returns(new[] { "migration" });
+                services.AddScoped(_ => new MockDbContext());
+                services.AddScoped(_ => helper);
+                services.AddDbMigrationsActuatorServices(configuration);
+            };
 
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddScoped(_ => new MockDbContext());
-                    services.AddScoped(_ => helper);
-                    services.AddDbMigrationsActuatorServices(configuration);
-                };
+            var sut = tc.GetService<IDbMigrationsEndpoint>();
+            var result = sut.Invoke();
 
-                var sut = tc.GetService<IDbMigrationsEndpoint>();
-                var result = sut.Invoke();
-
-                var contextName = nameof(MockDbContext);
-                result.Should().ContainKey(contextName);
-                result[contextName].AppliedMigrations.Should().BeEmpty();
-                result[contextName].PendingMigrations.Should().Equal("migration");
-            }
+            var contextName = nameof(MockDbContext);
+            result.Should().ContainKey(contextName);
+            result[contextName].AppliedMigrations.Should().BeEmpty();
+            result[contextName].PendingMigrations.Should().Equal("migration");
         }
 
         [Fact]
         public void Invoke_NonContainerRegistered_ReturnsExpected()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            var container = Substitute.For<IServiceProvider>();
+            var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
+            helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var container = Substitute.For<IServiceProvider>();
-                var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
-                helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+                services.AddScoped(_ => helper);
+                services.AddDbMigrationsActuatorServices(configuration);
+            };
 
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddScoped(_ => helper);
-                    services.AddDbMigrationsActuatorServices(configuration);
-                };
+            var sut = tc.GetService<IDbMigrationsEndpoint>();
+            var result = sut.Invoke();
 
-                var sut = tc.GetService<IDbMigrationsEndpoint>();
-                var result = sut.Invoke();
-
-                result.Should().BeEmpty();
-            }
+            result.Should().BeEmpty();
         }
     }
 }

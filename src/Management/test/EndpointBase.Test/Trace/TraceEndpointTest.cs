@@ -29,21 +29,19 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void DoInvoke_CallsTraceRepo()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            var repo = new TestTraceRepo();
+
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var repo = new TestTraceRepo();
+                services.AddSingleton<ITraceRepository>(repo);
+                services.AddTraceActuatorServices(configuration, MediaTypeVersion.V1);
+            };
 
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton<ITraceRepository>(repo);
-                    services.AddTraceActuatorServices(configuration, MediaTypeVersion.V1);
-                };
-
-                var ep = tc.GetService<ITraceEndpoint>();
-                var result = ep.Invoke();
-                Assert.NotNull(result);
-                Assert.True(repo.GetTracesCalled);
-            }
+            var ep = tc.GetService<ITraceEndpoint>();
+            var result = ep.Invoke();
+            Assert.NotNull(result);
+            Assert.True(repo.GetTracesCalled);
         }
     }
 }

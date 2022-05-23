@@ -42,14 +42,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         [Fact]
         public void HostShouldInitializeServices()
         {
-            using (var host = RabbitMQHost.CreateDefaultBuilder().Start())
-            {
-                var lifecycleProcessor = host.Services.GetRequiredService<ILifecycleProcessor>();
-                var rabbitHostService = (RabbitHostService)host.Services.GetRequiredService<IHostedService>();
+            using var host = RabbitMQHost.CreateDefaultBuilder().Start();
+            var lifecycleProcessor = host.Services.GetRequiredService<ILifecycleProcessor>();
+            var rabbitHostService = (RabbitHostService)host.Services.GetRequiredService<IHostedService>();
 
-                Assert.True(lifecycleProcessor.IsRunning);
-                Assert.NotNull(rabbitHostService);
-            }
+            Assert.True(lifecycleProcessor.IsRunning);
+            Assert.NotNull(rabbitHostService);
         }
 
         [Fact]
@@ -70,16 +68,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
                 configBuilder.AddInMemoryCollection(appSettings);
             });
 
-            using (var host = hostBuilder.Start())
-            {
-                var rabbitOptions = host.Services.GetService<IOptions<RabbitOptions>>()?.Value;
+            using var host = hostBuilder.Start();
+            var rabbitOptions = host.Services.GetService<IOptions<RabbitOptions>>()?.Value;
 
-                Assert.NotNull(rabbitOptions);
-                Assert.Equal("ThisIsATest", rabbitOptions.Host);
-                Assert.Equal(1234, rabbitOptions.Port);
-                Assert.Equal("TestUser", rabbitOptions.Username);
-                Assert.Equal("TestPassword", rabbitOptions.Password);
-            }
+            Assert.NotNull(rabbitOptions);
+            Assert.Equal("ThisIsATest", rabbitOptions.Host);
+            Assert.Equal(1234, rabbitOptions.Port);
+            Assert.Equal("TestUser", rabbitOptions.Username);
+            Assert.Equal("TestPassword", rabbitOptions.Password);
         }
 
         [Fact]
@@ -87,25 +83,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         {
             var hostBuilder = RabbitMQHost.CreateDefaultBuilder(new string[] { "RabbitHostCommandKey=RabbitHostCommandValue" });
 
-            using (var host = hostBuilder.Start())
-            {
-                var config = host.Services.GetService<IConfiguration>();
+            using var host = hostBuilder.Start();
+            var config = host.Services.GetService<IConfiguration>();
 
-                Assert.Equal("RabbitHostCommandValue", config["RabbitHostCommandKey"]);
-            }
+            Assert.Equal("RabbitHostCommandValue", config["RabbitHostCommandKey"]);
         }
 
         [Fact]
         public void ShouldWorkWithRabbitMQConnection()
         {
-            using (var host = RabbitMQHost.CreateDefaultBuilder()
-                                .ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build()))
-                                .Start())
-            {
-                var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
+            using var host = RabbitMQHost.CreateDefaultBuilder()
+                .ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build()))
+                .Start();
+            var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
 
-                Assert.NotNull(connectionFactory);
-            }
+            Assert.NotNull(connectionFactory);
         }
     }
 }

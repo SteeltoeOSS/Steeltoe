@@ -171,11 +171,9 @@ namespace Steeltoe.Messaging.Core
 
             if (cancellationToken == default)
             {
-                using (var source = new CancellationTokenSource())
-                {
-                    source.CancelAfter(timeout);
-                    sent = await channel.SendAsync(messageToSend, source.Token);
-                }
+                using var source = new CancellationTokenSource();
+                source.CancelAfter(timeout);
+                sent = await channel.SendAsync(messageToSend, source.Token);
             }
             else
             {
@@ -235,11 +233,9 @@ namespace Steeltoe.Messaging.Core
 
             if (cancellationToken == default)
             {
-                using (var source = new CancellationTokenSource())
-                {
-                    source.CancelAfter(timeout);
-                    message = await ((IPollableChannel)channel).ReceiveAsync(source.Token);
-                }
+                using var source = new CancellationTokenSource();
+                source.CancelAfter(timeout);
+                message = await ((IPollableChannel)channel).ReceiveAsync(source.Token);
             }
             else
             {

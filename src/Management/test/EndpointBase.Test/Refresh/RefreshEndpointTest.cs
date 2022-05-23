@@ -47,24 +47,22 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
 
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddRefreshActuatorServices(configuration);
-                };
-                tc.AdditionalConfiguration = configuration =>
-                {
-                    configuration.AddInMemoryCollection(appsettings);
-                };
+                services.AddRefreshActuatorServices(configuration);
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(appsettings);
+            };
 
-                var ep = tc.GetService<IRefreshEndpoint>();
-                var result = ep.Invoke();
-                Assert.NotNull(result);
+            var ep = tc.GetService<IRefreshEndpoint>();
+            var result = ep.Invoke();
+            Assert.NotNull(result);
 
-                Assert.Contains("management:endpoints:loggers:enabled", result);
-                Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
-            }
+            Assert.Contains("management:endpoints:loggers:enabled", result);
+            Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
         }
     }
 }

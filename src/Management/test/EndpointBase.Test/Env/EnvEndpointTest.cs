@@ -106,43 +106,41 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["charSize"] = "should not duplicate"
             };
 
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                    services.AddEnvActuatorServices(configuration);
-                };
-                tc.AdditionalConfiguration = configuration =>
-                {
-                    configuration.AddInMemoryCollection(appsettings);
-                    configuration.AddInMemoryCollection(otherAppsettings);
-                };
+                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddEnvActuatorServices(configuration);
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(appsettings);
+                configuration.AddInMemoryCollection(otherAppsettings);
+            };
 
-                var ep = tc.GetService<IEnvEndpoint>();
+            var ep = tc.GetService<IEnvEndpoint>();
 
-                var appsettingsProvider = tc.Configuration.Providers.ElementAt(0);
-                var appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
+            var appsettingsProvider = tc.Configuration.Providers.ElementAt(0);
+            var appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
 
-                var otherAppsettingsProvider = tc.Configuration.Providers.ElementAt(1);
-                var otherAppsettingsDesc = ep.GetPropertySourceDescriptor(otherAppsettingsProvider);
+            var otherAppsettingsProvider = tc.Configuration.Providers.ElementAt(1);
+            var otherAppsettingsDesc = ep.GetPropertySourceDescriptor(otherAppsettingsProvider);
 
-                Assert.Equal("MemoryConfigurationProvider", appsettingsDesc.Name);
-                var props = appsettingsDesc.Properties;
-                Assert.NotNull(props);
-                Assert.Equal(9, props.Count);
-                Assert.Contains("management:endpoints:enabled", props.Keys);
-                var prop = props["management:endpoints:enabled"];
-                Assert.NotNull(prop);
-                Assert.Equal("false", prop.Value);
-                Assert.Null(prop.Origin);
+            Assert.Equal("MemoryConfigurationProvider", appsettingsDesc.Name);
+            var props = appsettingsDesc.Properties;
+            Assert.NotNull(props);
+            Assert.Equal(9, props.Count);
+            Assert.Contains("management:endpoints:enabled", props.Keys);
+            var prop = props["management:endpoints:enabled"];
+            Assert.NotNull(prop);
+            Assert.Equal("false", prop.Value);
+            Assert.Null(prop.Origin);
 
-                var otherProps = otherAppsettingsDesc.Properties;
-                var appsettingsCommonProp = props["common"];
-                var otherAppsettingCommonProp = otherProps["common"];
-                Assert.Equal("appsettings", appsettingsCommonProp.Value);
-                Assert.Equal("otherAppsettings", otherAppsettingCommonProp.Value);
-            }
+            var otherProps = otherAppsettingsDesc.Properties;
+            var appsettingsCommonProp = props["common"];
+            var otherAppsettingCommonProp = otherProps["common"];
+            Assert.Equal("appsettings", appsettingsCommonProp.Value);
+            Assert.Equal("otherAppsettings", otherAppsettingCommonProp.Value);
         }
 
         [Fact]
@@ -158,35 +156,33 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
 
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                    services.AddEnvActuatorServices(configuration);
-                };
-                tc.AdditionalConfiguration = configuration =>
-                {
-                    configuration.AddInMemoryCollection(appsettings);
-                };
+                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddEnvActuatorServices(configuration);
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(appsettings);
+            };
 
-                var ep = tc.GetService<IEnvEndpoint>();
-                var result = ep.GetPropertySources(tc.Configuration);
-                Assert.NotNull(result);
-                Assert.Single(result);
+            var ep = tc.GetService<IEnvEndpoint>();
+            var result = ep.GetPropertySources(tc.Configuration);
+            Assert.NotNull(result);
+            Assert.Single(result);
 
-                var desc = result[0];
+            var desc = result[0];
 
-                Assert.Equal("MemoryConfigurationProvider", desc.Name);
-                var props = desc.Properties;
-                Assert.NotNull(props);
-                Assert.Equal(6, props.Count);
-                Assert.Contains("management:endpoints:cloudfoundry:validatecertificates", props.Keys);
-                var prop = props["management:endpoints:cloudfoundry:validatecertificates"];
-                Assert.NotNull(prop);
-                Assert.Equal("true", prop.Value);
-                Assert.Null(prop.Origin);
-            }
+            Assert.Equal("MemoryConfigurationProvider", desc.Name);
+            var props = desc.Properties;
+            Assert.NotNull(props);
+            Assert.Equal(6, props.Count);
+            Assert.Contains("management:endpoints:cloudfoundry:validatecertificates", props.Keys);
+            var prop = props["management:endpoints:cloudfoundry:validatecertificates"];
+            Assert.NotNull(prop);
+            Assert.Equal("true", prop.Value);
+            Assert.Null(prop.Origin);
         }
 
         [Fact]
@@ -198,29 +194,27 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["appsManagerBase"] = "${management:endpoints:path}"
             };
 
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                    services.AddEnvActuatorServices(configuration);
-                };
-                tc.AdditionalConfiguration = configuration =>
-                {
-                    configuration.AddInMemoryCollection(appsettings);
-                    configuration.AddPlaceholderResolver();
-                };
+                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddEnvActuatorServices(configuration);
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(appsettings);
+                configuration.AddPlaceholderResolver();
+            };
 
-                var endpoint = tc.GetService<IEnvEndpoint>();
+            var endpoint = tc.GetService<IEnvEndpoint>();
 
-                var result = endpoint.GetPropertySources(tc.Configuration);
-                var testProp = tc.Configuration["appsManagerBase"];
+            var result = endpoint.GetPropertySources(tc.Configuration);
+            var testProp = tc.Configuration["appsManagerBase"];
 
-                Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
-                Assert.NotNull(testProp);
-                Assert.Equal("/cloudfoundryapplication", testProp);
-            }
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.NotNull(testProp);
+            Assert.Equal("/cloudfoundryapplication", testProp);
         }
 
         [Fact]
@@ -236,37 +230,35 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
 
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                    services.AddEnvActuatorServices(configuration);
-                };
-                tc.AdditionalConfiguration = configuration =>
-                {
-                    configuration.AddInMemoryCollection(appsettings);
-                };
+                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddEnvActuatorServices(configuration);
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(appsettings);
+            };
 
-                var ep = tc.GetService<IEnvEndpoint>();
-                var result = ep.Invoke();
-                Assert.NotNull(result);
-                Assert.Single(result.ActiveProfiles);
-                Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
-                Assert.Single(result.PropertySources);
+            var ep = tc.GetService<IEnvEndpoint>();
+            var result = ep.Invoke();
+            Assert.NotNull(result);
+            Assert.Single(result.ActiveProfiles);
+            Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
+            Assert.Single(result.PropertySources);
 
-                var desc = result.PropertySources[0];
+            var desc = result.PropertySources[0];
 
-                Assert.Equal("MemoryConfigurationProvider", desc.Name);
-                var props = desc.Properties;
-                Assert.NotNull(props);
-                Assert.Equal(6, props.Count);
-                Assert.Contains("management:endpoints:loggers:enabled", props.Keys);
-                var prop = props["management:endpoints:loggers:enabled"];
-                Assert.NotNull(prop);
-                Assert.Equal("false", prop.Value);
-                Assert.Null(prop.Origin);
-            }
+            Assert.Equal("MemoryConfigurationProvider", desc.Name);
+            var props = desc.Properties;
+            Assert.NotNull(props);
+            Assert.Equal(6, props.Count);
+            Assert.Contains("management:endpoints:loggers:enabled", props.Keys);
+            var prop = props["management:endpoints:loggers:enabled"];
+            Assert.NotNull(prop);
+            Assert.Equal("false", prop.Value);
+            Assert.Null(prop.Origin);
         }
 
         [Fact]
@@ -284,34 +276,32 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["vcap_services"] = "mysecret"
             };
 
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                    services.AddEnvActuatorServices(configuration);
-                };
-                tc.AdditionalConfiguration = configuration =>
-                {
-                    configuration.AddInMemoryCollection(appsettings);
-                };
+                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddEnvActuatorServices(configuration);
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(appsettings);
+            };
 
-                var ep = tc.GetService<IEnvEndpoint>();
-                var result = ep.Invoke();
-                Assert.NotNull(result);
+            var ep = tc.GetService<IEnvEndpoint>();
+            var result = ep.Invoke();
+            Assert.NotNull(result);
 
-                var desc = result.PropertySources[0];
+            var desc = result.PropertySources[0];
 
-                Assert.Equal("MemoryConfigurationProvider", desc.Name);
-                var props = desc.Properties;
-                Assert.NotNull(props);
-                foreach (var key in appsettings.Keys)
-                {
-                    Assert.Contains(key, props.Keys);
-                    Assert.NotNull(props[key]);
-                    Assert.Equal("******", props[key].Value);
-                    Assert.Null(props[key].Origin);
-                }
+            Assert.Equal("MemoryConfigurationProvider", desc.Name);
+            var props = desc.Properties;
+            Assert.NotNull(props);
+            foreach (var key in appsettings.Keys)
+            {
+                Assert.Contains(key, props.Keys);
+                Assert.NotNull(props[key]);
+                Assert.Equal("******", props[key].Value);
+                Assert.Null(props[key].Origin);
             }
         }
 
@@ -324,30 +314,28 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["password"] = "mysecret"
             };
 
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                    services.AddEnvActuatorServices(configuration);
-                };
-                tc.AdditionalConfiguration = configuration =>
-                {
-                    configuration.AddInMemoryCollection(appsettings);
-                };
+                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddEnvActuatorServices(configuration);
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(appsettings);
+            };
 
-                var ep = tc.GetService<IEnvEndpoint>();
-                var result = ep.Invoke();
-                Assert.NotNull(result);
+            var ep = tc.GetService<IEnvEndpoint>();
+            var result = ep.Invoke();
+            Assert.NotNull(result);
 
-                var desc = result.PropertySources[0];
-                Assert.Equal("MemoryConfigurationProvider", desc.Name);
-                var props = desc.Properties;
-                Assert.NotNull(props);
-                Assert.Contains("password", props.Keys);
-                Assert.NotNull(props["password"]);
-                Assert.Equal("mysecret", props["password"].Value);
-            }
+            var desc = result.PropertySources[0];
+            Assert.Equal("MemoryConfigurationProvider", desc.Name);
+            var props = desc.Properties;
+            Assert.NotNull(props);
+            Assert.Contains("password", props.Keys);
+            Assert.NotNull(props["password"]);
+            Assert.Equal("mysecret", props["password"].Value);
         }
     }
 }

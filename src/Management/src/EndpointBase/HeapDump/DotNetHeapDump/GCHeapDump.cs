@@ -726,11 +726,9 @@ internal class XmlGcHeapDump
     public static GCHeapDump ReadGCHeapDumpFromXml(string fileName)
     {
         XmlReaderSettings settings = new XmlReaderSettings() { IgnoreWhitespace = true, IgnoreComments = true };
-        using (XmlReader reader = XmlReader.Create(fileName, settings))
-        {
-            reader.ReadToDescendant("GCHeapDump");
-            return ReadGCHeapDumpFromXml(reader);
-        }
+        using XmlReader reader = XmlReader.Create(fileName, settings);
+        reader.ReadToDescendant("GCHeapDump");
+        return ReadGCHeapDumpFromXml(reader);
     }
 
     public static GCHeapDump ReadGCHeapDumpFromXml(XmlReader reader)

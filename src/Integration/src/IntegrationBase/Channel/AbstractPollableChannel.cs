@@ -50,11 +50,9 @@ namespace Steeltoe.Integration.Channel
             }
             else
             {
-                using (var source = new CancellationTokenSource())
-                {
-                    source.CancelAfter(timeout);
-                    return DoReceive(source.Token);
-                }
+                using var source = new CancellationTokenSource();
+                source.CancelAfter(timeout);
+                return DoReceive(source.Token);
             }
         }
 

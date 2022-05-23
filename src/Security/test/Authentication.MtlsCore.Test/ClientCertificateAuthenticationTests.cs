@@ -711,25 +711,23 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 DateTimeOffset notBefore,
                 DateTimeOffset notAfter)
             {
-                using (var key = RSA.Create(2048))
+                using var key = RSA.Create(2048);
+                var request = new CertificateRequest(
+                    subjectName,
+                    key,
+                    HashAlgorithmName.SHA256,
+                    RSASignaturePadding.Pkcs1);
+
+                request.CertificateExtensions.Add(DigitalSignatureOnlyUsage);
+
+                if (eku != null)
                 {
-                    var request = new CertificateRequest(
-                        subjectName,
-                        key,
-                        HashAlgorithmName.SHA256,
-                        RSASignaturePadding.Pkcs1);
-
-                    request.CertificateExtensions.Add(DigitalSignatureOnlyUsage);
-
-                    if (eku != null)
-                    {
-                        request.CertificateExtensions.Add(
-                            new X509EnhancedKeyUsageExtension(
-                                new OidCollection { new Oid(eku, null) }, false));
-                    }
-
-                    return request.CreateSelfSigned(notBefore, notAfter);
+                    request.CertificateExtensions.Add(
+                        new X509EnhancedKeyUsageExtension(
+                            new OidCollection { new Oid(eku, null) }, false));
                 }
+
+                return request.CreateSelfSigned(notBefore, notAfter);
             }
 
             public static X509Certificate2 SelfSignedPrimaryRoot { get; private set; }

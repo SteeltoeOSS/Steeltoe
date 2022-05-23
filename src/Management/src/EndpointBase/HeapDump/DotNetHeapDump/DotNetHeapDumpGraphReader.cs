@@ -59,10 +59,8 @@ internal class DotNetHeapDumpGraphReader
     }
     public void Append(MemoryGraph memoryGraph, string etlName, string processNameOrId = null, double startTimeRelativeMSec = 0)
     {
-        using (var source = TraceEventDispatcher.GetDispatcherFromFileName(etlName))
-        {
-            Append(memoryGraph, source, processNameOrId, startTimeRelativeMSec);
-        }
+        using var source = TraceEventDispatcher.GetDispatcherFromFileName(etlName);
+        Append(memoryGraph, source, processNameOrId, startTimeRelativeMSec);
     }
     public void Append(MemoryGraph memoryGraph, TraceEventDispatcher source, string processNameOrId = null, double startTimeRelativeMSec = 0)
     {
@@ -737,12 +735,10 @@ internal class DotNetHeapDumpGraphReader
             m_log.WriteLine("No PDB information for {0} in ETL file, looking for it directly", module.Path);
             if (File.Exists(module.Path))
             {
-                using (var modulePEFile = new PEFile.PEFile(module.Path))
+                using var modulePEFile = new PEFile.PEFile(module.Path);
+                if (!modulePEFile.GetPdbSignature(out module.PdbName, out module.PdbGuid, out module.PdbAge))
                 {
-                    if (!modulePEFile.GetPdbSignature(out module.PdbName, out module.PdbGuid, out module.PdbAge))
-                    {
-                        m_log.WriteLine("Could not get PDB information for {0}", module.Path);
-                    }
+                    m_log.WriteLine("Could not get PDB information for {0}", module.Path);
                 }
             }
         }

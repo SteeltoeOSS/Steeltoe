@@ -121,11 +121,9 @@ namespace Steeltoe.Messaging.Support
             }
             else
             {
-                using (var source = new CancellationTokenSource())
-                {
-                    source.CancelAfter(timeout);
-                    return DoSend(message, source.Token);
-                }
+                using var source = new CancellationTokenSource();
+                source.CancelAfter(timeout);
+                return DoSend(message, source.Token);
             }
         }
 

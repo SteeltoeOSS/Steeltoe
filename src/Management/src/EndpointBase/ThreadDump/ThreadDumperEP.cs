@@ -61,10 +61,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     new EventPipeProvider("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
                 };
 
-                using (var session = client.StartEventPipeSession(providers))
-                {
-                    DumpThreads(session, results);
-                }
+                using var session = client.StartEventPipeSession(providers);
+                DumpThreads(session, results);
             }
             catch (Exception e)
             {
@@ -88,59 +86,57 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 traceFileName = CreateTraceFile(session).Result;
                 if (traceFileName != null)
                 {
-                   using (var symbolReader = new SymbolReader(System.IO.TextWriter.Null) { SymbolPath = Environment.CurrentDirectory })
-                    using (var eventLog = new TraceLog(traceFileName))
+                    using var symbolReader = new SymbolReader(System.IO.TextWriter.Null) { SymbolPath = Environment.CurrentDirectory };
+                    using var eventLog = new TraceLog(traceFileName);
+                    var stackSource = new MutableTraceEventStackSource(eventLog)
                     {
-                        var stackSource = new MutableTraceEventStackSource(eventLog)
+                        OnlyManagedCodeStacks = true
+                    };
+
+                    var computer = new SampleProfilerThreadTimeComputer(eventLog, symbolReader);
+                    computer.GenerateThreadTimeStacks(stackSource);
+
+                    var samplesForThread = new Dictionary<int, List<StackSourceSample>>();
+
+                    stackSource.ForEach((sample) =>
+                    {
+                        var stackIndex = sample.StackIndex;
+                        while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread ("))
                         {
-                            OnlyManagedCodeStacks = true
-                        };
-
-                        var computer = new SampleProfilerThreadTimeComputer(eventLog, symbolReader);
-                        computer.GenerateThreadTimeStacks(stackSource);
-
-                        var samplesForThread = new Dictionary<int, List<StackSourceSample>>();
-
-                        stackSource.ForEach((sample) =>
-                        {
-                            var stackIndex = sample.StackIndex;
-                            while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread ("))
-                            {
-                                stackIndex = stackSource.GetCallerIndex(stackIndex);
-                            }
-
-                            var template = "Thread (";
-                            var threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
-                            var threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)));
-
-                            if (samplesForThread.TryGetValue(threadId, out var samples))
-                            {
-                                samples.Add(sample);
-                            }
-                            else
-                            {
-                                samplesForThread[threadId] = new List<StackSourceSample>() { sample };
-                            }
-                        });
-
-                        foreach (var (threadId, samples) in samplesForThread)
-                        {
-                            _logger?.LogDebug("Found {0} stacks for thread {1}", samples.Count, threadId);
-                            var threadInfo = new ThreadInfo
-                            {
-                                ThreadId = threadId,
-                                ThreadName = "Thread-" + threadId,
-                                ThreadState = TState.RUNNABLE,
-                                IsInNative = false,
-                                IsSuspended = false,
-                                LockedMonitors = new List<MonitorInfo>(),
-                                LockedSynchronizers = new List<LockInfo>(),
-                                StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader)
-                            };
-                            threadInfo.ThreadState = GetThreadState(threadInfo.StackTrace);
-                            threadInfo.IsInNative = IsThreadInNative(threadInfo.StackTrace);
-                            results.Add(threadInfo);
+                            stackIndex = stackSource.GetCallerIndex(stackIndex);
                         }
+
+                        var template = "Thread (";
+                        var threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
+                        var threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)));
+
+                        if (samplesForThread.TryGetValue(threadId, out var samples))
+                        {
+                            samples.Add(sample);
+                        }
+                        else
+                        {
+                            samplesForThread[threadId] = new List<StackSourceSample>() { sample };
+                        }
+                    });
+
+                    foreach (var (threadId, samples) in samplesForThread)
+                    {
+                        _logger?.LogDebug("Found {0} stacks for thread {1}", samples.Count, threadId);
+                        var threadInfo = new ThreadInfo
+                        {
+                            ThreadId = threadId,
+                            ThreadName = "Thread-" + threadId,
+                            ThreadState = TState.RUNNABLE,
+                            IsInNative = false,
+                            IsSuspended = false,
+                            LockedMonitors = new List<MonitorInfo>(),
+                            LockedSynchronizers = new List<LockInfo>(),
+                            StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader)
+                        };
+                        threadInfo.ThreadState = GetThreadState(threadInfo.StackTrace);
+                        threadInfo.IsInNative = IsThreadInNative(threadInfo.StackTrace);
+                        results.Add(threadInfo);
                     }
                 }
             }

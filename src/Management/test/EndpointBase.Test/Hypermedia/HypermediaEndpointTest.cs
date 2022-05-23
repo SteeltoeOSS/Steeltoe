@@ -32,135 +32,127 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [Fact]
         public void Invoke_ReturnsExpectedLinks()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
+                services.AddHypermediaActuatorServices(configuration);
+                services.AddInfoActuatorServices(configuration);
+                services.AddSingleton(sp =>
                 {
-                    services.AddHypermediaActuatorServices(configuration);
-                    services.AddInfoActuatorServices(configuration);
-                    services.AddSingleton(sp =>
-                    {
-                        var options = new ActuatorManagementOptions();
-                        options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
-                        options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
+                    var options = new ActuatorManagementOptions();
+                    options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
+                    options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
 
-                        return options;
-                    });
-                };
+                    return options;
+                });
+            };
 
-                var ep = tc.GetService<IActuatorEndpoint>();
+            var ep = tc.GetService<IActuatorEndpoint>();
 
-                var info = ep.Invoke("http://localhost:5000/foobar");
-                Assert.NotNull(info);
-                Assert.NotNull(info._links);
-                Assert.True(info._links.ContainsKey("self"));
-                Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-                Assert.True(info._links.ContainsKey("info"));
-                Assert.Equal("http://localhost:5000/foobar/info", info._links["info"].Href);
-                Assert.Equal(2, info._links.Count);
-            }
+            var info = ep.Invoke("http://localhost:5000/foobar");
+            Assert.NotNull(info);
+            Assert.NotNull(info._links);
+            Assert.True(info._links.ContainsKey("self"));
+            Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
+            Assert.True(info._links.ContainsKey("info"));
+            Assert.Equal("http://localhost:5000/foobar/info", info._links["info"].Href);
+            Assert.Equal(2, info._links.Count);
         }
 
         [Fact]
         public void Invoke_OnlyActuatorHypermediaEndpoint_ReturnsExpectedLinks()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
+                services.AddHypermediaActuatorServices(configuration);
+                services.AddSingleton(sp =>
                 {
-                    services.AddHypermediaActuatorServices(configuration);
-                    services.AddSingleton(sp =>
-                    {
-                        var options = new ActuatorManagementOptions();
-                        options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
+                    var options = new ActuatorManagementOptions();
+                    options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
 
-                        return options;
-                    });
-                };
+                    return options;
+                });
+            };
 
-                var ep = tc.GetService<IActuatorEndpoint>();
+            var ep = tc.GetService<IActuatorEndpoint>();
 
-                var info = ep.Invoke("http://localhost:5000/foobar");
-                Assert.NotNull(info);
-                Assert.NotNull(info._links);
-                Assert.True(info._links.ContainsKey("self"));
-                Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-                Assert.Single(info._links);
-            }
+            var info = ep.Invoke("http://localhost:5000/foobar");
+            Assert.NotNull(info);
+            Assert.NotNull(info._links);
+            Assert.True(info._links.ContainsKey("self"));
+            Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
+            Assert.Single(info._links);
         }
 
         [Fact]
         public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
+                services.AddHypermediaActuatorServices(configuration);
+                services.AddInfoActuatorServices(configuration);
+                services.AddSingleton(sp =>
                 {
-                    services.AddHypermediaActuatorServices(configuration);
-                    services.AddInfoActuatorServices(configuration);
-                    services.AddSingleton(sp =>
-                    {
-                        var options = new ActuatorManagementOptions();
-                        options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
-                        options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
+                    var options = new ActuatorManagementOptions();
+                    options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
+                    options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
 
-                        return options;
-                    });
-                };
-                tc.AdditionalConfiguration = configuration =>
+                    return options;
+                });
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    configuration.AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        { "management:endpoints:info:enabled", "false" }
-                    });
-                };
+                    { "management:endpoints:info:enabled", "false" }
+                });
+            };
 
-                var ep = tc.GetService<IActuatorEndpoint>();
+            var ep = tc.GetService<IActuatorEndpoint>();
 
-                var info = ep.Invoke("http://localhost:5000/foobar");
-                Assert.NotNull(info);
-                Assert.NotNull(info._links);
-                Assert.True(info._links.ContainsKey("self"));
-                Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-                Assert.False(info._links.ContainsKey("info"));
-                Assert.Single(info._links);
-            }
+            var info = ep.Invoke("http://localhost:5000/foobar");
+            Assert.NotNull(info);
+            Assert.NotNull(info._links);
+            Assert.True(info._links.ContainsKey("self"));
+            Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
+            Assert.False(info._links.ContainsKey("info"));
+            Assert.Single(info._links);
         }
 
         [Fact]
         public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            tc.AdditionalServices = (services, configuration) =>
             {
-                tc.AdditionalServices = (services, configuration) =>
+                services.AddHypermediaActuatorServices(configuration);
+                services.AddInfoActuatorServices(configuration);
+                services.AddSingleton(sp =>
                 {
-                    services.AddHypermediaActuatorServices(configuration);
-                    services.AddInfoActuatorServices(configuration);
-                    services.AddSingleton(sp =>
-                    {
-                        var options = new ActuatorManagementOptions();
-                        options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
-                        options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
+                    var options = new ActuatorManagementOptions();
+                    options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
+                    options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
 
-                        return options;
-                    });
-                };
-                tc.AdditionalConfiguration = configuration =>
+                    return options;
+                });
+            };
+            tc.AdditionalConfiguration = configuration =>
+            {
+                configuration.AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    configuration.AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        { "management:endpoints:actuator:enabled", "false" },
-                        { "management:endpoints:info:enabled", "true" }
-                    });
-                };
+                    { "management:endpoints:actuator:enabled", "false" },
+                    { "management:endpoints:info:enabled", "true" }
+                });
+            };
 
-                var ep = tc.GetService<IActuatorEndpoint>();
+            var ep = tc.GetService<IActuatorEndpoint>();
 
-                var info = ep.Invoke("http://localhost:5000/foobar");
-                Assert.NotNull(info);
-                Assert.NotNull(info._links);
-                Assert.Empty(info._links);
-            }
+            var info = ep.Invoke("http://localhost:5000/foobar");
+            Assert.NotNull(info);
+            Assert.NotNull(info._links);
+            Assert.Empty(info._links);
         }
     }
 }

@@ -87,26 +87,24 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dbmigrations");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                var expected = Serialize(
-                    new Dictionary<string, DbMigrationsDescriptor>()
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dbmigrations");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            var expected = Serialize(
+                new Dictionary<string, DbMigrationsDescriptor>()
+                {
                     {
+                        nameof(MockDbContext), new DbMigrationsDescriptor()
                         {
-                            nameof(MockDbContext), new DbMigrationsDescriptor()
-                            {
-                                AppliedMigrations = new List<string> { "applied" },
-                                PendingMigrations = new List<string> { "pending" }
-                            }
+                            AppliedMigrations = new List<string> { "applied" },
+                            PendingMigrations = new List<string> { "pending" }
                         }
-                    });
+                    }
+                });
 
-                Assert.Equal(expected, json);
-            }
+            Assert.Equal(expected, json);
         }
 
         [Fact]

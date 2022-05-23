@@ -35,8 +35,25 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
             {
-                using (var tc = new TestContext(_output))
+                using var tc = new TestContext(_output);
+                tc.AdditionalServices = (services, configuration) =>
                 {
+                    services.AddHeapDumpActuatorServices(configuration);
+                    services.AddSingleton<IHeapDumper>(sp => new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
+                };
+
+                var ep = tc.GetService<IHeapDumpEndpoint>();
+
+                var result = ep.Invoke();
+                Assert.NotNull(result);
+                Assert.True(File.Exists(result));
+                File.Delete(result);
+            }
+            else if (!Platform.IsOSX)
+            {
+                if (typeof(object).Assembly.GetType("System.Index") != null)
+                {
+                    using var tc = new TestContext(_output);
                     tc.AdditionalServices = (services, configuration) =>
                     {
                         services.AddHeapDumpActuatorServices(configuration);
@@ -49,27 +66,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     Assert.NotNull(result);
                     Assert.True(File.Exists(result));
                     File.Delete(result);
-                }
-            }
-            else if (!Platform.IsOSX)
-            {
-                if (typeof(object).Assembly.GetType("System.Index") != null)
-                {
-                    using (var tc = new TestContext(_output))
-                    {
-                        tc.AdditionalServices = (services, configuration) =>
-                        {
-                            services.AddHeapDumpActuatorServices(configuration);
-                            services.AddSingleton<IHeapDumper>(sp => new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
-                        };
-
-                        var ep = tc.GetService<IHeapDumpEndpoint>();
-
-                        var result = ep.Invoke();
-                        Assert.NotNull(result);
-                        Assert.True(File.Exists(result));
-                        File.Delete(result);
-                    }
                 }
             }
             else if (Platform.IsWindows || Platform.IsLinux)

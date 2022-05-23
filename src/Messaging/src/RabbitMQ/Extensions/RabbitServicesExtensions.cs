@@ -235,18 +235,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
                 .Bind(config.GetSection(RabbitOptions.PREFIX))
                 .Configure<IServiceProvider>((options, provider) =>
                 {
-                    using (var scope = provider.CreateScope())
-                    {
-                        var connectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+                    using var scope = provider.CreateScope();
+                    var connectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
 
-                        if (connectionFactory is not null)
-                        {
-                            options.Addresses = $"{connectionFactory.UserName}:{connectionFactory.Password}@{connectionFactory.HostName}:{connectionFactory.Port}";
-                            options.VirtualHost = connectionFactory.VirtualHost;
-                            options.Host = connectionFactory.HostName;
-                            options.Username = connectionFactory.UserName;
-                            options.Password = connectionFactory.Password;
-                        }
+                    if (connectionFactory is not null)
+                    {
+                        options.Addresses = $"{connectionFactory.UserName}:{connectionFactory.Password}@{connectionFactory.HostName}:{connectionFactory.Port}";
+                        options.VirtualHost = connectionFactory.VirtualHost;
+                        options.Host = connectionFactory.HostName;
+                        options.Username = connectionFactory.UserName;
+                        options.Password = connectionFactory.Password;
                     }
                 });
 

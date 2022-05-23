@@ -29,20 +29,18 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public void Invoke_CallsDumpThreads()
         {
-            using (var tc = new TestContext(_output))
+            using var tc = new TestContext(_output);
+            var dumper = new TestThreadDumper();
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var dumper = new TestThreadDumper();
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton<IThreadDumper>(dumper);
-                    services.AddThreadDumpActuatorServices(configuration, MediaTypeVersion.V1);
-                };
+                services.AddSingleton<IThreadDumper>(dumper);
+                services.AddThreadDumpActuatorServices(configuration, MediaTypeVersion.V1);
+            };
 
-                var ep = tc.GetService<IThreadDumpEndpoint>();
-                var result = ep.Invoke();
-                Assert.NotNull(result);
-                Assert.True(dumper.DumpThreadsCalled);
-            }
+            var ep = tc.GetService<IThreadDumpEndpoint>();
+            var result = ep.Invoke();
+            Assert.NotNull(result);
+            Assert.True(dumper.DumpThreadsCalled);
         }
     }
 }
