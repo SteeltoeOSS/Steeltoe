@@ -51,9 +51,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             if (key != null)
             {
                 var cacheInstance = RequestVariableForCache.Value;
-                object result;
                 /* look for the stored value */
-                if (cacheInstance.TryGetValue(key, out result))
+                if (cacheInstance.TryGetValue(key, out var result))
                 {
                     return (T)result;
                 }
