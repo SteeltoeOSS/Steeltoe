@@ -34,7 +34,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             if (resolvedName == null)
             {
                 throw new InvalidOperationException(
-                        "Specified name must not resolve to null: [" + namedValueInfo.Name + "]");
+                    $"Specified name must not resolve to null: [{namedValueInfo.Name}]");
             }
 
             var arg = ResolveArgumentInternal(parameter, message, resolvedName.ToString());
@@ -106,8 +106,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
                 {
                     var type = parameter.ParameterType;
                     throw new InvalidOperationException(
-                            "Name for argument of type [" + type.Name + "] not specified, " +
-                                    "and parameter name information not found in class file either.");
+                        $"Name for argument of type [{type.Name}] not specified, and parameter name information not found in class file either.");
                 }
             }
 
@@ -124,10 +123,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
                 }
                 else if (paramType.IsPrimitive)
                 {
-                    throw new InvalidOperationException("Optional " + paramType + " parameter '" + name +
-                            "' is present but cannot be translated into a null value due to being " +
-                            "declared as a primitive type. Consider declaring it as object wrapper " +
-                            "for the corresponding primitive type.");
+                    throw new InvalidOperationException(
+                        $"Optional {paramType} parameter '{name}' is present but cannot be translated into a null value due to being declared as a primitive type. Consider declaring it as object wrapper for the corresponding primitive type.");
                 }
             }
 

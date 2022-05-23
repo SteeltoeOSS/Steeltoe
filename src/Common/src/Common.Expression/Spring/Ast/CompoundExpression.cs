@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             if (expressionComponents.Length < 2)
             {
-                throw new InvalidOperationException("Do not build compound expressions with less than two entries: " + expressionComponents.Length);
+                throw new InvalidOperationException($"Do not build compound expressions with less than two entries: {expressionComponents.Length}");
             }
         }
 

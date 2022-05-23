@@ -64,7 +64,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override string ToStringAST()
         {
-            return "#" + _name;
+            return $"#{_name}";
         }
 
         public override bool IsWritable(ExpressionState state)

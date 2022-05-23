@@ -9,11 +9,20 @@ namespace Steeltoe.Security.Authentication.Mtls
 {
     internal static class LoggingExtensions
     {
-        private static Action<ILogger, Exception> _noCertificate = LoggerMessage.Define(eventId: new EventId(0, "NoCertificate"), logLevel: LogLevel.Debug, formatString: "No client certificate found.");
+        private static Action<ILogger, Exception> _noCertificate = LoggerMessage.Define(
+            eventId: new EventId(0, "NoCertificate"),
+            logLevel: LogLevel.Debug,
+            formatString: "No client certificate found.");
 
-        private static Action<ILogger, string, string, Exception> _certRejected = LoggerMessage.Define<string, string>(eventId: new EventId(1, "CertificateRejected"), logLevel: LogLevel.Warning, formatString: "{CertificateType} certificate rejected, subject was {Subject}.");
+        private static Action<ILogger, string, string, Exception> _certRejected = LoggerMessage.Define<string, string>(
+            eventId: new EventId(1, "CertificateRejected"),
+            logLevel: LogLevel.Warning,
+            formatString: "{CertificateType} certificate rejected, subject was {Subject}.");
 
-        private static Action<ILogger, string, string, Exception> _certFailedValidation = LoggerMessage.Define<string, string>(eventId: new EventId(2, "CertificateFailedValidation"), logLevel: LogLevel.Warning, formatString: "Certificate validation failed, subject was {Subject}." + Environment.NewLine + "{ChainErrors}");
+        private static Action<ILogger, string, string, Exception> _certFailedValidation = LoggerMessage.Define<string, string>(
+            eventId: new EventId(2, "CertificateFailedValidation"),
+            logLevel: LogLevel.Warning,
+            formatString: $"Certificate validation failed, subject was {{Subject}}.{Environment.NewLine}{{ChainErrors}}");
 
         public static void NoCertificate(this ILogger logger)
         {

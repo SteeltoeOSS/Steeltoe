@@ -237,7 +237,7 @@ namespace Steeltoe.Common.Lifecycle
                     }
                     catch (Exception ex)
                     {
-                        throw new LifecycleException("Failed to start bean(service) '" + bean + "'", ex);
+                        throw new LifecycleException($"Failed to start bean(service) '{bean}'", ex);
                     }
                 }
             }

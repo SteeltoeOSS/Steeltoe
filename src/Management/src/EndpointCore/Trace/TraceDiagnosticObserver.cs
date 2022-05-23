@@ -184,7 +184,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         protected internal string GetRequestUri(HttpRequest request)
         {
-            return request.Scheme + "://" + request.Host.Value + request.Path.Value;
+            return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
         }
 
         protected internal string GetPathInfo(HttpRequest request)

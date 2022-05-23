@@ -132,9 +132,7 @@ namespace Steeltoe.Stream.Binder
 
         public override string ToString()
         {
-            return " Binding [name=" + Name + ", target=" + _target + ", lifecycle="
-                    + _lifecycle.ToString()
-                + "]";
+            return $" Binding [name={Name}, target={_target}, lifecycle={_lifecycle}]";
         }
 
         protected virtual void AfterUnbind()

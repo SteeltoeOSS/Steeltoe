@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         internal string CreateFileName()
         {
-            return "minidump-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "-live" + ".dmp";
+            return $"minidump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.dmp";
         }
     }
 }

@@ -91,7 +91,7 @@ namespace Steeltoe.Common.Transaction
             if (deadlineReached)
             {
                 RollbackOnly = true;
-                throw new TransactionTimedOutException("Transaction timed out: deadline was " + Deadline);
+                throw new TransactionTimedOutException($"Transaction timed out: deadline was {Deadline}");
             }
         }
     }

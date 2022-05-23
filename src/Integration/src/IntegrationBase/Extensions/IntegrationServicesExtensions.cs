@@ -200,7 +200,7 @@ namespace Steeltoe.Integration.Extensions
             var attribute = method.GetCustomAttribute<ServiceActivatorAttribute>();
             if (attribute == null)
             {
-                throw new InvalidOperationException("Method: '" + method.ToString() + "' missing ServiceActivatorAttribute");
+                throw new InvalidOperationException($"Method: '{method}' missing ServiceActivatorAttribute");
             }
 
             services.AddSingleton<IServiceActivatorMethod>(new ServiceActivatorMethod(method, targetClass, attribute));
@@ -212,7 +212,7 @@ namespace Steeltoe.Integration.Extensions
         {
             if (context.GetServices<IMessageChannel>().FirstOrDefault((chan) => chan.ServiceName == name) is not T result)
             {
-                throw new InvalidOperationException("Unable to resolve channel:" + name);
+                throw new InvalidOperationException($"Unable to resolve channel:{name}");
             }
 
             return result;

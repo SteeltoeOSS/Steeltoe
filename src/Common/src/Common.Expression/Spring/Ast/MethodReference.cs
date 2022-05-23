@@ -47,7 +47,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 sj.Add(GetChild(i).ToStringAST());
             }
 
-            return Name + "(" + string.Join(",", sj) + ")";
+            return $"{Name}({string.Join(",", sj)})";
         }
 
         public override bool IsCompilable()
@@ -286,7 +286,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     throw exception;
                 }
 
-                throw new ExpressionInvocationTargetException(StartPosition, "A problem occurred when trying to execute method '" + Name + "' on object of type [" + value.GetType().FullName + "]", rootCause);
+                throw new ExpressionInvocationTargetException(
+                    StartPosition,
+                    $"A problem occurred when trying to execute method '{Name}' on object of type [{value.GetType().FullName}]",
+                    rootCause);
             }
         }
 
@@ -397,7 +400,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var methodExecutor = (ReflectiveMethodExecutor)_cachedExecutor?.Get();
             if (methodExecutor == null)
             {
-                throw new InvalidOperationException("No applicable cached executor found: " + _cachedExecutor);
+                throw new InvalidOperationException($"No applicable cached executor found: {_cachedExecutor}");
             }
 
             var method = methodExecutor.Method;

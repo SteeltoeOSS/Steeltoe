@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             map[key] = value;
             if (oldValue != null)
             {
-                throw new InvalidOperationException("Already value [" + oldValue + FOR_KEY + key + BOUND_TO_THREAD + Thread.CurrentThread.ManagedThreadId + "]");
+                throw new InvalidOperationException($"Already value [{oldValue}{FOR_KEY}{key}{BOUND_TO_THREAD}{Thread.CurrentThread.ManagedThreadId}]");
             }
 
             logger?.LogTrace("Bound value [{value}" + FOR_KEY + "{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
@@ -134,7 +134,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var value = UnbindIfPossible(key);
             if (value == null)
             {
-                throw new InvalidOperationException("No value for key [" + key + BOUND_TO_THREAD + Thread.CurrentThread.ManagedThreadId + "]");
+                throw new InvalidOperationException($"No value for key [{key}{BOUND_TO_THREAD}{Thread.CurrentThread.ManagedThreadId}]");
             }
 
             return value;

@@ -105,7 +105,7 @@ namespace Steeltoe.Common.Util
                 throw new ArgumentNullException(nameof(method));
             }
 
-            return method.DeclaringType.FullName + "." + method.Name;
+            return $"{method.DeclaringType.FullName}.{method.Name}";
         }
 
         public static Type[] GetParameterTypes(MethodBase method)

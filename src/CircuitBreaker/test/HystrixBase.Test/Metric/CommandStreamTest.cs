@@ -179,7 +179,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                         HystrixEventType.SUCCESS => 1,
                         HystrixEventType.FAILURE => throw new Exception("induced failure"),
                         HystrixEventType.BAD_REQUEST => throw new HystrixBadRequestException("induced bad request"),
-                        _ => throw new Exception("unhandled HystrixEventType : " + _executionResult),
+                        _ => throw new Exception($"unhandled HystrixEventType : {_executionResult}"),
                     };
                 }
                 catch (Exception)
@@ -204,7 +204,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                     HystrixEventType.FALLBACK_SUCCESS => -1,
                     HystrixEventType.FALLBACK_FAILURE => throw new Exception("induced failure"),
                     HystrixEventType.FALLBACK_MISSING => throw new InvalidOperationException("fallback not defined"),
-                    _ => throw new Exception("unhandled HystrixEventType : " + fallbackExecutionResult),
+                    _ => throw new Exception($"unhandled HystrixEventType : {fallbackExecutionResult}"),
                 };
             }
 

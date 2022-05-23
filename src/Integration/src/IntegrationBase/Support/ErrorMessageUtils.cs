@@ -9,9 +9,9 @@ namespace Steeltoe.Integration.Support
 {
     public static class ErrorMessageUtils
     {
-        public const string FAILED_MESSAGE_CONTEXT_KEY = MessageHeaders.INTERNAL + "message";
+        public const string FAILED_MESSAGE_CONTEXT_KEY = $"{MessageHeaders.INTERNAL}message";
 
-        public const string INPUT_MESSAGE_CONTEXT_KEY = MessageHeaders.INTERNAL + "inputMessage";
+        public const string INPUT_MESSAGE_CONTEXT_KEY = $"{MessageHeaders.INTERNAL}inputMessage";
 
         public static IAttributeAccessor GetAttributeAccessor(IMessage inputMessage, IMessage failedMessage)
         {

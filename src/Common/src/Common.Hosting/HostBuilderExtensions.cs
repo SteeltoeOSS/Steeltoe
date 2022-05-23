@@ -140,7 +140,7 @@ namespace Steeltoe.Common.Hosting
         private static void AddFromKubernetesEnv(List<string> urls)
         {
             var appname = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
-            var foundPort = Environment.GetEnvironmentVariable(appname + "_SERVICE_PORT_HTTP");
+            var foundPort = Environment.GetEnvironmentVariable($"{appname}_SERVICE_PORT_HTTP");
             urls.Add($"http://*:{foundPort ?? "80"}");
         }
 

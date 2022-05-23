@@ -212,7 +212,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 return new CustomExchange(name, ExchangeType.SYSTEM);
             }
 
-            throw new InvalidOperationException("Unable to determine exchange type " + type);
+            throw new InvalidOperationException($"Unable to determine exchange type {type}");
         }
 
         private static List<Queue> ProcessDeclareQueues(IServiceCollection services, IConfiguration config, List<DeclareQueueAttribute> declareQueues)
@@ -288,7 +288,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 return result;
             }
 
-            throw new InvalidOperationException("Unable to parse annotation property: " + name);
+            throw new InvalidOperationException($"Unable to parse annotation property: {name}");
         }
 
         private static List<T> GetAllAttributes<T>(Type targetClass)

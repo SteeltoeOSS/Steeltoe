@@ -54,8 +54,8 @@ namespace Steeltoe.Common.Converter
 
             if (source != null && !sourceType.IsInstanceOfType(source))
             {
-                throw new ArgumentException("Source to convert from must be an instance of [" +
-                        sourceType + "]; instead it was a [" + source.GetType().Name + "]");
+                throw new ArgumentException(
+                    $"Source to convert from must be an instance of [{sourceType}]; instead it was a [{source.GetType().Name}]");
             }
 
             var converter = GetConverter(sourceType, targetType);
@@ -208,7 +208,7 @@ namespace Steeltoe.Common.Converter
 
             public override int GetHashCode() => (_sourceType.GetHashCode() * 29) + _targetType.GetHashCode();
 
-            public override string ToString() => "ConverterCacheKey [sourceType = " + _sourceType + ", targetType = " + _targetType + "]";
+            public override string ToString() => $"ConverterCacheKey [sourceType = {_sourceType}, targetType = {_targetType}]";
 
             public int CompareTo(ConverterCacheKey other)
             {

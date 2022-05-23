@@ -52,7 +52,7 @@ namespace Steeltoe.Stream.Binding
                 else
                 {
                     throw new MessagingException(
-                        requestMessage, "Exception thrown while invoking " + _invocableHandlerMethod.ShortLogMessage, e);
+                        requestMessage, $"Exception thrown while invoking {_invocableHandlerMethod.ShortLogMessage}", e);
                 }
             }
         }

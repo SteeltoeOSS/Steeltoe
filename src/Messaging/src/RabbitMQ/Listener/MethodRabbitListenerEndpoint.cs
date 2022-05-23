@@ -116,7 +116,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     var destinations = ann.Destinations;
                     if (destinations.Length > 1)
                     {
-                        throw new InvalidOperationException("Invalid SendToAttribute on '" + listenerMethod + "' one destination must be set (got " + string.Join(",", destinations) + ")");
+                        throw new InvalidOperationException($"Invalid SendToAttribute on '{listenerMethod}' one destination must be set (got {string.Join(",", destinations)})");
                     }
 
                     return destinations.Length == 1 ? ResolveSendTo(destinations[0]) : string.Empty;

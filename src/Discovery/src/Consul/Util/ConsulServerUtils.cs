@@ -41,7 +41,7 @@ namespace Steeltoe.Discovery.Consul.Util
                 for (var i = 0; i < bytes.Length; i += 2)
                 {
                     var num = (ushort)((bytes[i] << 8) | bytes[i + 1]);
-                    sb.Append(num.ToString("x") + ":");
+                    sb.Append($"{num:x}:");
                 }
 
                 sb.Replace(':', ']', sb.Length - 1, 1);

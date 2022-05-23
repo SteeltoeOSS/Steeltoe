@@ -171,7 +171,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     consumerCaptor.Value = a7;
                     consumerLatch.Signal();
                 })
-               .Returns("consumer" + n.IncrementAndGet());
+               .Returns($"consumer{n.IncrementAndGet()}");
             channel.Setup(c => c.BasicCancel("consumer2"))
                 .Throws(new Exception("Intentional cancel fail"));
             var blockingQueueConsumer = new BlockingQueueConsumer(

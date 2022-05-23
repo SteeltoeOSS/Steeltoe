@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
     {
         public const string RETURNED_MESSAGE_CORRELATION_KEY = "spring_returned_message_correlation";
         public const string RETURN_LISTENER_CORRELATION_KEY = "spring_listener_return_correlation";
-        public const string RETURN_LISTENER_ERROR = "No '" + RETURN_LISTENER_CORRELATION_KEY + "' header in returned message";
+        public const string RETURN_LISTENER_ERROR = $"No '{RETURN_LISTENER_CORRELATION_KEY}' header in returned message";
         private readonly List<PendingConfirm> _emptyConfirms = new ();
         private readonly IMessageHeadersConverter _converter = new DefaultMessageHeadersConverter();
         private readonly ILogger _logger;

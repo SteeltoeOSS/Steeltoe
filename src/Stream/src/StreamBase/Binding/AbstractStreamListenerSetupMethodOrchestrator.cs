@@ -62,9 +62,7 @@ namespace Steeltoe.Stream.Binding
 
                     if (arguments[parameterIndex] == null)
                     {
-                        throw new ArgumentException("Cannot convert argument " + parameterIndex + " of " + method
-                                + "from " + targetBean.GetType() + " to "
-                                + parameterType);
+                        throw new ArgumentException($"Cannot convert argument {parameterIndex} of {method}from {targetBean.GetType()} to {parameterType}");
                     }
                 }
                 else

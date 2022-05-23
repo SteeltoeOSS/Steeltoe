@@ -48,7 +48,7 @@ namespace Steeltoe.Common.Converter
             }
             else
             {
-                throw new ArgumentException("Invalid boolean value '" + source + "'");
+                throw new ArgumentException($"Invalid boolean value '{source}'");
             }
         }
     }

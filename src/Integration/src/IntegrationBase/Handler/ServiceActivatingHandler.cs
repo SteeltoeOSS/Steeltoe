@@ -58,8 +58,7 @@ namespace Steeltoe.Integration.Handler
 
         public override string ToString()
         {
-            return "ServiceActivator for [" + _processor + "]"
-                    + (ComponentName == null ? string.Empty : " (" + ComponentName + ")");
+            return $"ServiceActivator for [{_processor}]{(ComponentName == null ? string.Empty : $" ({ComponentName})")}";
         }
 
         protected override object HandleRequestMessage(IMessage requestMessage)

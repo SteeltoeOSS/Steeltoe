@@ -367,12 +367,12 @@ internal class DotNetHeapDumpGraphReader
                                     m_children.Add(m_graph.GetNodeIndex(value.RootedNodeAddress));
                                     m_graph.SetNode(staticNodeIdx, staticTypeIdx, 0, m_children);
                                     staticRoot.AddChild(staticNodeIdx);
-                                    Trace.WriteLine("Got Static 0x" + gcRootId.ToString("x") + " pointing at 0x" + value.RootedNodeAddress.ToString("x") + " kind " + value.GCRootKind + " flags " + value.GCRootFlag);
+                                    Trace.WriteLine($"Got Static 0x{gcRootId:x} pointing at 0x{value.RootedNodeAddress:x} kind {value.GCRootKind} flags {value.GCRootFlag}");
                                     continue;
                                 }
                             }
 
-                            Trace.WriteLine("Got GC Root 0x" + gcRootId.ToString("x") + " pointing at 0x" + value.RootedNodeAddress.ToString("x") + " kind " + value.GCRootKind + " flags " + value.GCRootFlag);
+                            Trace.WriteLine($"Got GC Root 0x{gcRootId:x} pointing at 0x{value.RootedNodeAddress:x} kind {value.GCRootKind} flags {value.GCRootFlag}");
                         }
                     }
 
@@ -504,10 +504,10 @@ internal class DotNetHeapDumpGraphReader
         {
             if (m_processName != null)
             {
-                throw new ApplicationException("ETL file did not include a Heap Dump for process " + m_processName);
+                throw new ApplicationException($"ETL file did not include a Heap Dump for process {m_processName}");
             }
 
-            throw new ApplicationException("ETL file did not include a Heap Dump for process ID " + m_processId);
+            throw new ApplicationException($"ETL file did not include a Heap Dump for process ID {m_processId}");
         }
 
         if (!m_ignoreEvents)
@@ -550,11 +550,11 @@ internal class DotNetHeapDumpGraphReader
                     {
                         if ((typeData.Flags & TypeFlags.Array) != 0)
                         {
-                            typeName = "ArrayType(0x" + typeData.TypeNameID.ToString("x") + ")";
+                            typeName = $"ArrayType(0x{typeData.TypeNameID:x})";
                         }
                         else
                         {
-                            typeName = "Type(0x" + typeData.TypeNameID.ToString("x") + ")";
+                            typeName = $"Type(0x{typeData.TypeNameID:x})";
                         }
                     }
                     // TODO FIX NOW these are kind of hacks
@@ -566,14 +566,14 @@ internal class DotNetHeapDumpGraphReader
                     string moduleName;
                     if (!m_moduleID2Name.TryGetValue(typeData.ModuleID, out moduleName))
                     {
-                        moduleName = "Module(0x" + typeData.ModuleID.ToString("x") + ")";
+                        moduleName = $"Module(0x{typeData.ModuleID:x})";
                         m_moduleID2Name[typeData.ModuleID] = moduleName;
                     }
 
                     // Is this type a an RCW?   If so mark the type name that way.   
                     if ((typeData.Flags & TypeFlags.ExternallyImplementedCOMObject) != 0)
                     {
-                        typeName = "[RCW " + typeName + "]";
+                        typeName = $"[RCW {typeName}]";
                     }
 
                     m_typeID2TypeIndex[typeData.TypeID] = CreateType(typeName, moduleName);
@@ -607,7 +607,7 @@ internal class DotNetHeapDumpGraphReader
                     var ccwTypeIndex = GetTypeIndex(ccwInfo.TypeID, 200);
                     var ccwType = m_graph.GetType(ccwTypeIndex, m_typeStorage);
 
-                    var typeName = "[CCW 0x" + ccwInfo.IUnknown.ToString("x") + " for type " + ccwType.Name + "]";
+                    var typeName = $"[CCW 0x{ccwInfo.IUnknown:x} for type {ccwType.Name}]";
                     ccwTypeIndex = CreateType(typeName);
 
                     ccwChildren.Clear();
@@ -642,12 +642,12 @@ internal class DotNetHeapDumpGraphReader
                 }
                 else
                 {
-                    typeName = "Type(0x" + staticVarData.TypeID.ToString("x") + ")";
+                    typeName = $"Type(0x{staticVarData.TypeID:x})";
                 }
 
-                string fullFieldName = typeName + "." + staticVarData.FieldName;
+                string fullFieldName = $"{typeName}.{staticVarData.FieldName}";
 
-                rootToAddTo = rootToAddTo.FindOrCreateChild("[static var " + fullFieldName + "]");
+                rootToAddTo = rootToAddTo.FindOrCreateChild($"[static var {fullFieldName}]");
                 var nodeIdx = m_graph.GetNodeIndex(staticVarData.ObjectID);
                 rootToAddTo.AddChild(nodeIdx);
             }
@@ -781,7 +781,8 @@ internal class DotNetHeapDumpGraphReader
             var nextBlock = m_nodeBlocks.Dequeue();
             if (m_curNodeBlock != null && nextBlock.Index != m_curNodeBlock.Index + 1)
             {
-                throw new ApplicationException("Error expected Node Index " + (m_curNodeBlock.Index + 1) + " Got " + nextBlock.Index + " Giving up on heap dump.");
+                throw new ApplicationException(
+                    $"Error expected Node Index {(m_curNodeBlock.Index + 1)} Got {nextBlock.Index} Giving up on heap dump.");
             }
 
             m_curNodeBlock = nextBlock;
@@ -803,7 +804,8 @@ internal class DotNetHeapDumpGraphReader
             var nextEdgeBlock = m_edgeBlocks.Dequeue();
             if (m_curEdgeBlock != null && nextEdgeBlock.Index != m_curEdgeBlock.Index + 1)
             {
-                throw new ApplicationException("Error expected Node Index " + (m_curEdgeBlock.Index + 1) + " Got " + nextEdgeBlock.Index + " Giving up on heap dump.");
+                throw new ApplicationException(
+                    $"Error expected Node Index {(m_curEdgeBlock.Index + 1)} Got {nextEdgeBlock.Index} Giving up on heap dump.");
             }
 
             m_curEdgeBlock = nextEdgeBlock;
@@ -820,7 +822,7 @@ internal class DotNetHeapDumpGraphReader
             m_log.WriteLine("Error: Did not have a type definition for typeID 0x{0:x}", typeID);
             Trace.WriteLine($"Error: Did not have a type definition for typeID 0x{typeID:x}");
 
-            var typeName = "UNKNOWN 0x" + typeID.ToString("x");
+            var typeName = $"UNKNOWN 0x{typeID:x}";
             ret = CreateType(typeName);
             m_typeID2TypeIndex[typeID] = ret;
         }
@@ -883,7 +885,7 @@ internal class DotNetHeapDumpGraphReader
             size = "100M";
         }
 
-        return " (Bytes > " + size + ")";
+        return $" (Bytes > {size})";
     }
 
     private NodeTypeIndex CreateType(string typeName, string moduleName = null)
@@ -891,7 +893,7 @@ internal class DotNetHeapDumpGraphReader
         var fullTypeName = typeName;
         if (moduleName != null)
         {
-            fullTypeName = moduleName + "!" + typeName;
+            fullTypeName = $"{moduleName}!{typeName}";
         }
 
         NodeTypeIndex ret;

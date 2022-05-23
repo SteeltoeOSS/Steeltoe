@@ -126,7 +126,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                         var threadInfo = new ThreadInfo
                         {
                             ThreadId = threadId,
-                            ThreadName = "Thread-" + threadId,
+                            ThreadName = $"Thread-{threadId}",
                             ThreadState = TState.RUNNABLE,
                             IsInNative = false,
                             IsSuspended = false,
@@ -222,7 +222,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
             if (ParseFrameName(frameName, out var assemblyName, out var className, out var methodName, out var parameters))
             {
-                result.ClassName = assemblyName + "!" + className;
+                result.ClassName = $"{assemblyName}!{className}";
                 result.MethodName = methodName + parameters;
             }
 
@@ -369,7 +369,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     simpleName = Path.GetFileNameWithoutExtension(simpleName);
                 }
 
-                pdbFileName = reader.FindSymbolFilePath(simpleName + ".pdb", Guid.Empty, 0);
+                pdbFileName = reader.FindSymbolFilePath($"{simpleName}.pdb", Guid.Empty, 0);
             }
 
             if (pdbFileName != null)
@@ -393,7 +393,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private async Task<string> CreateTraceFile(EventPipeSession session)
         {
-            var tempNetTraceFilename = Path.GetRandomFileName() + ".nettrace";
+            var tempNetTraceFilename = $"{Path.GetRandomFileName()}.nettrace";
             try
             {
                 await using (var fs = File.OpenWrite(tempNetTraceFilename))

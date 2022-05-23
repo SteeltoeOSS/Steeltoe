@@ -104,7 +104,7 @@ namespace Steeltoe.Stream.Binder
 
             public LatchedMessageHandler()
             {
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public virtual string ServiceName { get; set; }

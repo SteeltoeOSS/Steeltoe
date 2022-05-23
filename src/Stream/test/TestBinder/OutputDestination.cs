@@ -47,7 +47,7 @@ namespace Steeltoe.Stream.TestBinder
             public MessageHandler(OutputDestination thiz)
             {
                 _outputDestination = thiz;
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public void HandleMessage(IMessage message)

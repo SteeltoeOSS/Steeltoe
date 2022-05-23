@@ -30,7 +30,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             var uri = Options.Uri;
             if (Options.Uri.StartsWith("proxy://"))
             {
-                uri = "http" + Options.Uri.Substring("proxy".Length); // Proxy reporting is now http on newer proxies.
+                uri = $"http{Options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
             }
             else
             {
@@ -87,8 +87,8 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                             // TODO: Setup custom aggregations to compute distributions
                             var tags = GetTags(metricPoint.Tags);
 
-                            _wavefrontSender.SendMetric(metric.Name.ToLower() + "_count", metricPoint.GetHistogramCount(), timestamp, Options.Source, tags);
-                            _wavefrontSender.SendMetric(metric.Name.ToLower() + "_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
+                            _wavefrontSender.SendMetric($"{metric.Name.ToLower()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source, tags);
+                            _wavefrontSender.SendMetric($"{metric.Name.ToLower()}_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
                             metricCount += 2;
                         }
                     }

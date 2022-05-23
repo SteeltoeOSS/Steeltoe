@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
                     var method = ReflectionHelpers.FindMethod(paramType, "Wrap", new Type[] { typeof(IMessage) });
                     if (method == null)
                     {
-                        throw new InvalidOperationException("Cannot create accessor of type " + paramType + " for message " + message);
+                        throw new InvalidOperationException($"Cannot create accessor of type {paramType} for message {message}");
                     }
 
                     return ReflectionHelpers.Invoke(method, null, new object[] { message });
@@ -45,7 +45,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             }
             else
             {
-                throw new InvalidOperationException("Unexpected parameter of type " + paramType + " in method " + parameter.Member + ". ");
+                throw new InvalidOperationException($"Unexpected parameter of type {paramType} in method {parameter.Member}. ");
             }
         }
 

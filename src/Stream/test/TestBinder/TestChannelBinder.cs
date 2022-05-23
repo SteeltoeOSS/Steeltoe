@@ -94,7 +94,7 @@ namespace Steeltoe.Stream.TestBinder
             public ErrorMessageHandler(TestChannelBinder binder)
             {
                 Binder = binder;
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public TestChannelBinder Binder { get; }
@@ -122,7 +122,7 @@ namespace Steeltoe.Stream.TestBinder
         {
             public TestMessageListeningContainer()
             {
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public void HandleMessage(IMessage message)
@@ -205,7 +205,7 @@ namespace Steeltoe.Stream.TestBinder
                             _adapter.MessagingTemplate
                                     .Send(
                                 _adapter.ErrorChannel,
-                                _adapter.BuildErrorMessage(null, new InvalidOperationException("Message conversion failed: " + message, e)));
+                                _adapter.BuildErrorMessage(null, new InvalidOperationException($"Message conversion failed: {message}", e)));
                         }
                         else
                         {

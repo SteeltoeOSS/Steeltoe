@@ -33,7 +33,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override string ToStringAST()
         {
-            return GetPrefix() + GetChild(0).ToStringAST() + "]";
+            return $"{GetPrefix()}{GetChild(0).ToStringAST()}]";
         }
 
         protected internal override IValueRef GetValueRef(ExpressionState state)

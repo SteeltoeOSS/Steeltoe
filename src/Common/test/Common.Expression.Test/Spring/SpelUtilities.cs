@@ -12,9 +12,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
     {
         public static void PrintAbstractSyntaxTree(TextWriter printStream, IExpression expression)
         {
-            printStream.WriteLine("===> Expression '" + expression.ExpressionString + "' - AST start");
+            printStream.WriteLine($"===> Expression '{expression.ExpressionString}' - AST start");
             PrintAST(printStream, ((SpelExpression)expression).AST, string.Empty);
-            printStream.WriteLine("===> Expression '" + expression.ExpressionString + "' - AST end");
+            printStream.WriteLine($"===> Expression '{expression.ExpressionString}' - AST end");
         }
 
         private static void PrintAST(TextWriter output, ISpelNode t, string indent)
@@ -24,11 +24,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 var sb = new StringBuilder();
                 sb.Append(indent).Append(t.GetType().Name);
                 sb.Append("  value:").Append(t.ToStringAST());
-                sb.Append(t.ChildCount < 2 ? string.Empty : "  #children:" + t.ChildCount);
+                sb.Append(t.ChildCount < 2 ? string.Empty : $"  #children:{t.ChildCount}");
                 output.WriteLine(sb.ToString());
                 for (var i = 0; i < t.ChildCount; i++)
                 {
-                    PrintAST(output, t.GetChild(i), indent + "  ");
+                    PrintAST(output, t.GetChild(i), $"{indent}  ");
                 }
             }
         }

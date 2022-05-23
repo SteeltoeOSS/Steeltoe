@@ -85,7 +85,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                             }
                             else
                             {
-                                throw new ArgumentException("Duplicate argument in collapser batch : [" + arg + "]  This is not supported.  Please turn request-caching on for HystrixCollapser:" + _commandCollapser.CollapserKey.Name + " or prevent duplicates from making it into the batch!");
+                                throw new ArgumentException(
+                                    $"Duplicate argument in collapser batch : [{arg}]  This is not supported.  Please turn request-caching on for HystrixCollapser:{_commandCollapser.CollapserKey.Name} or prevent duplicates from making it into the batch!");
                             }
                         }
                         else
@@ -181,7 +182,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                                 {
                                     try
                                     {
-                                        e = request.SetExceptionIfResponseNotReceived(e, "No response set by " + _commandCollapser.CollapserKey.Name + " 'mapResponseToRequests' implementation.");
+                                        e = request.SetExceptionIfResponseNotReceived(e, $"No response set by {_commandCollapser.CollapserKey.Name} 'mapResponseToRequests' implementation.");
                                     }
                                     catch (InvalidOperationException)
                                     {

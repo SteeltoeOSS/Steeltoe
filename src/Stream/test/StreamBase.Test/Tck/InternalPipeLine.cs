@@ -14,7 +14,7 @@ namespace Steeltoe.Stream.Tck
         [SendTo("internalchannel")]
         public string HandleA(Person value)
         {
-            return "{\"name\":\"" + value.Name.ToUpper() + "\"}";
+            return $"{{\"name\":\"{value.Name.ToUpper()}\"}}";
         }
 
         [StreamListener("internalchannel")]

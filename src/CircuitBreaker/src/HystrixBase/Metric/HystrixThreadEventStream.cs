@@ -54,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
         internal HystrixThreadEventStream(int id)
         {
             _threadId = id;
-            _threadName = "hystrix-" + _threadId;
+            _threadName = $"hystrix-{_threadId}";
 
             _writeOnlyCommandStartSubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
             _writeOnlyCommandCompletionSubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
@@ -113,7 +113,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override string ToString()
         {
-            return "HystrixThreadEventStream (" + _threadId + " - " + _threadName + ")";
+            return $"HystrixThreadEventStream ({_threadId} - {_threadName})";
         }
 
         internal static void Reset()

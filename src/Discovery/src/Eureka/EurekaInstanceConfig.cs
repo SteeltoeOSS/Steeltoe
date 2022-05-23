@@ -36,8 +36,8 @@ namespace Steeltoe.Discovery.Eureka
             SecurePortEnabled = false;
             LeaseRenewalIntervalInSeconds = Default_LeaseRenewalIntervalInSeconds;
             LeaseExpirationDurationInSeconds = Default_LeaseExpirationDurationInSeconds;
-            VirtualHostName = _thisHostName + ":" + NonSecurePort;
-            SecureVirtualHostName = _thisHostName + ":" + SecurePort;
+            VirtualHostName = $"{_thisHostName}:{NonSecurePort}";
+            SecureVirtualHostName = $"{_thisHostName}:{SecurePort}";
             IpAddress = _thisHostAddress;
             AppName = Default_Appname;
             StatusPageUrlPath = Default_StatusPageUrlPath;

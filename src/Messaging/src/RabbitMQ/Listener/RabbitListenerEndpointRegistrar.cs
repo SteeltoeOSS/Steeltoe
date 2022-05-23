@@ -116,7 +116,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
             else
             {
-                throw new InvalidOperationException("Could not resolve the IRabbitListenerContainerFactory to use for [" + descriptor.Endpoint + "] no factory was given and no default is set.");
+                throw new InvalidOperationException($"Could not resolve the IRabbitListenerContainerFactory to use for [{descriptor.Endpoint}] no factory was given and no default is set.");
             }
         }
 

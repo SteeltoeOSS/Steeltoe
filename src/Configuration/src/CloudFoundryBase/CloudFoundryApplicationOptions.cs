@@ -29,13 +29,13 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         {
             if (config != null)
             {
-                var vcapInstanceId = config.GetValue<string>(PlatformConfigRoot + ":application:instance_id");
+                var vcapInstanceId = config.GetValue<string>($"{PlatformConfigRoot}:application:instance_id");
                 if (!string.IsNullOrEmpty(vcapInstanceId))
                 {
                     Instance_Id = vcapInstanceId;
                 }
 
-                var vcapAppId = config.GetValue<string>(PlatformConfigRoot + ":application:id");
+                var vcapAppId = config.GetValue<string>($"{PlatformConfigRoot}:application:id");
                 if (!string.IsNullOrEmpty(vcapAppId))
                 {
                     Application_Id = vcapAppId;

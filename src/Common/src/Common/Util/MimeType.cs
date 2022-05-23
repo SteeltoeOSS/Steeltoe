@@ -486,7 +486,7 @@ namespace Steeltoe.Common.Util
             {
                 if (!TOKEN.Get(ch))
                 {
-                    throw new ArgumentException("Invalid token character '" + ch + "' in token \"" + token + "\"");
+                    throw new ArgumentException($"Invalid token character '{ch}' in token \"{token}\"");
                 }
             }
         }

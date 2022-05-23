@@ -16,7 +16,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             TokenValidationParameters.ValidateIssuer = true;
             TokenValidationParameters.ValidateLifetime = true;
 
-            SetEndpoints("http://" + CloudFoundryDefaults.OAuthServiceUrl);
+            SetEndpoints($"http://{CloudFoundryDefaults.OAuthServiceUrl}");
         }
 
         public string JwtKeyUrl { get; set; }

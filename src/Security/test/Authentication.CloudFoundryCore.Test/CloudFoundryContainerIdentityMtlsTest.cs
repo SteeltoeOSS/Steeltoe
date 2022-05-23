@@ -30,7 +30,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             var host = await GetHostBuilder().StartAsync();
 
-            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameSpaceAuthorizationPolicy);
+            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -40,7 +40,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             var host = await GetHostBuilder().StartAsync();
 
-            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameOrganizationAuthorizationPolicy);
+            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -50,7 +50,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             var host = await GetHostBuilder().StartAsync();
 
-            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameOrganizationAuthorizationPolicy);
+            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -60,7 +60,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             var host = await GetHostBuilder().StartAsync();
 
-            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync("https://localhost/" + CloudFoundryDefaults.SameSpaceAuthorizationPolicy);
+            var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -70,7 +70,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             var host = await GetHostBuilder().StartAsync();
 
-            var response = await host.GetTestClient().GetAsync("http://localhost/" + CloudFoundryDefaults.SameSpaceAuthorizationPolicy);
+            var response = await host.GetTestClient().GetAsync($"http://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }

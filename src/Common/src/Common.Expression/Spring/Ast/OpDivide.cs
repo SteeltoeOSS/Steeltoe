@@ -110,7 +110,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
                 if (exitDesc != TypeDescriptor.I && exitDesc != TypeDescriptor.J && exitDesc != TypeDescriptor.F && exitDesc != TypeDescriptor.D)
                 {
-                    throw new InvalidOperationException("Unrecognized exit type descriptor: '" + _exitTypeDescriptor + "'");
+                    throw new InvalidOperationException($"Unrecognized exit type descriptor: '{_exitTypeDescriptor}'");
                 }
 
                 gen.Emit(OpCodes.Div);

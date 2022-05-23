@@ -114,13 +114,13 @@ namespace Steeltoe.Common.Http.Test
         public void GetEncodedUserPassword_Nulls()
         {
             var result = HttpClientHelper.GetEncodedUserPassword(null, null);
-            Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Empty + ":" + string.Empty)), result);
+            Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes($"{string.Empty}:{string.Empty}")), result);
 
             var result2 = HttpClientHelper.GetEncodedUserPassword("foo", null);
-            Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + string.Empty)), result2);
+            Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes($"foo:{string.Empty}")), result2);
 
             var result3 = HttpClientHelper.GetEncodedUserPassword(null, "bar");
-            Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Empty + ":" + "bar")), result3);
+            Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes($"{string.Empty}:bar")), result3);
         }
 
         [Fact]

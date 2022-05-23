@@ -44,7 +44,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                         {
                             try
                             {
-                                var nameToLookup = prefix + '.' + typeName;
+                                var nameToLookup = $"{prefix}.{typeName}";
                                 result = assembly.GetType(nameToLookup, false);
                                 if (result != null)
                                 {

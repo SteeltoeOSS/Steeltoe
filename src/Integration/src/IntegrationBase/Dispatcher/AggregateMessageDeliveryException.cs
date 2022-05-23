@@ -29,10 +29,10 @@ namespace Steeltoe.Integration.Dispatcher
             get
             {
                 var baseMessage = base.Message;
-                var message = new StringBuilder(AppendPeriodIfNecessary(baseMessage) + " Multiple causes:\n");
+                var message = new StringBuilder($"{AppendPeriodIfNecessary(baseMessage)} Multiple causes:\n");
                 foreach (var exception in _aggregatedExceptions)
                 {
-                    message.Append("    " + exception.Message + "\n");
+                    message.Append($"    {exception.Message}\n");
                 }
 
                 message.Append("See below for the stacktrace of the first cause.");
@@ -48,7 +48,7 @@ namespace Steeltoe.Integration.Dispatcher
             }
             else if (!baseMessage.EndsWith("."))
             {
-                return baseMessage + ".";
+                return $"{baseMessage}.";
             }
             else
             {

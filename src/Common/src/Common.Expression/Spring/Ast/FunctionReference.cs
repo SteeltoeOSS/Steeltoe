@@ -58,7 +58,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 items.Add(GetChild(i).ToStringAST());
             }
 
-            return '#' + _name + "(" + string.Join(",", items) + ")";
+            return $"#{_name}({string.Join(",", items)})";
         }
 
         public override bool IsCompilable()

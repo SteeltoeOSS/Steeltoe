@@ -99,7 +99,7 @@ namespace Steeltoe.Common.Net
 
             if (result != 0)
             {
-                throw new ExternalException("Error connecting to remote share - Code: " + result + ", " + GetErrorForNumber(result));
+                throw new ExternalException($"Error connecting to remote share - Code: {result}, {GetErrorForNumber(result)}");
             }
         }
 
@@ -191,7 +191,7 @@ namespace Steeltoe.Common.Net
         {
             if (!Error_list.Any(e => e.Num == errNum))
             {
-                return "Error: Unknown, " + errNum;
+                return $"Error: Unknown, {errNum}";
             }
             else
             {

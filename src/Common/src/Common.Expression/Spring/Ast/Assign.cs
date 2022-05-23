@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override string ToStringAST()
         {
-            return GetChild(0).ToStringAST() + "=" + GetChild(1).ToStringAST();
+            return $"{GetChild(0).ToStringAST()}={GetChild(1).ToStringAST()}";
         }
     }
 }

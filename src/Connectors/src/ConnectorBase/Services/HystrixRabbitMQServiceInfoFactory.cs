@@ -47,7 +47,7 @@ namespace Steeltoe.Connector.Services
                 {
                     foreach (var uriScheme in UriSchemes)
                     {
-                        if (uri.StartsWith(uriScheme + "://"))
+                        if (uri.StartsWith($"{uriScheme}://"))
                         {
                             return true;
                         }

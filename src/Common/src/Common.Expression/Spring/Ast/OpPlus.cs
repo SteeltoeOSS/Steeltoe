@@ -135,7 +135,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             if (_children.Length < 2)
             {
                 // unary plus
-                return "+" + LeftOperand.ToStringAST();
+                return $"+{LeftOperand.ToStringAST()}";
             }
 
             return base.ToStringAST();

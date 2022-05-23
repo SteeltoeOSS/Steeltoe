@@ -45,7 +45,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
             public IBinding To(FanoutExchange exchange)
             {
-                var bindingName = exchange.ExchangeName + "." + Name;
+                var bindingName = $"{exchange.ExchangeName}.{Name}";
                 return Binding.Create(bindingName, Name, Type, exchange.ExchangeName, string.Empty, new Dictionary<string, object>());
             }
 
@@ -120,7 +120,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
                 public IBinding Exists()
                 {
-                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
                     return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
@@ -136,7 +136,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                     {
                         [_key] = value
                     };
-                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
                     return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
@@ -166,7 +166,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
                 public IBinding Exist()
                 {
-                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
                     return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
@@ -198,7 +198,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
                 public IBinding Match()
                 {
-                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
                     return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
@@ -232,13 +232,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
             public IBinding With(string routingKey)
             {
-                var bindingName = ExchangeName + "." + Destination.Name;
+                var bindingName = $"{ExchangeName}.{Destination.Name}";
                 return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
             }
 
             public IBinding With(Enum routingKeyEnum)
             {
-                var bindingName = ExchangeName + "." + Destination.Name;
+                var bindingName = $"{ExchangeName}.{Destination.Name}";
                 return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
             }
         }
@@ -275,13 +275,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
             public IBinding And(Dictionary<string, object> map)
             {
-                var bindingName = _configurer.ExchangeName + "." + _configurer.Destination.Name;
+                var bindingName = $"{_configurer.ExchangeName}.{_configurer.Destination.Name}";
                 return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, map);
             }
 
             public IBinding NoArgs()
             {
-                var bindingName = _configurer.ExchangeName + "." + _configurer.Destination.Name;
+                var bindingName = $"{_configurer.ExchangeName}.{_configurer.Destination.Name}";
                 return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, new Dictionary<string, object>());
             }
         }
@@ -295,19 +295,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
             public IBinding With(string routingKey)
             {
-                var bindingName = ExchangeName + "." + Destination.Name;
+                var bindingName = $"{ExchangeName}.{Destination.Name}";
                 return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
             }
 
             public IBinding With(Enum routingKeyEnum)
             {
-                var bindingName = ExchangeName + "." + Destination.Name;
+                var bindingName = $"{ExchangeName}.{Destination.Name}";
                 return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
             }
 
             public IBinding WithQueueName()
             {
-                var bindingName = ExchangeName + "." + Destination.Name;
+                var bindingName = $"{ExchangeName}.{Destination.Name}";
                 return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, Destination.Name, new Dictionary<string, object>());
             }
         }

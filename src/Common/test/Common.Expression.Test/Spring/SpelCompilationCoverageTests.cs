@@ -3593,59 +3593,59 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void ConstructorReference_SPR12326()
         {
             var type = GetType().FullName;
-            var prefix = "new " + type + "$Obj";
+            var prefix = $"new {type}$Obj";
 
-            _expression = _parser.ParseExpression(prefix + "([0])");
+            _expression = _parser.ParseExpression($"{prefix}([0])");
             Assert.Equal("test", ((Obj)_expression.GetValue(new object[] { "test" })).Param1);
             AssertCanCompile(_expression);
             Assert.Equal("test", ((Obj)_expression.GetValue(new object[] { "test" })).Param1);
 
-            _expression = _parser.ParseExpression(prefix + "2('foo','bar').Output");
+            _expression = _parser.ParseExpression($"{prefix}2('foo','bar').Output");
             Assert.Equal("foobar", _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal("foobar", _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "2('foo').Output");
+            _expression = _parser.ParseExpression($"{prefix}2('foo').Output");
             Assert.Equal("foo", _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal("foo", _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "2().Output");
+            _expression = _parser.ParseExpression($"{prefix}2().Output");
             Assert.Equal(string.Empty, _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal(string.Empty, _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "3(1,2,3).Output");
+            _expression = _parser.ParseExpression($"{prefix}3(1,2,3).Output");
             Assert.Equal("123", _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal("123", _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "3(1).Output");
+            _expression = _parser.ParseExpression($"{prefix}3(1).Output");
             Assert.Equal("1", _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal("1", _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "3().Output");
+            _expression = _parser.ParseExpression($"{prefix}3().Output");
             Assert.Equal(string.Empty, _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal(string.Empty, _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "3('abc',5.0f,1,2,3).Output");
+            _expression = _parser.ParseExpression($"{prefix}3('abc',5.0f,1,2,3).Output");
             Assert.Equal("abc:5:123", _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal("abc:5:123", _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "3('abc',5.0f,1).Output");
+            _expression = _parser.ParseExpression($"{prefix}3('abc',5.0f,1).Output");
             Assert.Equal("abc:5:1", _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal("abc:5:1", _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "3('abc',5.0f).Output");
+            _expression = _parser.ParseExpression($"{prefix}3('abc',5.0f).Output");
             Assert.Equal("abc:5:", _expression.GetValue<string>());
             AssertCanCompile(_expression);
             Assert.Equal("abc:5:", _expression.GetValue<string>());
 
-            _expression = _parser.ParseExpression(prefix + "4(#root).Output");
+            _expression = _parser.ParseExpression($"{prefix}4(#root).Output");
             Assert.Equal("123", _expression.GetValue<string>(new int[] { 1, 2, 3 }));
             AssertCanCompile(_expression);
             Assert.Equal("123", _expression.GetValue<string>(new int[] { 1, 2, 3 }));
@@ -3700,7 +3700,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var testclass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
 
             // multi arg ctor that includes primitives
-            _expression = _parser.ParseExpression("new " + testclass8 + "(42,'123',4.0d,True)");
+            _expression = _parser.ParseExpression($"new {testclass8}(42,'123',4.0d,True)");
             Assert.IsType<TestClass8>(_expression.GetValue());
             AssertCanCompile(_expression);
             var o = _expression.GetValue();
@@ -3712,7 +3712,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.True(tc8.Z);
 
             // pass primitive to reference type ctor
-            _expression = _parser.ParseExpression("new " + testclass8 + "(42)");
+            _expression = _parser.ParseExpression($"new {testclass8}(42)");
             Assert.IsType<TestClass8>(_expression.GetValue());
             AssertCanCompile(_expression);
             o = _expression.GetValue();
@@ -3722,7 +3722,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // private class, can't compile it
             var testclass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
-            _expression = _parser.ParseExpression("new " + testclass9 + "(42)");
+            _expression = _parser.ParseExpression($"new {testclass9}(42)");
             Assert.IsType<TestClass9>(_expression.GetValue());
             AssertCantCompile(_expression);
         }
@@ -5984,11 +5984,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 if (vargs == null)
                 {
-                    S = a + "::";
+                    S = $"{a}::";
                 }
                 else
                 {
-                    S = a + "::";
+                    S = $"{a}::";
                     foreach (var varg in vargs)
                     {
                         S += varg;
@@ -6091,11 +6091,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 if (vargs == null)
                 {
-                    S = a + "::";
+                    S = $"{a}::";
                 }
                 else
                 {
-                    S = a + "::";
+                    S = $"{a}::";
                     foreach (var varg in vargs)
                     {
                         S += "{";
@@ -6113,11 +6113,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 if (vargs == null)
                 {
-                    S = a + "::";
+                    S = $"{a}::";
                 }
                 else
                 {
-                    S = a + "::";
+                    S = $"{a}::";
                     foreach (var varg in vargs)
                     {
                         S += "{";
@@ -6159,7 +6159,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public void Concat(string arg)
             {
-                S = "::" + arg;
+                S = $"::{arg}";
             }
 
             public void Concat(params string[] vargs)
@@ -6180,7 +6180,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public void Concat2(object arg)
             {
-                S = "::" + arg;
+                S = $"::{arg}";
             }
 
             public void Concat2(params object[] vargs)

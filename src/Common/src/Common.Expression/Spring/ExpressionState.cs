@@ -104,7 +104,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var result = EvaluationContext.TypeConverter.ConvertValue(value, value?.GetType(), targetTypeDescriptor);
             if (result == null)
             {
-                throw new InvalidOperationException("Null conversion result for value [" + value + "]");
+                throw new InvalidOperationException($"Null conversion result for value [{value}]");
             }
 
             return result;

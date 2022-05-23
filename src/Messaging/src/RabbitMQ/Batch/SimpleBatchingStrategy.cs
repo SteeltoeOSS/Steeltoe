@@ -133,7 +133,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
                 {
                     throw new ListenerExecutionFailedException(
                         "Bad batched message received",
-                        new MessageConversionException("Insufficient batch data at offset " + index),
+                        new MessageConversionException($"Insufficient batch data at offset {index}"),
                         message);
                 }
 

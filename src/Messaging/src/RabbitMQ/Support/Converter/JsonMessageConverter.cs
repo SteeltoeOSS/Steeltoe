@@ -112,7 +112,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         {
             if (from is not IMessage<byte[]> message)
             {
-                throw new MessageConversionException("Failed to convert Message content, message missing byte[] " + from.GetType());
+                throw new MessageConversionException($"Failed to convert Message content, message missing byte[] {from.GetType()}");
             }
 
             object content;

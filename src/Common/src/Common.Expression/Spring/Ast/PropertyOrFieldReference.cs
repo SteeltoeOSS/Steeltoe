@@ -92,7 +92,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             if (_cachedReadAccessor is not ICompilablePropertyAccessor accessorToUse)
             {
-                throw new InvalidOperationException("Property accessor is not compilable: " + _cachedReadAccessor);
+                throw new InvalidOperationException($"Property accessor is not compilable: {_cachedReadAccessor}");
             }
 
             Label? skipIfNullLabel = null;

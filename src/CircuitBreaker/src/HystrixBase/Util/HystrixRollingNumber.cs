@@ -328,14 +328,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     return _updaterForCounterType[(int)type].Max;
                 }
 
-                throw new InvalidOperationException("Unknown type of event: " + type.ToString());
+                throw new InvalidOperationException($"Unknown type of event: {type}");
             }
 
             public LongAdder GetAdder(HystrixRollingNumberEvent type)
             {
                 if (!HystrixRollingNumberEventHelper.IsCounter(type))
                 {
-                    throw new InvalidOperationException("Type is not a Counter: " + type.ToString());
+                    throw new InvalidOperationException($"Type is not a Counter: {type}");
                 }
 
                 return _adderForCounterType[(int)type];
@@ -345,7 +345,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             {
                 if (!HystrixRollingNumberEventHelper.IsMaxUpdater(type))
                 {
-                    throw new InvalidOperationException("Type is not a MaxUpdater: " + type.ToString());
+                    throw new InvalidOperationException($"Type is not a MaxUpdater: {type}");
                 }
 
                 return _updaterForCounterType[(int)type];
@@ -417,14 +417,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     return _updaterForCounterType[(int)type].Max;
                 }
 
-                throw new InvalidOperationException("Unknown type of event: " + type.ToString());
+                throw new InvalidOperationException($"Unknown type of event: {type}");
             }
 
             public LongAdder GetAdder(HystrixRollingNumberEvent type)
             {
                 if (!HystrixRollingNumberEventHelper.IsCounter(type))
                 {
-                    throw new InvalidOperationException("Type is not a Counter: " + type.ToString());
+                    throw new InvalidOperationException($"Type is not a Counter: {type}");
                 }
 
                 return _adderForCounterType[(int)type];
@@ -434,7 +434,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             {
                 if (!HystrixRollingNumberEventHelper.IsMaxUpdater(type))
                 {
-                    throw new InvalidOperationException("Type is not a MaxUpdater: " + type.ToString());
+                    throw new InvalidOperationException($"Type is not a MaxUpdater: {type}");
                 }
 
                 return _updaterForCounterType[(int)type];

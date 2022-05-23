@@ -53,7 +53,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
 
                     if (!GetEncoding().Equals(encoding))
                     {
-                        throw new InvalidOperationException("Content encoding must be:" + GetEncoding() + ", was:" + encoding);
+                        throw new InvalidOperationException($"Content encoding must be:{GetEncoding()}, was:{encoding}");
                     }
 
                     headers.ContentEncoding = colonAt < 0 ? null : headers.ContentEncoding.Substring(colonAt + 1);

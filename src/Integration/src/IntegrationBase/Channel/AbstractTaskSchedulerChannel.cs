@@ -160,7 +160,7 @@ namespace Steeltoe.Integration.Channel
                         throw new MessagingExceptionWrapperException(message, exception);
                     }
 
-                    var description = "Failed to handle " + message + " to " + this + " in " + messageHandler;
+                    var description = $"Failed to handle {message} to {this} in {messageHandler}";
                     throw new MessageDeliveryException(message, description, ex);
                 }
             }

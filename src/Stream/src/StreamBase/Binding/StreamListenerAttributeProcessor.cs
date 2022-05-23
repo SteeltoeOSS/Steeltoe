@@ -135,7 +135,7 @@ namespace Steeltoe.Stream.Binding
                 //    .getBean(mappedBindingEntry.getKey(), typeof(ISubscribableChannel))
                 if (BindingHelpers.GetBindable<IMessageChannel>(_context, mappedBindingEntry.Key) is not ISubscribableChannel channel)
                 {
-                    throw new InvalidOperationException("Unable to locate ISubscribableChannel with ServiceName: " + mappedBindingEntry.Key);
+                    throw new InvalidOperationException($"Unable to locate ISubscribableChannel with ServiceName: {mappedBindingEntry.Key}");
                 }
 
                 channel.Subscribe(handler);
@@ -181,7 +181,7 @@ namespace Steeltoe.Stream.Binding
             catch (Exception e)
             {
                 // Log
-                throw new InvalidOperationException("Unable to CreateInstance of type containing StreamListener method, Type: " + implementation, e);
+                throw new InvalidOperationException($"Unable to CreateInstance of type containing StreamListener method, Type: {implementation}", e);
             }
         }
 

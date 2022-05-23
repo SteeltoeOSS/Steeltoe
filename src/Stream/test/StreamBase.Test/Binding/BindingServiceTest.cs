@@ -250,14 +250,14 @@ namespace Steeltoe.Stream.Binding
         {
             var searchDirectories = GetSearchDirectories("MockBinder");
             var mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";
-            var mockAssembly = searchDirectories[0] + Path.DirectorySeparatorChar + "Steeltoe.Stream.MockBinder.dll";
+            var mockAssembly = $"{searchDirectories[0]}{Path.DirectorySeparatorChar}Steeltoe.Stream.MockBinder.dll";
             var provider = CreateStreamsContainer(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.destination=fooInput",
                 "spring.cloud.stream.bindings.output.destination=fooOutput",
                 "spring.cloud.stream.defaultBinder=mock1",
-                "spring.cloud.stream.binders.mock1.configureclass=" + mockBinder,
-                "spring.cloud.stream.binders.mock1.configureassembly=" + mockAssembly,
+                $"spring.cloud.stream.binders.mock1.configureclass={mockBinder}",
+                $"spring.cloud.stream.binders.mock1.configureassembly={mockAssembly}",
                 "spring.cloud.stream.binders.kafka1.configureclass=kafka")
                 .BuildServiceProvider();
 

@@ -85,7 +85,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             }
             catch (Exception ex)
             {
-                throw new AccessException("Problem invoking method: " + _methodToInvoke, ex);
+                throw new AccessException($"Problem invoking method: {_methodToInvoke}", ex);
             }
         }
     }

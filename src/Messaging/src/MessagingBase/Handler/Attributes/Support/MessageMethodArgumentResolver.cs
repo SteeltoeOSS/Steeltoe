@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
                 throw new MessageConversionException(
                     message,
-                    "Cannot convert from actual payload type '" + payloadType + "' to expected payload type '" + targetPayloadType.ToString() + "' when payload is empty");
+                    $"Cannot convert from actual payload type '{payloadType}' to expected payload type '{targetPayloadType}' when payload is empty");
             }
 
             payload = ConvertPayload(message, parameter, targetPayloadType);
@@ -103,7 +103,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
                 var payloadType = message.Payload != null ? message.Payload.GetType().ToString() : "null";
                 throw new MessageConversionException(
                     message,
-                    "No converter found from actual payload type '" + payloadType + "' to expected payload type '" + targetPayloadType.ToString() + "'");
+                    $"No converter found from actual payload type '{payloadType}' to expected payload type '{targetPayloadType}'");
             }
 
             return result;

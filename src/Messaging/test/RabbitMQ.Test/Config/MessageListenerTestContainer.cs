@@ -64,12 +64,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         {
             if (!InitializationInvoked)
             {
-                throw new InvalidOperationException("afterPropertiesSet should have been invoked before start on " + this);
+                throw new InvalidOperationException($"afterPropertiesSet should have been invoked before start on {this}");
             }
 
             if (StartInvoked)
             {
-                throw new InvalidOperationException("Start already invoked on " + this);
+                throw new InvalidOperationException($"Start already invoked on {this}");
             }
 
             StartInvoked = true;
@@ -87,7 +87,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         {
             if (StopInvoked)
             {
-                throw new InvalidOperationException("Stop already invoked on " + this);
+                throw new InvalidOperationException($"Stop already invoked on {this}");
             }
 
             StopInvoked = true;

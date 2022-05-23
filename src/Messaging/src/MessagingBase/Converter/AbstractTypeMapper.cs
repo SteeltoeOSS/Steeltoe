@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.Converter
             if (classId == null)
             {
                 throw new MessageConversionException(
-                        "failed to convert Message content. Could not resolve " + headerName + " in header");
+                    $"failed to convert Message content. Could not resolve {headerName} in header");
             }
 
             return classId;

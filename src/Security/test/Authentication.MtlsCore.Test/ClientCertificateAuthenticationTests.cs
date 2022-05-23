@@ -330,7 +330,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 wireUpHeaderMiddleware: true);
 
             var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("X-Client-Cert", "OOPS" + Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
+            client.DefaultRequestHeaders.Add("X-Client-Cert", $"OOPS{Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData)}");
             var response = await client.GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }

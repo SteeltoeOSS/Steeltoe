@@ -132,7 +132,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                 9995 => _p99_95,
                 9999 => _p99_99,
                 10000 => _p100,
-                _ => throw new ArgumentException("Percentile (" + percentile + ") is not currently cached"),
+                _ => throw new ArgumentException($"Percentile ({percentile}) is not currently cached"),
             };
         }
 
@@ -143,7 +143,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override string ToString()
         {
-            return "[Mean: " + GetMean() + "/Total: " + GetTotalCount() + "]";
+            return $"[Mean: {GetMean()}/Total: {GetTotalCount()}]";
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Steeltoe.Integration.Handler
             {
                 throw new ReplyRequiredException(
                     message,
-                    "No reply produced by handler '" + GetType().Name + "', and its 'requiresReply' property is set to true.");
+                    $"No reply produced by handler '{GetType().Name}', and its 'requiresReply' property is set to true.");
             }
         }
 

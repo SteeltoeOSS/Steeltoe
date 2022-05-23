@@ -190,12 +190,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public override string ToString()
             {
-                return "EventCounts{" +
-                        "events=" + _events +
-                        ", numEmissions=" + _numEmissions +
-                        ", numFallbackEmissions=" + _numFallbackEmissions +
-                        ", numCollapsed=" + _numCollapsed +
-                        '}';
+                return
+                    $"EventCounts{{events={_events}, numEmissions={_numEmissions}, numFallbackEmissions={_numFallbackEmissions}, numCollapsed={_numCollapsed}}}";
             }
 
             internal EventCounts Plus(HystrixEventType eventType)
@@ -500,17 +496,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public override string ToString()
         {
-            return "ExecutionResult{" +
-                    "eventCounts=" + Eventcounts +
-                    ", failedExecutionException=" + Exception +
-                    ", executionException=" + ExecutionException +
-                    ", startTimestamp=" + StartTimestamp +
-                    ", executionLatency=" + ExecutionLatency +
-                    ", userThreadLatency=" + UserThreadLatency +
-                    ", executionOccurred=" + ExecutionOccurred +
-                    ", isExecutedInThread=" + IsExecutedInThread +
-                    ", collapserKey=" + CollapserKey +
-                    '}';
+            return
+                $"ExecutionResult{{eventCounts={Eventcounts}, failedExecutionException={Exception}, executionException={ExecutionException}, startTimestamp={StartTimestamp}, executionLatency={ExecutionLatency}, userThreadLatency={UserThreadLatency}, executionOccurred={ExecutionOccurred}, isExecutedInThread={IsExecutedInThread}, collapserKey={CollapserKey}}}";
         }
 
         private static bool DidExecutionOccur(HystrixEventType eventType)

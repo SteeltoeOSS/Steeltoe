@@ -175,7 +175,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void TestMatchesWithPatternAccessThreshold()
         {
             var pattern = "^(?=[a-z0-9-]{1,47})([a-z0-9]+[-]{0,1}){1,47}[a-z0-9]{1}$";
-            var expression = "'abcde-fghijklmn-o42pasdfasdfasdf.qrstuvwxyz10x.xx.yyy.zasdfasfd' matches \'" + pattern + "\'";
+            var expression = $"'abcde-fghijklmn-o42pasdfasdfasdf.qrstuvwxyz10x.xx.yyy.zasdfasfd' matches '{pattern}'";
             var expr = _parser.ParseExpression(expression);
             var ex = Assert.Throws<SpelEvaluationException>(() => expr.GetValue());
             Assert.IsType<RegexMatchTimeoutException>(ex.InnerException);
@@ -1362,7 +1362,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     return new Spr9751_2();
                 }
 
-                throw new AccessException("not heard of " + serviceName);
+                throw new AccessException($"not heard of {serviceName}");
             }
         }
 

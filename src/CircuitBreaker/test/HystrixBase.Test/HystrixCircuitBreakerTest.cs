@@ -341,8 +341,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
             // this should start as allowing requests
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
+            Assert.True(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request NOT allowed when expected!");
+            Assert.False(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit breaker is open when it should be closed!");
 
             _ = await cmd1.ExecuteAsync();
             HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
@@ -360,7 +360,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine(Time.CurrentTimeMillis + " !!!! 1 4 failures, circuit will open on recalc");
 
             // Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
+            Assert.True(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit is closed when it should be open!");
 
             // wait for sleepWindow to pass
             output.WriteLine(Time.CurrentTimeMillis + " !!!! 2 Sleep window starting where all commands fail-fast");
@@ -368,7 +368,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine(Time.CurrentTimeMillis + " !!!! 3 Sleep window over, should allow singleTest()");
 
             // but the circuit should still be open
-            Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
+            Assert.True(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit is closed when it should be open!");
 
             // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
             HystrixCommand<bool> cmd5 = new FailureCommand(key, 50);
@@ -376,16 +376,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine(Time.CurrentTimeMillis + " !!!! Kicked off the single-test");
 
             // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed when NOT expected!");
             output.WriteLine(Time.CurrentTimeMillis + " !!!! Confirmed that no other requests go out during single-test");
 
             await asyncResult5.SingleAsync();
             output.WriteLine(Time.CurrentTimeMillis + " !!!! SingleTest just completed");
 
             // all requests should still be blocked, because the singleTest failed
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (1) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (2) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (3) when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (1) when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (2) when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (3) when NOT expected!");
 
             // wait for sleepWindow to pass
             output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window START");
@@ -398,40 +398,40 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest just kicked off");
 
             // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed when NOT expected!");
             Assert.False(await asyncResult6.SingleAsync());
             output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest now over");
 
             // all requests should still be blocked, because the singleTest failed
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (1) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (2) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (3) when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (1) when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (2) when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (3) when NOT expected!");
 
             // wait for sleepWindow to pass
             Time.Wait(sleepWindow);
 
             // but the circuit should still be open
-            Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
+            Assert.True(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit is closed when it should be open!");
 
             // we should now allow 1 request, and upon success, should cause the circuit to be closed
             HystrixCommand<bool> cmd7 = new SuccessCommand(key, 50);
             var asyncResult7 = cmd7.Observe();
 
             // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
+            Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed when NOT expected!");
 
             await asyncResult7.SingleAsync();
 
             // all requests should be open again
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (1) when expected!");
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (2) when expected!");
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (3) when expected!");
+            Assert.True(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request NOT allowed (1) when expected!");
+            Assert.True(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request NOT allowed (2) when expected!");
+            Assert.True(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request NOT allowed (3) when expected!");
 
             // and the circuit should be closed again
-            Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
+            Assert.False(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit breaker is open when it should be closed!");
 
             // and the circuit should be closed again
-            Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
+            Assert.False(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit breaker is open when it should be closed!");
         }
 
         [Fact]
@@ -657,11 +657,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     var metrics = commandInfo.Metrics;
 
-                    Console.WriteLine("cb/error-count/%/total: "
-                            + commandInfo.IsCircuitBreakerOpen + " "
-                            + metrics.Healthcounts.ErrorCount + " "
-                            + metrics.Healthcounts.ErrorPercentage + " "
-                            + metrics.Healthcounts.TotalRequests + "  => " + response + "  " + commandInfo.ExecutionEvents);
+                    Console.WriteLine(
+                        $"cb/error-count/%/total: {commandInfo.IsCircuitBreakerOpen} {metrics.Healthcounts.ErrorCount} {metrics.Healthcounts.ErrorPercentage} {metrics.Healthcounts.TotalRequests}  => {response}  {commandInfo.ExecutionEvents}");
                 }
             }
         }

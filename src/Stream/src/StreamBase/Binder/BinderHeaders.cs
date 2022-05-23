@@ -11,11 +11,11 @@ namespace Steeltoe.Stream.Binder
     {
         public const string BINDER_ORIGINAL_CONTENT_TYPE = "originalContentType";
 
-        public const string PARTITION_HEADER = PREFIX + "partition";
+        public const string PARTITION_HEADER = $"{PREFIX}partition";
 
-        public const string PARTITION_OVERRIDE = PREFIX + "partitionOverride";
+        public const string PARTITION_OVERRIDE = $"{PREFIX}partitionOverride";
 
-        public const string NATIVE_HEADERS_PRESENT = PREFIX + "nativeHeadersPresent";
+        public const string NATIVE_HEADERS_PRESENT = $"{PREFIX}nativeHeadersPresent";
 
         public static readonly string[] STANDARD_HEADERS = new string[]
         {

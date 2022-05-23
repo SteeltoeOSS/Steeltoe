@@ -40,7 +40,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 return destination.QueueName;
             }
 
-            return destination.ExchangeName + "/" + destination.QueueName;
+            return $"{destination.ExchangeName}/{destination.QueueName}";
         }
 
         public static implicit operator RabbitDestination(string destination)

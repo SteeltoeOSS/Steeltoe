@@ -109,7 +109,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var queueNamesEmpty = QueueNames.Count == 0;
             if (!queuesEmpty && !queueNamesEmpty)
             {
-                throw new InvalidOperationException("Queues or queue names must be provided but not both for " + this);
+                throw new InvalidOperationException($"Queues or queue names must be provided but not both for {this}");
             }
 
             if (queuesEmpty)
@@ -170,7 +170,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var messageListener = CreateMessageListener(container);
             if (messageListener == null)
             {
-                throw new InvalidOperationException("Endpoint [" + this + "] must provide a non null message listener");
+                throw new InvalidOperationException($"Endpoint [{this}] must provide a non null message listener");
             }
 
             container.SetupMessageListener(messageListener);

@@ -84,7 +84,7 @@ namespace Steeltoe.Stream.Binding
         {
             if (channel is not Integration.Channel.AbstractMessageChannel messageChannel)
             {
-                throw new ArgumentException(nameof(channel) + " not an AbstractMessageChannel");
+                throw new ArgumentException($"{nameof(channel)} not an AbstractMessageChannel");
             }
 
             IBindingOptions bindingOptions = Options.GetBindingOptions(channelName);
@@ -127,7 +127,7 @@ namespace Steeltoe.Stream.Binding
                 strategy = _extractors?.FirstOrDefault((s) => s.ServiceName == options.PartitionKeyExtractorName);
                 if (strategy == null)
                 {
-                    throw new InvalidOperationException("PartitionKeyExtractorStrategy bean with the name '" + options.PartitionKeyExtractorName + "' can not be found.");
+                    throw new InvalidOperationException($"PartitionKeyExtractorStrategy bean with the name '{options.PartitionKeyExtractorName}' can not be found.");
                 }
             }
             else
@@ -154,7 +154,7 @@ namespace Steeltoe.Stream.Binding
                 strategy = _selectors.FirstOrDefault((s) => s.ServiceName == options.PartitionSelectorName);
                 if (strategy == null)
                 {
-                    throw new InvalidOperationException("IPartitionSelectorStrategy bean with the name '" + options.PartitionSelectorName + "' can not be found.");
+                    throw new InvalidOperationException($"IPartitionSelectorStrategy bean with the name '{options.PartitionSelectorName}' can not be found.");
                 }
             }
             else
@@ -252,7 +252,7 @@ namespace Steeltoe.Stream.Binding
 
             if (result == null)
             {
-                throw new InvalidOperationException("Failed to convert message: '" + message + "' to outbound message.");
+                throw new InvalidOperationException($"Failed to convert message: '{message}' to outbound message.");
             }
 
             // ===== 1.3 backward compatibility code part-2 ===

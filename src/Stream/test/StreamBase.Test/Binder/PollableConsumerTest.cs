@@ -228,7 +228,7 @@ namespace Steeltoe.Stream.Binder
             var searchDirectories = GetSearchDirectories("TestBinder");
             IServiceProvider serviceProvider = CreateStreamsContainer(
                 searchDirectories,
-                "spring:cloud:stream:bindings:foo:consumer:headerMode=" + HeaderMode.EmbeddedHeaders.ToString()).BuildServiceProvider();
+                $"spring:cloud:stream:bindings:foo:consumer:headerMode={HeaderMode.EmbeddedHeaders}").BuildServiceProvider();
             var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
             Assert.NotNull(messageConverter);
 
@@ -412,7 +412,7 @@ namespace Steeltoe.Stream.Binder
             public TestErrorsErrorChannelHandler(CountdownEvent latch)
             {
                 this.latch = latch;
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public virtual string ServiceName { get; set; }
@@ -430,7 +430,7 @@ namespace Steeltoe.Stream.Binder
             public TestFuncMessageHandler(Action<IMessage> action)
             {
                 Act = action;
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public virtual string ServiceName { get; set; }
@@ -482,7 +482,7 @@ namespace Steeltoe.Stream.Binder
 
             public TestConvertSimpleHandler()
             {
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public virtual string ServiceName { get; set; }
@@ -500,7 +500,7 @@ namespace Steeltoe.Stream.Binder
 
             public TestSimpleHandler()
             {
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
             public virtual string ServiceName { get; set; }

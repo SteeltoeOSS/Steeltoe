@@ -55,7 +55,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 sj.Add(GetChild(c).ToStringAST());
             }
 
-            return "{" + string.Join(",", sj) + "}";
+            return $"{{{string.Join(",", sj)}}}";
         }
 
         public bool IsConstant => _constant != null;
@@ -74,7 +74,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            var constantFieldName = "inlineList$" + cf.NextFieldId();
+            var constantFieldName = $"inlineList${cf.NextFieldId()}";
             cf.RegisterNewField(constantFieldName, new List<object>());
             cf.RegisterNewInitGenerator((initGenerator, cflow) => { GenerateInitCode(constantFieldName, initGenerator, cflow); });
 

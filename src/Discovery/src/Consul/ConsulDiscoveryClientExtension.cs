@@ -49,7 +49,7 @@ namespace Steeltoe.Discovery.Consul
 
                     // Consul is enabled by default. If consul:discovery:enabled was not set then check spring:cloud:discovery:enabled
                     if (options.Enabled &&
-                        config.GetValue<bool?>(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX + ":enabled") is null &&
+                        config.GetValue<bool?>($"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:enabled") is null &&
                         config.GetValue<bool?>(_springDiscoveryEnabled) == false)
                     {
                         options.Enabled = false;

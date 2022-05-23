@@ -135,7 +135,7 @@ namespace Steeltoe.Common.Util
             var result = DoMatch(pattern, path, true, variables);
             if (!result)
             {
-                throw new InvalidOperationException("Pattern \"" + pattern + "\" is not a match for \"" + path + "\"");
+                throw new InvalidOperationException($"Pattern \"{pattern}\" is not a match for \"{path}\"");
             }
 
             return variables;
@@ -195,7 +195,7 @@ namespace Steeltoe.Common.Util
             var ext2All = ext2.Equals(".*") || ext2 == string.Empty;
             if (!ext1All && !ext2All)
             {
-                throw new InvalidOperationException("Cannot combine patterns: " + pattern1 + " vs " + pattern2);
+                throw new InvalidOperationException($"Cannot combine patterns: {pattern1} vs {pattern2}");
             }
 
             var ext = ext1All ? ext2 : ext1;
@@ -798,10 +798,8 @@ namespace Steeltoe.Common.Util
                         // SPR-8455
                         if (_variableNames.Count != (matcher.Groups.Count - 1))
                         {
-                            throw new InvalidOperationException("The number of capturing groups in the pattern segment " +
-                                    _pattern + " does not match the number of URI template variables it defines, " +
-                                    "which can occur if capturing groups are used in a URI template regex. " +
-                                    "Use non-capturing groups instead.");
+                            throw new InvalidOperationException(
+                                $"The number of capturing groups in the pattern segment {_pattern} does not match the number of URI template variables it defines, which can occur if capturing groups are used in a URI template regex. Use non-capturing groups instead.");
                         }
 
                         for (var i = 1; i <= matcher.Groups.Count - 1; i++)
@@ -836,8 +834,8 @@ namespace Steeltoe.Common.Util
         {
             public PathSeparatorPatternCache(string pathSeparator)
             {
-                EndsOnWildCard = pathSeparator + "*";
-                EndsOnDoubleWildCard = pathSeparator + "**";
+                EndsOnWildCard = $"{pathSeparator}*";
+                EndsOnDoubleWildCard = $"{pathSeparator}**";
             }
 
             public string EndsOnWildCard { get; }

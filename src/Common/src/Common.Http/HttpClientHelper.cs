@@ -138,7 +138,7 @@ namespace Steeltoe.Common.Http
 
             password ??= string.Empty;
 
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
         }
 
         /// <summary>

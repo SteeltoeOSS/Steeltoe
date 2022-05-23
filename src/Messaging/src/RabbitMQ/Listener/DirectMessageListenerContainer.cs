@@ -494,7 +494,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             var consumer = consumerArg;
 
-            _logger?.LogWarning(e, $"basicConsume failed, scheduling consumer {consumer?.ToString() ?? "for queue " + queue.ToString()} for restart");
+            _logger?.LogWarning(e, $"basicConsume failed, scheduling consumer {consumer?.ToString() ?? $"for queue {queue}"} for restart");
 
             if (consumer == null)
             {
@@ -662,7 +662,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     }
 
                     _logger?.LogError("Consumer {consumer} canceled - channel closed ", consumer);
-                    consumer.CancelConsumer("Consumer " + consumer + " channel closed");
+                    consumer.CancelConsumer($"Consumer {consumer} channel closed");
                 });
         }
 
@@ -1014,10 +1014,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             public override void HandleBasicCancel(string consumerTag)
             {
                 _logger?.LogError("Consumer canceled - queue deleted? {consumerTag}, {consumer}", consumerTag, this);
-                CancelConsumer("Consumer " + this + " canceled");
+                CancelConsumer($"Consumer {this} canceled");
             }
 
-            public override string ToString() => "SimpleConsumer [queue=" + Queue + ", consumerTag=" + ConsumerTag + " identity=" + GetHashCode() + "]";
+            public override string ToString() => $"SimpleConsumer [queue={Queue}, consumerTag={ConsumerTag} identity={GetHashCode()}]";
 
             internal void CancelConsumer(string eventMessage)
             {

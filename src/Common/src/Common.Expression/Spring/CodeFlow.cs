@@ -143,7 +143,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 return descriptor.UnBox();
             }
 
-            throw new InvalidOperationException("No primitive for '" + descriptor + "'");
+            throw new InvalidOperationException($"No primitive for '{descriptor}'");
         }
 
         public static void InsertBoxIfNecessary(ILGenerator gen, TypeDescriptor descriptor)
@@ -218,7 +218,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     }
                     else
                     {
-                        throw new InvalidOperationException("Cannot get from " + stackDescriptor + " to " + targetDescriptor);
+                        throw new InvalidOperationException($"Cannot get from {stackDescriptor} to {targetDescriptor}");
                     }
                 }
                 else if (stackDescriptor == TypeDescriptor.J)
@@ -241,7 +241,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     }
                     else
                     {
-                        throw new InvalidOperationException("Cannot get from " + stackDescriptor + " to " + targetDescriptor);
+                        throw new InvalidOperationException($"Cannot get from {stackDescriptor} to {targetDescriptor}");
                     }
                 }
                 else if (stackDescriptor == TypeDescriptor.F)
@@ -264,7 +264,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     }
                     else
                     {
-                        throw new InvalidOperationException("Cannot get from " + stackDescriptor + " to " + targetDescriptor);
+                        throw new InvalidOperationException($"Cannot get from {stackDescriptor} to {targetDescriptor}");
                     }
                 }
                 else if (stackDescriptor == TypeDescriptor.D)
@@ -287,7 +287,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     }
                     else
                     {
-                        throw new InvalidOperationException("Cannot get from " + stackDescriptor + " to " + targetDescriptor);
+                        throw new InvalidOperationException($"Cannot get from {stackDescriptor} to {targetDescriptor}");
                     }
                 }
             }
@@ -338,7 +338,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             if (_initGenerators.Count > 0)
             {
-                var methodName = "SpelExpressionInit" + compilationId;
+                var methodName = $"SpelExpressionInit{compilationId}";
                 var method = new DynamicMethod(methodName, typeof(void), new Type[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
                 var ilGenerator = method.GetILGenerator(4096);
 

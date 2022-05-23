@@ -30,7 +30,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public override string ToString()
         {
-            return "CorrelationData [id=" + Id + "]";
+            return $"CorrelationData [id={Id}]";
         }
 
         public class Confirm
@@ -47,7 +47,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public override string ToString()
             {
-                return "Confirm [ack=" + Ack + (Reason != null ? ", reason=" + Reason : string.Empty) + "]";
+                return $"Confirm [ack={Ack}{(Reason != null ? $", reason={Reason}" : string.Empty)}]";
             }
         }
     }

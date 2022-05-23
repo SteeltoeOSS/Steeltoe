@@ -452,12 +452,12 @@ namespace Steeltoe.Integration.Handler
 
             public string MessageAndHeader(IMessage message, [Header("number")] int num)
             {
-                return message.Payload + "-" + num.ToString();
+                return $"{message.Payload}-{num}";
             }
 
             public string TwoHeaders([Header] string prop, [Header("number")] int num)
             {
-                return prop + "-" + num.ToString();
+                return $"{prop}-{num}";
             }
 
             public int OptionalHeader([Header(Required = false)] int num)
@@ -499,37 +499,37 @@ namespace Steeltoe.Integration.Handler
         {
             public string AcceptPayloadAndReturnObject(string s)
             {
-                return s + "-1";
+                return $"{s}-1";
             }
 
             public IMessage AcceptPayloadAndReturnMessage(string s)
             {
-                return Message.Create(s + "-2");
+                return Message.Create($"{s}-2");
             }
 
             public string AcceptMessageAndReturnObject(IMessage m)
             {
-                return m.Payload + "-3";
+                return $"{m.Payload}-3";
             }
 
             public IMessage AcceptMessageAndReturnMessage(IMessage m)
             {
-                return Message.Create(m.Payload + "-4");
+                return Message.Create($"{m.Payload}-4");
             }
 
             public IMessage AcceptMessageSubclassAndReturnMessage(IMessage<string> m)
             {
-                return Message.Create(m.Payload + "-5");
+                return Message.Create($"{m.Payload}-5");
             }
 
             public IMessage<string> AcceptMessageSubclassAndReturnMessageSubclass(IMessage<string> m)
             {
-                return Message.Create(m.Payload + "-6");
+                return Message.Create($"{m.Payload}-6");
             }
 
             public string AcceptPayloadAndHeaderAndReturnObject(string s, [Header("number")] int n)
             {
-                return s + "-" + n;
+                return $"{s}-{n}";
             }
 
             public void TestVoidReturningMethods(string s)
@@ -638,12 +638,12 @@ namespace Steeltoe.Integration.Handler
 
             public Person(string fname, string lname)
             {
-                Name = fname + " " + lname;
+                Name = $"{fname} {lname}";
             }
 
             public override string ToString()
             {
-                return "Person: " + Name;
+                return $"Person: {Name}";
             }
         }
     }

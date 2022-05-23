@@ -316,7 +316,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public void TestSendAndReceiveUndeliverable()
         {
             template.Mandatory = true;
-            var ex = Assert.Throws<RabbitMessageReturnedException>(() => template.ConvertSendAndReceive<string>(ROUTE + "xxxxxx", "undeliverable"));
+            var ex = Assert.Throws<RabbitMessageReturnedException>(() => template.ConvertSendAndReceive<string>($"{ROUTE}xxxxxx", "undeliverable"));
             var body = ex.ReturnedMessage.Payload as byte[];
             Assert.NotNull(body);
             Assert.Equal("undeliverable", EncodingUtils.Utf8.GetString(body));

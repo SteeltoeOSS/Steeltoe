@@ -9,7 +9,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     public class CloudFoundryJwtBearerOptionsTest
     {
         private const string DEFAULT_JWT_TOKEN_URL =
-            "http://" + CloudFoundryDefaults.OAuthServiceUrl + CloudFoundryDefaults.JwtTokenUri;
+            $"http://{CloudFoundryDefaults.OAuthServiceUrl}{CloudFoundryDefaults.JwtTokenUri}";
 
         public static TheoryData<string, string> SetEndpointsData()
         {

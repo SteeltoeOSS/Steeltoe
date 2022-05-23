@@ -1863,7 +1863,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // to allow random access as the response size does not match the request size
                 if (batchResponse.Count != requests.Count)
                 {
-                    throw new Exception("lists don't match in size => " + batchResponse.Count + " : " + requests.Count);
+                    throw new Exception($"lists don't match in size => {batchResponse.Count} : {requests.Count}");
                 }
 
                 var i = 0;
@@ -2036,7 +2036,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     if (cacheEnabled)
                     {
-                        return "aCacheKey_" + value;
+                        return $"aCacheKey_{value}";
                     }
                     else
                     {
@@ -2523,7 +2523,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     if (!OnNextEvents.Contains(v))
                     {
-                        Assert.False(true, "Value not found: " + v);
+                        Assert.False(true, $"Value not found: {v}");
                     }
                 }
             }
@@ -2543,7 +2543,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     return;
                 }
 
-                Assert.False(true, "Exceptions differ, Expected: " + et.ToString() + " Found: " + e.GetType());
+                Assert.False(true, $"Exceptions differ, Expected: {et} Found: {e.GetType()}");
             }
 
             internal void AssertNoValues()
@@ -2551,7 +2551,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 var c = OnNextEvents.Count;
                 if (c != 0)
                 {
-                    Assert.False(true, "No onNext events expected yet some received: " + c);
+                    Assert.False(true, $"No onNext events expected yet some received: {c}");
                 }
             }
 
@@ -2564,7 +2564,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
                 else if (s > 1)
                 {
-                    Assert.False(true, "Completed multiple times: " + s);
+                    Assert.False(true, $"Completed multiple times: {s}");
                 }
             }
 

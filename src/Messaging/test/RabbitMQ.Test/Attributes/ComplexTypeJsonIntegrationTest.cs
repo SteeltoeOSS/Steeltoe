@@ -208,7 +208,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public override string ToString()
             {
-                return "Foo [field=" + Field + "]";
+                return $"Foo [field={Field}]";
             }
         }
 
@@ -220,7 +220,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public override string ToString()
             {
-                return "Bar [aField=" + AField + ", bField=" + BField + "]";
+                return $"Bar [aField={AField}, bField={BField}]";
             }
         }
 
@@ -235,7 +235,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public override string ToString()
             {
-                return "Baz [baz=" + BazField + "]";
+                return $"Baz [baz={BazField}]";
             }
         }
 
@@ -250,7 +250,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public override string ToString()
             {
-                return "Qux [qux=" + QuxField + "]";
+                return $"Qux [qux={QuxField}]";
             }
         }
     }

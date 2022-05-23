@@ -61,7 +61,7 @@ namespace Steeltoe.Integration.Channel.Test
             channel.Subscribe(handler3);
             for (var i = 0; i < numberOfMessages; i++)
             {
-                channel.Send(Message.Create("test-" + i));
+                channel.Send(Message.Create($"test-{i}"));
             }
 
             Assert.True(latch.Wait(3000));
@@ -92,7 +92,7 @@ namespace Steeltoe.Integration.Channel.Test
             handler2.ShouldFail = true;
             for (var i = 0; i < numberOfMessages; i++)
             {
-                channel.Send(Message.Create("test-" + i));
+                channel.Send(Message.Create($"test-{i}"));
             }
 
             Assert.True(latch.Wait(3000));
@@ -123,7 +123,7 @@ namespace Steeltoe.Integration.Channel.Test
             handler1.ShouldFail = true;
             for (var i = 0; i < numberOfMessages; i++)
             {
-                channel.Send(Message.Create("test-" + i));
+                channel.Send(Message.Create($"test-{i}"));
             }
 
             Assert.True(latch.Wait(3000));

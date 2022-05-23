@@ -51,7 +51,7 @@ namespace Steeltoe.Stream.Converter
 
             return converters.Count switch
             {
-                0 => throw new ConversionException("No message converter is registered for " + mimeType.ToString()),
+                0 => throw new ConversionException($"No message converter is registered for {mimeType}"),
                 > 1 => new CompositeMessageConverter(converters),
                 _ => converters[0],
             };

@@ -151,7 +151,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 var targetEx = ex.InnerException;
 
                 throw new ListenerExecutionFailedException(
-                    "Listener method '" + methodName + "' threw exception", targetEx, originalMessage);
+                    $"Listener method '{methodName}' threw exception", targetEx, originalMessage);
             }
             catch (Exception ex)
             {
@@ -168,10 +168,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 }
 
                 throw new ListenerExecutionFailedException(
-                    "Failed to invoke target method '" + methodName
-                        + "' with argument type = [" + string.Join(",", arrayClass)
-                        + "], value = [" + NullSafeToString(arguments) + "]", ex,
-                    originalMessage);
+                    $"Failed to invoke target method '{methodName}' with argument type = [{string.Join(",", arrayClass)}], value = [{NullSafeToString(arguments)}]", ex, originalMessage);
             }
         }
 

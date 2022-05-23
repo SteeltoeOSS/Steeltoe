@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 // add the contributor with a -n appended to the id
                 if (keys.Any(k => k.Equals(key)))
                 {
-                    var newKey = string.Concat(key, "-", keys.Count(k => k.StartsWith(key)));
+                    var newKey = $"{key}-{keys.Count(k => k.StartsWith(key))}";
                     keys.Add(newKey);
                     return newKey;
                 }

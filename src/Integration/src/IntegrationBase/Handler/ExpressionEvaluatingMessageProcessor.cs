@@ -62,7 +62,7 @@ namespace Steeltoe.Integration.Handler
 
         public override string ToString()
         {
-            return "ExpressionEvaluatingMessageProcessor for: [" + Expression.ExpressionString + "]";
+            return $"ExpressionEvaluatingMessageProcessor for: [{Expression.ExpressionString}]";
         }
     }
 }

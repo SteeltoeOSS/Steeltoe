@@ -48,7 +48,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             PublisherConnectionFactory = publisherConnectionFactory;
             RecoveryListener = new DefaultRecoveryListener(_loggerFactory?.CreateLogger<DefaultRecoveryListener>());
             BlockedListener = new DefaultBlockedListener(_loggerFactory?.CreateLogger<DefaultBlockedListener>());
-            ServiceName = GetType().Name + "@" + GetHashCode();
+            ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
         public virtual RC.ConnectionFactory RabbitConnectionFactory => _rabbitConnectionFactory as RC.ConnectionFactory;
@@ -309,7 +309,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         protected virtual string ObtainNewConnectionName()
         {
-            return ServiceName + ":" + Interlocked.Increment(ref _defaultConnectionNameStrategyCounter) + PUBLISHER_SUFFIX;
+            return $"{ServiceName}:{Interlocked.Increment(ref _defaultConnectionNameStrategyCounter)}{PUBLISHER_SUFFIX}";
         }
 
         private RC.IConnection Connect(string connectionName)

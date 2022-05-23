@@ -28,8 +28,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics
 
         public override string ToString()
         {
-            return "MeasurementSample{" + "Statistic=" + Statistic.ToString() + ", Value="
-                    + Value + '}';
+            return $"MeasurementSample{{Statistic={Statistic}, Value={Value}}}";
         }
     }
 }

@@ -424,7 +424,7 @@ namespace Graphs
 
         internal void SetNodeTypeAndSize(NodeIndex nodeIndex, NodeTypeIndex typeIndex, int sizeInBytes)
         {
-            Debug.Assert(m_nodes[(int)nodeIndex] == m_undefinedObjDef, "Calling SetNode twice for node index " + nodeIndex);
+            Debug.Assert(m_nodes[(int)nodeIndex] == m_undefinedObjDef, $"Calling SetNode twice for node index {nodeIndex}");
             m_nodes[(int)nodeIndex] = m_writer.GetLabel();
 
             Debug.Assert(sizeInBytes >= 0);
@@ -949,7 +949,7 @@ namespace Graphs
 
                         m_graph.m_types.UnderlyingArray[(int)m_index].Name = ret;
                     }
-                    ret ??= "TypeID(0x" + info.TypeID.ToString("x") + ")";
+                    ret ??= $"TypeID(0x{info.TypeID:x})";
                 }
                 return ret;
             }
@@ -972,7 +972,7 @@ namespace Graphs
                     moduleName = "?";
                 }
 
-                return moduleName + "!" + Name;
+                return $"{moduleName}!{Name}";
             }
         }
         /// <summary>
@@ -1939,7 +1939,7 @@ internal class SpanningTree
                     continue;
                 }
 
-                throw new ApplicationException("Priority pattern " + priorityPatArray[i] + " is not of the form Pat->Num.");
+                throw new ApplicationException($"Priority pattern {priorityPatArray[i]} is not of the form Pat->Num.");
             }
 
             var dotNetRegEx = ToDotNetRegEx(m.Groups[1].Value.Trim());

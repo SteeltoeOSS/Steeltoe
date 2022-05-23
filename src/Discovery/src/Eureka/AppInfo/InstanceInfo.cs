@@ -165,27 +165,27 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         public override string ToString()
         {
             var sb = new StringBuilder("Instance[");
-            sb.Append("InstanceId=" + InstanceId);
+            sb.Append($"InstanceId={InstanceId}");
             sb.Append(',');
-            sb.Append("HostName=" + HostName);
+            sb.Append($"HostName={HostName}");
             sb.Append(',');
-            sb.Append("IpAddr=" + IpAddr);
+            sb.Append($"IpAddr={IpAddr}");
             sb.Append(',');
-            sb.Append("Status=" + Status.ToString());
+            sb.Append($"Status={Status}");
             sb.Append(',');
-            sb.Append("IsUnsecurePortEnabled=" + IsUnsecurePortEnabled);
+            sb.Append($"IsUnsecurePortEnabled={IsUnsecurePortEnabled}");
             sb.Append(',');
-            sb.Append("Port=" + Port);
+            sb.Append($"Port={Port}");
             sb.Append(',');
-            sb.Append("IsSecurePortEnabled=" + IsSecurePortEnabled);
+            sb.Append($"IsSecurePortEnabled={IsSecurePortEnabled}");
             sb.Append(',');
-            sb.Append("SecurePort=" + SecurePort);
+            sb.Append($"SecurePort={SecurePort}");
             sb.Append(',');
-            sb.Append("VipAddress=" + VipAddress);
+            sb.Append($"VipAddress={VipAddress}");
             sb.Append(',');
-            sb.Append("SecureVipAddress=" + SecureVipAddress);
+            sb.Append($"SecureVipAddress={SecureVipAddress}");
             sb.Append(',');
-            sb.Append("ActionType=" + Actiontype.ToString());
+            sb.Append($"ActionType={Actiontype}");
             sb.Append(']');
             return sb.ToString();
         }
@@ -359,7 +359,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
                 if (metaData.TryGetValue("instanceId", out var mid))
                 {
-                    return jinfo.HostName + ":" + mid;
+                    return $"{jinfo.HostName}:{mid}";
                 }
 
                 return null;
@@ -378,7 +378,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
             else if (!string.IsNullOrEmpty(relativeUrl) && info.IsUnsecurePortEnabled)
             {
-                return "http://" + info.HostName + ":" + info.Port + relativeUrl;
+                return $"http://{info.HostName}:{info.Port}{relativeUrl}";
             }
 
             if (!string.IsNullOrEmpty(secureExplicitUrl))
@@ -387,7 +387,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
             else if (info.IsSecurePortEnabled)
             {
-                return "https://" + info.HostName + ":" + info.SecurePort + relativeUrl;
+                return $"https://{info.HostName}:{info.SecurePort}{relativeUrl}";
             }
 
             return string.Empty;

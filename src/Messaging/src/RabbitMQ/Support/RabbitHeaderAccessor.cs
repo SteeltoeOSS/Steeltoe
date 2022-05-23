@@ -318,7 +318,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             base.VerifyType(headerName, headerValue);
             if (RabbitMessageHeaders.PRIORITY.Equals(headerName) && headerValue is not int)
             {
-                throw new ArgumentException("The '" + headerName + "' header value must be an Integer.");
+                throw new ArgumentException($"The '{headerName}' header value must be an Integer.");
             }
         }
 

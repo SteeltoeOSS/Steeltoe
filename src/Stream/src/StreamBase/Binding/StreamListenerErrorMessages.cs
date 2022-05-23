@@ -45,19 +45,17 @@ namespace Steeltoe.Stream.Binding
         public const string MULTIPLE_VALUE_RETURNING_METHODS = "If multiple StreamListener "
                 + "methods are listening to the same binding target, none of them may return a value";
 
-        public const string INPUT_AT_STREAM_LISTENER = PREFIX
-                + "may never be annotated with Input. "
-                + "If it should listen to a specific input, use the value of StreamListener instead";
+        public const string INPUT_AT_STREAM_LISTENER =
+            $"{PREFIX}may never be annotated with Input. If it should listen to a specific input, use the value of StreamListener instead";
 
-        public const string RETURN_TYPE_NO_OUTBOUND_SPECIFIED = PREFIX
-                + "having a return type should also have an outbound target specified";
+        public const string RETURN_TYPE_NO_OUTBOUND_SPECIFIED =
+            $"{PREFIX}having a return type should also have an outbound target specified";
 
-        public const string RETURN_TYPE_MULTIPLE_OUTBOUND_SPECIFIED = PREFIX
-                + "having a return type should have only one outbound target specified";
+        public const string RETURN_TYPE_MULTIPLE_OUTBOUND_SPECIFIED =
+            $"{PREFIX}having a return type should have only one outbound target specified";
 
-        public const string INVALID_DECLARATIVE_METHOD_PARAMETERS = PREFIX
-                + "may use Input or Output attributes only in declarative mode "
-                + "and for parameters that are binding targets or convertible from binding targets.";
+        public const string INVALID_DECLARATIVE_METHOD_PARAMETERS =
+            $"{PREFIX}may use Input or Output attributes only in declarative mode and for parameters that are binding targets or convertible from binding targets.";
 
         private const string PREFIX = "A method attributed with StreamListener ";
     }

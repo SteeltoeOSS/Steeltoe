@@ -106,8 +106,8 @@ namespace Steeltoe.Integration
 
             if (value is not T typedValue)
             {
-                throw new ArgumentException("Incorrect type specified for header '" + key + "'. Expected [" + typeof(T)
-                        + "] but actual type is [" + value.GetType() + "]");
+                throw new ArgumentException(
+                    $"Incorrect type specified for header '{key}'. Expected [{typeof(T)}] but actual type is [{value.GetType()}]");
             }
 
             return typedValue;
@@ -145,7 +145,7 @@ namespace Steeltoe.Integration
                 {
                     if (!(headerValue is DateTime || headerValue is long))
                     {
-                        throw new ArgumentException("The '" + headerName + "' header value must be a Date or Long.");
+                        throw new ArgumentException($"The '{headerName}' header value must be a Date or Long.");
                     }
                 }
                 else if (SEQUENCE_NUMBER.Equals(headerName)
@@ -154,19 +154,19 @@ namespace Steeltoe.Integration
                 {
                     if (headerValue is not int)
                     {
-                        throw new ArgumentException("The '" + headerName + "' header value must be a integer.");
+                        throw new ArgumentException($"The '{headerName}' header value must be a integer.");
                     }
                 }
                 else if (ROUTING_SLIP.Equals(headerName))
                 {
                     if (headerValue is not IDictionary<string, object>)
                     {
-                        throw new ArgumentException("The '" + headerName + "' header value must be a IDictionary<string,object>.");
+                        throw new ArgumentException($"The '{headerName}' header value must be a IDictionary<string,object>.");
                     }
                 }
                 else if (DUPLICATE_MESSAGE.Equals(headerName) && headerValue is not bool)
                 {
-                    throw new ArgumentException("The '" + headerName + "' header value must be a boolean.");
+                    throw new ArgumentException($"The '{headerName}' header value must be a boolean.");
                 }
             }
         }

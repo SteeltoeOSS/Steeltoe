@@ -72,7 +72,7 @@ namespace Steeltoe.Stream.Config
 
                 if (payload == null)
                 {
-                    throw new MessageConversionException(message, "Cannot convert from [" + payloadClass.Name + "] to [" + targetClass.Name + "] for " + message);
+                    throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
                 }
 
                 return payload;

@@ -43,7 +43,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.NotNull(thisService.Uri);
             var scheme = instConfig.SecurePortEnabled ? "https" : "http";
             var uriPort = instConfig.SecurePortEnabled ? instConfig.SecurePort : instConfig.NonSecurePort;
-            var uri = new Uri(scheme + "://" + instConfig.GetHostName(false) + ":" + uriPort.ToString());
+            var uri = new Uri($"{scheme}://{instConfig.GetHostName(false)}:{uriPort}");
             Assert.Equal(uri, thisService.Uri);
         }
     }

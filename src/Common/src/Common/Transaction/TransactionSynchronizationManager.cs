@@ -74,7 +74,7 @@ namespace Steeltoe.Common.Transaction
 
             if (oldValue != null)
             {
-                throw new InvalidOperationException("Already value [" + oldValue + "] for key [" + key + "] bound to thread [" + Thread.CurrentThread.ManagedThreadId + "]");
+                throw new InvalidOperationException($"Already value [{oldValue}] for key [{key}] bound to thread [{Thread.CurrentThread.ManagedThreadId}]");
             }
 
             logger?.LogTrace("Bound value [{value}] for key [{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
@@ -85,8 +85,7 @@ namespace Steeltoe.Common.Transaction
             var value = DoUnbindResource(key, logger);
             if (value == null)
             {
-                throw new InvalidOperationException(
-                        "No value for key [" + key + "] bound to thread [" + Thread.CurrentThread.ManagedThreadId + "]");
+                throw new InvalidOperationException($"No value for key [{key}] bound to thread [{Thread.CurrentThread.ManagedThreadId}]");
             }
 
             return value;

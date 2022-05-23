@@ -140,8 +140,7 @@ namespace Steeltoe.Messaging.Core
                 messageHeaders?.TryGetValue(MessageHeaders.CONTENT_TYPE, out contentType);
                 contentType ??= "unknown";
 
-                throw new MessageConversionException("Unable to convert payload with type='" + payloadType +
-                        "', contentType='" + contentType + "', converter=[" + MessageConverter + "]");
+                throw new MessageConversionException($"Unable to convert payload with type='{payloadType}', contentType='{contentType}', converter=[{MessageConverter}]");
             }
 
             if (postProcessor != null)

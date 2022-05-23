@@ -188,7 +188,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var payload = "H\u00e9llo W\u00f6rld";
             var message = converter.ToMessage(payload, headers);
             var actual = encoding.GetString((byte[])message.Payload);
-            var expected = "\"" + payload + "\"";
+            var expected = $"\"{payload}\"";
             Assert.Equal(expected, actual);
             Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
         }
@@ -210,7 +210,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var payload = "H\u00e9llo W\u00f6rld";
             var message = converter.ToMessage(payload, headers);
 
-            Assert.Equal("\"" + payload + "\"", message.Payload);
+            Assert.Equal($"\"{payload}\"", message.Payload);
             Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
         }
 

@@ -90,7 +90,7 @@ namespace Steeltoe.Stream.Config
                     // Must have a Type configured for the configured binder
                     if (string.IsNullOrEmpty(binderOptions.ConfigureClass))
                     {
-                        throw new InvalidOperationException("No 'Type' setting present for custom binder: " + declBinder.Key);
+                        throw new InvalidOperationException($"No 'Type' setting present for custom binder: {declBinder.Key}");
                     }
 
                     // Log, configured binder not found on "classpath"

@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override string ToString()
         {
-            return "HystrixCommandCompletionStream(" + _commandKey.Name + ")";
+            return $"HystrixCommandCompletionStream({_commandKey.Name})";
         }
     }
 }

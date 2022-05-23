@@ -158,14 +158,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         public override string ToString()
         {
-            return Name + (TokenChars.Length != 0 ? "(" + new string(TokenChars) + ")" : string.Empty);
+            return Name + (TokenChars.Length != 0 ? $"({new string(TokenChars)})" : string.Empty);
         }
 
         internal static TokenKind ValueOf(string name)
         {
             if (!_kinds.TryGetValue(name, out var kind))
             {
-                throw new InvalidOperationException("Invalid TokenKind name:  " + name);
+                throw new InvalidOperationException($"Invalid TokenKind name:  {name}");
             }
 
             return kind;

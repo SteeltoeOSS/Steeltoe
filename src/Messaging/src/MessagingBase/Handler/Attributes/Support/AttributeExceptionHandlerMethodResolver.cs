@@ -46,8 +46,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
                     if (oldMethod != null && !oldMethod.Equals(method))
                     {
-                        throw new InvalidOperationException("Ambiguous @ExceptionHandler method mapped for [" +
-                                exceptionType + "]: {" + oldMethod + ", " + method + "}");
+                        throw new InvalidOperationException(
+                            $"Ambiguous @ExceptionHandler method mapped for [{exceptionType}]: {{{oldMethod}, {method}}}");
                     }
                 }
             }

@@ -151,7 +151,7 @@ namespace Steeltoe.Messaging.Converter
             }
             catch (Exception ex)
             {
-                throw new MessageConversionException(message, "Could not read JSON: " + ex.Message, ex);
+                throw new MessageConversionException(message, $"Could not read JSON: {ex.Message}", ex);
             }
         }
 
@@ -180,7 +180,7 @@ namespace Steeltoe.Messaging.Converter
             }
             catch (Exception ex)
             {
-                throw new MessageConversionException("Could not write JSON: " + ex.Message, ex);
+                throw new MessageConversionException($"Could not write JSON: {ex.Message}", ex);
             }
 
             return payload;

@@ -100,7 +100,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override string ToStringAST()
         {
-            return LeftOperand.ToStringAST() + "--";
+            return $"{LeftOperand.ToStringAST()}--";
         }
 
         public override SpelNode RightOperand => throw new InvalidOperationException("No right operand");

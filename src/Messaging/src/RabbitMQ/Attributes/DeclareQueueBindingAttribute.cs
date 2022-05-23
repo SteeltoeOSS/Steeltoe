@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 if (_bindingName == null)
                 {
-                    return ExchangeName + "." + QueueName;
+                    return $"{ExchangeName}.{QueueName}";
                 }
 
                 return _bindingName;

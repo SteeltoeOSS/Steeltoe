@@ -27,7 +27,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override string ToString()
         {
-            return "'" + GetLiteralValue().Value + "'";
+            return $"'{GetLiteralValue().Value}'";
         }
 
         public override bool IsCompilable()

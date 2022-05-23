@@ -309,7 +309,7 @@ namespace Steeltoe.Integration.Handler
 
             public string PayloadAnnotationFirstName([Payload("Fname")] string fname) => fname;
 
-            public string PayloadAnnotationFullName([Payload("Fname")] string first, [Payload("Lname")] string last) => first + " " + last;
+            public string PayloadAnnotationFullName([Payload("Fname")] string first, [Payload("Lname")] string last) => $"{first} {last}";
 
             public string PayloadArgAndHeaderArg([Payload("Fname")] string fname, [Header] string day) => fname + day;
 
@@ -317,7 +317,7 @@ namespace Steeltoe.Integration.Handler
 
             public int RequiredHeader([Header(Name = "num", Required = true)] int num) => num;
 
-            public string HeadersWithExpressions([Header("emp.Fname")] string firstName, [Header("emp.Lname.ToUpper()")] string lastName) => lastName + ", " + firstName;
+            public string HeadersWithExpressions([Header("emp.Fname")] string firstName, [Header("emp.Lname.ToUpper()")] string lastName) => $"{lastName}, {firstName}";
 
             public string OptionalAndRequiredHeader([Header(Required = false)] string prop, [Header(Name = "num", Required = true)] int num) => (prop ?? "null") + num;
 

@@ -684,7 +684,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             await consumerBinding.Unbind();
 
             Assert.False(container.IsRunning);
-            Assert.Equal("propsHeader." + group, container.GetQueueNames()[0]);
+            Assert.Equal($"propsHeader.{group}", container.GetQueueNames()[0]);
 
             var client = new Client();
             var bindings = await client.GetBindingsBySource("/", "propsHeader");
@@ -699,7 +699,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Single(bindings);
             var binding = bindings.First();
             Assert.Equal("propsHeader", binding.Source);
-            Assert.Equal("propsHeader." + group, binding.Destination);
+            Assert.Equal($"propsHeader.{group}", binding.Destination);
             Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
             Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
 
@@ -714,7 +714,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Single(bindings);
             binding = bindings.First();
             Assert.Equal("propsHeader.dlx", binding.Source);
-            Assert.Equal("propsHeader." + group + ".dlq", binding.Destination);
+            Assert.Equal($"propsHeader.{group}.dlq", binding.Destination);
             Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
             Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
         }
@@ -770,7 +770,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
             Assert.Same(GetResource(), endpoint.Template.ConnectionFactory);
 
-            Assert.Equal("'props.0-' + Headers['" + BinderHeaders.PARTITION_HEADER + "']", endpoint.RoutingKeyExpression.ExpressionString);
+            Assert.Equal($"'props.0-' + Headers['{BinderHeaders.PARTITION_HEADER}']", endpoint.RoutingKeyExpression.ExpressionString);
             Assert.Equal("42", endpoint.DelayExpression.ExpressionString);
             Assert.Equal(MessageDeliveryMode.NON_PERSISTENT, endpoint.DefaultDeliveryMode);
             Assert.True(endpoint.Template.IsChannelTransacted);
@@ -818,12 +818,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var consumerBinding = binder.BindConsumer("durabletest.0", "tgroup", moduleInputChannel, consumerProperties);
 
             var template = new RabbitTemplate(GetResource());
-            template.ConvertAndSend(TEST_PREFIX + "durabletest.0", string.Empty, "foo");
+            template.ConvertAndSend($"{TEST_PREFIX}durabletest.0", string.Empty, "foo");
 
             var n = 0;
             while (n++ < 100)
             {
-                var deadLetter = template.ReceiveAndConvert<string>(TEST_PREFIX + "durabletest.0.tgroup.dlq");
+                var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}durabletest.0.tgroup.dlq");
                 if (deadLetter != null)
                 {
                     Assert.Equal("foo", deadLetter);
@@ -836,7 +836,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.InRange(n, 0, 150);
 
             consumerBinding.Unbind();
-            Assert.NotNull(admin.GetQueueProperties(TEST_PREFIX + "durabletest.0.tgroup.dlq"));
+            Assert.NotNull(admin.GetQueueProperties($"{TEST_PREFIX}durabletest.0.tgroup.dlq"));
         }
 
         [Fact]
@@ -866,7 +866,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var consumerBinding = binder.BindConsumer("nondurabletest.0", "tgroup", moduleInputChannel, consumerProperties);
 
             consumerBinding.Unbind();
-            Assert.Null(admin.GetQueueProperties(TEST_PREFIX + "nondurabletest.0.dlq"));
+            Assert.Null(admin.GetQueueProperties($"{TEST_PREFIX}nondurabletest.0.dlq"));
         }
 
         [Fact]
@@ -896,12 +896,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Equal(2, container.GetQueueNames().Length);
 
             var template = new RabbitTemplate(GetResource());
-            template.ConvertAndSend(string.Empty, TEST_PREFIX + "dlqtest.default", "foo");
+            template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}dlqtest.default", "foo");
 
             var n = 0;
             while (n++ < 100)
             {
-                var deadLetter = template.ReceiveAndConvert<string>(TEST_PREFIX + "dlqtest.default.dlq");
+                var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}dlqtest.default.dlq");
                 if (deadLetter != null)
                 {
                     Assert.Equal("foo", deadLetter);
@@ -913,12 +913,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             Assert.InRange(n, 0, 99);
 
-            template.ConvertAndSend(string.Empty, TEST_PREFIX + "dlqtest2.default", "bar");
+            template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}dlqtest2.default", "bar");
 
             n = 0;
             while (n++ < 100)
             {
-                var deadLetter = template.ReceiveAndConvert<string>(TEST_PREFIX + "dlqtest2.default.dlq");
+                var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}dlqtest2.default.dlq");
                 if (deadLetter != null)
                 {
                     Assert.Equal("bar", deadLetter);
@@ -934,10 +934,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var provider = GetPropertyValue<RabbitExchangeQueueProvisioner>(binder.Binder, "ProvisioningProvider");
             var context = GetFieldValue<GenericApplicationContext>(provider, "_autoDeclareContext");
 
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default.binding"));
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default"));
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default.dlq.binding"));
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default.dlq"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default.binding"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default.dlq.binding"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default.dlq"));
         }
 
         [Fact]
@@ -965,12 +965,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 // Wait until unacked state is reflected in the admin
                 OnHandleMessage = (message) =>
                 {
-                    var info = client.GetQueue(TEST_PREFIX + "dlqTestManual.default", vhost);
+                    var info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
                     var n = 0;
                     while (n++ < 100 && info.MessagesUnacknowledged < 1L)
                     {
                         Thread.Sleep(100);
-                        info = client.GetQueue(TEST_PREFIX + "dlqTestManual.default", vhost);
+                        info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
                     }
 
                     throw new Exception("foo");
@@ -979,12 +979,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var consumerBinding = binder.BindConsumer("dlqTestManual", "default", moduleInputChannel, consumerProperties);
 
             var template = new RabbitTemplate(GetResource());
-            template.ConvertAndSend(string.Empty, TEST_PREFIX + "dlqTestManual.default", "foo");
+            template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}dlqTestManual.default", "foo");
 
             var n = 0;
             while (n++ < 100)
             {
-                var deadLetter = template.ReceiveAndConvert<string>(TEST_PREFIX + "dlqTestManual.default.dlq");
+                var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}dlqTestManual.default.dlq");
                 if (deadLetter != null)
                 {
                     Assert.Equal("foo", deadLetter);
@@ -997,11 +997,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.InRange(n, 1, 100);
 
             n = 0;
-            var info = client.GetQueue(TEST_PREFIX + "dlqTestManual.default", vhost);
+            var info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
             while (n++ < 100 && info.MessagesUnacknowledged > 0L)
             {
                 Thread.Sleep(200);
-                info = client.GetQueue(TEST_PREFIX + "dlqTestManual.default", vhost);
+                info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
             }
 
             Assert.Equal(0, info.MessagesUnacknowledged);
@@ -1011,10 +1011,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var provider = GetPropertyValue<RabbitExchangeQueueProvisioner>(binder.Binder, "ProvisioningProvider");
             var context = GetFieldValue<GenericApplicationContext>(provider, "_autoDeclareContext");
 
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqTestManual.default.binding"));
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqTestManual.default"));
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqTestManual.default.dlq.binding"));
-            Assert.False(context.ContainsService(TEST_PREFIX + "dlqTestManual.default.dlq"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default.binding"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default.dlq.binding"));
+            Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default.dlq"));
         }
 
         [Fact]
@@ -1284,28 +1284,28 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var consumerBinding = binder.BindConsumer("foo.dlqpubtest,foo.dlqpubtest2", "foo", moduleInputChannel, consumerProperties);
 
             var template = new RabbitTemplate(GetResource());
-            template.ConvertAndSend(string.Empty, TEST_PREFIX + "foo.dlqpubtest.foo", "foo");
+            template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}foo.dlqpubtest.foo", "foo");
 
             template.ReceiveTimeout = 10_000;
 
-            var deadLetter = template.Receive(TEST_PREFIX + "foo.dlqpubtest.foo.dlq");
+            var deadLetter = template.Receive($"{TEST_PREFIX}foo.dlqpubtest.foo.dlq");
             Assert.NotNull(deadLetter);
             Assert.Equal("foo", ((byte[])deadLetter.Payload).GetString());
             Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
 
             // Assert.Equal(maxStackTraceSize, ((string)deadLetter.Headers[RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE]).Length); TODO: Wrapped exception doesnt contain propogate stack trace
-            template.ConvertAndSend(string.Empty, TEST_PREFIX + "foo.dlqpubtest2.foo", "bar");
+            template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}foo.dlqpubtest2.foo", "bar");
 
-            deadLetter = template.Receive(TEST_PREFIX + "foo.dlqpubtest2.foo.dlq");
+            deadLetter = template.Receive($"{TEST_PREFIX}foo.dlqpubtest2.foo.dlq");
             Assert.NotNull(deadLetter);
 
             Assert.Equal("bar", ((byte[])deadLetter.Payload).GetString());
             Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
 
             dontRepublish.GetAndSet(true);
-            template.ConvertAndSend(string.Empty, TEST_PREFIX + "foo.dlqpubtest2.foo", "baz");
+            template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}foo.dlqpubtest2.foo", "baz");
             template.ReceiveTimeout = 500;
-            Assert.Null(template.Receive(TEST_PREFIX + "foo.dlqpubtest2.foo.dlq"));
+            Assert.Null(template.Receive($"{TEST_PREFIX}foo.dlqpubtest2.foo.dlq"));
 
             consumerBinding.Unbind();
         }
@@ -1902,7 +1902,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             var routingExpression = GetEndpointRouting(endpoint);
             var delimiter = GetDestinationNameDelimiter();
-            var dest = GetExpectedRoutingBaseDestination($"'part{delimiter}0'", "test") + " + '-' + Headers['" + BinderHeaders.PARTITION_HEADER + "']";
+            var dest = $"{GetExpectedRoutingBaseDestination($"'part{delimiter}0'", "test")} + '-' + Headers['{BinderHeaders.PARTITION_HEADER}']";
 
             Assert.Contains(dest, routingExpression);
         }

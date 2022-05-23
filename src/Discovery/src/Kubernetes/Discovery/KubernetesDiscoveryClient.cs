@@ -49,7 +49,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
             {
                 var labelSelectorValue =
                     labels != null ?
-                        string.Join(",", labels.Keys.Select(k => k + "=" + labels[k])) :
+                        string.Join(",", labels.Keys.Select(k => $"{k}={labels[k]}")) :
                         null;
                 if (_discoveryOptions.CurrentValue.AllNamespaces)
                 {

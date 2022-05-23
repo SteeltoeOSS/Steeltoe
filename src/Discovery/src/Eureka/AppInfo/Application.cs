@@ -26,7 +26,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         public override string ToString()
         {
             var sb = new StringBuilder("Application[");
-            sb.Append("Name=" + Name);
+            sb.Append($"Name={Name}");
             sb.Append(",Instances=");
             foreach (var inst in Instances)
             {

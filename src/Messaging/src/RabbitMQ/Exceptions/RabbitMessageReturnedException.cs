@@ -28,11 +28,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions
 
         public override string ToString()
         {
-            return "AmqpMessageReturnedException: "
-                    + Message
-                    + "[returnedMessage=" + ReturnedMessage + ", replyCode=" + ReplyCode
-                    + ", replyText=" + ReplyText + ", exchange=" + Exchange + ", routingKey=" + RoutingKey
-                    + "]";
+            return
+                $"AmqpMessageReturnedException: {Message}[returnedMessage={ReturnedMessage}, replyCode={ReplyCode}, replyText={ReplyText}, exchange={Exchange}, routingKey={RoutingKey}]";
         }
     }
 }

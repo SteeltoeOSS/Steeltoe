@@ -366,7 +366,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 var etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 iTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -386,7 +386,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 var etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 iTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -432,7 +432,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -452,7 +452,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -493,7 +493,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -513,7 +513,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -554,7 +554,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -574,7 +574,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -615,7 +615,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -635,7 +635,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -676,7 +676,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -696,7 +696,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -737,7 +737,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -757,7 +757,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 etime = DateTime.Now.Ticks;
                 var interpretedSpeed = etime - stime;
                 interpretedTotal += interpretedSpeed;
-                Log(interpretedSpeed + "ticks ");
+                Log($"{interpretedSpeed}ticks ");
             }
 
             LogLn();
@@ -780,13 +780,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var averageCompiled = compiledTotal / _iterations;
             var ratio = (averageCompiled / averageInterpreted) * 100.0d;
 
-            LogLn(">>" + title + ": average for " + _count + ": compiled=" + averageCompiled +
-                    "ms interpreted=" + averageInterpreted + "ms: compiled takes " +
-                    ((int)ratio) + "% of the interpreted time");
+            LogLn(
+                $">>{title}: average for {_count}: compiled={averageCompiled}ms interpreted={averageInterpreted}ms: compiled takes {(int)ratio}% of the interpreted time");
             if (averageCompiled > averageInterpreted)
             {
-                throw new Exception("Compiled version took longer than interpreted! CompiledSpeed=~" + averageCompiled +
-                        "ms InterpretedSpeed=" + averageInterpreted + "ms");
+                throw new Exception($"Compiled version took longer than interpreted! CompiledSpeed=~{averageCompiled}ms InterpretedSpeed={averageInterpreted}ms");
             }
 
             LogLn();

@@ -349,10 +349,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public override string ToString()
         {
-            return "Consumer@" + RuntimeHelpers.GetHashCode(this) + ": "
-                    + "tags=[" + string.Join(',', GetConsumerTags())
-                    + "], channel=" + Channel
-                    + ", acknowledgeMode=" + AcknowledgeMode + " local queue size=" + Queue.Count;
+            return
+                $"Consumer@{RuntimeHelpers.GetHashCode(this)}: tags=[{string.Join(',', GetConsumerTags())}], channel={Channel}, acknowledgeMode={AcknowledgeMode} local queue size={Queue.Count}";
         }
 
         internal List<RC.DefaultBasicConsumer> CurrentConsumers()
@@ -770,9 +768,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             public override string ToString()
             {
-                return "InternalConsumer{" + "queue='" + QueueName + '\'' +
-                        ", consumerTag='" + ConsumerTag + '\'' +
-                        '}';
+                return $"InternalConsumer{{queue='{QueueName}', consumerTag='{ConsumerTag}'}}";
             }
         }
 

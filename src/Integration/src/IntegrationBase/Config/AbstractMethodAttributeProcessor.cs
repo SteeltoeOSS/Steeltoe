@@ -92,7 +92,7 @@ namespace Steeltoe.Integration.Config
                 var isService = method.GetCustomAttribute<ServiceAttribute>() != null;
                 if (isService)
                 {
-                    throw new InvalidOperationException("A channel name in '" + InputChannelProperty + "' is required when " + AnnotationType + " is used on '[Service]' methods.");
+                    throw new InvalidOperationException($"A channel name in '{InputChannelProperty}' is required when {AnnotationType} is used on '[Service]' methods.");
                 }
             }
 
@@ -149,16 +149,16 @@ namespace Steeltoe.Integration.Config
             {
                 originalServiceName ??= method.DeclaringType.Name;
 
-                var baseName = originalServiceName + "." + method.Name + "." + AnnotationType.Name;
+                var baseName = $"{originalServiceName}.{method.Name}.{AnnotationType.Name}";
                 name = baseName;
                 var count = 1;
                 while (ApplicationContext.ContainsService(name))
                 {
-                    name = baseName + "#" + (++count);
+                    name = $"{baseName}#{++count}";
                 }
             }
 
-            return name + ".handler";
+            return $"{name}.handler";
         }
 
         protected virtual void SetOutputChannelIfPresent(List<Attribute> annotations, AbstractReplyProducingMessageHandler handler)
@@ -212,13 +212,10 @@ namespace Steeltoe.Integration.Config
                     var value = AttributeUtils.GetValue(annotation, property);
                     if (MessagingAttributeUtils.HasValue(value))
                     {
-                        throw new InvalidOperationException("The IMessageHandler [" + handlerServiceName +
-                                "] can not be populated because of ambiguity with attribute properties " +
-                                string.Join(',', MessageHandlerProperties) + " which are not allowed when an integration attribute " +
-                                "is used with a service definition for a IMessageHandler." +
-                                "\nThe property causing the ambiguity is: [" + property + "]." +
-                                "\nUse the appropriate setter on the IMessageHandler directly when configuring an " +
-                                "endpoint this way.");
+                        throw new InvalidOperationException(
+                            $"The IMessageHandler [{handlerServiceName}] can not be populated because of ambiguity with attribute properties {string.Join(',', MessageHandlerProperties)} which are not allowed when an integration attribute is used with a service definition for a IMessageHandler.\n" +
+                            $"The property causing the ambiguity is: [{property}].\n" +
+                            "Use the appropriate setter on the IMessageHandler directly when configuring an endpoint this way.");
                     }
                 }
             }

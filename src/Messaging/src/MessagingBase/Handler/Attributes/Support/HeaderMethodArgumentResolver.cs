@@ -54,7 +54,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         protected override void HandleMissingValue(string headerName, ParameterInfo parameter, IMessage message)
         {
-            throw new MessageHandlingException(message, "Missing header '" + headerName + "' for method parameter type [" + parameter.ParameterType + "]");
+            throw new MessageHandlingException(message, $"Missing header '{headerName}' for method parameter type [{parameter.ParameterType}]");
         }
 
         private object GetNativeHeaderValue(IMessage message, string name)

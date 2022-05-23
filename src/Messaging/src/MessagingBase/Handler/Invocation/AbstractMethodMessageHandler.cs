@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
         protected AbstractMethodMessageHandler(ILogger logger = null)
         {
-            ServiceName = GetType().Name + "@" + GetHashCode();
+            ServiceName = $"{GetType().Name}@{GetHashCode()}";
             _logger = logger;
         }
 
@@ -171,7 +171,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
         public override string ToString()
         {
-            return GetType().Name + "[prefixes=" + string.Join(",", DestinationPrefixes) + "]";
+            return $"{GetType().Name}[prefixes={string.Join(",", DestinationPrefixes)}]";
         }
 
         protected HandlerMethodArgumentResolverComposite MethodArgumentResolvers
@@ -285,9 +285,8 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
             if (oldHandlerMethod != null && !oldHandlerMethod.Equals(newHandlerMethod))
             {
-                throw new InvalidOperationException("Ambiguous mapping found. Cannot map '" + newHandlerMethod.Handler +
-                        "' bean method \n" + newHandlerMethod + "\nto " + mapping + ": There is already '" +
-                        oldHandlerMethod.Handler + "' bean method\n" + oldHandlerMethod + " mapped.");
+                throw new InvalidOperationException(
+                    $"Ambiguous mapping found. Cannot map '{newHandlerMethod.Handler}' bean method \n{newHandlerMethod}\nto {mapping}: There is already '{oldHandlerMethod.Handler}' bean method\n{oldHandlerMethod} mapped.");
             }
 
             _handlerMethods[mapping] = newHandlerMethod;
@@ -346,8 +345,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
                 {
                     var m1 = bestMatch.HandlerMethod.Method;
                     var m2 = secondBestMatch.HandlerMethod.Method;
-                    throw new InvalidOperationException("Ambiguous handler methods mapped for destination '" +
-                            lookupDestination + "': {" + m1 + ", " + m2 + "}");
+                    throw new InvalidOperationException($"Ambiguous handler methods mapped for destination '{lookupDestination}': {{{m1}, {m2}}}");
                 }
             }
 

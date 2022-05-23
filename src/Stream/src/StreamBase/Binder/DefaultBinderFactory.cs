@@ -150,12 +150,12 @@ namespace Steeltoe.Stream.Binder
             var binderInstance = GetBinderInstance(configurationName);
             if (binderInstance == null)
             {
-                throw new InvalidOperationException("Unknown binder configuration: " + configurationName);
+                throw new InvalidOperationException($"Unknown binder configuration: {configurationName}");
             }
 
             if (!VerifyBinderTypeMatchesTarget(binderInstance, bindableType))
             {
-                throw new InvalidOperationException("The binder " + configurationName + " cannot bind a " + bindableType.FullName);
+                throw new InvalidOperationException($"The binder {configurationName} cannot bind a {bindableType.FullName}");
             }
 
             return binderInstance;

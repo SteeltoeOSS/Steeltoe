@@ -23,7 +23,7 @@ namespace Steeltoe.Common.Security
         {
             if (!File.Exists(_certFilePath))
             {
-                throw new InvalidOperationException("Required certificate file not found:" + _certFilePath);
+                throw new InvalidOperationException($"Required certificate file not found:{_certFilePath}");
             }
 
             var certSource = new FileSource("certificate")

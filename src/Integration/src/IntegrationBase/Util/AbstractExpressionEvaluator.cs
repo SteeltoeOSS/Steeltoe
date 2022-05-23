@@ -121,7 +121,7 @@ namespace Steeltoe.Integration.Util
                     cause = ex.InnerException;
                 }
 
-                var wrapped = IntegrationServicesUtils.WrapInHandlingExceptionIfNecessary(message, "Expression evaluation failed: " + expression.ExpressionString, cause ?? ex);
+                var wrapped = IntegrationServicesUtils.WrapInHandlingExceptionIfNecessary(message, $"Expression evaluation failed: {expression.ExpressionString}", cause ?? ex);
                 if (wrapped != ex)
                 {
                     throw wrapped;

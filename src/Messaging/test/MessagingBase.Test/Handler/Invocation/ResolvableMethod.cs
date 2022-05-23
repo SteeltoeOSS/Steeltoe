@@ -56,7 +56,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         public override string ToString()
         {
-            return "ResolvableMethod=" + Method.ToString();
+            return $"ResolvableMethod={Method}";
         }
 
         internal class Builder<T>
@@ -72,13 +72,13 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             public Builder<T> Named(string methodName)
             {
-                AddFilter("methodName=" + methodName, method => method.Name.Equals(methodName));
+                AddFilter($"methodName={methodName}", method => method.Name.Equals(methodName));
                 return this;
             }
 
             public Builder<T> ArgTypes(params Type[] argTypes)
             {
-                AddFilter("argTypes=" + string.Join<Type>(",", argTypes), method =>
+                AddFilter($"argTypes={string.Join<Type>(",", argTypes)}", method =>
                 {
                     var paramTypes = method.GetParameters().Select((p) => p.ParameterType).ToArray();
                     if (paramTypes.Length != argTypes.Length)
@@ -108,7 +108,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             public Builder<T> AnnotPresent(params Type[] annotationTypes)
             {
-                var message = "annotationPresent=" + string.Join<Type>(",", annotationTypes);
+                var message = $"annotationPresent={string.Join<Type>(",", annotationTypes)}";
                 AddFilter(message, method =>
                 {
                     foreach (var anno in annotationTypes)
@@ -126,7 +126,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             public Builder<T> AnnotNotPresent(params Type[] annotationTypes)
             {
-                var message = "annotationNotPresent=" + string.Join<Type>(",", annotationTypes);
+                var message = $"annotationNotPresent={string.Join<Type>(",", annotationTypes)}";
                 AddFilter(message, method =>
                 {
                     if (annotationTypes.Length != 0)
@@ -151,7 +151,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             public Builder<T> Returning(Type returnType)
             {
-                var message = "returnType=" + returnType.ToString();
+                var message = $"returnType={returnType}";
                 AddFilter(message, method => method.ReturnType == returnType);
                 return this;
             }
@@ -173,12 +173,12 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
                 var methods = objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).Where(IsMatch).ToList();
                 if (methods.Count == 0)
                 {
-                    throw new InvalidOperationException("No matching method: " + this);
+                    throw new InvalidOperationException($"No matching method: {this}");
                 }
 
                 if (methods.Count > 1)
                 {
-                    throw new InvalidOperationException("Multiple matching methods: " + this);
+                    throw new InvalidOperationException($"Multiple matching methods: {this}");
                 }
 
                 return new ResolvableMethod(methods[0]);
@@ -352,12 +352,13 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
                 var matches = ApplyFilters();
                 if (matches.Count == 0)
                 {
-                    throw new InvalidOperationException("No matching arg in method: " + resolvable.Method.ToString());
+                    throw new InvalidOperationException($"No matching arg in method: {resolvable.Method}");
                 }
 
                 if (matches.Count > 1)
                 {
-                    throw new InvalidOperationException("Multiple matching args in method: " + resolvable.Method.ToString() + " " + string.Join(",", matches));
+                    throw new InvalidOperationException(
+                        $"Multiple matching args in method: {resolvable.Method} {string.Join(",", matches)}");
                 }
 
                 return matches[0];

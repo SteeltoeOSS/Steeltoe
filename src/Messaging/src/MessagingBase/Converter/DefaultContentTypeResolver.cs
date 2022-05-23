@@ -33,10 +33,10 @@ namespace Steeltoe.Messaging.Converter
             }
             else
             {
-                throw new ArgumentException("Unknown type for contentType header value: " + value.GetType());
+                throw new ArgumentException($"Unknown type for contentType header value: {value.GetType()}");
             }
         }
 
-        public override string ToString() => "DefaultContentTypeResolver[" + "defaultMimeType=" + DefaultMimeType + "]";
+        public override string ToString() => $"DefaultContentTypeResolver[defaultMimeType={DefaultMimeType}]";
     }
 }

@@ -25,7 +25,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override string ToStringAST()
         {
-            return "![" + GetChild(0).ToStringAST() + "]";
+            return $"![{GetChild(0).ToStringAST()}]";
         }
 
         protected internal override IValueRef GetValueRef(ExpressionState state)

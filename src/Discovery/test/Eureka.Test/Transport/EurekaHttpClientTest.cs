@@ -194,7 +194,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/FOO/id1", TestConfigServerStartup.LastRequest.Path.Value);
             var time = DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc));
-            Assert.Equal("?status=STARTING&lastDirtyTimestamp=" + time, TestConfigServerStartup.LastRequest.QueryString.Value);
+            Assert.Equal($"?status=STARTING&lastDirtyTimestamp={time}", TestConfigServerStartup.LastRequest.QueryString.Value);
         }
 
         [Fact]
@@ -414,7 +414,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var cconfig = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "https://bad.host:9999/," + uri
+                EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             var resp = await client.GetApplicationAsync("foo");
@@ -578,7 +578,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var cconfig = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "https://bad.host:9999/," + uri
+                EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             var resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
@@ -697,7 +697,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("PUT", TestConfigServerStartup.LastRequest.Method);
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
-            Assert.Equal("?value=DOWN&lastDirtyTimestamp=" + javaTime, TestConfigServerStartup.LastRequest.QueryString.Value);
+            Assert.Equal($"?value=DOWN&lastDirtyTimestamp={javaTime}", TestConfigServerStartup.LastRequest.QueryString.Value);
 
             Assert.Equal("http://localhost:8888/", client._serviceUrl);
         }
@@ -754,7 +754,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("DELETE", TestConfigServerStartup.LastRequest.Method);
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
-            Assert.Equal("?lastDirtyTimestamp=" + javaTime, TestConfigServerStartup.LastRequest.QueryString.Value);
+            Assert.Equal($"?lastDirtyTimestamp={javaTime}", TestConfigServerStartup.LastRequest.QueryString.Value);
 
             Assert.Equal("http://localhost:8888/", client._serviceUrl);
         }

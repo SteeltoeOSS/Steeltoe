@@ -139,7 +139,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
             if (result is not IMessage<byte[]> byteArrayMessage)
             {
-                throw new MessageConversionException("No MessageConverter specified - cannot handle message [" + result + "]");
+                throw new MessageConversionException($"No MessageConverter specified - cannot handle message [{result}]");
             }
 
             return byteArrayMessage;
@@ -219,7 +219,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
             catch (Exception ex)
             {
-                throw new ReplyFailureException("Failed to send reply with payload '" + resultArg + "'", ex);
+                throw new ReplyFailureException($"Failed to send reply with payload '{resultArg}'", ex);
             }
         }
 

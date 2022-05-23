@@ -82,7 +82,7 @@ namespace Steeltoe.Connector.Redis
                 }
 
                 _logger?.LogError("Redis connection down! {HealthCheckException}", e.Message);
-                result.Details.Add("error", e.GetType().Name + ": " + e.Message);
+                result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
                 result.Description = "Redis health check failed";

@@ -57,7 +57,7 @@ namespace Graphs
         }
         public void SetAddress(NodeIndex nodeIndex, Address nodeAddress)
         {
-            Debug.Assert(m_nodeAddresses[(int)nodeIndex] == 0, "Calling SetAddress twice for node index " + nodeIndex);
+            Debug.Assert(m_nodeAddresses[(int)nodeIndex] == 0, $"Calling SetAddress twice for node index {nodeIndex}");
             m_nodeAddresses[(int)nodeIndex] = nodeAddress;
         }
         public override NodeIndex CreateNode()
@@ -181,9 +181,7 @@ namespace Graphs
         {
             Address end = Address + (uint)Size;
             // base.WriteXml(writer, prefix, storage, typeStorage, additinalAttribs + " Address=\"0x" + Address.ToString("x") + "\"");
-            base.WriteXml(writer, includeChildren, prefix, typeStorage,
-                additinalAttribs + " Address=\"0x" + Address.ToString("x") + "\""
-                                 + " End=\"0x" + end.ToString("x") + "\"");
+            base.WriteXml(writer, includeChildren, prefix, typeStorage, $"{additinalAttribs} Address=\"0x{Address:x}\" End=\"0x{end:x}\"");
         }
 
         private MemoryGraph m_memoryGraph;

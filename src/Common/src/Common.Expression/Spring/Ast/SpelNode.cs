@@ -84,7 +84,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public virtual void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            throw new InvalidOperationException(GetType().FullName + " has no GenerateCode(..) method");
+            throw new InvalidOperationException($"{GetType().FullName} has no GenerateCode(..) method");
         }
 
         public abstract ITypedValue GetValueInternal(ExpressionState state);

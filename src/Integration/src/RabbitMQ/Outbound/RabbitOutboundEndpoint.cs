@@ -105,13 +105,13 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             {
                 if (!correlationData.Future.Wait(WaitForConfirmTimeout))
                 {
-                    throw new MessageTimeoutException(requestMessage, this + ": Timed out awaiting publisher confirm");
+                    throw new MessageTimeoutException(requestMessage, $"{this}: Timed out awaiting publisher confirm");
                 }
 
                 var confirm = correlationData.Future.Result;
                 if (!confirm.Ack)
                 {
-                    throw new RabbitException("Negative publisher confirm received: " + confirm);
+                    throw new RabbitException($"Negative publisher confirm received: {confirm}");
                 }
 
                 if (correlationData.ReturnedMessage != null)

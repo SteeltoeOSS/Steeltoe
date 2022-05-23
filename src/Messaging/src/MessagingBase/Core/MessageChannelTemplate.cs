@@ -145,7 +145,7 @@ namespace Steeltoe.Messaging.Core
 
             if (!sent)
             {
-                throw new MessageDeliveryException(message, "Failed to send message to channel '" + channel);
+                throw new MessageDeliveryException(message, $"Failed to send message to channel '{channel}");
             }
         }
 
@@ -182,7 +182,7 @@ namespace Steeltoe.Messaging.Core
 
             if (!sent)
             {
-                throw new MessageDeliveryException(message, "Failed to send message to channel '" + channel);
+                throw new MessageDeliveryException(message, $"Failed to send message to channel '{channel}");
             }
         }
 

@@ -20,7 +20,7 @@ namespace Steeltoe.Stream.Binder
             var paths = BuildPaths(binderDir);
 
             var context = new MetadataLoadContext(new PathAssemblyResolver(paths));
-            var binderAssembly = binderDir + Path.DirectorySeparatorChar + "Steeltoe.Stream.TestBinder.dll";
+            var binderAssembly = $"{binderDir}{Path.DirectorySeparatorChar}Steeltoe.Stream.TestBinder.dll";
             var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, binderAssembly);
             Assert.Equal(binderAssembly, result.AssemblyPath);
             Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result.ConfigureClass);
@@ -35,7 +35,7 @@ namespace Steeltoe.Stream.Binder
             var paths = BuildPaths(binderDir);
 
             var context = new MetadataLoadContext(new PathAssemblyResolver(paths));
-            var binderAssembly = binderDir + Path.DirectorySeparatorChar + "Steeltoe.Stream.TestBinder.dll";
+            var binderAssembly = $"{binderDir}{Path.DirectorySeparatorChar}Steeltoe.Stream.TestBinder.dll";
             var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, binderAssembly);
             Assert.Equal(binderAssembly, result.AssemblyPath);
             Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result.ConfigureClass);
@@ -48,7 +48,7 @@ namespace Steeltoe.Stream.Binder
         {
             var paths = BuildPaths(null);
             var context = new MetadataLoadContext(new PathAssemblyResolver(paths));
-            var binderAssembly = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "Steeltoe.Stream.FooBar.dll";
+            var binderAssembly = $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}Steeltoe.Stream.FooBar.dll";
             var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, binderAssembly);
             Assert.Null(result);
             context.Dispose();
@@ -78,7 +78,7 @@ namespace Steeltoe.Stream.Binder
             var paths = BuildPaths(null);
 
             var result = new Dictionary<string, IBinderType>();
-            var binderPath = GetSearchDirectories("TestBinder")[0] + Path.DirectorySeparatorChar + "Steeltoe.Stream.TestBinder.dll";
+            var binderPath = $"{GetSearchDirectories("TestBinder")[0]}{Path.DirectorySeparatorChar}Steeltoe.Stream.TestBinder.dll";
             Assembly.LoadFrom(binderPath);
 
             DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);

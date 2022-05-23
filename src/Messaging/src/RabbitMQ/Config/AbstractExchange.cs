@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             : base(arguments)
         {
             ExchangeName = exchangeName;
-            ServiceName = !string.IsNullOrEmpty(exchangeName) ? exchangeName : "exchange@" + RuntimeHelpers.GetHashCode(this);
+            ServiceName = !string.IsNullOrEmpty(exchangeName) ? exchangeName : $"exchange@{RuntimeHelpers.GetHashCode(this)}";
             IsDurable = durable;
             IsAutoDelete = autoDelete;
         }
@@ -45,12 +45,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public override string ToString()
         {
-            return "Exchange [name=" + ExchangeName +
-                            ", type=" + Type +
-                            ", durable=" + IsDurable +
-                            ", autoDelete=" + IsAutoDelete +
-                            ", internal=" + IsInternal +
-                            ", arguments=" + Arguments + "]";
+            return
+                $"Exchange [name={ExchangeName}, type={Type}, durable={IsDurable}, autoDelete={IsAutoDelete}, internal={IsInternal}, arguments={Arguments}]";
         }
     }
 }

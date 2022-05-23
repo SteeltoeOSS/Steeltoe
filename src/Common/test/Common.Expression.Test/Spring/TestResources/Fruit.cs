@@ -32,7 +32,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public override string ToString()
         {
-            return "A" + (ColorName != null && ColorName.StartsWith("o") ? "n " : " ") + ColorName + " " + Name;
+            return $"A{(ColorName != null && ColorName.StartsWith("o") ? "n " : " ")}{ColorName} {Name}";
         }
     }
 }

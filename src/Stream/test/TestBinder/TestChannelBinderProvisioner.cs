@@ -48,7 +48,7 @@ namespace Steeltoe.Stream.TestBinder
 
         private ISubscribableChannel ProvisionDestination(string name, bool pubSub)
         {
-            var destinationName = name + ".destination";
+            var destinationName = $"{name}.destination";
             _provisionedDestinations.TryGetValue(destinationName, out var destination);
             if (destination == null)
             {

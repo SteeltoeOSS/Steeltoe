@@ -466,12 +466,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
 
             public override string ToString()
             {
-                return "SimpleExecution{" +
-                        "commandKey=" + CommandKey.Name +
-                        ", executionResult=" + executionResult +
-                        ", cacheKey='" + PublicCacheKey + '\'' +
-                        ", collapserKey=" + OriginatingCollapserKey +
-                        '}';
+                return
+                    $"SimpleExecution{{commandKey={CommandKey.Name}, executionResult={executionResult}, cacheKey='{PublicCacheKey}', collapserKey={OriginatingCollapserKey}}}";
             }
         }
     }

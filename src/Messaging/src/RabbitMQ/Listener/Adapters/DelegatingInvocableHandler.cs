@@ -104,7 +104,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 handler = FindHandlerForPayload(payloadClass);
                 if (handler == null)
                 {
-                    throw new RabbitException("No method found for " + payloadClass);
+                    throw new RabbitException($"No method found for {payloadClass}");
                 }
 
                 _cachedHandlers.TryAdd(payloadClass, handler);
@@ -126,7 +126,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                         var resultIsDefault = result.Equals(DefaultHandler);
                         if (!handler.Equals(DefaultHandler) && !resultIsDefault)
                         {
-                            throw new RabbitException("Ambiguous methods for payload type: " + payloadClass + ": " + result.Method.Name + " and " + handler.Method.Name);
+                            throw new RabbitException($"Ambiguous methods for payload type: {payloadClass}: {result.Method.Name} and {handler.Method.Name}");
                         }
 
                         if (!resultIsDefault)
@@ -166,7 +166,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 {
                     if (foundCandidate)
                     {
-                        throw new RabbitException("Ambiguous payload parameter for " + method.ToString());
+                        throw new RabbitException($"Ambiguous payload parameter for {method}");
                     }
 
                     foundCandidate = true;
@@ -219,7 +219,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 var destinations = ann.Destinations;
                 if (destinations.Length > 1)
                 {
-                    throw new InvalidOperationException("Invalid SendToAttribute on '" + element + "' only one destination must be set");
+                    throw new InvalidOperationException($"Invalid SendToAttribute on '{element}' only one destination must be set");
                 }
 
                 replyTo = destinations.Length == 1 ? Resolve(destinations[0]) : null;

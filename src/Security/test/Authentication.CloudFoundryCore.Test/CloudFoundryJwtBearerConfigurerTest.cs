@@ -32,7 +32,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var jwtOpts = new JwtBearerOptions();
 
             CloudFoundryJwtBearerConfigurer.Configure(info, jwtOpts, opts);
-            Assert.Equal("http://domain" + CloudFoundryDefaults.JwtTokenUri, opts.JwtKeyUrl);
+            Assert.Equal($"http://domain{CloudFoundryDefaults.JwtTokenUri}", opts.JwtKeyUrl);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(opts.ClaimsIssuer, jwtOpts.ClaimsIssuer);
             Assert.Null(jwtOpts.BackchannelHttpHandler);

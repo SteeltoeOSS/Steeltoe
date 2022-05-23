@@ -86,7 +86,7 @@ namespace Steeltoe.Connector.RabbitMQ
                 }
 
                 _logger?.LogError("RabbitMQ connection down! {HealthCheckException}", e.Message);
-                result.Details.Add("error", e.GetType().Name + ": " + e.Message);
+                result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
                 result.Description = e.Message;

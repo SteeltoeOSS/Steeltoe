@@ -50,7 +50,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
-            SetEndpoints("http://" + CloudFoundryDefaults.OAuthServiceUrl);
+            SetEndpoints($"http://{CloudFoundryDefaults.OAuthServiceUrl}");
         }
 
         public void SetEndpoints(string authDomain)

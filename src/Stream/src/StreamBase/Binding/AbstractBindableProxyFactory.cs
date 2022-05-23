@@ -119,14 +119,14 @@ namespace Steeltoe.Stream.Binding
                     }
                     else
                     {
-                        throw new InvalidOperationException("Multiple factories found for binding target type: " + bindingTargetType);
+                        throw new InvalidOperationException($"Multiple factories found for binding target type: {bindingTargetType}");
                     }
                 }
             }
 
             if (result == null)
             {
-                throw new InvalidOperationException("No factory found for binding target type: " + bindingTargetType);
+                throw new InvalidOperationException($"No factory found for binding target type: {bindingTargetType}");
             }
 
             return result;

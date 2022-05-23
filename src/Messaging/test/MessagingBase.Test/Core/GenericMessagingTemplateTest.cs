@@ -343,7 +343,7 @@ namespace Steeltoe.Messaging.Core.Test
                     var actual = ex.Message;
                     if (!expected.Equals(actual))
                     {
-                        _failure = new InvalidOperationException("Unexpected error: '" + actual + "'");
+                        _failure = new InvalidOperationException($"Unexpected error: '{actual}'");
                     }
                 }
                 catch (Exception e)

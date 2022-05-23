@@ -70,7 +70,8 @@ namespace Steeltoe.Discovery.Eureka
         /// <param name="instanceInfo">Information about this application instance</param>
         public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
         {
-            var defaultIdEnding = ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
+            var defaultIdEnding =
+                $":{EurekaInstanceOptions.Default_Appname}:{EurekaInstanceOptions.Default_NonSecurePort}";
 
             if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
             {
@@ -119,11 +120,11 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     if (options.SecurePortEnabled)
                     {
-                        options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.SecurePort;
+                        options.InstanceId = $"{options.GetHostName(false)}:{options.AppName}:{options.SecurePort}";
                     }
                     else
                     {
-                        options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
+                        options.InstanceId = $"{options.GetHostName(false)}:{options.AppName}:{options.NonSecurePort}";
                     }
                 }
             }
@@ -178,7 +179,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             UpdateWithDefaults(si, instOptions);
             instOptions.HostName = hostName;
-            instOptions.InstanceId = hostName + ":" + si.ApplicationInfo.InstanceId;
+            instOptions.InstanceId = $"{hostName}:{si.ApplicationInfo.InstanceId}";
         }
 
         private static void UpdateWithDefaultsForDirect(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
@@ -187,7 +188,7 @@ namespace Steeltoe.Discovery.Eureka
             instOptions.PreferIpAddress = true;
             instOptions.NonSecurePort = si.ApplicationInfo.Port;
             instOptions.SecurePort = si.ApplicationInfo.Port;
-            instOptions.InstanceId = si.ApplicationInfo.InternalIP + ":" + si.ApplicationInfo.InstanceId;
+            instOptions.InstanceId = $"{si.ApplicationInfo.InternalIP}:{si.ApplicationInfo.InstanceId}";
         }
 
         private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
@@ -198,7 +199,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (si.ApplicationInfo.Uris.Any())
             {
-                instOptions.InstanceId = si.ApplicationInfo.Uris.First() + ":" + si.ApplicationInfo.InstanceId;
+                instOptions.InstanceId = $"{si.ApplicationInfo.Uris.First()}:{si.ApplicationInfo.InstanceId}";
             }
         }
 

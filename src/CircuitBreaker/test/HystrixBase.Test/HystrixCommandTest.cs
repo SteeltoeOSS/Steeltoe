@@ -2143,7 +2143,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
                 command1.Execute();
-                Assert.True(false, "we expect to receive a " + nameof(HystrixBadRequestException));
+                Assert.True(false, $"we expect to receive a {nameof(HystrixBadRequestException)}");
             }
             catch (HystrixBadRequestException)
             {
@@ -2165,7 +2165,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
                 var res = await command1.ExecuteAsync();
-                Assert.True(false, "we expect to receive a " + nameof(HystrixBadRequestException));
+                Assert.True(false, $"we expect to receive a {nameof(HystrixBadRequestException)}");
             }
             catch (Exception e)
             {
@@ -2176,7 +2176,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
                 else
                 {
-                    Assert.True(false, "We expect a " + nameof(HystrixBadRequestException) + " but got a " + e.GetType().Name);
+                    Assert.True(false, $"We expect a {nameof(HystrixBadRequestException)} but got a {e.GetType().Name}");
                 }
             }
 
@@ -2208,7 +2208,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 command2 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
                 var res = await command2.ExecuteAsync();
-                Assert.True(false, "we expect to receive a " + nameof(HystrixBadRequestException));
+                Assert.True(false, $"we expect to receive a {nameof(HystrixBadRequestException)}");
             }
             catch (Exception e)
             {
@@ -2219,7 +2219,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
                 else
                 {
-                    Assert.False(true, "We expect a " + nameof(HystrixBadRequestException) + " but got a " + e.GetType().Name);
+                    Assert.False(true, $"We expect a {nameof(HystrixBadRequestException)} but got a {e.GetType().Name}");
                 }
             }
 
@@ -2237,7 +2237,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command1.Execute();
-                Assert.True(false, "we expect to receive a " + nameof(HystrixBadRequestException));
+                Assert.True(false, $"we expect to receive a {nameof(HystrixBadRequestException)}");
             }
             catch (HystrixBadRequestException)
             {
@@ -2258,7 +2258,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command.Execute();
-                Assert.True(false, "we expect to receive a " + nameof(Exception));
+                Assert.True(false, $"we expect to receive a {nameof(Exception)}");
             }
             catch (Exception e)
             {
@@ -2347,7 +2347,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command.Execute();
-                Assert.False(true, "we expect to receive a " + nameof(Exception));
+                Assert.False(true, $"we expect to receive a {nameof(Exception)}");
             }
             catch (Exception e)
             {
@@ -2385,7 +2385,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command.Execute();
-                Assert.True(false, "we expect to receive a " + nameof(Exception));
+                Assert.True(false, $"we expect to receive a {nameof(Exception)}");
             }
             catch (Exception e)
             {
@@ -2409,7 +2409,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command.Execute();
-                Assert.False(true, "we expect to receive a " + nameof(Exception));
+                Assert.False(true, $"we expect to receive a {nameof(Exception)}");
             }
             catch (Exception e)
             {
@@ -2592,7 +2592,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command.Execute();
-                Assert.False(true, "we expect to receive a " + nameof(HystrixBadRequestException));
+                Assert.False(true, $"we expect to receive a {nameof(HystrixBadRequestException)}");
             }
             catch (HystrixBadRequestException)
             {
@@ -2602,7 +2602,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 // e.printStackTrace()
-                Assert.False(true, "We expect a " + nameof(HystrixBadRequestException) + " but got a " + e.GetType().Name);
+                Assert.False(true, $"We expect a {nameof(HystrixBadRequestException)} but got a {e.GetType().Name}");
             }
 
             AssertCommandExecutionEvents(command, HystrixEventType.BAD_REQUEST);
@@ -4194,7 +4194,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override TestHystrixCommand<int> GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         {
-            var commandKey = HystrixCommandKeyDefault.AsKey("Flexible-" + Interlocked.Increment(ref uniqueNameCounter));
+            var commandKey = HystrixCommandKeyDefault.AsKey($"Flexible-{Interlocked.Increment(ref uniqueNameCounter)}");
             var result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency, fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled);
             result._output = output;
             if (result._executionHook is TestableExecutionHook testExecHook)
@@ -4437,7 +4437,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             else
             {
-                throw new Exception("You passed in a fallbackResult enum that can't be represented in HystrixCommand: " + fallbackResult);
+                throw new Exception($"You passed in a fallbackResult enum that can't be represented in HystrixCommand: {fallbackResult}");
             }
         }
     }
@@ -4502,7 +4502,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             else
             {
-                throw new Exception("You passed in a executionResult enum that can't be represented in HystrixCommand: " + result);
+                throw new Exception($"You passed in a executionResult enum that can't be represented in HystrixCommand: {result}");
             }
         }
 

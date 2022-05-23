@@ -42,7 +42,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                 health.Details.TryGetValue("propertySources", out var sourcelist);
 
                 var nameList = ToCSV(sourcelist as IList<string>);
-                return health.Status.ToString() + "," + nameList;
+                return $"{health.Status},{nameList}";
             }
             else
             {
@@ -55,7 +55,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             var result = string.Empty;
             foreach (var name in list)
             {
-                result += name + ",";
+                result += $"{name},";
             }
 
             return result;

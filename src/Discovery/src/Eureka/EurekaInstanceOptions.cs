@@ -24,7 +24,7 @@ namespace Steeltoe.Discovery.Eureka
             IsInstanceEnabledOnInit = true;
             VirtualHostName = null;
             SecureVirtualHostName = null;
-            InstanceId = GetHostName(false) + ":" + AppName + ":" + NonSecurePort;
+            InstanceId = $"{GetHostName(false)}:{AppName}:{NonSecurePort}";
         }
 
         // eureka:instance:appGroup

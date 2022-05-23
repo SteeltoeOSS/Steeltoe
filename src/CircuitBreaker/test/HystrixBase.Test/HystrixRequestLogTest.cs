@@ -276,7 +276,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     }
                     else
                     {
-                        return value + "-fallback";
+                        return $"{value}-fallback";
                     }
                 }
                 else

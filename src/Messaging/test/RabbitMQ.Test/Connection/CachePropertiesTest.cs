@@ -100,16 +100,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(2, props["idleConnectionsHighWater"]);
             var c1Port = c1.LocalPort;
             var c2Port = c2.LocalPort;
-            Assert.StartsWith("testConnectionCache:1", (string)props["connectionName:" + c1Port]);
-            Assert.StartsWith("testConnectionCache:2", (string)props["connectionName:" + c2Port]);
-            Assert.Equal(2, props["idleChannelsNotTx:" + c1Port]);
-            Assert.Equal(0, props["idleChannelsTx:" + c1Port]);
-            Assert.Equal(2, props["idleChannelsNotTxHighWater:" + c1Port]);
-            Assert.Equal(0, props["idleChannelsTxHighWater:" + c1Port]);
-            Assert.Equal(1, props["idleChannelsNotTx:" + c2Port]);
-            Assert.Equal(2, props["idleChannelsTx:" + c2Port]);
-            Assert.Equal(1, props["idleChannelsNotTxHighWater:" + c2Port]);
-            Assert.Equal(2, props["idleChannelsTxHighWater:" + c2Port]);
+            Assert.StartsWith("testConnectionCache:1", (string)props[$"connectionName:{c1Port}"]);
+            Assert.StartsWith("testConnectionCache:2", (string)props[$"connectionName:{c2Port}"]);
+            Assert.Equal(2, props[$"idleChannelsNotTx:{c1Port}"]);
+            Assert.Equal(0, props[$"idleChannelsTx:{c1Port}"]);
+            Assert.Equal(2, props[$"idleChannelsNotTxHighWater:{c1Port}"]);
+            Assert.Equal(0, props[$"idleChannelsTxHighWater:{c1Port}"]);
+            Assert.Equal(1, props[$"idleChannelsNotTx:{c2Port}"]);
+            Assert.Equal(2, props[$"idleChannelsTx:{c2Port}"]);
+            Assert.Equal(1, props[$"idleChannelsNotTxHighWater:{c2Port}"]);
+            Assert.Equal(2, props[$"idleChannelsTxHighWater:{c2Port}"]);
         }
     }
 }

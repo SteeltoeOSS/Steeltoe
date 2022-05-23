@@ -38,7 +38,7 @@ namespace Steeltoe.Stream.Config
             var payload = message.Payload;
             if (IsEmptyPayload(payload))
             {
-                throw new MessageConversionException(message, "Cannot convert from actual payload type '" + payload.GetType() + "' to expected payload type '" + targetPayloadType + "' when payload is empty");
+                throw new MessageConversionException(message, $"Cannot convert from actual payload type '{payload.GetType()}' to expected payload type '{targetPayloadType}' when payload is empty");
             }
 
             payload = ConvertPayload(message, parameter, targetPayloadType);
@@ -70,7 +70,7 @@ namespace Steeltoe.Stream.Config
 
             if (result == null)
             {
-                throw new MessageConversionException(message, "No converter found from actual payload type '" + message.Payload.GetType() + "' to expected payload type '" + targetPayloadType + "'");
+                throw new MessageConversionException(message, $"No converter found from actual payload type '{message.Payload.GetType()}' to expected payload type '{targetPayloadType}'");
             }
 
             return result;

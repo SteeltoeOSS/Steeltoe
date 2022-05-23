@@ -37,15 +37,15 @@ namespace Steeltoe.Common.LoadBalancer.Test
             var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
             var loadBalancer = new RoundRobinLoadBalancer(provider);
 
-            Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "fruitService"]);
-            Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "vegetableService"]);
+            Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{loadBalancer.IndexKeyPrefix}fruitService"]);
+            Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{loadBalancer.IndexKeyPrefix}vegetableService"]);
             var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
             await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
             var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
 
-            Assert.Equal(1, loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "fruitservice"]);
+            Assert.Equal(1, loadBalancer.NextIndexForService[$"{loadBalancer.IndexKeyPrefix}fruitservice"]);
             Assert.Equal(8000, fruitResult.Port);
-            Assert.Equal(2, loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "vegetableservice"]);
+            Assert.Equal(2, loadBalancer.NextIndexForService[$"{loadBalancer.IndexKeyPrefix}vegetableservice"]);
             Assert.Equal(8011, vegResult.Port);
         }
 

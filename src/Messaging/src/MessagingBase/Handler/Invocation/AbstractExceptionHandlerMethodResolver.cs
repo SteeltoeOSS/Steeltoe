@@ -44,7 +44,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
             if (result.Count == 0)
             {
-                throw new InvalidOperationException("No exception types mapped to " + method);
+                throw new InvalidOperationException($"No exception types mapped to {method}");
             }
 
             return result;

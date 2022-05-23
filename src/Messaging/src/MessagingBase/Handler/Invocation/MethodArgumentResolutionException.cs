@@ -17,14 +17,14 @@ namespace Steeltoe.Messaging.Handler.Invocation
         }
 
         public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter, string description)
-            : base(message, GetMethodParameterMessage(parameter) + ": " + description)
+            : base(message, $"{GetMethodParameterMessage(parameter)}: {description}")
         {
             Parameter = parameter;
         }
 
         private static string GetMethodParameterMessage(ParameterInfo parameter)
         {
-            return "Could not resolve method parameter at index " + parameter.Position + " in " + parameter.Member.ToString();
+            return $"Could not resolve method parameter at index {parameter.Position} in {parameter.Member}";
         }
     }
 }

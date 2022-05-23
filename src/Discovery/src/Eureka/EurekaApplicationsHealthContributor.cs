@@ -62,7 +62,7 @@ namespace Steeltoe.Discovery.Eureka
                     result.Status = HealthStatus.DOWN;
                 }
 
-                result.Details[appName] = upCount + " instances with UP status";
+                result.Details[appName] = $"{upCount} instances with UP status";
             }
             else
             {

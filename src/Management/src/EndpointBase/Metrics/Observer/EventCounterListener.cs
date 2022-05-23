@@ -144,7 +144,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                         break;
                 }
 
-                metricName = eventSourceName + "." + counterName;
+                metricName = $"{eventSourceName}.{counterName}";
             }
 
             if (doubleValue.HasValue)

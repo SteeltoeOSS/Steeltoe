@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Tracing
         }
 
         /// <inheritdoc />
-        public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, CONFIG_PREFIX + ":name");
+        public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, $"{CONFIG_PREFIX}:name");
 
         /// <inheritdoc />
         public string IngressIgnorePattern { get; set; }

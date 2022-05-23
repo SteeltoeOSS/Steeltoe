@@ -90,7 +90,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 HystrixRollingNumberEvent.RESPONSE_FROM_CACHE => HystrixEventType.RESPONSE_FROM_CACHE,
                 HystrixRollingNumberEvent.COLLAPSED => HystrixEventType.COLLAPSED,
                 HystrixRollingNumberEvent.BAD_REQUEST => HystrixEventType.BAD_REQUEST,
-                _ => throw new ArgumentOutOfRangeException("Not an event that can be converted to HystrixEventType : " + @event),
+                _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType : {@event}"),
             };
         }
 

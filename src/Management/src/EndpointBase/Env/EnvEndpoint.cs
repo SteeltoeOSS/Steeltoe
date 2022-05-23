@@ -100,7 +100,7 @@ namespace Steeltoe.Management.Endpoint.Env
         public virtual string GetPropertySourceName(IConfigurationProvider provider)
         {
             return provider is FileConfigurationProvider fileProvider
-                ? provider.GetType().Name + ": [" + fileProvider.Source.Path + "]"
+                ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]"
                 : provider.GetType().Name;
         }
 
@@ -111,7 +111,7 @@ namespace Steeltoe.Management.Endpoint.Env
                 var surrogateKey = key;
                 if (rootKey != null)
                 {
-                    surrogateKey = rootKey + ":" + key;
+                    surrogateKey = $"{rootKey}:{key}";
                 }
 
                 GetFullKeyNames(provider, surrogateKey, initialKeys);

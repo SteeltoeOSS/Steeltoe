@@ -14,7 +14,7 @@ namespace Steeltoe.Stream.Util
             Type bindableType = null;
             if (!interfaceClass.IsInterface)
             {
-                throw new ArgumentException(nameof(interfaceClass) + " is not an interface");
+                throw new ArgumentException($"{nameof(interfaceClass)} is not an interface");
             }
 
             var currentType = evaluatedClass;
@@ -57,7 +57,7 @@ namespace Steeltoe.Stream.Util
 
             if (bindableType == null)
             {
-                throw new InvalidOperationException("Cannot find parameter of " + evaluatedClass.Name + " for " + interfaceClass + " at position " + position);
+                throw new InvalidOperationException($"Cannot find parameter of {evaluatedClass.Name} for {interfaceClass} at position {position}");
             }
 
             return bindableType;

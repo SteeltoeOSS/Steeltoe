@@ -84,7 +84,7 @@ namespace Steeltoe.Integration.Transformer
             }
             else
             {
-                throw new InvalidOperationException("Unsupported result type: " + ResultType);
+                throw new InvalidOperationException($"Unsupported result type: {ResultType}");
             }
         }
     }

@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 {
     public class DestinationVariableMethodArgumentResolver : AbstractNamedValueMethodArgumentResolver
     {
-        public const string DESTINATION_TEMPLATE_VARIABLES_HEADER = nameof(DestinationVariableMethodArgumentResolver) + ".templateVariables";
+        public const string DESTINATION_TEMPLATE_VARIABLES_HEADER = $"{nameof(DestinationVariableMethodArgumentResolver)}.templateVariables";
 
         public DestinationVariableMethodArgumentResolver(IConversionService conversionService)
             : base(conversionService, null)
@@ -49,7 +49,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         protected override void HandleMissingValue(string name, ParameterInfo parameter, IMessage message)
         {
-            throw new MessageHandlingException(message, "Missing path template variable '" + name + "' " + "for method parameter type [" + parameter.ParameterType + "]");
+            throw new MessageHandlingException(message, $"Missing path template variable '{name}' for method parameter type [{parameter.ParameterType}]");
         }
 
         protected class DestinationVariableNamedValueInfo : NamedValueInfo

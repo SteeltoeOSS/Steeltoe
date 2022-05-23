@@ -190,7 +190,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
                 var methodName = method.Name;
                 if (methodName.StartsWith("Handler"))
                 {
-                    return "/" + methodName;
+                    return $"/{methodName}";
                 }
 
                 return null;

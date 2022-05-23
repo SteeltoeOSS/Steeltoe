@@ -28,7 +28,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public override string ToString()
         {
-            return "ArgumentMatchInfo: " + _kind;
+            return $"ArgumentMatchInfo: {_kind}";
         }
     }
 }

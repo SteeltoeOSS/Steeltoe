@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.Converter
                 }
                 catch (ConversionException ex)
                 {
-                    throw new MessageConversionException(message, "Failed to convert message payload '" + payload + "' to '" + targetClass.Name + "'", ex);
+                    throw new MessageConversionException(message, $"Failed to convert message payload '{payload}' to '{targetClass.Name}'", ex);
                 }
             }
 

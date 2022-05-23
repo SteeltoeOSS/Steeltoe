@@ -117,12 +117,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var authToken = Encoding.ASCII.GetBytes("guest:guest");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-            var result = await client.GetAsync("http://localhost:15672/api/queues/%3F/" + queueName);
+            var result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queueName}");
             var n = 0;
             while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
             {
                 await Task.Delay(100);
-                result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + queueName);
+                result = await client.GetAsync($"http://localhost:15672/api/queues/%2F/{queueName}");
             }
 
             Assert.True(n < 100);
@@ -139,7 +139,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var authToken = Encoding.ASCII.GetBytes("guest:guest");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-            var result = await client.GetAsync("http://localhost:15672/api/exchanges/%2F/" + exchangeName);
+            var result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var config = new ConfigurationBuilder()

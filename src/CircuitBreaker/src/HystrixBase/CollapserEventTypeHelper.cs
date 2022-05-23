@@ -26,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 HystrixRollingNumberEvent.COLLAPSER_BATCH => CollapserEventType.BATCH_EXECUTED,
                 HystrixRollingNumberEvent.COLLAPSER_REQUEST_BATCHED => CollapserEventType.ADDED_TO_BATCH,
                 HystrixRollingNumberEvent.RESPONSE_FROM_CACHE => CollapserEventType.RESPONSE_FROM_CACHE,
-                _ => throw new ArgumentOutOfRangeException("Not an event that can be converted to HystrixEventType.Collapser : " + @event),
+                _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.Collapser : {@event}"),
             };
         }
     }

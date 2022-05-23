@@ -16,7 +16,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public CloudFoundryOpenIdConnectOptions()
         {
             AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
-            Authority = "https://" + CloudFoundryDefaults.OAuthServiceUrl;
+            Authority = $"https://{CloudFoundryDefaults.OAuthServiceUrl}";
             CallbackPath = new PathString(CloudFoundryDefaults.CallbackPath);
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             ClientId = CloudFoundryDefaults.ClientId;

@@ -82,7 +82,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
             }
             else
             {
-                headers.ContentEncoding = GetEncoding() + ":" + message.Headers.ContentEncoding();
+                headers.ContentEncoding = $"{GetEncoding()}:{message.Headers.ContentEncoding()}";
             }
 
             return Message.Create(compressed, headers.ToMessageHeaders());

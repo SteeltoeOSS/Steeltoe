@@ -76,7 +76,7 @@ namespace Steeltoe.Connector.MongoDb
                 }
 
                 _logger?.LogError("MongoDb connection is down! {HealthCheckException}", e.Message);
-                result.Details.Add("error", e.GetType().Name + ": " + e.Message);
+                result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
                 result.Description = e.Message;

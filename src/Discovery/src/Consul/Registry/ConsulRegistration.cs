@@ -132,7 +132,7 @@ namespace Steeltoe.Discovery.Consul.Registry
                 service.Address = options.HostName;
             }
 
-            var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX + ":serviceName");
+            var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:serviceName");
             service.Name = NormalizeForConsul(appName);
             service.Tags = CreateTags(options);
             if (options.Port != 0)
@@ -154,16 +154,16 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             if (!string.IsNullOrEmpty(options.InstanceZone))
             {
-                tags.Add(options.DefaultZoneMetadataName + "=" + options.InstanceZone);
+                tags.Add($"{options.DefaultZoneMetadataName}={options.InstanceZone}");
             }
 
             if (!string.IsNullOrEmpty(options.InstanceGroup))
             {
-                tags.Add("group=" + options.InstanceGroup);
+                tags.Add($"group={options.InstanceGroup}");
             }
 
             // store the secure flag in the tags so that clients will be able to figure out whether to use http or https automatically
-            tags.Add("secure=" + (options.Scheme == "https").ToString().ToLower());
+            tags.Add($"secure={(options.Scheme == "https").ToString().ToLower()}");
 
             return tags.ToArray();
         }
@@ -180,7 +180,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
         {
-            var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX + ":serviceName");
+            var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:serviceName");
             var instanceId = applicationInfo.InstanceId;
             if (string.IsNullOrEmpty(instanceId))
             {
@@ -188,14 +188,14 @@ namespace Steeltoe.Discovery.Consul.Registry
                 instanceId = rand.Next().ToString();
             }
 
-            return appName + ":" + instanceId;
+            return $"{appName}:{instanceId}";
         }
 
         internal static string NormalizeForConsul(string s)
         {
             if (s == null || !char.IsLetter(s[0]) || !char.IsLetterOrDigit(s[s.Length - 1]))
             {
-                throw new ArgumentException("Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: " + s);
+                throw new ArgumentException($"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {s}");
             }
 
             var normalized = new StringBuilder();

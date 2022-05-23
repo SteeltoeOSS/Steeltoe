@@ -63,7 +63,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             user ??= string.Empty;
             password ??= string.Empty;
 
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
         }
 
         protected internal virtual HttpClient GetHttpClient()
@@ -93,7 +93,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             else
             {
-                var error = "OAuth token endpoint failure: " + await Display(response).ConfigureAwait(false);
+                var error = $"OAuth token endpoint failure: {await Display(response).ConfigureAwait(false)}";
                 return OAuthTokenResponse.Failed(new Exception(error));
             }
         }
@@ -192,9 +192,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         private static async Task<string> Display(HttpResponseMessage response)
         {
             var output = new StringBuilder();
-            output.Append("Status: " + response.StatusCode + ";");
-            output.Append("Headers: " + response.Headers.ToString() + ";");
-            output.Append("Body: " + await response.Content.ReadAsStringAsync().ConfigureAwait(false) + ";");
+            output.Append($"Status: {response.StatusCode};");
+            output.Append($"Headers: {response.Headers};");
+            output.Append($"Body: {await response.Content.ReadAsStringAsync().ConfigureAwait(false)};");
             return output.ToString();
         }
     }

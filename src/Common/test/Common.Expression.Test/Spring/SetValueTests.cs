@@ -239,11 +239,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
             catch (EvaluationException ex)
             {
-                throw new Exception("Unexpected Exception: " + ex.Message, ex);
+                throw new Exception($"Unexpected Exception: {ex.Message}", ex);
             }
             catch (ParseException ex)
             {
-                throw new Exception("Unexpected Exception: " + ex.Message, ex);
+                throw new Exception($"Unexpected Exception: {ex.Message}", ex);
             }
         }
 
@@ -267,11 +267,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
             catch (EvaluationException ex)
             {
-                throw new Exception("Unexpected Exception: " + ex.Message, ex);
+                throw new Exception($"Unexpected Exception: {ex.Message}", ex);
             }
             catch (ParseException ex)
             {
-                throw new Exception("Unexpected Exception: " + ex.Message, ex);
+                throw new Exception($"Unexpected Exception: {ex.Message}", ex);
             }
         }
 

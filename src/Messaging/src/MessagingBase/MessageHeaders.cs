@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging
         public const string CONTENT_TYPE = "contentType";
         public const string REPLY_CHANNEL = "replyChannel";
         public const string ERROR_CHANNEL = "errorChannel";
-        public const string INFERRED_ARGUMENT_TYPE = INTERNAL + "InferredArgumentType";
+        public const string INFERRED_ARGUMENT_TYPE = $"{INTERNAL}InferredArgumentType";
 
         public const string CONTENT_TYPE_JSON = "application/json";
         public const string CONTENT_TYPE_TEXT_PLAIN = "text/plain";

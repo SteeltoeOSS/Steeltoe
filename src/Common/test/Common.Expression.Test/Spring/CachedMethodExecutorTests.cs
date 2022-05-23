@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             public string Echo(string value)
             {
-                return "String: " + value;
+                return $"String: {value}";
             }
         }
 
@@ -53,7 +53,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             public string Echo(int value)
             {
-                return "int: " + value;
+                return $"int: {value}";
             }
         }
     }

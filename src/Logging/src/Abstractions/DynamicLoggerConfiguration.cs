@@ -51,7 +51,7 @@ namespace Steeltoe.Extensions.Logging
 
         public override string ToString()
         {
-            return "[" + Name + "," + ConfiguredLevel + "," + EffectiveLevel + "]";
+            return $"[{Name},{ConfiguredLevel},{EffectiveLevel}]";
         }
     }
 }

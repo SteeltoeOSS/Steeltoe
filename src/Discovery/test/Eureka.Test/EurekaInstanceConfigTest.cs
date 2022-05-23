@@ -24,7 +24,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.False(config.SecurePortEnabled);
             Assert.Equal(EurekaInstanceConfig.Default_LeaseRenewalIntervalInSeconds, config.LeaseRenewalIntervalInSeconds);
             Assert.Equal(EurekaInstanceConfig.Default_LeaseExpirationDurationInSeconds, config.LeaseExpirationDurationInSeconds);
-            Assert.Equal(thisHostName + ":" + config.SecurePort, config.SecureVirtualHostName);
+            Assert.Equal($"{thisHostName}:{config.SecurePort}", config.SecureVirtualHostName);
             Assert.Equal(thisHostAddress, config.IpAddress);
             Assert.Equal(EurekaInstanceConfig.Default_Appname, config.AppName);
             Assert.Equal(EurekaInstanceConfig.Default_StatusPageUrlPath, config.StatusPageUrlPath);

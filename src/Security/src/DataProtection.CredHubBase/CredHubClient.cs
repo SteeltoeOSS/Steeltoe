@@ -100,7 +100,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 }
                 else
                 {
-                    throw new AuthenticationException($"Authentication with UAA Server failed");
+                    throw new AuthenticationException("Authentication with UAA Server failed");
                 }
             }
             finally

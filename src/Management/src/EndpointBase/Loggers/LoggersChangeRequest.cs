@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public override string ToString()
         {
-            return "[" + Name + "," + (Level ?? "RESET") + "]";
+            return $"[{Name},{Level ?? "RESET"}]";
         }
     }
 }

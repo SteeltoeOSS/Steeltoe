@@ -33,8 +33,8 @@ namespace Steeltoe.Connector.Services
             {
                 foreach (var s in schemes)
                 {
-                    UriKeys.Add(s + "uri");
-                    UriKeys.Add(s + "url");
+                    UriKeys.Add($"{s}uri");
+                    UriKeys.Add($"{s}url");
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace Steeltoe.Connector.Services
             {
                 foreach (var uriScheme in UriSchemes)
                 {
-                    if (uri.StartsWith(uriScheme + "://", StringComparison.OrdinalIgnoreCase))
+                    if (uri.StartsWith($"{uriScheme}://", StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
@@ -102,7 +102,7 @@ namespace Steeltoe.Connector.Services
 
             foreach (var uriScheme in UriSchemes)
             {
-                if (credentials.ContainsKey(uriScheme + "Uri") || credentials.ContainsKey(uriScheme + "uri") || credentials.ContainsKey(uriScheme + "Url") || credentials.ContainsKey(uriScheme + "url"))
+                if (credentials.ContainsKey($"{uriScheme}Uri") || credentials.ContainsKey($"{uriScheme}uri") || credentials.ContainsKey($"{uriScheme}Url") || credentials.ContainsKey($"{uriScheme}url"))
                 {
                     return true;
                 }

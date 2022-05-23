@@ -228,7 +228,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             var hashcodeBuilder = new StringBuilder();
             foreach (var entry in query)
             {
-                hashcodeBuilder.Append(entry.Key.ToString() + "_" + entry.Value.ToString() + "_");
+                hashcodeBuilder.Append($"{entry.Key}_{entry.Value}_");
             }
 
             return hashcodeBuilder.ToString();

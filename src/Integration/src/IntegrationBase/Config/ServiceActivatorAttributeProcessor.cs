@@ -109,7 +109,7 @@ namespace Steeltoe.Integration.Config
             var name = MessagingAttributeUtils.EndpointIdValue(method);
             if (string.IsNullOrEmpty(name))
             {
-                name = originalServiceName + "." + method.Name + "." + attributeType.Name + "." + Guid.NewGuid().ToString();
+                name = $"{originalServiceName}.{method.Name}.{attributeType.Name}.{Guid.NewGuid()}";
             }
 
             return name;
@@ -164,7 +164,7 @@ namespace Steeltoe.Integration.Config
             catch (Exception e)
             {
                 // Log
-                throw new InvalidOperationException("Unable to CreateInstance of type containing StreamListener method, Type: " + implementation, e);
+                throw new InvalidOperationException($"Unable to CreateInstance of type containing StreamListener method, Type: {implementation}", e);
             }
         }
     }

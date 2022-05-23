@@ -26,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override string ToString()
         {
-            return "HystrixCollapserEvent[" + CollapserKey.Name + "] : " + EventType + " : " + Count;
+            return $"HystrixCollapserEvent[{CollapserKey.Name}] : {EventType} : {Count}";
         }
     }
 }

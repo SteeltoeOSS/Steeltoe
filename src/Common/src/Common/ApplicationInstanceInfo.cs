@@ -24,21 +24,21 @@ namespace Steeltoe.Common
 
         public string DefaultAppName => Assembly.GetEntryAssembly().GetName().Name;
 
-        public string AppNameKey => SpringApplicationRoot + ":name";
+        public string AppNameKey => $"{SpringApplicationRoot}:name";
 
-        public string AppInstanceIdKey => SpringApplicationRoot + ":instance_id";
+        public string AppInstanceIdKey => $"{SpringApplicationRoot}:instance_id";
 
-        public string ConfigServerNameKey => ConfigServerRoot + ":name";
+        public string ConfigServerNameKey => $"{ConfigServerRoot}:name";
 
-        public string ConsulInstanceNameKey => ConsulRoot + ":serviceName";
+        public string ConsulInstanceNameKey => $"{ConsulRoot}:serviceName";
 
-        public string EurekaInstanceNameKey => EurekaRoot + ":instance:appName";
+        public string EurekaInstanceNameKey => $"{EurekaRoot}:instance:appName";
 
-        public string KubernetesNameKey => KubernetesRoot + ":name";
+        public string KubernetesNameKey => $"{KubernetesRoot}:name";
 
-        public string ManagementNameKey => ManagementRoot + ":name";
+        public string ManagementNameKey => $"{ManagementRoot}:name";
 
-        public string PlatformNameKey => BuildConfigString(PlatformRoot, ApplicationRoot + ":name");
+        public string PlatformNameKey => BuildConfigString(PlatformRoot, $"{ApplicationRoot}:name");
 
         protected virtual string PlatformRoot => string.Empty;
 
@@ -47,7 +47,7 @@ namespace Steeltoe.Common
             if (config != null)
             {
                 Instance_Id ??= config.GetValue<string>(AppInstanceIdKey);
-                Application_Id ??= config.GetValue<string>(SpringApplicationRoot + ":id");
+                Application_Id ??= config.GetValue<string>($"{SpringApplicationRoot}:id");
             }
         }
 
@@ -59,7 +59,7 @@ namespace Steeltoe.Common
             }
             else
             {
-                return prefix + ":" + key;
+                return $"{prefix}:{key}";
             }
         }
 

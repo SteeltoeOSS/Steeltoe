@@ -56,7 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 HystrixEventType.SUCCESS => HystrixRollingNumberEvent.SUCCESS,
                 HystrixEventType.THREAD_POOL_REJECTED => HystrixRollingNumberEvent.THREAD_POOL_REJECTED,
                 HystrixEventType.TIMEOUT => HystrixRollingNumberEvent.TIMEOUT,
-                _ => throw new ArgumentOutOfRangeException("Unknown HystrixEventType : " + eventType),
+                _ => throw new ArgumentOutOfRangeException($"Unknown HystrixEventType : {eventType}"),
             };
         }
 

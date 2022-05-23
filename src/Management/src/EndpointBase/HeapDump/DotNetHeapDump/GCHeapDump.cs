@@ -233,7 +233,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
         }
         catch (Exception e)
         {
-            throw new ApplicationException("Error opening file " + deserializer.Name + " Message: " + e.Message);
+            throw new ApplicationException($"Error opening file {deserializer.Name} Message: {e.Message}");
         }
     }
 
@@ -791,7 +791,7 @@ internal class XmlGcHeapDump
         }
         if (ret.MemoryGraph == null)
         {
-            throw new ApplicationException(elementName + " does not have MemoryGraph field.");
+            throw new ApplicationException($"{elementName} does not have MemoryGraph field.");
         }
 
         return ret;

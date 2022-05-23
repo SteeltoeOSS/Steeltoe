@@ -136,7 +136,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
             if (localService != null)
             {
-                writer.WriteStringField("name", localService.ServiceId + "." + key.Name);
+                writer.WriteStringField("name", $"{localService.ServiceId}.{key.Name}");
             }
             else
             {

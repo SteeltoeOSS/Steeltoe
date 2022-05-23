@@ -91,7 +91,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 
             if (d == null)
             {
-                throw new MessageConversionException("No delegate converter is specified for content type " + contentType);
+                throw new MessageConversionException($"No delegate converter is specified for content type {contentType}");
             }
 
             return d;

@@ -89,6 +89,6 @@ namespace Steeltoe.Messaging.Converter
 
         public List<IMessageConverter> Converters { get; }
 
-        public override string ToString() => "CompositeMessageConverter[converters=" + Converters.Count + "]";
+        public override string ToString() => $"CompositeMessageConverter[converters={Converters.Count}]";
     }
 }

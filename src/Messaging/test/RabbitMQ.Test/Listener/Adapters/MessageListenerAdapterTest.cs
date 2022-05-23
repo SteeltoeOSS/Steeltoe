@@ -200,19 +200,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             public string Handle(string input)
             {
                 Called = "Handle";
-                return "processed" + input;
+                return $"processed{input}";
             }
 
             public string AnotherHandle(string input)
             {
                 Called = "AnotherHandle";
-                return "processed" + input;
+                return $"processed{input}";
             }
 
             public string NotDefinedOnInterface(string input)
             {
                 Called = "NotDefinedOnInterface";
-                return "processed" + input;
+                return $"processed{input}";
             }
         }
 
@@ -223,7 +223,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 return Task.Run(() =>
                 {
                     Thread.Sleep(1000);
-                    return "processed" + input;
+                    return $"processed{input}";
                 });
             }
         }
@@ -240,7 +240,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             public string MyPojoMessageMethod(string input)
             {
                 called.Value = true;
-                return "processed" + input;
+                return $"processed{input}";
             }
         }
 
@@ -256,7 +256,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             public string HandleMessage(string input)
             {
                 called.Value = true;
-                return "processed" + input;
+                return $"processed{input}";
             }
         }
 

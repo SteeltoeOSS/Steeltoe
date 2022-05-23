@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Eureka
 
                     // Eureka is enabled by default. If eureka:client:enabled was not set then check spring:cloud:discovery:enabled
                     if (options.Enabled &&
-                        config.GetValue<bool?>(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX + ":enabled") is null &&
+                        config.GetValue<bool?>($"{EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX}:enabled") is null &&
                         config.GetValue<bool?>(_springDiscoveryEnabled) == false)
                     {
                         options.Enabled = false;
@@ -90,8 +90,8 @@ namespace Steeltoe.Discovery.Eureka
                         var mgmtOptions = serviceProvider.GetService(actuatorOptionsType);
                         if (mgmtOptions != null)
                         {
-                            var basePath = (string)actuatorOptionsType.GetProperty("Path").GetValue(mgmtOptions) + '/';
-                            if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":HealthCheckUrlPath")))
+                            var basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(mgmtOptions)}/";
+                            if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX}:HealthCheckUrlPath")))
                             {
                                 var healthOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Health.IHealthOptions" });
                                 var healthOptions = serviceProvider.GetService(healthOptionsType);
@@ -101,7 +101,7 @@ namespace Steeltoe.Discovery.Eureka
                                 }
                             }
 
-                            if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":StatusPageUrlPath")))
+                            if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX}:StatusPageUrlPath")))
                             {
                                 var infoOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Info.IInfoOptions" });
                                 var infoOptions = serviceProvider.GetService(infoOptionsType);

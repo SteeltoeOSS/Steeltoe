@@ -74,7 +74,7 @@ namespace Steeltoe.Integration.Channel
             }
             catch (MessageDispatchingException e)
             {
-                var description = e.Message + " for channel '" + ServiceName + "'.";
+                var description = $"{e.Message} for channel '{ServiceName}'.";
                 throw new MessageDeliveryException(message, description, e);
             }
         }

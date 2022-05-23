@@ -69,7 +69,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         public static string ConstructDLQName(string name)
         {
-            return name + ".dlq";
+            return $"{name}.dlq";
         }
 
         public static string ApplyPrefix(string prefix, string name)
@@ -91,7 +91,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             RabbitConfig.IBinding binding = null;
             foreach (var requiredGroupName in options.RequiredGroups)
             {
-                var baseQueueName = producerProperties.QueueNameGroupOnly.Value ? requiredGroupName : exchangeName + "." + requiredGroupName;
+                var baseQueueName = producerProperties.QueueNameGroupOnly.Value ? requiredGroupName : $"{exchangeName}.{requiredGroupName}";
                 if (!options.IsPartitioned)
                 {
                     AutoBindDLQ(baseQueueName, baseQueueName, producerProperties);
@@ -118,7 +118,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     // if the stream is partitioned, create one queue for each target partition for the default group
                     for (var i = 0; i < options.PartitionCount; i++)
                     {
-                        var partitionSuffix = "-" + i;
+                        var partitionSuffix = $"-{i}";
                         var partitionQueueName = baseQueueName + partitionSuffix;
                         AutoBindDLQ(baseQueueName, baseQueueName + partitionSuffix, producerProperties);
                         if (producerProperties.BindQueue.Value)
@@ -189,10 +189,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 destination.Name.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList().ForEach(name =>
                 {
                     name = name.Trim();
-                    RemoveSingleton(name + ".binding");
+                    RemoveSingleton($"{name}.binding");
                     RemoveSingleton(name);
-                    var dlq = name + ".dlq";
-                    RemoveSingleton(dlq + ".binding");
+                    var dlq = $"{name}.dlq";
+                    RemoveSingleton($"{dlq}.binding");
                     RemoveSingleton(dlq);
                 });
             }
@@ -245,7 +245,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             {
                 if (partitioned)
                 {
-                    var partitionSuffix = "-" + options.InstanceIndex;
+                    var partitionSuffix = $"-{options.InstanceIndex}";
                     queueName += partitionSuffix;
                 }
 
@@ -309,7 +309,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         {
             var bindingKey = rk ?? destination;
 
-            bindingKey += "-" + index;
+            bindingKey += $"-{index}";
             var arguments = new Dictionary<string, object>();
             foreach (var entry in extendedProperties.QueueBindingArguments)
             {
@@ -336,13 +336,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     throw new ProvisioningException("A fanout exchange is not appropriate for partitioned apps");
                 case HeadersExchange:
                     {
-                        var binding = new RabbitConfig.Binding(queue.QueueName + "." + exchange.ExchangeName + ".binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
+                        var binding = new RabbitConfig.Binding($"{queue.QueueName}.{exchange.ExchangeName}.binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
                         DeclareBinding(queue.QueueName, binding);
                         return binding;
                     }
 
                 default:
-                    throw new ProvisioningException("Cannot bind to a " + exchange.Type + " exchange");
+                    throw new ProvisioningException($"Cannot bind to a {exchange.Type} exchange");
             }
         }
 
@@ -385,13 +385,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
                 case HeadersExchange:
                     {
-                        var binding = new RabbitConfig.Binding(queue.QueueName + "." + exchange.ExchangeName + ".binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
+                        var binding = new RabbitConfig.Binding($"{queue.QueueName}.{exchange.ExchangeName}.binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
                         DeclareBinding(queue.QueueName, binding);
                         return binding;
                     }
 
                 default:
-                    throw new ProvisioningException("Cannot bind to a " + exchange.Type + " exchange");
+                    throw new ProvisioningException($"Cannot bind to a {exchange.Type} exchange");
             }
         }
 
@@ -443,7 +443,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     ForEach(entry => arguments.Add(entry.Key, entry.Value));
 
                 var dlRoutingKey = properties.DeadLetterRoutingKey ?? routingKey;
-                var dlBindingName = dlq.QueueName + "." + dlxName + "." + dlRoutingKey + ".binding";
+                var dlBindingName = $"{dlq.QueueName}.{dlxName}.{dlRoutingKey}.binding";
                 var dlqBinding = new RabbitConfig.Binding(dlBindingName, dlq.QueueName, DestinationType.QUEUE, dlxName, dlRoutingKey, arguments);
                 DeclareBinding(dlqName, dlqBinding);
                 if (properties is RabbitConsumerOptions options && options.RepublishToDlq.Value)
@@ -451,7 +451,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     /*
                      * Also bind with the base queue name when republishToDlq is used, which does not know about partitioning
                      */
-                    var bindingName = dlq.QueueName + "." + dlxName + "." + baseQueueName + ".binding";
+                    var bindingName = $"{dlq.QueueName}.{dlxName}.{baseQueueName}.binding";
                     DeclareBinding(dlqName, new RabbitConfig.Binding(bindingName, dlq.QueueName, DestinationType.QUEUE, dlxName, baseQueueName, arguments));
                 }
             }
@@ -650,7 +650,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 _logger.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred", e);
             }
 
-            AddToAutoDeclareContext(rootName + ".exchange", exchange);
+            AddToAutoDeclareContext($"{rootName}.exchange", exchange);
         }
 
         private void AddToAutoDeclareContext(string name, object bean)
@@ -691,7 +691,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred", e);
             }
 
-            AddToAutoDeclareContext(rootName + ".binding", binding);
+            AddToAutoDeclareContext($"{rootName}.binding", binding);
         }
 
         private void RemoveSingleton(string name)
@@ -727,7 +727,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
             public override string ToString()
             {
-                return "RabbitProducerDestination{" + "exchange=" + Exchange + ", binding=" + Binding + '}';
+                return $"RabbitProducerDestination{{exchange={Exchange}, binding={Binding}}}";
             }
         }
 
@@ -745,7 +745,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
             public override string ToString()
             {
-                return "RabbitConsumerDestination{" + "queue=" + Name + ", binding=" + Binding + '}';
+                return $"RabbitConsumerDestination{{queue={Name}, binding={Binding}}}";
             }
         }
     }

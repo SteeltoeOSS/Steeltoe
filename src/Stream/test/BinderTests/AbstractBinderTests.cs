@@ -147,9 +147,9 @@ namespace Steeltoe.Stream.Binder
             var consumerBinding1 = binder.BindConsumer($"foo{delimiter}xy", "testSendAndReceiveMultipleTopics", moduleInputChannel, consumerProperties);
             var consumerBinding2 = binder.BindConsumer($"foo{delimiter}yz", "testSendAndReceiveMultipleTopics", moduleInputChannel, consumerProperties);
 
-            var testPayload1 = "foo" + Guid.NewGuid();
+            var testPayload1 = $"foo{Guid.NewGuid()}";
             var message1 = MessageBuilder.WithPayload(testPayload1.GetBytes()).SetHeader("contentType", MimeTypeUtils.APPLICATION_OCTET_STREAM).Build();
-            var testPayload2 = "foo" + Guid.NewGuid();
+            var testPayload2 = $"foo{Guid.NewGuid()}";
             var message2 = MessageBuilder.WithPayload(testPayload2.GetBytes()).SetHeader("contentType", MimeTypeUtils.APPLICATION_OCTET_STREAM).Build();
 
             BinderBindUnbindLatency();
@@ -486,7 +486,7 @@ namespace Steeltoe.Stream.Binder
 
         private StreamListenerMessageHandler BuildStreamListener(Type handlerType, string handlerMethodName, params Type[] parameters)
         {
-            var channelName = "reply_" + default(DateTime).Ticks.ToString();
+            var channelName = $"reply_{default(DateTime).Ticks}";
             var binder = GetBinder();
 
             binder.ApplicationContext.Register(channelName, new QueueChannel());

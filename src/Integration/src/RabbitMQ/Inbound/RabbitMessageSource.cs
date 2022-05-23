@@ -134,7 +134,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
             public override string ToString()
             {
-                return "RabbitAckInfo [connection=" + Connection + ", channel=" + Channel + ", transacted=" + Transacted + ", getResponse=" + Response + "]";
+                return $"RabbitAckInfo [connection={Connection}, channel={Channel}, transacted={Transacted}, getResponse={Response}]";
             }
         }
 

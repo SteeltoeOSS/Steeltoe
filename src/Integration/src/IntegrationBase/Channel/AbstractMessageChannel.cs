@@ -35,7 +35,7 @@ namespace Steeltoe.Integration.Channel
         {
             ApplicationContext = context;
             this.logger = logger;
-            ServiceName = name ?? GetType().Name + "@" + GetHashCode();
+            ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
             Interceptors = new ChannelInterceptorList(logger);
         }
 
@@ -192,7 +192,7 @@ namespace Steeltoe.Integration.Channel
                     Interceptors.AfterSendCompletion(message, this, sent, e, interceptorStack);
                 }
 
-                var wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "failed to send Message to channel '" + ServiceName + "'", e);
+                var wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, $"failed to send Message to channel '{ServiceName}'", e);
                 if (wrapped != e)
                 {
                     throw wrapped;
@@ -234,7 +234,7 @@ namespace Steeltoe.Integration.Channel
 
             throw new MessageDeliveryException(
                 message,
-                "Channel '" + ServiceName + "' expected one of the following datataypes [" + string.Join(",", DataTypes) + "], but received [" + message.Payload.GetType() + "]");
+                $"Channel '{ServiceName}' expected one of the following datataypes [{string.Join(",", DataTypes)}], but received [{message.Payload.GetType()}]");
         }
 
         internal class ChannelInterceptorList

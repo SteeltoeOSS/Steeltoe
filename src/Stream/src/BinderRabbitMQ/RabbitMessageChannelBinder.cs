@@ -148,7 +148,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 if (expressionInterceptorNeeded)
                 {
-                    endpoint.SetDelayExpressionString("Headers['" + RabbitExpressionEvaluatingInterceptor.DELAY_HEADER + "']");
+                    endpoint.SetDelayExpressionString($"Headers['{RabbitExpressionEvaluatingInterceptor.DELAY_HEADER}']");
                 }
                 else
                 {
@@ -159,9 +159,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var mapper = DefaultRabbitHeaderMapper.GetOutboundMapper(_logger);
             var headerPatterns = new List<string>(extendedProperties.HeaderPatterns.Count + 3)
             {
-                "!" + BinderHeaders.PARTITION_HEADER,
-                "!" + IntegrationMessageHeaderAccessor.SOURCE_DATA,
-                "!" + IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT
+                $"!{BinderHeaders.PARTITION_HEADER}",
+                $"!{IntegrationMessageHeaderAccessor.SOURCE_DATA}",
+                $"!{IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT}"
             };
             headerPatterns.AddRange(extendedProperties.HeaderPatterns);
 
@@ -273,7 +273,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var adapter = new RabbitInboundChannelAdapter(ApplicationContext, listenerContainer, _logger)
             {
                 BindSourceMessage = true,
-                ServiceName = "inbound." + destinationName
+                ServiceName = $"inbound.{destinationName}"
             };
 
             // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.inboundMapper();
@@ -357,7 +357,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         protected override string GetErrorsBaseName(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            return destination.Name + ".errors";
+            return $"{destination.Name}.errors";
         }
 
         protected override void AfterUnbindConsumer(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
@@ -393,7 +393,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             else
             {
                 endpoint.RoutingKeyExpression = expressionInterceptorNeeded
-                    ? BuildPartitionRoutingExpression("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']", true)
+                    ? BuildPartitionRoutingExpression($"Headers['{RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER}']", true)
                     : BuildPartitionRoutingExpression(routingKeyExpression, true);
             }
         }
@@ -408,7 +408,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 if (expressionInterceptorNeeded)
                 {
-                    endpoint.SetRoutingKeyExpressionString("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']");
+                    endpoint.SetRoutingKeyExpressionString($"Headers['{RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER}']");
                 }
                 else
                 {
@@ -452,10 +452,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private IExpression BuildPartitionRoutingExpression(string expressionRoot, bool rootIsExpression)
         {
             var partitionRoutingExpression = rootIsExpression
-                    ? expressionRoot + " + '-' + Headers['" + BinderHeaders.PARTITION_HEADER
-                            + "']"
-                    : "'" + expressionRoot + "-' + Headers['" + BinderHeaders.PARTITION_HEADER
-                            + "']";
+                    ? $"{expressionRoot} + '-' + Headers['{BinderHeaders.PARTITION_HEADER}']"
+                    : $"'{expressionRoot}-' + Headers['{BinderHeaders.PARTITION_HEADER}']";
             return ExpressionParser.ParseExpression(partitionRoutingExpression);
         }
 
@@ -503,7 +501,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 _superHandler = superHandler;
                 _properties = properties;
                 _logger = logger;
-                ServiceName = GetType() + "@" + GetHashCode();
+                ServiceName = $"{GetType()}@{GetHashCode()}";
             }
 
             public string ServiceName { get; set; }
@@ -545,7 +543,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public RejectingErrorMessageHandler(ILogger logger)
             {
-                ServiceName = GetType() + "@" + GetHashCode();
+                ServiceName = $"{GetType()}@{GetHashCode()}";
                 _logger = logger;
             }
 
@@ -556,7 +554,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 if (message is not MessagingSupport.ErrorMessage errorMessage)
                 {
                     _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType().ToString() + " for: " + message);
-                    throw new ListenerExecutionFailedException("Unexpected error message " + message.ToString(), new RabbitRejectAndDontRequeueException(string.Empty), null);
+                    throw new ListenerExecutionFailedException($"Unexpected error message {message}", new RabbitRejectAndDontRequeueException(string.Empty), null);
                 }
 
                 _recoverer.Recover(errorMessage, errorMessage.Payload);
@@ -586,7 +584,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 _frameMaxHeaderoom = properties.FrameMaxHeadroom.Value;
                 _properties = properties;
                 _logger = logger;
-                ServiceName = GetType() + "@" + GetHashCode();
+                ServiceName = $"{GetType()}@{GetHashCode()}";
             }
 
             public string ServiceName { get; set; }
@@ -670,7 +668,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public string CreateConsumerTag(string queue)
             {
-                return _prefix + "#" + _index.GetAndIncrement();
+                return $"{_prefix}#{_index.GetAndIncrement()}";
             }
         }
 

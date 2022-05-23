@@ -21,7 +21,7 @@ namespace Steeltoe.Messaging.Support
 
         protected AbstractMessageChannel(ILogger logger = null)
         {
-            ServiceName = GetType().Name + "@" + GetHashCode();
+            ServiceName = $"{GetType().Name}@{GetHashCode()}";
             Logger = logger;
         }
 
@@ -167,7 +167,7 @@ namespace Steeltoe.Messaging.Support
                     throw;
                 }
 
-                throw new MessageDeliveryException(messageToUse, "Failed to send message to " + ServiceName, ex);
+                throw new MessageDeliveryException(messageToUse, $"Failed to send message to {ServiceName}", ex);
             }
         }
 

@@ -127,7 +127,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     }
                     catch (Exception ex)
                     {
-                        throw new AccessException("Unable to access property '" + name + "' through getter method", ex);
+                        throw new AccessException($"Unable to access property '{name}' through getter method", ex);
                     }
                 }
             }
@@ -154,12 +154,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     }
                     catch (Exception ex)
                     {
-                        throw new AccessException("Unable to access field '" + name + "'", ex);
+                        throw new AccessException($"Unable to access field '{name}'", ex);
                     }
                 }
             }
 
-            throw new AccessException("Neither getter method nor field found for property '" + name + "'");
+            throw new AccessException($"Neither getter method nor field found for property '{name}'");
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)
@@ -204,7 +204,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         {
             if (!_allowWrite)
             {
-                throw new AccessException("PropertyAccessor for property '" + name + "' on target [" + target + "] does not allow write operations");
+                throw new AccessException($"PropertyAccessor for property '{name}' on target [{target}] does not allow write operations");
             }
 
             if (target == null)
@@ -254,7 +254,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     }
                     catch (Exception ex)
                     {
-                        throw new AccessException("Unable to access property '" + name + "' through setter method", ex);
+                        throw new AccessException($"Unable to access property '{name}' through setter method", ex);
                     }
                 }
             }
@@ -281,12 +281,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     }
                     catch (Exception ex)
                     {
-                        throw new AccessException("Unable to access field '" + name + "'", ex);
+                        throw new AccessException($"Unable to access field '{name}'", ex);
                     }
                 }
             }
 
-            throw new AccessException("Neither setter method nor field found for property '" + name + "'");
+            throw new AccessException($"Neither setter method nor field found for property '{name}'");
         }
 
         public IPropertyAccessor CreateOptimalAccessor(IEvaluationContext context, object target, string name)
@@ -561,8 +561,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             public override string ToString()
             {
-                return "CacheKey [clazz=" + _clazz.FullName + ", property=" + _property + ", " +
-                        _property + ", targetIsClass=" + _targetIsClass + "]";
+                return $"CacheKey [clazz={_clazz.FullName}, property={_property}, {_property}, targetIsClass={_targetIsClass}]";
             }
 
             public int CompareTo(PropertyCacheKey other)
@@ -609,7 +608,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
                 if (Member is MethodInfo method)
                 {
-                    var getterName = "get_" + ReflectivePropertyAccessor.Capitalize(name);
+                    var getterName = $"get_{ReflectivePropertyAccessor.Capitalize(name)}";
                     if (getterName.Equals(method.Name))
                     {
                         return true;
@@ -635,7 +634,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     }
                     catch (Exception ex)
                     {
-                        throw new AccessException("Unable to access property '" + name + "' through getter method", ex);
+                        throw new AccessException($"Unable to access property '{name}' through getter method", ex);
                     }
                 }
                 else
@@ -648,7 +647,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     }
                     catch (Exception ex)
                     {
-                        throw new AccessException("Unable to access field '" + name + "'", ex);
+                        throw new AccessException($"Unable to access field '{name}'", ex);
                     }
                 }
             }

@@ -39,7 +39,7 @@ namespace Steeltoe.Integration.Handler.Support
             {
                 if (value is not ICollection<IMessage> messages)
                 {
-                    throw new InvalidOperationException("This Argument Resolver only supports messages with a payload of ICollection<IMessage>, payload is: " + value.GetType());
+                    throw new InvalidOperationException($"This Argument Resolver only supports messages with a payload of ICollection<IMessage>, payload is: {value.GetType()}");
                 }
 
                 var paramType = parameter.ParameterType;

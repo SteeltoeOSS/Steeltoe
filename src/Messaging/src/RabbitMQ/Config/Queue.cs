@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             : base(arguments)
         {
             QueueName = queueName ?? throw new ArgumentNullException(nameof(queueName));
-            ServiceName = !string.IsNullOrEmpty(queueName) ? queueName : "queue@" + RuntimeHelpers.GetHashCode(this);
+            ServiceName = !string.IsNullOrEmpty(queueName) ? queueName : $"queue@{RuntimeHelpers.GetHashCode(this)}";
             ActualName = !string.IsNullOrEmpty(queueName) ? queueName : (Base64UrlNamingStrategy.DEFAULT.GenerateName() + "_awaiting_declaration");
             IsDurable = durable;
             IsExclusive = exclusive;
@@ -83,9 +83,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public override string ToString()
         {
-            return "Queue [name=" + QueueName + ", durable=" + IsDurable + ", autoDelete=" + IsAutoDelete
-                    + ", exclusive=" + IsExclusive + ", arguments=" + Arguments
-                    + ", actualName=" + ActualName + "]";
+            return
+                $"Queue [name={QueueName}, durable={IsDurable}, autoDelete={IsAutoDelete}, exclusive={IsExclusive}, arguments={Arguments}, actualName={ActualName}]";
         }
     }
 }

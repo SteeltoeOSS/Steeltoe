@@ -39,10 +39,8 @@ namespace Steeltoe.Integration
         protected override Exception PayloadWhenNull(IAttributeAccessor context)
         {
             var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FAILED_MESSAGE_CONTEXT_KEY);
-            var description = "No retry exception available; " +
-                    "this can occur, for example, if the RetryPolicy allowed zero attempts " +
-                    "to execute the handler; " +
-                    "RetryContext: " + context.ToString();
+            var description =
+                $"No retry exception available; this can occur, for example, if the RetryPolicy allowed zero attempts to execute the handler; RetryContext: {context}";
             return message == null
                     ? new RetryExceptionNotAvailableException(description)
                     : new RetryExceptionNotAvailableException(message, description);

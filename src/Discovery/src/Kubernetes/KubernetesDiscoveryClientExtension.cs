@@ -46,7 +46,7 @@ namespace Steeltoe.Discovery.Kubernetes
 
                     // Kubernetes discovery is enabled by default. If spring:cloud:kubernetes:discovery:enabled was not set then check spring:cloud:discovery:enabled
                     if (options.Enabled &&
-                        config.GetValue<bool?>(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX + ":enabled") is null &&
+                        config.GetValue<bool?>($"{KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX}:enabled") is null &&
                         config.GetValue<bool?>(_springDiscoveryEnabled) == false)
                     {
                         options.Enabled = false;
@@ -54,7 +54,7 @@ namespace Steeltoe.Discovery.Kubernetes
                 })
                 .PostConfigure<KubernetesApplicationOptions>((options, appOptions) =>
                 {
-                    options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, appOptions.KubernetesRoot + ":discovery:servicename");
+                    options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, $"{appOptions.KubernetesRoot}:discovery:servicename");
                     if (options.Namespace == "default" && appOptions.NameSpace != "default")
                     {
                         options.Namespace = appOptions.NameSpace;

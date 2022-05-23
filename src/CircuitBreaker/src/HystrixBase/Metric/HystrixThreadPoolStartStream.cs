@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override string ToString()
         {
-            return "HystrixThreadPoolStartStream(" + _threadPoolKey.Name + ")";
+            return $"HystrixThreadPoolStartStream({_threadPoolKey.Name})";
         }
     }
 }

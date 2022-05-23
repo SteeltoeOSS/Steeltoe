@@ -185,7 +185,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             if (connectionFactory == null)
             {
-                throw new InvalidOperationException("Cannot determine target ConnectionFactory for lookup key [" + lookupKey + "]");
+                throw new InvalidOperationException($"Cannot determine target ConnectionFactory for lookup key [{lookupKey}]");
             }
 
             return connectionFactory;

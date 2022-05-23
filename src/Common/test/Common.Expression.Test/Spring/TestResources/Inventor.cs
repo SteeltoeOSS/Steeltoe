@@ -127,7 +127,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public string SayHelloTo(string person)
         {
-            return "hello " + person;
+            return $"hello {person}";
         }
 
         public string PrintDouble(double d)
@@ -137,7 +137,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public string PrintDoubles(double[] d)
         {
-            return "{" + string.Join(", ", d) + "}";
+            return $"{{{string.Join(", ", d)}}}";
         }
 
         public List<string> GetDoublesAsStringList()

@@ -59,7 +59,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             ExclusiveConsumerExceptionLogger = new DefaultExclusiveConsumerLogger();
             BatchingStrategy = new SimpleBatchingStrategy(0, 0, 0L);
             TransactionAttribute = new DefaultTransactionAttribute();
-            ServiceName = name ?? GetType().Name + "@" + GetHashCode();
+            ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
         }
 
         public virtual IConnectionFactory ConnectionFactory
@@ -1021,8 +1021,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             if (listener is not IMessageListener)
             {
-                throw new ArgumentException(
-                    "Message listener needs to be of type [" + nameof(IMessageListener) + "] or [" + nameof(IChannelAwareMessageListener) + "]");
+                throw new ArgumentException($"Message listener needs to be of type [{nameof(IMessageListener)}] or [{nameof(IChannelAwareMessageListener)}]");
             }
         }
 
@@ -1089,7 +1088,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             {
                 if (StatefulRetryFatalWithNullMessageId)
                 {
-                    throw new FatalListenerExecutionException("Illegal null id in message. Failed to manage retry for message: " + message, ex);
+                    throw new FatalListenerExecutionException($"Illegal null id in message. Failed to manage retry for message: {message}", ex);
                 }
                 else
                 {
@@ -1168,7 +1167,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 sb.Append(',');
             }
 
-            return sb.ToString(0, sb.Length - 1) + "]";
+            return $"{sb.ToString(0, sb.Length - 1)}]";
         }
 
         private List<string> QueuesToNames()

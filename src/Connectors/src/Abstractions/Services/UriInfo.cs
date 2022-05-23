@@ -90,7 +90,7 @@ namespace Steeltoe.Connector.Services
         protected internal Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
         {
             var cleanedPath = path == null || path.StartsWith("/") ? path : $"/{path}";
-            cleanedPath = query != null ? cleanedPath + "?" + query : cleanedPath;
+            cleanedPath = query != null ? $"{cleanedPath}?{query}" : cleanedPath;
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {

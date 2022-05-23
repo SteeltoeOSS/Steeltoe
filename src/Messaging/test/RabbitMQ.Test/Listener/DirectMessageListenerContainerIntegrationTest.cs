@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             admin = new RabbitAdmin(adminCf);
             admin.DeclareQueue(new Config.Queue(Q1));
             admin.DeclareQueue(new Config.Queue(Q2));
-            testName = "DirectMessageListenerContainerIntegrationTest-" + testNumber++;
+            testName = $"DirectMessageListenerContainerIntegrationTest-{testNumber++}";
             _output = output;
         }
 
@@ -146,7 +146,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             public string CreateConsumerTag(string queue)
             {
-                return queue + "/" + testName + n++;
+                return $"{queue}/{testName}{n++}";
             }
         }
     }

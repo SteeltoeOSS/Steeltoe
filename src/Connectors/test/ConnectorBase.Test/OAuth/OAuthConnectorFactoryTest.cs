@@ -22,13 +22,13 @@ namespace Steeltoe.Connector.OAuth.Test
             var opts = result.Value;
             Assert.NotNull(opts);
 
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
+            Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_AccessTokenUri}", opts.AccessTokenUrl);
             Assert.Equal("myClientId", opts.ClientId);
             Assert.Equal("myClientSecret", opts.ClientSecret);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
+            Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_JwtTokenKey}", opts.JwtKeyUrl);
+            Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_CheckTokenUri}", opts.TokenInfoUrl);
+            Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_AuthorizationUri}", opts.UserAuthorizationUrl);
+            Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_UserInfoUri}", opts.UserInfoUrl);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
         }

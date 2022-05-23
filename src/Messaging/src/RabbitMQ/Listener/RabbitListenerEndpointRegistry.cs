@@ -87,7 +87,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             {
                 if (_listenerContainers.ContainsKey(id))
                 {
-                    throw new InvalidOperationException("Another endpoint is already registered with id '" + id + "'");
+                    throw new InvalidOperationException($"Another endpoint is already registered with id '{id}'");
                 }
 
                 var container = CreateListenerContainer(endpoint, factory);
@@ -218,7 +218,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 // a custom phase value
                 if (Phase < int.MaxValue && Phase != containerPhase)
                 {
-                    throw new InvalidOperationException("Encountered phase mismatch between container factory definitions: " + Phase + " vs " + containerPhase);
+                    throw new InvalidOperationException($"Encountered phase mismatch between container factory definitions: {Phase} vs {containerPhase}");
                 }
 
                 Phase = listenerContainer.Phase;

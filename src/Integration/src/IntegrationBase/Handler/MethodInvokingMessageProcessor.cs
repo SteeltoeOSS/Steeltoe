@@ -106,7 +106,7 @@ namespace Steeltoe.Integration.Handler
 
             if (results.Count != 1)
             {
-                throw new InvalidOperationException("Multiple methods with attribute: " + attribute.ToString() + " exist on type: " + target.GetType());
+                throw new InvalidOperationException($"Multiple methods with attribute: {attribute} exist on type: {target.GetType()}");
             }
 
             return results[0];

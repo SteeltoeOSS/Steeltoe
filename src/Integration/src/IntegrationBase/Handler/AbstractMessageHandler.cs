@@ -61,7 +61,7 @@ namespace Steeltoe.Integration.Handler
             }
             catch (Exception e)
             {
-                var wrapped = IntegrationUtils.WrapInHandlingExceptionIfNecessary(message, "error occurred in message handler [" + this + "]", e);
+                var wrapped = IntegrationUtils.WrapInHandlingExceptionIfNecessary(message, $"error occurred in message handler [{this}]", e);
                 if (wrapped != e)
                 {
                     throw wrapped;

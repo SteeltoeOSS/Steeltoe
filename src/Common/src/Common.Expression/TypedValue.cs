@@ -46,6 +46,6 @@ namespace Steeltoe.Common.Expression.Internal
 
         public override int GetHashCode() => ObjectUtils.NullSafeHashCode(Value);
 
-        public override string ToString() => "TypedValue: '" + Value + "' of [" + TypeDescriptor + "]";
+        public override string ToString() => $"TypedValue: '{Value}' of [{TypeDescriptor}]";
     }
 }

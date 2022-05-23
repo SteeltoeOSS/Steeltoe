@@ -94,7 +94,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
             if (result is not IMessage<byte[]> mResult)
             {
-                throw new MessageConversionException("No MessageConverter specified - cannot handle message [" + result + "]");
+                throw new MessageConversionException($"No MessageConverter specified - cannot handle message [{result}]");
             }
 
             return mResult;
@@ -182,16 +182,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
             catch (Exception ex)
             {
-                throw new ListenerExecutionFailedException("Listener method '" + HandlerAdapter.GetMethodAsString(message.Payload) + "' threw exception", ex, amqpMessage);
+                throw new ListenerExecutionFailedException($"Listener method '{HandlerAdapter.GetMethodAsString(message.Payload)}' threw exception", ex, amqpMessage);
             }
         }
 
         private string CreateMessagingErrorMessage(string description, object payload)
         {
-            return description + "\n"
-                    + "Endpoint handler details:\n"
-                    + "Method [" + HandlerAdapter.GetMethodAsString(payload) + "]\n"
-                    + "Bean [" + HandlerAdapter.Instance + "]";
+            return $"{description}\nEndpoint handler details:\nMethod [{HandlerAdapter.GetMethodAsString(payload)}]\nBean [{HandlerAdapter.Instance}]";
         }
 
         private void ReturnOrThrow(IMessage amqpMessage, RC.IModel channel, IMessage message, Exception exceptionToRetrun, Exception exceptionToThrow)

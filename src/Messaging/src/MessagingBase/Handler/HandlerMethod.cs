@@ -96,7 +96,7 @@ namespace Steeltoe.Messaging.Handler
             get
             {
                 var args = Method.GetParameters().Length;
-                return HandlerType.Name + "#" + Method.Name + "[" + args + " args]";
+                return $"{HandlerType.Name}#{Method.Name}[{args} args]";
             }
         }
 
@@ -133,8 +133,8 @@ namespace Steeltoe.Messaging.Handler
 
         protected static string FormatArgumentError(ParameterInfo param, string message)
         {
-            return "Could not resolve parameter [" + param.Position + "] in " +
-                    param.Member.ToString() + (!string.IsNullOrEmpty(message) ? ": " + message : string.Empty);
+            return
+                $"Could not resolve parameter [{param.Position}] in {param.Member}{(!string.IsNullOrEmpty(message) ? $": {message}" : string.Empty)}";
         }
 
         protected HandlerMethod(HandlerMethod handlerMethod)
@@ -157,9 +157,8 @@ namespace Steeltoe.Messaging.Handler
             var targetBeanClass = targetBean.GetType();
             if (!methodDeclaringClass.IsAssignableFrom(targetBeanClass))
             {
-                var text = "The mapped handler method class '" + methodDeclaringClass.Name +
-                        "' is not an instance of the actual endpoint bean class '" +
-                        targetBeanClass.Name;
+                var text =
+                    $"The mapped handler method class '{methodDeclaringClass.Name}' is not an instance of the actual endpoint bean class '{targetBeanClass.Name}";
                 throw new InvalidOperationException(FormatInvokeError(text, args));
             }
         }
@@ -171,20 +170,17 @@ namespace Steeltoe.Messaging.Handler
             {
                 if (args[i] != null)
                 {
-                    sb.Append("[" + i + "] [type=" + args[i].GetType().FullName + "] [value=" + args[i] + "]");
+                    sb.Append($"[{i}] [type={args[i].GetType().FullName}] [value={args[i]}]");
                 }
                 else
                 {
-                    sb.Append("[" + i + "] [null]");
+                    sb.Append($"[{i}] [null]");
                 }
 
                 sb.Append('\n');
             }
 
-            return text + "\n" +
-                     "Endpoint [" + HandlerType.Name + "]\n" +
-                     "Method [" + Method.ToString() + "] " +
-                     "with argument values:\n" + sb.ToString();
+            return $"{text}\nEndpoint [{HandlerType.Name}]\nMethod [{Method}] with argument values:\n{sb}";
         }
 
         private Invoker CreateInvoker()
@@ -192,7 +188,7 @@ namespace Steeltoe.Messaging.Handler
             var methodArgTypes = GetMethodParameterTypes();
 
             var dynamicMethod = new DynamicMethod(
-                Method.Name + "Invoker",
+                $"{Method.Name}Invoker",
                 typeof(object),
                 new Type[] { typeof(object), typeof(object[]) },
                 Method.DeclaringType.Module);

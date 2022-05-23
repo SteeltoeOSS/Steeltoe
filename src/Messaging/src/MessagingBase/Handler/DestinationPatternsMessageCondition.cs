@@ -44,7 +44,7 @@ namespace Steeltoe.Messaging.Handler
                 var pattern = pat;
                 if (slashSeparator && !string.IsNullOrEmpty(pattern) && !pattern.StartsWith("/"))
                 {
-                    pattern = "/" + pattern;
+                    pattern = $"/{pattern}";
                 }
 
                 result.Add(pattern);

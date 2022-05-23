@@ -105,7 +105,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             ConnectionFactory = connectionFactory;
             MessageConverter = new Support.Converter.SimpleMessageConverter();
-            DefaultSendDestination = string.Empty + "/" + string.Empty;
+            DefaultSendDestination = $"{string.Empty}/{string.Empty}";
             DefaultReceiveDestination = null;
             _logger = logger;
         }
@@ -113,7 +113,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public RabbitTemplate(ILogger logger = null)
         {
             MessageConverter = new Support.Converter.SimpleMessageConverter();
-            DefaultSendDestination = string.Empty + "/" + string.Empty;
+            DefaultSendDestination = $"{string.Empty}/{string.Empty}";
             DefaultReceiveDestination = null;
             _logger = logger;
         }
@@ -1226,7 +1226,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var currentChannel = _dedicatedChannels.Value;
             if (currentChannel != null)
             {
-                throw new InvalidOperationException("Nested invoke() calls are not supported; channel '" + currentChannel + "' is already associated with this thread");
+                throw new InvalidOperationException($"Nested invoke() calls are not supported; channel '{currentChannel}' is already associated with this thread");
             }
 
             Interlocked.Increment(ref _activeTemplateCallbacks);
@@ -1552,7 +1552,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             if (!_isListener)
             {
-                throw new InvalidOperationException("RabbitTemplate is not configured as MessageListener - cannot use a 'replyAddress': " + ReplyAddress);
+                throw new InvalidOperationException($"RabbitTemplate is not configured as MessageListener - cannot use a 'replyAddress': {ReplyAddress}");
             }
 
             return Execute(
@@ -1575,7 +1575,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     {
                         container = new DirectReplyToMessageListenerContainer(null, connectionFactory);
                         container.MessageListener = this;
-                        container.ServiceName = ServiceName + "#" + Interlocked.Increment(ref _containerInstance);
+                        container.ServiceName = $"{ServiceName}#{Interlocked.Increment(ref _containerInstance)}";
 
                         // if (this.taskExecutor != null)
                         // {
@@ -1862,7 +1862,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 ReplyTimeout = asMillis;
             }
 
-            DefaultSendDestination = templateOptions.Exchange + "/" + templateOptions.RoutingKey;
+            DefaultSendDestination = $"{templateOptions.Exchange}/{templateOptions.RoutingKey}";
             DefaultReceiveDestination = templateOptions.DefaultReceiveQueue;
         }
 
@@ -2259,7 +2259,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             if (receive is not R messageAsR)
             {
-                throw new ArgumentException("'receiveAndReplyCallback' can't handle received object '" + receive.GetType() + "'");
+                throw new ArgumentException($"'receiveAndReplyCallback' can't handle received object '{receive.GetType()}'");
             }
 
             var reply = receiveAndReplyCallback(messageAsR);
@@ -2325,7 +2325,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     asProxy.TargetChannel.Close();
                 }
 
-                future.TrySetException(new ConsumeOkNotReceivedException("Blocking receive, consumer failed to consume within  ms: " + timeoutMillis + " for consumer " + consumer));
+                future.TrySetException(new ConsumeOkNotReceivedException($"Blocking receive, consumer failed to consume within  ms: {timeoutMillis} for consumer {consumer}"));
             }
 
             return consumer;
@@ -2353,7 +2353,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     }
                     else if (!routingConnectionFactory.LenientFallback)
                     {
-                        throw new InvalidOperationException("Cannot determine target ConnectionFactory for lookup key [" + lookupKey + "]");
+                        throw new InvalidOperationException($"Cannot determine target ConnectionFactory for lookup key [{lookupKey}]");
                     }
                 }
             }
@@ -2722,7 +2722,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             public override string ToString()
             {
-                return "TemplateConsumer [channel=" + Model + ", consumerTag=" + ConsumerTag + "]";
+                return $"TemplateConsumer [channel={Model}, consumerTag={ConsumerTag}]";
             }
         }
 

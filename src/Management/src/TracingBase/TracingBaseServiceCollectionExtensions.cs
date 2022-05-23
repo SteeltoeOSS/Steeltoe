@@ -73,7 +73,7 @@ namespace Steeltoe.Management.Tracing
             {
                 builder.Configure((serviceProvider, deferredBuilder) =>
                 {
-                    var appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>().ApplicationNameInContext(SteeltoeComponent.Management, TracingOptions.CONFIG_PREFIX + ":name");
+                    var appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>().ApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.CONFIG_PREFIX}:name");
                     var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
                     var logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");
                     logger?.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.", exportToZipkin, exportToJaeger, exportToOtlp);

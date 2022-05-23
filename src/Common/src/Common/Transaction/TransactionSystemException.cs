@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Transaction
         {
             if (ApplicationException != null)
             {
-                throw new InvalidOperationException("Already holding an application exception: " + ApplicationException);
+                throw new InvalidOperationException($"Already holding an application exception: {ApplicationException}");
             }
 
             ApplicationException = exception ?? throw new ArgumentNullException(nameof(exception));

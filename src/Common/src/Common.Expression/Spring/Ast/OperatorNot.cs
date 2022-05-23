@@ -36,7 +36,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override string ToStringAST()
         {
-            return "!" + GetChild(0).ToStringAST();
+            return $"!{GetChild(0).ToStringAST()}";
         }
 
         public override bool IsCompilable()

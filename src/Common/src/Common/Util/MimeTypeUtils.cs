@@ -177,19 +177,19 @@ namespace Steeltoe.Common.Util
             var subIndex = fullType.IndexOf('/');
             if (subIndex == -1)
             {
-                throw new ArgumentException(mimeType + " does not contain '/'");
+                throw new ArgumentException($"{mimeType} does not contain '/'");
             }
 
             if (subIndex == fullType.Length - 1)
             {
-                throw new ArgumentException(mimeType + " does not contain subtype after '/'");
+                throw new ArgumentException($"{mimeType} does not contain subtype after '/'");
             }
 
             var type = fullType.Substring(0, subIndex);
             var subtype = fullType.Substring(subIndex + 1, fullType.Length - type.Length - 1);
             if (MimeType.WILDCARD_TYPE.Equals(type) && !MimeType.WILDCARD_TYPE.Equals(subtype))
             {
-                throw new ArgumentException(mimeType + " wildcard type is legal only in '*/*' (all mime types)");
+                throw new ArgumentException($"{mimeType} wildcard type is legal only in '*/*' (all mime types)");
             }
 
             Dictionary<string, string> parameters = null;
@@ -239,7 +239,7 @@ namespace Steeltoe.Common.Util
             }
             catch (Exception ex)
             {
-                throw new ArgumentException(mimeType + " " + ex.Message);
+                throw new ArgumentException($"{mimeType} {ex.Message}");
             }
         }
 

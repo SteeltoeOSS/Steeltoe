@@ -310,7 +310,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             [Anno]
             public string DoIt(double d)
             {
-                return "double " + d.ToString("F1");
+                return $"double {d:F1}";
             }
         }
 

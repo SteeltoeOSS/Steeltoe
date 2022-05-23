@@ -118,7 +118,7 @@ namespace Steeltoe.Messaging.Support
                     throw;
                 }
 
-                var description = "Failed to handle " + message + " to " + this + " in " + handler;
+                var description = $"Failed to handle {message} to {this} in {handler}";
                 throw new MessageDeliveryException(message, description, ex);
             }
         }
@@ -180,7 +180,7 @@ namespace Steeltoe.Messaging.Support
                         throw;
                     }
 
-                    var description = "Failed to handle " + message + " to " + this + " in " + MessageHandler;
+                    var description = $"Failed to handle {message} to {this} in {MessageHandler}";
                     throw new MessageDeliveryException(message, description, ex);
                 }
             }

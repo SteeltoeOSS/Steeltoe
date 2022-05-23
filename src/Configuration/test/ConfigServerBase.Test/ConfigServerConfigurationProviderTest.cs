@@ -107,7 +107,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
-            Assert.Equal(settings.RawUris[0] + settings.Name + "/" + settings.Environment, path);
+            Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}", path);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
-            Assert.Equal(settings.RawUris[0] + settings.Name + "/" + settings.Environment + "/" + settings.Label, path);
+            Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}/{settings.Label}", path);
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
-            Assert.Equal(settings.RawUris[0] + settings.Name + "/" + settings.Environment + "/" + "myLabel(_)version", path);
+            Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}/myLabel(_)version", path);
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
-            Assert.Equal("http://localhost:9999/myPath/path/" + settings.Name + "/" + settings.Environment, path);
+            Assert.Equal($"http://localhost:9999/myPath/path/{settings.Name}/{settings.Environment}", path);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
-            Assert.Equal("http://localhost:9999/myPath/path/" + settings.Name + "/" + settings.Environment, path);
+            Assert.Equal($"http://localhost:9999/myPath/path/{settings.Name}/{settings.Environment}", path);
         }
 
         [Fact]
@@ -157,7 +157,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
-            Assert.Equal("http://localhost:9999/" + settings.Name + "/" + settings.Environment, path);
+            Assert.Equal($"http://localhost:9999/{settings.Name}/{settings.Environment}", path);
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var provider = new ConfigServerConfigurationProvider(settings);
 
             var path = provider.GetConfigServerUri(settings.RawUris[0], null);
-            Assert.Equal("http://localhost:9999/" + settings.Name + "/" + settings.Environment, path);
+            Assert.Equal($"http://localhost:9999/{settings.Name}/{settings.Environment}", path);
         }
 
         [Fact]
@@ -337,7 +337,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
 
             Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         }
 
         [Fact]
@@ -356,7 +356,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var result = await provider.RemoteLoadAsync(settings.GetRawUris(), null);
 
             Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Null(result);
         }
 
@@ -435,7 +435,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal(2, TestConfigServerStartup.RequestCount);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment + "/testlabel", TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}/testlabel", TestConfigServerStartup.LastRequest.Path.Value);
         }
 
         [Fact]
@@ -469,7 +469,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             var env = await provider.RemoteLoadAsync(settings.GetUris(), null);
             Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.NotNull(env);
             Assert.Equal("testname", env.Name);
             Assert.NotNull(env.Profiles);
@@ -501,7 +501,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal(1, TestConfigServerStartup.RequestCount);
         }
 
@@ -521,7 +521,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal(1, TestConfigServerStartup.RequestCount);
         }
 
@@ -540,7 +540,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal(26, provider.Properties.Count);
         }
 
@@ -667,7 +667,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
 
             Assert.True(provider.TryGet("key1", out var value));
             Assert.Equal("value1", value);

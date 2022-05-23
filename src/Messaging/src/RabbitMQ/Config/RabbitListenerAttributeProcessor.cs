@@ -149,7 +149,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                     var toAssert = defaultMethod;
                     if (toAssert != null)
                     {
-                        throw new InvalidOperationException("Only one RabbitHandlerAttribute can be marked 'isDefault', found: " + toAssert.ToString() + " and " + method.ToString());
+                        throw new InvalidOperationException($"Only one RabbitHandlerAttribute can be marked 'isDefault', found: {toAssert} and {method}");
                     }
 
                     defaultMethod = method;
@@ -223,8 +223,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 var pp = ApplicationContext.GetService<IReplyPostProcessor>(ppBeanName);
                 if (pp == null)
                 {
-                    throw new InvalidOperationException("Could not register rabbit listener endpoint on [" +
-                            target + "], no IReplyPostProcessor with id '" + name + "' was found");
+                    throw new InvalidOperationException($"Could not register rabbit listener endpoint on [{target}], no IReplyPostProcessor with id '{name}' was found");
                 }
 
                 endpoint.ReplyPostProcessor = pp;
@@ -245,8 +244,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 factory = ApplicationContext.GetService<IRabbitListenerContainerFactory>(containerFactoryBeanName);
                 if (factory == null)
                 {
-                    throw new InvalidOperationException("Could not register rabbit listener endpoint on [" +
-                            factoryTarget + "], no IRabbitListenerContainerFactory with id '" + containerFactoryBeanName + "' was found");
+                    throw new InvalidOperationException($"Could not register rabbit listener endpoint on [{factoryTarget}], no IRabbitListenerContainerFactory with id '{containerFactoryBeanName}' was found");
                 }
             }
 
@@ -266,8 +264,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 endpoint.Admin = ApplicationContext.GetService<IRabbitAdmin>(rabbitAdmin);
                 if (endpoint.Admin == null)
                 {
-                    throw new InvalidOperationException("Could not register rabbit listener endpoint on [" +
-                            adminTarget + "], no RabbitAdmin with id '" + rabbitAdmin + "' was found");
+                    throw new InvalidOperationException($"Could not register rabbit listener endpoint on [{adminTarget}], no RabbitAdmin with id '{rabbitAdmin}' was found");
                 }
             }
         }
@@ -291,7 +288,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                         endpoint.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
                         if (endpoint.ErrorHandler == null)
                         {
-                            throw new InvalidOperationException("Failed to resolve ErrorHandler by name using: " + errorHandlerName);
+                            throw new InvalidOperationException($"Failed to resolve ErrorHandler by name using: {errorHandlerName}");
                         }
 
                         break;
@@ -337,7 +334,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                         return result;
                     }
 
-                    throw new InvalidOperationException("Unable to resolve " + propertyName + " to a bool using " + resolvedString);
+                    throw new InvalidOperationException($"Unable to resolve {propertyName} to a bool using {resolvedString}");
                 }
             }
 
@@ -358,7 +355,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                     return result;
                 }
 
-                throw new InvalidOperationException("Unable to resolve " + propertyName + " to an int using " + resolved);
+                throw new InvalidOperationException($"Unable to resolve {propertyName} to an int using {resolved}");
             }
 
             return null;
@@ -415,7 +412,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                     binding = ApplicationContext.GetService<IBinding>(bindingName);
                     if (binding == null)
                     {
-                        throw new InvalidOperationException("Unable to resolve binding: " + bindingExpression + " using: " + bindingName);
+                        throw new InvalidOperationException($"Unable to resolve binding: {bindingExpression} using: {bindingName}");
                     }
                 }
 
@@ -482,7 +479,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             }
             else
             {
-                return "Steeltoe.Messaging.Rabbit.RabbitListenerEndpointContainer#" + Interlocked.Increment(ref _counter);
+                return $"Steeltoe.Messaging.Rabbit.RabbitListenerEndpointContainer#{Interlocked.Increment(ref _counter)}";
             }
         }
 
@@ -497,7 +494,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             {
                 // Log
                 _logger?.LogError(e, "Error creating RabbitListener service {serviceType}.", implementation);
-                throw new InvalidOperationException("Unable to CreateInstance of type containing RabbitListener method, Type: " + implementation, e);
+                throw new InvalidOperationException($"Unable to CreateInstance of type containing RabbitListener method, Type: {implementation}", e);
             }
         }
     }

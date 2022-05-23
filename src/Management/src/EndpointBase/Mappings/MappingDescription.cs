@@ -59,21 +59,21 @@ namespace Steeltoe.Management.Endpoint.Mappings
         {
             var sb = new StringBuilder("{");
 
-            sb.Append("[" + routeDetails.RouteTemplate + "]");
+            sb.Append($"[{routeDetails.RouteTemplate}]");
 
             sb.Append(",methods=");
-            sb.Append("[" + CreateRouteMethods(routeDetails.HttpMethods) + "]");
+            sb.Append($"[{CreateRouteMethods(routeDetails.HttpMethods)}]");
 
             if (!IsEmpty(routeDetails.Produces))
             {
                 sb.Append(",produces=");
-                sb.Append("[" + string.Join(" || ", routeDetails.Produces) + "]");
+                sb.Append($"[{string.Join(" || ", routeDetails.Produces)}]");
             }
 
             if (!IsEmpty(routeDetails.Consumes))
             {
                 sb.Append(",consumes=");
-                sb.Append("[" + string.Join(" || ", routeDetails.Consumes) + "]");
+                sb.Append($"[{string.Join(" || ", routeDetails.Consumes)}]");
             }
 
             sb.Append('}');

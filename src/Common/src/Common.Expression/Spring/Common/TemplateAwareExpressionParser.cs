@@ -67,12 +67,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
                     var suffixIndex = SkipToCorrectEndSuffix(suffix, expressionString, afterPrefixIndex);
                     if (suffixIndex == -1)
                     {
-                        throw new ParseException(expressionString, prefixIndex, "No ending suffix '" + suffix + "' for expression starting at character " + prefixIndex + ": " + expressionString.Substring(prefixIndex));
+                        throw new ParseException(expressionString, prefixIndex, $"No ending suffix '{suffix}' for expression starting at character {prefixIndex}: {expressionString.Substring(prefixIndex)}");
                     }
 
                     if (suffixIndex == afterPrefixIndex)
                     {
-                        throw new ParseException(expressionString, prefixIndex, "No expression defined within delimiter '" + prefix + suffix + "' at character " + prefixIndex);
+                        throw new ParseException(expressionString, prefixIndex, $"No expression defined within delimiter '{prefix}{suffix}' at character {prefixIndex}");
                     }
 
                     var startIndex = prefixIndex + prefix.Length;
@@ -80,7 +80,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
                     expr = expr.Trim();
                     if (expr.Length == 0)
                     {
-                        throw new ParseException(expressionString, prefixIndex, "No expression defined within delimiter '" + prefix + suffix + "' at character " + prefixIndex);
+                        throw new ParseException(expressionString, prefixIndex, $"No expression defined within delimiter '{prefix}{suffix}' at character {prefixIndex}");
                     }
 
                     expressions.Add(DoParseExpression(expr, context));
@@ -151,13 +151,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
                     case ')':
                         if (stack.Count == 0)
                         {
-                            throw new ParseException(expressionString, pos, "Found closing '" + ch + "' at position " + pos + " without an opening '" + Bracket.TheOpenBracketFor(ch) + "'");
+                            throw new ParseException(expressionString, pos, $"Found closing '{ch}' at position {pos} without an opening '{Bracket.TheOpenBracketFor(ch)}'");
                         }
 
                         var p = stack.Pop();
                         if (!p.CompatibleWithCloseBracket(ch))
                         {
-                            throw new ParseException(expressionString, pos, "Found closing '" + ch + "' at position " + pos + " but most recent opening is '" + p.BracketChar + "' at position " + p.Pos);
+                            throw new ParseException(expressionString, pos, $"Found closing '{ch}' at position {pos} but most recent opening is '{p.BracketChar}' at position {p.Pos}");
                         }
 
                         break;
@@ -167,7 +167,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
                         var endLiteral = expressionString.IndexOf(ch, pos + 1);
                         if (endLiteral == -1)
                         {
-                            throw new ParseException(expressionString, pos, "Found non terminating string literal starting at position " + pos);
+                            throw new ParseException(expressionString, pos, $"Found non terminating string literal starting at position {pos}");
                         }
 
                         pos = endLiteral;
@@ -180,7 +180,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
             if (stack.Count > 0)
             {
                 var p = stack.Pop();
-                throw new ParseException(expressionString, p.Pos, "Missing closing '" + Bracket.TheCloseBracketFor(p.BracketChar) + "' for '" + p.BracketChar + "' at position " + p.Pos);
+                throw new ParseException(expressionString, p.Pos, $"Missing closing '{Bracket.TheCloseBracketFor(p.BracketChar)}' for '{p.BracketChar}' at position {p.Pos}");
             }
 
             if (!IsSuffixHere(expressionString, pos, suffix))

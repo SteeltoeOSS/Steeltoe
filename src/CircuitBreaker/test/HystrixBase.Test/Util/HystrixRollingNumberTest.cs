@@ -50,7 +50,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -83,7 +83,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -113,7 +113,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -145,7 +145,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -185,7 +185,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -225,7 +225,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -313,7 +313,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -363,7 +363,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -407,7 +407,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -455,7 +455,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -491,7 +491,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
 
@@ -735,7 +735,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
+                Assert.True(false, $"Exception: {e.Message}");
             }
         }
     }

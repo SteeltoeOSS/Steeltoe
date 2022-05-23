@@ -101,7 +101,7 @@ namespace Steeltoe.Integration.Channel
 
             if (errorChannelHeader is not string header)
             {
-                throw new ArgumentException("Unsupported error channel header type. Expected IMessageChannel or String, but actual type is [" + errorChannelHeader.GetType() + "]");
+                throw new ArgumentException($"Unsupported error channel header type. Expected IMessageChannel or String, but actual type is [{errorChannelHeader.GetType()}]");
             }
 
             if (ChannelResolver != null)

@@ -117,7 +117,7 @@ namespace Steeltoe.Stream.Binding
         {
             if (components.ContainsKey(component.Name))
             {
-                throw new InvalidOperationException("Duplicate bindable target with name: " + component.Name);
+                throw new InvalidOperationException($"Duplicate bindable target with name: {component.Name}");
             }
 
             components.Add(component.Name, component);

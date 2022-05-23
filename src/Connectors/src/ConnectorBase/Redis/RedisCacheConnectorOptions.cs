@@ -101,7 +101,7 @@ namespace Steeltoe.Connector.Redis
             }
             else
             {
-                sb.Append(Host + ":" + Port);
+                sb.Append($"{Host}:{Port}");
                 sb.Append(',');
             }
 

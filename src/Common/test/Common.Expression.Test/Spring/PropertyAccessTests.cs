@@ -295,7 +295,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 }
                 catch (EvaluationException)
                 {
-                    throw new AccessException("Cannot set flibbles to an object of type '" + newValue?.GetType() + "'");
+                    throw new AccessException($"Cannot set flibbles to an object of type '{newValue?.GetType()}'");
                 }
             }
         }

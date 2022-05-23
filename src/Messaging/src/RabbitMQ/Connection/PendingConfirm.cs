@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public override string ToString()
         {
-            return "PendingConfirm [correlationInfo=" + CorrelationInfo + (Cause == null ? string.Empty : " cause=" + Cause) + "]";
+            return $"PendingConfirm [correlationInfo={CorrelationInfo}{(Cause == null ? string.Empty : $" cause={Cause}")}]";
         }
     }
 }

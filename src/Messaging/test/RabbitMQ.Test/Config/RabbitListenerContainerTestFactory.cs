@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public RabbitListenerContainerTestFactory(string name = null)
         {
-            ServiceName = name ?? "RabbitListenerContainerTestFactory@" + GetHashCode();
+            ServiceName = name ?? $"RabbitListenerContainerTestFactory@{GetHashCode()}";
         }
 
         public Dictionary<string, MessageListenerTestContainer> ListenerContainers { get; } = new Dictionary<string, MessageListenerTestContainer>();
@@ -33,7 +33,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             if (endpoint.Id == null && endpoint is AbstractRabbitListenerEndpoint)
             {
                 var id = Interlocked.Increment(ref counter);
-                endpoint.Id = "endpoint#" + id;
+                endpoint.Id = $"endpoint#{id}";
             }
 
             Assert.NotNull(endpoint.Id);

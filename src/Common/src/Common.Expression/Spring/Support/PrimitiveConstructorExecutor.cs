@@ -19,7 +19,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         {
             if (arguments.Length != 1 || arguments[0] == null)
             {
-                throw new AccessException("Invalid argument for primitive type:" + _primitiveType);
+                throw new AccessException($"Invalid argument for primitive type:{_primitiveType}");
             }
 
             var argType = arguments[0].GetType();

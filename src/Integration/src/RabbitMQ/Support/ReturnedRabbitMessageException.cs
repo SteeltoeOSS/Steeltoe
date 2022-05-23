@@ -30,9 +30,7 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         public override string ToString()
         {
-            return base.ToString() + ", replyCode=" + ReplyCode
-                    + ", replyText=" + ReplyText + ", exchange=" + Exchange + ", routingKey=" + RoutingKey
-                    + "]";
+            return $"{base.ToString()}, replyCode={ReplyCode}, replyText={ReplyText}, exchange={Exchange}, routingKey={RoutingKey}]";
         }
     }
 }

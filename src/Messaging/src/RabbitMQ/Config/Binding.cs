@@ -56,8 +56,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public override string ToString()
         {
-            return "Binding [bindingName=" + BindingName + ", destination=" + Destination + ", exchange=" + Exchange + ", routingKey="
-                        + RoutingKey + ", arguments=" + Arguments + "]";
+            return
+                $"Binding [bindingName={BindingName}, destination={Destination}, exchange={Exchange}, routingKey={RoutingKey}, arguments={Arguments}]";
         }
     }
 }

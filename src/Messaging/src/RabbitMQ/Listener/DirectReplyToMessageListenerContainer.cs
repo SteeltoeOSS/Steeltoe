@@ -141,7 +141,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                             throw new ArgumentNullException("A 'message' is required when 'cancelConsumer' is 'true'");
                         }
 
-                        consumer.CancelConsumer("Consumer " + this + " canceled due to " + message);
+                        consumer.CancelConsumer($"Consumer {this} canceled due to {message}");
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             public override string ToString()
             {
-                return "ChannelHolder [channel=" + Channel + ", consumerEpoch=" + ConsumerEpoch + "]";
+                return $"ChannelHolder [channel={Channel}, consumerEpoch={ConsumerEpoch}]";
             }
         }
 

@@ -152,7 +152,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
                     else if (stackTraceAsString.Length + exceptionMessage.Length > MaxStackTraceLength)
                     {
                         _logger?.LogWarning(cause, "Exception message in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the exception message size");
-                        truncatedExceptionMessage = exceptionMessage.Substring(0, MaxStackTraceLength - stackTraceAsString.Length - ELLIPSIS_LENGTH) + "...";
+                        truncatedExceptionMessage = $"{exceptionMessage.Substring(0, MaxStackTraceLength - stackTraceAsString.Length - ELLIPSIS_LENGTH)}...";
                         truncated = true;
                     }
                 }

@@ -107,7 +107,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     out var prevValidator);
 
                 serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
-                var requestUri = GetRequestUri(serviceUrl + "apps/" + info.AppName);
+                var requestUri = GetRequestUri($"{serviceUrl}apps/{info.AppName}");
                 var request = GetRequestMessage(HttpMethod.Post, requestUri);
 
                 try
@@ -286,7 +286,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         private Task<EurekaHttpResponse<Applications>> GetVipAsyncInternal(string vipAddress, ISet<string> regions)
         {
-            return DoGetApplicationsAsync("vips/" + vipAddress, regions);
+            return DoGetApplicationsAsync($"vips/{vipAddress}", regions);
         }
 
         public virtual Task<EurekaHttpResponse<Applications>> GetSecureVipAsync(string secureVipAddress, ISet<string> regions = null)
@@ -301,7 +301,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         private Task<EurekaHttpResponse<Applications>> GetSecureVipAsyncInternal(string secureVipAddress, ISet<string> regions = null)
         {
-            return DoGetApplicationsAsync("vips/" + secureVipAddress, regions);
+            return DoGetApplicationsAsync($"vips/{secureVipAddress}", regions);
         }
 
         public virtual Task<EurekaHttpResponse<Application>> GetApplicationAsync(string appName)
@@ -330,7 +330,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     out var prevValidator);
 
                 serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
-                var requestUri = GetRequestUri(serviceUrl + "apps/" + appName);
+                var requestUri = GetRequestUri($"{serviceUrl}apps/{appName}");
                 var request = GetRequestMessage(HttpMethod.Get, requestUri);
 
                 try
@@ -404,7 +404,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsyncInternal(string id)
         {
-            return DoGetInstanceAsync("instances/" + id);
+            return DoGetInstanceAsync($"instances/{id}");
         }
 
         private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsyncInternal(string appName, string id)
@@ -775,7 +775,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 var sep = "?";
                 foreach (var kvp in queryValues)
                 {
-                    sb.Append(sep + kvp.Key + "=" + kvp.Value);
+                    sb.Append($"{sep}{kvp.Key}={kvp.Value}");
                     sep = "&";
                 }
 

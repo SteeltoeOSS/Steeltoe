@@ -77,7 +77,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 sb.Append(v);
             }
 
-            return sb.ToString(0, sb.Length - 1) + "]";
+            return $"{sb.ToString(0, sb.Length - 1)}]";
         }
     }
 }

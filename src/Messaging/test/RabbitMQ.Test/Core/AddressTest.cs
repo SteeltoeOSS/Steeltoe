@@ -75,7 +75,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void TestDirectReplyTo()
         {
-            var replyTo = Address.AMQ_RABBITMQ_REPLY_TO + ".ab/cd/ef";
+            var replyTo = $"{Address.AMQ_RABBITMQ_REPLY_TO}.ab/cd/ef";
             var headers = new MessageHeaders();
             var props = RabbitHeaderAccessor.GetMutableAccessor(headers);
             props.ReplyTo = replyTo;

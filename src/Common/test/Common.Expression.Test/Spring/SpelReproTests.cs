@@ -1754,7 +1754,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public D(string s) => A = s;
 
-            public override string ToString() => "D(" + A + ")";
+            public override string ToString() => $"D({A})";
         }
 
         public class Resource
@@ -1776,7 +1776,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Foo2
         {
-            public void Execute(string str) => Console.WriteLine("Value: " + str);
+            public void Execute(string str) => Console.WriteLine($"Value: {str}");
         }
 
         public class Message
@@ -1823,7 +1823,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             public object MethodToCall(T param)
             {
-                Console.WriteLine(param + " " + param.GetType());
+                Console.WriteLine($"{param} {param.GetType()}");
                 return "object MethodToCall(T param)";
             }
 
@@ -2143,11 +2143,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class DistanceEnforcer
         {
-            public static string From(ValueType no) => "ValueType:" + no.ToString();
+            public static string From(ValueType no) => $"ValueType:{no}";
 
-            public static string From(int no) => "Integer:" + no.ToString();
+            public static string From(int no) => $"Integer:{no}";
 
-            public static string From(object no) => "Object:" + no.ToString();
+            public static string From(object no) => $"Object:{no}";
         }
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning restore IDE1006 // Naming Styles

@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 return new SecurityResult(HttpStatusCode.Unauthorized, AUTHORIZATION_HEADER_INVALID);
             }
 
-            var checkPermissionsUri = _options.CloudFoundryApi + "/v2/apps/" + _options.ApplicationId + "/permissions";
+            var checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
             var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
             var auth = new AuthenticationHeaderValue("bearer", token);
             request.Headers.Authorization = auth;

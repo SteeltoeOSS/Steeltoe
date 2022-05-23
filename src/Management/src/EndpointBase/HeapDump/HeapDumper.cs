@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             {
                 if (Environment.Version.Major == 3 || "gcdump".Equals(_options.HeapDumpType, StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger?.LogInformation($"Attempting to create a gcdump");
+                    _logger?.LogInformation("Attempting to create a gcdump");
                     if (TryCollectMemoryGraph(CancellationToken.None, Process.GetCurrentProcess().Id, 30, true, out var memoryGraph))
                     {
                         GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
@@ -68,11 +68,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         {
             if (Environment.Version.Major == 3 || "gcdump".Equals(_options.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
-                return "gcdump-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "-live" + ".gcdump";
+                return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
             }
             else
             {
-                return "minidump-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "-live" + ".dmp";
+                return $"minidump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.dmp";
             }
         }
 

@@ -288,7 +288,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                     };
                     var tag = RC.IModelExensions.BasicConsume(channel, route, false, new RC.DefaultBasicConsumer(channel));
                     var result = RC.IModelExensions.BasicConsume(channel, route, false, tag, new RC.DefaultBasicConsumer(channel));
-                    throw new Exception("Expected Exception, got: " + result);
+                    throw new Exception($"Expected Exception, got: {result}");
                 });
                 throw new Exception("Expected AmqpIOException");
             }

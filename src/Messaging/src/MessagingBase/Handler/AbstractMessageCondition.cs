@@ -61,7 +61,7 @@ namespace Steeltoe.Messaging.Handler
                 joiner.Append(expression.ToString() + infix);
             }
 
-            return joiner.ToString(0, joiner.Length - 1) + "]";
+            return $"{joiner.ToString(0, joiner.Length - 1)}]";
         }
 
         protected abstract IList GetContent();

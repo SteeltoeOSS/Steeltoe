@@ -459,7 +459,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 throw new HystrixRuntimeException(
                     FailureType.BAD_REQUEST_EXCEPTION,
                     GetType(),
-                    LogMessagePrefix + " command executed multiple times - this is not permitted.",
+                    $"{LogMessagePrefix} command executed multiple times - this is not permitted.",
                     ex,
                     null);
             }
@@ -597,7 +597,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
 
             // we don't know what kind of exception this is so create a generic message and throw a new HystrixRuntimeException
-            var message = LogMessagePrefix + " failed while executing. {0}";
+            var message = $"{LogMessagePrefix} failed while executing. {{0}}";
             _logger?.LogDebug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
             return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, GetType(), message, e, null);
         }
@@ -655,8 +655,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 /* executionHook for all errors */
                 e = WrapWithOnErrorHook(failureType, e);
-                tcs.TrySetException(
-                    new HystrixRuntimeException(failureType, GetType(), LogMessagePrefix + " " + message + " and encountered unrecoverable error.", e, null));
+                tcs.TrySetException(new HystrixRuntimeException(failureType, GetType(), $"{LogMessagePrefix} {message} and encountered unrecoverable error.", e, null));
                 return;
             }
             else
@@ -738,7 +737,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 tcs.TrySetException(new HystrixRuntimeException(
                     failureType,
                     GetType(),
-                    LogMessagePrefix + " " + message + " and no fallback available.",
+                    $"{LogMessagePrefix} {message} and no fallback available.",
                     e,
                     fe));
             }
@@ -755,7 +754,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 tcs.TrySetException(new HystrixRuntimeException(
                     failureType,
                     GetType(),
-                    LogMessagePrefix + " " + message + " and fallback failed.",
+                    $"{LogMessagePrefix} {message} and fallback failed.",
                     e,
                     fe));
             }
@@ -771,7 +770,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             tcs.TrySetException(new HystrixRuntimeException(
                 failureType,
                 GetType(),
-                LogMessagePrefix + " " + message + " and fallback disabled.",
+                $"{LogMessagePrefix} {message} and fallback disabled.",
                 wrapped,
                 null));
         }
@@ -787,7 +786,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             tcs.TrySetException(new HystrixRuntimeException(
                 FailureType.REJECTED_SEMAPHORE_FALLBACK,
                 GetType(),
-                LogMessagePrefix + " fallback execution rejected.",
+                $"{LogMessagePrefix} fallback execution rejected.",
                 null,
                 null));
         }
@@ -1025,7 +1024,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 _executionResult = _executionResult.SetExecutionOccurred();
                 if (!commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.USER_CODE_EXECUTED))
                 {
-                    tcs.TrySetException(new InvalidOperationException("execution attempted while in state : " + commandState.Value));
+                    tcs.TrySetException(new InvalidOperationException($"execution attempted while in state : {commandState.Value}"));
                     return;
                 }
 
@@ -1130,7 +1129,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 _executionResult = _executionResult.SetExecutionOccurred();
                 if (!commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.USER_CODE_EXECUTED))
                 {
-                    throw new InvalidOperationException("execution attempted while in state : " + commandState.Value);
+                    throw new InvalidOperationException($"execution attempted while in state : {commandState.Value}");
                 }
 
                 _metrics.MarkCommandStart(commandKey, threadPoolKey, ExecutionIsolationStrategy.SEMAPHORE);

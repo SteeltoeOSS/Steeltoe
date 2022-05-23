@@ -29,7 +29,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         {
             if (from is not IMessage<byte[]> message)
             {
-                throw new MessageConversionException("Failed to convert non byte[] Message content" + from.GetType());
+                throw new MessageConversionException($"Failed to convert non byte[] Message content{from.GetType()}");
             }
 
             object content = null;
@@ -75,7 +75,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
                 else if (contentType != null &&
                         contentType.Equals(MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT))
                 {
-                    throw new MessageConversionException("Content type: " + MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT + " unsupported");
+                    throw new MessageConversionException($"Content type: {MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT} unsupported");
                 }
             }
 
@@ -141,7 +141,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 
             if (bytes == null)
             {
-                throw new ArgumentException("SimpleMessageConverter only supports string, byte[] and serializable payloads, received: " + payload?.GetType().Name);
+                throw new ArgumentException($"SimpleMessageConverter only supports string, byte[] and serializable payloads, received: {payload?.GetType().Name}");
             }
 
             var message = Message.Create(bytes, messageProperties);

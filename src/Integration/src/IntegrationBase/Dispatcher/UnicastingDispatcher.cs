@@ -162,7 +162,7 @@ namespace Steeltoe.Integration.Dispatcher
                 public MessageHandlerDelegate(MessageHandlingRunnable runnable)
                 {
                     _runnable = runnable;
-                    ServiceName = GetType().Name + "@" + GetHashCode();
+                    ServiceName = $"{GetType().Name}@{GetHashCode()}";
                 }
 
                 public virtual string ServiceName { get; set; }

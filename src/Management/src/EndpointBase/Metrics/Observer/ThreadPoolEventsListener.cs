@@ -52,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         public ThreadPoolEventsListener(ILogger<EventSourceListener> logger = null)
         {
             _logger = logger;
-            _availableThreads = OpenTelemetryMetrics.Meter.CreateCounter<long>($"clr.threadpool.available");
+            _availableThreads = OpenTelemetryMetrics.Meter.CreateCounter<long>("clr.threadpool.available");
         }
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)

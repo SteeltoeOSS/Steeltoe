@@ -291,7 +291,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                             RaiseParseException(_pos, SpelMessage.UNEXPECTED_ESCAPE_CHAR);
                             break;
                         default:
-                            throw new InvalidOperationException("Cannot handle (" + (int)ch + ") '" + ch + "'");
+                            throw new InvalidOperationException($"Cannot handle ({(int)ch}) '{ch}'");
                     }
                 }
             }

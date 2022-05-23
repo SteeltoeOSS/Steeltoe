@@ -125,7 +125,7 @@ namespace Steeltoe.Messaging.Converter
                         }
                     }
 
-                    throw new MessageConversionException("failed to resolve class name. Class not found [" + classId + "]");
+                    throw new MessageConversionException($"failed to resolve class name. Class not found [{classId}]");
                 }
             }
         }

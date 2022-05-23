@@ -228,7 +228,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual Exception DecomposeException(Exception e)
         {
-            var message = GetType() + " HystrixCollapser failed while executing.";
+            var message = $"{GetType()} HystrixCollapser failed while executing.";
 
             // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
             return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, GetType(), message, e, null);

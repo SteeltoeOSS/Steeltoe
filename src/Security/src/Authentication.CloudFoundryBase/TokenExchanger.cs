@@ -151,10 +151,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         internal List<KeyValuePair<string, string>> CommonTokenRequestParams()
         {
-            var scopes = "openid " + _options.AdditionalTokenScopes;
+            var scopes = $"openid {_options.AdditionalTokenScopes}";
             if (_options.RequiredScopes != null)
             {
-                scopes = scopes.Trim() + " " + string.Join(" ", _options.RequiredScopes);
+                scopes = $"{scopes.Trim()} {string.Join(" ", _options.RequiredScopes)}";
             }
 
             return new List<KeyValuePair<string, string>>

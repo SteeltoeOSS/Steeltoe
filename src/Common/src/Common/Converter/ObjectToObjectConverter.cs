@@ -105,7 +105,7 @@ namespace Steeltoe.Common.Converter
                 return null;
             }
 
-            var method = ConversionUtils.GetMethodIfAvailable(sourceClass, "To" + targetClass.Name);
+            var method = ConversionUtils.GetMethodIfAvailable(sourceClass, $"To{targetClass.Name}");
             return method != null && !method.IsStatic && targetClass.IsAssignableFrom(method.ReturnType) ? method : null;
         }
 

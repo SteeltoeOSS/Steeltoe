@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public override string ToString()
         {
-            return "DeclarationExceptionEvent [declarable=" + Declarable + ", throwable=" + Exception + ", source=" + Source + "]";
+            return $"DeclarationExceptionEvent [declarable={Declarable}, throwable={Exception}, source={Source}]";
         }
     }
 }

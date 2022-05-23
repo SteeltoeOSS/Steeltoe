@@ -44,7 +44,7 @@ namespace Steeltoe.Stream.Binder
 
         public static string ConstructDLQName(string name)
         {
-            return name + ".dlq";
+            return $"{name}.dlq";
         }
 
         public abstract string ServiceName { get; set; }

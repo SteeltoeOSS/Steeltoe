@@ -12,7 +12,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryOAuthOptionsTest
     {
-        private const string DEFAULT_OAUTH_URL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+        private const string DEFAULT_OAUTH_URL = $"http://{CloudFoundryDefaults.OAuthServiceUrl}";
         private const string DEFAULT_ACCESSTOKEN_URL = DEFAULT_OAUTH_URL + CloudFoundryDefaults.AccessTokenUri;
         private const string DEFAULT_AUTHORIZATION_URL = DEFAULT_OAUTH_URL + CloudFoundryDefaults.AuthorizationUri;
         private const string DEFAULT_CHECKTOKEN_URL = DEFAULT_OAUTH_URL + CloudFoundryDefaults.CheckTokenUri;

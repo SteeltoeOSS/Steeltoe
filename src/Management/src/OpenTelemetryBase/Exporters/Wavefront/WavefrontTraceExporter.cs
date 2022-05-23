@@ -31,7 +31,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             var uri = _options.Uri;
             if (_options.Uri.StartsWith("proxy://"))
             {
-                uri = "http" + _options.Uri.Substring("proxy".Length); // Proxy reporting is now http on newer proxies.
+                uri = $"http{_options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
             }
             else
             {
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 
         private Guid FromActivitySpanId(ActivitySpanId spanID)
         {
-            return Guid.Parse("0000000000000000" + spanID.ToString());
+            return Guid.Parse($"0000000000000000{spanID}");
         }
     }
 }

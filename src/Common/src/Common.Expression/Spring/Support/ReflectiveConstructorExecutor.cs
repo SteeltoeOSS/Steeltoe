@@ -41,7 +41,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             }
             catch (Exception ex)
             {
-                throw new AccessException("Problem invoking constructor: " + Constructor, ex);
+                throw new AccessException($"Problem invoking constructor: {Constructor}", ex);
             }
         }
     }

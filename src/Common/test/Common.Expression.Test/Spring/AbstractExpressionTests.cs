@@ -39,7 +39,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     return;  // no point doing other checks
                 }
 
-                Assert.True(expectedValue == null, "Expression returned null value, but expected '" + expectedValue + "'");
+                Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
             }
 
             var resultType = value.GetType();
@@ -64,7 +64,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     return;  // no point doing other checks
                 }
 
-                Assert.True(expectedValue == null, "Expression returned null value, but expected '" + expectedValue + "'");
+                Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
             }
 
             var resultType = value.GetType();
@@ -89,7 +89,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     return;  // no point doing other checks
                 }
 
-                Assert.True(expectedValue == null, "Expression returned null value, but expected '" + expectedValue + "'");
+                Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
             }
 
             var resultType = value.GetType();
@@ -174,7 +174,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
                 if (sb[sb.Length - 1] == ',')
                 {
-                    return sb.ToString(0, sb.Length - 1) + "}";
+                    return $"{sb.ToString(0, sb.Length - 1)}}}";
                 }
 
                 sb.Append('}');
@@ -199,7 +199,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
                 if (sb[sb.Length - 1] == ',')
                 {
-                    return sb.ToString(0, sb.Length - 1) + "]";
+                    return $"{sb.ToString(0, sb.Length - 1)}]";
                 }
 
                 sb.Append(']');

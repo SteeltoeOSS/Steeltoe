@@ -109,7 +109,7 @@ namespace Steeltoe.Messaging.Core
             {
                 throw new MessageConversionException(
                     message,
-                    "Unable to convert payload [" + message.Payload + "] to type [" + typeof(T) + "] using converter [" + messageConverter + "]");
+                    $"Unable to convert payload [{message.Payload}] to type [{typeof(T)}] using converter [{messageConverter}]");
             }
 
             return value is Exception exception && ThrowReceivedExceptions

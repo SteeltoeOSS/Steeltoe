@@ -986,7 +986,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             [DeclareAnonymousQueue("myAnonymous")]
             [RabbitListener(Queue = "#{@myAnonymous}", Id = "anonymousQueue575")]
-            public string HandleWithAnonymousQueueToDeclare(string data) => "viaAnonymous:" + data;
+            public string HandleWithAnonymousQueueToDeclare(string data) => $"viaAnonymous:{data}";
 
             [DeclareAnonymousQueue("anon1", AutoDelete = "True", Exclusive = "True", Durable = "True")]
             [DeclareExchange(Name = "auto.start", AutoDelete = "True", Delayed = "${no:prop?false}")]
@@ -1012,7 +1012,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
             [DeclareQueueBinding(Name = "auto.exch.anon.atts.rk", QueueName = "#{@anon3}", ExchangeName = "auto.exch", RoutingKey = "auto.anon.atts.rk")]
             [RabbitListener(Binding = "auto.exch.anon.atts.rk")]
-            public string HandleWithDeclareAnonQueueWithAtts(string foo, [Header(RabbitMessageHeaders.CONSUMER_QUEUE)] string queue) => foo + ":" + queue;
+            public string HandleWithDeclareAnonQueueWithAtts(string foo, [Header(RabbitMessageHeaders.CONSUMER_QUEUE)] string queue) =>
+                $"{foo}:{queue}";
 
             [RabbitListener("test.simple", Group = "testGroup")]
             public string Capitalize(string foo) => foo.ToUpper();
@@ -1051,7 +1052,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             [SendTo("!{'test.sendTo.reply.' + result}")]
             public string CapitalizeAndSendToSpelRuntime(string foo)
             {
-                return "runtime" + foo;
+                return $"runtime{foo}";
             }
 
             [RabbitListener("test.sendTo.runtimespelsource")]
@@ -1194,9 +1195,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public class TxClassLevel : ITxClassLevel
         {
-            public string Foo(Bar bar) => "BAR: " + bar.Field + bar.Field;
+            public string Foo(Bar bar) => $"BAR: {bar.Field}{bar.Field}";
 
-            public string Baz(Baz baz, string rk) => "BAZ: " + baz.Field + baz.Field + ": " + rk;
+            public string Baz(Baz baz, string rk) => $"BAZ: {baz.Field}{baz.Field}: {rk}";
         }
 
         public class JsonObject
@@ -1209,7 +1210,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public JsonObject(string bar) => Bar = bar;
 
-            public override string ToString() => "JsonObject [bar=" + Bar + "]";
+            public override string ToString() => $"JsonObject [bar={Bar}]";
         }
 
         public class Foo
@@ -1238,7 +1239,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             public string Bar { get; set; }
 
-            public override string ToString() => "bar=" + Bar;
+            public override string ToString() => $"bar={Bar}";
         }
 
         [DeclareAnonymousQueue("multiListenerAnon")]
@@ -1260,7 +1261,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     throw new Exception("Test reply from error handler");
                 }
 
-                return "BAR: " + bar.Field;
+                return $"BAR: {bar.Field}";
             }
 
             [RabbitHandler]
@@ -1268,17 +1269,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 Bean = message.Headers.Target();
                 Method = message.Headers.TargetMethod();
-                return "BAZ: " + baz.Field;
+                return $"BAZ: {baz.Field}";
             }
 
             [RabbitHandler]
             public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux)
-                => "QUX: " + qux.Field + ": " + rk;
+                => $"QUX: {qux.Field}: {rk}";
 
             [RabbitHandler(true)]
             public string DefaultHandler([Payload] object payload) => payload is Foo foo
-                    ? "FOO: " + foo.Field + " handled by default handler"
-                    : payload.ToString() + " handled by default handler";
+                    ? $"FOO: {foo.Field} handled by default handler"
+                    : $"{payload} handled by default handler";
         }
 
         [RabbitListener("test.inheritance.class")]
@@ -1290,7 +1291,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public class MyServiceInterfaceImpl2 : IMyServiceInterface2
         {
-            public string TestAnnotationInheritance(string foo) => foo.ToUpper() + "BAR";
+            public string TestAnnotationInheritance(string foo) => $"{foo.ToUpper()}BAR";
         }
 
         [DeclareAnonymousQueue("multiListenerJson")]
@@ -1301,13 +1302,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             [RabbitHandler]
             [SendTo("sendTo.replies.spel")]
-            public string Bar(Bar bar, IMessage message) => "BAR: " + bar.Field + message.Headers.Target().GetType().Name;
+            public string Bar(Bar bar, IMessage message) =>
+                $"BAR: {bar.Field}{message.Headers.Target().GetType().Name}";
 
             [RabbitHandler]
-            public string Baz(Baz baz) => "BAZ: " + baz.Field;
+            public string Baz(Baz baz) => $"BAZ: {baz.Field}";
 
             [RabbitHandler]
-            public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux) => "QUX: " + qux.Field + ": " + rk;
+            public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux) =>
+                $"QUX: {qux.Field}: {rk}";
         }
 
         public class DefaultReplyRecoveryCallback : IRecoveryCallback
@@ -1361,7 +1364,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 var barPayload = message.Payload as Bar;
                 var upperPayload = barPayload.Field.ToUpper();
-                return upperPayload + upperPayload + " " + exception.InnerException.Message;
+                return $"{upperPayload}{upperPayload} {exception.InnerException.Message}";
             }
         }
 

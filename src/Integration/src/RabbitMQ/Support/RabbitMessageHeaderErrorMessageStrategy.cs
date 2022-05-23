@@ -13,7 +13,7 @@ namespace Steeltoe.Integration.Rabbit.Support
 {
     public class RabbitMessageHeaderErrorMessageStrategy : IErrorMessageStrategy
     {
-        public const string AMQP_RAW_MESSAGE = MessageHeaders.INTERNAL + "raw_message";
+        public const string AMQP_RAW_MESSAGE = $"{MessageHeaders.INTERNAL}raw_message";
 
         public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor context)
         {

@@ -138,7 +138,7 @@ namespace Steeltoe.Integration.Dispatcher
 
         public override string ToString()
         {
-            return GetType().Name + " with handlers: " + _handlers.Count;
+            return $"{GetType().Name} with handlers: {_handlers.Count}";
         }
 
         public virtual bool Dispatch(IMessage message, CancellationToken cancellationToken = default)

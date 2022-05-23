@@ -43,7 +43,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
                 if (result == null)
                 {
-                    throw new AccessException("Could not resolve service reference '" + serviceName + "' against application context");
+                    throw new AccessException($"Could not resolve service reference '{serviceName}' against application context");
                 }
 
                 return result;

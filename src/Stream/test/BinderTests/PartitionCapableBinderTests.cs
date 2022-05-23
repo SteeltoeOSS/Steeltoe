@@ -54,7 +54,7 @@ namespace Steeltoe.Stream.Binder
             var input2 = new QueueChannel();
             var binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
 
-            var testPayload1 = "foo-" + Guid.NewGuid().ToString();
+            var testPayload1 = $"foo-{Guid.NewGuid()}";
             output.Send(MessageBuilder.WithPayload(testPayload1)
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
@@ -69,14 +69,14 @@ namespace Steeltoe.Stream.Binder
 
             binding2.Unbind();
 
-            var testPayload2 = "foo-" + Guid.NewGuid().ToString();
+            var testPayload2 = $"foo-{Guid.NewGuid()}";
 
             output.Send(MessageBuilder.WithPayload(testPayload2)
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
 
             binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
-            var testPayload3 = "foo-" + Guid.NewGuid().ToString();
+            var testPayload3 = $"foo-{Guid.NewGuid()}";
             output.Send(MessageBuilder.WithPayload(testPayload3)
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
@@ -108,10 +108,10 @@ namespace Steeltoe.Stream.Binder
 
             var consumerOptions = GetConsumerOptions("output", bindingsOptions);
 
-            var testDestination = "testDestination" + Guid.NewGuid().ToString().Replace("-", string.Empty);
+            var testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
             producerOptions.RequiredGroups = new List<string>() { "test1" };
             var producerBinding = binder.BindProducer(testDestination, output, producerOptions);
-            var testPayload = "foo-" + Guid.NewGuid().ToString();
+            var testPayload = $"foo-{Guid.NewGuid()}";
 
             output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).Build());
             var inbound1 = new QueueChannel();
@@ -134,12 +134,12 @@ namespace Steeltoe.Stream.Binder
             var producerBindingOptions = CreateProducerBindingOptions(producerOptions);
             var output = CreateBindableChannel("output", producerBindingOptions);
 
-            var testDestination = "testDestination" + Guid.NewGuid().ToString().Replace("-", string.Empty);
+            var testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
             producerOptions.RequiredGroups = new List<string>() { "test1", "test2" };
 
             var producerBinding = binder.BindProducer(testDestination, output, producerOptions);
 
-            var testPayload = "foo-" + Guid.NewGuid().ToString();
+            var testPayload = $"foo-{Guid.NewGuid()}";
 
             output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).Build());
             var inbound1 = new QueueChannel();
@@ -283,7 +283,7 @@ namespace Steeltoe.Stream.Binder
         {
             var routingExpression = GetEndpointRouting(endpoint);
             var delimiter = GetDestinationNameDelimiter();
-            var dest = GetExpectedRoutingBaseDestination($"part{delimiter}0", "test") + "-' + Headers['partition']";
+            var dest = $"{GetExpectedRoutingBaseDestination($"part{delimiter}0", "test")}-' + Headers['partition']";
             Assert.Contains(dest, routingExpression);
         }
     }

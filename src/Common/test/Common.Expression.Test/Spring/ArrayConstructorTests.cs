@@ -213,7 +213,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
             else
             {
-                throw new InvalidOperationException("Not supported " + o.GetType());
+                throw new InvalidOperationException($"Not supported {o.GetType()}");
             }
 
             s.Append(']');

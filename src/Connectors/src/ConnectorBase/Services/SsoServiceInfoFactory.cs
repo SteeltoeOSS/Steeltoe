@@ -37,7 +37,7 @@ namespace Steeltoe.Connector.Services
         {
             if (uaaString.StartsWith("uaa:"))
             {
-                return "https:" + uaaString.Substring(4);
+                return $"https:{uaaString.Substring(4)}";
             }
 
             return uaaString;

@@ -42,14 +42,14 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 return;
             }
 
-            var gzFilename = filename + ".gz";
+            var gzFilename = $"{filename}.gz";
             var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
 
             if (result != null)
             {
                 await using (result)
                 {
-                    context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
+                    context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFilename)}\"");
                     context.Response.StatusCode = StatusCodes.Status200OK;
                     context.Response.ContentLength = result.Length;
                     await result.CopyToAsync(context.Response.Body).ConfigureAwait(false);

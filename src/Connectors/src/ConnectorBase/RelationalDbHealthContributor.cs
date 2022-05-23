@@ -108,7 +108,7 @@ namespace Steeltoe.Connector
             catch (Exception e)
             {
                 _logger?.LogError("{DbConnection} down! {HealthCheckException}", Id, e.Message);
-                result.Details.Add("error", e.GetType().Name + ": " + e.Message);
+                result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
                 result.Description = $"{Id} health check failed";
@@ -140,7 +140,7 @@ namespace Steeltoe.Connector
                     break;
             }
 
-            return string.Concat(result, "-", connection.Database);
+            return $"{result}-{connection.Database}";
         }
     }
 }

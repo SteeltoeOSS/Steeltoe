@@ -55,7 +55,7 @@ namespace Steeltoe.Common.Transaction
             var transaction = Transaction;
             if (transaction is not ISavepointManager savepointManager)
             {
-                throw new NestedTransactionNotSupportedException("Transaction object [" + Transaction + "] does not support savepoints");
+                throw new NestedTransactionNotSupportedException($"Transaction object [{Transaction}] does not support savepoints");
             }
 
             return savepointManager;

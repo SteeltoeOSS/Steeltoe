@@ -31,12 +31,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         public override string ToString()
         {
-            return "InvocationResult [returnValue=" + ReturnValue
-                    + (SendTo != null ? ", sendTo=" + SendTo : string.Empty)
-                    + ", returnType=" + ReturnType
-                    + ", instance=" + Instance
-                    + ", method=" + Method
-                    + "]";
+            return
+                $"InvocationResult [returnValue={ReturnValue}{(SendTo != null ? $", sendTo={SendTo}" : string.Empty)}, returnType={ReturnType}, instance={Instance}, method={Method}]";
         }
     }
 }

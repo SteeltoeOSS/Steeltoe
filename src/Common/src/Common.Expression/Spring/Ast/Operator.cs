@@ -256,7 +256,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
             else
             {
-                throw new InvalidOperationException("Unsupported: " + brToElseInstruction);
+                throw new InvalidOperationException($"Unsupported: {brToElseInstruction}");
             }
 
             gen.Emit(OpCodes.Br, endOfIfTarget);
@@ -275,7 +275,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
             else
             {
-                throw new InvalidOperationException("Unsupported: " + brToElseInstruction);
+                throw new InvalidOperationException($"Unsupported: {brToElseInstruction}");
             }
 
             gen.Emit(OpCodes.Br, endOfIfTarget);
@@ -298,7 +298,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
             else
             {
-                throw new InvalidOperationException("Unsupported: " + brToElseInstruction);
+                throw new InvalidOperationException($"Unsupported: {brToElseInstruction}");
             }
 
             gen.Emit(OpCodes.Br, endOfIfTarget);

@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 HystrixRollingNumberEvent.THREAD_EXECUTION => ThreadPoolEventType.EXECUTED,
                 HystrixRollingNumberEvent.THREAD_POOL_REJECTED => ThreadPoolEventType.REJECTED,
-                _ => throw new ArgumentOutOfRangeException("Not an event that can be converted to HystrixEventType.ThreadPool : " + @event),
+                _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.ThreadPool : {@event}"),
             };
         }
 

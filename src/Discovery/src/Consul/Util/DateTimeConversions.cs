@@ -37,7 +37,7 @@ namespace Steeltoe.Discovery.Consul.Util
                 return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1)), "h");
             }
 
-            throw new InvalidOperationException("Incorrect format:" + time);
+            throw new InvalidOperationException($"Incorrect format:{time}");
         }
 
         public static TimeSpan ToTimeSpan(int value, string unit)
@@ -53,7 +53,7 @@ namespace Steeltoe.Discovery.Consul.Util
                 "s" => TimeSpan.FromSeconds(value),
                 "m" => TimeSpan.FromMinutes(value),
                 "h" => TimeSpan.FromHours(value),
-                _ => throw new InvalidOperationException("Incorrect unit:" + unit),
+                _ => throw new InvalidOperationException($"Incorrect unit:{unit}"),
             };
         }
     }

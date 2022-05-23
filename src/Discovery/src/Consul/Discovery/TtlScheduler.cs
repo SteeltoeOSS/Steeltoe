@@ -89,7 +89,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
                 var checkId = instanceId;
                 if (!checkId.StartsWith("service:"))
                 {
-                    checkId = "service:" + checkId;
+                    checkId = $"service:{checkId}";
                 }
 
                 var timer = new Timer(async s => { await PassTtl(s.ToString()).ConfigureAwait(false); }, checkId, TimeSpan.Zero, interval);

@@ -222,7 +222,7 @@ namespace Steeltoe.Messaging.Support
         {
             if (IsReadOnly(name))
             {
-                throw new ArgumentException("'" + name + "' header is read-only");
+                throw new ArgumentException($"'{name}' header is read-only");
             }
 
             VerifyType(name, value);
@@ -316,11 +316,11 @@ namespace Steeltoe.Messaging.Support
         }
 
         // Log message stuff
-        public virtual string GetShortLogMessage(object payload) => "headers=" + headers.ToString() + GetShortPayloadLogMessage(payload);
+        public virtual string GetShortLogMessage(object payload) => $"headers={headers}{GetShortPayloadLogMessage(payload)}";
 
-        public virtual string GetDetailedLogMessage(object payload) => "headers=" + headers.ToString() + GetDetailedPayloadLogMessage(payload);
+        public virtual string GetDetailedLogMessage(object payload) => $"headers={headers}{GetDetailedPayloadLogMessage(payload)}";
 
-        public override string ToString() => GetType().Name + " [headers=" + headers + "]";
+        public override string ToString() => $"{GetType().Name} [headers={headers}]";
 
         protected virtual MessageHeaderAccessor CreateMutableAccessor(IMessage message) => CreateMutableAccessor(message.Headers);
 
@@ -342,7 +342,7 @@ namespace Steeltoe.Messaging.Support
                         Messaging.MessageHeaders.REPLY_CHANNEL.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
             {
                 throw new ArgumentException(
-                        "'" + headerName + "' header value must be a MessageChannel or string");
+                    $"'{headerName}' header value must be a MessageChannel or string");
             }
         }
 
@@ -353,29 +353,29 @@ namespace Steeltoe.Messaging.Support
                 case string sPayload:
                     {
                         var payloadText = sPayload;
-                        return payloadText.Length < 80 ?
-                            " payload=" + payloadText :
-                            " payload=" + payloadText.Substring(0, 80) + "...(truncated)";
+                        return payloadText.Length < 80
+                            ? $" payload={payloadText}"
+                            : $" payload={payloadText.Substring(0, 80)}...(truncated)";
                     }
 
                 case byte[] bytes:
                     if (IsReadableContentType())
                     {
-                        return bytes.Length < 80 ?
-                                " payload=" + new string(Encoding.GetChars(bytes)) :
-                                " payload=" + new string(Encoding.GetChars(bytes, 0, 80)) + "...(truncated)";
+                        return bytes.Length < 80
+                            ? $" payload={new string(Encoding.GetChars(bytes))}"
+                            : $" payload={new string(Encoding.GetChars(bytes, 0, 80))}...(truncated)";
                     }
                     else
                     {
-                        return " payload=byte[" + bytes.Length + "]";
+                        return $" payload=byte[{bytes.Length}]";
                     }
 
                 default:
                     {
                         var payloadText = payload.ToString();
-                        return payloadText.Length < 80 ?
-                                " payload=" + payloadText :
-                                " payload=" + payload.GetType().Name + "@" + payload.ToString();
+                        return payloadText.Length < 80
+                            ? $" payload={payloadText}"
+                            : $" payload={payload.GetType().Name}@{payload}";
                     }
             }
         }
@@ -384,22 +384,22 @@ namespace Steeltoe.Messaging.Support
         {
             if (payload is string)
             {
-                return " payload=" + payload;
+                return $" payload={payload}";
             }
             else if (payload is byte[] bytes)
             {
                 if (IsReadableContentType())
                 {
-                    return " payload=" + new string(Encoding.GetChars(bytes));
+                    return $" payload={new string(Encoding.GetChars(bytes))}";
                 }
                 else
                 {
-                    return " payload=byte[" + bytes.Length + "]";
+                    return $" payload=byte[{bytes.Length}]";
                 }
             }
             else
             {
-                return " payload=" + payload;
+                return $" payload={payload}";
             }
         }
 

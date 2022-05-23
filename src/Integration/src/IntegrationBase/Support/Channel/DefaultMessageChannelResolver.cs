@@ -38,9 +38,7 @@ namespace Steeltoe.Integration.Support.Channel
             }
 
             throw new DestinationResolutionException(
-                "failed to look up MessageChannel with name '" + name
-                     + "' in the Service Container"
-                     + (_registry == null ? " (and there is no IHeaderChannelRegistry present)." : "."));
+                $"failed to look up MessageChannel with name '{name}' in the Service Container{(_registry == null ? " (and there is no IHeaderChannelRegistry present)." : ".")}");
         }
 
         object IDestinationResolver.ResolveDestination(string name)

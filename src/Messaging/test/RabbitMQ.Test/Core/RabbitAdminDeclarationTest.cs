@@ -100,7 +100,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     var connectionNum = connectionNumber.IncrementAndGet();
                     mockConnections.Add(connection.Object);
                     connection.Setup(c => c.IsOpen).Returns(true);
-                    connection.Setup(c => c.ToString()).Returns("mockConnection" + connectionNum);
+                    connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
                     connection.Setup(c => c.CreateModel())
                         .Callback(() =>
                         {
@@ -108,7 +108,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                             mockChannels.Add(channel.Object);
                             channel.Setup(c => c.IsOpen).Returns(true);
                             var channelNum = channelNumber.IncrementAndGet();
-                            channel.Setup(c => c.ToString()).Returns("mockChannel" + channelNum);
+                            channel.Setup(c => c.ToString()).Returns($"mockChannel{channelNum}");
                         })
                         .Returns(() => mockChannels[channelNumber.Value]);
                 })

@@ -697,12 +697,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     label = label.Replace("/", "(_)");
                 }
 
-                path = path + "/" + label.Trim();
+                path = $"{path}/{label.Trim()}";
             }
 
             if (!baseRawUri.EndsWith("/"))
             {
-                path = "/" + path;
+                path = $"/{path}";
             }
 
             return baseRawUri + path;
@@ -878,7 +878,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return;
             }
 
-            var obscuredToken = Settings.Token.Substring(0, 4) + "[*]" + Settings.Token.Substring(Settings.Token.Length - 4);
+            var obscuredToken = $"{Settings.Token.Substring(0, 4)}[*]{Settings.Token.Substring(Settings.Token.Length - 4)}";
 
             // If certificate validation is disabled, inject a callback to handle properly
             HttpClientHelper.ConfigureCertificateValidation(
@@ -932,7 +932,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
 
             var renewTtlSeconds = Settings.TokenTtl / 1000;
-            var json = "{\"increment\":" + renewTtlSeconds.ToString() + "}";
+            var json = $"{{\"increment\":{renewTtlSeconds}}}";
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             request.Content = content;

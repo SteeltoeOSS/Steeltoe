@@ -66,7 +66,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             var addressStrings = new List<string>();
             foreach (var parsedAddress in parsed)
             {
-                addressStrings.Add(parsedAddress.Host + ":" + parsedAddress.Port);
+                addressStrings.Add($"{parsedAddress.Host}:{parsedAddress.Port}");
             }
 
             return string.Join(',', addressStrings);

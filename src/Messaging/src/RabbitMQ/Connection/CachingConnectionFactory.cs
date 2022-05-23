@@ -454,7 +454,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                     props.Add("idleConnectionsHighWater", _connectionHighWaterMark.Value);
                     foreach (var proxy in _allocatedConnections)
                     {
-                        PutConnectionName(props, proxy, ":" + proxy.LocalPort);
+                        PutConnectionName(props, proxy, $":{proxy.LocalPort}");
                     }
 
                     foreach (var entry in _allocatedConnectionTransactionalChannels)
@@ -463,8 +463,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                         if (port > 0 && entry.Key.IsOpen)
                         {
                             var channelList = entry.Value;
-                            props.Add("idleChannelsTx:" + port, channelList.Count);
-                            props.Add("idleChannelsTxHighWater:" + port, _channelHighWaterMarks[RuntimeHelpers.GetHashCode(channelList)].Value);
+                            props.Add($"idleChannelsTx:{port}", channelList.Count);
+                            props.Add($"idleChannelsTxHighWater:{port}", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(channelList)].Value);
                         }
                     }
 
@@ -474,8 +474,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                         if (port > 0 && entry.Key.IsOpen)
                         {
                             var channelList = entry.Value;
-                            props.Add("idleChannelsNotTx:" + port, channelList.Count);
-                            props.Add("idleChannelsNotTxHighWater:" + port, _channelHighWaterMarks[RuntimeHelpers.GetHashCode(channelList)].Value);
+                            props.Add($"idleChannelsNotTx:{port}", channelList.Count);
+                            props.Add($"idleChannelsNotTxHighWater:{port}", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(channelList)].Value);
                         }
                     }
                 }
@@ -598,7 +598,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                     var name = del.ClientProvidedName;
                     if (name != null)
                     {
-                        props.Add("connectionName" + keySuffix, name);
+                        props.Add($"connectionName{keySuffix}", name);
                     }
                 }
             }
@@ -737,7 +737,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
             else
             {
-                throw new InvalidOperationException("No permits map entry for " + connection);
+                throw new InvalidOperationException($"No permits map entry for {connection}");
             }
 
             return permits;
@@ -817,7 +817,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             if (channelList == null)
             {
-                throw new InvalidOperationException("No channel list for connection " + connection);
+                throw new InvalidOperationException($"No channel list for connection {connection}");
             }
 
             return channelList;
@@ -1109,7 +1109,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public override string ToString()
             {
-                return "Cached Rabbit Channel: " + _target + ", conn: " + _theConnection;
+                return $"Cached Rabbit Channel: {_target}, conn: {_theConnection}";
             }
 
             #region Protected
@@ -2193,7 +2193,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public override string ToString()
             {
-                return "Cached Rabbit Channel: " + _target + ", conn: " + _theConnection;
+                return $"Cached Rabbit Channel: {_target}, conn: {_theConnection}";
             }
 
             #region protected
@@ -2620,7 +2620,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public override string ToString()
             {
-                return "Proxy@" + RuntimeHelpers.GetHashCode(this) + " " + ((_factory.CacheMode == CachingMode.CHANNEL) ? "Shared " : "Dedicated ") + "Rabbit Connection: " + Target;
+                return $"Proxy@{RuntimeHelpers.GetHashCode(this)} {((_factory.CacheMode == CachingMode.CHANNEL) ? "Shared " : "Dedicated ")}Rabbit Connection: {Target}";
             }
 
             private int CountOpenIdleConnections()

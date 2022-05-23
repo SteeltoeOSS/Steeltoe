@@ -156,12 +156,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             {
                 if (p.GetPercentile(50) > 5)
                 {
-                    Assert.True(false, "We expect around 2 but got: " + p.GetPercentile(50));
+                    Assert.True(false, $"We expect around 2 but got: {p.GetPercentile(50)}");
                 }
 
                 if (p.GetPercentile(99.5) < 20)
                 {
-                    Assert.True(false, "We expect to see some high values over 20 but got: " + p.GetPercentile(99.5));
+                    Assert.True(false, $"We expect to see some high values over 20 but got: {p.GetPercentile(99.5)}");
                 }
             }
         }
@@ -191,12 +191,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             if (p.GetPercentile(50) > 90 || p.GetPercentile(50) < 50)
             {
-                Assert.True(false, "We expect around 60-70 but got: " + p.GetPercentile(50));
+                Assert.True(false, $"We expect around 60-70 but got: {p.GetPercentile(50)}");
             }
 
             if (p.GetPercentile(99) < 400)
             {
-                Assert.True(false, "We expect to see some high values over 400 but got: " + p.GetPercentile(99));
+                Assert.True(false, $"We expect to see some high values over 400 but got: {p.GetPercentile(99)}");
             }
         }
 
@@ -246,12 +246,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.Equal(2, p.GetPercentile(75));
             if (p.GetPercentile(95) < 600)
             {
-                Assert.True(false, "We expect the 90th to be over 600 to show the extremes but got: " + p.GetPercentile(90));
+                Assert.True(false, $"We expect the 90th to be over 600 to show the extremes but got: {p.GetPercentile(90)}");
             }
 
             if (p.GetPercentile(99) < 600)
             {
-                Assert.True(false, "We expect the 99th to be over 600 to show the extremes but got: " + p.GetPercentile(99));
+                Assert.True(false, $"We expect the 99th to be over 600 to show the extremes but got: {p.GetPercentile(99)}");
             }
         }
 

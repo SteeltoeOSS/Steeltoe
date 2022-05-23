@@ -91,7 +91,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var applicationContext = provider.GetService<IApplicationContext>();
             var connectionFactory = applicationContext.GetService<IConnectionFactory>();
             var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory);
-            var queueName = "test.properties." + DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            var queueName = $"test.properties.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
             try
             {
                 rabbitAdmin.DeclareQueue(new Config.Queue(queueName));
@@ -379,12 +379,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var authToken = Encoding.ASCII.GetBytes("guest:guest");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-            var result = await client.GetAsync("http://localhost:15672/api/queues/%3F/" + queue.QueueName);
+            var result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queue.QueueName}");
             var n = 0;
             while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
             {
                 await Task.Delay(100);
-                result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + queue.QueueName);
+                result = await client.GetAsync($"http://localhost:15672/api/queues/%2F/{queue.QueueName}");
             }
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -398,12 +398,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             };
             admin.DeclareQueue(queue);
 
-            result = await client.GetAsync("http://localhost:15672/api/queues/%3F/" + queue.QueueName);
+            result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queue.QueueName}");
             n = 0;
             while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
             {
                 await Task.Delay(100);
-                result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + queue.QueueName);
+                result = await client.GetAsync($"http://localhost:15672/api/queues/%2F/{queue.QueueName}");
             }
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);

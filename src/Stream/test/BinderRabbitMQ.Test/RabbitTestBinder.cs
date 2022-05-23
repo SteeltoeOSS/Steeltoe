@@ -81,7 +81,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             var properties = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
 
-            _queues.Add(properties.Prefix + name + ".default");
+            _queues.Add($"{properties.Prefix}{name}.default");
             _exchanges.Add(properties.Prefix + name);
 
             if (producerOptions.RequiredGroups != null)
@@ -94,7 +94,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     }
                     else
                     {
-                        _queues.Add(properties.Prefix + name + "." + group);
+                        _queues.Add($"{properties.Prefix}{name}.{group}");
                     }
                 }
             }
@@ -120,13 +120,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 _logger.LogInformation("Deleting queue " + q);
                 _rabbitAdmin.DeleteQueue(q);
-                _rabbitAdmin.DeleteQueue(q + ".dlq");
+                _rabbitAdmin.DeleteQueue($"{q}.dlq");
 
                 // delete any partitioned queues
                 for (var i = 0; i < 10; i++)
                 {
-                    _rabbitAdmin.DeleteQueue(q + "-" + i);
-                    _rabbitAdmin.DeleteQueue(q + "-" + i + ".dlq");
+                    _rabbitAdmin.DeleteQueue($"{q}-{i}");
+                    _rabbitAdmin.DeleteQueue($"{q}-{i}.dlq");
                 }
             }
 
@@ -138,7 +138,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             foreach (var prefix in _prefixes)
             {
-                _rabbitAdmin.DeleteExchange(prefix + "DLX");
+                _rabbitAdmin.DeleteExchange($"{prefix}DLX");
             }
 
             _applicationContext = null;
@@ -161,12 +161,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
                         names = name.Split(',');
                         foreach (var nayme in names)
                         {
-                            _queues.Add(consumerOptions.Prefix + nayme.Trim() + "." + group);
+                            _queues.Add($"{consumerOptions.Prefix}{nayme.Trim()}.{group}");
                         }
                     }
                     else
                     {
-                        _queues.Add(consumerOptions.Prefix + name + "." + group);
+                        _queues.Add($"{consumerOptions.Prefix}{name}.{group}");
                     }
                 }
             }

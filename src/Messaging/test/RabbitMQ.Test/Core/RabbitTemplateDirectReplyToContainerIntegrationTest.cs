@@ -74,7 +74,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var rabbitTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
             rabbitTemplate.UseDirectReplyToContainer = true;
-            rabbitTemplate.ServiceName = nameof(RabbitTemplateDirectReplyToContainerIntegrationTest) + ".SendReceiveRabbitTemplate";
+            rabbitTemplate.ServiceName = $"{nameof(RabbitTemplateDirectReplyToContainerIntegrationTest)}.SendReceiveRabbitTemplate";
             return rabbitTemplate;
         }
 

@@ -42,7 +42,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
                 if (ann == null || ann.Required)
                 {
                     var paramName = GetParameterName(parameter);
-                    throw new MethodArgumentNotValidException(message, parameter, "Payload value must not be empty when binding to: " + paramName);
+                    throw new MethodArgumentNotValidException(message, parameter, $"Payload value must not be empty when binding to: {paramName}");
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
                 if (payload == null)
                 {
-                    throw new MessageConversionException(message, "Cannot convert from [" + payloadClass.Name + "] to [" + targetClass.Name + "] for " + message);
+                    throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
                 }
 
                 Validate(message, parameter, payload);
@@ -96,6 +96,6 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         {
         }
 
-        private string GetParameterName(ParameterInfo param) => param.Name ?? "Arg " + param.Position;
+        private string GetParameterName(ParameterInfo param) => param.Name ?? $"Arg {param.Position}";
     }
 }

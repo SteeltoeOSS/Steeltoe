@@ -38,7 +38,7 @@ namespace Steeltoe.Integration.Handler.Support
             {
                 var payloads = parameter.GetCustomAttribute<PayloadsAttribute>();
 
-                var value = !string.IsNullOrEmpty(payloads.Expression) ? ExpressionParser.ParseExpression("![payload." + payloads.Expression + "]") : null;
+                var value = !string.IsNullOrEmpty(payloads.Expression) ? ExpressionParser.ParseExpression($"![payload.{payloads.Expression}]") : null;
                 _expressionCache.Add(parameter, value);
             }
 

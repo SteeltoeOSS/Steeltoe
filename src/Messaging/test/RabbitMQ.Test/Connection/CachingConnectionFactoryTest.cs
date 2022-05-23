@@ -837,12 +837,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                             var channel = new Mock<RC.IModel>();
                             channel.Setup((c) => c.IsOpen).Returns(true);
                             var channelNum = channelNumber.IncrementAndGet();
-                            channel.Setup((c) => c.ToString()).Returns("mockChannel" + connectionNumber + ":" + channelNum);
+                            channel.Setup((c) => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
                             mockChannels.Add(channel);
                         })
                         .Returns(() => mockChannels[channelNumber.Value - 1].Object);
                     var connectionNum = connectionNumber.IncrementAndGet();
-                    connection.Setup((c) => c.ToString()).Returns("mockConnection" + connectionNum);
+                    connection.Setup((c) => c.ToString()).Returns($"mockConnection{connectionNum}");
                     connection.Setup((c) => c.IsOpen).Returns(true);
                     mockConnections.Add(connection);
                 })
@@ -1015,12 +1015,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                             var channel = new Mock<RC.IModel>();
                             channel.Setup((c) => c.IsOpen).Returns(true);
                             var channelNum = channelNumber.IncrementAndGet();
-                            channel.Setup((c) => c.ToString()).Returns("mockChannel" + connectionNumber + ":" + channelNum);
+                            channel.Setup((c) => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
                             mockChannels.Add(channel);
                         })
                         .Returns(() => mockChannels[channelNumber.Value - 1].Object);
                     var connectionNum = connectionNumber.IncrementAndGet();
-                    connection.Setup((c) => c.ToString()).Returns("mockConnection" + connectionNum);
+                    connection.Setup((c) => c.ToString()).Returns($"mockConnection{connectionNum}");
                     connection.Setup((c) => c.IsOpen).Returns(true);
                     mockConnections.Add(connection);
                 })
@@ -1219,12 +1219,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                             var channel = new Mock<RC.IModel>();
                             channel.Setup((c) => c.IsOpen).Returns(true);
                             var channelNum = channelNumber.IncrementAndGet();
-                            channel.Setup((c) => c.ToString()).Returns("mockChannel" + connectionNumber + ":" + channelNum);
+                            channel.Setup((c) => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
                             mockChannels.Add(channel);
                         })
                         .Returns(() => mockChannels[channelNumber.Value - 1].Object);
                     var connectionNum = connectionNumber.IncrementAndGet();
-                    connection.Setup((c) => c.ToString()).Returns("mockConnection" + connectionNum);
+                    connection.Setup((c) => c.ToString()).Returns($"mockConnection{connectionNum}");
                     connection.Setup((c) => c.IsOpen).Returns(true);
                     mockConnections.Add(connection);
                 })

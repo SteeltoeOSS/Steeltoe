@@ -112,7 +112,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public override string ToString()
         {
-            return "SingleConnectionFactory [host=" + Host + ", port=" + Port + "]";
+            return $"SingleConnectionFactory [host={Host}, port={Port}]";
         }
 
         protected IConnection DoCreateConnection()
@@ -254,7 +254,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public override string ToString()
             {
-                return "Shared Rabbit Connection: " + Target;
+                return $"Shared Rabbit Connection: {Target}";
             }
 
             public void Dispose()

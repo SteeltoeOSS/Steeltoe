@@ -32,7 +32,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                     UserMessage = optionName;
                 }
 
-                public override string Message => UserMessage + " " + base.Message;
+                public override string Message => $"{UserMessage} {base.Message}";
             }
 
             public static void Equal(string expected, string actual, string optionName)
@@ -222,13 +222,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             var inputBindingsKey = "bindings:input:consumer";
             foreach (var tuple in GetOptionsConfigPairs(config, inputBinding, inputBindingsKey))
             {
-                AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, inputBindingsKey + ":" + tuple.Item1);
+                AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, $"{inputBindingsKey}:{tuple.Item1}");
             }
 
             var outputBindingsKey = "bindings:output:producer";
             foreach (var tuple in GetOptionsConfigPairs(config, outputBinding, outputBindingsKey))
             {
-                AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, outputBindingsKey + ":" + tuple.Item1);
+                AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, $"{outputBindingsKey}:{tuple.Item1}");
             }
         }
 
@@ -276,7 +276,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 }
                 else
                 {
-                    yield return new Tuple<string, string, string>(inputBindingsKey + ":" + child.Key, value?.ToString(), child.Value);
+                    yield return new Tuple<string, string, string>($"{inputBindingsKey}:{child.Key}", value?.ToString(), child.Value);
                 }
             }
         }

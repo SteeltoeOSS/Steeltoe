@@ -32,7 +32,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
                 return value;
             }
 
-            throw new EvaluationException("Cannot convert value '" + value + "' to type '" + targetType.FullName + "'");
+            throw new EvaluationException($"Cannot convert value '{value}' to type '{targetType.FullName}'");
         }
 
         public static int ToInt(ITypeConverter typeConverter, ITypedValue typedValue)
@@ -100,7 +100,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
             var result = typeConverter.ConvertValue(typedValue.Value, typedValue.TypeDescriptor, typeof(T));
             if (result == null)
             {
-                throw new InvalidOperationException("Null conversion result for value [" + typedValue.Value + "]");
+                throw new InvalidOperationException($"Null conversion result for value [{typedValue.Value}]");
             }
 
             return (T)result;

@@ -58,9 +58,7 @@ namespace Steeltoe.Integration.Util
                 {
                     if (match != null)
                     {
-                        throw new MessagingException("At most one parameter annotation can be provided "
-                                + "for message mapping, but found two: [" + match.GetType().Name + "] and ["
-                                + annotation.GetType().Name + "]");
+                        throw new MessagingException($"At most one parameter annotation can be provided for message mapping, but found two: [{match.GetType().Name}] and [{annotation.GetType().Name}]");
                     }
 
                     match = annotation;

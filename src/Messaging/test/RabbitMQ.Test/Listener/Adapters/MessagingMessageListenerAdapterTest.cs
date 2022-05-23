@@ -61,7 +61,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
             catch (Exception ex)
             {
-                throw new Exception("Should not have thrown an " + ex);
+                throw new Exception($"Should not have thrown an {ex}");
             }
         }
 
@@ -84,7 +84,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
             catch (Exception ex)
             {
-                throw new Exception("Should not have thrown an " + ex);
+                throw new Exception($"Should not have thrown an {ex}");
             }
         }
 
@@ -107,7 +107,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
             catch (Exception ex)
             {
-                throw new Exception("Should not have thrown an " + ex);
+                throw new Exception($"Should not have thrown an {ex}");
             }
 
             message = Message.Create(new byte[] { 1, 2 }, new MessageHeaders());
@@ -122,7 +122,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
             catch (Exception ex)
             {
-                throw new Exception("Should not have thrown an " + ex);
+                throw new Exception($"Should not have thrown an {ex}");
             }
 
             // TODO: The Java simpleconverter will convert the exception using java serialization...
@@ -151,7 +151,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
             catch (Exception ex)
             {
-                throw new Exception("Should not have thrown an " + ex);
+                throw new Exception($"Should not have thrown an {ex}");
             }
         }
 

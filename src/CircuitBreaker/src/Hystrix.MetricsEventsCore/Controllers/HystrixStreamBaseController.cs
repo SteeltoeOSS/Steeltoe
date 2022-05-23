@@ -38,7 +38,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
                         {
                             try
                             {
-                                await Response.WriteAsync("data: " + sampleDataAsString + "\n\n").ConfigureAwait(false);
+                                await Response.WriteAsync($"data: {sampleDataAsString}\n\n").ConfigureAwait(false);
                                 await Response.Body.FlushAsync().ConfigureAwait(false);
                             }
                             catch (Exception)

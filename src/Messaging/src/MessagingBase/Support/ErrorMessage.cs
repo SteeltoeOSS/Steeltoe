@@ -54,7 +54,7 @@ namespace Steeltoe.Messaging.Support
                 return base.ToString();
             }
 
-            return base.ToString() + " for original " + OriginalMessage;
+            return $"{base.ToString()} for original {OriginalMessage}";
         }
     }
 }

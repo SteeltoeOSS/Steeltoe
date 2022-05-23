@@ -46,10 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override string ToString()
         {
-            return "CommandAndCacheKey{" +
-                    "commandName='" + _commandName + '\'' +
-                    ", cacheKey='" + _cacheKey + '\'' +
-                    '}';
+            return $"CommandAndCacheKey{{commandName='{_commandName}', cacheKey='{_cacheKey}'}}";
         }
     }
 }

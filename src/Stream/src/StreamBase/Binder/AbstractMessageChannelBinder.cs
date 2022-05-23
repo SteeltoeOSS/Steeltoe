@@ -296,32 +296,32 @@ namespace Steeltoe.Stream.Binder
 
         protected virtual string GetErrorRecovererName(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            return GetErrorsBaseName(destination, group, consumerOptions) + ".recoverer";
+            return $"{GetErrorsBaseName(destination, group, consumerOptions)}.recoverer";
         }
 
         protected virtual string GetErrorMessageHandlerName(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            return GetErrorsBaseName(destination, group, consumerOptions) + ".handler";
+            return $"{GetErrorsBaseName(destination, group, consumerOptions)}.handler";
         }
 
         protected virtual string GetErrorsBaseName(IProducerDestination destination)
         {
-            return destination.Name + ".errors";
+            return $"{destination.Name}.errors";
         }
 
         protected virtual string GetErrorsBaseName(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            return destination.Name + "." + group + ".errors";
+            return $"{destination.Name}.{group}.errors";
         }
 
         protected virtual string GetErrorBridgeName(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            return GetErrorsBaseName(destination, group, consumerOptions) + ".bridge";
+            return $"{GetErrorsBaseName(destination, group, consumerOptions)}.bridge";
         }
 
         protected virtual string GetErrorBridgeName(IProducerDestination destination)
         {
-            return GetErrorsBaseName(destination) + ".bridge";
+            return $"{GetErrorsBaseName(destination)}.bridge";
         }
 
         private static bool IsSubscribable(ISubscribableChannel errorChannel)
@@ -358,7 +358,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (errorChannelObject is not ISubscribableChannel subscribableChannel)
                 {
-                    throw new ArgumentException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
+                    throw new ArgumentException($"Error channel '{errorChannelName}' must be a ISubscribableChannel");
                 }
 
                 errorChannel = subscribableChannel;
@@ -381,7 +381,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (errorChannelObject is not ISubscribableChannel subscribableChannel)
                 {
-                    throw new InvalidOperationException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
+                    throw new InvalidOperationException($"Error channel '{errorChannelName}' must be a ISubscribableChannel");
                 }
 
                 errorChannel = subscribableChannel;

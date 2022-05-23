@@ -325,7 +325,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 StringHeader = message.Headers.Get<string>("stringHeader");
                 IntHeader = message.Headers.Get<int>("intHeader");
-                return "foo" + message.GetType().Name;
+                return $"foo{message.GetType().Name}";
             }
 
             [RabbitListener("test.notconverted.channel")]
@@ -337,7 +337,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             [RabbitListener("test.notconverted.messagechannel")]
             public string MessageChannel(Foo2 foo2, IMessage message, RC.IModel channel)
             {
-                return foo2 + message.GetType().Name + "AndChannel";
+                return $"{foo2}{message.GetType().Name}AndChannel";
             }
 
             [RabbitListener("test.notconverted.messagingmessage")]
@@ -375,7 +375,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public override string ToString()
             {
-                return "bar=" + Bar;
+                return $"bar={Bar}";
             }
         }
 

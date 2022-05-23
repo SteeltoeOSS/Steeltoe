@@ -175,7 +175,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 sj.Add(GetChild(i).ToStringAST());
             }
 
-            return "[" + string.Join(",", sj) + "]";
+            return $"[{string.Join(",", sj)}]";
         }
 
         protected internal override IValueRef GetValueRef(ExpressionState state)
@@ -288,7 +288,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var result = (T)converter.ConvertValue(value, value == null ? typeof(object) : value.GetType(), targetType);
             if (result == null)
             {
-                throw new InvalidOperationException("Null conversion result for index [" + value + "]");
+                throw new InvalidOperationException($"Null conversion result for index [{value}]");
             }
 
             return result;
@@ -650,7 +650,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     return new TypedValue(o, ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor, o));
                 }
 
-                throw new InvalidOperationException("Failed to find indexed element " + _index + ": " + _collection);
+                throw new InvalidOperationException($"Failed to find indexed element {_index}: {_collection}");
             }
 
             public void SetValue(object newValue)

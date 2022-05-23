@@ -81,7 +81,7 @@ namespace Steeltoe.Integration.Transformer
                     throw;
                 }
 
-                throw new MessageTransformationException(requestMessage, "Failed to transform Message in " + this, e);
+                throw new MessageTransformationException(requestMessage, $"Failed to transform Message in {this}", e);
             }
         }
 

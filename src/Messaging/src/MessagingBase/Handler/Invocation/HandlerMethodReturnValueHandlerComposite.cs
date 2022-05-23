@@ -48,7 +48,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
             var handler = GetReturnValueHandler(returnType);
             if (handler == null)
             {
-                throw new InvalidOperationException("No handler for return value type: " + returnType.ParameterType);
+                throw new InvalidOperationException($"No handler for return value type: {returnType.ParameterType}");
             }
 
             // if (logger.isTraceEnabled())

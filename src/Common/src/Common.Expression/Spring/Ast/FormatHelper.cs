@@ -19,7 +19,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     : FormatClassNameForMessage(null));
             }
 
-            return name + "(" + string.Join(",", items) + ")";
+            return $"{name}({string.Join(",", items)})";
         }
 
         public static string FormatClassNameForMessage(Type clazz)

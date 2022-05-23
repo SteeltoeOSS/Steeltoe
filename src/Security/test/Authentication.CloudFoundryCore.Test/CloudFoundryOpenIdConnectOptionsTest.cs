@@ -17,7 +17,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var opts = new CloudFoundryOpenIdConnectOptions();
 
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
-            Assert.Equal("https://" + CloudFoundryDefaults.OAuthServiceUrl, opts.Authority);
+            Assert.Equal($"https://{CloudFoundryDefaults.OAuthServiceUrl}", opts.Authority);
             Assert.Equal(CloudFoundryDefaults.ClientId, opts.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);
             Assert.Equal(new PathString("/signin-cloudfoundry"), opts.CallbackPath);

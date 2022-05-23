@@ -282,12 +282,12 @@ namespace Steeltoe.Common.Transaction
 
         protected virtual object DoSuspend(object transaction)
         {
-            throw new TransactionSuspensionNotSupportedException("Transaction manager [" + GetType().Name + "] does not support transaction suspension");
+            throw new TransactionSuspensionNotSupportedException($"Transaction manager [{GetType().Name}] does not support transaction suspension");
         }
 
         protected virtual void DoResume(object transaction, object suspendedResources)
         {
-            throw new TransactionSuspensionNotSupportedException("Transaction manager [" + GetType().Name + "] does not support transaction suspension");
+            throw new TransactionSuspensionNotSupportedException($"Transaction manager [{GetType().Name}] does not support transaction suspension");
         }
 
         protected virtual void PrepareForCommit(DefaultTransactionStatus status)
@@ -661,15 +661,15 @@ namespace Steeltoe.Common.Transaction
                     var currentIsolationLevel = TransactionSynchronizationManager.GetCurrentTransactionIsolationLevel();
                     if (currentIsolationLevel == null || currentIsolationLevel != definition.IsolationLevel)
                     {
-                        throw new IllegalTransactionStateException("Participating transaction with definition [" +
-                                definition + "] specifies isolation level which is incompatible with existing transaction: ");
+                        throw new IllegalTransactionStateException(
+                            $"Participating transaction with definition [{definition}] specifies isolation level which is incompatible with existing transaction: ");
                     }
                 }
 
                 if (!definition.IsReadOnly && TransactionSynchronizationManager.IsCurrentTransactionReadOnly())
                 {
-                    throw new IllegalTransactionStateException("Participating transaction with definition [" +
-                            definition + "] is not marked as read-only but existing transaction is");
+                    throw new IllegalTransactionStateException(
+                        $"Participating transaction with definition [{definition}] is not marked as read-only but existing transaction is");
                 }
             }
 

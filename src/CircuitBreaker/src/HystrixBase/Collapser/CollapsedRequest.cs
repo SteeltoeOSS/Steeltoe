@@ -102,7 +102,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 _complete = true;
                 if (!CompletionSource.TrySetException(value))
                 {
-                    throw new InvalidOperationException("Task has already terminated so exectpion can not be set : " + value);
+                    throw new InvalidOperationException($"Task has already terminated so exectpion can not be set : {value}");
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 _complete = true;
                 if (!CompletionSource.TrySetResult(value))
                 {
-                    throw new InvalidOperationException("Task has already terminated so response can not be set : " + value);
+                    throw new InvalidOperationException($"Task has already terminated so response can not be set : {value}");
                 }
             }
         }

@@ -17,7 +17,7 @@ namespace Steeltoe.Stream.Binder
         {
             _errorChannel = errorChannel;
             _defaultErrorChannelPresent = defaultErrorChannelPresent;
-            ServiceName = GetType().Name + "@" + GetHashCode();
+            ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
         public virtual string ServiceName { get; set; }

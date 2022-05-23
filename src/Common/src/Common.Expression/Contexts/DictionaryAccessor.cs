@@ -92,7 +92,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 _key = key;
             }
 
-            public override string Message => "Dictionary does not contain a value for key '" + _key + "'";
+            public override string Message => $"Dictionary does not contain a value for key '{_key}'";
         }
     }
 }

@@ -157,7 +157,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var value = o.GetValueInternal(expressionState);
             Assert.Equal(typeof(string), value.TypeDescriptor);
             Assert.Equal(typeof(string), value.TypeDescriptor);
-            Assert.Equal(time + " is now", value.Value);
+            Assert.Equal($"{time} is now", value.Value);
         }
     }
 }
