@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
     public class HomeController : Controller
     {
         [HttpGet]
-        [Produces("text/plain", new string[] { "application/json", "text/json" })]
+        [Produces("text/plain", "application/json", "text/json")]
         public Person Index()
         {
             return new Person();

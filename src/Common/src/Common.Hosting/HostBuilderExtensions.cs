@@ -110,7 +110,7 @@ namespace Steeltoe.Common.Hosting
             else
             {
                 Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DEFAULT_URL);
-                webHostBuilder.UseUrls(new string[] { DEFAULT_URL });
+                webHostBuilder.UseUrls(DEFAULT_URL);
             }
 
             return webHostBuilder;

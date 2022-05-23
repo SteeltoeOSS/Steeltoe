@@ -30,20 +30,20 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             switch (Configuration.GetValue<string>("HealthCheckType"))
             {
                 case "down":
-                    services.AddHealthActuator(Configuration, new[] { typeof(DownContributor) });
+                    services.AddHealthActuator(Configuration, typeof(DownContributor));
                     break;
                 case "out":
-                    services.AddHealthActuator(Configuration, new[] { typeof(OutOfSserviceContributor) });
+                    services.AddHealthActuator(Configuration, typeof(OutOfSserviceContributor));
                     break;
                 case "unknown":
-                    services.AddHealthActuator(Configuration, new[] { typeof(UnknownContributor) });
+                    services.AddHealthActuator(Configuration, typeof(UnknownContributor));
                     break;
                 case "defaultAggregator":
-                    services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), new[] { typeof(DiskSpaceContributor) });
+                    services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
                     break;
                 case "microsoftHealthAggregator":
                     services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
-                    services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), new[] { typeof(DiskSpaceContributor) });
+                    services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), typeof(DiskSpaceContributor));
                     break;
                 default:
                     services.AddHealthActuator(Configuration);

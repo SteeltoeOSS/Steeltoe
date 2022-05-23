@@ -380,14 +380,14 @@ namespace Steeltoe.Common.Converter
         internal static Type MakeGenericListType(Type type)
         {
             var elemType = type.GetGenericArguments()[0];
-            return typeof(List<>).MakeGenericType(new Type[] { elemType });
+            return typeof(List<>).MakeGenericType(elemType);
         }
 
         internal static Type MakeGenericDictionaryType(Type type)
         {
             var keyType = type.GetGenericArguments()[0];
             var valType = type.GetGenericArguments()[1];
-            return typeof(Dictionary<,>).MakeGenericType(new Type[] { keyType, valType });
+            return typeof(Dictionary<,>).MakeGenericType(keyType, valType);
         }
     }
 }
