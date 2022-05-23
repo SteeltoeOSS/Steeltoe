@@ -63,23 +63,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             ILogger logger = null)
             : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore, executionSemaphore, optionsStrategy, executionHook, null, null, logger)
         {
-            if (run == null)
-            {
-                _run = Run;
-            }
-            else
-            {
-                _run = run;
-            }
-
-            if (fallback == null)
-            {
-                _fallback = RunFallback;
-            }
-            else
-            {
-                _fallback = fallback;
-            }
+            _run = run ?? Run;
+            _fallback = fallback ?? RunFallback;
         }
 
         public new void Execute()
@@ -164,23 +149,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             ILogger logger = null)
             : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore, executionSemaphore, optionsStrategy, executionHook, logger)
         {
-            if (run == null)
-            {
-                _run = Run;
-            }
-            else
-            {
-                _run = run;
-            }
-
-            if (fallback == null)
-            {
-                _fallback = RunFallback;
-            }
-            else
-            {
-                _fallback = fallback;
-            }
+            _run = run ?? Run;
+            _fallback = fallback ?? RunFallback;
         }
 
         public TResult Execute()

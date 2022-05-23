@@ -16,14 +16,7 @@ namespace Steeltoe.Connector.Services
 
         public Tags(string[] tags)
         {
-            if (tags == null)
-            {
-                Values = System.Array.Empty<string>();
-            }
-            else
-            {
-                Values = tags;
-            }
+            Values = tags ?? System.Array.Empty<string>();
         }
 
         internal Tags()

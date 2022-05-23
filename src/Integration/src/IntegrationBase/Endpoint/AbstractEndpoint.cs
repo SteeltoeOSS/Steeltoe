@@ -26,11 +26,7 @@ namespace Steeltoe.Integration.Endpoint
         {
             get
             {
-                if (_integrationServices == null)
-                {
-                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
-                }
-
+                _integrationServices ??= IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
                 return _integrationServices;
             }
         }

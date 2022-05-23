@@ -47,11 +47,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 
         public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
         {
-            var messageProperties = headers;
-            if (messageProperties == null)
-            {
-                messageProperties = new MessageHeaders();
-            }
+            var messageProperties = headers ?? new MessageHeaders();
 
             var message = CreateMessage(payload, messageProperties, conversionHint);
 

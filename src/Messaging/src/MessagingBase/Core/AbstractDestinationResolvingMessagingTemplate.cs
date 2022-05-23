@@ -29,11 +29,7 @@ namespace Steeltoe.Messaging.Core
         {
             get
             {
-                if (_destinationResolver == null)
-                {
-                    _destinationResolver = (IDestinationResolver<D>)ApplicationContext?.GetService(typeof(IDestinationResolver<D>));
-                }
-
+                _destinationResolver ??= (IDestinationResolver<D>)ApplicationContext?.GetService(typeof(IDestinationResolver<D>));
                 return _destinationResolver;
             }
 

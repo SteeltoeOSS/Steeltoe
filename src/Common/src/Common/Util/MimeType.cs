@@ -407,11 +407,7 @@ namespace Steeltoe.Common.Util
                 else
                 {
                     var thisValue = Parameters[thisAttribute];
-                    var otherValue = other.Parameters[otherAttribute];
-                    if (otherValue == null)
-                    {
-                        otherValue = string.Empty;
-                    }
+                    var otherValue = other.Parameters[otherAttribute] ?? string.Empty;
 
                     comp = thisValue.CompareTo(otherValue);
                     if (comp != 0)

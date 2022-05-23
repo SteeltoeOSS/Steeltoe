@@ -89,11 +89,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         {
             get
             {
-                if (_typeLocator == null)
-                {
-                    _typeLocator = new StandardTypeLocator();
-                }
-
+                _typeLocator ??= new StandardTypeLocator();
                 return _typeLocator;
             }
 
@@ -107,11 +103,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         {
             get
             {
-                if (_typeConverter == null)
-                {
-                    _typeConverter = new StandardTypeConverter();
-                }
-
+                _typeConverter ??= new StandardTypeConverter();
                 return _typeConverter;
             }
 

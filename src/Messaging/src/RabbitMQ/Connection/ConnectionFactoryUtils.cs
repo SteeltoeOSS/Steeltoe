@@ -110,11 +110,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 }
             }
 
-            var resourceHolderToUse = resourceHolder;
-            if (resourceHolderToUse == null)
-            {
-                resourceHolderToUse = new RabbitResourceHolder();
-            }
+            var resourceHolderToUse = resourceHolder ?? new RabbitResourceHolder();
 
             var connection = resourceFactory.GetConnection(resourceHolderToUse);
             RC.IModel channel;

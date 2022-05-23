@@ -90,11 +90,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                     expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 2);
 
                     NextToken();  // elvis has left the building
-                    var valueIfNull = EatExpression();
-                    if (valueIfNull == null)
-                    {
-                        valueIfNull = new NullLiteral(t.StartPos + 1, t.EndPos + 1);
-                    }
+                    var valueIfNull = EatExpression() ?? new NullLiteral(t.StartPos + 1, t.EndPos + 1);
 
                     return new Elvis(t.StartPos, t.EndPos, expr, valueIfNull);
                 }

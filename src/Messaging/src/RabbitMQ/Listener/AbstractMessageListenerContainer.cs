@@ -66,11 +66,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             get
             {
-                if (_connectionFactory == null)
-                {
-                    _connectionFactory = ApplicationContext.GetService<IConnectionFactory>();
-                }
-
+                _connectionFactory ??= ApplicationContext.GetService<IConnectionFactory>();
                 return _connectionFactory;
             }
 
@@ -351,11 +347,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 throw new ArgumentNullException(nameof(afterReceivePostProcessors));
             }
 
-            var current = AfterReceivePostProcessors;
-            if (current == null)
-            {
-                current = new List<IMessagePostProcessor>();
-            }
+            var current = AfterReceivePostProcessors ?? new List<IMessagePostProcessor>();
 
             var asList = afterReceivePostProcessors.ToList();
             asList.AddRange(current);

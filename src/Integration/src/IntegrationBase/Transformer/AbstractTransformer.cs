@@ -24,11 +24,8 @@ namespace Steeltoe.Integration.Transformer
         {
             get
             {
-                if (_messageBuilderFactory == null)
-                {
-                    _messageBuilderFactory = ApplicationContext.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
-                }
-
+                _messageBuilderFactory ??=
+                    ApplicationContext.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
                 return _messageBuilderFactory;
             }
 

@@ -109,11 +109,7 @@ namespace Steeltoe.Common.Converter
                 return converter != NO_MATCH ? converter : null;
             }
 
-            converter = _converters.Find(sourceType, targetType);
-            if (converter == null)
-            {
-                converter = GetDefaultConverter(sourceType, targetType);
-            }
+            converter = _converters.Find(sourceType, targetType) ?? GetDefaultConverter(sourceType, targetType);
 
             if (converter != null)
             {

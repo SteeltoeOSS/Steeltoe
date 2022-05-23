@@ -72,15 +72,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixThreadPoolKey threadPoolKey, IHystrixCommandOptions properties)
         {
             // attempt to retrieve from cache first
-            IHystrixThreadPoolKey nonNullThreadPoolKey;
-            if (threadPoolKey == null)
-            {
-                nonNullThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(commandGroup.Name);
-            }
-            else
-            {
-                nonNullThreadPoolKey = threadPoolKey;
-            }
+            var nonNullThreadPoolKey = threadPoolKey ?? HystrixThreadPoolKeyDefault.AsKey(commandGroup.Name);
 
             return Metrics.GetOrAddEx(key.Name, (k) => new HystrixCommandMetrics(key, commandGroup, nonNullThreadPoolKey, properties, HystrixPlugins.EventNotifier));
         }

@@ -86,11 +86,7 @@ namespace Steeltoe.Stream.Binder
         {
             get
             {
-                if (_evaluationContext == null)
-                {
-                    _evaluationContext = _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
-                }
-
+                _evaluationContext ??= _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
                 return _evaluationContext;
             }
 
@@ -104,11 +100,7 @@ namespace Steeltoe.Stream.Binder
         {
             get
             {
-                if (_expressionParser == null)
-                {
-                    _expressionParser = new SpelExpressionParser();
-                }
-
+                _expressionParser ??= new SpelExpressionParser();
                 return _expressionParser;
             }
 

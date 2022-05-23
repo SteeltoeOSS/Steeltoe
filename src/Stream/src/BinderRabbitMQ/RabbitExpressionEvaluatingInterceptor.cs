@@ -33,30 +33,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 throw new ArgumentException("At least one expression is required");
             }
 
-            if (evaluationContext == null)
-            {
-                throw new ArgumentNullException(nameof(evaluationContext));
-            }
-
-            if (routingKeyExpression != null)
-            {
-                RoutingKeyExpression = routingKeyExpression;
-            }
-            else
-            {
-                RoutingKeyExpression = null;
-            }
-
-            if (delayExpression != null)
-            {
-                DelayExpression = delayExpression;
-            }
-            else
-            {
-                DelayExpression = null;
-            }
-
-            EvaluationContext = evaluationContext;
+            RoutingKeyExpression = routingKeyExpression;
+            DelayExpression = delayExpression;
+            EvaluationContext = evaluationContext ?? throw new ArgumentNullException(nameof(evaluationContext));
         }
 
         public void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception exception)

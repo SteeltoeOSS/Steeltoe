@@ -88,11 +88,7 @@ namespace Steeltoe.Stream.Binder
                 throw new InvalidOperationException("Multiple binders are available, however neither default nor per-destination binder name is provided.");
             }
 
-            if (result == null)
-            {
-                result = DoGetBinder(binderName, bindableType);
-            }
-
+            result ??= DoGetBinder(binderName, bindableType);
             return result;
         }
 

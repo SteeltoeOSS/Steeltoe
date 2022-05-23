@@ -10,11 +10,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
     {
         protected Dictionary<string, object> GetOrCreateArguments()
         {
-            if (Arguments == null)
-            {
-                Arguments = new Dictionary<string, object>();
-            }
-
+            Arguments ??= new Dictionary<string, object>();
             return Arguments;
         }
 

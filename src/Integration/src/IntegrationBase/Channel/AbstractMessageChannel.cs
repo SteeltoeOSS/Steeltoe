@@ -45,11 +45,7 @@ namespace Steeltoe.Integration.Channel
         {
             get
             {
-                if (_integrationServices == null)
-                {
-                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
-                }
-
+                _integrationServices ??= IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
                 return _integrationServices;
             }
         }
@@ -66,11 +62,7 @@ namespace Steeltoe.Integration.Channel
         {
             get
             {
-                if (_messageConverter == null)
-                {
-                    _messageConverter = ApplicationContext.GetService<DefaultDatatypeChannelMessageConverter>();
-                }
-
+                _messageConverter ??= ApplicationContext.GetService<DefaultDatatypeChannelMessageConverter>();
                 return _messageConverter;
             }
 

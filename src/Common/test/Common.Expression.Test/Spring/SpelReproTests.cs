@@ -1641,14 +1641,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 var sb = new StringBuilder();
                 foreach (var str in strings)
                 {
-                    if (str == null)
-                    {
-                        sb.Append("null");
-                    }
-                    else
-                    {
-                        sb.Append(str);
-                    }
+                    sb.Append(str ?? "null");
                 }
 
                 return sb.ToString();

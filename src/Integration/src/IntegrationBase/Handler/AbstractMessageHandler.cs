@@ -25,11 +25,7 @@ namespace Steeltoe.Integration.Handler
         {
             get
             {
-                if (_integrationServices == null)
-                {
-                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
-                }
-
+                _integrationServices ??= IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
                 return _integrationServices;
             }
         }

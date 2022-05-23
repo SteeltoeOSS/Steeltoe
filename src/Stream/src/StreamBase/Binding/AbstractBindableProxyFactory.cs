@@ -70,12 +70,7 @@ namespace Steeltoe.Stream.Binding
 
         public override object GetBoundTarget(string name)
         {
-            var result = GetBoundInputTarget(name);
-            if (result == null)
-            {
-                result = GetBoundOutputTarget(name);
-            }
-
+            var result = GetBoundInputTarget(name) ?? GetBoundOutputTarget(name);
             return result;
         }
 

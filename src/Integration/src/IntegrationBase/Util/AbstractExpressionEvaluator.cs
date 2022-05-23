@@ -27,11 +27,7 @@ namespace Steeltoe.Integration.Util
         {
             get
             {
-                if (_evaluationContext == null)
-                {
-                    _evaluationContext = GetEvaluationContext();
-                }
-
+                _evaluationContext ??= GetEvaluationContext();
                 return _evaluationContext;
             }
 
@@ -45,11 +41,7 @@ namespace Steeltoe.Integration.Util
         {
             get
             {
-                if (_integrationServices == null)
-                {
-                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
-                }
-
+                _integrationServices ??= IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
                 return _integrationServices;
             }
         }
@@ -58,11 +50,7 @@ namespace Steeltoe.Integration.Util
         {
             get
             {
-                if (_messageBuilderFactory == null)
-                {
-                    _messageBuilderFactory = GetMessageBuilderFactory();
-                }
-
+                _messageBuilderFactory ??= GetMessageBuilderFactory();
                 return _messageBuilderFactory;
             }
 

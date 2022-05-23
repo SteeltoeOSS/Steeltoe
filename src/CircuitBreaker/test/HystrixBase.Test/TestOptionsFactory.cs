@@ -11,22 +11,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         public override IHystrixCommandOptions GetCommandOptions(IHystrixCommandKey commandKey, IHystrixCommandOptions builder)
         {
-            if (builder == null)
-            {
-                builder = HystrixCommandOptionsTest.GetUnitTestOptions();
-            }
-
-            return builder;
+            return builder ?? HystrixCommandOptionsTest.GetUnitTestOptions();
         }
 
         public override IHystrixThreadPoolOptions GetThreadPoolOptions(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions builder)
         {
-            if (builder == null)
-            {
-                builder = HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();
-            }
-
-            return builder;
+            return builder ?? HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();
         }
 
         public override IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions builder)

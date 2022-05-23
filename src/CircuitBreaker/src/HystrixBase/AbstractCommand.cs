@@ -623,14 +623,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             var userThreadLatency = Time.CurrentTimeMillis - _commandStartTimestamp;
             _executionResult = _executionResult.MarkUserThreadCompletion((int)userThreadLatency);
-            if (_executionResultAtTimeOfCancellation == null)
-            {
-                _metrics.MarkCommandDone(_executionResult, commandKey, threadPoolKey, commandExecutionStarted);
-            }
-            else
-            {
-                _metrics.MarkCommandDone(_executionResultAtTimeOfCancellation, commandKey, threadPoolKey, commandExecutionStarted);
-            }
+            _metrics.MarkCommandDone(_executionResultAtTimeOfCancellation ?? _executionResult, commandKey, threadPoolKey, commandExecutionStarted);
         }
 
         protected virtual void HandleThreadEnd()
@@ -1616,15 +1609,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             get
             {
-                ExecutionResult resultToReturn;
-                if (_executionResultAtTimeOfCancellation == null)
-                {
-                    resultToReturn = _executionResult;
-                }
-                else
-                {
-                    resultToReturn = _executionResultAtTimeOfCancellation;
-                }
+                var resultToReturn = _executionResultAtTimeOfCancellation ?? _executionResult;
 
                 if (_isResponseFromCache)
                 {

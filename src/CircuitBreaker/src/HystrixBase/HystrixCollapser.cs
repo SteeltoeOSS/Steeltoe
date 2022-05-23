@@ -59,15 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var options = HystrixOptionsFactory.GetCollapserOptions(collapserKey, optionsDefault);
             _collapserFactory = new RequestCollapserFactory(collapserKey, scope, timer, options);
             _requestCache = HystrixRequestCache.GetInstance(collapserKey);
-
-            if (metrics == null)
-            {
-                _metrics = HystrixCollapserMetrics.GetInstance(collapserKey, options);
-            }
-            else
-            {
-                _metrics = metrics;
-            }
+            _metrics = metrics ?? HystrixCollapserMetrics.GetInstance(collapserKey, options);
 
             HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCollapser(collapserKey, _metrics, options);
         }

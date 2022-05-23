@@ -50,12 +50,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             _thisInstance = new ThisServiceInstance(instConfig);
             _configOptions = clientConfig;
-
-            _httpClient = httpClient;
-            if (_httpClient == null)
-            {
-                _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
-            }
+            _httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
 
             Initialize();
         }

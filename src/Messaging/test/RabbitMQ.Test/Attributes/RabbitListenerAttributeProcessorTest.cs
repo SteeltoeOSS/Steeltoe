@@ -242,11 +242,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     .Callback<string>((name) => queueName.Value = name);
 
                 var services = new ServiceCollection();
-                var config = configuration;
-                if (config == null)
-                {
-                    config = new ConfigurationBuilder().Build();
-                }
+                var config = configuration ?? new ConfigurationBuilder().Build();
 
                 services.AddSingleton<IConfiguration>(config);
                 services.AddSingleton<IConnectionFactory>(mockConnectionFactory.Object);

@@ -35,11 +35,7 @@ namespace Steeltoe.Integration
         {
             get
             {
-                if (_integrationServices == null)
-                {
-                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(_context);
-                }
-
+                _integrationServices ??= IntegrationServicesUtils.GetIntegrationServices(_context);
                 return _integrationServices;
             }
         }
@@ -91,11 +87,7 @@ namespace Steeltoe.Integration
         {
             get
             {
-                if (_channelResolver == null)
-                {
-                    _channelResolver = IntegrationServices.ChannelResolver;
-                }
-
+                _channelResolver ??= IntegrationServices.ChannelResolver;
                 return _channelResolver;
             }
 
@@ -172,11 +164,7 @@ namespace Steeltoe.Integration
             {
                 if (_channel == null)
                 {
-                    var recoveryChannelName = ChannelName;
-                    if (recoveryChannelName == null)
-                    {
-                        recoveryChannelName = IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME;
-                    }
+                    var recoveryChannelName = ChannelName ?? IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME;
 
                     if (_channelResolver != null)
                     {

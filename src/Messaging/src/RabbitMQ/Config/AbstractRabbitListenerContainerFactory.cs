@@ -60,13 +60,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         {
             get
             {
-                _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>();
-
-                if (_messageConverter == null)
-                {
-                    _messageConverter = new RabbitMQ.Support.Converter.SimpleMessageConverter(_loggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
-                }
-
+                _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>() ?? new RabbitMQ.Support.Converter.SimpleMessageConverter(_loggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
                 return _messageConverter;
             }
             set => _messageConverter = value;

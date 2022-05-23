@@ -51,11 +51,7 @@ namespace Steeltoe.Integration.Handler
         {
             get
             {
-                if (_conversionService == null)
-                {
-                    _conversionService = IntegrationServices.ConversionService;
-                }
-
+                _conversionService ??= IntegrationServices.ConversionService;
                 return _conversionService;
             }
 
@@ -118,12 +114,7 @@ namespace Steeltoe.Integration.Handler
 
         private IMessageHandlerMethodFactory ConfigureMessageHandlerFactory()
         {
-            var factory = ApplicationContext?.GetService<IMessageHandlerMethodFactory>();
-            if (factory == null)
-            {
-                factory = ConfigureLocalMessageHandlerFactory();
-            }
-
+            var factory = ApplicationContext?.GetService<IMessageHandlerMethodFactory>() ?? ConfigureLocalMessageHandlerFactory();
             return factory;
         }
 

@@ -56,11 +56,7 @@ namespace Steeltoe.Integration.Dispatcher
         {
             get
             {
-                if (_integrationServices == null)
-                {
-                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(_context);
-                }
-
+                _integrationServices ??= IntegrationServicesUtils.GetIntegrationServices(_context);
                 return _integrationServices;
             }
         }

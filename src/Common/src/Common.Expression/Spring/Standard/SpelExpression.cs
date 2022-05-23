@@ -47,11 +47,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         {
             get
             {
-                if (_evaluationContext == null)
-                {
-                    _evaluationContext = new StandardEvaluationContext();
-                }
-
+                _evaluationContext ??= new StandardEvaluationContext();
                 return _evaluationContext;
             }
 

@@ -109,11 +109,7 @@ namespace Steeltoe.Common.Configuration
                         {
                             var actualPlaceholder = placeholder.Substring(0, separatorIndex);
                             var defaultValue = placeholder.Substring(separatorIndex + SEPARATOR.Length);
-                            propVal = config[actualPlaceholder];
-                            if (propVal == null)
-                            {
-                                propVal = defaultValue;
-                            }
+                            propVal = config[actualPlaceholder] ?? defaultValue;
                         }
                         else if (useEmptyStringIfNotFound)
                         {

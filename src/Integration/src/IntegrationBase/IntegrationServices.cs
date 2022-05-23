@@ -32,11 +32,7 @@ namespace Steeltoe.Integration
         {
             get
             {
-                if (_messageBuilderFactory == null)
-                {
-                    _messageBuilderFactory = _context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
-                }
-
+                _messageBuilderFactory ??= _context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
                 return _messageBuilderFactory;
             }
 
@@ -50,11 +46,7 @@ namespace Steeltoe.Integration
         {
             get
             {
-                if (_expressionParser == null)
-                {
-                    _expressionParser = _context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
-                }
-
+                _expressionParser ??= _context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
                 return _expressionParser;
             }
 
@@ -68,11 +60,7 @@ namespace Steeltoe.Integration
         {
             get
             {
-                if (_channelResolver == null)
-                {
-                    _channelResolver = _context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(_context);
-                }
-
+                _channelResolver ??= _context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(_context);
                 return _channelResolver;
             }
 
@@ -86,11 +74,7 @@ namespace Steeltoe.Integration
         {
             get
             {
-                if (_conversionService == null)
-                {
-                    _conversionService = _context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
-                }
-
+                _conversionService ??= _context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
                 return _conversionService;
             }
 
@@ -104,11 +88,7 @@ namespace Steeltoe.Integration
         {
             get
             {
-                if (_idGenerator == null)
-                {
-                    _idGenerator = _context?.GetService<IIDGenerator>() ?? new DefaultIdGenerator();
-                }
-
+                _idGenerator ??= _context?.GetService<IIDGenerator>() ?? new DefaultIdGenerator();
                 return _idGenerator;
             }
 

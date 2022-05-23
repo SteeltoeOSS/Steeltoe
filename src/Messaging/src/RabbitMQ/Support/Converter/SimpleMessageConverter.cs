@@ -39,11 +39,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
                 var contentType = properties.ContentType();
                 if (contentType != null && contentType.StartsWith("text"))
                 {
-                    var encoding = properties.ContentEncoding();
-                    if (encoding == null)
-                    {
-                        encoding = DefaultCharset;
-                    }
+                    var encoding = properties.ContentEncoding() ?? DefaultCharset;
 
                     try
                     {

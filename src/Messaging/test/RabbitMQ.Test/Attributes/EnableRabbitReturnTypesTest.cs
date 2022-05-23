@@ -220,11 +220,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
         {
             var services = new ServiceCollection();
-            var config = configuration;
-            if (config == null)
-            {
-                config = new ConfigurationBuilder().Build();
-            }
+            var config = configuration ?? new ConfigurationBuilder().Build();
 
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();

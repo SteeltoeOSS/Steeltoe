@@ -43,11 +43,7 @@ namespace Steeltoe.Integration.Config
             ApplicationContext = applicatonContext ?? throw new ArgumentNullException(nameof(applicatonContext));
             _logger = logger;
             MessageHandlerProperties.Add(SEND_TIMEOUT_PROPERTY);
-            ConversionService = ApplicationContext.GetService<IConversionService>();
-            if (ConversionService == null)
-            {
-                ConversionService = DefaultConversionService.Singleton;
-            }
+            ConversionService = ApplicationContext.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
 
             ChannelResolver = new DefaultMessageChannelDestinationResolver(applicatonContext);
             AnnotationType = typeof(A);

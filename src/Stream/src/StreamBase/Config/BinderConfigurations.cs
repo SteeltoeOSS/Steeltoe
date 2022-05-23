@@ -33,11 +33,7 @@ namespace Steeltoe.Stream.Config
         {
             get
             {
-                if (_configurations == null)
-                {
-                    _configurations = GetBinderConfigurations();
-                }
-
+                _configurations ??= GetBinderConfigurations();
                 return _configurations;
             }
         }

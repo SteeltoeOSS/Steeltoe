@@ -312,11 +312,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             RabbitCommonOptions extendedProperties,
             int index)
         {
-            var bindingKey = rk;
-            if (bindingKey == null)
-            {
-                bindingKey = destination;
-            }
+            var bindingKey = rk ?? destination;
 
             bindingKey += "-" + index;
             var arguments = new Dictionary<string, object>();
@@ -361,11 +357,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             string rk,
             RabbitCommonOptions extendedProperties)
         {
-            var routingKey = rk;
-            if (routingKey == null)
-            {
-                routingKey = "#";
-            }
+            var routingKey = rk ?? "#";
 
             var arguments = new Dictionary<string, object>();
             foreach (var entry in extendedProperties.QueueBindingArguments)
@@ -440,15 +432,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             _logger.LogDebug("autoBindDLQ=" + autoBindDlq + " for: " + baseQueueName);
             if (autoBindDlq)
             {
-                string dlqName;
-                if (properties.DeadLetterQueueName == null)
-                {
-                    dlqName = ConstructDLQName(baseQueueName);
-                }
-                else
-                {
-                    dlqName = properties.DeadLetterQueueName;
-                }
+                var dlqName = properties.DeadLetterQueueName ?? ConstructDLQName(baseQueueName);
 
                 var dlq = new Queue(dlqName, true, false, false, GetQueueArgs(dlqName, properties, true));
                 DeclareQueue(dlqName, dlq);
@@ -527,27 +511,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             {
                 if (properties.AutoBindDlq.Value)
                 {
-                    string dlx;
-                    if (properties.DeadLetterExchange != null)
-                    {
-                        dlx = properties.DeadLetterExchange;
-                    }
-                    else
-                    {
-                        dlx = ApplyPrefix(properties.Prefix, "DLX");
-                    }
+                    var dlx = properties.DeadLetterExchange ?? ApplyPrefix(properties.Prefix, "DLX");
 
                     args.Add("x-dead-letter-exchange", dlx);
 
-                    string dlRk;
-                    if (properties.DeadLetterRoutingKey != null)
-                    {
-                        dlRk = properties.DeadLetterRoutingKey;
-                    }
-                    else
-                    {
-                        dlRk = queueName;
-                    }
+                    var dlRk = properties.DeadLetterRoutingKey ?? queueName;
 
                     args.Add("x-dead-letter-routing-key", dlRk);
                 }

@@ -42,10 +42,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 result = new List<JsonApplication>();
             }
 
-            if (result == null)
-            {
-                result = new List<JsonApplication>();
-            }
+            result ??= new List<JsonApplication>();
 
             return result;
         }

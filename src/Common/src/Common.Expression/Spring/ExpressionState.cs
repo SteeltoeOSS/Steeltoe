@@ -189,11 +189,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         private Stack<ITypedValue> InitScopeRootObjects()
         {
-            if (_scopeRootObjects == null)
-            {
-                _scopeRootObjects = new Stack<ITypedValue>();
-            }
-
+            _scopeRootObjects ??= new Stack<ITypedValue>();
             return _scopeRootObjects;
         }
 

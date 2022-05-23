@@ -59,13 +59,7 @@ namespace Steeltoe.Discovery.Eureka
             : this(ApplicationInfoManager.Instance, logFactory)
         {
             ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
-
-            _httpClient = httpClient;
-
-            if (_httpClient == null)
-            {
-                _httpClient = new EurekaHttpClient(clientConfig, logFactory);
-            }
+            _httpClient = httpClient ?? new EurekaHttpClient(clientConfig, logFactory);
 
             Initialize();
         }

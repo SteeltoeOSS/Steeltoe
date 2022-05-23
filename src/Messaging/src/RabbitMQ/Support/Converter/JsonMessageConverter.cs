@@ -70,11 +70,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
                     && (contentType == null || contentType.Equals(RabbitHeaderAccessor.DEFAULT_CONTENT_TYPE)))
                     || (contentType != null && contentType.Contains(SupportedContentType.Subtype)))
                 {
-                    var encoding = EncodingUtils.GetEncoding(properties.ContentEncoding());
-                    if (encoding == null)
-                    {
-                        encoding = DefaultCharset;
-                    }
+                    var encoding = EncodingUtils.GetEncoding(properties.ContentEncoding()) ?? DefaultCharset;
 
                     content = DoFromMessage(message, targetType, conversionHint, properties, encoding);
                 }
@@ -85,11 +81,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
                 }
             }
 
-            if (content == null)
-            {
-                content = message.Payload;
-            }
-
+            content ??= message.Payload;
             return content;
         }
 
