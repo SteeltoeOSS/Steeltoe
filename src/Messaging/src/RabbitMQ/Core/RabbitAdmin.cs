@@ -540,9 +540,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private List<RC.QueueDeclareOk> DeclareQueues(RC.IModel channel, params IQueue[] queues)
         {
             var declareOks = new List<RC.QueueDeclareOk>(queues.Length);
-            for (var i = 0; i < queues.Length; i++)
+            foreach (var queue in queues)
             {
-                var queue = queues[i];
                 if (!queue.QueueName.StartsWith("amq."))
                 {
                     _logger?.LogDebug("Declaring Queue '{queueName}'", queue.QueueName);

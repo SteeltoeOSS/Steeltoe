@@ -32,9 +32,8 @@ namespace Steeltoe.Stream.Binding
         {
             var count = 0;
             var parameters = Method.GetParameters();
-            for (var parameterIndex = 0; parameterIndex < parameters.Length; parameterIndex++)
+            foreach (var methodParameter in parameters)
             {
-                var methodParameter = parameters[parameterIndex];
                 if (methodParameter.GetCustomAttribute<InputAttribute>() != null)
                 {
                     count++;
@@ -48,9 +47,8 @@ namespace Steeltoe.Stream.Binding
         {
             var count = 0;
             var parameters = Method.GetParameters();
-            for (var parameterIndex = 0; parameterIndex < parameters.Length; parameterIndex++)
+            foreach (var methodParameter in parameters)
             {
-                var methodParameter = parameters[parameterIndex];
                 if (methodParameter.GetCustomAttribute<OutputAttribute>() != null)
                 {
                     count++;

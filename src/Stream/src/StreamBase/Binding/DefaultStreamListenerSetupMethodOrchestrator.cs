@@ -71,9 +71,8 @@ namespace Steeltoe.Stream.Binding
                     if (string.IsNullOrEmpty(outboundName))
                     {
                         var parameters = method.GetParameters();
-                        for (var parameterIndex = 0; parameterIndex < parameters.Length; parameterIndex++)
+                        foreach (var methodParameter in parameters)
                         {
-                            var methodParameter = parameters[parameterIndex];
                             var attr = methodParameter.GetCustomAttribute<OutputAttribute>();
                             if (attr != null)
                             {

@@ -7,6 +7,7 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring
@@ -134,14 +135,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 }
 
                 var myRoles = Roles;
-                for (var i = 0; i < myRoles.Length; i++)
+                foreach (var myRole in myRoles)
                 {
-                    for (var j = 0; j < roles.Length; j++)
+                    if (roles.Any(role => myRole.Equals(role)))
                     {
-                        if (myRoles[i].Equals(roles[j]))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
 

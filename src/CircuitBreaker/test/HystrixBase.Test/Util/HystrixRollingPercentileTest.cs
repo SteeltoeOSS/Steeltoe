@@ -129,10 +129,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             var time = new MockedTime();
             var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
             var previousTime = 0;
-            for (var i = 0; i < SampleDataHolder1.Data.Length; i++)
+            foreach (var sample in SampleDataHolder1.Data)
             {
-                var timeInMillisecondsSinceStart = SampleDataHolder1.Data[i][0];
-                var latency = SampleDataHolder1.Data[i][1];
+                var timeInMillisecondsSinceStart = sample[0];
+                var latency = sample[1];
                 time.Increment(timeInMillisecondsSinceStart - previousTime);
                 previousTime = timeInMillisecondsSinceStart;
                 p.AddValue(latency);
@@ -173,10 +173,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             var time = new MockedTime();
             var previousTime = 0;
             var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
-            for (var i = 0; i < SampleDataHolder2.Data.Length; i++)
+            foreach (var sample in SampleDataHolder2.Data)
             {
-                var timeInMillisecondsSinceStart = SampleDataHolder2.Data[i][0];
-                var latency = SampleDataHolder2.Data[i][1];
+                var timeInMillisecondsSinceStart = sample[0];
+                var latency = sample[1];
                 time.Increment(timeInMillisecondsSinceStart - previousTime);
                 previousTime = timeInMillisecondsSinceStart;
                 p.AddValue(latency);
@@ -299,10 +299,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             var time = new MockedTime();
             var previousTime = 0;
             var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, false);
-            for (var i = 0; i < SampleDataHolder2.Data.Length; i++)
+            foreach (var sample in SampleDataHolder2.Data)
             {
-                var timeInMillisecondsSinceStart = SampleDataHolder2.Data[i][0];
-                var latency = SampleDataHolder2.Data[i][1];
+                var timeInMillisecondsSinceStart = sample[0];
+                var latency = sample[1];
                 time.Increment(timeInMillisecondsSinceStart - previousTime);
                 previousTime = timeInMillisecondsSinceStart;
                 p.AddValue(latency);

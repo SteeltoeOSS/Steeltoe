@@ -370,9 +370,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             var result = new List<string>();
             if (queues.Length > 0)
             {
-                for (var i = 0; i < queues.Length; i++)
+                foreach (var queueExpression in queues)
                 {
-                    var queueExpression = queues[i];
                     ResolveQueue(queueExpression, result);
                 }
             }

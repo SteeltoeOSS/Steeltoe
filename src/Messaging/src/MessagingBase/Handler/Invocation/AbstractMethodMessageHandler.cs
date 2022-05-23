@@ -262,9 +262,8 @@ namespace Steeltoe.Messaging.Handler.Invocation
                 return destination;
             }
 
-            for (var i = 0; i < _destinationPrefixes.Count; i++)
+            foreach (var prefix in _destinationPrefixes)
             {
-                var prefix = _destinationPrefixes[i];
                 if (destination.StartsWith(prefix))
                 {
                     return destination[prefix.Length..];

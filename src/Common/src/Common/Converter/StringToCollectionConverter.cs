@@ -44,9 +44,8 @@ namespace Steeltoe.Common.Converter
                 throw new InvalidOperationException("Unable to create compatable list");
             }
 
-            for (var i = 0; i < fields.Length; i++)
+            foreach (var sourceElement in fields)
             {
-                var sourceElement = fields[i];
                 var targetElement = _conversionService.Convert(sourceElement.Trim(), sourceType, targetElementType);
                 list.Add(targetElement);
             }

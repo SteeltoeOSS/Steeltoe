@@ -64,9 +64,8 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
         private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
         {
-            for (var i = 0; i < _returnValueHandlers.Count; i++)
+            foreach (var handler in _returnValueHandlers)
             {
-                var handler = _returnValueHandlers[i];
                 if (handler.SupportsReturnType(returnType))
                 {
                     return handler;

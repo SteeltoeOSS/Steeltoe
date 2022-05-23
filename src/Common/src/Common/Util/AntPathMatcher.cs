@@ -68,9 +68,8 @@ namespace Steeltoe.Common.Util
         public virtual bool IsPattern(string path)
         {
             var uriVar = false;
-            for (var i = 0; i < path.Length; i++)
+            foreach (var c in path)
             {
-                var c = path[i];
                 if (c == '*' || c == '?')
                 {
                     return true;
@@ -511,9 +510,8 @@ namespace Steeltoe.Common.Util
         private int SkipSegment(string path, int pos, string prefix)
         {
             var skipped = 0;
-            for (var i = 0; i < prefix.Length; i++)
+            foreach (var c in prefix)
             {
-                var c = prefix[i];
                 if (IsWildcardChar(c))
                 {
                     return skipped;

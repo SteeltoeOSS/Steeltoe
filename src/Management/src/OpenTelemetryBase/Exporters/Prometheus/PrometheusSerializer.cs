@@ -88,9 +88,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteAsciiStringNoEscape(byte[] buffer, int cursor, string value)
         {
-            for (int i = 0; i < value.Length; i++)
+            foreach (var ch in value)
             {
-                buffer[cursor++] = unchecked((byte)value[i]);
+                buffer[cursor++] = unchecked((byte)ch);
             }
 
             return cursor;
@@ -125,9 +125,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteUnicodeString(byte[] buffer, int cursor, string value)
         {
-            for (int i = 0; i < value.Length; i++)
+            foreach (var ch in value)
             {
-                var ordinal = (ushort)value[i];
+                var ordinal = (ushort)ch;
                 switch (ordinal)
                 {
                     case ASCII_REVERSE_SOLIDUS:
@@ -159,9 +159,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
                 buffer[cursor++] = unchecked((byte)'_');
             }
 
-            for (int i = 0; i < value.Length; i++)
+            foreach (var ch in value)
             {
-                ordinal = (ushort)value[i];
+                ordinal = (ushort)ch;
 
                 if ((ordinal >= (ushort)'A' && ordinal <= (ushort)'Z') ||
                     (ordinal >= (ushort)'a' && ordinal <= (ushort)'z') ||
@@ -183,9 +183,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
         {
             Debug.Assert(value != null, $"{nameof(value)} should not be null.");
 
-            for (int i = 0; i < value.Length; i++)
+            foreach (var ch in value)
             {
-                var ordinal = (ushort)value[i];
+                var ordinal = (ushort)ch;
                 switch (ordinal)
                 {
                     case ASCII_QUOTATION_MARK:
@@ -228,9 +228,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
         {
             Debug.Assert(!string.IsNullOrEmpty(metricName), $"{nameof(metricName)} should not be null or empty.");
 
-            for (int i = 0; i < metricName.Length; i++)
+            foreach (var ch in metricName)
             {
-                var ordinal = (ushort)metricName[i];
+                var ordinal = (ushort)ch;
                 switch (ordinal)
                 {
                     case ASCII_FULL_STOP:
@@ -247,9 +247,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
             {
                 buffer[cursor++] = unchecked((byte)'_');
 
-                for (int i = 0; i < metricUnit.Length; i++)
+                foreach (var ch in metricUnit)
                 {
-                    var ordinal = (ushort)metricUnit[i];
+                    var ordinal = (ushort)ch;
 
                     if ((ordinal >= (ushort)'A' && ordinal <= (ushort)'Z') ||
                         (ordinal >= (ushort)'a' && ordinal <= (ushort)'z') ||

@@ -243,9 +243,9 @@ namespace Steeltoe.Messaging.Handler
             }
 
             // Load all arg values from locals, including this
-            for (var i = 0; i < argLocals.Length; i++)
+            foreach (var builder in argLocals)
             {
-                generator.Emit(OpCodes.Ldloc, argLocals[i]);
+                generator.Emit(OpCodes.Ldloc, builder);
             }
 
             // Call target method

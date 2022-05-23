@@ -335,9 +335,8 @@ namespace Steeltoe.Integration.Channel
 
                 var interceptors = _interceptors;
 
-                for (var i = 0; i < interceptors.Length; i++)
+                foreach (var interceptor in interceptors)
                 {
-                    var interceptor = interceptors[i];
                     var previous = message;
                     message = interceptor.PreSend(message, channel);
                     if (message == null)
@@ -356,9 +355,8 @@ namespace Steeltoe.Integration.Channel
             {
                 var interceptors = _interceptors;
 
-                for (var i = 0; i < interceptors.Length; i++)
+                foreach (var interceptor in interceptors)
                 {
-                    var interceptor = interceptors[i];
                     interceptor.PostSend(message, channel, sent);
                 }
             }
@@ -387,10 +385,8 @@ namespace Steeltoe.Integration.Channel
             {
                 var interceptors = _interceptors;
 
-                for (var i = 0; i < interceptors.Length; i++)
+                foreach (var interceptor in interceptors)
                 {
-                    var interceptor = interceptors[i];
-
                     if (!interceptor.PreReceive(channel))
                     {
                         AfterReceiveCompletion((IMessage)null, channel, (Exception)null, interceptorStack);
@@ -408,9 +404,8 @@ namespace Steeltoe.Integration.Channel
                 var message = messageArg;
                 var interceptors = _interceptors;
 
-                for (var i = 0; i < interceptors.Length; i++)
+                foreach (var interceptor in interceptors)
                 {
-                    var interceptor = interceptors[i];
                     message = interceptor.PostReceive(message, channel);
                     if (message == null)
                     {

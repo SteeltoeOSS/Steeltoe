@@ -46,15 +46,13 @@ namespace Steeltoe.Common.Net
             {
                 var lowest = int.MaxValue;
                 var ifaces = NetworkInterface.GetAllNetworkInterfaces();
-                for (var i = 0; i < ifaces.Length; i++)
+                foreach (var iface in ifaces)
                 {
-                    var ifc = ifaces[i];
-
-                    if (ifc.OperationalStatus == OperationalStatus.Up && !ifc.IsReceiveOnly)
+                    if (iface.OperationalStatus == OperationalStatus.Up && !iface.IsReceiveOnly)
                     {
-                        _logger?.LogTrace("Testing interface: {name}, {id}", ifc.Name, ifc.Id);
+                        _logger?.LogTrace("Testing interface: {name}, {id}", iface.Name, iface.Id);
 
-                        var props = ifc.GetIPProperties();
+                        var props = iface.GetIPProperties();
                         var ipprops = props.GetIPv4Properties();
 
                         if (ipprops.Index < lowest || result == null)
@@ -66,7 +64,7 @@ namespace Steeltoe.Common.Net
                             continue;
                         }
 
-                        if (!IgnoreInterface(ifc.Name))
+                        if (!IgnoreInterface(iface.Name))
                         {
                             foreach (var addressInfo in props.UnicastAddresses)
                             {
@@ -75,7 +73,7 @@ namespace Steeltoe.Common.Net
                                     && !IsLoopbackAddress(address)
                                     && IsPreferredAddress(address))
                                 {
-                                    _logger?.LogTrace("Found non-loopback interface: {name}", ifc.Name);
+                                    _logger?.LogTrace("Found non-loopback interface: {name}", iface.Name);
                                     result = address;
                                 }
                             }

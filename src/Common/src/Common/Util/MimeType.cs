@@ -482,9 +482,8 @@ namespace Steeltoe.Common.Util
 
         private void CheckToken(string token)
         {
-            for (var i = 0; i < token.Length; i++)
+            foreach (var ch in token)
             {
-                var ch = token[i];
                 if (!TOKEN.Get(ch))
                 {
                     throw new ArgumentException("Invalid token character '" + ch + "' in token \"" + token + "\"");

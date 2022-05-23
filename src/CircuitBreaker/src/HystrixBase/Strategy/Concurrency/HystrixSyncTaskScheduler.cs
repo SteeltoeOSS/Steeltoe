@@ -192,9 +192,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             get
             {
                 var size = 0;
-                for (var i = 0; i < _workQueues.Length; i++)
+                foreach (var queue in _workQueues)
                 {
-                    var queue = _workQueues[i];
                     if (queue.ThreadAssigned && queue.Task != null)
                     {
                         size++;
