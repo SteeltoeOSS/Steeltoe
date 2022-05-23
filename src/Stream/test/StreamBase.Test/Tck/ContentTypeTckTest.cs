@@ -868,7 +868,7 @@ namespace Steeltoe.Stream.Tck
         {
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
-            var builder = Steeltoe.Messaging.Support.MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload));
+            var builder = MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload));
             foreach (var header in headers)
             {
                 builder.SetHeader(header.Key, header.Value);

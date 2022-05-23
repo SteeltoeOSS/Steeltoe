@@ -692,7 +692,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 admin = new RabbitAdmin(adminCf);
                 foreach (var q in Queues)
                 {
-                    var queue = new Config.Queue(q);
+                    var queue = new Queue(q);
                     admin.DeclareQueue(queue);
                 }
 
@@ -928,7 +928,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             };
         }
 
-        [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = Config.ExchangeType.FANOUT)]
+        [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.FANOUT)]
         public class FanoutListener
         {
             public CountdownEvent Latch { get; } = new CountdownEvent(2);
@@ -997,7 +997,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             }
 
             [DeclareQueue(Name = "auto.declare.fanout", AutoDelete = "True")]
-            [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = Config.ExchangeType.FANOUT)]
+            [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = ExchangeType.FANOUT)]
             [DeclareQueueBinding(Name = "auto.fanout.binding", QueueName = "auto.declare.fanout", ExchangeName = "auto.exch.fanout")]
             [RabbitListener(Binding = "auto.fanout.binding")]
             public string HandleWithFanout(string foo) => foo.ToUpper() + foo.ToUpper();

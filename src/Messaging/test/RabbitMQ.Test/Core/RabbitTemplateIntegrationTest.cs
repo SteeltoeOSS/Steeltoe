@@ -38,9 +38,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         protected RabbitTemplate template;
         protected RabbitTemplate routingTemplate;
         protected RabbitAdmin admin;
-        protected Mock<Connection.IConnectionFactory> cf1;
-        protected Mock<Connection.IConnectionFactory> cf2;
-        protected Mock<Connection.IConnectionFactory> defaultCF;
+        protected Mock<IConnectionFactory> cf1;
+        protected Mock<IConnectionFactory> cf2;
+        protected Mock<IConnectionFactory> defaultCF;
 
         private readonly CachingConnectionFactory connectionFactory;
 
@@ -66,9 +66,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             // TODO: Requires expression language support
             // routingTemplate.SendConnectionFactorySelectorExpression = "messageProperties.headers['cfKey']"
             var routingConnFactory = new SimpleRoutingConnectionFactory();
-            cf1 = new Mock<Connection.IConnectionFactory>();
-            cf2 = new Mock<Connection.IConnectionFactory>();
-            defaultCF = new Mock<Connection.IConnectionFactory>();
+            cf1 = new Mock<IConnectionFactory>();
+            cf2 = new Mock<IConnectionFactory>();
+            defaultCF = new Mock<IConnectionFactory>();
             routingConnFactory.AddTargetConnectionFactory("foo", cf1.Object);
             routingConnFactory.AddTargetConnectionFactory("bar", cf2.Object);
             routingTemplate.ConnectionFactory = routingConnFactory;
@@ -1031,7 +1031,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact(Skip = "Requires expression language")]
         public void TestRouting()
         {
-            var connection1 = new Mock<Connection.IConnection>();
+            var connection1 = new Mock<IConnection>();
             var channel1 = new Mock<RC.IModel>();
             cf1.Setup(f => f.CreateConnection()).Returns(connection1.Object);
             connection1.Setup(c => c.CreateChannel(false)).Returns(channel1.Object);
@@ -1042,7 +1042,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             routingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPP);
             channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));
 
-            var connection2 = new Mock<Connection.IConnection>();
+            var connection2 = new Mock<IConnection>();
             var channel2 = new Mock<RC.IModel>();
             cf2.Setup(f => f.CreateConnection()).Returns(connection2.Object);
             connection2.Setup(c => c.CreateChannel(false)).Returns(channel2.Object);
@@ -1140,7 +1140,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Assert.True(result);
         }
 
-        protected virtual RabbitTemplate CreateSendAndReceiveRabbitTemplate(Connection.IConnectionFactory connectionFactory)
+        protected virtual RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
         {
             var template = new RabbitTemplate(connectionFactory)
             {
@@ -1368,11 +1368,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 this.connLatch = connLatch;
             }
 
-            public void OnClose(Connection.IConnection connection)
+            public void OnClose(IConnection connection)
             {
             }
 
-            public void OnCreate(Connection.IConnection connection)
+            public void OnCreate(IConnection connection)
             {
             }
 
@@ -1590,21 +1590,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             {
             }
 
-            public override Connection.IConnection CreateConnection()
+            public override IConnection CreateConnection()
             {
                 var dele = base.CreateConnection();
                 return new MockConnection(dele);
             }
         }
 
-        private class MockConnection : Connection.IConnection
+        private class MockConnection : IConnection
         {
-            public MockConnection(Connection.IConnection deleg)
+            public MockConnection(IConnection deleg)
             {
                 Delegate = deleg;
             }
 
-            public Connection.IConnection Delegate { get; }
+            public IConnection Delegate { get; }
 
             public bool IsOpen => Delegate.IsOpen;
 

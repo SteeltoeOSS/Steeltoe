@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public interface IRabbitTemplate : IServiceNameAware
     {
-        Connection.IConnectionFactory ConnectionFactory { get; }
+        IConnectionFactory ConnectionFactory { get; }
 
         T Execute<T>(Func<RC.IModel, T> channelCallback);
 

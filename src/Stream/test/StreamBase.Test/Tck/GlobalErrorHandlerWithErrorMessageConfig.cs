@@ -13,7 +13,7 @@ namespace Steeltoe.Stream.Tck
     {
         public bool GlobalErroInvoked { get; set; }
 
-        [StreamListener(IProcessor.INPUT)]
+        [StreamListener(ISink.INPUT)]
         public void Input(string value)
         {
             throw new Exception("test exception");

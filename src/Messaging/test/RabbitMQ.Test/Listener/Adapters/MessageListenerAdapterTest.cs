@@ -45,7 +45,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             var channelMock = new Mock<RC.IModel>();
             var delgate = new TestDelegate(called);
             extendedAdapter.Instance = delgate;
-            extendedAdapter.ContainerAckMode = Core.AcknowledgeMode.MANUAL;
+            extendedAdapter.ContainerAckMode = AcknowledgeMode.MANUAL;
             var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
             extendedAdapter.OnMessage(Message.Create<byte[]>(bytes, messageProperties), channelMock.Object);
             Assert.True(called.Value);

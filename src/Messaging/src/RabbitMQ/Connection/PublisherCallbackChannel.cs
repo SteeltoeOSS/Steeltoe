@@ -48,7 +48,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public virtual RC.IModel Channel { get; }
 
-        public virtual IList<PendingConfirm> Expire(IPublisherCallbackChannel.IListener listener, long cutoffTime)
+        public virtual IList<PendingConfirm> Expire(IListener listener, long cutoffTime)
         {
             lock (_lock)
             {
@@ -89,7 +89,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        public virtual int GetPendingConfirmsCount(IPublisherCallbackChannel.IListener listener)
+        public virtual int GetPendingConfirmsCount(IListener listener)
         {
             lock (_lock)
             {
@@ -136,7 +136,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        public virtual void AddPendingConfirm(IPublisherCallbackChannel.IListener listener, ulong sequence, PendingConfirm pendingConfirm)
+        public virtual void AddPendingConfirm(IListener listener, ulong sequence, PendingConfirm pendingConfirm)
         {
             lock (_lock)
             {

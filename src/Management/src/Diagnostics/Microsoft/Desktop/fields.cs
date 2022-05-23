@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                             res = sigParser.PeekElemType(out etype);
                             type = (ClrElementType)etype;
 
-                            if (DesktopRuntimeBase.IsObjectReference(type))
+                            if (ClrRuntime.IsObjectReference(type))
                                 _type = (BaseDesktopHeapType)heap.GetBasicType(ClrElementType.SZArray);
                             else
                                 _type = (BaseDesktopHeapType)heap.GetArrayType(type, -1, null);
@@ -292,7 +292,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                 return 0;
 
             ulong addr;
-            if (DesktopRuntimeBase.IsPrimitive(ElementType))
+            if (ClrRuntime.IsPrimitive(ElementType))
                 addr = data.NonGCStaticDataStart + _field.Offset;
             else
                 addr = data.GCStaticDataStart + _field.Offset;
@@ -408,7 +408,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override bool HasSimpleValue
         {
-            get { return _type != null && !DesktopRuntimeBase.IsValueClass(ElementType); }
+            get { return _type != null && !ClrRuntime.IsValueClass(ElementType); }
         }
         public override int Size
         {
@@ -537,7 +537,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                             res = sigParser.PeekElemType(out etype);
                             type = (ClrElementType)etype;
 
-                            if (DesktopRuntimeBase.IsObjectReference(type))
+                            if (ClrRuntime.IsObjectReference(type))
                                 result = (BaseDesktopHeapType)heap.GetBasicType(ClrElementType.SZArray);
                             else
                                 result = (BaseDesktopHeapType)heap.GetArrayType(type, -1, null);
@@ -666,7 +666,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override bool HasSimpleValue
         {
-            get { return _type != null && !DesktopRuntimeBase.IsValueClass(ElementType); }
+            get { return _type != null && !ClrRuntime.IsValueClass(ElementType); }
         }
         public override int Size
         {

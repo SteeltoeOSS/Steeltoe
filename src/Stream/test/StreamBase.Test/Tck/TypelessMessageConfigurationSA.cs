@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Tck
 {
     public class TypelessMessageConfigurationSA
     {
-        [ServiceActivator(InputChannel = IProcessor.INPUT, OutputChannel = IProcessor.OUTPUT)]
+        [ServiceActivator(InputChannel = ISink.INPUT, OutputChannel = ISource.OUTPUT)]
         public object Echo(IMessage value)
         {
             Console.WriteLine(value.Payload);

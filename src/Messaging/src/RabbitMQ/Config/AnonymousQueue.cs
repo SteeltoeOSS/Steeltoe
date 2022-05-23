@@ -33,7 +33,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         public AnonymousQueue(INamingStrategy namingStrategy, Dictionary<string, object> arguments)
             : base(namingStrategy.GenerateName(), false, true, true, arguments)
         {
-            if (!Arguments.ContainsKey(Queue.X_QUEUE_MASTER_LOCATOR))
+            if (!Arguments.ContainsKey(X_QUEUE_MASTER_LOCATOR))
             {
                 MasterLocator = "client-local";
             }

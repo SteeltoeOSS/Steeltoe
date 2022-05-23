@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             return context.ServiceProvider.GetRabbitQueue(name);
         }
 
-        public static Config.IExchange GetRabbitExchange(this IApplicationContext context, string name)
+        public static IExchange GetRabbitExchange(this IApplicationContext context, string name)
         {
             return context.ServiceProvider.GetRabbitExchange(name);
         }

@@ -642,7 +642,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             if (!DesktopRuntime.ReadMemory(data, buffer, buffer.Length, out int read))
                 return null;
 
-            return UnicodeEncoding.Unicode.GetString(buffer);
+            return Encoding.Unicode.GetString(buffer);
         }
 
         public override int ReadMemory(ulong address, byte[] buffer, int offset, int count)

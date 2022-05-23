@@ -32,9 +32,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             return provider.GetServices<IQueue>().SingleOrDefault((t) => t.ServiceName == name);
         }
 
-        public static Config.IExchange GetRabbitExchange(this IServiceProvider provider, string name)
+        public static IExchange GetRabbitExchange(this IServiceProvider provider, string name)
         {
-            return provider.GetServices<Config.IExchange>().SingleOrDefault((t) => t.ServiceName == name);
+            return provider.GetServices<IExchange>().SingleOrDefault((t) => t.ServiceName == name);
         }
 
         public static IBinding GetRabbitBinding(this IServiceProvider provider, string name)

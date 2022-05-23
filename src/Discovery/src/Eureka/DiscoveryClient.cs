@@ -368,7 +368,7 @@ namespace Steeltoe.Discovery.Eureka
                 _logger.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (result)
                 {
-                    LastGoodRegisterTimestamp = System.DateTime.UtcNow.Ticks;
+                    LastGoodRegisterTimestamp = DateTime.UtcNow.Ticks;
                 }
 
                 return result;
@@ -410,7 +410,7 @@ namespace Steeltoe.Discovery.Eureka
                 var result = resp.StatusCode == HttpStatusCode.OK;
                 if (result)
                 {
-                    LastGoodHeartbeatTimestamp = System.DateTime.UtcNow.Ticks;
+                    LastGoodHeartbeatTimestamp = DateTime.UtcNow.Ticks;
                 }
 
                 return result;

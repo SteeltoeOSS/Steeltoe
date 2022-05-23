@@ -708,7 +708,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var context = new StandardEvaluationContext();
             var methodResolvers = new List<IMethodResolver> { new ParseReflectiveMethodResolver() };
             context.MethodResolvers = methodResolvers;
-            var type = typeof(System.Globalization.NumberStyles);
+            var type = typeof(NumberStyles);
             context.SetVariable("parseFormat", NumberStyles.HexNumber);
             var expression = parser.ParseExpression("-Parse('FF', #parseFormat)");
 
@@ -1549,7 +1549,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 try
                 {
-                    return new[] { typeof(int).GetMethod("Parse", new[] { typeof(string), typeof(System.Globalization.NumberStyles) }) };
+                    return new[] { typeof(int).GetMethod("Parse", new[] { typeof(string), typeof(NumberStyles) }) };
                 }
                 catch (Exception)
                 {

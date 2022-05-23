@@ -15,13 +15,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
     {
         public static AbstractMessageBuilder SetTimestamp(this AbstractMessageBuilder builder, long timestamp)
         {
-            builder.SetHeader(Messaging.MessageHeaders.TIMESTAMP, timestamp);
+            builder.SetHeader(MessageHeaders.TIMESTAMP, timestamp);
             return builder;
         }
 
         public static AbstractMessageBuilder SetMessageId(this AbstractMessageBuilder builder, string messageId)
         {
-            builder.SetHeader(Messaging.MessageHeaders.ID, messageId);
+            builder.SetHeader(MessageHeaders.ID, messageId);
             return builder;
         }
 
@@ -135,13 +135,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static AbstractMessageBuilder SetTimestampIfAbsent(this AbstractMessageBuilder builder, long timestamp)
         {
-            builder.SetHeaderIfAbsent(Messaging.MessageHeaders.TIMESTAMP, timestamp);
+            builder.SetHeaderIfAbsent(MessageHeaders.TIMESTAMP, timestamp);
             return builder;
         }
 
         public static AbstractMessageBuilder SetMessageIdIfAbsent(this AbstractMessageBuilder builder, string messageId)
         {
-            builder.SetHeaderIfAbsent(Messaging.MessageHeaders.ID, messageId);
+            builder.SetHeaderIfAbsent(MessageHeaders.ID, messageId);
             return builder;
         }
 

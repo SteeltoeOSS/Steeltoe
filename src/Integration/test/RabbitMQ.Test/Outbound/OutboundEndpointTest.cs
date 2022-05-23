@@ -25,7 +25,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             var services = new ServiceCollection().BuildServiceProvider();
             var context = new GenericApplicationContext(services, config);
 
-            var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
+            var connectionFactory = new Mock<IConnectionFactory>();
             var ampqTemplate = new TestRabbitTemplate
             {
                 ConnectionFactory = connectionFactory.Object

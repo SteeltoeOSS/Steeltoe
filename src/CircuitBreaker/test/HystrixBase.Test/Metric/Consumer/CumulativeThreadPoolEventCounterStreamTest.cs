@@ -215,8 +215,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
             var failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
 
-            var shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
-            var shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            var shortCircuit1 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            var shortCircuit2 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -410,7 +410,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
             for (var i = 0; i < 5; i++)
             {
-                fallbackSaturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
+                fallbackSaturators.Add(Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
             }
 
             var rejection1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);

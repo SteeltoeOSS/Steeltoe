@@ -177,7 +177,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static long? Timestamp(this IMessageHeaders headers)
         {
-            return headers.Get<long?>(Messaging.MessageHeaders.TIMESTAMP);
+            return headers.Get<long?>(MessageHeaders.TIMESTAMP);
         }
 
         public static string Type(this IMessageHeaders headers)

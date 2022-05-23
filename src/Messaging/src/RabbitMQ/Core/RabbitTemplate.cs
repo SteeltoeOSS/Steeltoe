@@ -20,6 +20,7 @@ using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         internal readonly object _lock = new ();
         internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> _publisherConfirmChannels = new ();
         internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ();
-        internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new ();
+        internal readonly Dictionary<IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new ();
         internal readonly AsyncLocal<RC.IModel> _dedicatedChannels = new ();
         internal readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
         internal bool _evaluatedFastReplyTo;
@@ -65,7 +66,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private string _replyAddress;
 
         [ActivatorUtilitiesConstructor]
-        public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, Connection.IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
+        public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
         {
             _optionsMonitor = optionsMonitor;
             ConnectionFactory = connectionFactory;
@@ -74,7 +75,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Configure(Options);
         }
 
-        public RabbitTemplate(RabbitOptions options, Connection.IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
+        public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
         {
             _options = options;
             ConnectionFactory = connectionFactory;
@@ -83,7 +84,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Configure(Options);
         }
 
-        public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+        public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILogger logger = null)
         {
             _optionsMonitor = optionsMonitor;
             ConnectionFactory = connectionFactory;
@@ -92,7 +93,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Configure(Options);
         }
 
-        public RabbitTemplate(RabbitOptions options, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+        public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ILogger logger = null)
         {
             _options = options;
             ConnectionFactory = connectionFactory;
@@ -101,7 +102,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Configure(Options);
         }
 
-        public RabbitTemplate(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+        public RabbitTemplate(IConnectionFactory connectionFactory, ILogger logger = null)
         {
             ConnectionFactory = connectionFactory;
             MessageConverter = new Support.Converter.SimpleMessageConverter();
@@ -118,7 +119,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             _logger = logger;
         }
 
-        public virtual Connection.IConnectionFactory ConnectionFactory { get; set; }
+        public virtual IConnectionFactory ConnectionFactory { get; set; }
 
         public virtual bool IsChannelTransacted { get; set; }
 
@@ -1231,7 +1232,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             Interlocked.Increment(ref _activeTemplateCallbacks);
             RabbitResourceHolder resourceHolder = null;
-            Connection.IConnection connection = null;
+            IConnection connection = null;
             RC.IModel channel;
             var connectionFactory = ConnectionFactory;
             if (IsChannelTransacted)
@@ -1329,7 +1330,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        public virtual void DetermineConfirmsReturnsCapability(Connection.IConnectionFactory connectionFactory)
+        public virtual void DetermineConfirmsReturnsCapability(IConnectionFactory connectionFactory)
         {
             _publisherConfirms = connectionFactory.IsPublisherConfirms;
             _confirmsOrReturnsCapable = _publisherConfirms || connectionFactory.IsPublisherReturns;
@@ -1726,7 +1727,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             return IsChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
         }
 
-        protected virtual Connection.IConnection CreateConnection()
+        protected virtual IConnection CreateConnection()
         {
             return ConnectionFactory.CreateConnection();
         }
@@ -1914,7 +1915,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var messageProps = MessagePropertiesConverter.ToMessageHeaders(properties, envelope, Encoding);
             if (msgCount.HasValue)
             {
-                var accessor = RabbitHeaderAccessor.GetAccessor<RabbitHeaderAccessor>(messageProps);
+                var accessor = MessageHeaderAccessor.GetAccessor<RabbitHeaderAccessor>(messageProps);
                 accessor.MessageCount = msgCount.Value;
             }
 
@@ -2331,7 +2332,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             return consumer;
         }
 
-        private Connection.IConnectionFactory ObtainTargetConnectionFactory(IExpression expression, object rootObject)
+        private IConnectionFactory ObtainTargetConnectionFactory(IExpression expression, object rootObject)
         {
             if (ConnectionFactory is AbstractRoutingConnectionFactory routingConnectionFactory)
             {
@@ -2361,7 +2362,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             return ConnectionFactory;
         }
 
-        private T Execute<T>(Func<RC.IModel, T> action, Connection.IConnectionFactory connectionFactory)
+        private T Execute<T>(Func<RC.IModel, T> action, IConnectionFactory connectionFactory)
         {
             if (RetryTemplate != null)
             {
@@ -2383,7 +2384,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private T DoExecute<T>(Func<RC.IModel, T> channelCallback, Connection.IConnectionFactory connectionFactory)
+        private T DoExecute<T>(Func<RC.IModel, T> channelCallback, IConnectionFactory connectionFactory)
         {
             // NOSONAR complexity
             if (channelCallback == null)
@@ -2401,7 +2402,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
 
             RabbitResourceHolder resourceHolder = null;
-            Connection.IConnection connection = null;
+            IConnection connection = null;
             if (channel == null)
             {
                 if (IsChannelTransacted)
@@ -2462,7 +2463,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private T InvokeAction<T>(Func<RC.IModel, T> channelCallback, Connection.IConnectionFactory connectionFactory, RC.IModel channel)
+        private T InvokeAction<T>(Func<RC.IModel, T> channelCallback, IConnectionFactory connectionFactory, RC.IModel channel)
         {
             if (!_confirmsOrReturnsCapable.HasValue)
             {
@@ -2483,7 +2484,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 ? new ConfirmListener(acks, nacks, channel)
                 : null;
 
-        private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, Connection.IConnection connection)
+        private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, IConnection connection)
         {
             if (!invokeScope)
             {
@@ -2499,7 +2500,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private void CleanUpAfterAction(RabbitResourceHolder resourceHolder, Connection.IConnection connection, RC.IModel channel, ConfirmListener listener)
+        private void CleanUpAfterAction(RabbitResourceHolder resourceHolder, IConnection connection, RC.IModel channel, ConfirmListener listener)
         {
             if (listener != null)
             {

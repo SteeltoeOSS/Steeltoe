@@ -321,7 +321,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                     UInt16 opt = b[2];
                     UInt16 dbg = b[3];
 
-                    _debugMode = (System.Diagnostics.DebuggableAttribute.DebuggingModes)((dbg << 8) | opt);
+                    _debugMode = (DebuggableAttribute.DebuggingModes)((dbg << 8) | opt);
                 }
             }
             catch (SEHException)

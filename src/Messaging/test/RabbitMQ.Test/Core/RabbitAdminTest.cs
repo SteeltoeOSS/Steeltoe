@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void TestSettingOfNullConnectionFactory()
         {
-            Connection.IConnectionFactory connectionFactory = null;
+            IConnectionFactory connectionFactory = null;
             Assert.Throws<ArgumentNullException>(() => new RabbitAdmin(connectionFactory));
         }
 
@@ -40,7 +40,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public void TestNoFailOnStartupWithMissingBroker()
         {
             var serviceCollection = CreateContainer();
-            serviceCollection.AddRabbitQueue(new Config.Queue("foo"));
+            serviceCollection.AddRabbitQueue(new Queue("foo"));
             serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
             {
                 f.Host = "foo";
@@ -61,7 +61,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public void TestFailOnFirstUseWithMissingBroker()
         {
             var serviceCollection = CreateContainer();
-            serviceCollection.AddRabbitQueue(new Config.Queue("foo"));
+            serviceCollection.AddRabbitQueue(new Queue("foo"));
             serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
             {
                 f.Host = "localhost";
@@ -94,7 +94,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var queueName = $"test.properties.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
             try
             {
-                rabbitAdmin.DeclareQueue(new Config.Queue(queueName));
+                rabbitAdmin.DeclareQueue(new Queue(queueName));
                 var template = new RabbitTemplate(connectionFactory);
                 template.ConvertAndSend(queueName, "foo");
                 var n = 0;
@@ -131,13 +131,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public void TestTemporaryLogs()
         {
             var serviceCollection = CreateContainer();
-            serviceCollection.AddRabbitQueue(new Config.Queue("testq.nonDur", false, false, false));
-            serviceCollection.AddRabbitQueue(new Config.Queue("testq.ad", true, false, true));
-            serviceCollection.AddRabbitQueue(new Config.Queue("testq.excl", true, true, false));
-            serviceCollection.AddRabbitQueue(new Config.Queue("testq.all", false, true, true));
-            serviceCollection.AddRabbitExchange(new Config.DirectExchange("testex.nonDur", false, false));
-            serviceCollection.AddRabbitExchange(new Config.DirectExchange("testex.ad", true, true));
-            serviceCollection.AddRabbitExchange(new Config.DirectExchange("testex.all", false, true));
+            serviceCollection.AddRabbitQueue(new Queue("testq.nonDur", false, false, false));
+            serviceCollection.AddRabbitQueue(new Queue("testq.ad", true, false, true));
+            serviceCollection.AddRabbitQueue(new Queue("testq.excl", true, true, false));
+            serviceCollection.AddRabbitQueue(new Queue("testq.all", false, true, true));
+            serviceCollection.AddRabbitExchange(new DirectExchange("testex.nonDur", false, false));
+            serviceCollection.AddRabbitExchange(new DirectExchange("testex.ad", true, true));
+            serviceCollection.AddRabbitExchange(new DirectExchange("testex.all", false, true));
             serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
             {
                 f.Host = "localhost";
@@ -182,9 +182,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             serviceCollection.AddRabbitServices();
             serviceCollection.AddRabbitAdmin();
-            var e1 = new Config.DirectExchange("e1", false, true);
+            var e1 = new DirectExchange("e1", false, true);
             serviceCollection.AddRabbitExchange(e1);
-            var q1 = new Config.Queue("q1", false, false, true);
+            var q1 = new Queue("q1", false, false, true);
             serviceCollection.AddRabbitQueue(q1);
             var binding = BindingBuilder.Bind(q1).To(e1).With("k1");
             serviceCollection.AddRabbitBinding(binding);
@@ -195,8 +195,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             serviceCollection.AddSingleton(es);
             var qs = new Declarables(
                 "qs",
-                new Config.Queue("q2", false, false, true),
-                new Config.Queue("q3", false, false, true));
+                new Queue("q2", false, false, true),
+                new Queue("q3", false, false, true));
             serviceCollection.AddSingleton(qs);
             var bs = new Declarables(
                 "bs",
@@ -308,8 +308,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void TestWithinInvoke()
         {
-            var connectionFactory = new Mock<Connection.IConnectionFactory>();
-            var connection = new Mock<Connection.IConnection>();
+            var connectionFactory = new Mock<IConnectionFactory>();
+            var connection = new Mock<IConnection>();
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
 
             var channel1 = new Mock<RC.IModel>();
@@ -356,7 +356,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             {
                 a.RetryTemplate = rtt;
             });
-            var foo = new Config.AnonymousQueue("foo");
+            var foo = new AnonymousQueue("foo");
             serviceCollection.AddRabbitQueue(foo);
             var provider = serviceCollection.BuildServiceProvider();
             var admin = provider.GetRabbitAdmin();

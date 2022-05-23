@@ -206,10 +206,10 @@ namespace Microsoft.Diagnostics.Runtime
 
             DacLibrary lib = new DacLibrary(_dataTarget, dac);
 
-            Desktop.DesktopVersion ver;
+            DesktopVersion ver;
             if (Flavor == ClrFlavor.Core)
             {
-                return new Desktop.V45Runtime(this, _dataTarget, lib);
+                return new V45Runtime(this, _dataTarget, lib);
             }
             //else if (Flavor == ClrFlavor.Native)
             //{
@@ -217,19 +217,19 @@ namespace Microsoft.Diagnostics.Runtime
             //}
             else if (Version.Major == 2)
             {
-                ver = Desktop.DesktopVersion.v2;
+                ver = DesktopVersion.v2;
             }
             else if (Version.Major == 4 && Version.Minor == 0 && Version.Patch < 10000)
             {
-                ver = Desktop.DesktopVersion.v4;
+                ver = DesktopVersion.v4;
             }
             else
             {
                 // Assume future versions will all work on the newest runtime version.
-                return new Desktop.V45Runtime(this, _dataTarget, lib);
+                return new V45Runtime(this, _dataTarget, lib);
             }
 
-            return new Desktop.LegacyRuntime(this, _dataTarget, lib, ver, Version.Patch);
+            return new LegacyRuntime(this, _dataTarget, lib, ver, Version.Patch);
         }
 
         /// <summary>
@@ -582,19 +582,19 @@ namespace Microsoft.Diagnostics.Runtime
         /// <summary>
         /// Returns the filename of the dac dll according to the specified parameters
         /// </summary>
-        public static string GetDacRequestFileName(ClrFlavor flavor, Runtime.Architecture currentArchitecture, Runtime.Architecture targetArchitecture, VersionInfo clrVersion)
+        public static string GetDacRequestFileName(ClrFlavor flavor, Architecture currentArchitecture, Architecture targetArchitecture, VersionInfo clrVersion)
         {
             if (flavor == ClrFlavor.Native)
-                return targetArchitecture == Runtime.Architecture.Amd64 ? "mrt100dac_winamd64.dll" : "mrt100dac_winx86.dll";
+                return targetArchitecture == Architecture.Amd64 ? "mrt100dac_winamd64.dll" : "mrt100dac_winx86.dll";
 
             string dacName = flavor == ClrFlavor.Core ? "mscordaccore" : "mscordacwks";
             return string.Format("{0}_{1}_{2}_{3}.{4}.{5}.{6:D2}.dll", dacName, currentArchitecture, targetArchitecture, clrVersion.Major, clrVersion.Minor, clrVersion.Revision, clrVersion.Patch);
         }
 
-        internal static string GetDacFileName(ClrFlavor flavor, Runtime.Architecture targetArchitecture)
+        internal static string GetDacFileName(ClrFlavor flavor, Architecture targetArchitecture)
         {
             if (flavor == ClrFlavor.Native)
-                return targetArchitecture == Runtime.Architecture.Amd64 ? "mrt100dac_winamd64.dll" : "mrt100dac_winx86.dll";
+                return targetArchitecture == Architecture.Amd64 ? "mrt100dac_winamd64.dll" : "mrt100dac_winx86.dll";
 
             return flavor == ClrFlavor.Core ? "mscordaccore.dll" : "mscordacwks.dll";
         }
@@ -1074,7 +1074,7 @@ namespace Microsoft.Diagnostics.Runtime
         //    return null;
         //}
 
-        private static Regex s_invalidChars = new Regex($"[{Regex.Escape(new string(System.IO.Path.GetInvalidPathChars()))}]");
+        private static Regex s_invalidChars = new Regex($"[{Regex.Escape(new string(Path.GetInvalidPathChars()))}]");
 
         private ModuleInfo[] InitModules()
         {

@@ -16,7 +16,7 @@ namespace Steeltoe.Discovery.Eureka.Task.Test
             _timerFuncCount = 0;
             var timedTask = new TimedTask("MyTask", TimerFunc);
             var timer = new Timer(timedTask.Run, null, 10, 100);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
             Assert.Equal(1, _timerFuncCount);
 
             timer.Dispose();
@@ -27,7 +27,7 @@ namespace Steeltoe.Discovery.Eureka.Task.Test
         private void TimerFunc()
         {
             ++_timerFuncCount;
-            System.Threading.Thread.Sleep(3000);
+            Thread.Sleep(3000);
         }
     }
 }

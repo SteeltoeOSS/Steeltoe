@@ -24,7 +24,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             var loggerField = logger.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
             var logger2 = loggerField.GetValue(logger);
             var loggersField = logger2.GetType().GetProperty("Loggers");
-            var loggersvalueArray = loggersField.GetValue(logger2) as System.Array;
+            var loggersvalueArray = loggersField.GetValue(logger2) as Array;
 
             var loggersvaluearrayItem = loggersvalueArray.GetValue(0);
             var dynamicLoggerField = loggersvaluearrayItem.GetType().GetProperty("Logger");
@@ -96,7 +96,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                .Build();
 
             var logger = host.Services.GetService(typeof(ILogger<SerilogDynamicWebhostBuilderTest>));
-            var sinks = SerilogDynamicWebhostBuilderTest.GetSinks(logger);
+            var sinks = GetSinks(logger);
             Assert.NotNull(sinks);
             var testSink = sinks.FirstOrDefault(x => x.GetType() == typeof(TestSink)) as TestSink;
 

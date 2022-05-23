@@ -100,7 +100,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         private static void SetupRootContextObject(StandardEvaluationContext testContext)
         {
             var c = new GregorianCalendar();
-            var tesla = new Inventor("Nikola Tesla", c.ToDateTime(1856, 7, 9, 0, 0, 0, GregorianCalendar.CurrentEra), "Serbian")
+            var tesla = new Inventor("Nikola Tesla", c.ToDateTime(1856, 7, 9, 0, 0, 0, Calendar.CurrentEra), "Serbian")
             {
                 PlaceOfBirth = new PlaceOfBirth("SmilJan"),
                 Inventions = new[]

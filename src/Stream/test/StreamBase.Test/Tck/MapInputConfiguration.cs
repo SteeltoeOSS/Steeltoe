@@ -11,8 +11,8 @@ namespace Steeltoe.Stream.Tck
 {
     public class MapInputConfiguration
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
+        [StreamListener(ISink.INPUT)]
+        [SendTo(ISource.OUTPUT)]
         public Dictionary<object, object> Echo(Dictionary<object, object> value)
         {
             return value;

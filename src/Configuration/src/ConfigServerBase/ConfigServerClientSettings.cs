@@ -326,7 +326,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 if (!string.IsNullOrEmpty(Uri))
                 {
-                    var uri = new System.Uri(Uri);
+                    var uri = new Uri(Uri);
                     return uri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
                 }
             }
@@ -341,7 +341,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             try
             {
-                var ri = new System.Uri(uri);
+                var ri = new Uri(uri);
                 return ri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
             }
             catch (UriFormatException)
@@ -417,7 +417,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             if (!string.IsNullOrEmpty(uri))
             {
-                var u = new System.Uri(uri);
+                var u = new Uri(uri);
                 return u.UserInfo;
             }
 

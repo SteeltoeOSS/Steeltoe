@@ -1121,9 +1121,9 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
                 fixed (byte* ptr = NameBytes)
                 {
                     if (ptr[7] == 0)
-                        return System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)ptr);
+                        return Marshal.PtrToStringAnsi((IntPtr)ptr);
                     else
-                        return System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)ptr, 8);
+                        return Marshal.PtrToStringAnsi((IntPtr)ptr, 8);
                 }
             }
         }
@@ -1174,7 +1174,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
             get
             {
                 fixed (byte* ptr = bytePdbFileName)
-                    return System.Runtime.InteropServices.Marshal.PtrToStringAnsi((IntPtr)ptr);
+                    return Marshal.PtrToStringAnsi((IntPtr)ptr);
             }
         }
     };

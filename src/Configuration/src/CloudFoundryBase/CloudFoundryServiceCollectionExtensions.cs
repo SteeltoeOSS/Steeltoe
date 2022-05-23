@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using System;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
@@ -35,7 +36,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
             services.AddOptions();
 
-            var appSection = config.GetSection($"{CloudFoundryApplicationOptions.PlatformConfigRoot}:{CloudFoundryApplicationOptions.ApplicationRoot}");
+            var appSection = config.GetSection($"{CloudFoundryApplicationOptions.PlatformConfigRoot}:{ApplicationInstanceInfo.ApplicationRoot}");
             services.Configure<CloudFoundryApplicationOptions>(appSection);
 
             var serviceSection = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);

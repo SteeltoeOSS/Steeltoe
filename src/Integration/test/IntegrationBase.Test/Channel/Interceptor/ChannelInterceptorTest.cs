@@ -106,7 +106,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             testChannel.AddInterceptor(interceptor2);
             try
             {
-                testChannel.Send(Support.IntegrationMessageBuilder.WithPayload("test").Build());
+                testChannel.Send(IntegrationMessageBuilder.WithPayload("test").Build());
             }
             catch (Exception ex)
             {
@@ -126,7 +126,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             channel.AddInterceptor(interceptor2);
             try
             {
-                channel.Send(Support.IntegrationMessageBuilder.WithPayload("test").Build());
+                channel.Send(IntegrationMessageBuilder.WithPayload("test").Build());
             }
             catch (Exception ex)
             {
@@ -264,7 +264,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             {
                 Assert.NotNull(message);
                 var value = Interlocked.Increment(ref Counter);
-                return Support.IntegrationMessageBuilder.FromMessage(message)
+                return IntegrationMessageBuilder.FromMessage(message)
                         .SetHeader(GetType().Name, value)
                         .Build();
             }

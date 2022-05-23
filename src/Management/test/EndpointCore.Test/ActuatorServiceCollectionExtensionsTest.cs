@@ -52,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddAllActuators_YesCFonCF()
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", Steeltoe.TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             var hostBuilder = new WebHostBuilder().Configure(config => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
             var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();

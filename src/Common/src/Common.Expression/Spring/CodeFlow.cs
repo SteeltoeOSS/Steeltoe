@@ -179,17 +179,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             if (stackDescriptor.IsBoxedNumber)
             {
                 gen.Emit(OpCodes.Unbox_Any, stackDescriptor.Value);
-                CodeFlow.InsertAnyNecessaryTypeConversionBytecodes(gen, targetDescriptor, stackDescriptor.UnBox());
+                InsertAnyNecessaryTypeConversionBytecodes(gen, targetDescriptor, stackDescriptor.UnBox());
             }
             else
             {
-                CodeFlow.InsertAnyNecessaryTypeConversionBytecodes(gen, targetDescriptor, stackDescriptor);
+                InsertAnyNecessaryTypeConversionBytecodes(gen, targetDescriptor, stackDescriptor);
             }
         }
 
         public static void InsertAnyNecessaryTypeConversionBytecodes(ILGenerator gen, TypeDescriptor targetDescriptor, TypeDescriptor stackDescriptor)
         {
-            if (CodeFlow.IsValueType(stackDescriptor))
+            if (IsValueType(stackDescriptor))
             {
                 if (stackDescriptor == TypeDescriptor.I || stackDescriptor == TypeDescriptor.B || stackDescriptor == TypeDescriptor.S || stackDescriptor == TypeDescriptor.C)
                 {

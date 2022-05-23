@@ -136,7 +136,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-            var cmd = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST);
+            var cmd = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST);
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
@@ -274,11 +274,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             for (var i = 0; i < 10; i++)
             {
-                saturators.Add(CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400));
+                saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400));
             }
 
-            var rejected1 = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
-            var rejected2 = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
+            var rejected1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
+            var rejected2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -314,7 +314,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-            var cmd = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
+            var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -335,7 +335,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-            var cmd = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
+            var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
@@ -358,11 +358,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             for (var i = 0; i < 5; i++)
             {
-                fallbackSaturators.Add(CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
+                fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
             }
 
-            var rejection1 = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
-            var rejection2 = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+            var rejection1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+            var rejection2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -399,8 +399,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-            var cmd1 = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
-            var cmd2 = CommandStreamTest.Command.From(GroupKey, key, HystrixEventType.FAILURE, 10);
+            var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
+            var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 10);
 
             // by doing a take(30), we ensure that all rolling counts go back to 0
             latchSubscription = stream.Observe().Take(30 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);

@@ -35,7 +35,7 @@ namespace Steeltoe.Integration.Handler.Test
             provider = services.BuildServiceProvider();
             handler = new TestAbstractReplyProducingMessageHandler(provider.GetService<IApplicationContext>());
             mockChannel = new Mock<IMessageChannel>();
-            message = Integration.Support.IntegrationMessageBuilder.WithPayload("test").Build();
+            message = IntegrationMessageBuilder.WithPayload("test").Build();
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace Steeltoe.Integration.Handler.Test
             mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
             mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
 
-            handler.HandleMessage(Integration.Support.IntegrationMessageBuilder.WithPayload("hello")
+            handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("foo", "FOO")
                     .SetHeader("bar", "BAR")
                     .SetHeader("baz", "BAZ")
@@ -89,7 +89,7 @@ namespace Steeltoe.Integration.Handler.Test
             mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
             mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
 
-            handler.HandleMessage(Integration.Support.IntegrationMessageBuilder.WithPayload("hello")
+            handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("boom", "FOO")
                     .SetHeader("bar", "BAR")
                     .SetHeader("baz", "BAZ")
@@ -113,7 +113,7 @@ namespace Steeltoe.Integration.Handler.Test
             mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
             mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
 
-            handler.HandleMessage(Integration.Support.IntegrationMessageBuilder.WithPayload("hello")
+            handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("foo", "FOO")
                     .SetHeader("bar", "BAR")
                     .SetHeader("baz", "BAZ")

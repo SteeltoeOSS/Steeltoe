@@ -194,7 +194,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public IConnection CreateConnection2()
             {
-                return ConnectionFactoryUtils.CreateConnection(ConnectionFactory, PublisherConnectionIfPossible);
+                return CreateConnection(ConnectionFactory, PublisherConnectionIfPossible);
             }
 
             public RC.IModel GetChannel(RabbitResourceHolder holder)
@@ -244,7 +244,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             protected override void ReleaseResource(RabbitResourceHolder resourceHolder, object resourceKey)
             {
-                ConnectionFactoryUtils.ReleaseResources(resourceHolder);
+                ReleaseResources(resourceHolder);
             }
         }
     }

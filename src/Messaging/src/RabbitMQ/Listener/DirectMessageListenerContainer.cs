@@ -411,7 +411,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 SimpleResourceHolder.Push(GetRoutingConnectionFactory(), routingLookupKey);
             }
 
-            Connection.IConnection connection = null;
+            IConnection connection = null;
             try
             {
                 connection = ConnectionFactory.CreateConnection();
@@ -460,7 +460,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private SimpleConsumer Consume(string queue, Connection.IConnection connection)
+        private SimpleConsumer Consume(string queue, IConnection connection)
         {
             RC.IModel channel = null;
             SimpleConsumer consumer = null;
@@ -888,12 +888,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         protected internal class SimpleConsumer : RC.DefaultBasicConsumer
         {
             private readonly DirectMessageListenerContainer _container;
-            private readonly Connection.IConnection _connection;
+            private readonly IConnection _connection;
             private readonly RC.IModel _targetChannel;
             private readonly ILogger _logger;
             private readonly object _lock = new ();
 
-            public SimpleConsumer(DirectMessageListenerContainer container, Connection.IConnection connection, RC.IModel channel, string queue, ILogger logger = null)
+            public SimpleConsumer(DirectMessageListenerContainer container, IConnection connection, RC.IModel channel, string queue, ILogger logger = null)
                 : base(channel)
             {
                 _container = container;

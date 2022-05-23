@@ -21,8 +21,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         [Fact(Skip = "Not needed, We disable autorecoverconsumers")]
         public async Task TestAlwaysCancelAutoRecoverConsumer()
         {
-            var connectionFactory = new Mock<Connection.IConnectionFactory>();
-            var connection = new Mock<Connection.IConnection>();
+            var connectionFactory = new Mock<IConnectionFactory>();
+            var connection = new Mock<IConnection>();
             var channel = new Mock<IChannelProxy>();
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
@@ -73,8 +73,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         [Trait("Category", "SkipOnMacOS")] // TODO: Figure out why
         public async Task TestDeferredAcks()
         {
-            var connectionFactory = new Mock<Connection.IConnectionFactory>();
-            var connection = new Mock<Connection.IConnection>();
+            var connectionFactory = new Mock<IConnectionFactory>();
+            var connection = new Mock<IConnection>();
             var channel = new Mock<IChannelProxy>();
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
@@ -182,8 +182,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         [Fact(Skip = "Fails, needs investigation")]
         public async Task TestRemoveQueuesWhileNotConnected()
         {
-            var connectionFactory = new Mock<Connection.IConnectionFactory>();
-            var connection = new Mock<Connection.IConnection>();
+            var connectionFactory = new Mock<IConnectionFactory>();
+            var connection = new Mock<IConnection>();
             var channel = new Mock<IChannelProxy>();
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
@@ -274,8 +274,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         [Fact]
         public async Task TestMonitorCancelsAfterBadAckEvenIfChannelReportsOpen()
         {
-            var connectionFactory = new Mock<Connection.IConnectionFactory>();
-            var connection = new Mock<Connection.IConnection>();
+            var connectionFactory = new Mock<IConnectionFactory>();
+            var connection = new Mock<IConnection>();
             var channel = new Mock<IChannelProxy>();
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
@@ -326,8 +326,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         [Fact]
         public async Task TestMonitorCancelsAfterTargetChannelChanges()
         {
-            var connectionFactory = new Mock<Connection.IConnectionFactory>();
-            var connection = new Mock<Connection.IConnection>();
+            var connectionFactory = new Mock<IConnectionFactory>();
+            var connection = new Mock<IConnection>();
             var channel = new Mock<IChannelProxy>();
             var rabbitChannel1 = new Mock<RC.IModel>();
             var rabbitChannel2 = new Mock<RC.IModel>();

@@ -186,7 +186,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     throw new ArgumentNullException("queue names cannot be null");
                 }
 
-                qs[index++] = new Config.Queue(name);
+                qs[index++] = new Queue(name);
             }
 
             SetQueues(qs);
@@ -239,7 +239,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     throw new ArgumentNullException("queue names cannot be null");
                 }
 
-                qs[index++] = new Config.Queue(name);
+                qs[index++] = new Queue(name);
             }
 
             AddQueues(qs);

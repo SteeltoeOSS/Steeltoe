@@ -35,7 +35,7 @@ namespace Steeltoe.Discovery.Consul.Test
 
             var client = provider.GetRequiredService<IDiscoveryClient>();
             Assert.NotNull(client);
-            Assert.IsType<Consul.Discovery.ConsulDiscoveryClient>(client);
+            Assert.IsType<Discovery.ConsulDiscoveryClient>(client);
         }
     }
 }

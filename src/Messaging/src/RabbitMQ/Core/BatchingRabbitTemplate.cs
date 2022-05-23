@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public BatchingRabbitTemplate(
             IOptionsMonitor<RabbitOptions> optionsMonitor,
-            Connection.IConnectionFactory connectionFactory,
+            IConnectionFactory connectionFactory,
             ISmartMessageConverter messageConverter,
             IBatchingStrategy batchingStrategy,
             ILogger logger = null)
@@ -35,7 +35,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public BatchingRabbitTemplate(
             RabbitOptions options,
-            Connection.IConnectionFactory connectionFactory,
+            IConnectionFactory connectionFactory,
             ISmartMessageConverter messageConverter,
             IBatchingStrategy batchingStrategy,
             ILogger logger = null)
@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public BatchingRabbitTemplate(
             IOptionsMonitor<RabbitOptions> optionsMonitor,
-            Connection.IConnectionFactory connectionFactory,
+            IConnectionFactory connectionFactory,
             IBatchingStrategy batchingStrategy,
             ILogger logger = null)
             : base(optionsMonitor, connectionFactory, logger)
@@ -56,7 +56,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public BatchingRabbitTemplate(
             RabbitOptions options,
-            Connection.IConnectionFactory connectionFactory,
+            IConnectionFactory connectionFactory,
             IBatchingStrategy batchingStrategy,
             ILogger logger = null)
             : base(options, connectionFactory, logger)

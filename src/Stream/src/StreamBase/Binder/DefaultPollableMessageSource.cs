@@ -228,7 +228,7 @@ namespace Steeltoe.Stream.Binder
                 }
 
                 // TODO: Rationalize S.M.S.MessageBuilder and S.I.S.MessageBuilder
-                message = Steeltoe.Messaging.Support.MessageBuilder.WithPayload(payload).CopyHeaders(message.Headers).Build();
+                message = MessageBuilder.WithPayload(payload).CopyHeaders(message.Headers).Build();
             }
 
             return message;

@@ -44,7 +44,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             var resultType = value.GetType();
             Assert.Equal(expectedResultType, resultType);
-            Assert.Equal(expectedValue, expectedValue is string ? AbstractExpressionTests.StringValueOf(value) : value);
+            Assert.Equal(expectedValue, expectedValue is string ? StringValueOf(value) : value);
         }
 
         public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
@@ -93,7 +93,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
 
             var resultType = value.GetType();
-            Assert.Equal(expectedValue, expectedValue is string ? AbstractExpressionTests.StringValueOf(value) : value);
+            Assert.Equal(expectedValue, expectedValue is string ? StringValueOf(value) : value);
 
             Assert.Equal(expectedClassOfResult, resultType);
             Assert.Equal(shouldBeWritable, expr.IsWritable(_context));

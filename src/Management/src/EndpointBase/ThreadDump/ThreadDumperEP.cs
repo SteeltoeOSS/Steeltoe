@@ -86,7 +86,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 traceFileName = CreateTraceFile(session).Result;
                 if (traceFileName != null)
                 {
-                    using var symbolReader = new SymbolReader(System.IO.TextWriter.Null) { SymbolPath = Environment.CurrentDirectory };
+                    using var symbolReader = new SymbolReader(TextWriter.Null) { SymbolPath = Environment.CurrentDirectory };
                     using var eventLog = new TraceLog(traceFileName);
                     var stackSource = new MutableTraceEventStackSource(eventLog)
                     {

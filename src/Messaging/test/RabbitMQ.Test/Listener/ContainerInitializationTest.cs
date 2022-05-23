@@ -33,7 +33,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public async Task TestNoAdmin()
         {
             var services = CreateServiceCollection();
-            services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, false, false, true));
+            services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
             services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
             services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
@@ -57,7 +57,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
             services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-            services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, false, false, true));
+            services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
             services.AddRabbitAdmin();
 
             provider = services.BuildServiceProvider();
@@ -79,7 +79,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
             services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-            services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, true, false, false));
+            services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
             services.AddRabbitAdmin();
             provider = services.BuildServiceProvider();
 
@@ -92,7 +92,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             admin.RetryTemplate = null;
             admin.DeleteQueue(TEST_MISMATCH);
             Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
-            admin.DeclareQueue(new Config.Queue(TEST_MISMATCH, false, false, true));
+            admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
             latches[2].Signal();
             Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
 
@@ -112,8 +112,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             services.AddSingleton((p) => CreateMessageListenerContainer(p, TEST_MISMATCH, TEST_MISMATCH2));
 
             services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-            services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH, true, false, false));
-            services.AddRabbitQueue(new Config.Queue(TEST_MISMATCH2, true, false, false));
+            services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
+            services.AddRabbitQueue(new Queue(TEST_MISMATCH2, true, false, false));
             services.AddRabbitAdmin();
             provider = services.BuildServiceProvider();
 
@@ -126,7 +126,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             admin.RetryTemplate = null;
             admin.DeleteQueue(TEST_MISMATCH);
             Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
-            admin.DeclareQueue(new Config.Queue(TEST_MISMATCH, false, false, true));
+            admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
             latches[2].Signal();
             Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
 
@@ -160,7 +160,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private CountdownEvent[] SetUpChannelLatches(IServiceProvider context)
         {
-            var cf = context.GetService<Connection.IConnectionFactory>() as CachingConnectionFactory;
+            var cf = context.GetService<IConnectionFactory>() as CachingConnectionFactory;
             var cancelLatch = new CountdownEvent(1);
             var mismatchLatch = new CountdownEvent(1);
             var preventContainerRedeclareQueueLatch = new CountdownEvent(1);
@@ -176,7 +176,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             services.AddHostedService<RabbitHostService>();
             services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
             services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
-            services.TryAddSingleton<Connection.IConnectionFactory, CachingConnectionFactory>();
+            services.TryAddSingleton<IConnectionFactory, CachingConnectionFactory>();
             services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
             return services;
         }
@@ -221,7 +221,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private DirectMessageListenerContainer CreateMessageListenerContainer(IServiceProvider services, params string[] queueNames)
         {
-            var cf = services.GetRequiredService<Connection.IConnectionFactory>();
+            var cf = services.GetRequiredService<IConnectionFactory>();
             var ctx = services.GetRequiredService<IApplicationContext>();
             var queue2 = services.GetRequiredService<IQueue>();
             var listener = new TestMessageListener();

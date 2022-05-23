@@ -36,10 +36,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             var queues = new List<IQueue>()
             {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
+                new Queue(Q1),
+                new Queue(Q2),
+                new Queue(Q3),
+                new Queue(Q4)
             };
 
             ServiceProvider provider = null;
@@ -68,10 +68,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             var queues = new List<IQueue>()
             {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
+                new Queue(Q1),
+                new Queue(Q2),
+                new Queue(Q3),
+                new Queue(Q4)
             };
 
             ServiceProvider provider = null;
@@ -103,10 +103,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             var queues = new List<IQueue>()
             {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
+                new Queue(Q1),
+                new Queue(Q2),
+                new Queue(Q3),
+                new Queue(Q4)
             };
 
             ServiceProvider provider = null;
@@ -133,10 +133,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             var queues = new List<IQueue>()
             {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
+                new Queue(Q1),
+                new Queue(Q2),
+                new Queue(Q3),
+                new Queue(Q4)
             };
 
             ServiceProvider provider = null;

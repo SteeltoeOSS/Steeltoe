@@ -12,8 +12,8 @@ namespace Steeltoe.Stream.Tck
 {
     public class MessageHeadersInputConfiguration
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
+        [StreamListener(ISink.INPUT)]
+        [SendTo(ISource.OUTPUT)]
         public IDictionary<string, object> Echo(MessageHeaders value)
         {
             return value;

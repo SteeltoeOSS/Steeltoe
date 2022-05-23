@@ -17,7 +17,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
     {
         public string ConfigPath => "Serilog";
 
-        private Serilog.LoggerConfiguration _serilogConfiguration;
+        private LoggerConfiguration _serilogConfiguration;
 
         /// <summary>
         /// Gets or sets the minimum level for the root logger (and the "Default").
@@ -50,7 +50,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         }
 
         // Capture Serilog configuration provided programmatically using reflection
-        public void SetSerilogOptions(Serilog.LoggerConfiguration loggerConfiguration)
+        public void SetSerilogOptions(LoggerConfiguration loggerConfiguration)
         {
             var minLevelProperty = loggerConfiguration.GetType().GetField("_minimumLevel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var minimumLevel = (LogEventLevel)minLevelProperty.GetValue(loggerConfiguration);
@@ -74,7 +74,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             _serilogConfiguration = loggerConfiguration.ClearLevels(MinimumLevel);
         }
 
-        public Serilog.LoggerConfiguration GetSerilogConfiguration() => _serilogConfiguration; // Method, so it won't `Bind` to anything
+        public LoggerConfiguration GetSerilogConfiguration() => _serilogConfiguration; // Method, so it won't `Bind` to anything
 
         [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
         public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }

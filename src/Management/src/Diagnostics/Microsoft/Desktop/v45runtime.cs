@@ -424,14 +424,14 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             return sb.ToString();
         }
 
-        internal override bool TraverseHeap(ulong heap, DesktopRuntimeBase.LoaderHeapTraverse callback)
+        internal override bool TraverseHeap(ulong heap, LoaderHeapTraverse callback)
         {
             bool res = _sos.TraverseLoaderHeap(heap, Marshal.GetFunctionPointerForDelegate(callback)) >= 0;
             GC.KeepAlive(callback);
             return res;
         }
 
-        internal override bool TraverseStubHeap(ulong appDomain, int type, DesktopRuntimeBase.LoaderHeapTraverse callback)
+        internal override bool TraverseStubHeap(ulong appDomain, int type, LoaderHeapTraverse callback)
         {
             bool res = _sos.TraverseVirtCallStubHeap(appDomain, (uint)type, Marshal.GetFunctionPointerForDelegate(callback)) >= 0;
             GC.KeepAlive(callback);

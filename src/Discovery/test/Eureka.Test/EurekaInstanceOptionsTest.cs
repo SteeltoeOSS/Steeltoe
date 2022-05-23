@@ -30,8 +30,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(443, opts.SecurePort);
             Assert.True(opts.IsNonSecurePortEnabled);
             Assert.False(opts.SecurePortEnabled);
-            Assert.Equal(EurekaInstanceOptions.Default_LeaseRenewalIntervalInSeconds, opts.LeaseRenewalIntervalInSeconds);
-            Assert.Equal(EurekaInstanceOptions.Default_LeaseExpirationDurationInSeconds, opts.LeaseExpirationDurationInSeconds);
+            Assert.Equal(EurekaInstanceConfig.Default_LeaseRenewalIntervalInSeconds, opts.LeaseRenewalIntervalInSeconds);
+            Assert.Equal(EurekaInstanceConfig.Default_LeaseExpirationDurationInSeconds, opts.LeaseExpirationDurationInSeconds);
             Assert.Null(opts.VirtualHostName);
             Assert.Null(opts.SecureVirtualHostName);
             Assert.Null(opts.ASGName);
@@ -39,7 +39,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Empty(opts.MetadataMap);
             Assert.Equal(EurekaInstanceOptions.Default_StatusPageUrlPath, opts.StatusPageUrlPath);
             Assert.Null(opts.StatusPageUrl);
-            Assert.Equal(EurekaInstanceOptions.Default_HomePageUrlPath, opts.HomePageUrlPath);
+            Assert.Equal(EurekaInstanceConfig.Default_HomePageUrlPath, opts.HomePageUrlPath);
             Assert.Null(opts.HomePageUrl);
             Assert.Equal(EurekaInstanceOptions.Default_HealthCheckUrlPath, opts.HealthCheckUrlPath);
             Assert.Null(opts.HealthCheckUrl);

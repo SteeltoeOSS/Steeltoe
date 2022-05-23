@@ -38,7 +38,7 @@ namespace Steeltoe.Integration.Endpoint.Test
         public async Task TestCorrelationIdPassedIfAvailable()
         {
             object correlationId = "123-ABC";
-            var message = Support.IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
+            var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
             var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
             var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
@@ -57,7 +57,7 @@ namespace Steeltoe.Integration.Endpoint.Test
         public async Task TestCorrelationIdCopiedFromMessageCorrelationIdIfAvailable()
         {
             object correlationId = "correlationId";
-            var message = Support.IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
+            var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
             var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
             var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
@@ -77,7 +77,7 @@ namespace Steeltoe.Integration.Endpoint.Test
         public async Task TestCorrelationNotPassedFromRequestHeaderIfAlreadySetByHandler()
         {
             object correlationId = "123-ABC";
-            var message = Support.IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
+            var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
             var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
             var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
@@ -124,7 +124,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             public object ProcessMessage(IMessage message)
             {
                 var str = message.Payload as string;
-                return Support.IntegrationMessageBuilder.WithPayload(str).SetCorrelationId("456-XYZ").Build();
+                return IntegrationMessageBuilder.WithPayload(str).SetCorrelationId("456-XYZ").Build();
             }
         }
     }

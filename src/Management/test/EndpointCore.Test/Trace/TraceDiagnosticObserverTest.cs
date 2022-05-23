@@ -188,7 +188,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var expectedContext = CreateRequest();
 
             obs.GetProperty(new { HttpContext = expectedContext }, out var context);
-            Assert.True(object.ReferenceEquals(expectedContext, context));
+            Assert.True(ReferenceEquals(expectedContext, context));
         }
 
         [Fact]

@@ -292,7 +292,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             targetMock1.Object.HandleMessage(messageMock.Object);
-            var dontReplaceThisMessage = Support.IntegrationMessageBuilder.WithPayload("x").Build();
+            var dontReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
 
             try

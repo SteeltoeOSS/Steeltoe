@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Runtime
 
         internal static void ThrowRevisionError(int revision, int runtimeRevision)
         {
-            throw new ClrDiagnosticsException(string.Format("You must not reuse any object other than ClrRuntime after calling flush!\nClrModule revision ({0}) != ClrRuntime revision ({1}).", revision, runtimeRevision), ClrDiagnosticsException.HR.RevisionError);
+            throw new ClrDiagnosticsException(string.Format("You must not reuse any object other than ClrRuntime after calling flush!\nClrModule revision ({0}) != ClrRuntime revision ({1}).", revision, runtimeRevision), HR.RevisionError);
         }
     }
 }

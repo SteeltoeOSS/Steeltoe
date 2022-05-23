@@ -11,8 +11,8 @@ namespace Steeltoe.Stream.Tck
 {
     public class ListInputConfiguration
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
+        [StreamListener(ISink.INPUT)]
+        [SendTo(ISource.OUTPUT)]
         public List<object> Echo(List<object> value)
         {
             return value;

@@ -90,7 +90,7 @@ namespace Steeltoe.Common.Converter
 
         public static Type GetNullableElementType(Type nullable)
         {
-            if (nullable.IsGenericType && typeof(System.Nullable<>) == nullable.GetGenericTypeDefinition())
+            if (nullable.IsGenericType && typeof(Nullable<>) == nullable.GetGenericTypeDefinition())
             {
                 return nullable.GetGenericArguments()[0];
             }

@@ -153,8 +153,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             public static List<Command> GetCommandsWithResponseFromCache(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key)
             {
-                var cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
-                var cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+                var cmd1 = From(groupKey, key, HystrixEventType.SUCCESS);
+                var cmd2 = From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
                 var cmds = new List<Command>
                 {
                     cmd1,

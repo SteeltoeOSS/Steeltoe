@@ -187,7 +187,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             object index;
 
             // This first part of the if clause prevents a 'double dereference' of the property (SPR-5847)
-            if (target is System.Collections.IDictionary && (_children[0] is PropertyOrFieldReference reference1))
+            if (target is IDictionary && (_children[0] is PropertyOrFieldReference reference1))
             {
                 var reference = reference1;
                 index = reference.Name;
@@ -226,7 +226,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             // Indexing into a Map
-            if (target is System.Collections.IDictionary dictionary)
+            if (target is IDictionary dictionary)
             {
                 var key = index;
                 var mapkeyType = ReflectionHelper.GetMapKeyTypeDescriptor(targetDescriptor);

@@ -126,8 +126,8 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             foreach (uint thread in _dataReader.EnumerateAllThreads())
             {
                 ulong teb = _dataReader.GetThreadTeb(thread);
-                int threadType = DesktopThread.GetTlsSlotForThread(this, teb);
-                if ((threadType & (int)DesktopThread.TlsThreadType.ThreadType_GC) == (int)DesktopThread.TlsThreadType.ThreadType_GC)
+                int threadType = ThreadBase.GetTlsSlotForThread(this, teb);
+                if ((threadType & (int)ThreadBase.TlsThreadType.ThreadType_GC) == (int)ThreadBase.TlsThreadType.ThreadType_GC)
                     yield return (int)thread;
             }
         }

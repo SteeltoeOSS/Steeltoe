@@ -18,9 +18,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         protected RabbitTemplate routingTemplate;
 
-        protected Mock<Connection.IConnectionFactory> cf1;
-        protected Mock<Connection.IConnectionFactory> cf2;
-        protected Mock<Connection.IConnectionFactory> defaultCF;
+        protected Mock<IConnectionFactory> cf1;
+        protected Mock<IConnectionFactory> cf2;
+        protected Mock<IConnectionFactory> defaultCF;
 
         public RabbitTemplateSimpleRoutingConnectionFactoryTest()
         {
@@ -28,9 +28,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var routingConnFactory = new SimpleRoutingConnectionFactory();
 
-            cf1 = new Mock<Connection.IConnectionFactory>();
-            cf2 = new Mock<Connection.IConnectionFactory>();
-            defaultCF = new Mock<Connection.IConnectionFactory>();
+            cf1 = new Mock<IConnectionFactory>();
+            cf2 = new Mock<IConnectionFactory>();
+            defaultCF = new Mock<IConnectionFactory>();
             routingConnFactory.AddTargetConnectionFactory(CONNECTION_FACTORY_1, cf1.Object);
             routingConnFactory.AddTargetConnectionFactory(CONNECTION_FACTORY_2, cf2.Object);
 
@@ -42,7 +42,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             static Mock<RC.IModel> SetupMocks(Mock<IConnectionFactory> cf)
             {
-                var connection = new Mock<Connection.IConnection>();
+                var connection = new Mock<IConnection>();
                 var channel = new Mock<RC.IModel>();
                 cf.Setup(f => f.CreateConnection()).Returns(connection.Object);
                 connection.Setup(c => c.CreateChannel(false)).Returns(channel.Object);

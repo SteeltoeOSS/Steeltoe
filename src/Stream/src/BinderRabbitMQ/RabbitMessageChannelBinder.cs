@@ -579,7 +579,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     UsePublisherConnection = true
                 };
-                _exchange = RabbitMessageChannelBinder.GetDeadLetterExchangeName(properties);
+                _exchange = GetDeadLetterExchangeName(properties);
                 _routingKey = properties.DeadLetterRoutingKey;
                 _frameMaxHeaderoom = properties.FrameMaxHeadroom.Value;
                 _properties = properties;

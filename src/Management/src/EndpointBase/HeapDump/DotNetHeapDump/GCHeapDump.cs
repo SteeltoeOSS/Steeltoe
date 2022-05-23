@@ -118,7 +118,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
         var ret = new Dictionary<int, ProcessInfo>();
 
         // Do the 64 bit processes first, then do us   
-        if (System.Environment.Is64BitOperatingSystem && !System.Environment.Is64BitProcess)
+        if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
         {
             GetProcessesWithGCHeapsFromHeapDump(ret);
         }
@@ -219,7 +219,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
     private GCHeapDump(Deserializer deserializer)
     {
         deserializer.RegisterFactory(typeof(MemoryGraph), () => new MemoryGraph(1));
-        deserializer.RegisterFactory(typeof(Graphs.Module), () => new Graphs.Module(0));
+        deserializer.RegisterFactory(typeof(Module), () => new Module(0));
         deserializer.RegisterFactory(typeof(InteropInfo), () => new InteropInfo());
         deserializer.RegisterFactory(typeof(GCHeapDump), () => this);
         deserializer.RegisterFactory(typeof(GCHeapDumpSegment), () => new GCHeapDumpSegment());

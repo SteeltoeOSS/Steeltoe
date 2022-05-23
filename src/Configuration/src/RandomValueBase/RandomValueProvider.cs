@@ -30,7 +30,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue
         {
             _prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
             _logger = logFactory?.CreateLogger<RandomValueProvider>();
-            _random = new System.Random();
+            _random = new Random();
         }
 
         /// <summary>

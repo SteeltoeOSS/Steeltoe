@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         private DirectMessageListenerContainer listenerContainer4;
 
         private Queue expiringQueue;
-        private Connection.IConnectionFactory connectionFactory;
+        private IConnectionFactory connectionFactory;
         private AppendingListener listener;
         private TestAdmin containerAdmin;
 
@@ -53,8 +53,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             listenerContainer1.ConsumersPerQueue = 2;
             listenerContainer1.AddQueueNames(Q1, Q2);
             containerAdmin.DeclareExchange(directExchange);
-            containerAdmin.DeclareQueue(new Config.Queue(Q1, true, false, true));
-            containerAdmin.DeclareQueue(new Config.Queue(Q2, true, false, true));
+            containerAdmin.DeclareQueue(new Queue(Q1, true, false, true));
+            containerAdmin.DeclareQueue(new Queue(Q2, true, false, true));
             containerAdmin.DeclareBinding(new Binding("b1", Q1, Binding.DestinationType.QUEUE, directExchange.ExchangeName, Q1, null));
             containerAdmin.DeclareBinding(new Binding("b2", Q2, Binding.DestinationType.QUEUE, directExchange.ExchangeName, Q2, null));
 
@@ -68,7 +68,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             // Conditional declarations
             var otherExchange = new DirectExchange(Exch2, true, true);
             containerAdmin.DeclareExchange(otherExchange);
-            containerAdmin.DeclareQueue(new Config.Queue(Q3, true, false, true));
+            containerAdmin.DeclareQueue(new Queue(Q3, true, false, true));
             containerAdmin.DeclareBinding(new Binding("b3", Q3, Binding.DestinationType.QUEUE, otherExchange.ExchangeName, Q3, null));
 
             listenerContainer2 = new DirectMessageListenerContainer(null, connectionFactory, "container2");
@@ -77,7 +77,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             listenerContainer2.AddQueueNames(Q3);
             listenerContainer2.MessageListener = adapter;
 
-            expiringQueue = new Config.Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object>() { { "x-expires", 200 } });
+            expiringQueue = new Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object>() { { "x-expires", 200 } });
             containerAdmin.DeclareQueue(expiringQueue);
             listenerContainer3 = new DirectMessageListenerContainer(null, connectionFactory, "container3");
             listenerContainer3.IsAutoStartup = false;
@@ -197,7 +197,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             public int InstanceCounter;
 
-            public TestAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+            public TestAdmin(IConnectionFactory connectionFactory, ILogger logger = null)
                 : base(connectionFactory, logger)
             {
             }

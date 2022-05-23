@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Channel
 {
     public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
     {
-        private readonly Channels.Channel<IMessage> _channel;
+        private readonly Channel<IMessage> _channel;
         private readonly int _capacity = -1;
         private int _size;
 
@@ -25,29 +25,29 @@ namespace Steeltoe.Integration.Channel
         }
 
         public QueueChannel(IApplicationContext context, ILogger logger = null)
-            : this(context, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
+            : this(context, Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
         {
             _capacity = int.MaxValue;
         }
 
         public QueueChannel(IApplicationContext context, string name, ILogger logger = null)
-            : this(context, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), name, logger)
+            : this(context, Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), name, logger)
         {
             _capacity = int.MaxValue;
         }
 
         public QueueChannel(IApplicationContext context, int capacity, ILogger logger = null)
-            : this(context, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(capacity) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
+            : this(context, Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(capacity) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
         {
             _capacity = capacity;
         }
 
-        public QueueChannel(IApplicationContext context, Channels.Channel<IMessage> channel, ILogger logger = null)
+        public QueueChannel(IApplicationContext context, Channel<IMessage> channel, ILogger logger = null)
             : this(context, channel, null, logger)
         {
         }
 
-        public QueueChannel(IApplicationContext context, Channels.Channel<IMessage> channel, string name, ILogger logger = null)
+        public QueueChannel(IApplicationContext context, Channel<IMessage> channel, string name, ILogger logger = null)
             : base(context, name, logger)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));

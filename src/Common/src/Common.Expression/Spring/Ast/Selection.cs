@@ -42,7 +42,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var operand = op.Value;
             var selectionCriteria = _children[0];
 
-            if (operand is System.Collections.IDictionary mapdata)
+            if (operand is IDictionary mapdata)
             {
                 // Don't lose generic info for the new map
                 var result = new Dictionary<object, object>();

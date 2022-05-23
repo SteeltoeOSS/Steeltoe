@@ -58,7 +58,7 @@ namespace Steeltoe.Integration.Handler.Test
         public void MissingOutputChannelAllowedForReplyChannelMessages()
         {
             var replyChannel = new QueueChannel(provider.GetService<IApplicationContext>());
-            var request = Integration.Support.IntegrationMessageBuilder.WithPayload("tst").SetReplyChannel(replyChannel).Build();
+            var request = IntegrationMessageBuilder.WithPayload("tst").SetReplyChannel(replyChannel).Build();
             handler.HandleMessage(request);
             var reply = replyChannel.Receive();
             Assert.NotNull(reply);

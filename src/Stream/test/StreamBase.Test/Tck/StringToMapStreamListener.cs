@@ -11,8 +11,8 @@ namespace Steeltoe.Stream.Tck
 {
     public class StringToMapStreamListener
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
+        [StreamListener(ISink.INPUT)]
+        [SendTo(ISource.OUTPUT)]
         public string Echo([Payload] Dictionary<object, object> value)
         {
             value.TryGetValue("name", out var result);

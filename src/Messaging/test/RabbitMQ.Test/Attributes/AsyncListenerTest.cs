@@ -174,7 +174,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitListenerContainerFactory((p, f) =>
                 {
                     f.MismatchedQueuesFatal = true;
-                    f.AcknowledgeMode = Core.AcknowledgeMode.MANUAL;
+                    f.AcknowledgeMode = AcknowledgeMode.MANUAL;
                 });
 
                 // Add dontRequeueFactory container factory
@@ -182,7 +182,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 {
                     f.ServiceName = "dontRequeueFactory";
                     f.MismatchedQueuesFatal = true;
-                    f.AcknowledgeMode = Core.AcknowledgeMode.MANUAL;
+                    f.AcknowledgeMode = AcknowledgeMode.MANUAL;
                     f.DefaultRequeueRejected = false;
                 });
 

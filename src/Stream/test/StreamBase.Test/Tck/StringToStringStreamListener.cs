@@ -10,8 +10,8 @@ namespace Steeltoe.Stream.Tck
 {
     public class StringToStringStreamListener
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
+        [StreamListener(ISink.INPUT)]
+        [SendTo(ISource.OUTPUT)]
         public string Echo(string value)
         {
             return value;

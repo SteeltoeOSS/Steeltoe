@@ -531,7 +531,7 @@ namespace Microsoft.Diagnostics.Runtime
         {
             get
             {
-                return HandleType == Runtime.HandleType.AsyncPinned || HandleType == Runtime.HandleType.Pinned;
+                return HandleType == HandleType.AsyncPinned || HandleType == HandleType.Pinned;
             }
         }
 

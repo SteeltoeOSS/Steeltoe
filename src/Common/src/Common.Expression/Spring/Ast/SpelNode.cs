@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public abstract class SpelNode : ISpelNode
     {
-        protected SpelNode[] _children = SpelNode.NO_CHILDREN;
+        protected SpelNode[] _children = NO_CHILDREN;
         protected volatile TypeDescriptor _exitTypeDescriptor;
         private static readonly SpelNode[] NO_CHILDREN = Array.Empty<SpelNode>();
         private SpelNode _parent;

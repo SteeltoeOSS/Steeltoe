@@ -71,9 +71,9 @@ namespace Steeltoe.Discovery.Eureka
         public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
         {
             var defaultIdEnding =
-                $":{EurekaInstanceOptions.Default_Appname}:{EurekaInstanceOptions.Default_NonSecurePort}";
+                $":{EurekaInstanceConfig.Default_Appname}:{EurekaInstanceConfig.Default_NonSecurePort}";
 
-            if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
+            if (EurekaInstanceConfig.Default_Appname.Equals(options.AppName))
             {
                 var springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
 
@@ -151,7 +151,7 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
-            if (EurekaInstanceOptions.Default_Appname.Equals(instOptions.AppName))
+            if (EurekaInstanceConfig.Default_Appname.Equals(instOptions.AppName))
             {
                 instOptions.AppName = si.ApplicationInfo.ApplicationName;
             }

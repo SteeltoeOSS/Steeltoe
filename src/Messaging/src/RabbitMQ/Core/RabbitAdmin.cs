@@ -40,7 +40,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private int _initializing;
 
         [ActivatorUtilitiesConstructor]
-        public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+        public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILogger logger = null)
         {
             _logger = logger;
             ApplicationContext = applicationContext;
@@ -49,7 +49,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             DoInitialize();
         }
 
-        public RabbitAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+        public RabbitAdmin(IConnectionFactory connectionFactory, ILogger logger = null)
             : this(null, connectionFactory, logger)
         {
         }
@@ -66,7 +66,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        public Connection.IConnectionFactory ConnectionFactory { get; set; }
+        public IConnectionFactory ConnectionFactory { get; set; }
 
         public RabbitTemplate RabbitTemplate { get; }
 
@@ -315,7 +315,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         #region IConnectionListener
-        public void OnCreate(Connection.IConnection connection)
+        public void OnCreate(IConnection connection)
         {
             _logger?.LogDebug("OnCreate for connection: {connection}", connection?.ToString());
 
@@ -352,7 +352,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        public void OnClose(Connection.IConnection connection)
+        public void OnClose(IConnection connection)
         {
             _logger?.LogDebug("OnClose for connection: {connection}", connection?.ToString());
         }

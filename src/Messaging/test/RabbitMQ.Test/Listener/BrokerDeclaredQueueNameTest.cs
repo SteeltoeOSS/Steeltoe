@@ -31,11 +31,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var latch4 = new CountdownEvent(2);
             var message = new AtomicReference<IMessage>();
             var services = CreateContainer();
-            services.AddRabbitQueue(new Config.Queue(string.Empty, false, true, true));
+            services.AddRabbitQueue(new Queue(string.Empty, false, true, true));
 
             services.AddHostedService<RabbitHostService>();
             services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
-            services.TryAddSingleton<Connection.IConnectionFactory, CachingConnectionFactory>();
+            services.TryAddSingleton<IConnectionFactory, CachingConnectionFactory>();
             services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
             services.AddSingleton((p) => CreateDMLCContainer(p, latch3, latch4, message));
             services.AddRabbitAdmin();
@@ -45,7 +45,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             await provider.GetRequiredService<IHostedService>().StartAsync(default);
 
             var container = provider.GetRequiredService<DirectMessageListenerContainer>();
-            var cf = provider.GetRequiredService<Connection.IConnectionFactory>() as CachingConnectionFactory;
+            var cf = provider.GetRequiredService<IConnectionFactory>() as CachingConnectionFactory;
 
             await container.Start();
             Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10))); // Really wait for container to start
@@ -76,7 +76,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private DirectMessageListenerContainer CreateDMLCContainer(IServiceProvider services, CountdownEvent latch3, CountdownEvent latch4, AtomicReference<IMessage> message)
         {
-            var cf = services.GetRequiredService<Connection.IConnectionFactory>();
+            var cf = services.GetRequiredService<IConnectionFactory>();
             var ctx = services.GetRequiredService<IApplicationContext>();
             var queue2 = services.GetRequiredService<IQueue>();
             var listener = new TestMessageListener(latch3, latch4, message);
@@ -100,11 +100,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             public CountdownEvent Latch { get; }
 
-            public void OnClose(Connection.IConnection connection)
+            public void OnClose(IConnection connection)
             {
             }
 
-            public void OnCreate(Connection.IConnection connection)
+            public void OnCreate(IConnection connection)
             {
                 if (!Latch.IsSet)
                 {

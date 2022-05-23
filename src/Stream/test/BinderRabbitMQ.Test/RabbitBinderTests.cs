@@ -103,7 +103,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             var ccf = GetResource();
             ccf.IsPublisherConfirms = true;
-            ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
+            ccf.PublisherConfirmType = ConfirmType.CORRELATED;
             ccf.ResetConnection();
             var bindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(bindingsOptions);

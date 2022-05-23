@@ -14,8 +14,8 @@ namespace Steeltoe.Stream.Tck
 {
     public class TypelessMessageToPojoStreamListener
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
+        [StreamListener(ISink.INPUT)]
+        [SendTo(ISource.OUTPUT)]
         public Person Echo(IMessage value)
         {
             var settings = new JsonSerializerSettings()

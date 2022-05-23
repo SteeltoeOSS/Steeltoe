@@ -172,7 +172,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 admin = new RabbitAdmin(adminCf, null);
                 foreach (var q in Queues)
                 {
-                    var queue = new Config.Queue(q);
+                    var queue = new Queue(q);
                     admin.DeclareQueue(queue);
                 }
 

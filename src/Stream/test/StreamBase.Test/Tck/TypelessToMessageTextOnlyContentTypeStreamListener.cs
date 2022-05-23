@@ -13,8 +13,8 @@ namespace Steeltoe.Stream.Tck
 {
     public class TypelessToMessageTextOnlyContentTypeStreamListener
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
+        [StreamListener(ISink.INPUT)]
+        [SendTo(ISource.OUTPUT)]
         public IMessage Echo(object value)
         {
             return MessageBuilder.WithPayload<string>(value.ToString()).SetHeader("contentType", new MimeType("text")).Build();

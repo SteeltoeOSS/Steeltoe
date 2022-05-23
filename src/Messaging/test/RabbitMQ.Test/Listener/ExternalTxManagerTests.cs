@@ -99,10 +99,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private class TestListener : IMessageListener
         {
-            private Connection.IConnectionFactory _connectionFactory;
+            private IConnectionFactory _connectionFactory;
             private CountdownEvent _latch;
 
-            public TestListener(Connection.IConnectionFactory connectionFactory, CountdownEvent latch)
+            public TestListener(IConnectionFactory connectionFactory, CountdownEvent latch)
             {
                 _connectionFactory = connectionFactory;
                 _latch = latch;

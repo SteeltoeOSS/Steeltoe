@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             return handleTable.Handles;
         }
 
-        internal override bool TraverseHeap(ulong heap, DesktopRuntimeBase.LoaderHeapTraverse callback)
+        internal override bool TraverseHeap(ulong heap, LoaderHeapTraverse callback)
         {
             byte[] input = new byte[sizeof(ulong) * 2];
             WriteValueToBuffer(heap, input, 0);

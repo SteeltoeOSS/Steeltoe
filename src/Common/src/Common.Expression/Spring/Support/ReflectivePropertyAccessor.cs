@@ -608,7 +608,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
                 if (Member is MethodInfo method)
                 {
-                    var getterName = $"get_{ReflectivePropertyAccessor.Capitalize(name)}";
+                    var getterName = $"get_{Capitalize(name)}";
                     if (getterName.Equals(method.Name))
                     {
                         return true;
