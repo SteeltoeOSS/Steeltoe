@@ -1285,8 +1285,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("#root.GetType().Name");
-            Assert.Equal(typeof(UnnamedUser).Name, expression.GetValue(new UnnamedUser()));
-            Assert.Equal(typeof(NamedUser).Name, expression.GetValue(new NamedUser()));
+            Assert.Equal(nameof(UnnamedUser), expression.GetValue(new UnnamedUser()));
+            Assert.Equal(nameof(NamedUser), expression.GetValue(new NamedUser()));
         }
 
         [Fact]

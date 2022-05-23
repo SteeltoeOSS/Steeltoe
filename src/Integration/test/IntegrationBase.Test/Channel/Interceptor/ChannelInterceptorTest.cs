@@ -43,7 +43,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             var result = channel.Receive(0);
             Assert.NotNull(result);
             Assert.Equal("test", result.Payload);
-            Assert.Equal(1, result.Headers[typeof(PreSendReturnsMessageInterceptor).Name]);
+            Assert.Equal(1, result.Headers[nameof(PreSendReturnsMessageInterceptor)]);
             Assert.True(interceptor.AfterCompletionInvoked);
         }
 

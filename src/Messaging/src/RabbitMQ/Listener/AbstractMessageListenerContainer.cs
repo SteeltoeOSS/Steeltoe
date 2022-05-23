@@ -1024,7 +1024,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             if (listener is not IMessageListener)
             {
                 throw new ArgumentException(
-                    "Message listener needs to be of type [" + typeof(IMessageListener).Name + "] or [" + typeof(IChannelAwareMessageListener).Name + "]");
+                    "Message listener needs to be of type [" + nameof(IMessageListener) + "] or [" + nameof(IChannelAwareMessageListener) + "]");
             }
         }
 
