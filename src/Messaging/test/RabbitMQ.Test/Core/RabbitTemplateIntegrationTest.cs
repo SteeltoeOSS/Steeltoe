@@ -377,7 +377,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             template.ConvertAndSend(ROUTE, "message");
             var messagePropertiesConverter = new DefaultMessageHeadersConverter();
-            var result = template.Execute<string>((c) =>
+            var result = template.Execute((c) =>
             {
                 var response = c.BasicGet(ROUTE, false);
                 var props = messagePropertiesConverter.ToMessageHeaders(
@@ -504,7 +504,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var template = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
             template.DefaultSendDestination = new RabbitDestination(string.Empty, ROUTE);
             template.DefaultReceiveDestination = new RabbitDestination(ROUTE);
-            var task = Task.Run<IMessage>(() =>
+            var task = Task.Run(() =>
             {
                 IMessage message = null;
                 for (var i = 0; i < 10; i++)
@@ -537,7 +537,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             template.DefaultSendDestination = new RabbitDestination(string.Empty, ROUTE);
             template.DefaultReceiveDestination = new RabbitDestination(ROUTE);
             var remoteCorrelationId = new AtomicReference<string>();
-            var received = Task.Run<IMessage>(() =>
+            var received = Task.Run(() =>
             {
                 var message = template.Receive(10000);
                 Assert.NotNull(message);
@@ -923,7 +923,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
                     formatter.Serialize(stream, request);
                     var bytes = stream.ToArray();
-                    var reply = template.SendAndReceive(Message.Create<byte[]>(bytes, messageHeaders.MessageHeaders));
+                    var reply = template.SendAndReceive(Message.Create(bytes, messageHeaders.MessageHeaders));
                     stream = new MemoryStream((byte[])reply.Payload);
                     var obj = formatter.Deserialize(stream);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
@@ -963,7 +963,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN,
                 ReplyTo = REPLY_QUEUE_NAME
             };
-            template.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("test"), messageProperties.MessageHeaders));
+            template.Send(Message.Create(Encoding.UTF8.GetBytes("test"), messageProperties.MessageHeaders));
             template.ReceiveAndReply<string, string>((str) => str.ToUpper());
 
             this.template.ReceiveTimeout = 20000;
@@ -1131,7 +1131,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             connectionFactory.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
             var messages = new List<string>() { "foo", "bar" };
-            var result = template.Invoke<bool>(t =>
+            var result = template.Invoke(t =>
             {
                 messages.ForEach(m => t.ConvertAndSend(string.Empty, ROUTE, m));
                 t.WaitForConfirmsOrDie(10_000);

@@ -114,7 +114,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitQueue(this IServiceCollection services, Func<IServiceProvider, IQueue> factory)
         {
-            services.AddSingleton<IQueue>(factory);
+            services.AddSingleton(factory);
 
             return services;
         }
@@ -148,14 +148,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitExchange(this IServiceCollection services, Func<IServiceProvider, IExchange> factory)
         {
-            services.AddSingleton<IExchange>(factory);
+            services.AddSingleton(factory);
 
             return services;
         }
 
         public static IServiceCollection AddRabbitExchange(this IServiceCollection services, IExchange exchange)
         {
-            return services.AddSingleton<IExchange>(exchange);
+            return services.AddSingleton(exchange);
         }
 
         public static IServiceCollection AddRabbitExchange(this IServiceCollection services, string exchangeName, string exchangeType, Action<IServiceProvider, IExchange> configure = null)
@@ -170,7 +170,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
                 throw new ArgumentException(nameof(exchangeType));
             }
 
-            services.AddSingleton<IExchange>(p =>
+            services.AddSingleton(p =>
             {
                 var exchange = ExchangeBuilder.Create(exchangeName, exchangeType);
                 if (configure != null)
@@ -196,7 +196,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitBinding(this IServiceCollection services, Func<IServiceProvider, IBinding> factory)
         {
-            services.AddSingleton<IBinding>(factory);
+            services.AddSingleton(factory);
 
             return services;
         }
@@ -204,7 +204,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitBinding(this IServiceCollection services, IBinding binding)
         {
             services.RegisterService(binding.ServiceName, typeof(IBinding));
-            services.AddSingleton<IBinding>(binding);
+            services.AddSingleton(binding);
             return services;
         }
 
@@ -216,7 +216,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             }
 
             services.RegisterService(bindingName, typeof(IBinding));
-            services.AddSingleton<IBinding>(p =>
+            services.AddSingleton(p =>
             {
                 var binding = BindingBuilder.Create(bindingName, bindingType);
                 if (configure != null)
@@ -312,7 +312,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitListenerAttributeProcessor<P>(this IServiceCollection services, Action<IServiceProvider, P> configure)
             where P : IRabbitListenerAttributeProcessor
         {
-            return services.AddRabbitListenerAttributeProcessor<P>(null, configure);
+            return services.AddRabbitListenerAttributeProcessor(null, configure);
         }
 
         public static IServiceCollection AddRabbitListenerAttributeProcessor<P>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, P> configure = null)
@@ -357,7 +357,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitListenerEndpointRegistrar<R>(this IServiceCollection services, Action<IServiceProvider, R> configure)
             where R : IRabbitListenerEndpointRegistrar
         {
-            return services.AddRabbitListenerEndpointRegistrar<R>(null, configure);
+            return services.AddRabbitListenerEndpointRegistrar(null, configure);
         }
 
         public static IServiceCollection AddRabbitListenerEndpointRegistrar<R>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, R> configure = null)
@@ -402,7 +402,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitListenerEndpointRegistry<R>(this IServiceCollection services, Action<IServiceProvider, R> configure)
             where R : IRabbitListenerEndpointRegistry
         {
-            return services.AddRabbitListenerEndpointRegistry<R>(null, configure);
+            return services.AddRabbitListenerEndpointRegistry(null, configure);
         }
 
         public static IServiceCollection AddRabbitListenerEndpointRegistry<R>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, R> configure = null)
@@ -424,7 +424,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
                 return instance;
             });
 
-            services.AddSingleton<ILifecycle>((p) =>
+            services.AddSingleton((p) =>
             {
                 var instance = p.GetRequiredService<IRabbitListenerEndpointRegistry>() as ILifecycle;
                 return instance;
@@ -451,7 +451,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitListenerContainerFactory<F>(this IServiceCollection services, Action<IServiceProvider, F> configure)
             where F : IRabbitListenerContainerFactory
         {
-            return services.AddRabbitListenerContainerFactory<F>(null, configure);
+            return services.AddRabbitListenerContainerFactory(null, configure);
         }
 
         public static IServiceCollection AddRabbitListenerContainerFactory<F>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, F> configure = null)
@@ -498,13 +498,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitConnectionFactory<F>(this IServiceCollection services, Action<IServiceProvider, F> configure)
             where F : IConnectionFactory
         {
-            return services.AddRabbitConnectionFactory<F>(null, configure);
+            return services.AddRabbitConnectionFactory(null, configure);
         }
 
         public static IServiceCollection AddRabbitConnectionFactory<F>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, F> configure = null)
             where F : IConnectionFactory
         {
-            services.AddSingleton<IConnectionFactory>(provider =>
+            services.AddSingleton(provider =>
             {
                 using var scope = provider.CreateScope();
                 var rabbitConnectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
@@ -532,7 +532,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, Action<IServiceProvider, Support.Converter.JsonMessageConverter> configure = null)
         {
-            return services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>(Support.Converter.JsonMessageConverter.DEFAULT_SERVICE_NAME, configure);
+            return services.AddRabbitMessageConverter(Support.Converter.JsonMessageConverter.DEFAULT_SERVICE_NAME, configure);
         }
 
         public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, string serviceName, Action<IServiceProvider, Support.Converter.JsonMessageConverter> configure = null)
@@ -542,12 +542,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
                 throw new ArgumentException(serviceName);
             }
 
-            return services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>(serviceName, configure);
+            return services.AddRabbitMessageConverter(serviceName, configure);
         }
 
         public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, Action<IServiceProvider, Support.Converter.SimpleMessageConverter> configure = null)
         {
-            return services.AddRabbitMessageConverter<Support.Converter.SimpleMessageConverter>(SimpleMessageConverter.DEFAULT_SERVICE_NAME, configure);
+            return services.AddRabbitMessageConverter(SimpleMessageConverter.DEFAULT_SERVICE_NAME, configure);
         }
 
         public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, string serviceName, Action<IServiceProvider, Support.Converter.SimpleMessageConverter> configure = null)
@@ -557,13 +557,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
                 throw new ArgumentException(serviceName);
             }
 
-            return services.AddRabbitMessageConverter<Support.Converter.SimpleMessageConverter>(serviceName, configure);
+            return services.AddRabbitMessageConverter(serviceName, configure);
         }
 
         public static IServiceCollection AddRabbitMessageConverter<C>(this IServiceCollection services, Action<IServiceProvider, C> configure)
             where C : ISmartMessageConverter
         {
-            return services.AddRabbitMessageConverter<C>(null, configure);
+            return services.AddRabbitMessageConverter(null, configure);
         }
 
         public static IServiceCollection AddRabbitMessageConverter<C>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, C> configure = null)
@@ -606,7 +606,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitMessageHandlerMethodFactory<F>(this IServiceCollection services, Action<IServiceProvider, F> configure)
             where F : IMessageHandlerMethodFactory
         {
-            return services.AddRabbitMessageHandlerMethodFactory<F>(null, configure);
+            return services.AddRabbitMessageHandlerMethodFactory(null, configure);
         }
 
         public static IServiceCollection AddRabbitMessageHandlerMethodFactory<F>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, F> configure = null)
@@ -635,12 +635,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitDirecListenerContainer(this IServiceCollection services, Func<IServiceProvider, DirectMessageListenerContainer> factory)
         {
-            return services.AddRabbitListenerContainer<DirectMessageListenerContainer>(factory);
+            return services.AddRabbitListenerContainer(factory);
         }
 
         public static IServiceCollection AddRabbitDirecListenerContainer(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, DirectMessageListenerContainer> configure = null)
         {
-            return services.AddRabbitListenerContainer<DirectMessageListenerContainer>(serviceName, configure);
+            return services.AddRabbitListenerContainer(serviceName, configure);
         }
 
         public static IServiceCollection AddRabbitListenerContainer<C>(this IServiceCollection services, Func<IServiceProvider, C> factory)

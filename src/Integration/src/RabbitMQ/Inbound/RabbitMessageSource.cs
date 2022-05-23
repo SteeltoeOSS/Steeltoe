@@ -73,7 +73,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                 accessor.ConsumerQueue = QueueName;
 
                 // Map<String, Object> headers = this.headerMapper.toHeadersFromRequest(messageProperties);
-                var message = Message.Create<byte[]>(resp.Body, accessor.MessageHeaders);
+                var message = Message.Create(resp.Body, accessor.MessageHeaders);
 
                 object payload;
                 if (BatchingStrategy.CanDebatch(message.Headers))

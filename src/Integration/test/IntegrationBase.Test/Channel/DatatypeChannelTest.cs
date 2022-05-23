@@ -49,7 +49,7 @@ namespace Steeltoe.Integration.Channel.Test
             IConversionService conversionService = new DefaultConversionService();
             var converter = new DefaultDatatypeChannelMessageConverter(conversionService);
             channel.MessageConverter = converter;
-            Assert.Throws<MessageDeliveryException>(() => channel.Send(Message.Create<bool>(true)));
+            Assert.Throws<MessageDeliveryException>(() => channel.Send(Message.Create(true)));
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace Steeltoe.Integration.Channel.Test
         {
             IMessageChannel channel = CreateChannel(typeof(string), typeof(int));
             Assert.True(channel.Send(Message.Create("test1")));
-            Assert.True(channel.Send(Message.Create<int>(2)));
+            Assert.True(channel.Send(Message.Create(2)));
             Exception exception = null;
             try
             {
@@ -132,7 +132,7 @@ namespace Steeltoe.Integration.Channel.Test
             Assert.True(channel.Send(Message.Create("foo")));
             var outmessage = channel.Receive(0);
             Assert.IsType<Bar>(outmessage.Payload);
-            Assert.True(channel.Send(Message.Create<int>(42)));
+            Assert.True(channel.Send(Message.Create(42)));
             outmessage = channel.Receive(0);
             Assert.IsType<Baz>(outmessage.Payload);
         }

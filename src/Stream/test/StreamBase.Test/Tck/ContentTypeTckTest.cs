@@ -86,7 +86,7 @@ namespace Steeltoe.Stream.Tck
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
             var jsonPayload = "{\"name\":\"oleg\"}";
-            var message = MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
+            var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
                                         .SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain")
                                         .SetHeader("originalContentType", "application/json;charset=UTF-8")
                                         .Build();
@@ -453,7 +453,7 @@ namespace Steeltoe.Stream.Tck
             streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
-            var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
+            var message = Message.Create(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
             var outputMessage = DoSendReceive(provider, message);
 
             Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
@@ -781,7 +781,7 @@ namespace Steeltoe.Stream.Tck
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder
-                .WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
+                .WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
                 .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
                 .Build();
             var outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
@@ -804,7 +804,7 @@ namespace Steeltoe.Stream.Tck
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder
-                .WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
+                .WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
                 .Build();
             var outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 
@@ -826,7 +826,7 @@ namespace Steeltoe.Stream.Tck
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder
-                .WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
+                .WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
                 .Build();
             var outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 
@@ -839,7 +839,7 @@ namespace Steeltoe.Stream.Tck
         {
             var source = provider.GetService<InputDestination>();
             _ = provider.GetService<OutputDestination>();
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload)));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes(jsonPayload)));
             var binder = provider.GetService<IBinder>() as TestChannelBinder;
             Assert.Equal(lastError, binder.LastError?.Payload?.GetType());
         }
@@ -848,7 +848,7 @@ namespace Steeltoe.Stream.Tck
         {
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload)));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes(jsonPayload)));
             var outputMessage = target.Receive();
             Assert.NotNull(outputMessage);
             return outputMessage;
@@ -868,7 +868,7 @@ namespace Steeltoe.Stream.Tck
         {
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
-            var builder = MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload));
+            var builder = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload));
             foreach (var header in headers)
             {
                 builder.SetHeader(header.Key, header.Value);

@@ -244,8 +244,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var services = new ServiceCollection();
                 var config = configuration ?? new ConfigurationBuilder().Build();
 
-                services.AddSingleton<IConfiguration>(config);
-                services.AddSingleton<IConnectionFactory>(mockConnectionFactory.Object);
+                services.AddSingleton(config);
+                services.AddSingleton(mockConnectionFactory.Object);
                 services.AddRabbitHostingServices();
                 services.AddRabbitMessageHandlerMethodFactory();
                 services.AddRabbitDefaultMessageConverter();

@@ -160,7 +160,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     b.AddConsole();
                 });
 
-                services.AddSingleton<IConfiguration>(config);
+                services.AddSingleton(config);
                 services.AddRabbitHostingServices();
                 services.AddRabbitJsonMessageConverter();
                 services.AddRabbitMessageHandlerMethodFactory();

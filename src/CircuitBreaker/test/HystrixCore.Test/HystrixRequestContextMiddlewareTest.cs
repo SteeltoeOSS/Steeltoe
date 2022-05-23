@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             RequestDelegate del = (ctx) =>
             {
                 Assert.True(HystrixRequestContext.IsCurrentThreadInitialized);
-                return Task.FromResult<int>(1);
+                return Task.FromResult(1);
             };
             var life = new TestLifecyecle();
             var reqContext = new HystrixRequestContextMiddleware(del, life);
@@ -35,7 +35,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             RequestDelegate del = (ctx) =>
             {
                 Assert.True(HystrixRequestContext.IsCurrentThreadInitialized);
-                return Task.FromResult<int>(1);
+                return Task.FromResult(1);
             };
             var life = new TestLifecyecle();
             var reqContext = new HystrixRequestContextMiddleware(del, life);

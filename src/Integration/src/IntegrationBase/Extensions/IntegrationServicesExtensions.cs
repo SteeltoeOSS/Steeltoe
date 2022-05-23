@@ -36,7 +36,7 @@ namespace Steeltoe.Integration.Extensions
             });
 
             services.RegisterService(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, typeof(ISubscribableChannel));
-            services.AddSingleton<ISubscribableChannel>((p) =>
+            services.AddSingleton((p) =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<ISubscribableChannel>(context, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
@@ -50,7 +50,7 @@ namespace Steeltoe.Integration.Extensions
             services.RegisterService(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME, typeof(IMessageChannel));
             services.AddSingleton<IMessageChannel, NullChannel>();
             services.RegisterService(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME, typeof(IPollableChannel));
-            services.AddSingleton<IPollableChannel>((p) =>
+            services.AddSingleton((p) =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<IPollableChannel>(context, IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME);
@@ -86,7 +86,7 @@ namespace Steeltoe.Integration.Extensions
             });
 
             services.RegisterService(channelName, typeof(IPollableChannel));
-            services.AddSingleton<IPollableChannel>((p) =>
+            services.AddSingleton((p) =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<IPollableChannel>(context, channelName);
@@ -122,7 +122,7 @@ namespace Steeltoe.Integration.Extensions
             });
 
             services.RegisterService(channelName, typeof(ISubscribableChannel));
-            services.AddSingleton<ISubscribableChannel>((p) =>
+            services.AddSingleton((p) =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<ISubscribableChannel>(context, channelName);

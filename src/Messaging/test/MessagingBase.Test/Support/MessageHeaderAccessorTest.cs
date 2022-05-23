@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.Support.Test
                 { "foo", "bar" },
                 { "bar", "baz" }
             };
-            var message = Message.Create<string>("payload", map);
+            var message = Message.Create("payload", map);
 
             var accessor = new MessageHeaderAccessor(message);
             var actual = accessor.MessageHeaders;
@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.Support.Test
                 { "foo", "bar" },
                 { "bar", "baz" }
             };
-            var message = Message.Create<string>("payload", map);
+            var message = Message.Create("payload", map);
 
             Thread.Sleep(50);
 
@@ -63,7 +63,7 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TestRemoveHeader()
         {
-            IMessage message = Message.Create<string>("payload", SingletonMap("foo", "bar"));
+            IMessage message = Message.Create("payload", SingletonMap("foo", "bar"));
             var accessor = new MessageHeaderAccessor(message);
             accessor.RemoveHeader("foo");
             var headers = accessor.ToDictionary();
@@ -73,7 +73,7 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TestRemoveHeaderEvenIfNull()
         {
-            var message = Message.Create<string>("payload", SingletonMap("foo", null));
+            var message = Message.Create("payload", SingletonMap("foo", null));
             var accessor = new MessageHeaderAccessor(message);
             accessor.RemoveHeader("foo");
             var headers = accessor.ToDictionary();
@@ -88,7 +88,7 @@ namespace Steeltoe.Messaging.Support.Test
                 { "foo", "bar" },
                 { "bar", "baz" }
             };
-            var message = Message.Create<string>("payload", map);
+            var message = Message.Create("payload", map);
             var accessor = new MessageHeaderAccessor(message);
 
             accessor.RemoveHeaders("fo*");
@@ -106,7 +106,7 @@ namespace Steeltoe.Messaging.Support.Test
             {
                 { "foo", "bar" }
             };
-            var message = Message.Create<string>("payload", map1);
+            var message = Message.Create("payload", map1);
             var accessor = new MessageHeaderAccessor(message);
 
             IDictionary<string, object> map2 = new Dictionary<string, object>
@@ -129,7 +129,7 @@ namespace Steeltoe.Messaging.Support.Test
             {
                 { "foo", "bar" }
             };
-            var message = Message.Create<string>("payload", map1);
+            var message = Message.Create("payload", map1);
             var accessor = new MessageHeaderAccessor(message);
 
             IDictionary<string, object> map2 = new Dictionary<string, object>

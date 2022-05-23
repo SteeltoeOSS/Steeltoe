@@ -303,9 +303,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             admin.ApplicationContext = mockContext.Object;
             var templateChannel = new AtomicReference<RC.IModel>();
             var transTemplate = new TransactionTemplate(new TestTransactionManager());
-            transTemplate.Execute<bool>((s) =>
+            transTemplate.Execute((s) =>
             {
-                return rabbitTemplate.Execute<bool>((c) =>
+                return rabbitTemplate.Execute((c) =>
                 {
                     templateChannel.Value = ((IChannelProxy)c).TargetChannel;
                     return true;

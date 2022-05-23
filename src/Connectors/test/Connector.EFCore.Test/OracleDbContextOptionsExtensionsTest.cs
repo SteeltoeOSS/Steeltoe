@@ -25,10 +25,10 @@ namespace Steeltoe.Connector.Oracle.EFCore.Test
             var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(config));
             Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
         }
 
@@ -45,10 +45,10 @@ namespace Steeltoe.Connector.Oracle.EFCore.Test
             var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(config));
             Assert.Contains(nameof(config), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle<GoodDbContext>(config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
         }
 
@@ -63,7 +63,7 @@ namespace Steeltoe.Connector.Oracle.EFCore.Test
             var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseOracle(config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
-            var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseOracle<GoodDbContext>(config, serviceName));
+            var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseOracle(config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
         }
     }

@@ -349,7 +349,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
 
         // Things after version 8 go here. Always add the the end, and it should always work
         // and use the tagged variation.  
-        deserializer.TryReadTagged<InteropInfo>(ref m_interop);
+        deserializer.TryReadTagged(ref m_interop);
         string creationTool = null;
         deserializer.TryReadTagged(ref creationTool);
         CreationTool = creationTool;

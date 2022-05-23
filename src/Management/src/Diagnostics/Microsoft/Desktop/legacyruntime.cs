@@ -257,7 +257,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         internal override bool GetCommonMethodTables(ref CommonMethodTables mCommonMTs)
         {
-            return RequestStruct<CommonMethodTables>(DacRequests.USEFULGLOBALS, ref mCommonMTs);
+            return RequestStruct(DacRequests.USEFULGLOBALS, ref mCommonMTs);
         }
 
         internal override string GetNameForMT(ulong mt)
@@ -486,7 +486,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             if (data == null)
             {
                 CodeHeaderData codeHeaderData = new CodeHeaderData();
-                if (RequestStruct<CodeHeaderData>(DacRequests.CODEHEADER_DATA, ip, ref codeHeaderData))
+                if (RequestStruct(DacRequests.CODEHEADER_DATA, ip, ref codeHeaderData))
                     return codeHeaderData.MethodDescPtr;
             }
 
@@ -665,7 +665,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
                 ulong ip = BitConverter.ToUInt64(result, 0);
 
-                if (!RequestStruct<CodeHeaderData>(DacRequests.CODEHEADER_DATA, ip, ref codeHeader))
+                if (!RequestStruct(DacRequests.CODEHEADER_DATA, ip, ref codeHeader))
                     continue;
                 values[i] = codeHeader.MethodDescPtr;
             }
@@ -682,7 +682,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         internal override IThreadStoreData GetThreadStoreData()
         {
             LegacyThreadStoreData threadStore = new LegacyThreadStoreData();
-            if (!RequestStruct<LegacyThreadStoreData>(DacRequests.THREAD_STORE_DATA, ref threadStore))
+            if (!RequestStruct(DacRequests.THREAD_STORE_DATA, ref threadStore))
                 return null;
 
             return threadStore;
@@ -772,7 +772,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             {
                 CodeHeaderData codeHeaderData = new CodeHeaderData();
 
-                if (RequestStruct<CodeHeaderData>(DacRequests.CODEHEADER_DATA, addr, ref codeHeaderData))
+                if (RequestStruct(DacRequests.CODEHEADER_DATA, addr, ref codeHeaderData))
                     result = GetMethodDescData(DacRequests.METHODDESC_DATA, codeHeaderData.MethodDescPtr);
             }
 

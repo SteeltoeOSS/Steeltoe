@@ -44,13 +44,13 @@ namespace Steeltoe.Common.Retry
 
         public override T Execute<T>(Func<IRetryContext, T> retryCallback)
         {
-            return Execute<T>(retryCallback, (IRecoveryCallback<T>)null);
+            return Execute(retryCallback, (IRecoveryCallback<T>)null);
         }
 
         public override T Execute<T>(Func<IRetryContext, T> retryCallback, Func<IRetryContext, T> recoveryCallback)
         {
             var recovCallback = new FuncRecoveryCallback<T>(recoveryCallback, _logger);
-            return Execute<T>(retryCallback, recovCallback);
+            return Execute(retryCallback, recovCallback);
         }
 
         public override void Execute(Action<IRetryContext> retryCallback, Action<IRetryContext> recoveryCallback)
@@ -138,7 +138,7 @@ namespace Steeltoe.Common.Retry
             .WaitAndRetry(delay, OnRetry);
 
             var fallbackPolicy = Policy<T>.Handle<Exception>()
-                   .Fallback<T>(
+                   .Fallback(
                         (delegateResult, context, token) =>
                         {
                             var retryContext = GetRetryContext(context);

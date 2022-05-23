@@ -30,7 +30,7 @@ namespace Steeltoe.Stream.Partitioning
             var factory = provider.GetService<IBinderFactory>();
             Assert.NotNull(factory);
             var binder = factory.GetBinder(null);
-            var mockBinder = Mock.Get<IBinder>(binder);
+            var mockBinder = Mock.Get(binder);
             var sink = provider.GetService<ISink>();
             IConsumerOptions captured = null;
             mockBinder.Setup((b) => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>())).Callback<string, string, object, IConsumerOptions>((a, b, c, d) => { captured = d; });

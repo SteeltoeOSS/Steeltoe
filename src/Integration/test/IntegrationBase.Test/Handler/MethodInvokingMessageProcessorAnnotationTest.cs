@@ -27,7 +27,7 @@ namespace Steeltoe.Integration.Handler
             var method = _testService.GetType().GetMethod("OptionalHeader");
             var context = GetDefaultContext();
             var processor = new MethodInvokingMessageProcessor<int?>(context, _testService, method);
-            var result = processor.ProcessMessage(Message.Create<string>("foo"));
+            var result = processor.ProcessMessage(Message.Create("foo"));
             Assert.Null(result);
         }
 
@@ -37,7 +37,7 @@ namespace Steeltoe.Integration.Handler
             var method = _testService.GetType().GetMethod("RequiredHeader");
             var context = GetDefaultContext();
             var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
-            Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(Message.Create<string>("foo")));
+            Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(Message.Create("foo")));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Steeltoe.Integration.Handler
             var context = GetDefaultContext();
             var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
             var messageWithHeader = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
-            var messageWithoutHeader = Message.Create<string>("foo");
+            var messageWithoutHeader = Message.Create("foo");
 
             processor.ProcessMessage(messageWithHeader);
             Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(messageWithoutHeader));

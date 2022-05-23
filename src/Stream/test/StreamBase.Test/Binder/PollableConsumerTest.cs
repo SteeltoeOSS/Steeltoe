@@ -254,7 +254,7 @@ namespace Steeltoe.Stream.Binder
                     Assert.NotNull(e);
                 }
 
-                return Message.Create<byte[]>(payload);
+                return Message.Create(payload);
             });
 
             setter.Invoke(binder, new object[] { messageSource });
@@ -470,7 +470,7 @@ namespace Steeltoe.Stream.Binder
 
             public IMessage Receive()
             {
-                return Message.Create<byte[]>(Encoding.UTF8.GetBytes(payload));
+                return Message.Create(Encoding.UTF8.GetBytes(payload));
             }
         }
 

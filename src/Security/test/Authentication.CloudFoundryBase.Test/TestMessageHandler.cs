@@ -17,7 +17,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             LastRequest = request;
-            return Task.FromResult<HttpResponseMessage>(Response);
+            return Task.FromResult(Response);
         }
     }
 }

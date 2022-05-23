@@ -15,7 +15,7 @@ namespace Steeltoe.Stream.Tck
         [ServiceActivator(InputChannel = ISink.INPUT, OutputChannel = ISource.OUTPUT)]
         public IMessage<string> Echo(IMessage<Person> value)
         {
-            return (IMessage<string>)MessageBuilder.WithPayload<string>(value.Payload.ToString())
+            return (IMessage<string>)MessageBuilder.WithPayload(value.Payload.ToString())
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build();
         }

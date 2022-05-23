@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.Oracle.EFCore
 
             var connection = GetConnection(config);
 
-            return DoUseOracle<TContext>(optionsBuilder, connection, oracleOptionsAction);
+            return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
         }
 
         public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object oracleOptionsAction = null)
@@ -91,7 +91,7 @@ namespace Steeltoe.Connector.Oracle.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseOracle<TContext>(optionsBuilder, connection, oracleOptionsAction);
+            return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
         }
 
         private static DbContextOptionsBuilder DoUseOracle(DbContextOptionsBuilder optionsBuilder, object connection, object oracleOptionsAction)

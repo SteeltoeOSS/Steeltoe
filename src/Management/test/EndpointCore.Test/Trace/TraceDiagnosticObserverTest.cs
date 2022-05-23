@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             {
                 Session = session
             };
-            context.Features.Set<ISessionFeature>(sessFeature);
+            context.Features.Set(sessFeature);
 
             var result = obs.GetSessionId(context);
             Assert.Equal("TestSessionId", result);

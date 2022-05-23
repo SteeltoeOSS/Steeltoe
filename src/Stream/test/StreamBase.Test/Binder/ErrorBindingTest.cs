@@ -74,9 +74,9 @@ namespace Steeltoe.Stream.Binder
         private void SendAndValidate_ErrorConfigurationWithCustomErrorHandler(IServiceProvider provider)
         {
             var source = provider.GetService<InputDestination>();
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("Hello1")));
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("Hello2")));
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("Hello3")));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes("Hello1")));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes("Hello2")));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes("Hello3")));
 
             var errorConfig = provider.GetService<ErrorConfigurationWithCustomErrorHandler>();
             Assert.NotNull(errorConfig);
@@ -86,9 +86,9 @@ namespace Steeltoe.Stream.Binder
         private void SendAndValidate_ErrorConfigurationDefault(IServiceProvider provider)
         {
             var source = provider.GetService<InputDestination>();
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("Hello1")));
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("Hello2")));
-            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes("Hello3")));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes("Hello1")));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes("Hello2")));
+            source.Send(Message.Create(Encoding.UTF8.GetBytes("Hello3")));
 
             var errorConfig = provider.GetService<ErrorConfigurationDefault>();
             Assert.NotNull(errorConfig);

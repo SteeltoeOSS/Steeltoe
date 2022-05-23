@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         {
             var services = new ServiceCollection();
             var host = HostingHelpers.GetHostingEnvironment();
-            services.AddSingleton<IHostEnvironment>(host);
+            services.AddSingleton(host);
 
             var appSettings = new Dictionary<string, string>()
             {

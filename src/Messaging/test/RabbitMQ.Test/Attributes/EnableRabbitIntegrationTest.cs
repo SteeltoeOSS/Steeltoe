@@ -727,7 +727,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     b.AddConsole();
                 });
 
-                services.AddSingleton<IConfiguration>(config);
+                services.AddSingleton(config);
                 services.AddRabbitHostingServices();
                 services.AddRabbitDefaultMessageConverter();
                 services.AddRabbitMessageHandlerMethodFactory();
@@ -903,7 +903,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
                 services.AddRabbitListenerErrorHandler<UpcaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
                 services.AddRabbitListenerErrorHandler<AlwaysBarListenerErrorHandler>("alwaysBARHandler");
-                services.AddRabbitListenerErrorHandler<ThrowANewExceptionErrorHandler>("throwANewException", p => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
+                services.AddRabbitListenerErrorHandler("throwANewException", p => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
                 return services;
             }
 
@@ -1112,7 +1112,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     Field = input.ToUpper()
                 };
                 var headers = new MessageHeaders(new Dictionary<string, object>() { { "foo", "bar" } });
-                return Message.Create<Bar>(bar, headers);
+                return Message.Create(bar, headers);
             }
 
             [RabbitListener("test.amqp.message")]

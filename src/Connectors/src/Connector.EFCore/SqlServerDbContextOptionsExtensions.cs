@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.SqlServer.EFCore
 
             var connection = GetConnection(config);
 
-            return DoUseSqlServer<TContext>(optionsBuilder, connection, sqlServerOptionsAction);
+            return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
         }
 
         public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object sqlServerOptionsAction = null)
@@ -91,7 +91,7 @@ namespace Steeltoe.Connector.SqlServer.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseSqlServer<TContext>(optionsBuilder, connection, sqlServerOptionsAction);
+            return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
         }
 
         private static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)

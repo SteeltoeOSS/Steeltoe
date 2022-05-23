@@ -384,7 +384,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     b.AddConsole();
                 });
 
-                services.AddSingleton<IConfiguration>(config);
+                services.AddSingleton(config);
                 services.AddRabbitHostingServices();
 
                 // services.AddRabbitDefaultMessageConverter();
@@ -393,7 +393,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 // services.AddRabbitListenerAttributeProcessor();
 
                 // ConnectionFactory cf1
-                services.AddSingleton<IConnectionFactory>((p) =>
+                services.AddSingleton((p) =>
                 {
                     var mockConnectionFactory = new Mock<IConnectionFactory>();
                     Conn1 = new Mock<IConnection>();
@@ -413,7 +413,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 });
 
                 // ConnectionFactory cf2
-                services.AddSingleton<IConnectionFactory>((p) =>
+                services.AddSingleton((p) =>
                 {
                     var mockConnectionFactory = new Mock<IConnectionFactory>();
                     Conn2 = new Mock<IConnection>();
@@ -433,7 +433,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 });
 
                 // ConnectionFactory cf3
-                services.AddSingleton<IConnectionFactory>((p) =>
+                services.AddSingleton((p) =>
                 {
                     var mockConnectionFactory = new Mock<IConnectionFactory>();
                     Conn3 = new Mock<IConnection>();
@@ -452,7 +452,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     return mockConnectionFactory.Object;
                 });
 
-                services.AddSingleton<RabbitAdmin>(p =>
+                services.AddSingleton(p =>
                 {
                     var context = p.GetApplicationContext();
                     var cf1 = context.GetService<IConnectionFactory>("cf1");
@@ -468,7 +468,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     return context.GetService<RabbitAdmin>("admin1");
                 });
 
-                services.AddSingleton<RabbitAdmin>(p =>
+                services.AddSingleton(p =>
                 {
                     var context = p.GetApplicationContext();
                     var cf2 = context.GetService<IConnectionFactory>("cf2");
@@ -484,7 +484,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     return context.GetService<RabbitAdmin>("admin2");
                 });
 
-                services.AddSingleton<RabbitAdmin>(p =>
+                services.AddSingleton(p =>
                 {
                     var context = p.GetApplicationContext();
                     var cf3 = context.GetService<IConnectionFactory>("cf3");

@@ -165,7 +165,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             var recoveryCallback = new ErrorMessageSendingRecoverer(context, errors) { ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy() };
             adapter.RecoveryCallback = recoveryCallback;
             var listener = container.MessageListener as IChannelAwareMessageListener;
-            var message = MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes("foo")).CopyHeaders(new MessageHeaders()).Build();
+            var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("foo")).CopyHeaders(new MessageHeaders()).Build();
             listener.OnMessage(message, null);
             var errorMessage = errors.Receive(0);
             Assert.NotNull(errorMessage);

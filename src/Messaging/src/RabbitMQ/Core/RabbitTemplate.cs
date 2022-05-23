@@ -1219,7 +1219,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual T Invoke<T>(Func<IRabbitTemplate, T> rabbitOperations)
         {
-            return Invoke<T>(rabbitOperations, null, null);
+            return Invoke(rabbitOperations, null, null);
         }
 
         public virtual T Invoke<T>(Func<IRabbitTemplate, T> rabbitOperations, Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks)

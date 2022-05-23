@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private ObservableGauge<long> _availThreadsMeasure;
         private ObservableGauge<double> _processUptimeMeasure;
 
-        private CLRRuntimeSource.HeapMetrics _previous = default(CLRRuntimeSource.HeapMetrics);
+        private CLRRuntimeSource.HeapMetrics _previous = default;
 
         public CLRRuntimeObserver(IViewRegistry viewRegistry, ILogger<CLRRuntimeObserver> logger)
         {

@@ -45,7 +45,7 @@ namespace Steeltoe.Stream
                 b.SetMinimumLevel(LogLevel.Trace);
             });
 
-            container.AddSingleton<IConfiguration>(configuration);
+            container.AddSingleton(configuration);
             container.AddSingleton<IApplicationContext, GenericApplicationContext>();
             container.AddStreamConfiguration(configuration);
             container.AddCoreServices();

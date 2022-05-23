@@ -62,11 +62,11 @@ namespace Steeltoe.Integration.Transformer
             _defaultTypeMapper.FromType(message.Payload.GetType(), headers);
             if (ResultType == typeof(string))
             {
-                return MessageBuilderFactory.WithPayload<string>((string)payload).CopyHeaders(headers).Build();
+                return MessageBuilderFactory.WithPayload((string)payload).CopyHeaders(headers).Build();
             }
             else
             {
-                return MessageBuilderFactory.WithPayload<byte[]>((byte[])payload).CopyHeaders(headers).Build();
+                return MessageBuilderFactory.WithPayload((byte[])payload).CopyHeaders(headers).Build();
             }
         }
 

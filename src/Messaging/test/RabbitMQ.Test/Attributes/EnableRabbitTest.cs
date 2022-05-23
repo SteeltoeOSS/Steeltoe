@@ -296,7 +296,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitListenerEndpointRegistry();
                 services.AddRabbitListenerEndpointRegistrar();
 
-                services.AddSingleton<IConnectionFactory>(mockConnectionFactory.Object);
+                services.AddSingleton(mockConnectionFactory.Object);
                 services.AddRabbitListenerContainerFactory<TestDirectRabbitListenerContainerFactory>("rabbitListenerContainerFactory");
                 services.AddRabbitAdmin();
 
@@ -342,7 +342,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitListenerEndpointRegistry();
                 services.AddRabbitListenerEndpointRegistrar();
 
-                services.AddSingleton<IConnectionFactory>(mockConnectionFactory.Object);
+                services.AddSingleton(mockConnectionFactory.Object);
                 services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("rabbitListenerContainerFactory");
                 services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");
                 services.AddRabbitAdmin("myAdmin");
@@ -414,7 +414,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitListenerEndpointRegistry();
                 services.AddRabbitListenerEndpointRegistrar();
 
-                services.AddSingleton<IConnectionFactory>(mockConnectionFactory.Object);
+                services.AddSingleton(mockConnectionFactory.Object);
                 services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");
                 services.AddRabbitAdmin();
 
@@ -467,7 +467,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitListenerEndpointRegistry();
                 services.AddRabbitListenerEndpointRegistrar();
 
-                services.AddSingleton<IConnectionFactory>(mockConnectionFactory.Object);
+                services.AddSingleton(mockConnectionFactory.Object);
                 services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");
                 services.AddRabbitAdmin();
 
@@ -499,7 +499,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitDefaultMessageConverter();
                 services.AddRabbitListenerEndpointRegistrar();
                 services.AddRabbitListenerEndpointRegistry();
-                services.AddSingleton<IConnectionFactory>(mockConnection.Object);
+                services.AddSingleton(mockConnection.Object);
 
                 services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("rabbitListenerContainerFactory");
                 services.AddRabbitAdmin();
@@ -555,7 +555,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitDefaultMessageConverter();
                 services.AddRabbitListenerEndpointRegistrar();
 
-                services.AddSingleton<IConnectionFactory>(mockConnectionFactory.Object);
+                services.AddSingleton(mockConnectionFactory.Object);
                 services.AddSingleton<IRabbitListenerConfigurer, RabbitCustomConfig>();
                 services.AddRabbitListenerEndpointRegistry<CustomRabbitListenerEndpointRegistry>();
                 services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("rabbitListenerContainerFactory");
@@ -607,7 +607,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitDefaultMessageConverter();
                 services.AddRabbitListenerEndpointRegistrar();
 
-                services.AddSingleton<IConnectionFactory>(mockConnection.Object);
+                services.AddSingleton(mockConnection.Object);
                 services.AddSingleton<IRabbitListenerConfigurer, RabbitCustomContainerFactoryConfig>();
                 services.AddRabbitListenerEndpointRegistry();
                 services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");

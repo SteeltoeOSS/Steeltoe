@@ -138,12 +138,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetPassword(IConfigurationSection clientConfigsection, string defaultPassword)
         {
-            return clientConfigsection.GetValue<string>("password", defaultPassword);
+            return clientConfigsection.GetValue("password", defaultPassword);
         }
 
         private static string GetUsername(IConfigurationSection clientConfigsection, string defaultUser)
         {
-            return clientConfigsection.GetValue<string>("username", defaultUser);
+            return clientConfigsection.GetValue("username", defaultUser);
         }
 
         private static string GetLabel(IConfigurationSection clientConfigsection, string defaultLabel)

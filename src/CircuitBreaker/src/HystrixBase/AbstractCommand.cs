@@ -479,7 +479,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             if (IsRequestCachingEnabled && CacheKey != null)
             {
                 // wrap it for caching
-                fromCache = _requestCache.PutIfAbsent<Task<TResult>>(CacheKey, hystrixTask);
+                fromCache = _requestCache.PutIfAbsent(CacheKey, hystrixTask);
                 if (fromCache != null)
                 {
                     // another thread beat us so we'll use the cached value instead

@@ -82,7 +82,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
                 SendAndReceiveMessage = message;
                 ExchangeName = exchange;
                 RoutingKey = routingKey;
-                return Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
+                return Message.Create(Encoding.UTF8.GetBytes("foo"));
             }
         }
     }

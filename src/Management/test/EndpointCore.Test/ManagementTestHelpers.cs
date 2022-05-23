@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Test
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("scope", "actuators.read") })), AuthenticationScheme);
-            return Task.FromResult<AuthenticateResult>(AuthenticateResult.Success(ticket));
+            return Task.FromResult(AuthenticateResult.Success(ticket));
         }
     }
 }

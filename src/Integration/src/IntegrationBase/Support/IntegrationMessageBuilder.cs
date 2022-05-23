@@ -88,7 +88,7 @@ namespace Steeltoe.Integration.Support
                 return (IMessage<T>)new ErrorMessage(exception, _headerAccessor.ToDictionary());
             }
 
-            return Message.Create<T>((T)_payload, _headerAccessor.ToDictionary());
+            return Message.Create((T)_payload, _headerAccessor.ToDictionary());
         }
 
         public new IMessageBuilder<T> SetExpirationDate(long expirationDate)

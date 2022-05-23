@@ -91,7 +91,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             });
 
             services.ConfigureRabbitOptions(config);
-            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton(config);
             services.AddRabbitHostingServices();
             services.AddRabbitJsonMessageConverter();
             services.AddRabbitMessageHandlerMethodFactory();

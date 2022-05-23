@@ -59,15 +59,15 @@ namespace Steeltoe.Common.Util
         {
             return o1 switch
             {
-                object[] v => ArrayItemsHashCode<object>(v),
-                bool[] v => ArrayItemsHashCode<bool>(v),
-                byte[] v => ArrayItemsHashCode<byte>(v),
-                char[] v => ArrayItemsHashCode<char>(v),
-                double[] v => ArrayItemsHashCode<double>(v),
-                float[] v => ArrayItemsHashCode<float>(v),
-                int[] v => ArrayItemsHashCode<int>(v),
-                long[] v => ArrayItemsHashCode<long>(v),
-                short[] v => ArrayItemsHashCode<short>(v),
+                object[] v => ArrayItemsHashCode(v),
+                bool[] v => ArrayItemsHashCode(v),
+                byte[] v => ArrayItemsHashCode(v),
+                char[] v => ArrayItemsHashCode(v),
+                double[] v => ArrayItemsHashCode(v),
+                float[] v => ArrayItemsHashCode(v),
+                int[] v => ArrayItemsHashCode(v),
+                long[] v => ArrayItemsHashCode(v),
+                short[] v => ArrayItemsHashCode(v),
                 _ => 0
             };
         }
@@ -77,15 +77,15 @@ namespace Steeltoe.Common.Util
         {
             return o1 switch
             {
-                object[] v => o2 is object[] v1 && ArrayItemsEqual<object>(v, v1),
-                bool[] v => o2 is bool[] v1 && ArrayItemsEqual<bool>(v, v1),
-                byte[] v => o2 is byte[] v1 && ArrayItemsEqual<byte>(v, v1),
-                char[] v => o2 is char[] v1 && ArrayItemsEqual<char>(v, v1),
-                double[] v => o2 is double[] v1 && ArrayItemsEqual<double>(v, v1),
-                float[] v => o2 is float[] v1 && ArrayItemsEqual<float>(v, v1),
-                int[] v => o2 is int[] v1 && ArrayItemsEqual<int>(v, v1),
-                long[] v => o2 is long[] v1 && ArrayItemsEqual<long>(v, v1),
-                short[] v => o2 is short[] v1 && ArrayItemsEqual<short>(v, v1),
+                object[] v => o2 is object[] v1 && ArrayItemsEqual(v, v1),
+                bool[] v => o2 is bool[] v1 && ArrayItemsEqual(v, v1),
+                byte[] v => o2 is byte[] v1 && ArrayItemsEqual(v, v1),
+                char[] v => o2 is char[] v1 && ArrayItemsEqual(v, v1),
+                double[] v => o2 is double[] v1 && ArrayItemsEqual(v, v1),
+                float[] v => o2 is float[] v1 && ArrayItemsEqual(v, v1),
+                int[] v => o2 is int[] v1 && ArrayItemsEqual(v, v1),
+                long[] v => o2 is long[] v1 && ArrayItemsEqual(v, v1),
+                short[] v => o2 is short[] v1 && ArrayItemsEqual(v, v1),
                 _ => false
             };
         }

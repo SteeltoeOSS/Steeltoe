@@ -222,7 +222,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var services = new ServiceCollection();
             var config = configuration ?? new ConfigurationBuilder().Build();
 
-            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton(config);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>();
             services.AddRabbitMessageHandlerMethodFactory();

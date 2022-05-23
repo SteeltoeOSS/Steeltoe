@@ -114,7 +114,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 ThreadPoolKey = threadPoolKey
             };
             opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
-            services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCommand<TService>(this IServiceCollection services, IHystrixCommandGroupKey groupKey, IHystrixCommandKey commandKey, IConfiguration config)
@@ -151,7 +151,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 ThreadPoolKey = threadPoolKey
             };
             opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
-            services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCommand<TService>(this IServiceCollection services, string groupKey, IConfiguration config)
@@ -326,7 +326,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
-            services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCollapser<TService>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope, IConfiguration config)
@@ -352,7 +352,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
 
-            services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCollapser<TService>(this IServiceCollection services, string collapserKey, IConfiguration config)

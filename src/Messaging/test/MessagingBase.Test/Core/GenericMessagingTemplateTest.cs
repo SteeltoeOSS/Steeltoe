@@ -94,7 +94,7 @@ namespace Steeltoe.Messaging.Core.Test
             {
                 LeaveMutable = true
             };
-            var message = Message.Create<string>("request", accessor.MessageHeaders);
+            var message = Message.Create("request", accessor.MessageHeaders);
             accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
             await _template.SendAsync(channel, message);
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
@@ -119,7 +119,7 @@ namespace Steeltoe.Messaging.Core.Test
             {
                 LeaveMutable = true
             };
-            var message = Message.Create<string>("request", accessor.MessageHeaders);
+            var message = Message.Create("request", accessor.MessageHeaders);
             accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
             _template.Send(channel, message);
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
@@ -334,7 +334,7 @@ namespace Steeltoe.Messaging.Core.Test
                 {
                     Thread.Sleep(1000);
                     var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
-                    replyChannel.Send(Message.Create<string>("response"));
+                    replyChannel.Send(Message.Create("response"));
                     _failure = new InvalidOperationException("Expected exception");
                 }
                 catch (MessageDeliveryException ex)
@@ -366,7 +366,7 @@ namespace Steeltoe.Messaging.Core.Test
             public void HandleMessage(IMessage message)
             {
                 var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
-                replyChannel.Send(Message.Create<string>("response"));
+                replyChannel.Send(Message.Create("response"));
                 return;
             }
         }

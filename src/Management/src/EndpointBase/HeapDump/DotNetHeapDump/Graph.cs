@@ -1232,7 +1232,7 @@ namespace Graphs
                 sortedNodes[i] = (NodeIndex)i;
             }
 
-            Array.Sort<NodeIndex>(sortedNodes, delegate (NodeIndex x, NodeIndex y)
+            Array.Sort(sortedNodes, delegate (NodeIndex x, NodeIndex y)
             {
                 // Sort first by address
                 int ret = graph.GetAddress(x).CompareTo(graph.GetAddress(y));

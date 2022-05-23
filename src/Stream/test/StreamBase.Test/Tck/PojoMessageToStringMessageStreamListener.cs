@@ -17,7 +17,7 @@ namespace Steeltoe.Stream.Tck
         [SendTo(ISource.OUTPUT)]
         public IMessage<string> Echo(IMessage<Person> value)
         {
-            return (IMessage<string>)MessageBuilder.WithPayload<string>(value.Payload.ToString()).SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
+            return (IMessage<string>)MessageBuilder.WithPayload(value.Payload.ToString()).SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
         }
     }
 }

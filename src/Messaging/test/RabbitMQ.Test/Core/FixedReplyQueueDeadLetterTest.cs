@@ -172,7 +172,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     b.AddConsole();
                 });
 
-                services.AddSingleton<IConfiguration>(config);
+                services.AddSingleton(config);
                 services.AddRabbitHostingServices();
                 services.AddRabbitDefaultMessageConverter();
 

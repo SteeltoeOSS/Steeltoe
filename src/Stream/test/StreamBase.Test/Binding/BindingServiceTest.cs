@@ -34,7 +34,7 @@ namespace Steeltoe.Stream.Binding
             var binder = factory.GetBinder("mock");
 
             IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var mockBinder = Mock.Get<IBinder>(binder);
+            var mockBinder = Mock.Get(binder);
 
             var service = provider.GetService<BindingService>();
             var bindings = service.BindConsumer(inputChannel, "input");
@@ -62,7 +62,7 @@ namespace Steeltoe.Stream.Binding
             var binder = factory.GetBinder("mock");
 
             IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var mockBinder = Mock.Get<IBinder>(binder);
+            var mockBinder = Mock.Get(binder);
 
             var service = provider.GetService<BindingService>();
             var bindings = service.BindConsumer(inputChannel, "input");
@@ -98,7 +98,7 @@ namespace Steeltoe.Stream.Binding
             var binder = factory.GetBinder("mock");
 
             IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var mockBinder = Mock.Get<IBinder>(binder);
+            var mockBinder = Mock.Get(binder);
 
             var service = provider.GetService<BindingService>();
             var bindings = service.BindConsumer(inputChannel, "input");
@@ -127,7 +127,7 @@ namespace Steeltoe.Stream.Binding
             var binder = factory.GetBinder("mock");
 
             IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var mockBinder = Mock.Get<IBinder>(binder);
+            var mockBinder = Mock.Get(binder);
 
             var service = provider.GetService<BindingService>();
             var bindings = service.BindConsumer(inputChannel, "input");
@@ -156,7 +156,7 @@ namespace Steeltoe.Stream.Binding
             var binder = factory.GetBinder("mock");
 
             IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var mockBinder = Mock.Get<IBinder>(binder);
+            var mockBinder = Mock.Get(binder);
 
             var service = provider.GetService<BindingService>();
             Assert.Throws<InvalidOperationException>(() => service.BindProducer(outputChannel, "output"));

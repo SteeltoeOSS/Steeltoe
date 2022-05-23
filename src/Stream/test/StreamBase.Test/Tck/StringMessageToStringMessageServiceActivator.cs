@@ -30,7 +30,7 @@ namespace Steeltoe.Stream.Tck
             var textReader = new StringReader(value.Payload);
             var person = (Person)serializer.Deserialize(textReader, typeof(Person));
 
-            return (IMessage<string>)MessageBuilder.WithPayload<string>(person.ToString())
+            return (IMessage<string>)MessageBuilder.WithPayload(person.ToString())
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build();
         }

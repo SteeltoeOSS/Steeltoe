@@ -287,12 +287,12 @@ namespace Steeltoe.Common.Test.Lifecycle
             var serviceCollection = new ServiceCollection();
             foreach (var lifeCycle in lifecycles)
             {
-                serviceCollection.AddSingleton<ILifecycle>(lifeCycle);
+                serviceCollection.AddSingleton(lifeCycle);
             }
 
             foreach (var lifeCycle in smartLifecycles)
             {
-                serviceCollection.AddSingleton<ISmartLifecycle>(lifeCycle);
+                serviceCollection.AddSingleton(lifeCycle);
             }
 
             return new GenericApplicationContext(serviceCollection.BuildServiceProvider(), config);

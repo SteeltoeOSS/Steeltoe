@@ -17,7 +17,7 @@ namespace Steeltoe.Stream.Extensions
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
             services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
-            services.TryAddSingleton<IConversionService>(DefaultConversionService.Singleton);
+            services.TryAddSingleton(DefaultConversionService.Singleton);
             services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
 
             return services;

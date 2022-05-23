@@ -120,7 +120,7 @@ namespace Steeltoe.Stream.Binder
         public void TestBadDecode()
         {
             var bytes = new byte[] { 0xff, 99 };
-            var message = Message.Create<byte[]>(bytes);
+            var message = Message.Create(bytes);
             Assert.Throws<ArgumentOutOfRangeException>(() => EmbeddedHeaderUtils.ExtractHeaders(message, false));
         }
     }

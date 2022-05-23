@@ -34,10 +34,10 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config));
             Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
         }
 
@@ -54,10 +54,10 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config));
             Assert.Contains(nameof(config), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
         }
 
@@ -72,7 +72,7 @@ namespace Steeltoe.Connector.SqlServer.EFCore.Test
             var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseSqlServer(config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
-            var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseSqlServer<GoodDbContext>(config, serviceName));
+            var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseSqlServer(config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
         }
 
