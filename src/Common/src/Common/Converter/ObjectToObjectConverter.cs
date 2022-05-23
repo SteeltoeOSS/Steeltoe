@@ -37,11 +37,11 @@ namespace Steeltoe.Common.Converter
                 {
                     return !method.IsStatic
                         ? method.Invoke(source, Array.Empty<object>())
-                        : method.Invoke(null, new object[1] { source });
+                        : method.Invoke(null, new[] { source });
                 }
                 else if (member is ConstructorInfo ctor)
                 {
-                    return ctor.Invoke(new object[1] { source });
+                    return ctor.Invoke(new[] { source });
                 }
             }
             catch (TargetInvocationException ex)

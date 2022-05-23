@@ -221,7 +221,7 @@ namespace Steeltoe.Connector.Services
         {
             if (string.IsNullOrEmpty(userPass))
             {
-                return new string[2] { null, null };
+                return new string[] { null, null };
             }
 
             var split = userPass.Split(_colon);

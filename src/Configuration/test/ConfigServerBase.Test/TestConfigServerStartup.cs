@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public static void Reset()
         {
             Response = null;
-            ReturnStatus = new int[1] { 200 };
+            ReturnStatus = new[] { 200 };
             LastRequest = null;
             RequestCount = 0;
             Label = AppName = Env = string.Empty;
@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
         public static string Response { get; set; }
 
-        public static int[] ReturnStatus { get; set; } = new int[1] { 200 };
+        public static int[] ReturnStatus { get; set; } = new[] { 200 };
 
         public static HttpRequestInfo LastRequest { get; set; }
 
