@@ -141,14 +141,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             var received = source.Receive();
             connection.Verify(c => c.CreateModel());
             var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK);
-            if (requeue)
-            {
-                callback.Acknowledge(Status.REQUEUE);
-            }
-            else
-            {
-                callback.Acknowledge(Status.REJECT);
-            }
+            callback.Acknowledge(requeue ? Status.REQUEUE : Status.REJECT);
 
             channel.Verify(c => c.BasicReject(123ul, requeue));
             connection.Verify(c => c.CreateModel());

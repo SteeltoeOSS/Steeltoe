@@ -96,25 +96,15 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
                     }
                     else if (((int)metric.MetricType & 0b_0000_1111) == 0x0a /* I8 */)
                     {
-                        if (metric.MetricType.IsSum())
-                        {
-                            metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumLong(), tags));
-                        }
-                        else
-                        {
-                            metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueLong(), tags));
-                        }
+                        metricSamples[metric.Name].Add(metric.MetricType.IsSum()
+                            ? new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumLong(), tags)
+                            : new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueLong(), tags));
                     }
                     else
                     {
-                        if (metric.MetricType.IsSum())
-                        {
-                            metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumDouble(), tags));
-                        }
-                        else
-                        {
-                            metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueDouble(), tags));
-                        }
+                        metricSamples[metric.Name].Add(metric.MetricType.IsSum()
+                            ? new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumDouble(), tags)
+                            : new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueDouble(), tags));
                     }
                 }
             }

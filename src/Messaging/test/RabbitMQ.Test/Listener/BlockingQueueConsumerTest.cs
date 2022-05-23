@@ -89,17 +89,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             channel.Setup(c => c.IsOpen).Returns(true);
             var throws = new AtomicBoolean(false);
             channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>()))
-                .Callback<string>((arg) =>
-                {
-                    if (arg != "good")
-                    {
-                        throws.Value = true;
-                    }
-                    else
-                    {
-                        throws.Value = false;
-                    }
-                })
+                .Callback<string>((arg) => throws.Value = arg != "good")
                 .Returns(() =>
                 {
                     if (throws.Value)

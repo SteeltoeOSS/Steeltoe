@@ -215,15 +215,9 @@ namespace Steeltoe.Stream.Binder
             var recovererBeanName = GetErrorRecovererName(destination, group, consumerOptions);
             ApplicationContext.Register(recovererBeanName, recoverer);
 
-            IMessageHandler handler;
-            if (polled)
-            {
-                handler = GetPolledConsumerErrorMessageHandler(destination, group, consumerOptions);
-            }
-            else
-            {
-                handler = GetErrorMessageHandler(destination, group, consumerOptions);
-            }
+            var handler = polled
+                ? GetPolledConsumerErrorMessageHandler(destination, group, consumerOptions)
+                : GetErrorMessageHandler(destination, group, consumerOptions);
 
             var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
 

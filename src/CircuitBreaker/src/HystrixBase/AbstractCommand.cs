@@ -1171,14 +1171,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 var result = DoRun();
                 isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
 
-                if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
-                {
-                    result = WrapWithOnExecutionEmitHook(result);
-                }
-                else
-                {
-                    result = default;
-                }
+                result = isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT ? WrapWithOnExecutionEmitHook(result) : default;
 
                 return result;
             }

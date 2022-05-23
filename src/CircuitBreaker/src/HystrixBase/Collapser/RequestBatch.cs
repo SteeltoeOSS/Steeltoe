@@ -62,16 +62,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                         var tcs = new TaskCompletionSource<RequestResponseType>(collapsedRequest);
                         collapsedRequest.CompletionSource = tcs;
 
-                        CollapsedRequest<RequestResponseType, RequestArgumentType> existing = null;
-
-                        if (arg == null)
-                        {
-                            existing = GetOrAddNullArg(collapsedRequest);
-                        }
-                        else
-                        {
-                            existing = _argumentMap.GetOrAdd(arg, collapsedRequest);
-                        }
+                        var existing = arg == null ? GetOrAddNullArg(collapsedRequest) : _argumentMap.GetOrAdd(arg, collapsedRequest);
 
                         /*
                          * If the argument already exists in the batch, then there are 2 options:

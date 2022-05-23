@@ -229,14 +229,7 @@ namespace Steeltoe.Messaging.Handler
 
                 // Cast/Unbox if needed
                 var methodArgType = methodArgTypes[i];
-                if (IsValueType(methodArgType))
-                {
-                    generator.Emit(OpCodes.Unbox_Any, methodArgType);
-                }
-                else
-                {
-                    generator.Emit(OpCodes.Castclass, methodArgType);
-                }
+                generator.Emit(IsValueType(methodArgType) ? OpCodes.Unbox_Any : OpCodes.Castclass, methodArgType);
 
                 // Save to local
                 generator.Emit(OpCodes.Stloc, argLocals[i]);

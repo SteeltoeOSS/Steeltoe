@@ -65,15 +65,7 @@ namespace Steeltoe.Integration.Support
             var incomingSequenceDetails = SequenceDetails;
             if (incomingCorrelationId != null)
             {
-                if (incomingSequenceDetails == null)
-                {
-                    incomingSequenceDetails = new List<List<object>>();
-                }
-                else
-                {
-                    incomingSequenceDetails = new List<List<object>>(incomingSequenceDetails);
-                }
-
+                incomingSequenceDetails = incomingSequenceDetails == null ? new List<List<object>>() : new List<List<object>>(incomingSequenceDetails);
                 incomingSequenceDetails.Add(new List<object>() { incomingCorrelationId, SequenceNumber, SequenceSize });
             }
 

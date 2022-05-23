@@ -50,15 +50,7 @@ namespace Steeltoe.Connector.CosmosDb
                 var sb = new StringBuilder();
 
                 AddKeyValue(sb, "AccountEndpoint", Host);
-
-                if (UseReadOnlyCredentials)
-                {
-                    AddKeyValue(sb, "AccountKey", ReadOnlyKey);
-                }
-                else
-                {
-                    AddKeyValue(sb, "AccountKey", MasterKey);
-                }
+                AddKeyValue(sb, "AccountKey", UseReadOnlyCredentials ? ReadOnlyKey : MasterKey);
 
                 return sb.ToString();
             }

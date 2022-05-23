@@ -44,15 +44,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             var resultType = value.GetType();
             Assert.Equal(expectedResultType, resultType);
-
-            if (expectedValue is string)
-            {
-                Assert.Equal(expectedValue, AbstractExpressionTests.StringValueOf(value));
-            }
-            else
-            {
-                Assert.Equal(expectedValue, value);
-            }
+            Assert.Equal(expectedValue, expectedValue is string ? AbstractExpressionTests.StringValueOf(value) : value);
         }
 
         public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
@@ -101,14 +93,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
 
             var resultType = value.GetType();
-            if (expectedValue is string)
-            {
-                Assert.Equal(expectedValue, AbstractExpressionTests.StringValueOf(value));
-            }
-            else
-            {
-                Assert.Equal(expectedValue, value);
-            }
+            Assert.Equal(expectedValue, expectedValue is string ? AbstractExpressionTests.StringValueOf(value) : value);
 
             Assert.Equal(expectedClassOfResult, resultType);
             Assert.Equal(shouldBeWritable, expr.IsWritable(_context));
@@ -130,14 +115,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     indexes[dimension] = i;
                     sb.Append('(').Append(string.Join(",", indexes)).Append(")=");
                     var val = array.GetValue(indexes);
-                    if (val == null)
-                    {
-                        sb.Append("null");
-                    }
-                    else
-                    {
-                        sb.Append(val.ToString());
-                    }
+                    sb.Append(val == null ? "null" : val.ToString());
 
                     sb.Append(',');
                 }

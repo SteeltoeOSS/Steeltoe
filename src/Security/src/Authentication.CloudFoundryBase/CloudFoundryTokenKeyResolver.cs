@@ -124,17 +124,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public virtual HttpClient GetHttpClient()
         {
-            if (_httpClient == null)
-            {
-                if (_httpHandler is null)
-                {
-                    _httpClient = HttpClientHelper.GetHttpClient(_validateCertificates, _httpClientTimeoutMillis);
-                }
-                else
-                {
-                    _httpClient = HttpClientHelper.GetHttpClient(_httpHandler);
-                }
-            }
+            _httpClient ??= _httpHandler is null
+                ? HttpClientHelper.GetHttpClient(_validateCertificates, _httpClientTimeoutMillis)
+                : HttpClientHelper.GetHttpClient(_httpHandler);
 
             return _httpClient;
         }

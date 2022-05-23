@@ -43,14 +43,9 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 // POST - change a logger level
                 var paths = new List<string>();
                 _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
-                if (_mgmtOptions == null)
-                {
-                    paths.Add(_endpoint.Path);
-                }
-                else
-                {
-                    paths.Add($"{_mgmtOptions.Path}/{_endpoint.Path}".Replace("//", "/"));
-                }
+                paths.Add(_mgmtOptions == null
+                    ? _endpoint.Path
+                    : $"{_mgmtOptions.Path}/{_endpoint.Path}".Replace("//", "/"));
 
                 foreach (var path in paths.Distinct())
                 {

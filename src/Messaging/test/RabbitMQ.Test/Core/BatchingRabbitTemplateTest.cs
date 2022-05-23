@@ -696,14 +696,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
                 if (LastInBatch != null)
                 {
-                    if (message.Headers.LastInBatch().HasValue)
-                    {
-                        LastInBatch.Add(message.Headers.LastInBatch().Value);
-                    }
-                    else
-                    {
-                        LastInBatch.Add(false);
-                    }
+                    LastInBatch.Add(message.Headers.LastInBatch().HasValue && message.Headers.LastInBatch().Value);
                 }
 
                 if (BatchSize != null)

@@ -1836,14 +1836,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
 
             var templateOptions = options.Template;
-            if (templateOptions.Mandatory)
-            {
-                Mandatory = true;
-            }
-            else
-            {
-                Mandatory = options.PublisherReturns;
-            }
+            Mandatory = templateOptions.Mandatory || options.PublisherReturns;
 
             if (templateOptions.Retry.Enabled)
             {
@@ -2016,15 +2009,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
             if (UserCorrelationId)
             {
-                object correlationId;
-                if (CorrelationKey != null)
-                {
-                    correlationId = message.Headers.Get<object>(CorrelationKey);
-                }
-                else
-                {
-                    correlationId = message.Headers.CorrelationId();
-                }
+                var correlationId = CorrelationKey != null ? message.Headers.Get<object>(CorrelationKey) : message.Headers.CorrelationId();
 
                 if (correlationId == null)
                 {
@@ -2302,15 +2287,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var receiveMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(receiveMessage);
             var replyMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
 
-            object correlation;
-            if (CorrelationKey == null)
-            {
-                correlation = receiveMessageAccessor.CorrelationId;
-            }
-            else
-            {
-                correlation = receiveMessageAccessor.GetHeader(CorrelationKey);
-            }
+            var correlation = CorrelationKey == null ? receiveMessageAccessor.CorrelationId : receiveMessageAccessor.GetHeader(CorrelationKey);
 
             if (CorrelationKey == null || correlation == null)
             {
@@ -2365,15 +2342,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     return routingConnectionFactory.DetermineTargetConnectionFactory();
                 }
 
-                object lookupKey;
-                if (rootObject != null)
-                {
-                    lookupKey = SendConnectionFactorySelectorExpression.GetValue(EvaluationContext, rootObject);
-                }
-                else
-                {
-                    lookupKey = SendConnectionFactorySelectorExpression.GetValue(EvaluationContext);
-                }
+                var lookupKey = rootObject != null
+                    ? SendConnectionFactorySelectorExpression.GetValue(EvaluationContext, rootObject)
+                    : SendConnectionFactorySelectorExpression.GetValue(EvaluationContext);
 
                 if (lookupKey != null)
                 {

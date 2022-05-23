@@ -164,14 +164,7 @@ namespace Steeltoe.Stream.Binding
                     throw new InvalidOperationException("Multiple `IPartitionSelectorStrategy` found from service container.");
                 }
 
-                if (_selectors.Count() == 1)
-                {
-                    strategy = _selectors.Single();
-                }
-                else
-                {
-                    strategy = new DefaultPartitionSelector();
-                }
+                strategy = _selectors.Count() == 1 ? _selectors.Single() : new DefaultPartitionSelector();
             }
 
             return strategy;
@@ -243,14 +236,9 @@ namespace Steeltoe.Stream.Binding
             var ct = oct;
             if (message.Payload is string)
             {
-                if (MimeTypeUtils.APPLICATION_JSON_VALUE.Equals(oct))
-                {
-                    ct = MimeTypeUtils.APPLICATION_JSON_VALUE;
-                }
-                else
-                {
-                    ct = MimeTypeUtils.TEXT_PLAIN_VALUE;
-                }
+                ct = MimeTypeUtils.APPLICATION_JSON_VALUE.Equals(oct)
+                    ? MimeTypeUtils.APPLICATION_JSON_VALUE
+                    : MimeTypeUtils.TEXT_PLAIN_VALUE;
             }
 
             // ===== END 1.3 backward compatibility code part-1 ===
@@ -260,15 +248,7 @@ namespace Steeltoe.Stream.Binding
                 messageHeaders.RawHeaders[MessageHeaders.CONTENT_TYPE] = _mimeType;
             }
 
-            IMessage result;
-            if (message.Payload is byte[])
-            {
-                result = message;
-            }
-            else
-            {
-                result = _messageConverter.ToMessage(message.Payload, message.Headers);
-            }
+            var result = message.Payload is byte[] ? message : _messageConverter.ToMessage(message.Payload, message.Headers);
 
             if (result == null)
             {

@@ -101,14 +101,7 @@ namespace Steeltoe.Integration.Dispatcher
 
                 handlers.Add(handler);
                 handlers.Sort(_comparer);
-                if (handlers.Count == 1)
-                {
-                    _theOneHandler = handler;
-                }
-                else
-                {
-                    _theOneHandler = null;
-                }
+                _theOneHandler = handlers.Count == 1 ? handler : null;
 
                 _handlers = handlers;
             }

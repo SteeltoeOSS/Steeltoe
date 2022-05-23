@@ -30,14 +30,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
                 var rootName = dirInfo.Root.Name;
                 var d = new DriveInfo(rootName);
                 var freeSpace = d.TotalFreeSpace;
-                if (freeSpace >= _options.Threshold)
-                {
-                    result.Status = HealthStatus.UP;
-                }
-                else
-                {
-                    result.Status = HealthStatus.DOWN;
-                }
+                result.Status = freeSpace >= _options.Threshold ? HealthStatus.UP : HealthStatus.DOWN;
 
                 result.Details.Add("total", d.TotalSize);
                 result.Details.Add("free", freeSpace);

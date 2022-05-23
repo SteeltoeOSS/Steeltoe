@@ -14,14 +14,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var items = new List<string>();
             foreach (var typeDescriptor in argumentTypes)
             {
-                if (typeDescriptor != null)
-                {
-                    items.Add(FormatClassNameForMessage(typeDescriptor));
-                }
-                else
-                {
-                    items.Add(FormatClassNameForMessage(null));
-                }
+                items.Add(typeDescriptor != null
+                    ? FormatClassNameForMessage(typeDescriptor)
+                    : FormatClassNameForMessage(null));
             }
 
             return name + "(" + string.Join(",", items) + ")";

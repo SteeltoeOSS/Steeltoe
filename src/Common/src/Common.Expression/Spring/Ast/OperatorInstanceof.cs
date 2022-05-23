@@ -32,7 +32,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             if (leftValue == null)
             {
-                result = BooleanTypedValue.FALSE;  // null is not an instanceof anything
+                result = BooleanTypedValue.FALSE;  // null is not an instance of anything
             }
             else
             {

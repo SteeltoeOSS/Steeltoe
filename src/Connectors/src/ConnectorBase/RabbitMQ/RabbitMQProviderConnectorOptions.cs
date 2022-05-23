@@ -59,15 +59,9 @@ namespace Steeltoe.Connector.RabbitMQ
                 return Uri;
             }
 
-            UriInfo uri;
-            if (SslEnabled)
-            {
-                uri = new UriInfo(Default_SSLScheme, Server, SslPort, Username, Password, VirtualHost);
-            }
-            else
-            {
-                uri = new UriInfo(Default_Scheme, Server, Port, Username, Password, VirtualHost);
-            }
+            var uri = SslEnabled
+                ? new UriInfo(Default_SSLScheme, Server, SslPort, Username, Password, VirtualHost)
+                : new UriInfo(Default_Scheme, Server, Port, Username, Password, VirtualHost);
 
             return uri.ToString();
         }

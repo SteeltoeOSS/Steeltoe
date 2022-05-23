@@ -459,15 +459,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The HttpRequestMessage built from the path</returns>
         protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri, string username, string password)
         {
-            HttpRequestMessage request = null;
-            if (string.IsNullOrEmpty(_settings.AccessTokenUri))
-            {
-                request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password);
-            }
-            else
-            {
-                request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, FetchAccessToken);
-            }
+            var request = string.IsNullOrEmpty(_settings.AccessTokenUri)
+                ? HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password)
+                : HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, FetchAccessToken);
 
             if (!string.IsNullOrEmpty(_settings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(_settings.Uri))
             {

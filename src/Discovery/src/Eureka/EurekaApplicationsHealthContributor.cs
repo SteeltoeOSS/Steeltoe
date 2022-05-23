@@ -43,14 +43,9 @@ namespace Steeltoe.Discovery.Eureka
                 AddApplicationHealthStatus(appName, app, result);
             }
 
-            if (result.Status != HealthStatus.UP)
-            {
-                result.Description = "At least one monitored application has no instances UP";
-            }
-            else
-            {
-                result.Description = "All monitored applications have at least one instance UP";
-            }
+            result.Description = result.Status != HealthStatus.UP
+                ? "At least one monitored application has no instances UP"
+                : "All monitored applications have at least one instance UP";
 
             result.Details.Add("status", result.Status.ToString());
             result.Details.Add("statusDescription", result.Description);

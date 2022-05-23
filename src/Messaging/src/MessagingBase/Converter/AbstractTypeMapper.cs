@@ -37,14 +37,7 @@ namespace Steeltoe.Messaging.Converter
         protected virtual void AddHeader(IMessageHeaders headers, string headerName, Type clazz)
         {
             var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
-            if (_classIdMapping.ContainsKey(clazz))
-            {
-                accessor.SetHeader(headerName, _classIdMapping[clazz]);
-            }
-            else
-            {
-                accessor.SetHeader(headerName, GetClassName(clazz));
-            }
+            accessor.SetHeader(headerName, _classIdMapping.ContainsKey(clazz) ? _classIdMapping[clazz] : GetClassName(clazz));
         }
 
         protected virtual string RetrieveHeader(IMessageHeaders headers, string headerName)

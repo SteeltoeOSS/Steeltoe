@@ -15,14 +15,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         protected AbstractDeclarable(Dictionary<string, object> arguments)
         {
             ShouldDeclare = true;
-            if (arguments != null)
-            {
-                Arguments = new Dictionary<string, object>(arguments);
-            }
-            else
-            {
-                Arguments = new Dictionary<string, object>();
-            }
+            Arguments = arguments != null ? new Dictionary<string, object>(arguments) : new Dictionary<string, object>();
         }
 
         public bool ShouldDeclare { get; set; }

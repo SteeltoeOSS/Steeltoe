@@ -891,14 +891,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                     var dimensions = new List<SpelNode>();
                     while (PeekToken(TokenKind.LSQUARE, true))
                     {
-                        if (!PeekToken(TokenKind.RSQUARE))
-                        {
-                            dimensions.Add(EatExpression());
-                        }
-                        else
-                        {
-                            dimensions.Add(null);
-                        }
+                        dimensions.Add(!PeekToken(TokenKind.RSQUARE) ? EatExpression() : null);
 
                         EatToken(TokenKind.RSQUARE);
                     }

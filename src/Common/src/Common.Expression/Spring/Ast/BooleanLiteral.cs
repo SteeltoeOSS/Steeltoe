@@ -28,14 +28,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
             var result = gen.DeclareLocal(typeof(bool));
-            if (_value.Equals(BooleanTypedValue.TRUE))
-            {
-                gen.Emit(OpCodes.Ldc_I4_1);
-            }
-            else
-            {
-                gen.Emit(OpCodes.Ldc_I4_0);
-            }
+            gen.Emit(_value.Equals(BooleanTypedValue.TRUE) ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
 
             gen.Emit(OpCodes.Stloc, result);
             gen.Emit(OpCodes.Ldloc, result);

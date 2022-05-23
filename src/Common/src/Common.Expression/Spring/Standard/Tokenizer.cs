@@ -540,14 +540,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         private void PushIntToken(char[] data, bool isLong, int start, int end)
         {
-            if (isLong)
-            {
-                _tokens.Add(new Token(TokenKind.LITERAL_LONG, data, start, end));
-            }
-            else
-            {
-                _tokens.Add(new Token(TokenKind.LITERAL_INT, data, start, end));
-            }
+            _tokens.Add(isLong
+                ? new Token(TokenKind.LITERAL_LONG, data, start, end)
+                : new Token(TokenKind.LITERAL_INT, data, start, end));
         }
 
         private void PushHexIntToken(char[] data, bool isLong, int start, int end)
@@ -564,26 +559,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 }
             }
 
-            if (isLong)
-            {
-                _tokens.Add(new Token(TokenKind.LITERAL_HEXLONG, data, start, end));
-            }
-            else
-            {
-                _tokens.Add(new Token(TokenKind.LITERAL_HEXINT, data, start, end));
-            }
+            _tokens.Add(isLong
+                ? new Token(TokenKind.LITERAL_HEXLONG, data, start, end)
+                : new Token(TokenKind.LITERAL_HEXINT, data, start, end));
         }
 
         private void PushRealToken(char[] data, bool isFloat, int start, int end)
         {
-            if (isFloat)
-            {
-                _tokens.Add(new Token(TokenKind.LITERAL_REAL_FLOAT, data, start, end));
-            }
-            else
-            {
-                _tokens.Add(new Token(TokenKind.LITERAL_REAL, data, start, end));
-            }
+            _tokens.Add(isFloat
+                ? new Token(TokenKind.LITERAL_REAL_FLOAT, data, start, end)
+                : new Token(TokenKind.LITERAL_REAL, data, start, end));
         }
 
         private char[] Subarray(int start, int end)

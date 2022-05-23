@@ -38,16 +38,8 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
         {
             try
             {
-                object result = null;
                 var serviceType = GetServiceNameAndType(context, serviceName, out var lookupName);
-                if (serviceType != null)
-                {
-                    result = _applicationContext.GetService(lookupName, serviceType);
-                }
-                else
-                {
-                    result = _applicationContext.GetService(serviceName);
-                }
+                var result = serviceType != null ? _applicationContext.GetService(lookupName, serviceType) : _applicationContext.GetService(serviceName);
 
                 if (result == null)
                 {

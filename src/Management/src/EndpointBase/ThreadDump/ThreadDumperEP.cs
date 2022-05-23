@@ -272,14 +272,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             }
 
             var extIndex = remaining.IndexOf('.');
-            if (extIndex > 0)
-            {
-                assemblyName = remaining.Substring(0, extIndex);
-            }
-            else
-            {
-                assemblyName = remaining;
-            }
+            assemblyName = extIndex > 0 ? remaining.Substring(0, extIndex) : remaining;
 
             return true;
         }

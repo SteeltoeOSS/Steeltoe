@@ -249,14 +249,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     queueName += partitionSuffix;
                 }
 
-                if (durable)
-                {
-                    queue = new Queue(queueName, true, false, false, GetQueueArgs(queueName, consumerProperties, false));
-                }
-                else
-                {
-                    queue = new Queue(queueName, false, false, true, GetQueueArgs(queueName, consumerProperties, false));
-                }
+                queue = durable
+                    ? new Queue(queueName, true, false, false, GetQueueArgs(queueName, consumerProperties, false))
+                    : new Queue(queueName, false, false, true, GetQueueArgs(queueName, consumerProperties, false));
             }
 
             RabbitConfig.IBinding binding = null;

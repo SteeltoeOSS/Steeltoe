@@ -41,15 +41,9 @@ namespace Steeltoe.Integration.Support
 
         public static MutableIntegrationMessageBuilder WithPayload(object payload, bool generateHeaders)
         {
-            MutableMessage message;
-            if (generateHeaders)
-            {
-                message = new MutableMessage(payload);
-            }
-            else
-            {
-                message = new MutableMessage(payload, new MutableMessageHeaders(null, MessageHeaders.ID_VALUE_NONE, -1L));
-            }
+            var message = generateHeaders
+                ? new MutableMessage(payload)
+                : new MutableMessage(payload, new MutableMessageHeaders(null, MessageHeaders.ID_VALUE_NONE, -1L));
 
             return FromMessage(message);
         }
@@ -249,15 +243,9 @@ namespace Steeltoe.Integration.Support
 
         public static MutableIntegrationMessageBuilder<T> WithPayload(T payload, bool generateHeaders)
         {
-            MutableMessage<T> message;
-            if (generateHeaders)
-            {
-                message = new MutableMessage<T>(payload);
-            }
-            else
-            {
-                message = new MutableMessage<T>(payload, new MutableMessageHeaders(null, MessageHeaders.ID_VALUE_NONE, -1L));
-            }
+            var message = generateHeaders
+                ? new MutableMessage<T>(payload)
+                : new MutableMessage<T>(payload, new MutableMessageHeaders(null, MessageHeaders.ID_VALUE_NONE, -1L));
 
             return FromMessage(message);
         }

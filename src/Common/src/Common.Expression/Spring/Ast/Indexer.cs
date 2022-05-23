@@ -144,18 +144,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     throw new InvalidOperationException("No cached read accessor");
                 }
 
-                bool isStatic;
                 var method = accessor.Member as MethodInfo;
                 var field = accessor.Member as FieldInfo;
-
-                if (method != null)
-                {
-                    isStatic = method.IsStatic;
-                }
-                else
-                {
-                    isStatic = field.IsStatic;
-                }
+                var isStatic = method != null ? method.IsStatic : field.IsStatic;
 
                 var targetType = accessor.Member.DeclaringType;
                 if (!isStatic && (descriptor == null || targetType != descriptor.Value))
@@ -165,25 +156,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
                 if (method != null)
                 {
-                    if (isStatic)
-                    {
-                        gen.Emit(OpCodes.Call, method);
-                    }
-                    else
-                    {
-                        gen.Emit(OpCodes.Callvirt, method);
-                    }
+                    gen.Emit(isStatic ? OpCodes.Call : OpCodes.Callvirt, method);
                 }
                 else
                 {
-                    if (isStatic)
-                    {
-                        gen.Emit(OpCodes.Ldsfld, field);
-                    }
-                    else
-                    {
-                        gen.Emit(OpCodes.Ldfld, field);
-                    }
+                    gen.Emit(isStatic ? OpCodes.Ldsfld : OpCodes.Ldfld, field);
                 }
             }
 

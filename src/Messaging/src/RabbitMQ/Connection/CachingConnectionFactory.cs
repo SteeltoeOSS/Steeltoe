@@ -799,14 +799,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             LinkedList<IChannelProxy> channelList;
             if (CacheMode == CachingMode.CHANNEL)
             {
-                if (transactional)
-                {
-                    channelList = _cachedChannelsTransactional;
-                }
-                else
-                {
-                    channelList = _cachedChannelsNonTransactional;
-                }
+                channelList = transactional ? _cachedChannelsTransactional : _cachedChannelsNonTransactional;
             }
             else
             {

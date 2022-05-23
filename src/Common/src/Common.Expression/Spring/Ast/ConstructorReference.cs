@@ -242,16 +242,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     FormatHelper.FormatClassNameForMessage(intendedArrayType?.GetType()));
             }
 
-            Type componentType;
             var arrayTypeCode = SpelTypeCode.ForName(type);
-            if (arrayTypeCode == SpelTypeCode.OBJECT)
-            {
-                componentType = state.FindType(type);
-            }
-            else
-            {
-                componentType = arrayTypeCode.Type;
-            }
+            var componentType = arrayTypeCode == SpelTypeCode.OBJECT ? state.FindType(type) : arrayTypeCode.Type;
 
             object newArray;
             if (!HasInitializer)

@@ -42,17 +42,9 @@ namespace Steeltoe.Management.Tracing
                 sb.Append(',');
 
                 sb.Append(currentSpan.ParentSpanId.ToString());
-
                 sb.Append(',');
 
-                if (currentSpan.IsRecording)
-                {
-                    sb.Append("true");
-                }
-                else
-                {
-                    sb.Append("false");
-                }
+                sb.Append(currentSpan.IsRecording ? "true" : "false");
 
                 sb.Append("] ");
                 return sb.ToString() + inputLogMessage;

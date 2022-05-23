@@ -170,15 +170,7 @@ namespace Steeltoe.Discovery.Eureka
             {
                 foreach (var instance in app.Instances)
                 {
-                    string instanceVipAddress;
-                    if (secure)
-                    {
-                        instanceVipAddress = instance.SecureVipAddress;
-                    }
-                    else
-                    {
-                        instanceVipAddress = instance.VipAddress;
-                    }
+                    var instanceVipAddress = secure ? instance.SecureVipAddress : instance.VipAddress;
 
                     if (vipAddress.Equals(instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
                         appName.Equals(instance.AppName, StringComparison.OrdinalIgnoreCase))

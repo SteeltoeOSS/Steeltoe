@@ -58,15 +58,9 @@ namespace Steeltoe.Connector.Redis
         {
             var connectionOptions = _configurer.Configure(_info, _config);
 
-            object result;
-            if (Initializer == null)
-            {
-                result = CreateConnection(connectionOptions.ToMicrosoftExtensionObject(OptionsType));
-            }
-            else
-            {
-                result = CreateConnectionByMethod(connectionOptions.ToStackExchangeObject(OptionsType));
-            }
+            var result = Initializer == null
+                ? CreateConnection(connectionOptions.ToMicrosoftExtensionObject(OptionsType))
+                : CreateConnectionByMethod(connectionOptions.ToStackExchangeObject(OptionsType));
 
             return result;
         }

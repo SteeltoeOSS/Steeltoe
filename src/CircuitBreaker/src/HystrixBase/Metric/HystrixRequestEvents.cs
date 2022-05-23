@@ -56,17 +56,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                         cachingDetector.TryGetValue(key, out cachedCount);
                     }
 
-                    ExecutionSignature signature;
-                    if (cachedCount > 0)
-                    {
+                    var signature = cachedCount > 0
+
                         // this has a RESPONSE_FROM_CACHE and needs to get split off
-                        signature = ExecutionSignature.From(execution, cacheKey, cachedCount);
-                    }
-                    else
-                    {
+                        ? ExecutionSignature.From(execution, cacheKey, cachedCount)
+
                         // nothing cached from this, can collapse further
-                        signature = ExecutionSignature.From(execution);
-                    }
+                        : ExecutionSignature.From(execution);
 
                     if (commandDeduper.TryGetValue(signature, out var currentLatencyList))
                     {

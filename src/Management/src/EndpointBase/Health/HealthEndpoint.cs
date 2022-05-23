@@ -47,15 +47,7 @@ namespace Steeltoe.Management.Endpoint.Health
         protected virtual HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
         {
             var groupName = GetRequestedHealthGroup(securityContext);
-            IList<IHealthContributor> filteredContributors;
-            if (!string.IsNullOrEmpty(groupName))
-            {
-                filteredContributors = GetFilteredContributorList(groupName, _contributors);
-            }
-            else
-            {
-                filteredContributors = _contributors;
-            }
+            var filteredContributors = !string.IsNullOrEmpty(groupName) ? GetFilteredContributorList(groupName, _contributors) : _contributors;
 
             var result = new HealthEndpointResponse(_aggregator.Aggregate(filteredContributors));
 

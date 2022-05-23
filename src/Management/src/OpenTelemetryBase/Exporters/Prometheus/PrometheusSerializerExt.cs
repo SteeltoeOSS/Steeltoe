@@ -56,25 +56,11 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
                     // for each MetricPoint
                     if (((int)metric.MetricType & 0b_0000_1111) == 0x0a /* I8 */)
                     {
-                        if (metric.MetricType.IsSum())
-                        {
-                            cursor = WriteLong(buffer, cursor, metricPoint.GetSumLong());
-                        }
-                        else
-                        {
-                            cursor = WriteLong(buffer, cursor, metricPoint.GetGaugeLastValueLong());
-                        }
+                        cursor = WriteLong(buffer, cursor, metric.MetricType.IsSum() ? metricPoint.GetSumLong() : metricPoint.GetGaugeLastValueLong());
                     }
                     else
                     {
-                        if (metric.MetricType.IsSum())
-                        {
-                            cursor = WriteDouble(buffer, cursor, metricPoint.GetSumDouble());
-                        }
-                        else
-                        {
-                            cursor = WriteDouble(buffer, cursor, metricPoint.GetGaugeLastValueDouble());
-                        }
+                        cursor = WriteDouble(buffer, cursor, metric.MetricType.IsSum() ? metricPoint.GetSumDouble() : metricPoint.GetGaugeLastValueDouble());
                     }
 
                     buffer[cursor++] = unchecked((byte)' ');
@@ -107,14 +93,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus
 
                         cursor = WriteAsciiStringNoEscape(buffer, cursor, "le=\"");
 
-                        if (histogramMeasurement.ExplicitBound != double.PositiveInfinity)
-                        {
-                            cursor = WriteDouble(buffer, cursor, histogramMeasurement.ExplicitBound);
-                        }
-                        else
-                        {
-                            cursor = WriteAsciiStringNoEscape(buffer, cursor, "+Inf");
-                        }
+                        cursor = histogramMeasurement.ExplicitBound != double.PositiveInfinity
+                            ? WriteDouble(buffer, cursor, histogramMeasurement.ExplicitBound)
+                            : WriteAsciiStringNoEscape(buffer, cursor, "+Inf");
 
                         cursor = WriteAsciiStringNoEscape(buffer, cursor, "\"} ");
 

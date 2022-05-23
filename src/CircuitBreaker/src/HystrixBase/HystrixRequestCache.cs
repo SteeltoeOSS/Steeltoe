@@ -178,27 +178,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             public RequestCacheKey(IHystrixCommandKey commandKey)
             {
                 _type = 1;
-                if (commandKey == null)
-                {
-                    _key = null;
-                }
-                else
-                {
-                    _key = commandKey.Name;
-                }
+                _key = commandKey?.Name;
             }
 
             public RequestCacheKey(IHystrixCollapserKey collapserKey)
             {
                 _type = 2;
-                if (collapserKey == null)
-                {
-                    _key = null;
-                }
-                else
-                {
-                    _key = collapserKey.Name;
-                }
+                _key = collapserKey?.Name;
             }
 
             public override int GetHashCode()

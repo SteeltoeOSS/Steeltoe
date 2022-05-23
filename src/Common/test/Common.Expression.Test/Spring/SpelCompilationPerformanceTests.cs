@@ -804,14 +804,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             if (_noisyTests)
             {
-                if (messages.Length > 0)
-                {
-                    _output.WriteLine(messages[0]);
-                }
-                else
-                {
-                    _output.WriteLine(string.Empty);
-                }
+                _output.WriteLine(messages.Length > 0 ? messages[0] : string.Empty);
             }
         }
 

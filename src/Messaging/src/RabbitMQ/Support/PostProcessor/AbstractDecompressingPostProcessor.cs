@@ -56,14 +56,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
                         throw new InvalidOperationException("Content encoding must be:" + GetEncoding() + ", was:" + encoding);
                     }
 
-                    if (colonAt < 0)
-                    {
-                        headers.ContentEncoding = null;
-                    }
-                    else
-                    {
-                        headers.ContentEncoding = headers.ContentEncoding.Substring(colonAt + 1);
-                    }
+                    headers.ContentEncoding = colonAt < 0 ? null : headers.ContentEncoding.Substring(colonAt + 1);
 
                     headers.RemoveHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
                     return Message.Create(outStream.ToArray(), headers.ToMessageHeaders());

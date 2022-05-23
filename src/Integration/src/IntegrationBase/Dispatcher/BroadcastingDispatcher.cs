@@ -111,14 +111,9 @@ namespace Steeltoe.Integration.Dispatcher
 
             if (dispatched == 0 && MinSubscribers == 0)
             {
-                if (sequenceSize > 0)
-                {
-                    Logger?.LogDebug("No subscribers received message, default behavior is ignore");
-                }
-                else
-                {
-                    Logger?.LogDebug("No subscribers, default behavior is ignore");
-                }
+                Logger?.LogDebug(sequenceSize > 0
+                    ? "No subscribers received message, default behavior is ignore"
+                    : "No subscribers, default behavior is ignore");
             }
 
             return dispatched >= MinSubscribers;

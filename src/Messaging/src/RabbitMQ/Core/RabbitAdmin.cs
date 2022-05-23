@@ -509,14 +509,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                         if (exchange.IsDelayed)
                         {
                             var arguments = exchange.Arguments;
-                            if (arguments == null)
-                            {
-                                arguments = new Dictionary<string, object>();
-                            }
-                            else
-                            {
-                                arguments = new Dictionary<string, object>(arguments);
-                            }
+                            arguments = arguments == null ? new Dictionary<string, object>() : new Dictionary<string, object>(arguments);
 
                             arguments["x-delayed-type"] = exchange.Type;
 

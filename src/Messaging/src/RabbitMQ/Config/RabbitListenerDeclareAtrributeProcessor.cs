@@ -160,14 +160,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 binding.Destination = reference;
             }
 
-            if (!string.IsNullOrEmpty(b.ExchangeName))
-            {
-                binding.Exchange = PropertyPlaceholderHelper.ResolvePlaceholders(b.ExchangeName, config);
-            }
-            else
-            {
-                binding.Exchange = string.Empty;
-            }
+            binding.Exchange = !string.IsNullOrEmpty(b.ExchangeName) ? PropertyPlaceholderHelper.ResolvePlaceholders(b.ExchangeName, config) : string.Empty;
 
             if (!string.IsNullOrEmpty(b.IgnoreDeclarationExceptions))
             {
@@ -179,14 +172,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 binding.ShouldDeclare = GetBoolean(b.Declare, config, nameof(b.Declare));
             }
 
-            if (!string.IsNullOrEmpty(routingKey))
-            {
-                binding.RoutingKey = PropertyPlaceholderHelper.ResolvePlaceholders(routingKey, config);
-            }
-            else
-            {
-                binding.RoutingKey = string.Empty;
-            }
+            binding.RoutingKey = !string.IsNullOrEmpty(routingKey) ? PropertyPlaceholderHelper.ResolvePlaceholders(routingKey, config) : string.Empty;
 
             if (b.Admins.Length > 0)
             {

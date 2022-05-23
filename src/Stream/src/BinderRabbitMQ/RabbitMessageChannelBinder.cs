@@ -392,14 +392,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
             else
             {
-                if (expressionInterceptorNeeded)
-                {
-                    endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']", true);
-                }
-                else
-                {
-                    endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression(routingKeyExpression, true);
-                }
+                endpoint.RoutingKeyExpression = expressionInterceptorNeeded
+                    ? BuildPartitionRoutingExpression("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']", true)
+                    : BuildPartitionRoutingExpression(routingKeyExpression, true);
             }
         }
 
@@ -534,14 +529,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
                         var ack = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(payload.FailedMessage);
                         if (ack != null)
                         {
-                            if (_properties.RequeueRejected.Value)
-                            {
-                                ack.Acknowledge(Integration.Acks.Status.REQUEUE);
-                            }
-                            else
-                            {
-                                ack.Acknowledge(Integration.Acks.Status.REJECT);
-                            }
+                            ack.Acknowledge(_properties.RequeueRejected.Value
+                                ? Integration.Acks.Status.REQUEUE
+                                : Integration.Acks.Status.REJECT);
                         }
                     }
                 }

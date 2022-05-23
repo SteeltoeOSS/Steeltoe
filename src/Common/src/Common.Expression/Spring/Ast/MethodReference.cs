@@ -185,14 +185,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             GenerateCodeForArguments(gen, cf, targetMethod, _children);
-            if (targetType.IsValueType)
-            {
-                gen.Emit(OpCodes.Call, targetMethod);
-            }
-            else
-            {
-                gen.Emit(OpCodes.Callvirt, targetMethod);
-            }
+            gen.Emit(targetType.IsValueType ? OpCodes.Call : OpCodes.Callvirt, targetMethod);
 
             if (_originalPrimitiveExitTypeDescriptor != null)
             {

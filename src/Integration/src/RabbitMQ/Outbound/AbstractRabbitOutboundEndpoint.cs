@@ -128,14 +128,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
         public void SetDelayExpressionString(string delayExpression)
         {
-            if (delayExpression == null)
-            {
-                DelayExpression = null;
-            }
-            else
-            {
-                DelayExpression = IntegrationServices.ExpressionParser.ParseExpression(delayExpression);
-            }
+            DelayExpression = delayExpression == null ? null : IntegrationServices.ExpressionParser.ParseExpression(delayExpression);
         }
 
         public void SetConfirmTimeout(int confirmTimeout)
