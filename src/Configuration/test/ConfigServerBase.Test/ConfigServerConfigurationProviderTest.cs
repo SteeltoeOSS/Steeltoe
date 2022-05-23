@@ -300,7 +300,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
 
-            var ex = await Assert.ThrowsAsync<UriFormatException>(() => provider.RemoteLoadAsync(new string[] { "foobar\\foobar\\" }, null));
+            var ex = await Assert.ThrowsAsync<UriFormatException>(() => provider.RemoteLoadAsync(new[] { "foobar\\foobar\\" }, null));
         }
 
         [Fact]
@@ -310,7 +310,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             try
             {
-                var ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new string[] { "http://localhost:9999/app/profile" }, null));
+                var ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new[] { "http://localhost:9999/app/profile" }, null));
             }
             catch (ThrowsException e)
             {
@@ -327,7 +327,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public async Task RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
         {
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 500 };
+            TestConfigServerStartup.ReturnStatus = new[] { 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
             var settings = _commonSettings;
@@ -345,7 +345,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 204 };
+            TestConfigServerStartup.ReturnStatus = new[] { 204 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
 
@@ -422,7 +422,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = environment;
-            TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
+            TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
             TestConfigServerStartup.Label = "testlabel";
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
@@ -490,7 +490,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 500, 200 };
+            TestConfigServerStartup.ReturnStatus = new[] { 500, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
 
@@ -510,7 +510,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
+            TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
 
@@ -530,7 +530,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 404 };
+            TestConfigServerStartup.ReturnStatus = new[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
 
@@ -549,7 +549,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 404 };
+            TestConfigServerStartup.ReturnStatus = new[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
 
@@ -573,7 +573,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             using var client = server.CreateClient();
             var provider = new ConfigServerConfigurationProvider(settings, client);
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
+            TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
 
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
             Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -584,7 +584,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 500 };
+            TestConfigServerStartup.ReturnStatus = new[] { 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
             var settings = _commonSettings;
@@ -600,7 +600,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500 };
+            TestConfigServerStartup.ReturnStatus = new[] { 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
             var settings = _commonSettings;
@@ -618,7 +618,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500, 500, 500, 500 };
+            TestConfigServerStartup.ReturnStatus = new[] { 500, 500, 500, 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
 

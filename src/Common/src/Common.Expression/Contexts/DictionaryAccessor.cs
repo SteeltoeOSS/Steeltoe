@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 {
     public class DictionaryAccessor : ICompilablePropertyAccessor
     {
-        private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new Type[] { typeof(object) });
+        private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new[] { typeof(object) });
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {

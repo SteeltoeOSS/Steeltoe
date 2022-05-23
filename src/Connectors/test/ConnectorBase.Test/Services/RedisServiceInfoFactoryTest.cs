@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-redis",
-                Tags = new string[] { "redis", "pivotal" },
+                Tags = new[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
                 Credentials = new Credential()
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-redis",
-                Tags = new string[] { "foobar", "pivotal" },
+                Tags = new[] { "foobar", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
                 Credentials = new Credential()
@@ -55,7 +55,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-redis",
-                Tags = new string[] { "redis", "pivotal" },
+                Tags = new[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
                 Credentials = new Credential()
@@ -81,7 +81,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p.redis",
-                Tags = new string[] { "redis", "pivotal" },
+                Tags = new[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "cache-small",
                 Credentials = new Credential()

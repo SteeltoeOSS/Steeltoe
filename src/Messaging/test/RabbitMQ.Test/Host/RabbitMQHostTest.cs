@@ -81,7 +81,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         [Fact]
         public void HostShouldSendCommandLineArgs()
         {
-            var hostBuilder = RabbitMQHost.CreateDefaultBuilder(new string[] { "RabbitHostCommandKey=RabbitHostCommandValue" });
+            var hostBuilder = RabbitMQHost.CreateDefaultBuilder(new[] { "RabbitHostCommandKey=RabbitHostCommandValue" });
 
             using var host = hostBuilder.Start();
             var config = host.Services.GetService<IConfiguration>();

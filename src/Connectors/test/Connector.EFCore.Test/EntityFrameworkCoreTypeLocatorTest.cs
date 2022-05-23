@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.EFCore.Test
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "MySql.EntityFrameworkCore" };
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "MySql.EntityFrameworkCore" };
 
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
@@ -36,7 +36,7 @@ namespace Steeltoe.Connector.EFCore.Test
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "Pomelo.EntityFrameworkCore.MySql" };
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "Pomelo.EntityFrameworkCore.MySql" };
 
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.EFCore.Test
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0] };
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0] };
 
             var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 
@@ -81,7 +81,7 @@ namespace Steeltoe.Connector.EFCore.Test
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1] };
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1] };
 
             var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 

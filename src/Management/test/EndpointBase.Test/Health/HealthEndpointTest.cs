@@ -147,7 +147,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var ep = tc.GetService<IHealthEndpoint>();
 
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "cloudfoundryapplication", "health", "liVeness" });
+            context.GetRequestComponents().Returns(new[] { "cloudfoundryapplication", "health", "liVeness" });
             appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
 
             var result = ep.Invoke(context);
@@ -174,7 +174,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var ep = tc.GetService<IHealthEndpoint>();
 
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
+            context.GetRequestComponents().Returns(new[] { "actuator", "health", "readiness" });
             appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
             var result = ep.Invoke(context);
@@ -201,7 +201,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var ep = tc.GetService<IHealthEndpoint>();
 
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "health", "iNvAlId" });
+            context.GetRequestComponents().Returns(new[] { "health", "iNvAlId" });
 
             var result = ep.Invoke(context);
 

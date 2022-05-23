@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
         [Fact]
         public void TestOrderIng()
         {
-            var pps = new MPP[]
+            var pps = new[]
             {
                 new MPP(),
                 new OMPP().Order(3),

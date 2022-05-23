@@ -23,7 +23,7 @@ namespace Steeltoe.Messaging.Handler.Test
         public void PrependSlashWithCustomPathSeparator()
         {
             var c =
-                    new DestinationPatternsMessageCondition(new string[] { "foo" }, new AntPathMatcher("."));
+                    new DestinationPatternsMessageCondition(new[] { "foo" }, new AntPathMatcher("."));
 
             Assert.Equal("foo", c.Patterns.Single());
         }

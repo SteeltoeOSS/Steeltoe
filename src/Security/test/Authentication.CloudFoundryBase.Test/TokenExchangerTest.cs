@@ -66,7 +66,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void CommonTokenRequestParamsHandlesScopes()
         {
-            var opts = new AuthServerOptions { AdditionalTokenScopes = "onescope", RequiredScopes = new string[] { "twoscope" } };
+            var opts = new AuthServerOptions { AdditionalTokenScopes = "onescope", RequiredScopes = new[] { "twoscope" } };
             var tEx = new TokenExchanger(opts);
 
             var parameters = tEx.CommonTokenRequestParams();

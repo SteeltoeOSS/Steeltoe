@@ -22,7 +22,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             var types = SqlServerTypeLocator.ConnectionTypeNames;
-            SqlServerTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
+            SqlServerTypeLocator.ConnectionTypeNames = new[] { "something-Wrong" };
 
             var exception = Assert.Throws<TypeLoadException>(() => SqlServerTypeLocator.SqlConnection);
 

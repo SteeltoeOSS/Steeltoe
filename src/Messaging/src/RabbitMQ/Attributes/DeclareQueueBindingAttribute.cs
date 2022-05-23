@@ -47,7 +47,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             set
             {
-                RoutingKeys = new string[] { value };
+                RoutingKeys = new[] { value };
             }
         }
 
@@ -71,7 +71,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             set
             {
-                Admins = new string[] { value };
+                Admins = new[] { value };
             }
         }
 

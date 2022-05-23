@@ -23,7 +23,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Tesla = new Inventor("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
             {
                 PlaceOfBirth = new PlaceOfBirth("SmilJan"),
-                Inventions = new string[]
+                Inventions = new[]
             {
                 "Telephone repeater", "Rotating magnetic field principle",
                 "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",

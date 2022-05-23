@@ -98,13 +98,13 @@ namespace Steeltoe.Connector.Oracle.EFCore
         {
             var extensionType = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 
-            var useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            var useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseOracle extension, are you missing Oracle EntityFramework Core assembly");
             }
 
-            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { optionsBuilder, connection, oracleOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new[] { optionsBuilder, connection, oracleOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException($"Failed to invoke UseOracle extension, connection: {connection}");

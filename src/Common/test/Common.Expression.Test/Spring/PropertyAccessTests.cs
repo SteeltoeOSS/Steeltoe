@@ -249,7 +249,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public IList<Type> GetSpecificTargetClasses()
             {
-                return new Type[] { typeof(string) };
+                return new[] { typeof(string) };
             }
 
             public bool CanRead(IEvaluationContext context, object target, string name)

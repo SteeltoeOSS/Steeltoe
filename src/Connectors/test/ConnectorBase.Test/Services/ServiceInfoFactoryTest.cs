@@ -33,13 +33,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void TagsMatch_Matches()
         {
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var service1 = new Service()
             {
-                Tags = new string[] { "bar" }
+                Tags = new[] { "bar" }
             };
             Assert.True(sif.TagsMatch(service1));
         }
@@ -47,13 +47,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void TagsMatch_DoesntMatch()
         {
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var service1 = new Service()
             {
-                Tags = new string[] { "noMatch" }
+                Tags = new[] { "noMatch" }
             };
             Assert.False(sif.TagsMatch(service1));
         }
@@ -61,13 +61,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void LabelStartsWithTag_Matches()
         {
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var service1 = new Service()
             {
-                Tags = new string[] { "noMatch" },
+                Tags = new[] { "noMatch" },
                 Label = "foobarfoo"
             };
             Assert.True(sif.LabelStartsWithTag(service1));
@@ -76,13 +76,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void LabelStartsWithTag_DoesntMatch()
         {
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var service1 = new Service()
             {
-                Tags = new string[] { "noMatch" },
+                Tags = new[] { "noMatch" },
                 Label = "baby"
             };
             Assert.False(sif.LabelStartsWithTag(service1));
@@ -91,13 +91,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void UriMatchesScheme_Matches()
         {
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var service1 = new Service()
             {
-                Tags = new string[] { "noMatch" },
+                Tags = new[] { "noMatch" },
                 Label = "noMatch",
                 Credentials = new Dictionary<string, Credential>()
                 {
@@ -110,13 +110,13 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void UriMatchesScheme_DoesntMatch()
         {
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var service1 = new Service()
             {
-                Tags = new string[] { "noMatch" },
+                Tags = new[] { "noMatch" },
                 Label = "noMatch",
                 Credentials = new Dictionary<string, Credential>()
                 {
@@ -133,7 +133,7 @@ namespace Steeltoe.Connector.Services.Test
             {
                 { "username", new Credential("username") }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
@@ -161,7 +161,7 @@ namespace Steeltoe.Connector.Services.Test
             {
                 { "password", new Credential("password") }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
@@ -181,7 +181,7 @@ namespace Steeltoe.Connector.Services.Test
             {
                 { "port", new Credential("123") }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
@@ -201,7 +201,7 @@ namespace Steeltoe.Connector.Services.Test
             {
                 { "host", new Credential("host") }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
@@ -229,7 +229,7 @@ namespace Steeltoe.Connector.Services.Test
             {
                 { "uri", new Credential("https://boo:222") }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
@@ -263,7 +263,7 @@ namespace Steeltoe.Connector.Services.Test
                         }
                 }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
@@ -291,7 +291,7 @@ namespace Steeltoe.Connector.Services.Test
                         }
                 }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
@@ -307,7 +307,7 @@ namespace Steeltoe.Connector.Services.Test
             {
                 { "key", new Credential("foobar") }
             };
-            var tags = new Tags(new string[] { "foo", "bar" });
+            var tags = new Tags(new[] { "foo", "bar" });
             var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);

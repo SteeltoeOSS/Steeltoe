@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
     {
         protected static readonly MethodInfo _equalityCheck = typeof(Operator).GetMethod(
             "EqualityCheck",
-            new Type[] { typeof(IEvaluationContext), typeof(object), typeof(object) });
+            new[] { typeof(IEvaluationContext), typeof(object), typeof(object) });
 
         protected readonly string _operatorName;
 

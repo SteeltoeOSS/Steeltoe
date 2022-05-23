@@ -111,7 +111,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var ctx = new StandardEvaluationContext();
             var hmap = new Dictionary<string, object>()
             {
-                { "anArray",  new int[] { 1, 2, 3 } }
+                { "anArray",  new[] { 1, 2, 3 } }
             };
             ctx.SetVariables(hmap);
 

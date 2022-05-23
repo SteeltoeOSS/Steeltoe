@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-            var host = hostBuilder.AddHealthActuator(new Type[] { typeof(DownContributor) }).Build();
+            var host = hostBuilder.AddHealthActuator(new[] { typeof(DownContributor) }).Build();
 
             Assert.Single(host.Services.GetServices<HealthEndpointCore>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -98,7 +98,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-            var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new Type[] { typeof(DownContributor) }).Build();
+            var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[] { typeof(DownContributor) }).Build();
 
             Assert.Single(host.Services.GetServices<HealthEndpointCore>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));

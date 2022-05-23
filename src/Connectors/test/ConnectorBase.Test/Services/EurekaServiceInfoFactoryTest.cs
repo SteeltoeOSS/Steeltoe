@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-eureka",
-                Tags = new string[] { "eureka", "discovery", "registry", "spring-cloud" },
+                Tags = new[] { "eureka", "discovery", "registry", "spring-cloud" },
                 Name = "eurekaService",
                 Plan = "standard",
                 Credentials = new Credential()
@@ -36,7 +36,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-mysql",
-                Tags = new string[] { "foobar", "relational" },
+                Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
                 Credentials = new Credential()
@@ -60,7 +60,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-eureka",
-                Tags = new string[] { "eureka", "discovery", "registry", "spring-cloud" },
+                Tags = new[] { "eureka", "discovery", "registry", "spring-cloud" },
                 Name = "eurekaService",
                 Plan = "standard",
                 Credentials = new Credential()

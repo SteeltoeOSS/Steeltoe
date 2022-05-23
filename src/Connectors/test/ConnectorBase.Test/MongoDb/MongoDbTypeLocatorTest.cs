@@ -26,7 +26,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             var types = MongoDbTypeLocator.ConnectionInterfaceTypeNames;
-            MongoDbTypeLocator.ConnectionInterfaceTypeNames = new string[] { "something-Wrong" };
+            MongoDbTypeLocator.ConnectionInterfaceTypeNames = new[] { "something-Wrong" };
 
             var exception = Assert.Throws<TypeLoadException>(() => MongoDbTypeLocator.IMongoClient);
 

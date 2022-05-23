@@ -35,7 +35,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 Name = "name",
                 Address = "address",
                 Port = 1234,
-                Tags = new string[] { "foo=bar" }
+                Tags = new[] { "foo=bar" }
             };
 
             var options = new ConsulDiscoveryOptions();

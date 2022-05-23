@@ -907,7 +907,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 return services;
             }
 
-            public static string[] Queues = new string[]
+            public static string[] Queues = new[]
             {
             "test.manual.container", "test.no.listener.yet",
             "test.simple", "test.header", "test.message", "test.reply", "test.sendTo", "test.sendTo.reply",
@@ -1081,7 +1081,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 Latch.Signal();
             }
 
-            [RabbitListener(Bindings = new string[] { "auto.headers1.binding", "auto.headers2.binding" })]
+            [RabbitListener(Bindings = new[] { "auto.headers1.binding", "auto.headers2.binding" })]
             public string HandleWithHeadersExchange(string foo) => foo.ToUpper();
 
             [RabbitListener(Id = "defaultDLX", Binding = "amqp656.binding")]

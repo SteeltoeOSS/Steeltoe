@@ -29,7 +29,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
 
             var queryResult = new QueryResult<ServiceEntry[]>()
             {
-                Response = new ServiceEntry[]
+                Response = new[]
                 {
                     new ServiceEntry()
                     {
@@ -38,7 +38,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                             Service = "ServiceId",
                             Address = "foo.bar.com",
                             Port = 1234,
-                            Tags = new string[] { "foo=bar", "secure=true" }
+                            Tags = new[] { "foo=bar", "secure=true" }
                         }
                     },
                     new ServiceEntry()
@@ -48,7 +48,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                             Service = "ServiceId",
                             Address = "foo1.bar1.com",
                             Port = 5678,
-                            Tags = new string[] { "bar=foo", "secure=false" }
+                            Tags = new[] { "bar=foo", "secure=false" }
                         }
                     }
                 }
@@ -99,8 +99,8 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             {
                 Response = new Dictionary<string, string[]>
                 {
-                    { "foo", new string[] { "I1", "I2" } },
-                    { "bar", new string[] { "I1", "I2" } },
+                    { "foo", new[] { "I1", "I2" } },
+                    { "bar", new[] { "I1", "I2" } },
                 }
             };
             var result = Task.FromResult(queryResult);
@@ -125,8 +125,8 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             {
                 Response = new Dictionary<string, string[]>
                 {
-                    { "foo", new string[] { "I1", "I2" } },
-                    { "bar", new string[] { "I1", "I2" } },
+                    { "foo", new[] { "I1", "I2" } },
+                    { "bar", new[] { "I1", "I2" } },
                 }
             };
             var result = Task.FromResult(queryResult);
@@ -151,14 +151,14 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             {
                 Response = new Dictionary<string, string[]>
                 {
-                    { "ServiceId", new string[] { "I1", "I2" } },
+                    { "ServiceId", new[] { "I1", "I2" } },
                 }
             };
             var result1 = Task.FromResult(queryResult1);
 
             var queryResult2 = new QueryResult<ServiceEntry[]>()
             {
-                Response = new ServiceEntry[]
+                Response = new[]
                 {
                     new ServiceEntry()
                     {
@@ -167,7 +167,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                             Service = "ServiceId",
                             Address = "foo.bar.com",
                             Port = 1234,
-                            Tags = new string[] { "foo=bar", "secure=true" }
+                            Tags = new[] { "foo=bar", "secure=true" }
                         }
                     },
                     new ServiceEntry()
@@ -177,7 +177,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                             Service = "ServiceId",
                             Address = "foo1.bar1.com",
                             Port = 5678,
-                            Tags = new string[] { "bar=foo", "secure=false" }
+                            Tags = new[] { "bar=foo", "secure=false" }
                         }
                     }
                 }

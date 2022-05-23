@@ -166,7 +166,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var preventContainerRedeclareQueueLatch = new CountdownEvent(1);
             var listener = new TestListener(cancelLatch, mismatchLatch, preventContainerRedeclareQueueLatch);
             cf.AddChannelListener(listener);
-            return new CountdownEvent[] { cancelLatch, mismatchLatch, preventContainerRedeclareQueueLatch };
+            return new[] { cancelLatch, mismatchLatch, preventContainerRedeclareQueueLatch };
         }
 
         private ServiceCollection CreateServiceCollection()

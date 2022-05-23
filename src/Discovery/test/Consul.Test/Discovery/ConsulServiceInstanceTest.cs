@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                     Service = "ServiceId",
                     Address = "foo.bar.com",
                     Port = 1234,
-                    Tags = new string[] { "foo=bar", "secure=true" }
+                    Tags = new[] { "foo=bar", "secure=true" }
                 }
             };
 

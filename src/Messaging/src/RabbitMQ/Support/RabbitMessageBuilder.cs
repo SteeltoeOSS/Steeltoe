@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                   typeToCreate,
                   BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                   null,
-                  new object[] { payload, new RabbitHeaderAccessor() },
+                  new[] { payload, new RabbitHeaderAccessor() },
                   null,
                   null);
         }

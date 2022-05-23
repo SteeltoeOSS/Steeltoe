@@ -130,7 +130,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             AssertCanCompile(_expression);
             Assert.True((bool)_expression.GetValue(arrayOfLists));
 
-            var intArray = new int[] { 1, 2, 3 };
+            var intArray = new[] { 1, 2, 3 };
             _expression = Parse("#root instanceof T(int[])");
             Assert.True((bool)_expression.GetValue(intArray));
             AssertCanCompile(_expression);
@@ -856,7 +856,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             // Here the target method takes Object... and we are passing a string
             _expression = _parser.ParseExpression("#DoFormat('hey {0}', 'there')");
             context = new StandardEvaluationContext();
-            context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new Type[] { typeof(string), typeof(object[]) }));
+            context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
             ((SpelExpression)_expression).EvaluationContext = context;
 
             Assert.Equal("hey there", _expression.GetValue<string>());
@@ -866,7 +866,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             _expression = _parser.ParseExpression("#DoFormat([0], 'there')");
             context = new StandardEvaluationContext(new object[] { "hey {0}" });
-            context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new Type[] { typeof(string), typeof(object[]) }));
+            context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
             ((SpelExpression)_expression).EvaluationContext = context;
 
             Assert.Equal("hey there", _expression.GetValue<string>());
@@ -876,7 +876,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             _expression = _parser.ParseExpression("#DoFormat([0], #arg)");
             context = new StandardEvaluationContext(new object[] { "hey {0}" });
-            context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new Type[] { typeof(string), typeof(object[]) }));
+            context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
             context.SetVariable("arg", "there");
             ((SpelExpression)_expression).EvaluationContext = context;
 
@@ -890,7 +890,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void FunctionReference()
         {
             var ctx = new StandardEvaluationContext();
-            var m = GetType().GetMethod("Concat", new Type[] { typeof(string), typeof(string) });
+            var m = GetType().GetMethod("Concat", new[] { typeof(string), typeof(string) });
             ctx.SetVariable("Concat", m);
 
             _expression = _parser.ParseExpression("#Concat('a','b')");
@@ -912,7 +912,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             ctx.SetVariable("b", "boo");
             Assert.Equal("fooboo", _expression.GetValue(ctx));
 
-            m = typeof(Math).GetMethod("Pow", new Type[] { typeof(double), typeof(double) });
+            m = typeof(Math).GetMethod("Pow", new[] { typeof(double), typeof(double) });
             ctx.SetVariable("kapow", m);
             _expression = _parser.ParseExpression("#kapow(2.0d,2.0d)");
             Assert.Equal(4.0d, _expression.GetValue(ctx));
@@ -925,7 +925,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             // Confirms visibility of what is being called.
             var context = new StandardEvaluationContext(new object[] { "1" });
-            var m = typeof(SomeCompareMethod).GetMethod("Compare", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(object), typeof(object) }, null);
+            var m = typeof(SomeCompareMethod).GetMethod("Compare", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(object), typeof(object) }, null);
             context.RegisterFunction("doCompare", m);
             context.SetVariable("arg", "2");
 
@@ -936,7 +936,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // type not public but method is
             context = new StandardEvaluationContext(new object[] { "1" });
-            m = typeof(SomeCompareMethod).GetMethod("Compare2", BindingFlags.Static | BindingFlags.Public, null, new Type[] { typeof(object), typeof(object) }, null);
+            m = typeof(SomeCompareMethod).GetMethod("Compare2", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(object), typeof(object) }, null);
             context.RegisterFunction("doCompare", m);
             context.SetVariable("arg", "2");
             _expression = _parser.ParseExpression("#doCompare([0],#arg)");
@@ -948,11 +948,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void FunctionReferenceNonCompilableArguments_SPR12359()
         {
             var context = new StandardEvaluationContext(new object[] { "1" });
-            var m = typeof(SomeCompareMethod2).GetMethod("Negate", BindingFlags.Static | BindingFlags.Public, null, new Type[] { typeof(int) }, null);
+            var m = typeof(SomeCompareMethod2).GetMethod("Negate", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(int) }, null);
             context.RegisterFunction("negate", m);
             context.SetVariable("arg", "2");
 
-            var ints = new int[] { 1, 2, 3 };
+            var ints = new[] { 1, 2, 3 };
             context.SetVariable("ints", ints);
 
             _expression = _parser.ParseExpression("#negate(#ints.?[#this<2][0])");
@@ -966,19 +966,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void FunctionReferenceVarargs_SPR12359()
         {
             var context = new StandardEvaluationContext();
-            context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod("Append", new Type[] { typeof(string[]) }));
-            context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod("Append2", new Type[] { typeof(object[]) }));
-            context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod("Append3", new Type[] { typeof(string[]) }));
-            context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod("Append4", new Type[] { typeof(string), typeof(string[]) }));
-            context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod("AppendChar", new Type[] { typeof(char[]) }));
-            context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod("Sum", new Type[] { typeof(int[]) }));
-            context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod("SumDouble", new Type[] { typeof(double[]) }));
-            context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod("SumFloat", new Type[] { typeof(float[]) }));
+            context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod("Append", new[] { typeof(string[]) }));
+            context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod("Append2", new[] { typeof(object[]) }));
+            context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod("Append3", new[] { typeof(string[]) }));
+            context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod("Append4", new[] { typeof(string), typeof(string[]) }));
+            context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod("AppendChar", new[] { typeof(char[]) }));
+            context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod("Sum", new[] { typeof(int[]) }));
+            context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod("SumDouble", new[] { typeof(double[]) }));
+            context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod("SumFloat", new[] { typeof(float[]) }));
 
-            context.SetVariable("stringArray", new string[] { "x", "y", "z" });
-            context.SetVariable("intArray", new int[] { 5, 6, 9 });
-            context.SetVariable("doubleArray", new double[] { 5.0d, 6.0d, 9.0d });
-            context.SetVariable("floatArray", new float[] { 5.0f, 6.0f, 9.0f });
+            context.SetVariable("stringArray", new[] { "x", "y", "z" });
+            context.SetVariable("intArray", new[] { 5, 6, 9 });
+            context.SetVariable("doubleArray", new[] { 5.0d, 6.0d, 9.0d });
+            context.SetVariable("floatArray", new[] { 5.0f, 6.0f, 9.0f });
 
             _expression = _parser.ParseExpression("#append('a','b','c')");
             Assert.Equal("abc", _expression.GetValue(context).ToString());
@@ -1154,7 +1154,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void FunctionReferenceVarargs()
         {
             var ctx = new StandardEvaluationContext();
-            var m = GetType().GetMethod("Join", new Type[] { typeof(string[]) });
+            var m = GetType().GetMethod("Join", new[] { typeof(string[]) });
             ctx.SetVariable("join", m);
             _expression = _parser.ParseExpression("#join('a','b','c')");
             Assert.Equal("abc", _expression.GetValue(ctx));
@@ -3646,9 +3646,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Equal("abc:5:", _expression.GetValue<string>());
 
             _expression = _parser.ParseExpression($"{prefix}4(#root).Output");
-            Assert.Equal("123", _expression.GetValue<string>(new int[] { 1, 2, 3 }));
+            Assert.Equal("123", _expression.GetValue<string>(new[] { 1, 2, 3 }));
             AssertCanCompile(_expression);
-            Assert.Equal("123", _expression.GetValue<string>(new int[] { 1, 2, 3 }));
+            Assert.Equal("123", _expression.GetValue<string>(new[] { 1, 2, 3 }));
         }
 
         [Fact]
@@ -4197,8 +4197,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // changing target
             // from primitive array to reference type array
-            var intss = new int[] { 1, 2, 3 };
-            var strings = new string[] { "a", "b", "c" };
+            var intss = new[] { 1, 2, 3 };
+            var strings = new[] { "a", "b", "c" };
             _expression = _parser.ParseExpression("[1]");
             Assert.Equal(2, _expression.GetValue(intss));
             AssertCanCompile(_expression);
@@ -4384,14 +4384,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void Indexer()
         {
-            var sss = new string[] { "a", "b", "c" };
-            var iss = new int[] { 8, 9, 10 };
-            var ds = new double[] { 3.0d, 4.0d, 5.0d };
-            var ls = new long[] { 2L, 3L, 4L };
-            var ss = new short[] { (short)33, (short)44, (short)55 };
-            var fs = new float[] { 6.0f, 7.0f, 8.0f };
-            var bs = new byte[] { (byte)2, (byte)3, (byte)4 };
-            var cs = new char[] { 'a', 'b', 'c' };
+            var sss = new[] { "a", "b", "c" };
+            var iss = new[] { 8, 9, 10 };
+            var ds = new[] { 3.0d, 4.0d, 5.0d };
+            var ls = new[] { 2L, 3L, 4L };
+            var ss = new[] { (short)33, (short)44, (short)55 };
+            var fs = new[] { 6.0f, 7.0f, 8.0f };
+            var bs = new[] { (byte)2, (byte)3, (byte)4 };
+            var cs = new[] { 'a', 'b', 'c' };
 
             _expression = _parser.ParseExpression("[0]");
             Assert.Equal("a", _expression.GetValue(sss));
@@ -4487,8 +4487,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             // list of arrays
             var listOfStringArrays = new List<string[]>
             {
-                new string[] { "a", "b", "c" },
-                new string[] { "d", "e", "f" }
+                new[] { "a", "b", "c" },
+                new[] { "d", "e", "f" }
             };
             _expression = _parser.ParseExpression("[1]");
             Assert.Equal("d e f", Stringify(_expression.GetValue(listOfStringArrays)));
@@ -4502,8 +4502,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             var listOfIntegerArrays = new List<int[]>
             {
-                new int[] { 1, 2, 3 },
-                new int[] { 4, 5, 6 }
+                new[] { 1, 2, 3 },
+                new[] { 4, 5, 6 }
             };
             _expression = _parser.ParseExpression("[0]");
             Assert.Equal("1 2 3", Stringify(_expression.GetValue(listOfIntegerArrays)));
@@ -4541,7 +4541,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Equal("f", Stringify(_expression.GetValue(stringArrayOfLists)));
 
             // array of arrays
-            var referenceTypeArrayOfArrays = new string[][] { new string[] { "a", "b", "c" }, new string[] { "d", "e", "f" } };
+            var referenceTypeArrayOfArrays = new[] { new[] { "a", "b", "c" }, new[] { "d", "e", "f" } };
             _expression = _parser.ParseExpression("[1]");
             Assert.Equal("d e f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
             AssertCanCompile(_expression);
@@ -4552,7 +4552,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             AssertCanCompile(_expression);
             Assert.Equal("f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
 
-            var primitiveTypeArrayOfArrays = new int[][] { new int[] { 1, 2, 3 }, new int[] { 4, 5, 6 } };
+            var primitiveTypeArrayOfArrays = new[] { new[] { 1, 2, 3 }, new[] { 4, 5, 6 } };
             _expression = _parser.ParseExpression("[1]");
             Assert.Equal("4 5 6", Stringify(_expression.GetValue(primitiveTypeArrayOfArrays)));
             AssertCanCompile(_expression);
@@ -4613,7 +4613,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var mapToIntArray = new Dictionary<string, int[]>();
             var ctx = new StandardEvaluationContext();
             ctx.AddPropertyAccessor(new CompilableMapAccessor());
-            mapToIntArray.Add("foo", new int[] { 1, 2, 3 });
+            mapToIntArray.Add("foo", new[] { 1, 2, 3 });
 
             _expression = _parser.ParseExpression("['foo']");
             Assert.Equal("1 2 3", Stringify(_expression.GetValue(mapToIntArray)));
@@ -5009,7 +5009,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // variable access returning array
             exp = new SpelExpressionParser(configuration).ParseExpression("#x?:'foo'") as SpelExpression;
-            context.SetVariable("x", new int[] { 1, 2, 3 });
+            context.SetVariable("x", new[] { 1, 2, 3 });
             Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
             AssertCanCompile(exp);
             Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
@@ -5165,7 +5165,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // variable access returning array
             exp = new SpelExpressionParser(configuration).ParseExpression("#x==#x?'1,2,3':'foo'") as SpelExpression;
-            context.SetVariable("x", new int[] { 1, 2, 3 });
+            context.SetVariable("x", new[] { 1, 2, 3 });
             Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
             AssertCanCompile(exp);
             Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
@@ -5527,7 +5527,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class MyAccessor : ICompilablePropertyAccessor
         {
-            private static readonly MethodInfo _method = typeof(Payload2).GetMethod("GetField", new Type[] { typeof(string) });
+            private static readonly MethodInfo _method = typeof(Payload2).GetMethod("GetField", new[] { typeof(string) });
 
             public bool CanRead(IEvaluationContext context, object target, string name)
             {
@@ -5585,7 +5585,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class CompilableMapAccessor : ICompilablePropertyAccessor
         {
-            private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new Type[] { typeof(object) });
+            private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new[] { typeof(object) });
 
             public bool CanRead(IEvaluationContext context, object target, string name)
             {
@@ -5754,7 +5754,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 get
                 {
-                    return new int[] { 5, 3 };
+                    return new[] { 5, 3 };
                 }
             }
 
@@ -5838,7 +5838,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Payload
         {
-            public Two[] DR { get; } = new Two[] { new Two() };
+            public Two[] DR { get; } = new[] { new Two() };
 
             public Two Holder = new ();
         }
@@ -5869,8 +5869,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public static byte B2 = (byte)66;
             public static byte B3 = (byte)67;
 
-            public static string[] StringArray = new string[] { "aaa", "bbb", "ccc" };
-            public static int[] IntArray = new int[] { 11, 22, 33 };
+            public static string[] StringArray = new[] { "aaa", "bbb", "ccc" };
+            public static int[] IntArray = new[] { 11, 22, 33 };
 
             public int I;
             public string S;

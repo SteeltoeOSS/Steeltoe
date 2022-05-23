@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.Oracle.Test
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var assemblies = OracleTypeLocator.Assemblies;
-            OracleTypeLocator.Assemblies = new string[] { "Oracle.ManagedDataAccess" };
+            OracleTypeLocator.Assemblies = new[] { "Oracle.ManagedDataAccess" };
 
             var type = OracleTypeLocator.OracleConnection;
 
@@ -35,7 +35,7 @@ namespace Steeltoe.Connector.Oracle.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             var types = OracleTypeLocator.ConnectionTypeNames;
-            OracleTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
+            OracleTypeLocator.ConnectionTypeNames = new[] { "something-Wrong" };
 
             var exception = Assert.Throws<TypeLoadException>(() => OracleTypeLocator.OracleConnection);
 

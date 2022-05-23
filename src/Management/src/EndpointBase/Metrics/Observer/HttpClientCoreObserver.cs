@@ -47,15 +47,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 "http.client.request.time",
                 new ExplicitBucketHistogramConfiguration()
                 {
-                    Boundaries = new double[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
-                    TagKeys = new string[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
+                    Boundaries = new[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
+                    TagKeys = new[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
                 });
             _viewRegistry.AddView(
                 "http.client.request.count",
                 new ExplicitBucketHistogramConfiguration()
                 {
-                    Boundaries = new double[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
-                    TagKeys = new string[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
+                    Boundaries = new[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
+                    TagKeys = new[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
                 });
         }
 

@@ -87,7 +87,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             if (clientConfig is EurekaClientConfig config)
             {
-                var monitoredApps = config.HealthMonitoredApps?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var monitoredApps = config.HealthMonitoredApps?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 if (monitoredApps != null && monitoredApps.Length > 0)
                 {
                     var results = new List<string>();

@@ -43,7 +43,7 @@ namespace Steeltoe.Messaging.Support
                   typeToCreate,
                   BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                   null,
-                  new object[] { payload, new MessageHeaderAccessor() },
+                  new[] { payload, new MessageHeaderAccessor() },
                   null,
                   null);
         }

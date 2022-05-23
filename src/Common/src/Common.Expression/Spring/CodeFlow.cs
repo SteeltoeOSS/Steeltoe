@@ -339,7 +339,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             if (_initGenerators.Count > 0)
             {
                 var methodName = $"SpelExpressionInit{compilationId}";
-                var method = new DynamicMethod(methodName, typeof(void), new Type[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
+                var method = new DynamicMethod(methodName, typeof(void), new[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
                 var ilGenerator = method.GetILGenerator(4096);
 
                 foreach (var generator in _initGenerators)

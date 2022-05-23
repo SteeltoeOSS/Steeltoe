@@ -155,7 +155,7 @@ namespace Steeltoe.Stream.Binder
             BinderBindUnbindLatency();
             moduleOutputChannel1.Send(message1);
             moduleOutputChannel2.Send(message2);
-            var messages = new IMessage[] { Receive(moduleInputChannel), Receive(moduleInputChannel) };
+            var messages = new[] { Receive(moduleInputChannel), Receive(moduleInputChannel) };
 
             Assert.NotNull(messages[0]);
             Assert.NotNull(messages[1]);
@@ -498,7 +498,7 @@ namespace Steeltoe.Stream.Binder
 
             resolver.AddResolver(new PayloadArgumentResolver(factory.MessageConverterForAllRegistered));
             method.MessageMethodArgumentResolvers = resolver;
-            var constr = typeof(StreamListenerMessageHandler).GetConstructor(new Type[] { typeof(IApplicationContext), typeof(InvocableHandlerMethod), typeof(bool), typeof(string[]) });
+            var constr = typeof(StreamListenerMessageHandler).GetConstructor(new[] { typeof(IApplicationContext), typeof(InvocableHandlerMethod), typeof(bool), typeof(string[]) });
 
             var handler = (StreamListenerMessageHandler)constr.Invoke(new object[] { binder.ApplicationContext, method, false, Array.Empty<string>() });
 

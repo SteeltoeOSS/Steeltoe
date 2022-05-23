@@ -294,7 +294,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
             protected override object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
             {
-                return new object[] { extractedMessage, channel, message };
+                return new[] { extractedMessage, channel, message };
             }
         }
     }

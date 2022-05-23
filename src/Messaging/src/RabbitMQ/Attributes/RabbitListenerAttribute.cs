@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             set
             {
-                Queues = new string[] { value };
+                Queues = new[] { value };
             }
         }
 
@@ -52,7 +52,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             set
             {
-                Bindings = new string[] { value };
+                Bindings = new[] { value };
             }
         }
 

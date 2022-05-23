@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Test
             {
                 Exposure =
                 {
-                    Exclude = new string[] { "*" }.ToList()
+                    Exclude = new[] { "*" }.ToList()
                 }
             };
 

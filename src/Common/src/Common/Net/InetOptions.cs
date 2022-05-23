@@ -30,7 +30,7 @@ namespace Steeltoe.Common.Net
                 return new List<string>();
             }
 
-            return IgnoredInterfaces.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            return IgnoredInterfaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         internal IEnumerable<string> GetPreferredNetworks()
@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Net
                 return new List<string>();
             }
 
-            return PreferredNetworks.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            return PreferredNetworks.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             set
             {
-                Admins = new string[] { value };
+                Admins = new[] { value };
             }
         }
 

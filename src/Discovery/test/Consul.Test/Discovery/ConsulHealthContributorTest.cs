@@ -43,8 +43,8 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             {
                 Response = new Dictionary<string, string[]>
                 {
-                    { "foo", new string[] { "I1", "I2" } },
-                    { "bar", new string[] { "I1", "I2" } },
+                    { "foo", new[] { "I1", "I2" } },
+                    { "bar", new[] { "I1", "I2" } },
                 }
             };
 
@@ -69,8 +69,8 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             {
                 Response = new Dictionary<string, string[]>
                 {
-                    { "foo", new string[] { "I1", "I2" } },
-                    { "bar", new string[] { "I1", "I2" } },
+                    { "foo", new[] { "I1", "I2" } },
+                    { "bar", new[] { "I1", "I2" } },
                 }
             };
 

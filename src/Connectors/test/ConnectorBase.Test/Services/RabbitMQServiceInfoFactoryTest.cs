@@ -100,7 +100,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-mysql",
-                Tags = new string[] { "foobar", "relational" },
+                Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
                 Credentials = new Credential()
@@ -124,7 +124,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-circuit-breaker-dashboard",
-                Tags = new string[] { "circuit-breaker", "hystrix-amqp", "spring-cloud" },
+                Tags = new[] { "circuit-breaker", "hystrix-amqp", "spring-cloud" },
                 Name = "myHystrixService",
                 Plan = "standard",
                 Credentials = new Credential()

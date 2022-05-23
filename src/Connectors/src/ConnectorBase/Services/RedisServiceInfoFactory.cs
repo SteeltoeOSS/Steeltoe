@@ -9,7 +9,7 @@ namespace Steeltoe.Connector.Services
     public class RedisServiceInfoFactory : ServiceInfoFactory
     {
         public RedisServiceInfoFactory()
-            : base(new Tags("redis"), new string[] { RedisServiceInfo.REDIS_SCHEME, RedisServiceInfo.REDIS_SECURE_SCHEME })
+            : base(new Tags("redis"), new[] { RedisServiceInfo.REDIS_SCHEME, RedisServiceInfo.REDIS_SECURE_SCHEME })
         {
         }
 

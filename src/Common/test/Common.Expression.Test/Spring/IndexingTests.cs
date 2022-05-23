@@ -285,7 +285,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void IndexIntoGenericPropertyContainingArray()
         {
-            var property = new string[] { "bar" };
+            var property = new[] { "bar" };
             Property = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("Property");

@@ -260,7 +260,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
         {
-            var appsettings = new string[]
+            var appsettings = new[]
                 {
                     "spring:cloud:config:enabled=false",
                     "--spring:cloud:config:failFast=false",

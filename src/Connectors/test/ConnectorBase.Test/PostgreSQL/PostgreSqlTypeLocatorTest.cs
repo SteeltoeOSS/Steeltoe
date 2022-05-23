@@ -22,7 +22,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             var types = PostgreSqlTypeLocator.ConnectionTypeNames;
-            PostgreSqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
+            PostgreSqlTypeLocator.ConnectionTypeNames = new[] { "something-Wrong" };
 
             var exception = Assert.Throws<TypeLoadException>(() => PostgreSqlTypeLocator.NpgsqlConnection);
 

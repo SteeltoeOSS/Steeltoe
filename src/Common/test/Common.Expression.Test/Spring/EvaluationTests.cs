@@ -1224,7 +1224,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             ExpectFailSetValueNotSupported(parser, ctx, "('abc' matches '^a..')=('abc' matches '^a..')");
 
             // Selection
-            ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod("IsEven", new Type[] { typeof(int) }));
+            ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod("IsEven", new[] { typeof(int) }));
 
             ExpectFailNotIncrementable(parser, ctx, "({1,2,3}.?[#IsEven(#this)])++");
             ExpectFailNotDecrementable(parser, ctx, "--({1,2,3}.?[#IsEven(#this)])");
@@ -1377,7 +1377,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public short Sss = (short)15;
             public Spr9751_2 Foo = new ();
 
-            public int[] IntArray = new int[] { 1, 2, 3, 4, 5 };
+            public int[] IntArray = new[] { 1, 2, 3, 4, 5 };
             public int Index1 = 2;
 
             public int[] IntegerArray;

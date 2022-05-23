@@ -26,7 +26,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             var types = RabbitMQTypeLocator.ConnectionInterfaceTypeNames;
-            RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new string[] { "something-Wrong" };
+            RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new[] { "something-Wrong" };
 
             var exception = Assert.Throws<TypeLoadException>(() => RabbitMQTypeLocator.IConnectionFactory);
 

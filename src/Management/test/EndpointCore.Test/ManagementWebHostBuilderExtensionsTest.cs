@@ -113,7 +113,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
-            var host = hostBuilder.AddHealthActuator(new Type[] { typeof(DownContributor) }).Build();
+            var host = hostBuilder.AddHealthActuator(new[] { typeof(DownContributor) }).Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -127,7 +127,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
-            var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new Type[] { typeof(DownContributor) }).Build();
+            var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[] { typeof(DownContributor) }).Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 

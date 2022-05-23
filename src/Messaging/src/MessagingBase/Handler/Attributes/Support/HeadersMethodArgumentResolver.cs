@@ -34,7 +34,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
                 }
                 else
                 {
-                    var method = ReflectionHelpers.FindMethod(paramType, "Wrap", new Type[] { typeof(IMessage) });
+                    var method = ReflectionHelpers.FindMethod(paramType, "Wrap", new[] { typeof(IMessage) });
                     if (method == null)
                     {
                         throw new InvalidOperationException($"Cannot create accessor of type {paramType} for message {message}");

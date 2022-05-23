@@ -301,7 +301,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             rabbitConsumerOptions.MaxConcurrency = 3;
             rabbitConsumerOptions.Prefix = "foo.";
             rabbitConsumerOptions.Prefetch = 20;
-            rabbitConsumerOptions.HeaderPatterns = new string[] { "foo" }.ToList();
+            rabbitConsumerOptions.HeaderPatterns = new[] { "foo" }.ToList();
             rabbitConsumerOptions.BatchSize = 10;
             var quorum = rabbitConsumerOptions.Quorum;
             quorum.Enabled = true;
@@ -333,7 +333,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             consumerProperties.Multiplex = true;
             consumerProperties.Partitioned = true;
-            consumerProperties.InstanceIndexList = new int[] { 1, 2, 3 }.ToList();
+            consumerProperties.InstanceIndexList = new[] { 1, 2, 3 }.ToList();
 
             var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo", "boo", consumerProperties);
 
@@ -352,7 +352,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             consumerProperties.Multiplex = true;
             consumerProperties.Partitioned = true;
-            consumerProperties.InstanceIndexList = new int[] { 1, 2, 3 }.ToList();
+            consumerProperties.InstanceIndexList = new[] { 1, 2, 3 }.ToList();
 
             var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo,qaa", "boo", consumerProperties);
 
@@ -754,13 +754,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
             producerProperties.PartitionSelectorName = "pkSelector";
             producerRabbitOptions.Prefix = "foo.";
             producerRabbitOptions.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
-            producerRabbitOptions.HeaderPatterns = new string[] { "foo" }.ToList();
+            producerRabbitOptions.HeaderPatterns = new[] { "foo" }.ToList();
             producerProperties.PartitionKeyExpression = "'foo'";
             producerProperties.PartitionSelectorExpression = "0";
             producerProperties.PartitionCount = 1;
             producerRabbitOptions.Transacted = true;
             producerRabbitOptions.DelayExpression = "42";
-            producerProperties.RequiredGroups = new string[] { "prodPropsRequired" }.ToList();
+            producerProperties.RequiredGroups = new[] { "prodPropsRequired" }.ToList();
 
             var producerBindingProperties = CreateProducerBindingOptions(producerProperties);
             var channel = CreateBindableChannel("output", producerBindingProperties);
@@ -1159,7 +1159,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
             rabbitProducerOptions.Prefix = "bindertest.";
             rabbitProducerOptions.AutoBindDlq = true;
-            properties.RequiredGroups = new string[] { "dlqPartGrp" }.ToList();
+            properties.RequiredGroups = new[] { "dlqPartGrp" }.ToList();
             binder.ApplicationContext.Register("pkExtractor", new TestPartitionSupport("pkExtractor"));
             properties.PartitionKeyExtractorName = "pkExtractor";
             properties.PartitionSelectorName = "pkExtractor";
@@ -1325,7 +1325,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             rabbitProducerOptions.BatchBufferLimit = 100000;
             rabbitProducerOptions.BatchTimeout = 30000;
             rabbitProducerOptions.Compress = true;
-            producerProperties.RequiredGroups = new string[] { "default" }.ToList();
+            producerProperties.RequiredGroups = new[] { "default" }.ToList();
 
             var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
             output.ComponentName = "batchingProducer";

@@ -29,7 +29,7 @@ namespace Steeltoe.Connector.MySql.Test
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var types = MySqlTypeLocator.ConnectionTypeNames;
-            MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
+            MySqlTypeLocator.Assemblies = new[] { "MySqlConnector" };
 
             var type = MySqlTypeLocator.MySqlConnection;
 
@@ -41,7 +41,7 @@ namespace Steeltoe.Connector.MySql.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             var types = MySqlTypeLocator.ConnectionTypeNames;
-            MySqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
+            MySqlTypeLocator.ConnectionTypeNames = new[] { "something-Wrong" };
 
             var exception = Assert.Throws<TypeLoadException>(() => MySqlTypeLocator.MySqlConnection);
 

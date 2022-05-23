@@ -50,9 +50,9 @@ namespace Steeltoe.Connector.Redis
                 throw new ArgumentNullException(nameof(connectorOptions));
             }
 
-            var redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
-            var redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-            var redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
+            var redisAssemblies = new[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
+            var redisTypeNames = new[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
+            var redisOptionNames = new[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
 
             var redisConnection = ReflectionHelpers.FindType(redisAssemblies, redisTypeNames);
             var redisOptions = ReflectionHelpers.FindType(redisAssemblies, redisOptionNames);

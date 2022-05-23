@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging
                 typeToCreate,
                 BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                 null,
-                new object[] { payload },
+                new[] { payload },
                 null,
                 null);
         }
@@ -51,7 +51,7 @@ namespace Steeltoe.Messaging
                   typeToCreate,
                   BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                   null,
-                  new object[] { payload, headers },
+                  new[] { payload, headers },
                   null,
                   null);
         }
@@ -65,7 +65,7 @@ namespace Steeltoe.Messaging
                   typeToCreate,
                   BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                   null,
-                  new object[] { payload, headers },
+                  new[] { payload, headers },
                   null,
                   null);
         }

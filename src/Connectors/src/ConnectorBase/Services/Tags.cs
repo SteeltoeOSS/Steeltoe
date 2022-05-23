@@ -10,7 +10,7 @@ namespace Steeltoe.Connector.Services
     public class Tags
     {
         public Tags(string tag)
-            : this(new string[] { tag })
+            : this(new[] { tag })
         {
         }
 

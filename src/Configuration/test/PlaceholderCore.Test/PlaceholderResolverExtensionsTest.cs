@@ -89,7 +89,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 [spring:ini]
     name=${spring:line:name?noName}
 ";
-            var appsettingsLine = new string[]
+            var appsettingsLine = new[]
             {
                 "--spring:line:name=${spring:json:name?noName}"
             };

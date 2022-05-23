@@ -249,7 +249,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 {
                     try
                     {
-                        method.Invoke(target, new object[] { possiblyConvertedNewValue });
+                        method.Invoke(target, new[] { possiblyConvertedNewValue });
                         return;
                     }
                     catch (Exception ex)

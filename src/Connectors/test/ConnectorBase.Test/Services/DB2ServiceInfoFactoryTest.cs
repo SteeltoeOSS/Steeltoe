@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-db2",
-                Tags = new string[] { "db2", "relational" },
+                Tags = new[] { "db2", "relational" },
                 Name = "db2Service",
                 Plan = "100mb-dev",
                 Credentials = new Credential()
@@ -39,7 +39,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-msql",
-                Tags = new string[] { "foobar", "relational" },
+                Tags = new[] { "foobar", "relational" },
                 Name = "mysqlService",
                 Plan = "100mb-dev",
                 Credentials = new Credential()
@@ -63,7 +63,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-db2",
-                Tags = new string[] { "db2", "relational" },
+                Tags = new[] { "db2", "relational" },
                 Name = "db2Service",
                 Plan = "100mb-dev",
                 Credentials = new Credential()

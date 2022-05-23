@@ -117,7 +117,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal KeyValuePair<string, string>? ParseTag(string kvp)
         {
-            var str = kvp.Split(new char[] { ':' }, 2);
+            var str = kvp.Split(new[] { ':' }, 2);
             if (str != null && str.Length == 2)
             {
                 return new KeyValuePair<string, string>(str[0], str[1]);

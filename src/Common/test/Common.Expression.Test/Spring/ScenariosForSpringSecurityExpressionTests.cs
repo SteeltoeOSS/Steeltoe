@@ -125,7 +125,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 Name = n;
             }
 
-            public virtual string[] Roles => new string[] { "NONE" };
+            public virtual string[] Roles => new[] { "NONE" };
 
             public virtual bool HasAnyRole(params string[] roles)
             {
@@ -166,7 +166,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
             }
 
-            public override string[] Roles => new string[] { "MANAGER" };
+            public override string[] Roles => new[] { "MANAGER" };
         }
 
         public class Teller : Person
@@ -176,7 +176,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
             }
 
-            public override string[] Roles => new string[] { "TELLER" };
+            public override string[] Roles => new[] { "TELLER" };
         }
 
         public class Supervisor : Person
@@ -186,7 +186,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
             }
 
-            public override string[] Roles => new string[] { "SUPERVISOR" };
+            public override string[] Roles => new[] { "SUPERVISOR" };
         }
 
         public class SecurityPrincipalAccessor : IPropertyAccessor
@@ -270,7 +270,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 {
                     try
                     {
-                        var m = typeof(HasRoleExecutor).GetMethod("HasRole", new Type[] { typeof(string[]) });
+                        var m = typeof(HasRoleExecutor).GetMethod("HasRole", new[] { typeof(string[]) });
                         var args = arguments;
                         if (args != null)
                         {

@@ -33,8 +33,8 @@ namespace Steeltoe.Connector.Redis.Test
         {
             var msftAssemblies = RedisTypeLocator.MicrosoftAssemblies;
             var stackAssemblies = RedisTypeLocator.StackExchangeAssemblies;
-            RedisTypeLocator.MicrosoftAssemblies = new string[] { "something-Wrong" };
-            RedisTypeLocator.StackExchangeAssemblies = new string[] { "something-Wrong" };
+            RedisTypeLocator.MicrosoftAssemblies = new[] { "something-Wrong" };
+            RedisTypeLocator.StackExchangeAssemblies = new[] { "something-Wrong" };
 
             var msftException = Assert.Throws<ConnectorException>(() => RedisTypeLocator.MicrosoftInterface);
             var stackException = Assert.Throws<ConnectorException>(() => RedisTypeLocator.StackExchangeInterface);

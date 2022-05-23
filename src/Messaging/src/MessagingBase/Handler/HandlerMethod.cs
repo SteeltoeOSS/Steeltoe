@@ -190,7 +190,7 @@ namespace Steeltoe.Messaging.Handler
             var dynamicMethod = new DynamicMethod(
                 $"{Method.Name}Invoker",
                 typeof(object),
-                new Type[] { typeof(object), typeof(object[]) },
+                new[] { typeof(object), typeof(object[]) },
                 Method.DeclaringType.Module);
 
             var generator = dynamicMethod.GetILGenerator(128);

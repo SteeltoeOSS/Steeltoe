@@ -1485,7 +1485,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             var ex = _parser.ParseExpression("#str?.Split('\0')");
             var result = ex.GetValue(context);
-            Assert.True(ObjectUtils.NullSafeEquals(result, new string[] { "a", "b" }));
+            Assert.True(ObjectUtils.NullSafeEquals(result, new[] { "a", "b" }));
         }
 
         private void DoTestSpr10146(string expression, string expectedMessage)
@@ -1532,7 +1532,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 try
                 {
-                    var method = typeof(Enum).GetMethod("GetValues", new Type[] { typeof(Type) });
+                    var method = typeof(Enum).GetMethod("GetValues", new[] { typeof(Type) });
                     var value = method.Invoke(null, new object[] { typeof(XYZ) });
                     return new TypedValue(value, value == null ? typeof(object) : value.GetType());
                 }
@@ -1549,7 +1549,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 try
                 {
-                    return new MethodInfo[] { typeof(int).GetMethod("Parse", new Type[] { typeof(string), typeof(System.Globalization.NumberStyles) }) };
+                    return new[] { typeof(int).GetMethod("Parse", new[] { typeof(string), typeof(System.Globalization.NumberStyles) }) };
                 }
                 catch (Exception)
                 {
@@ -1743,7 +1743,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 Ls = new List<string> { "abc", "def" };
 
-                As = new string[] { "abc", "def" };
+                As = new[] { "abc", "def" };
                 Ms = new Dictionary<string, string> { ["abc"] = "xyz", ["def"] = "pqr" };
             }
         }

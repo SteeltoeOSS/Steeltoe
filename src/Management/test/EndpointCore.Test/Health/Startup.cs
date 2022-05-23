@@ -30,20 +30,20 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             switch (Configuration.GetValue<string>("HealthCheckType"))
             {
                 case "down":
-                    services.AddHealthActuator(Configuration, new Type[] { typeof(DownContributor) });
+                    services.AddHealthActuator(Configuration, new[] { typeof(DownContributor) });
                     break;
                 case "out":
-                    services.AddHealthActuator(Configuration, new Type[] { typeof(OutOfSserviceContributor) });
+                    services.AddHealthActuator(Configuration, new[] { typeof(OutOfSserviceContributor) });
                     break;
                 case "unknown":
-                    services.AddHealthActuator(Configuration, new Type[] { typeof(UnknownContributor) });
+                    services.AddHealthActuator(Configuration, new[] { typeof(UnknownContributor) });
                     break;
                 case "defaultAggregator":
-                    services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+                    services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), new[] { typeof(DiskSpaceContributor) });
                     break;
                 case "microsoftHealthAggregator":
                     services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
-                    services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+                    services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), new[] { typeof(DiskSpaceContributor) });
                     break;
                 default:
                     services.AddHealthActuator(Configuration);
@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public TestServiceOptions()
         {
             CurrentValue = new HealthCheckServiceOptions();
-            CurrentValue.Registrations.Add(new HealthCheckRegistration("test", (provider) => new TestHealthCheck(), HealthStatus.Unhealthy, new string[] { "tags" }.ToList()));
+            CurrentValue.Registrations.Add(new HealthCheckRegistration("test", (provider) => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
         }
 
         public HealthCheckServiceOptions CurrentValue { get; }

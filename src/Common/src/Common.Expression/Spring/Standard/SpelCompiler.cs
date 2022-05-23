@@ -58,7 +58,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         {
             var compiledExpression = new SpelCompiledExpression(_loggerFactory);
             var methodName = $"SpelExpression{_suffixId.GetAndIncrement()}";
-            var method = new DynamicMethod(methodName, typeof(object), new Type[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
+            var method = new DynamicMethod(methodName, typeof(object), new[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
             var ilGenerator = method.GetILGenerator(4096);
             var cf = new CodeFlow(compiledExpression);
             try

@@ -187,7 +187,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
 
                 try
                 {
-                    while (!Task.WaitAll(new Task[] { readerTask, stopTask }, 1000))
+                    while (!Task.WaitAll(new[] { readerTask, stopTask }, 1000))
                         log.WriteLine("{0,5:n1}s: still reading...", getElapsed().TotalSeconds);
                 }
                 catch (AggregateException ae) // no need to throw if we're just cancelling the tasks

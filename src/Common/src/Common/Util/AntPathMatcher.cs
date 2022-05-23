@@ -420,7 +420,7 @@ namespace Steeltoe.Common.Util
                 return Array.Empty<string>();
             }
 
-            var split = path.Split(new string[] { _pathSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            var split = path.Split(new[] { _pathSeparator }, StringSplitOptions.RemoveEmptyEntries);
             if (TrimTokens)
             {
                 for (var i = 0; i < split.Length; i++)

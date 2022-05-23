@@ -10,7 +10,7 @@ namespace Steeltoe.Connector.Services
     public class CosmosDbServiceInfoFactory : ServiceInfoFactory
     {
         public CosmosDbServiceInfoFactory()
-            : base(new Tags(new string[] { "azure-cosmosdb", "cosmosdb" }), "cosmosdb") // this URI scheme isn't know to be in use
+            : base(new Tags(new[] { "azure-cosmosdb", "cosmosdb" }), "cosmosdb") // this URI scheme isn't know to be in use
         {
         }
 

@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class Elvis : SpelNode
     {
-        private static readonly MethodInfo _equalsMethod = typeof(object).GetMethod("Equals", new Type[] { typeof(object) });
+        private static readonly MethodInfo _equalsMethod = typeof(object).GetMethod("Equals", new[] { typeof(object) });
 
         public Elvis(int startPos, int endPos, params SpelNode[] args)
         : base(startPos, endPos, args)

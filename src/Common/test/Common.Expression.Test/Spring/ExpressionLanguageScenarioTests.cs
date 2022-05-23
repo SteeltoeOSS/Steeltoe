@@ -135,7 +135,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
                 // Use the standard evaluation context
                 var ctx = new StandardEvaluationContext();
-                ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod("Repeat", new Type[] { typeof(string) }));
+                ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod("Repeat", new[] { typeof(string) }));
 
                 var expr = parser.ParseRaw("#Repeat('hello')");
                 var value = expr.GetValue(ctx);

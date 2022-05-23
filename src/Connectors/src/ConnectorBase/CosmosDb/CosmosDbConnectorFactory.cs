@@ -52,7 +52,7 @@ namespace Steeltoe.Connector.CosmosDb
         public virtual object CreateConnection(string connectionString, object clientOptions = null)
         {
             clientOptions ??= Activator.CreateInstance(CosmosDbTypeLocator.CosmosClientOptions);
-            return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString, clientOptions });
+            return ReflectionHelpers.CreateInstance(ConnectorType, new[] { connectionString, clientOptions });
         }
     }
 }

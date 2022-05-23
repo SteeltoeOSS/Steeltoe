@@ -206,7 +206,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
 
             var queryResult = new QueryResult<HealthCheck[]>()
             {
-                Response = new HealthCheck[]
+                Response = new[]
                 {
                     new HealthCheck()
                     {

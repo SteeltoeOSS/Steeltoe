@@ -17,7 +17,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
         public Dictionary<int, string> MapOfNumbersUpToTen = new ();
         public List<int> ListOfNumbersUpToTen = new ();
         public List<int> ListOneFive = new ();
-        public string[] StringArrayOfThreeItems = new string[] { "1", "2", "3" };
+        public string[] StringArrayOfThreeItems = new[] { "1", "2", "3" };
         public int Counter;
         public string _name;
         public string _name_;
@@ -81,7 +81,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
             set
             {
                 placeOfBirth = value;
-                PlacesLived = new PlaceOfBirth[] { value };
+                PlacesLived = new[] { value };
                 PlacesLivedList.Add(value);
             }
         }

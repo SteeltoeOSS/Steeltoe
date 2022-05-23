@@ -61,7 +61,7 @@ namespace Steeltoe.Messaging.Converter.Test
             Assert.Equal("Foo", actual.String);
             Assert.Equal(42, actual.Number);
             Assert.Equal(42F, actual.Fraction);
-            Assert.Equal(new string[] { "Foo", "Bar" }, actual.Array);
+            Assert.Equal(new[] { "Foo", "Bar" }, actual.Array);
             Assert.True(actual.Bool);
             Assert.Equal(new byte[] { 0x1, 0x2 }, actual.Bytes);
         }
@@ -80,7 +80,7 @@ namespace Steeltoe.Messaging.Converter.Test
             Assert.Equal("Foo", actual["string"]);
             Assert.Equal(42L, actual["number"]);
             Assert.Equal(42D, (double)actual["fraction"]);
-            Assert.Equal(new string[] { "Foo", "Bar" }, actual["array"]);
+            Assert.Equal(new[] { "Foo", "Bar" }, actual["array"]);
             Assert.Equal(true, actual["bool"]);
             Assert.Equal("AQI=", actual["bytes"]);
         }
@@ -155,7 +155,7 @@ namespace Steeltoe.Messaging.Converter.Test
                 String = "Foo",
                 Number = 42,
                 Fraction = 42F,
-                Array = new string[] { "Foo", "Bar" },
+                Array = new[] { "Foo", "Bar" },
                 Bool = true,
                 Bytes = new byte[] { 0x1, 0x2 }
             };

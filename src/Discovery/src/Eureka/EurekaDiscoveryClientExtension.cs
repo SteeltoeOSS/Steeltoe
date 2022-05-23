@@ -85,15 +85,15 @@ namespace Steeltoe.Discovery.Eureka
                     var endpointAssembly = "Steeltoe.Management.EndpointBase";
                     if (ReflectionHelpers.IsAssemblyLoaded(endpointAssembly))
                     {
-                        var actuatorOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions" });
-                        var endpointOptionsBaseType = ReflectionHelpers.FindType(new string[] { "Steeltoe.Management.Abstractions" }, new string[] { "Steeltoe.Management.IEndpointOptions" });
+                        var actuatorOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions" });
+                        var endpointOptionsBaseType = ReflectionHelpers.FindType(new[] { "Steeltoe.Management.Abstractions" }, new[] { "Steeltoe.Management.IEndpointOptions" });
                         var mgmtOptions = serviceProvider.GetService(actuatorOptionsType);
                         if (mgmtOptions != null)
                         {
                             var basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(mgmtOptions)}/";
                             if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX}:HealthCheckUrlPath")))
                             {
-                                var healthOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Health.IHealthOptions" });
+                                var healthOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Health.IHealthOptions" });
                                 var healthOptions = serviceProvider.GetService(healthOptionsType);
                                 if (healthOptions != null)
                                 {
@@ -103,7 +103,7 @@ namespace Steeltoe.Discovery.Eureka
 
                             if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX}:StatusPageUrlPath")))
                             {
-                                var infoOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Info.IInfoOptions" });
+                                var infoOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Info.IInfoOptions" });
                                 var infoOptions = serviceProvider.GetService(infoOptionsType);
                                 if (infoOptions != null)
                                 {

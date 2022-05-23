@@ -155,7 +155,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_CommandLineAppSettingsResolvesPlaceholders()
         {
-            var appsettings = new string[]
+            var appsettings = new[]
                 {
                             "spring:bar:name=myName",
                             "--spring:cloud:config:name=${spring:bar:name?noName}"
@@ -202,7 +202,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 [spring:ini]
     name=${spring:line:name?noName}
 ";
-            var appsettingsLine = new string[]
+            var appsettingsLine = new[]
     {
                             "--spring:line:name=${spring:json:name?noName}"
     };

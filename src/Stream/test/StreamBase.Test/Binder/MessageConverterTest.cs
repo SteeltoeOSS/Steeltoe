@@ -41,7 +41,7 @@ namespace Steeltoe.Stream.Binder
                 .SetHeader("contentType", "text/plain")
                 .Build();
 
-            var headers = new string[] { "foo" };
+            var headers = new[] { "foo" };
             var embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), EmbeddedHeaderUtils.HeadersToEmbed(headers));
             Assert.Equal(0xff, embedded[0]);
             var embeddedString = Encoding.UTF8.GetString(embedded);

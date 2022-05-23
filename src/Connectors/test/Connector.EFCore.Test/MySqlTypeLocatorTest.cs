@@ -29,7 +29,7 @@ namespace Steeltoe.Connector.MySql.Test
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var types = MySqlTypeLocator.Assemblies;
-            MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
+            MySqlTypeLocator.Assemblies = new[] { "MySqlConnector" };
 
             var type = MySqlTypeLocator.MySqlConnection;
 

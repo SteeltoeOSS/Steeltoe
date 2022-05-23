@@ -75,7 +75,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         [Fact]
         public void TestAmqp330StringArray()
         {
-            var testData = new string[] { "test" };
+            var testData = new[] { "test" };
             var message = converter.ToMessage(testData, new MessageHeaders());
             var result = converter.FromMessage<string[]>(message);
             Assert.Single(result);
@@ -85,7 +85,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         [Fact]
         public void TestAmqp330ObjectArray()
         {
-            var testData = new SimpleTrade[] { trade };
+            var testData = new[] { trade };
             var message = converter.ToMessage(testData, new MessageHeaders());
             var result = converter.FromMessage<SimpleTrade[]>(message);
             Assert.Single(result);

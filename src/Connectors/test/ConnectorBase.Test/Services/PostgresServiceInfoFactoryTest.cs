@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "elephantsql",
-                Tags = new string[] { "postgresql", "relational" },
+                Tags = new[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
                 Credentials = new Credential()
@@ -83,7 +83,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-foobar",
-                Tags = new string[] { "foobar", "relational" },
+                Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
                 Credentials = new Credential()
@@ -107,7 +107,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "elephantsql",
-                Tags = new string[] { "postgresql", "relational" },
+                Tags = new[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
                 Credentials = new Credential()
@@ -139,7 +139,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "elephantsql",
-                Tags = new string[] { "postgresql", "relational" },
+                Tags = new[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
                 Credentials = new Credential()

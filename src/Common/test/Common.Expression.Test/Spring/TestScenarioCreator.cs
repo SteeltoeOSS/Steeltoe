@@ -33,7 +33,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public static int[] ReverseInt(int i, int j, int k)
         {
-            return new int[] { k, j, i };
+            return new[] { k, j, i };
         }
 
         public static string ReverseString(string input)
@@ -80,11 +80,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             try
             {
-                testContext.RegisterFunction("IsEven", typeof(TestScenarioCreator).GetMethod("IsEven", new Type[] { typeof(int) }));
-                testContext.RegisterFunction("ReverseInt", typeof(TestScenarioCreator).GetMethod("ReverseInt", new Type[] { typeof(int), typeof(int), typeof(int) }));
-                testContext.RegisterFunction("ReverseString", typeof(TestScenarioCreator).GetMethod("ReverseString", new Type[] { typeof(string) }));
-                testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge", typeof(TestScenarioCreator).GetMethod("VarargsFunctionReverseStringsAndMerge", new Type[] { typeof(string[]) }));
-                testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge2", typeof(TestScenarioCreator).GetMethod("VarargsFunctionReverseStringsAndMerge2", new Type[] { typeof(int), typeof(string[]) }));
+                testContext.RegisterFunction("IsEven", typeof(TestScenarioCreator).GetMethod("IsEven", new[] { typeof(int) }));
+                testContext.RegisterFunction("ReverseInt", typeof(TestScenarioCreator).GetMethod("ReverseInt", new[] { typeof(int), typeof(int), typeof(int) }));
+                testContext.RegisterFunction("ReverseString", typeof(TestScenarioCreator).GetMethod("ReverseString", new[] { typeof(string) }));
+                testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge", typeof(TestScenarioCreator).GetMethod("VarargsFunctionReverseStringsAndMerge", new[] { typeof(string[]) }));
+                testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge2", typeof(TestScenarioCreator).GetMethod("VarargsFunctionReverseStringsAndMerge2", new[] { typeof(int), typeof(string[]) }));
             }
             catch (Exception ex)
             {
@@ -103,7 +103,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var tesla = new Inventor("Nikola Tesla", c.ToDateTime(1856, 7, 9, 0, 0, 0, GregorianCalendar.CurrentEra), "Serbian")
             {
                 PlaceOfBirth = new PlaceOfBirth("SmilJan"),
-                Inventions = new string[]
+                Inventions = new[]
             {
                 "Telephone repeater", "Rotating magnetic field principle",
                 "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",

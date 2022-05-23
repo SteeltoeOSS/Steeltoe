@@ -56,7 +56,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void WebHostConfiguresIConfiguration_CmdLine()
         {
-            var hostBuilder = WebHost.CreateDefaultBuilder(new string[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
+            var hostBuilder = WebHost.CreateDefaultBuilder(new[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
                        .UseStartup<TestServerStartup>()
                        .AddSpringBootConfiguration();
 
@@ -91,7 +91,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void GenericHostConfiguresIConfiguration_CmdLine()
         {
-            var hostBuilder = Host.CreateDefaultBuilder(new string[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
+            var hostBuilder = Host.CreateDefaultBuilder(new[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
                        .AddSpringBootConfiguration();
 
             using var host = hostBuilder.Build();
@@ -125,7 +125,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void WebApplicationConfiguresIConfiguration_CmdLine()
         {
-            var hostBuilder = TestHelpers.GetTestWebApplicationBuilder(new string[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" });
+            var hostBuilder = TestHelpers.GetTestWebApplicationBuilder(new[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" });
             hostBuilder.AddSpringBootConfiguration();
 
             using var host = hostBuilder.Build();

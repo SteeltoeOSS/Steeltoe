@@ -114,7 +114,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             => BuildListenerArguments(extractedMessage);
 
         protected virtual object[] BuildListenerArguments(object extractedMessage)
-            => new object[] { extractedMessage };
+            => new[] { extractedMessage };
 
         protected virtual string GetListenerMethodName(IMessage originalMessage, object extractedMessage)
         {

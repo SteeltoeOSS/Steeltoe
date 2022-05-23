@@ -131,13 +131,13 @@ namespace Steeltoe.Connector.PostgreSql.EFCore
         {
             var extensionType = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 
-            var useMethod = FindUseNpgsqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            var useMethod = FindUseNpgsqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseNpgsql extension, are you missing Postgres EntityFramework Core assembly");
             }
 
-            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, npgsqlOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new[] { builder, connection, npgsqlOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException($"Failed to invoke UseNpgsql extension, connection: {connection}");

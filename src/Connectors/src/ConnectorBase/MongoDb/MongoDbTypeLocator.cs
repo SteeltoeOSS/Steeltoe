@@ -17,22 +17,22 @@ namespace Steeltoe.Connector.MongoDb
         /// <summary>
         /// Gets a list of supported MongoDB assemblies
         /// </summary>
-        public static string[] Assemblies { get; internal set; } = new string[] { "MongoDB.Driver" };
+        public static string[] Assemblies { get; internal set; } = new[] { "MongoDB.Driver" };
 
         /// <summary>
         /// Gets a list of supported MongoDB client interface types
         /// </summary>
-        public static string[] ConnectionInterfaceTypeNames { get; internal set; } = new string[] { "MongoDB.Driver.IMongoClient" };
+        public static string[] ConnectionInterfaceTypeNames { get; internal set; } = new[] { "MongoDB.Driver.IMongoClient" };
 
         /// <summary>
         /// Gets a list of supported MongoDB client types
         /// </summary>
-        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "MongoDB.Driver.MongoClient" };
+        public static string[] ConnectionTypeNames { get; internal set; } = new[] { "MongoDB.Driver.MongoClient" };
 
         /// <summary>
         /// Gets the class used for describing MongoDB connection information
         /// </summary>
-        public static string[] MongoConnectionInfo { get; internal set; } = new string[] { "MongoDB.Driver.MongoUrl" };
+        public static string[] MongoConnectionInfo { get; internal set; } = new[] { "MongoDB.Driver.MongoUrl" };
 
         /// <summary>
         /// Gets IMongoClient from MongoDB Library
@@ -55,7 +55,7 @@ namespace Steeltoe.Connector.MongoDb
         /// <summary>
         /// Gets a method that lists databases available in a MongoClient
         /// </summary>
-        public static MethodInfo ListDatabasesMethod => FindMethodOrThrow(MongoClient, "ListDatabases", new Type[] { typeof(CancellationToken) });
+        public static MethodInfo ListDatabasesMethod => FindMethodOrThrow(MongoClient, "ListDatabases", new[] { typeof(CancellationToken) });
 
         private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
         {

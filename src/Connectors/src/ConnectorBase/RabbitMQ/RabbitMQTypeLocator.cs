@@ -16,17 +16,17 @@ namespace Steeltoe.Connector.RabbitMQ
         /// <summary>
         /// Gets a list of supported RabbitMQ assemblies
         /// </summary>
-        public static string[] Assemblies { get; internal set; } = new string[] { "RabbitMQ.Client" };
+        public static string[] Assemblies { get; internal set; } = new[] { "RabbitMQ.Client" };
 
         /// <summary>
         /// Gets a list of RabbitMQ Interface types
         /// </summary>
-        public static string[] ConnectionInterfaceTypeNames { get; internal set; } = new string[] { "RabbitMQ.Client.IConnectionFactory" };
+        public static string[] ConnectionInterfaceTypeNames { get; internal set; } = new[] { "RabbitMQ.Client.IConnectionFactory" };
 
         /// <summary>
         /// Gets a list of RabbitMQ Implementation types
         /// </summary>
-        public static string[] ConnectionImplementationTypeNames { get; internal set; } = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+        public static string[] ConnectionImplementationTypeNames { get; internal set; } = new[] { "RabbitMQ.Client.ConnectionFactory" };
 
         /// <summary>
         /// Gets IConnectionFactory from a RabbitMQ Library
@@ -43,7 +43,7 @@ namespace Steeltoe.Connector.RabbitMQ
         /// <summary>
         /// Gets IConnection from RabbitMQ Library
         /// </summary>
-        public static Type IConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, new string[] { "RabbitMQ.Client.IConnection" }, "IConnection", "the RabbitMQ.Client assembly");
+        public static Type IConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, new[] { "RabbitMQ.Client.IConnection" }, "IConnection", "the RabbitMQ.Client assembly");
 
         /// <summary>
         /// Gets the CreateConnection method of ConnectionFactory

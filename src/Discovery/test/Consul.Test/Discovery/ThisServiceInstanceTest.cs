@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                 Name = "foobar",
                 Address = "test.foo.bar",
                 Port = 1234,
-                Tags = new string[] { "foo=bar" }
+                Tags = new[] { "foo=bar" }
             };
             var opts = new ConsulDiscoveryOptions();
             var registration = new ConsulRegistration(serviceRegistration, opts);

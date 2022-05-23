@@ -267,8 +267,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         protected MessagingMessageListenerAdapter GetMultiInstance(string methodName1, string methodName2, bool returnExceptions, Type m1ParameterType, Type m2ParameterType)
         {
-            var m1 = typeof(SampleBean).GetMethod(methodName1, new Type[] { m1ParameterType });
-            var m2 = typeof(SampleBean).GetMethod(methodName2, new Type[] { m2ParameterType });
+            var m1 = typeof(SampleBean).GetMethod(methodName1, new[] { m1ParameterType });
+            var m2 = typeof(SampleBean).GetMethod(methodName2, new[] { m2ParameterType });
             return CreateMultiInstance(m1, m2, returnExceptions);
         }
 

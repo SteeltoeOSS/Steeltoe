@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
         public void AddSpringBootAdminClient_AddsHostedService()
         {
             var configuration = new ConfigurationBuilder()
-                .AddCommandLine(new string[] { "--urls=http://localhost" })
+                .AddCommandLine(new[] { "--urls=http://localhost" })
                 .Build();
             var services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(configuration);

@@ -67,12 +67,12 @@ namespace Steeltoe.Connector.Redis
 
         private object CreateConnection(object options)
         {
-            return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { options });
+            return ReflectionHelpers.CreateInstance(ConnectorType, new[] { options });
         }
 
         private object CreateConnectionByMethod(object options)
         {
-            return Initializer.Invoke(ConnectorType, new object[] { options, null });
+            return Initializer.Invoke(ConnectorType, new[] { options, null });
         }
     }
 }

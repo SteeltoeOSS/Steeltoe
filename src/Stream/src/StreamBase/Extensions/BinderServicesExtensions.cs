@@ -76,7 +76,7 @@ namespace Steeltoe.Stream.Extensions
 
         internal static MethodInfo FindConfigureServicesMethod(Type type)
         {
-            return type.GetMethod("ConfigureServices", new Type[] { typeof(IServiceCollection) });
+            return type.GetMethod("ConfigureServices", new[] { typeof(IServiceCollection) });
         }
 
         internal static Type FindConfigureType(BinderConfiguration binderConfiguration)
@@ -96,7 +96,7 @@ namespace Steeltoe.Stream.Extensions
 
         internal static ConstructorInfo FindConstructor(Type type)
         {
-            var constr = type.GetConstructor(new Type[] { typeof(IConfiguration) });
+            var constr = type.GetConstructor(new[] { typeof(IConfiguration) });
             if (constr == null)
             {
                 constr = type.GetConstructor(Array.Empty<Type>());

@@ -89,6 +89,6 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddEnumerable(descriptors);
         }
 
-        internal static Type[] DefaultHealthContributors => new Type[] { typeof(DiskSpaceContributor), typeof(LivenessHealthContributor), typeof(ReadinessHealthContributor) };
+        internal static Type[] DefaultHealthContributors => new[] { typeof(DiskSpaceContributor), typeof(LivenessHealthContributor), typeof(ReadinessHealthContributor) };
     }
 }

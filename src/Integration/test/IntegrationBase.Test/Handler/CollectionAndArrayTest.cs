@@ -51,7 +51,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void SetWithRequestReplyHandler()
         {
-            handler.ReturnValue = new HashSet<string>(new string[] { "foo", "bar" });
+            handler.ReturnValue = new HashSet<string>(new[] { "foo", "bar" });
             var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
             handler.HandleMessage(message);
@@ -66,7 +66,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void ArrayWithRequestReplyHandler()
         {
-            handler.ReturnValue = new string[] { "foo", "bar" };
+            handler.ReturnValue = new[] { "foo", "bar" };
             var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
             handler.HandleMessage(message);

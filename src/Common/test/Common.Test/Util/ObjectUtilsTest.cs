@@ -11,8 +11,8 @@ namespace Steeltoe.Common.Util.Test
         [Fact]
         public void NullSafeEqualsWithArrays()
         {
-            Assert.True(ObjectUtils.NullSafeEquals(new string[] { "a", "b", "c" }, new string[] { "a", "b", "c" }));
-            Assert.True(ObjectUtils.NullSafeEquals(new int[] { 1, 2, 3 }, new int[] { 1, 2, 3 }));
+            Assert.True(ObjectUtils.NullSafeEquals(new[] { "a", "b", "c" }, new[] { "a", "b", "c" }));
+            Assert.True(ObjectUtils.NullSafeEquals(new[] { 1, 2, 3 }, new[] { 1, 2, 3 }));
         }
 
         [Fact]
@@ -171,7 +171,7 @@ namespace Steeltoe.Common.Util.Test
         [Fact]
         public void NullSafeHashCodeWithobjectBeingBooleanArray()
         {
-            object array = new bool[] { true, false };
+            object array = new[] { true, false };
             var expected = ObjectUtils.NullSafeHashCode((bool[])array);
             AssertEqualHashCodes(expected, array);
         }
@@ -187,7 +187,7 @@ namespace Steeltoe.Common.Util.Test
         [Fact]
         public void NullSafeHashCodeWithobjectBeingCharArray()
         {
-            object array = new char[] { 'l', 'M' };
+            object array = new[] { 'l', 'M' };
             var expected = ObjectUtils.NullSafeHashCode((char[])array);
             AssertEqualHashCodes(expected, array);
         }
@@ -195,7 +195,7 @@ namespace Steeltoe.Common.Util.Test
         [Fact]
         public void NullSafeHashCodeWithobjectBeingDoubleArray()
         {
-            object array = new double[] { 68930.993, 9022.009 };
+            object array = new[] { 68930.993, 9022.009 };
             var expected = ObjectUtils.NullSafeHashCode((double[])array);
             AssertEqualHashCodes(expected, array);
         }
@@ -203,7 +203,7 @@ namespace Steeltoe.Common.Util.Test
         [Fact]
         public void NullSafeHashCodeWithobjectBeingFloatArray()
         {
-            object array = new float[] { 9.9f, 9.54f };
+            object array = new[] { 9.9f, 9.54f };
             var expected = ObjectUtils.NullSafeHashCode((float[])array);
             AssertEqualHashCodes(expected, array);
         }
@@ -211,7 +211,7 @@ namespace Steeltoe.Common.Util.Test
         [Fact]
         public void NullSafeHashCodeWithobjectBeingIntArray()
         {
-            object array = new int[] { 89, 32 };
+            object array = new[] { 89, 32 };
             var expected = ObjectUtils.NullSafeHashCode((int[])array);
             AssertEqualHashCodes(expected, array);
         }

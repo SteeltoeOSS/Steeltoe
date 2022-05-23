@@ -53,7 +53,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
         public void Create_ReturnsCosmosDbConnection_v3()
         {
             var optionsTypes = CosmosDbTypeLocator.ClientOptionsTypeNames;
-            CosmosDbTypeLocator.ClientOptionsTypeNames = new string[] { CosmosDbTypeLocator.ClientOptionsTypeNames[1] };
+            CosmosDbTypeLocator.ClientOptionsTypeNames = new[] { CosmosDbTypeLocator.ClientOptionsTypeNames[1] };
 
             var si = new CosmosDbServiceInfo("MyId")
             {

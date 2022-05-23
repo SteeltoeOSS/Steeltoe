@@ -46,7 +46,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         public void AddSpringBootCmd_AddKeys()
         {
             var config1 = new ConfigurationBuilder()
-                .AddCommandLine(new string[] { "spring.foo.bar=value", "spring.bar.foo=value2", "bar.foo=value3" })
+                .AddCommandLine(new[] { "spring.foo.bar=value", "spring.bar.foo=value2", "bar.foo=value3" })
                 .Build();
 
             var builder = new ConfigurationBuilder()

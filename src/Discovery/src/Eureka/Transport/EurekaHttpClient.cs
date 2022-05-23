@@ -42,7 +42,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected HttpClient _httpClient;
         protected ILogger _logger;
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
-        private static readonly char[] COLON_DELIMIT = new char[] { ':' };
+        private static readonly char[] COLON_DELIMIT = new[] { ':' };
         private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
         private JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -717,7 +717,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected internal static IList<string> MakeServiceUrls(string serviceUrls)
         {
             var results = new List<string>();
-            var split = serviceUrls.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var split = serviceUrls.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var serviceUrl in split)
             {
                 results.Add(MakeServiceUrl(serviceUrl));

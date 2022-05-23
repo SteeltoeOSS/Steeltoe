@@ -182,15 +182,15 @@ namespace Steeltoe.Connector.MySql.EFCore
             // the signature changed in 5.0 to require a param of type ServerVersion - use the presence of this new type to select the signature
             if (EntityFrameworkCoreTypeLocator.MySqlVersionType == null)
             {
-                useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
-                parms = new object[] { builder, connection, mySqlOptionsAction };
+                useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
+                parms = new[] { builder, connection, mySqlOptionsAction };
             }
             else
             {
                 // If the server version wasn't passed in, use the EF Core lib to autodetect it (this is the part that creates an extra connection)
-                serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new Type[] { typeof(string) }).Invoke(null, new[] { connection });
-                useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string), EntityFrameworkCoreTypeLocator.MySqlVersionType, typeof(Action<DbContextOptionsBuilder>) });
-                parms = new object[] { builder, connection, serverVersion, mySqlOptionsAction };
+                serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new[] { connection });
+                useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), EntityFrameworkCoreTypeLocator.MySqlVersionType, typeof(Action<DbContextOptionsBuilder>) });
+                parms = new[] { builder, connection, serverVersion, mySqlOptionsAction };
             }
 
             if (extensionType == null)

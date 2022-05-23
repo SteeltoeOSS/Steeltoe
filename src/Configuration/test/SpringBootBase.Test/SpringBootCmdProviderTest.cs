@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         public void TryGet_Key()
         {
             var config = new ConfigurationBuilder()
-                .AddCommandLine(new string[] { "spring.cloud.stream.bindings.input=test" })
+                .AddCommandLine(new[] { "spring.cloud.stream.bindings.input=test" })
                 .Build();
             var prov = new SpringBootCmdProvider(config);
             prov.Load();

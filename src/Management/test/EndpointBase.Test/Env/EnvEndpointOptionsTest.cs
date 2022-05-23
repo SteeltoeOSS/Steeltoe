@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var opts = new EnvEndpointOptions();
             Assert.Equal("env", opts.Id);
 
-            Assert.Equal(new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" }, opts.KeysToSanitize);
+            Assert.Equal(new[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" }, opts.KeysToSanitize);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
 

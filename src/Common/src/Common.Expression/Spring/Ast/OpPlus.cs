@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class OpPlus : Operator
     {
-        private static readonly MethodInfo _appendString = typeof(StringBuilder).GetMethod("Append", new Type[] { typeof(string) });
+        private static readonly MethodInfo _appendString = typeof(StringBuilder).GetMethod("Append", new[] { typeof(string) });
         private static readonly MethodInfo _toString = typeof(StringBuilder).GetMethod("ToString", Type.EmptyTypes);
         private static readonly ConstructorInfo _sbConstructor = typeof(StringBuilder).GetConstructor(Type.EmptyTypes);
 

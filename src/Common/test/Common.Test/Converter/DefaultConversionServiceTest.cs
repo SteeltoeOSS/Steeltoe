@@ -287,7 +287,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToCollectionInterface()
         {
-            var result = ConversionService.Convert<IList<string>>(new string[] { "1", "2", "3" });
+            var result = ConversionService.Convert<IList<string>>(new[] { "1", "2", "3" });
             Assert.Equal("1", result[0]);
             Assert.Equal("2", result[1]);
             Assert.Equal("3", result[2]);
@@ -296,7 +296,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToEnumerableInterface()
         {
-            var array = new string[] { "1", "2", "3" };
+            var array = new[] { "1", "2", "3" };
             var result = ConversionService.Convert<IEnumerable>(array);
             Assert.IsType<string[]>(result);
             Assert.Same(result, array);
@@ -305,7 +305,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToEnumerableStringInterface()
         {
-            var array = new string[] { "1", "2", "3" };
+            var array = new[] { "1", "2", "3" };
             var result = ConversionService.Convert<IEnumerable<string>>(array);
             Assert.IsType<string[]>(result);
             Assert.Same(result, array);
@@ -314,7 +314,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToEnumerableGenericTypeConversion()
         {
-            var array = new string[] { "1", "2", "3" };
+            var array = new[] { "1", "2", "3" };
             var result = ConversionService.Convert<IEnumerable<int>>(array);
             Assert.Contains(1, result);
             Assert.Contains(2, result);
@@ -324,7 +324,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToCollectionGenericTypeConversion()
         {
-            var result = ConversionService.Convert<IList<int>>(new string[] { "1", "2", "3" });
+            var result = ConversionService.Convert<IList<int>>(new[] { "1", "2", "3" });
             Assert.Equal(1, result[0]);
             Assert.Equal(2, result[1]);
             Assert.Equal(3, result[2]);
@@ -333,7 +333,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToCollectionImpl()
         {
-            var result = ConversionService.Convert<List<string>>(new string[] { "1", "2", "3" });
+            var result = ConversionService.Convert<List<string>>(new[] { "1", "2", "3" });
             Assert.Equal("1", result[0]);
             Assert.Equal("2", result[1]);
             Assert.Equal("3", result[2]);
@@ -343,20 +343,20 @@ namespace Steeltoe.Common.Converter.Test
         public void ConvertArrayToAbstractCollection()
         {
             // No public constructor found
-            Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<CollectionBase>(new string[] { "1", "2", "3" }));
+            Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<CollectionBase>(new[] { "1", "2", "3" }));
         }
 
         [Fact]
         public void ConvertArrayToString()
         {
-            var result = ConversionService.Convert<string>(new string[] { "1", "2", "3" });
+            var result = ConversionService.Convert<string>(new[] { "1", "2", "3" });
             Assert.Equal("1,2,3", result);
         }
 
         [Fact]
         public void ConvertArrayToStringWithElementConversion()
         {
-            var result = ConversionService.Convert<string>(new int[] { 1, 2, 3 });
+            var result = ConversionService.Convert<string>(new[] { 1, 2, 3 });
             Assert.Equal("1,2,3", result);
         }
 
@@ -405,7 +405,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToObjectWithElementConversion()
         {
-            object[] array = new string[] { "3" };
+            object[] array = new[] { "3" };
             var result = ConversionService.Convert<int>(array);
             Assert.Equal(3, result);
         }
@@ -413,7 +413,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToObjectAssignableTargetType()
         {
-            var array = new long[] { 3L };
+            var array = new[] { 3L };
             var result = ConversionService.Convert<long[]>(array);
             Assert.Equal(array, result);
         }
@@ -623,7 +623,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertStringArrayToIntegerArray()
         {
-            var result = ConversionService.Convert<int[]>(new string[] { "1", "2", "3" });
+            var result = ConversionService.Convert<int[]>(new[] { "1", "2", "3" });
             Assert.Equal(3, result.Length);
             Assert.Equal(1, result[0]);
             Assert.Equal(2, result[1]);
@@ -633,7 +633,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertIntegerArrayToIntegerArray()
         {
-            var result = ConversionService.Convert<int[]>(new int[] { 1, 2, 3 });
+            var result = ConversionService.Convert<int[]>(new[] { 1, 2, 3 });
             Assert.Equal(3, result.Length);
             Assert.Equal(1, result[0]);
             Assert.Equal(2, result[1]);
@@ -653,7 +653,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertArrayToArrayAssignable()
         {
-            var orig = new int[] { 1, 2, 3 };
+            var orig = new[] { 1, 2, 3 };
             var result = ConversionService.Convert<int[]>(orig);
             Assert.Same(orig, result);
         }
@@ -862,7 +862,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertCharArrayToString()
         {
-            var converted = ConversionService.Convert<string>(new char[] { 'a', 'b', 'c' });
+            var converted = ConversionService.Convert<string>(new[] { 'a', 'b', 'c' });
             Assert.Equal("a,b,c", converted);
         }
 
@@ -870,16 +870,16 @@ namespace Steeltoe.Common.Converter.Test
         public void ConvertStringToCharArray()
         {
             var converted = ConversionService.Convert<char[]>("a,b,c");
-            Assert.Equal(new char[] { 'a', 'b', 'c' }, converted);
+            Assert.Equal(new[] { 'a', 'b', 'c' }, converted);
         }
 
         [Fact]
         public void MultidimensionalArrayToListConversionShouldConvertEntriesCorrectly()
         {
-            var grid = new string[][]
+            var grid = new[]
             {
-                new string[] { "1", "2", "3", "4" }, new string[] { "5", "6", "7", "8" },
-                new string[] { "9", "10", "11", "12" }
+                new[] { "1", "2", "3", "4" }, new[] { "5", "6", "7", "8" },
+                new[] { "9", "10", "11", "12" }
             };
             var converted = ConversionService.Convert<List<string[]>>(grid);
             var convertedBack = ConversionService.Convert<string[][]>(converted);

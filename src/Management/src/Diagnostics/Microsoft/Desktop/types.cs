@@ -226,7 +226,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override IEnumerable<ulong> EnumerateMethodTables()
         {
-            return new ulong[] { MethodTable };
+            return new[] { MethodTable };
         }
 
         internal override ulong GetModuleAddress(ClrAppDomain domain)
@@ -493,7 +493,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         public override IEnumerable<ulong> EnumerateMethodTables()
         {
-            return new ulong[] { MethodTable };
+            return new[] { MethodTable };
         }
 
         public override ClrModule Module { get { return DesktopModule; } }
@@ -796,7 +796,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                     if (_constructedMT != 0)
                     {
                         _cachedMethodTable = _constructedMT;
-                        _methodTables = new ulong[] { _cachedMethodTable };
+                        _methodTables = new[] { _cachedMethodTable };
                         return _methodTables;
                     }
                 }

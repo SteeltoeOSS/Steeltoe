@@ -55,7 +55,7 @@ namespace Steeltoe.Connector.Services.Test
             var s = new Service()
             {
                 Label = "p-mysql",
-                Tags = new string[] { "foobar", "relational" },
+                Tags = new[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
                 Credentials = new Credential()

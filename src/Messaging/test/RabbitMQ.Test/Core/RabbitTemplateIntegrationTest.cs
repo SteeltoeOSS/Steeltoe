@@ -1576,7 +1576,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             {
                 var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                 accessor.ContentType = "text/other";
-                accessor.SetHeader("strings", new string[] { "1", "2" });
+                accessor.SetHeader("strings", new[] { "1", "2" });
                 accessor.SetHeader("objects", new object[] { new Foo(), new Foo() });
                 accessor.SetHeader("bytes", EncodingUtils.Utf8.GetBytes("abc"));
                 return message;

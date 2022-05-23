@@ -638,7 +638,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
         private const int mdtName = 0x71000000;       //
         private const int mdtBaseType = 0x72000000;       // Leave this on the high end value. This does not correspond to metadata table
 
-        private readonly static int[] s_tkCorEncodeToken = new int[] { mdtTypeDef, mdtTypeRef, mdtTypeSpec, mdtBaseType };
+        private readonly static int[] s_tkCorEncodeToken = new[] { mdtTypeDef, mdtTypeRef, mdtTypeSpec, mdtBaseType };
 
         private const int IMAGE_CEE_CS_CALLCONV_DEFAULT = 0x0;
 

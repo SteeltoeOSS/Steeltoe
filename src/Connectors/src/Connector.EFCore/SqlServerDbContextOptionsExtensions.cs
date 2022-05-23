@@ -132,13 +132,13 @@ namespace Steeltoe.Connector.SqlServer.EFCore
         {
             var extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
-            var useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            var useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
             }
 
-            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, sqlServerOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new[] { builder, connection, sqlServerOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException($"Failed to invoke UseSqlServer extension, connection: {connection}");

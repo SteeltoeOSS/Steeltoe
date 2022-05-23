@@ -110,7 +110,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
             var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contribs, ServiceProviderWithMSFTHealth(), provider);
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "health", "iNvAlId" });
+            context.GetRequestComponents().Returns(new[] { "health", "iNvAlId" });
 
             var result = ep.Invoke(context);
 
@@ -125,7 +125,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
             var ep = new HealthEndpointCore(options, aggregator, contribs, ServiceOptions(), provider);
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "cloudfoundryapplication", "health", "liVeness" });
+            context.GetRequestComponents().Returns(new[] { "cloudfoundryapplication", "health", "liVeness" });
             appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
 
             var result = ep.Invoke(context);
@@ -142,7 +142,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
             var ep = new HealthEndpointCore(options, aggregator, contribs, ServiceOptions(), provider);
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
+            context.GetRequestComponents().Returns(new[] { "actuator", "health", "readiness" });
             appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
             var result = ep.Invoke(context);
@@ -159,7 +159,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
             var ep = new HealthEndpointCore(options, aggregator, contribs, ServiceProviderWithMSFTHealth(), provider);
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
+            context.GetRequestComponents().Returns(new[] { "actuator", "health", "readiness" });
             appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
             var result = ep.Invoke(context);
@@ -176,7 +176,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor() };
             var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contribs, ServiceProviderWithMSFTHealth(), provider);
             var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "actuator", "health", "msft" });
+            context.GetRequestComponents().Returns(new[] { "actuator", "health", "msft" });
 
             var result = ep.Invoke(context);
 
