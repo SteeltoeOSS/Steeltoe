@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
 
         private static Func<long, HystrixUtilization> AllUtilization { get; } =
-            (long timestamp) => HystrixUtilization.From(AllCommandUtilization(timestamp), AllThreadPoolUtilization(timestamp));
+            timestamp => HystrixUtilization.From(AllCommandUtilization(timestamp), AllThreadPoolUtilization(timestamp));
 
         public HystrixUtilizationStream(int intervalInMilliseconds)
         {
@@ -84,7 +84,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         }
 
         private static Func<long, Dictionary<IHystrixCommandKey, HystrixCommandUtilization>> AllCommandUtilization { get; } =
-            (long timestamp) =>
+            timestamp =>
             {
                 var commandUtilizationPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandUtilization>();
                 foreach (var commandMetrics in HystrixCommandMetrics.GetInstances())
@@ -97,7 +97,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
             };
 
         private static Func<long, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>> AllThreadPoolUtilization { get; } =
-            (long timestamp) =>
+            timestamp =>
             {
                 var threadPoolUtilizationPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>();
                 foreach (var threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())
@@ -110,9 +110,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
             };
 
         private static Func<HystrixUtilization, Dictionary<IHystrixCommandKey, HystrixCommandUtilization>> OnlyCommandUtilization { get; } =
-            (HystrixUtilization hystrixUtilization) => hystrixUtilization.CommandUtilizationMap;
+            hystrixUtilization => hystrixUtilization.CommandUtilizationMap;
 
         private static Func<HystrixUtilization, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>> OnlyThreadPoolUtilization { get; } =
-            (HystrixUtilization hystrixUtilization) => hystrixUtilization.ThreadPoolUtilizationMap;
+            hystrixUtilization => hystrixUtilization.ThreadPoolUtilizationMap;
     }
 }

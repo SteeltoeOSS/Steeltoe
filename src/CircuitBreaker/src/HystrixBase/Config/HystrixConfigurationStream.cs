@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
 
         private static Func<long, HystrixConfiguration> AllConfig { get; } =
-            (long timestamp) => HystrixConfiguration.From(
+            timestamp => HystrixConfiguration.From(
                 AllCommandConfig(timestamp),
                 AllThreadPoolConfig(timestamp),
                 AllCollapserConfig(timestamp));
@@ -101,7 +101,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         }
 
         private static Func<long, Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>> AllCommandConfig { get; } =
-            (long timestamp) =>
+            timestamp =>
             {
                 var commandConfigPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>();
                 foreach (var commandMetrics in HystrixCommandMetrics.GetInstances())
@@ -116,7 +116,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             };
 
         private static Func<long, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>> AllThreadPoolConfig { get; } =
-            (long timestamp) =>
+            timestamp =>
             {
                 var threadPoolConfigPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>();
                 foreach (var threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())
@@ -129,7 +129,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             };
 
         private static Func<long, Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>> AllCollapserConfig { get; } =
-            (long timestamp) =>
+            timestamp =>
             {
                 var collapserConfigPerKey = new Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>();
                 foreach (var collapserMetrics in HystrixCollapserMetrics.GetInstances())
@@ -142,12 +142,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             };
 
         private static Func<HystrixConfiguration, Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>> OnlyCommandConfig { get; } =
-            (HystrixConfiguration hystrixConfiguration) => hystrixConfiguration.CommandConfig;
+            hystrixConfiguration => hystrixConfiguration.CommandConfig;
 
         private static Func<HystrixConfiguration, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>> OnlyThreadPoolConfig { get; } =
-            (HystrixConfiguration hystrixConfiguration) => hystrixConfiguration.ThreadPoolConfig;
+            hystrixConfiguration => hystrixConfiguration.ThreadPoolConfig;
 
         private static Func<HystrixConfiguration, Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>> OnlyCollapserConfig { get; } =
-            (HystrixConfiguration hystrixConfiguration) => hystrixConfiguration.CollapserConfig;
+            hystrixConfiguration => hystrixConfiguration.CollapserConfig;
     }
 }

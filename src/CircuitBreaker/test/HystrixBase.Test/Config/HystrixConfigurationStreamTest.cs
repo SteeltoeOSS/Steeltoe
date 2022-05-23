@@ -240,7 +240,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                      .Observe()
                      .ObserveOn(NewThreadScheduler.Default)
                      .Map(
-                (HystrixConfiguration config) =>
+                config =>
              {
                  try
                  {
@@ -253,7 +253,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                  }
              });
 
-            var checkZippedEqual = fast.Zip(slow, (HystrixConfiguration payload, HystrixConfiguration payload2) => payload == payload2);
+            var checkZippedEqual = fast.Zip(slow, (payload, payload2) => payload == payload2);
 
             var s1 = checkZippedEqual
                     .Take(10000)
