@@ -509,8 +509,8 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         internal override IList<MethodTableTokenPair> GetMethodTableList(ulong module)
         {
             List<MethodTableTokenPair> mts = new List<MethodTableTokenPair>();
-            int res = _sos.TraverseModuleMap(0, module, new ModuleMapTraverse(delegate (uint index, ulong mt, IntPtr token)
-                { mts.Add(new MethodTableTokenPair(mt, index)); }),
+            int res = _sos.TraverseModuleMap(0, module, delegate (uint index, ulong mt, IntPtr token)
+                { mts.Add(new MethodTableTokenPair(mt, index)); },
                 IntPtr.Zero);
 
             return mts;

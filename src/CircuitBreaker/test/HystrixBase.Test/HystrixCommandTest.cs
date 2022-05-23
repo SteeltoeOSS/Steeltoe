@@ -1448,20 +1448,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             var isolatedLatch = new CountdownEvent(1);
 
-            var isolatedThread = new Thread(new ThreadStart(() =>
-           {
-               try
-               {
-                   new LatchedSemaphoreCommand("Command-Isolated", circuitBreaker, isolatedSemaphore, startLatch, isolatedLatch).Execute();
-               }
-               catch (Exception)
-               {
-                   startLatch.SignalEx();
+            var isolatedThread = new Thread(() =>
+            {
+                try
+                {
+                    new LatchedSemaphoreCommand("Command-Isolated", circuitBreaker, isolatedSemaphore, startLatch, isolatedLatch).Execute();
+                }
+                catch (Exception)
+                {
+                    startLatch.SignalEx();
 
-                   // e.printStackTrace();
-                   failureCount.IncrementAndGet();
-               }
-           }));
+                    // e.printStackTrace();
+                    failureCount.IncrementAndGet();
+                }
+            });
 
             // verifies no permits in use before starting threads
             Assert.Equal(3, sharedSemaphore.CurrentCount);

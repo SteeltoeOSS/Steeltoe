@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         public AppDomainHeapWalker(DesktopRuntimeBase runtime)
         {
             _runtime = runtime;
-            _delegate = new DesktopRuntimeBase.LoaderHeapTraverse(VisitOneHeap);
+            _delegate = VisitOneHeap;
         }
 
         public IEnumerable<MemoryRegion> EnumerateHeaps(IAppDomainData appDomain)
@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             {
                 // MULTITHREAD ISSUE
                 if (_mV4Delegate == null)
-                    _mV4Delegate = new VISITHANDLEV4(VisitHandleV4);
+                    _mV4Delegate = VisitHandleV4;
 
                 IntPtr functionPtr = Marshal.GetFunctionPointerForDelegate(_mV4Delegate);
                 byte[] request = new byte[IntPtr.Size * 2];
@@ -153,7 +153,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             {
                 // MULTITHREAD ISSUE
                 if (_mV2Delegate == null)
-                    _mV2Delegate = new VISITHANDLEV2(VisitHandleV2);
+                    _mV2Delegate = VisitHandleV2;
 
                 IntPtr functionPtr = Marshal.GetFunctionPointerForDelegate(_mV2Delegate);
                 byte[] request = new byte[IntPtr.Size * 2];

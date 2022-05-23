@@ -25,7 +25,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             _listener = new TcpListener(IPAddress.Loopback, 0);
             _listener.Start();
             _logger = logger;
-            var listenerThread = new Thread(new ParameterizedThreadStart(StartListener));
+            var listenerThread = new Thread(StartListener);
             listenerThread.Start();
         }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     if (!_rejectConnections)
                     {
                         _logger.LogInformation("Connected to client!");
-                        var t = new Thread(new ParameterizedThreadStart(HandleConnection));
+                        var t = new Thread(HandleConnection);
                         t.Start(client);
                     }
                     else
