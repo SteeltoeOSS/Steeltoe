@@ -2426,7 +2426,7 @@ namespace Microsoft.Diagnostics.Runtime
         #endregion
 
         #region PInvokes
-        [DllImportAttribute("kernel32.dll", EntryPoint = "OpenProcess")]
+        [DllImport("kernel32.dll", EntryPoint = "OpenProcess")]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
         [DllImport("kernel32.dll", SetLastError = true)]

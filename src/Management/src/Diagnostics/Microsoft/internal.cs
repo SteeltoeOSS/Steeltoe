@@ -634,7 +634,7 @@ namespace Microsoft.Diagnostics.Runtime
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseHandle(IntPtr handle);
 
-        [DllImportAttribute(Kernel32LibraryName)]
+        [DllImport(Kernel32LibraryName)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool FreeLibrary(IntPtr hModule);
 
@@ -643,7 +643,7 @@ namespace Microsoft.Diagnostics.Runtime
             return LoadLibraryEx(lpFileName, 0, LoadLibraryFlags.NoFlags);
         }
 
-        [DllImportAttribute(Kernel32LibraryName, SetLastError = true)]
+        [DllImport(Kernel32LibraryName, SetLastError = true)]
         public static extern IntPtr LoadLibraryEx(String fileName, int hFile, LoadLibraryFlags dwFlags);
 
         [Flags]
