@@ -168,14 +168,9 @@ namespace Steeltoe.Messaging.Handler
             var sb = new StringBuilder();
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] != null)
-                {
-                    sb.Append($"[{i}] [type={args[i].GetType().FullName}] [value={args[i]}]");
-                }
-                else
-                {
-                    sb.Append($"[{i}] [null]");
-                }
+                sb.Append(args[i] != null
+                    ? $"[{i}] [type={args[i].GetType().FullName}] [value={args[i]}]"
+                    : $"[{i}] [null]");
 
                 sb.Append('\n');
             }

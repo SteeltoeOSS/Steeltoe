@@ -118,14 +118,9 @@ namespace Steeltoe.Discovery.Eureka
                 }
                 else
                 {
-                    if (options.SecurePortEnabled)
-                    {
-                        options.InstanceId = $"{options.GetHostName(false)}:{options.AppName}:{options.SecurePort}";
-                    }
-                    else
-                    {
-                        options.InstanceId = $"{options.GetHostName(false)}:{options.AppName}:{options.NonSecurePort}";
-                    }
+                    options.InstanceId = options.SecurePortEnabled
+                        ? $"{options.GetHostName(false)}:{options.AppName}:{options.SecurePort}"
+                        : $"{options.GetHostName(false)}:{options.AppName}:{options.NonSecurePort}";
                 }
             }
         }

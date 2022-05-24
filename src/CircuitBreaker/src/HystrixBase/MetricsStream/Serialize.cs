@@ -133,16 +133,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             var circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
 
             writer.WriteStringField("type", "HystrixCommand");
-
-            if (localService != null)
-            {
-                writer.WriteStringField("name", $"{localService.ServiceId}.{key.Name}");
-            }
-            else
-            {
-                writer.WriteStringField("name", key.Name);
-            }
-
+            writer.WriteStringField("name", localService != null ? $"{localService.ServiceId}.{key.Name}" : key.Name);
             writer.WriteStringField("group", commandMetrics.CommandGroup.Name);
             writer.WriteLongField("currentTime", Time.CurrentTimeMillisJava);
 

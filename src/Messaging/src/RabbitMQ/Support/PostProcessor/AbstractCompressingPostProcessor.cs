@@ -76,14 +76,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
                 headers.SetHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS, true);
             }
 
-            if (message.Headers.ContentEncoding() == null)
-            {
-                headers.ContentEncoding = GetEncoding();
-            }
-            else
-            {
-                headers.ContentEncoding = $"{GetEncoding()}:{message.Headers.ContentEncoding()}";
-            }
+            headers.ContentEncoding = message.Headers.ContentEncoding() == null
+                ? GetEncoding()
+                : $"{GetEncoding()}:{message.Headers.ContentEncoding()}";
 
             return Message.Create(compressed, headers.ToMessageHeaders());
         }
