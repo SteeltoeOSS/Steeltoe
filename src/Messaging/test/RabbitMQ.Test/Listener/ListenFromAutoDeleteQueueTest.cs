@@ -173,7 +173,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             containerAdmin.DeleteExchange("otherExchange");
         }
 
-        private class AppendingListener : IReplyingMessageListener<string, string>
+        private sealed class AppendingListener : IReplyingMessageListener<string, string>
         {
             public AcknowledgeMode ContainerAckMode { get; set; }
 
@@ -193,7 +193,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class TestAdmin : RabbitAdmin
+        private sealed class TestAdmin : RabbitAdmin
         {
             public int InstanceCounter;
 

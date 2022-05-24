@@ -141,7 +141,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             protected override string CacheKey { get; }
         }
 
-        private class SubCommandNoOverride : SuperCommand
+        private sealed class SubCommandNoOverride : SuperCommand
         {
             public SubCommandNoOverride(string uniqueArg, bool shouldSucceed)
                 : base(uniqueArg, shouldSucceed)
@@ -149,7 +149,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class SubCommandOverrideFallback : SuperCommand
+        private sealed class SubCommandOverrideFallback : SuperCommand
         {
             public SubCommandOverrideFallback(string uniqueArg, bool shouldSucceed)
                 : base(uniqueArg, shouldSucceed)

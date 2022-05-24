@@ -161,7 +161,7 @@ namespace Steeltoe.Messaging.Test
             Assert.Single(headers);
         }
 
-        private class MyMH : MessageHeaders
+        private sealed class MyMH : MessageHeaders
         {
             public MyMH(Guid id)
                 : base(null, id.ToString(), -1L)

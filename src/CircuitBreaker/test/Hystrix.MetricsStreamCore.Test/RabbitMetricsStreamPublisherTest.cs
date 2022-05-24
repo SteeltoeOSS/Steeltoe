@@ -27,7 +27,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             publisher.SampleSubscription.Dispose();
         }
 
-        private class OptionsWrapper<T> : IOptions<T>
+        private sealed class OptionsWrapper<T> : IOptions<T>
             where T : class, new()
         {
             public T Value { get; set; }

@@ -51,7 +51,7 @@ namespace Steeltoe.Common.Util
             return PathMatcher.GetPatternComparer(route.Value);
         }
 
-        private class DefaultRoute : IRoute
+        private sealed class DefaultRoute : IRoute
         {
             public DefaultRoute(string path)
             {

@@ -375,7 +375,7 @@ namespace Steeltoe.Stream.Binding
             Assert.False(binding.IsRunning);
         }
 
-        private class FooBinder : IBinder<SomeBindableType>
+        private sealed class FooBinder : IBinder<SomeBindableType>
         {
             public string ServiceName { get; set; } = "foobinder";
 
@@ -406,7 +406,7 @@ namespace Steeltoe.Stream.Binding
             }
         }
 
-        private class SomeBindableType
+        private sealed class SomeBindableType
         {
         }
     }

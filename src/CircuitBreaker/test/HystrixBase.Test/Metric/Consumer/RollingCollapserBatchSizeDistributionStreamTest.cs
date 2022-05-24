@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private RollingCollapserBatchSizeDistributionStream stream;
         private IDisposable latchSubscription;
 
-        private class LatchedObserver : TestObserverBase<CachedValuesHistogram>
+        private sealed class LatchedObserver : TestObserverBase<CachedValuesHistogram>
         {
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
                 : base(output, latch)

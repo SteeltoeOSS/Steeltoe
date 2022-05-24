@@ -47,7 +47,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             mockConnectionFactory.Verify(c => c.CreateConnection(It.IsAny<string>()));
         }
 
-        private class TestListener : IChannelListener
+        private sealed class TestListener : IChannelListener
         {
             private readonly AtomicInteger called;
 

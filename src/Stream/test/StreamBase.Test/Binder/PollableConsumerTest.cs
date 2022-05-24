@@ -444,7 +444,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        private class TestFuncMessageSource : IMessageSource
+        private sealed class TestFuncMessageSource : IMessageSource
         {
             public TestFuncMessageSource(Func<IMessage> func)
             {
@@ -459,7 +459,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        private class TestMessageSource : IMessageSource
+        private sealed class TestMessageSource : IMessageSource
         {
             private readonly string payload;
 
@@ -518,7 +518,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        private class TestRequeueChannelInterceptor : AbstractChannelInterceptor
+        private sealed class TestRequeueChannelInterceptor : AbstractChannelInterceptor
         {
             public TestRequeueChannelInterceptor(Mock mock)
             {
@@ -536,7 +536,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        private class TestEmbededChannelInterceptor : AbstractChannelInterceptor
+        private sealed class TestEmbededChannelInterceptor : AbstractChannelInterceptor
         {
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {
@@ -547,7 +547,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        private class TestSimpleChannelInterceptor : AbstractChannelInterceptor
+        private sealed class TestSimpleChannelInterceptor : AbstractChannelInterceptor
         {
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {
@@ -558,7 +558,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        private class FooType
+        private sealed class FooType
         {
             public string Foo { get; set; }
         }

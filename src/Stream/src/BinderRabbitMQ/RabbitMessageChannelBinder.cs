@@ -490,7 +490,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return rabbitTemplate;
         }
 
-        private class DefaultPolledConsumerErrorMessageHandler : IMessageHandler
+        private sealed class DefaultPolledConsumerErrorMessageHandler : IMessageHandler
         {
             private readonly IMessageHandler _superHandler;
             private readonly RabbitConsumerOptions _properties;
@@ -536,7 +536,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        private class RejectingErrorMessageHandler : IMessageHandler
+        private sealed class RejectingErrorMessageHandler : IMessageHandler
         {
             private readonly RejectAndDontRequeueRecoverer _recoverer = new ();
             private readonly ILogger _logger;
@@ -561,7 +561,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        private class RepublishToDlqErrorMessageHandler : IMessageHandler
+        private sealed class RepublishToDlqErrorMessageHandler : IMessageHandler
         {
             private readonly RabbitMessageChannelBinder _binder;
             private readonly RabbitTemplate _template;
@@ -653,7 +653,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        private class RabbitBinderConsumerTagStrategy : IConsumerTagStrategy
+        private sealed class RabbitBinderConsumerTagStrategy : IConsumerTagStrategy
         {
             private readonly string _prefix;
 
@@ -672,7 +672,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        private class DefaultBinderMessagePropertiesConverter : DefaultMessageHeadersConverter
+        private sealed class DefaultBinderMessagePropertiesConverter : DefaultMessageHeadersConverter
         {
             public override IMessageHeaders ToMessageHeaders(IBasicProperties source, Envelope envelope, Encoding charset)
             {
@@ -683,7 +683,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        private class SimplePassthroughMessageConverter : AbstractMessageConverter
+        private sealed class SimplePassthroughMessageConverter : AbstractMessageConverter
         {
             private readonly SimpleMessageConverter _converter = new ();
 

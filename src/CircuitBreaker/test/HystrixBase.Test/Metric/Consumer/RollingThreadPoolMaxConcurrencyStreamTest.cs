@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private RollingThreadPoolMaxConcurrencyStream stream;
         private IDisposable latchSubscription;
 
-        private class LatchedObserver : TestObserverBase<int>
+        private sealed class LatchedObserver : TestObserverBase<int>
         {
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
                 : base(output, latch)

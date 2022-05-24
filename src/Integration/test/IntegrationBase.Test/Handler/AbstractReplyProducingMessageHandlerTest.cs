@@ -125,7 +125,7 @@ namespace Steeltoe.Integration.Handler.Test
             Assert.Equal("BAZ", captor.Headers.Get<string>("baz"));
         }
 
-        private class TestAbstractReplyProducingMessageHandler : AbstractReplyProducingMessageHandler
+        private sealed class TestAbstractReplyProducingMessageHandler : AbstractReplyProducingMessageHandler
         {
             public object ReturnValue;
 

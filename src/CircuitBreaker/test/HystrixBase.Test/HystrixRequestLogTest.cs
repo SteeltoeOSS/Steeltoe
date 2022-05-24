@@ -189,7 +189,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(HystrixRequestLog.MAX_STORAGE, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         }
 
-        private class TestCommand : HystrixCommand<string>
+        private sealed class TestCommand : HystrixCommand<string>
         {
             private readonly string value;
             private readonly bool fail;

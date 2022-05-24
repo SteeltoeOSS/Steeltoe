@@ -115,7 +115,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Transaction
             txObject.ResourceHolder.Clear();
         }
 
-        private class RabbitTransactionObject : ISmartTransactionObject
+        private sealed class RabbitTransactionObject : ISmartTransactionObject
         {
             public RabbitTransactionObject(RabbitResourceHolder rabbitResourceHolder)
             {

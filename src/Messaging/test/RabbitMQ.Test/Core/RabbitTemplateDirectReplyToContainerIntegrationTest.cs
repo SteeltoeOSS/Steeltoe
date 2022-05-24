@@ -78,7 +78,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             return rabbitTemplate;
         }
 
-        private class TestErrorHandler : IErrorHandler
+        private sealed class TestErrorHandler : IErrorHandler
         {
             public TestErrorHandler(AtomicReference<Exception> atomicReference, CountdownEvent latch)
             {

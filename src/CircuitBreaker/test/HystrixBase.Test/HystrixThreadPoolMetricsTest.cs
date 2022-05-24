@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(1, metrics.RollingCountThreadsExecuted);
         }
 
-        private class NoOpHystrixCommand : HystrixCommand<bool>
+        private sealed class NoOpHystrixCommand : HystrixCommand<bool>
         {
             private readonly ITestOutputHelper output;
 

@@ -6636,7 +6636,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         }
 
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:Access modifier should be declared", Justification = "Used in Test")]
-        class SomeCompareMethod
+        private sealed class SomeCompareMethod
         {
             // public
             public static int Compare2(object o1, object o2)

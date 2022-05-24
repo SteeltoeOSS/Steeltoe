@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private HealthCountsStream stream;
         private IDisposable latchSubscription;
 
-        private class LatchedObserver : TestObserverBase<HealthCounts>
+        private sealed class LatchedObserver : TestObserverBase<HealthCounts>
         {
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
                 : base(output, latch)

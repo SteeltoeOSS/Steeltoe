@@ -74,7 +74,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
             Assert.Equal(4, t4.Result);
         }
 
-        private class DummyCommand : HystrixCommand<int>
+        private sealed class DummyCommand : HystrixCommand<int>
         {
             public DummyCommand(IHystrixCommandOptions commandOptions)
                 : base(commandOptions)
@@ -82,7 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
             }
         }
 
-        private class TaskActionClass
+        private sealed class TaskActionClass
         {
             public int Value;
             public bool Stop;

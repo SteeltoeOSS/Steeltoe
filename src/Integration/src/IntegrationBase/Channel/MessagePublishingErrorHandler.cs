@@ -114,7 +114,7 @@ namespace Steeltoe.Integration.Channel
             }
         }
 
-        private class DefaultErrorMessageStrategy : IErrorMessageStrategy
+        private sealed class DefaultErrorMessageStrategy : IErrorMessageStrategy
         {
             public ErrorMessage BuildErrorMessage(Exception payload, IAttributeAccessor attributes)
             {

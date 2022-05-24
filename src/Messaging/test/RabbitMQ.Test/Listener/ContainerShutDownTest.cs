@@ -71,7 +71,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class TestListener : IMessageListener
+        private sealed class TestListener : IMessageListener
         {
             private readonly CountdownEvent latch;
             private readonly CountdownEvent testEnded;

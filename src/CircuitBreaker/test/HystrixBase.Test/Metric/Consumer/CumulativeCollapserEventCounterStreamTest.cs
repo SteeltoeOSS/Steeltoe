@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
     {
-        private class LatchedObserver : TestObserverBase<long[]>
+        private sealed class LatchedObserver : TestObserverBase<long[]>
         {
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
                 : base(output, latch)

@@ -222,7 +222,7 @@ namespace Steeltoe.Messaging.Support.Test
             Assert.Equal("bar3", message3.Headers.Get<string>("foo"));
         }
 
-        private class TestIdGenerater : IIDGenerator
+        private sealed class TestIdGenerater : IIDGenerator
         {
             public string GenerateId()
             {

@@ -74,7 +74,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             }
         }
 
-        private class POMPP : OMPP, IPriorityOrdered
+        private sealed class POMPP : OMPP, IPriorityOrdered
         {
         }
     }

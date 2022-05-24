@@ -91,7 +91,7 @@ namespace Steeltoe.Integration.Channel.Test
             Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, resultHandler.LastThread.ManagedThreadId);
         }
 
-        private class ThrowMessageExceptionHandler : IMessageHandler
+        private sealed class ThrowMessageExceptionHandler : IMessageHandler
         {
             public string ServiceName { get; set; } = nameof(ThrowMessageExceptionHandler);
 
@@ -103,7 +103,7 @@ namespace Steeltoe.Integration.Channel.Test
             }
         }
 
-        private class ThrowingHandler : IMessageHandler
+        private sealed class ThrowingHandler : IMessageHandler
         {
             public string ServiceName { get; set; } = nameof(ThrowingHandler);
 
@@ -115,7 +115,7 @@ namespace Steeltoe.Integration.Channel.Test
             }
         }
 
-        private class ResultHandler : IMessageHandler
+        private sealed class ResultHandler : IMessageHandler
         {
             private readonly CountdownEvent latch;
 

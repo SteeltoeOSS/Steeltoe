@@ -222,7 +222,7 @@ namespace Steeltoe.Common.Retry
             }
         }
 
-        private class FuncRecoveryCallback<T> : IRecoveryCallback<T>
+        private sealed class FuncRecoveryCallback<T> : IRecoveryCallback<T>
         {
             private readonly Func<IRetryContext, T> _func;
             private readonly ILogger _logger;
@@ -246,7 +246,7 @@ namespace Steeltoe.Common.Retry
             }
         }
 
-        private class ActionRecoveryCallback : IRecoveryCallback
+        private sealed class ActionRecoveryCallback : IRecoveryCallback
         {
             private readonly Action<IRetryContext> _action;
             private readonly ILogger _logger;

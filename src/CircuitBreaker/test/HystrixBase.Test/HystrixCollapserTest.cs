@@ -1846,7 +1846,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestShardedRequestCollapser : TestRequestCollapser
+        private sealed class TestShardedRequestCollapser : TestRequestCollapser
         {
             public TestShardedRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value)
                 : base(output, timer, value)
@@ -1879,7 +1879,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestGloballyScopedRequestCollapser : TestRequestCollapser
+        private sealed class TestGloballyScopedRequestCollapser : TestRequestCollapser
         {
             public TestGloballyScopedRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value)
                 : base(output, RequestCollapserScope.GLOBAL, timer, value)
@@ -1887,7 +1887,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestRequestCollapserWithFaultyCreateCommand : TestRequestCollapser
+        private sealed class TestRequestCollapserWithFaultyCreateCommand : TestRequestCollapser
         {
             public TestRequestCollapserWithFaultyCreateCommand(ITestOutputHelper output, TestCollapserTimer timer, string value)
                 : base(output, timer, value)
@@ -1900,7 +1900,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestRequestCollapserWithShortCircuitedCommand : TestRequestCollapser
+        private sealed class TestRequestCollapserWithShortCircuitedCommand : TestRequestCollapser
         {
             public TestRequestCollapserWithShortCircuitedCommand(ITestOutputHelper output, TestCollapserTimer timer, string value)
                 : base(output, timer, value)
@@ -1914,7 +1914,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestRequestCollapserWithFaultyMapToResponse : TestRequestCollapser
+        private sealed class TestRequestCollapserWithFaultyMapToResponse : TestRequestCollapser
         {
             public TestRequestCollapserWithFaultyMapToResponse(ITestOutputHelper output, TestCollapserTimer timer, string value)
              : base(output, timer, value)
@@ -1928,7 +1928,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestCollapserCommand : TestHystrixCommand<List<string>>
+        private sealed class TestCollapserCommand : TestHystrixCommand<List<string>>
         {
             private readonly ICollection<ICollapsedRequest<string, string>> requests;
             private readonly ITestOutputHelper output;
@@ -1986,7 +1986,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class SuccessfulCacheableCollapsedCommand : TestRequestCollapser
+        private sealed class SuccessfulCacheableCollapsedCommand : TestRequestCollapser
         {
             private readonly bool cacheEnabled;
 
@@ -2018,7 +2018,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class ShortCircuitedCommand : HystrixCommand<List<string>>
+        private sealed class ShortCircuitedCommand : HystrixCommand<List<string>>
         {
             private readonly ITestOutputHelper output;
 
@@ -2051,7 +2051,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class FireAndForgetCommand : HystrixCommand<object>
+        private sealed class FireAndForgetCommand : HystrixCommand<object>
         {
             private readonly ITestOutputHelper output;
 
@@ -2076,7 +2076,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestCollapserTimer : ICollapserTimer
+        private sealed class TestCollapserTimer : ICollapserTimer
         {
             public readonly ConcurrentDictionary<ATask, ATask> Tasks = new ();
             private readonly object _lock = new ();
@@ -2109,7 +2109,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestTimerReference : TimerReference
+        private sealed class TestTimerReference : TimerReference
         {
             private readonly TestCollapserTimer ctimer;
 
@@ -2134,7 +2134,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class ATask
+        private sealed class ATask
         {
             public readonly TestTimerListener Task;
 
@@ -2193,7 +2193,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestTimerListener : ITimerListener
+        private sealed class TestTimerListener : ITimerListener
         {
             public readonly ITimerListener ActualListener;
             public readonly AtomicInteger Count = new ();
@@ -2217,7 +2217,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             return new HystrixCollapserKeyDefault(o.ToString() + o.GetHashCode());
         }
 
-        private class TestCollapserWithVoidResponseType : HystrixCollapser<object, object, int>
+        private sealed class TestCollapserWithVoidResponseType : HystrixCollapser<object, object, int>
         {
             private readonly ITestOutputHelper output;
 
@@ -2260,7 +2260,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests : HystrixCollapser<object, object, int>
+        private sealed class TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests : HystrixCollapser<object, object, int>
         {
             private readonly ITestOutputHelper output;
 
@@ -2299,7 +2299,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class Pair<A, B>
+        private sealed class Pair<A, B>
         {
             public readonly A AA;
             public readonly B BB;
@@ -2311,7 +2311,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class MyCommand : HystrixCommand<List<Pair<string, int>>>
+        private sealed class MyCommand : HystrixCommand<List<Pair<string, int>>>
         {
             private readonly List<string> args;
             private readonly ITestOutputHelper output;
@@ -2345,7 +2345,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class MyCollapser : HystrixCollapser<List<Pair<string, int>>, int, string>
+        private sealed class MyCollapser : HystrixCollapser<List<Pair<string, int>>, int, string>
         {
             private readonly string arg;
             private readonly ITestOutputHelper output;
@@ -2423,7 +2423,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TestSubscriber<T> : ObserverBase<T>
+        private sealed class TestSubscriber<T> : ObserverBase<T>
         {
             private readonly CountdownEvent latch = new (1);
             private readonly ITestOutputHelper output;

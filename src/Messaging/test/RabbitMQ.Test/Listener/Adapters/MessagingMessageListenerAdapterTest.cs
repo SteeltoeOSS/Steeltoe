@@ -309,7 +309,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             return adapter;
         }
 
-        private class SampleBean
+        private sealed class SampleBean
         {
             public object Payload;
             public List<object> BatchPayloads;

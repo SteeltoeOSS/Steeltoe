@@ -185,7 +185,7 @@ namespace Steeltoe.Integration.Channel.Test
             Assert.True(interceptor.AfterHandledInvoked);
         }
 
-        private class TestHandler : IMessageHandler
+        private sealed class TestHandler : IMessageHandler
         {
             public readonly CountdownEvent Latch;
 
@@ -215,7 +215,7 @@ namespace Steeltoe.Integration.Channel.Test
             }
         }
 
-        private class BeforeHandleInterceptor : AbstractTaskSchedulerChannelInterceptor
+        private sealed class BeforeHandleInterceptor : AbstractTaskSchedulerChannelInterceptor
         {
             public int Counter;
             public volatile bool AfterHandledInvoked;

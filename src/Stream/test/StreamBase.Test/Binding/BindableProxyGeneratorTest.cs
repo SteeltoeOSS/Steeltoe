@@ -70,7 +70,7 @@ namespace Steeltoe.Stream.Binding
             Assert.Equal("Orders", bindableFactory.Method.Name);
         }
 
-        private class TestBindableFactory : IBindableProxyFactory
+        private sealed class TestBindableFactory : IBindableProxyFactory
         {
             public TestBindableFactory(Type binding)
             {

@@ -44,7 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-        private class TestLifecyecle : IApplicationLifetime
+        private sealed class TestLifecyecle : IApplicationLifetime
 #pragma warning restore CS0618 // Type or member is obsolete
         {
             public bool Registered;

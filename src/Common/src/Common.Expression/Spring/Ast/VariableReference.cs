@@ -122,7 +122,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return _method;
         }
 
-        private class VariableRef : IValueRef
+        private sealed class VariableRef : IValueRef
         {
             private readonly string _name;
             private readonly ITypedValue _value;

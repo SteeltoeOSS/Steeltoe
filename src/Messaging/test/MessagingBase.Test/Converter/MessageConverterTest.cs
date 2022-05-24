@@ -123,7 +123,7 @@ namespace Steeltoe.Messaging.Converter.Test
             Assert.Equal(MimeTypeUtils.TEXT_PLAIN, message.Headers[MessageHeaders.CONTENT_TYPE]);
         }
 
-        private class TestMessageConverter : AbstractMessageConverter
+        private sealed class TestMessageConverter : AbstractMessageConverter
         {
             public override string ServiceName { get; set; } = nameof(TestMessageConverter);
 

@@ -40,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(pool.GetScheduler().IsShutdown);
         }
 
-        private class HystrixMetricsPublisherThreadPoolContainer : IHystrixMetricsPublisherThreadPool
+        private sealed class HystrixMetricsPublisherThreadPoolContainer : IHystrixMetricsPublisherThreadPool
         {
             public HystrixMetricsPublisherThreadPoolContainer(HystrixThreadPoolMetrics hystrixThreadPoolMetrics)
             {
@@ -54,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public HystrixThreadPoolMetrics HystrixThreadPoolMetrics { get; private set; }
         }
 
-        private class MyHystrixMetricsPublisher : HystrixMetricsPublisher
+        private sealed class MyHystrixMetricsPublisher : HystrixMetricsPublisher
         {
             public override IHystrixMetricsPublisherThreadPool GetMetricsPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
             {

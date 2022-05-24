@@ -540,7 +540,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        private class BindingServiceOptionsMonitor : IOptionsMonitor<BindingServiceOptions>
+        private sealed class BindingServiceOptionsMonitor : IOptionsMonitor<BindingServiceOptions>
         {
             public BindingServiceOptionsMonitor(BindingServiceOptions options)
             {

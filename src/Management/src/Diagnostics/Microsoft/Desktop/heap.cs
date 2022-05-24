@@ -971,7 +971,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         internal ClrType ExceptionType => _exceptionType.Value;
         internal ClrType EnumType { get; set; }
 
-        private class ModuleEntryCompare : IEqualityComparer<ModuleEntry>
+        private sealed class ModuleEntryCompare : IEqualityComparer<ModuleEntry>
         {
             public bool Equals(ModuleEntry mx, ModuleEntry my)
             {
@@ -1537,7 +1537,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
                 return result;
             }
 
-            class Entry
+            sealed class Entry
             {
                 public ulong Start;
                 public ulong End;
@@ -1976,7 +1976,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         #region Compare Helpers
         // TODO should not be needed.   IEquatable should cover it.  
         public static IEqualityComparer<TypeHandle> EqualityComparer = new HeapTypeEqualityComparer();
-        private class HeapTypeEqualityComparer : IEqualityComparer<TypeHandle>
+        private sealed class HeapTypeEqualityComparer : IEqualityComparer<TypeHandle>
         {
             public bool Equals(TypeHandle x, TypeHandle y)
             {

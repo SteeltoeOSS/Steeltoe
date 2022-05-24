@@ -27,7 +27,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         private readonly IApplicationContext _autoDeclareContext;
         private readonly ILogger _logger;
 
-        private class GivenNamingStrategy : INamingStrategy
+        private sealed class GivenNamingStrategy : INamingStrategy
         {
             private readonly Func<string> _strategy;
 
@@ -706,7 +706,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         // {
         //    this.notOurAdminException = true; // our admin doesn't have an event publisher
         // }
-        private class RabbitProducerDestination : IProducerDestination
+        private sealed class RabbitProducerDestination : IProducerDestination
         {
             public IExchange Exchange { get; }
 
@@ -731,7 +731,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        private class RabbitConsumerDestination : IConsumerDestination
+        private sealed class RabbitConsumerDestination : IConsumerDestination
         {
             public string Name { get; }
 

@@ -175,7 +175,7 @@ namespace Steeltoe.Integration.Dispatcher
 
         internal List<IMessageHandler> Handlers => new (_handlers);
 
-        private class MessageHandlerComparer : OrderComparer, IComparer<IMessageHandler>
+        private sealed class MessageHandlerComparer : OrderComparer, IComparer<IMessageHandler>
         {
             public int Compare(IMessageHandler x, IMessageHandler y)
             {

@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Util
             return new FixedBackOffExecution(this);
         }
 
-        private class FixedBackOffExecution : IBackOffExecution
+        private sealed class FixedBackOffExecution : IBackOffExecution
         {
             private readonly FixedBackOff _backoff;
             private int _currentAttempts;

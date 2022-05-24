@@ -296,7 +296,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[53],\"collapsed\":{\"name\":\"FooCollapser\",\"count\":6}}]", actual);
         }
 
-        private class SimpleExecution : IHystrixInvokableInfo
+        private sealed class SimpleExecution : IHystrixInvokableInfo
         {
             private readonly ExecutionResult executionResult;
 

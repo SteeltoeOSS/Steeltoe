@@ -28,7 +28,7 @@ namespace Steeltoe.Stream.Binding
             return proxy;
         }
 
-        private class BindingInterceptor : IInterceptor
+        private sealed class BindingInterceptor : IInterceptor
         {
             private readonly Delegate _impl;
 

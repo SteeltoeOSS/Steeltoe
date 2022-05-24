@@ -243,7 +243,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
 #pragma warning disable IDE1006 // Naming Styles
 
-        private class StringyPropertyAccessor : IPropertyAccessor
+        private sealed class StringyPropertyAccessor : IPropertyAccessor
         {
             private int flibbles = 7;
 
@@ -300,7 +300,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
         }
 
-        private class ConfigurablePropertyAccessor : IPropertyAccessor
+        private sealed class ConfigurablePropertyAccessor : IPropertyAccessor
         {
             private readonly Dictionary<string, object> values;
 

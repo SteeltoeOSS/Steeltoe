@@ -531,7 +531,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 Provider.Dispose();
             }
 
-            private class Customizer1 : IDeclarableCustomizer
+            private sealed class Customizer1 : IDeclarableCustomizer
             {
                 public IDeclarable Apply(IDeclarable declarable)
                 {
@@ -544,7 +544,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 }
             }
 
-            private class Customizer2 : IDeclarableCustomizer
+            private sealed class Customizer2 : IDeclarableCustomizer
             {
                 public IDeclarable Apply(IDeclarable declarable)
                 {

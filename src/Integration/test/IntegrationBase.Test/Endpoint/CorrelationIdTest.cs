@@ -110,7 +110,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             Assert.Equal("456-XYZ", accessor.GetCorrelationId());
         }
 
-        private class TestBeanUpperCase : IMessageProcessor
+        private sealed class TestBeanUpperCase : IMessageProcessor
         {
             public object ProcessMessage(IMessage message)
             {
@@ -119,7 +119,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             }
         }
 
-        private class TestBeanCreateMessage : IMessageProcessor
+        private sealed class TestBeanCreateMessage : IMessageProcessor
         {
             public object ProcessMessage(IMessage message)
             {

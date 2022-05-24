@@ -97,7 +97,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             };
         }
 
-        private class TestListener : IMessageListener
+        private sealed class TestListener : IMessageListener
         {
             private IConnectionFactory _connectionFactory;
             private CountdownEvent _latch;
@@ -124,7 +124,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class DummyTxManager : AbstractPlatformTransactionManager
+        private sealed class DummyTxManager : AbstractPlatformTransactionManager
         {
             private volatile bool _committed;
             private volatile bool _rolledBack;

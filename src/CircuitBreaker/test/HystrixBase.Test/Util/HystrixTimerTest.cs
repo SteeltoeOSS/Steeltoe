@@ -183,7 +183,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             HystrixTimer.Reset();
         }
 
-        private class TestListener : ITimerListener
+        private sealed class TestListener : ITimerListener
         {
             public AtomicInteger TickCount = new ();
 

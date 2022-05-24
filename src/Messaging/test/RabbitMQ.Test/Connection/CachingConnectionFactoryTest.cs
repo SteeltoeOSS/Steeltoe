@@ -1703,7 +1703,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(2, slim.CurrentCount);
         }
 
-        private class TestOrderlyShutdownPublisherCallbackChannelFactory : IPublisherCallbackChannelFactory
+        private sealed class TestOrderlyShutdownPublisherCallbackChannelFactory : IPublisherCallbackChannelFactory
         {
             private readonly Mock<IPublisherCallbackChannel> pccMock;
 
@@ -1718,7 +1718,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class TestWithConnectionFactoryCachedConnectionListener : IConnectionListener
+        private sealed class TestWithConnectionFactoryCachedConnectionListener : IConnectionListener
         {
             private readonly AtomicReference<RC.IConnection> createNotification;
             private readonly AtomicReference<RC.IConnection> closedNotification;
@@ -1750,7 +1750,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class TestWithConnectionListenerListener : IConnectionListener
+        private sealed class TestWithConnectionListenerListener : IConnectionListener
         {
             private readonly AtomicReference<IConnection> _created;
             private readonly AtomicReference<IConnection> _closed;
@@ -1779,7 +1779,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class TestWithChannelListenerListener : IChannelListener
+        private sealed class TestWithChannelListenerListener : IChannelListener
         {
             private readonly AtomicInteger _atomicInteger;
 
@@ -1799,7 +1799,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class TestCheckoutsWithRefreshedConnectionGutsListener : IConnectionListener
+        private sealed class TestCheckoutsWithRefreshedConnectionGutsListener : IConnectionListener
         {
             public void OnClose(IConnection connection)
             {

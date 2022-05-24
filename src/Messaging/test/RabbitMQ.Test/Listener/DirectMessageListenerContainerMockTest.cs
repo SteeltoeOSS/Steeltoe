@@ -379,7 +379,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             await container.Stop();
         }
 
-        private class TestListener2 : IMessageListener
+        private sealed class TestListener2 : IMessageListener
         {
             private readonly AtomicReference<RC.IModel> target;
             private readonly RC.IModel @object;
@@ -403,7 +403,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class TestListener : IMessageListener
+        private sealed class TestListener : IMessageListener
         {
             public AcknowledgeMode ContainerAckMode { get; set; }
 

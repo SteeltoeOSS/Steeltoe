@@ -172,7 +172,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             bool IsSynchedLocalTransactionAllowed { get; }
         }
 
-        private class RabbitResourceFactory : IResourceFactory
+        private sealed class RabbitResourceFactory : IResourceFactory
         {
             public IConnectionFactory ConnectionFactory { get; }
 
@@ -208,7 +208,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class RabbitResourceSynchronization : ResourceHolderSynchronization<RabbitResourceHolder, object>
+        private sealed class RabbitResourceSynchronization : ResourceHolderSynchronization<RabbitResourceHolder, object>
         {
             private readonly RabbitResourceHolder _resourceHolder;
 

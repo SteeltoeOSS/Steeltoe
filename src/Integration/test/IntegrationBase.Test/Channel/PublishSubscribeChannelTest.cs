@@ -114,7 +114,7 @@ namespace Steeltoe.Integration.Channel.Test
             Assert.Equal(10000000, handler2.Count);
         }
 
-        private class CounterHandler : IMessageHandler
+        private sealed class CounterHandler : IMessageHandler
         {
             public int Count;
 

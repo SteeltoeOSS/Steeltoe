@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public class HystrixRequestLog
     {
-        private class HystrixRequestLogVariable : HystrixRequestVariableDefault<HystrixRequestLog>
+        private sealed class HystrixRequestLogVariable : HystrixRequestVariableDefault<HystrixRequestLog>
         {
             public HystrixRequestLogVariable()
                 : base(() => new HystrixRequestLog(), log =>

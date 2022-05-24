@@ -159,7 +159,7 @@ namespace Steeltoe.Integration.Dispatcher
             return messageHandlingRunnable;
         }
 
-        private class MessageHandlingRunnable : IMessageHandlingRunnable
+        private sealed class MessageHandlingRunnable : IMessageHandlingRunnable
         {
             private readonly BroadcastingDispatcher _dispatcher;
 

@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     {
-        private class EurekaHttpClientInternal : EurekaHttpClient
+        private sealed class EurekaHttpClientInternal : EurekaHttpClient
         {
             private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 

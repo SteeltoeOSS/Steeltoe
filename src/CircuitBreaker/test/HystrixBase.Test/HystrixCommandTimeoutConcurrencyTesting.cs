@@ -93,7 +93,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Reset();
         }
 
-        private class TestCommand : HystrixCommand<string>
+        private sealed class TestCommand : HystrixCommand<string>
         {
             public TestCommand()
             : base(GetOptions())

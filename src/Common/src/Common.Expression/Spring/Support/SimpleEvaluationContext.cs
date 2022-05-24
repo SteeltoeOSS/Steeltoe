@@ -141,7 +141,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             }
         }
 
-        private class TypeNotFoundTypeLocator : ITypeLocator
+        private sealed class TypeNotFoundTypeLocator : ITypeLocator
         {
             public Type FindType(string typeName)
             {

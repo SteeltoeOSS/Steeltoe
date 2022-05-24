@@ -350,7 +350,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             }
         }
 
-        private class MessageStoringTestEndpoint : IMessageHandler
+        private sealed class MessageStoringTestEndpoint : IMessageHandler
         {
             public string ServiceName { get; set; } = nameof(MessageStoringTestEndpoint);
 
@@ -367,7 +367,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             }
         }
 
-        private class PartialFailingTaskScheduler : TaskScheduler
+        private sealed class PartialFailingTaskScheduler : TaskScheduler
         {
             private readonly bool[] failures;
             private int count = -1;

@@ -82,7 +82,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
             gen.Emit(OpCodes.Callvirt, _getItem);
         }
 
-        private class DictionaryAccessException : AccessException
+        private sealed class DictionaryAccessException : AccessException
         {
             private readonly string _key;
 

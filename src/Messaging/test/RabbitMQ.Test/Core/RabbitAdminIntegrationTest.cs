@@ -469,7 +469,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestPostProcessor : IMessagePostProcessor
+        private sealed class TestPostProcessor : IMessagePostProcessor
         {
             public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
             {

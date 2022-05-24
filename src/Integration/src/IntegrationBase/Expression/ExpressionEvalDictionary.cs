@@ -261,7 +261,7 @@ namespace Steeltoe.Integration.Expression
                 }
             }
 
-            private class ExpressionEvalMapComponentsBuilderImpl : ExpressionEvalMapFinalBuilderImpl, IExpressionEvalMapComponentsBuilder
+            private sealed class ExpressionEvalMapComponentsBuilderImpl : ExpressionEvalMapFinalBuilderImpl, IExpressionEvalMapComponentsBuilder
             {
                 public ExpressionEvalMapComponentsBuilderImpl(ExpressionEvalDictionaryBuilder builder)
                     : base(builder)

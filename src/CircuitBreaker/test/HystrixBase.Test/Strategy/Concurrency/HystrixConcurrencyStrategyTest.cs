@@ -75,7 +75,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
             Assert.True(true, "Nothing blew up");
         }
 
-        private class SimpleCommand : HystrixCommand<string>
+        private sealed class SimpleCommand : HystrixCommand<string>
         {
             private readonly ITestOutputHelper output;
 
@@ -99,7 +99,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
             }
         }
 
-        private class TimeoutCommand : HystrixCommand
+        private sealed class TimeoutCommand : HystrixCommand
         {
             private readonly ITestOutputHelper output;
 

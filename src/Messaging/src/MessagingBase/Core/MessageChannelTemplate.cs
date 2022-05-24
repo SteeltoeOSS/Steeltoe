@@ -381,7 +381,7 @@ namespace Steeltoe.Messaging.Core
             return _receiveTimeout;
         }
 
-        private class TemporaryReplyChannel : IPollableChannel
+        private sealed class TemporaryReplyChannel : IPollableChannel
         {
             private readonly CountdownEvent _replyLatch = new (1);
 

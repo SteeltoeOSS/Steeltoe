@@ -2638,7 +2638,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class DefaultChannelCloseLogger : IConditionalExceptionLogger
+        private sealed class DefaultChannelCloseLogger : IConditionalExceptionLogger
         {
             public void Log(ILogger logger, string message, object cause)
             {

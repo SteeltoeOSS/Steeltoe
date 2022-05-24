@@ -57,7 +57,7 @@ namespace Steeltoe.Stream.Config
         }
 #pragma warning restore xUnit1013 // Public method should be marked as test
 
-        private class TestMessageConverter : IMessageConverter
+        private sealed class TestMessageConverter : IMessageConverter
         {
             public const string DEFAULT_SERVICE_NAME = nameof(TestMessageConverter);
 

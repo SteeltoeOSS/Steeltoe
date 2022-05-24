@@ -311,7 +311,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             return memStream;
         }
 
-        private class JsonStreamConfigurationProvider : JsonConfigurationProvider
+        private sealed class JsonStreamConfigurationProvider : JsonConfigurationProvider
         {
             private readonly MemoryStream _stream;
 
@@ -327,7 +327,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class JsonStreamConfigurationSource : JsonConfigurationSource
+        private sealed class JsonStreamConfigurationSource : JsonConfigurationSource
         {
             private readonly MemoryStream _stream;
 

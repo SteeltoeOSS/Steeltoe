@@ -48,7 +48,7 @@ namespace Steeltoe.Common.Util.Test
             Assert.Contains("abc", attributeNames);
         }
 
-        private class SimpleAttributeAccessor : AbstractAttributeAccessor
+        private sealed class SimpleAttributeAccessor : AbstractAttributeAccessor
         {
         }
     }

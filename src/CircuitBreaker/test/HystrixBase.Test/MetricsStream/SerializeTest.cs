@@ -17,7 +17,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
     public class SerializeTest : HystrixTestBase
     {
-        private class MyCommand : HystrixCommand<int>
+        private sealed class MyCommand : HystrixCommand<int>
         {
             public MyCommand()
                 : base(

@@ -631,7 +631,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             return message;
         }
 
-        private class HeaderPostProcessor : IMessagePostProcessor
+        private sealed class HeaderPostProcessor : IMessagePostProcessor
         {
             public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
             {
@@ -646,7 +646,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestConditionalRejectingErrorHandler : ConditionalRejectingErrorHandler
+        private sealed class TestConditionalRejectingErrorHandler : ConditionalRejectingErrorHandler
         {
             public bool HandleErrorCalled;
 
@@ -657,7 +657,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class EmptyListener : IMessageListener
+        private sealed class EmptyListener : IMessageListener
         {
             public int Count;
 
@@ -673,7 +673,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestDebatchListener : IMessageListener
+        private sealed class TestDebatchListener : IMessageListener
         {
             public List<IMessage> Received;
             public List<bool> LastInBatch;

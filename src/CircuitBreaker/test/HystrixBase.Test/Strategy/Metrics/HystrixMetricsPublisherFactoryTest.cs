@@ -85,7 +85,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             Assert.True(secondCommand == cmd);
         }
 
-        private class MyHystrixMetricsPublisherCommand : IHystrixMetricsPublisherCommand
+        private sealed class MyHystrixMetricsPublisherCommand : IHystrixMetricsPublisherCommand
         {
             private readonly AtomicInteger commandCounter;
 
@@ -100,7 +100,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             }
         }
 
-        private class MyHystrixMetricsPublisherThreadPool : IHystrixMetricsPublisherThreadPool
+        private sealed class MyHystrixMetricsPublisherThreadPool : IHystrixMetricsPublisherThreadPool
         {
             private readonly AtomicInteger threadCounter;
 
@@ -115,7 +115,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             }
         }
 
-        private class TestHystrixMetricsPublisher : HystrixMetricsPublisher
+        private sealed class TestHystrixMetricsPublisher : HystrixMetricsPublisher
         {
             public AtomicInteger CommandCounter = new ();
             public AtomicInteger ThreadCounter = new ();
@@ -131,7 +131,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             }
         }
 
-        private class TestCommandKey : HystrixCommandKeyDefault
+        private sealed class TestCommandKey : HystrixCommandKeyDefault
         {
             public static TestCommandKey TEST_A = new ("TEST_A");
             public static TestCommandKey TEST_B = new ("TEST_B");
@@ -142,7 +142,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             }
         }
 
-        private class TestThreadPoolKey : HystrixThreadPoolKeyDefault
+        private sealed class TestThreadPoolKey : HystrixThreadPoolKeyDefault
         {
             public static TestThreadPoolKey TEST_A = new ("TEST_A");
             public static TestThreadPoolKey TEST_B = new ("TEST_B");
@@ -153,7 +153,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             }
         }
 
-        private class CustomPublisher : HystrixMetricsPublisher
+        private sealed class CustomPublisher : HystrixMetricsPublisher
         {
             private readonly IHystrixMetricsPublisherCommand commandToReturn;
 

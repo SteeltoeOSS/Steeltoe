@@ -450,7 +450,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             mockConnection.Verify(c => c.CreateChannel(true));
         }
 
-        private class DoNothingMPP : IMessagePostProcessor
+        private sealed class DoNothingMPP : IMessagePostProcessor
         {
             public IMessage PostProcessMessage(IMessage message)
             {
@@ -463,7 +463,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestRecoveryRecoveryCallback : IRecoveryCallback<object>
+        private sealed class TestRecoveryRecoveryCallback : IRecoveryCallback<object>
         {
             public TestRecoveryRecoveryCallback(AtomicBoolean boolean)
             {
@@ -479,7 +479,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestTransactionManager : AbstractPlatformTransactionManager
+        private sealed class TestTransactionManager : AbstractPlatformTransactionManager
         {
             protected override object DoGetTransaction()
             {

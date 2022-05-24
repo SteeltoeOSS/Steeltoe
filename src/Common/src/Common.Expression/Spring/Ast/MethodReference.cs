@@ -420,7 +420,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
         }
 
-        private class MethodValueRef : IValueRef
+        private sealed class MethodValueRef : IValueRef
         {
             private readonly IEvaluationContext _evaluationContext;
             private readonly object _value;
@@ -452,7 +452,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public bool IsWritable => false;
         }
 
-        private class CachedMethodExecutor
+        private sealed class CachedMethodExecutor
         {
             private readonly IMethodExecutor _methodExecutor;
             private readonly Type _staticClass;

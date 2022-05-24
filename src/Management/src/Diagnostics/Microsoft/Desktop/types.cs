@@ -1032,7 +1032,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             return result;
         }
 
-        private class EnumData
+        private sealed class EnumData
         {
             internal ClrElementType ElementType;
             internal Dictionary<string, object> NameToValue = new();

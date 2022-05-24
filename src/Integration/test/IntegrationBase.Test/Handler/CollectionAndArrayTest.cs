@@ -78,7 +78,7 @@ namespace Steeltoe.Integration.Handler.Test
             Assert.Equal(2, ((string[])reply1.Payload).Length);
         }
 
-        private class TestAbstractReplyProducingMessageHandler : AbstractReplyProducingMessageHandler
+        private sealed class TestAbstractReplyProducingMessageHandler : AbstractReplyProducingMessageHandler
         {
             public object ReturnValue;
 

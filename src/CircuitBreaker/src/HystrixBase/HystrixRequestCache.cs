@@ -13,7 +13,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         // the String key must be: HystrixRequestCache.prefix + cacheKey
         private static readonly ConcurrentDictionary<RequestCacheKey, HystrixRequestCache> Caches = new ();
 
-        private class HystrixRequestCacheVariable : HystrixRequestVariableDefault<ConcurrentDictionary<ValueCacheKey, object>>
+        private sealed class HystrixRequestCacheVariable : HystrixRequestVariableDefault<ConcurrentDictionary<ValueCacheKey, object>>
         {
             public HystrixRequestCacheVariable()
                 : base(() => new ConcurrentDictionary<ValueCacheKey, object>())
@@ -103,7 +103,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return null;
         }
 
-        private class ValueCacheKey
+        private sealed class ValueCacheKey
         {
             private readonly RequestCacheKey _rvKey;
             private readonly string _valueCacheKey;
@@ -169,7 +169,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        private class RequestCacheKey
+        private sealed class RequestCacheKey
         {
             private readonly short _type; // used to differentiate between Collapser/Command if key is same between them
             private readonly string _key;

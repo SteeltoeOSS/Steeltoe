@@ -224,7 +224,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class ChannelAwareMessageListener : IChannelAwareMessageListener
+        private sealed class ChannelAwareMessageListener : IChannelAwareMessageListener
         {
             private readonly DirectReplyToMessageListenerContainer _container;
 

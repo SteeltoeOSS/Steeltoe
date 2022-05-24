@@ -267,7 +267,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             public bool Stateless { get; set; } = true;
         }
 
-        private class Address
+        private sealed class Address
         {
             private const string PREFIX_AMQP = "amqp://";
             private const string PREFIX_AMQP_SECURE = "amqps://";

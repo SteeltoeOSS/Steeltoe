@@ -586,7 +586,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class SuccessCommand : Command
+        private sealed class SuccessCommand : Command
         {
             public SuccessCommand(string commandKey, int latencyToAdd)
                 : base(commandKey, false, latencyToAdd)
@@ -599,7 +599,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class FailureCommand : Command
+        private sealed class FailureCommand : Command
         {
             public FailureCommand(string commandKey, int latencyToAdd)
                 : base(commandKey, true, latencyToAdd)
@@ -617,7 +617,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        private class TimeoutCommand : Command
+        private sealed class TimeoutCommand : Command
         {
             public TimeoutCommand(string commandKey)
                 : base(commandKey, false, 2000)

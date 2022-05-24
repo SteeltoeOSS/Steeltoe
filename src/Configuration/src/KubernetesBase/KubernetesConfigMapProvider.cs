@@ -178,7 +178,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// This requires a dependency on the Microsoft.Extensions.Configuration.Json package,
         /// but will ensure users' appsettings.json values will be parsed consistently.
         /// </summary>
-        private class ExposedJsonStreamConfigurationParser : JsonStreamConfigurationProvider
+        private sealed class ExposedJsonStreamConfigurationParser : JsonStreamConfigurationProvider
         {
             public ExposedJsonStreamConfigurationParser(JsonStreamConfigurationSource source)
                 : base(source)

@@ -283,7 +283,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal("foo", SimpleResourceHolder.Unbind(connectionFactory));
         }
 
-        private class TestNullReturningFactory : AbstractRoutingConnectionFactory
+        private sealed class TestNullReturningFactory : AbstractRoutingConnectionFactory
         {
             public override string ServiceName { get; set; } = "TestNullReturningFactory";
 
@@ -293,7 +293,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class TestDirectReplyToMessageListenerContainer : DirectReplyToMessageListenerContainer
+        private sealed class TestDirectReplyToMessageListenerContainer : DirectReplyToMessageListenerContainer
         {
             private readonly AtomicReference<object> connectionMakerKey;
             private readonly SimpleRoutingConnectionFactory simpleFactory;
@@ -311,7 +311,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class TestDirectMessageListenerContainer : DirectMessageListenerContainer
+        private sealed class TestDirectMessageListenerContainer : DirectMessageListenerContainer
         {
             private readonly AtomicReference<object> connectionMakerKey2;
             private readonly SimpleRoutingConnectionFactory simpleFactory;
@@ -329,7 +329,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class TestAbstractRoutingConnectionFactoryFactory : AbstractRoutingConnectionFactory
+        private sealed class TestAbstractRoutingConnectionFactoryFactory : AbstractRoutingConnectionFactory
         {
             private readonly AtomicBoolean lookupFlag;
             private readonly AtomicInteger count;

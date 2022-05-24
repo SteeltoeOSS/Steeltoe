@@ -48,7 +48,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             return channel;
         }
 
-        private class ChannelHolder
+        private sealed class ChannelHolder
         {
             public RC.IModel Channel { get; }
 

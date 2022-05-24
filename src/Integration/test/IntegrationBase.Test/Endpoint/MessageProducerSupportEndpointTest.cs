@@ -127,7 +127,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             Assert.False(endpoint.IsRunning);
         }
 
-        private class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
+        private sealed class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
         {
             public TestMessageProducerSupportEndpoint(IApplicationContext context)
                 : base(context)
@@ -135,7 +135,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             }
         }
 
-        private class ExceptionHandler : IMessageHandler
+        private sealed class ExceptionHandler : IMessageHandler
         {
             public string ServiceName { get; set; } = nameof(ExceptionHandler);
 
@@ -145,7 +145,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             }
         }
 
-        private class SuccessfulErrorService : IMessageProcessor
+        private sealed class SuccessfulErrorService : IMessageProcessor
         {
             public volatile IMessage LastMessage;
 
@@ -156,7 +156,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             }
         }
 
-        private class CustomEndpoint : AbstractEndpoint
+        private sealed class CustomEndpoint : AbstractEndpoint
         {
             public int Count;
             public bool Stopped;

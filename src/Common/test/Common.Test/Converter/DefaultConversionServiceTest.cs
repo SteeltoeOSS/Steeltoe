@@ -898,7 +898,7 @@ namespace Steeltoe.Common.Converter.Test
             Assert.Equal("utf-8", ConversionService.Convert<string>(Encoding.UTF8));
         }
 
-        private class ISBN
+        private sealed class ISBN
         {
             public static int ConstructorCount;
             public static int ToStringCount;
@@ -944,7 +944,7 @@ namespace Steeltoe.Common.Converter.Test
             }
         }
 
-        private class SSN
+        private sealed class SSN
         {
             public static int ConstructorCount;
 

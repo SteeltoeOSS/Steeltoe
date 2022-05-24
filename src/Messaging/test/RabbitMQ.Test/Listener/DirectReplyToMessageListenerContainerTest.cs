@@ -81,7 +81,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             connectionFactory.Destroy();
         }
 
-        private class MockChannelAwareMessageListener : IChannelAwareMessageListener
+        private sealed class MockChannelAwareMessageListener : IChannelAwareMessageListener
         {
             public IChannelAwareMessageListener MessageListener;
             public CountdownEvent Latch;
@@ -119,7 +119,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class EmptyListener : IMessageListener
+        private sealed class EmptyListener : IMessageListener
         {
             public AcknowledgeMode ContainerAckMode { get; set; }
 

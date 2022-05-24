@@ -1228,7 +1228,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             // }
         }
 
-        private class DefaultExclusiveConsumerLogger : IConditionalExceptionLogger
+        private sealed class DefaultExclusiveConsumerLogger : IConditionalExceptionLogger
         {
             public void Log(ILogger logger, string message, object cause)
             {

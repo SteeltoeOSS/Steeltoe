@@ -338,7 +338,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertSaneHystrixRequestLog(1);
         }
 
-        private class TestCallbackThreadForThreadIsolation_TestHystrixCommand : TestHystrixCommand<bool>
+        private sealed class TestCallbackThreadForThreadIsolation_TestHystrixCommand : TestHystrixCommand<bool>
         {
             private readonly AtomicReference<Thread> commandThread;
 
@@ -397,7 +397,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.NotEqual(commandThread.Value.ManagedThreadId, subscribeThread.Value.ManagedThreadId);
         }
 
-        private class TestCallbackThreadForSemaphoreIsolation_TestHystrixCommand : TestHystrixCommand<bool>
+        private sealed class TestCallbackThreadForSemaphoreIsolation_TestHystrixCommand : TestHystrixCommand<bool>
         {
             private readonly AtomicReference<Thread> commandThread;
 
@@ -2484,7 +2484,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertSaneHystrixRequestLog(2);
         }
 
-        private class TestExecutionTimeoutValueHystrixCommand : HystrixCommand<string>
+        private sealed class TestExecutionTimeoutValueHystrixCommand : HystrixCommand<string>
         {
             public TestExecutionTimeoutValueHystrixCommand(HystrixCommandOptions commandOptions)
                 : base(commandOptions)

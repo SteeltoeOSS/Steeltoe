@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 {
     public class HystrixCommandCompletionStreamTest : CommandStreamTest
     {
-        private class LatchedObserver : ObserverBase<HystrixCommandCompletion>
+        private sealed class LatchedObserver : ObserverBase<HystrixCommandCompletion>
         {
             private readonly CountdownEvent latch;
 

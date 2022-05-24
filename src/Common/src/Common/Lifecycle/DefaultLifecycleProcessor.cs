@@ -136,7 +136,7 @@ namespace Steeltoe.Common.Lifecycle
         }
 
 #pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
-        private class LifecycleGroupMember : IComparable<LifecycleGroupMember>
+        private sealed class LifecycleGroupMember : IComparable<LifecycleGroupMember>
 #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
         {
             public ILifecycle Bean { get; }
@@ -154,7 +154,7 @@ namespace Steeltoe.Common.Lifecycle
             }
         }
 
-        private class LifecycleGroup
+        private sealed class LifecycleGroup
         {
             private readonly int _timeout;
 
@@ -229,7 +229,7 @@ namespace Steeltoe.Common.Lifecycle
 
             private async Task DoStart(ILifecycle bean)
             {
-                if (bean != null && bean != this && !bean.IsRunning && (!_autoStartupOnly || bean is not ISmartLifecycle lifecycle || lifecycle.IsAutoStartup))
+                if (bean != null && !bean.IsRunning && (!_autoStartupOnly || bean is not ISmartLifecycle lifecycle || lifecycle.IsAutoStartup))
                 {
                     try
                     {

@@ -120,7 +120,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class RabbitListenerEndpointDescriptor
+        private sealed class RabbitListenerEndpointDescriptor
         {
             public RabbitListenerEndpointDescriptor(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory containerFactory)
             {

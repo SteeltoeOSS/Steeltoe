@@ -193,7 +193,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             return _scopeRootObjects;
         }
 
-        private class VariableScope
+        private sealed class VariableScope
         {
             private readonly Dictionary<string, object> _vars = new ();
 

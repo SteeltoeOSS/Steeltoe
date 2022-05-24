@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.InRange(stopWatch.ElapsedMilliseconds, 950, 1000 + 200);
         }
 
-        private class TestListener : ITimerListener
+        private sealed class TestListener : ITimerListener
         {
             private readonly Stopwatch stopwatch;
 

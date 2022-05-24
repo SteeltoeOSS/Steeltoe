@@ -161,7 +161,7 @@ namespace Steeltoe.Common.Converter
             }
         }
 
-        private class NoOpConverter : IGenericConverter
+        private sealed class NoOpConverter : IGenericConverter
         {
             private readonly string _name;
 
@@ -222,7 +222,7 @@ namespace Steeltoe.Common.Converter
             }
         }
 
-        private class ConvertersForPair
+        private sealed class ConvertersForPair
         {
             private readonly LinkedList<IGenericConverter> _converters = new ();
 
@@ -247,7 +247,7 @@ namespace Steeltoe.Common.Converter
             public override string ToString() => string.Join(",", _converters);
         }
 
-        private class Converters
+        private sealed class Converters
         {
             private readonly ISet<IGenericConverter> _globalConverters = new HashSet<IGenericConverter>();
 

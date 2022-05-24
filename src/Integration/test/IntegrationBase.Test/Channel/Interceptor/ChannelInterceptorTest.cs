@@ -242,7 +242,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             }
         }
 
-        private class TestPostSendInterceptorWithSentMessageInterceptor : AbstractChannelInterceptor
+        private sealed class TestPostSendInterceptorWithSentMessageInterceptor : AbstractChannelInterceptor
         {
             public bool Invoked;
 
@@ -255,7 +255,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             }
         }
 
-        private class PreSendReturnsMessageInterceptor : AbstractChannelInterceptor
+        private sealed class PreSendReturnsMessageInterceptor : AbstractChannelInterceptor
         {
             public int Counter;
             public volatile bool AfterCompletionInvoked;
@@ -275,7 +275,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             }
         }
 
-        private class PreSendReturnsNullInterceptor : AbstractChannelInterceptor
+        private sealed class PreSendReturnsNullInterceptor : AbstractChannelInterceptor
         {
             public int Counter;
 
@@ -287,7 +287,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             }
         }
 
-        private class AfterCompletionTestInterceptor : AbstractChannelInterceptor
+        private sealed class AfterCompletionTestInterceptor : AbstractChannelInterceptor
         {
             public Exception ExceptionToRaise;
             public int Counter;
@@ -311,7 +311,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             }
         }
 
-        private class PreReceiveReturnsTrueInterceptor : AbstractChannelInterceptor
+        private sealed class PreReceiveReturnsTrueInterceptor : AbstractChannelInterceptor
         {
             public Exception ExceptionToRaise;
             public int Counter;
@@ -334,7 +334,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             }
         }
 
-        private class PreReceiveReturnsFalseInterceptor : AbstractChannelInterceptor
+        private sealed class PreReceiveReturnsFalseInterceptor : AbstractChannelInterceptor
         {
             public int Counter;
 

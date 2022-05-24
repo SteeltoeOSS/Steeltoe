@@ -385,7 +385,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return resolvers;
         }
 
-        private class AccessorLValue : IValueRef
+        private sealed class AccessorLValue : IValueRef
         {
             private readonly PropertyOrFieldReference _ref;
 

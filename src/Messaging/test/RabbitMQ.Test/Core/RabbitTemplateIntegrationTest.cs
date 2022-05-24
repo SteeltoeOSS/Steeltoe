@@ -1357,7 +1357,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             });
         }
 
-        private class TestConnectionListener : IConnectionListener
+        private sealed class TestConnectionListener : IConnectionListener
         {
             private AtomicReference<ShutdownSignalException> shutdown;
             private CountdownEvent connLatch;
@@ -1383,7 +1383,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestChannelListener : IChannelListener
+        private sealed class TestChannelListener : IChannelListener
         {
             private AtomicReference<ShutdownSignalException> shutdown;
             private CountdownEvent shutdownLatch;
@@ -1405,7 +1405,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestTransactionSynchronizationAdapter : ITransactionSynchronization
+        private sealed class TestTransactionSynchronizationAdapter : ITransactionSynchronization
         {
             public void AfterCommit()
             {
@@ -1438,7 +1438,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestPostProcessor : IMessagePostProcessor
+        private sealed class TestPostProcessor : IMessagePostProcessor
         {
             public TestPostProcessor(string keyValue)
             {
@@ -1460,7 +1460,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestMessageHandlerString
+        private sealed class TestMessageHandlerString
         {
             public string HandleMessage(string message)
             {
@@ -1468,7 +1468,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestMessageHandler
+        private sealed class TestMessageHandler
         {
             private AtomicReference<string> replyToWas;
 
@@ -1484,7 +1484,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class TestTransactionManager : AbstractPlatformTransactionManager
+        private sealed class TestTransactionManager : AbstractPlatformTransactionManager
         {
             protected override void DoBegin(object transaction, ITransactionDefinition definition)
             {
@@ -1504,7 +1504,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class PlannedException : Exception
+        private sealed class PlannedException : Exception
         {
             public PlannedException()
                 : base("Planned")
@@ -1512,7 +1512,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class Foo
+        private sealed class Foo
         {
             public override string ToString()
             {
@@ -1520,7 +1520,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class PostProcessor3 : IMessagePostProcessor
+        private sealed class PostProcessor3 : IMessagePostProcessor
         {
             public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
             {
@@ -1541,7 +1541,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class PostProcessor2 : IMessagePostProcessor
+        private sealed class PostProcessor2 : IMessagePostProcessor
         {
             public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
             {
@@ -1565,7 +1565,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class PostProccessor1 : IMessagePostProcessor
+        private sealed class PostProccessor1 : IMessagePostProcessor
         {
             public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
             {
@@ -1583,7 +1583,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class MockSingleConnectionFactory : SingleConnectionFactory
+        private sealed class MockSingleConnectionFactory : SingleConnectionFactory
         {
             public MockSingleConnectionFactory(string hostname)
                 : base(hostname)
@@ -1597,7 +1597,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class MockConnection : IConnection
+        private sealed class MockConnection : IConnection
         {
             public MockConnection(IConnection deleg)
             {
@@ -1639,7 +1639,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class MockConsumer : RC.IBasicConsumer
+        private sealed class MockConsumer : RC.IBasicConsumer
         {
             public MockConsumer(RC.IBasicConsumer deleg)
             {
@@ -1697,7 +1697,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
         }
 
-        private class MockChannel : PublisherCallbackChannel
+        private sealed class MockChannel : PublisherCallbackChannel
         {
             public MockChannel(RC.IModel channel, ILogger logger = null)
                 : base(channel, logger)

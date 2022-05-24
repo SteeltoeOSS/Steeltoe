@@ -131,7 +131,7 @@ namespace Steeltoe.Integration.Dispatcher
             return messageHandlingRunnable;
         }
 
-        private class MessageHandlingRunnable : IMessageHandlingRunnable
+        private sealed class MessageHandlingRunnable : IMessageHandlingRunnable
         {
             public MessageHandlingRunnable(UnicastingDispatcher dispatcher, IMessage message, CancellationToken cancellationToken)
             {

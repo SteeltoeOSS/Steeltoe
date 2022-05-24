@@ -667,7 +667,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return message;
         }
 
-        private class InternalConsumer : RC.DefaultBasicConsumer
+        private sealed class InternalConsumer : RC.DefaultBasicConsumer
         {
             public InternalConsumer(BlockingQueueConsumer consumer, RC.IModel channel, string queue, ILogger<InternalConsumer> logger = null)
                 : base(channel)
@@ -772,7 +772,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class DeclarationException : RabbitException
+        private sealed class DeclarationException : RabbitException
         {
             public DeclarationException()
                 : base("Failed to declare queue(s):")

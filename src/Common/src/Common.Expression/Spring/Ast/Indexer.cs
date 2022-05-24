@@ -429,7 +429,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
         }
 
-        private class ArrayIndexingValueRef : IValueRef
+        private sealed class ArrayIndexingValueRef : IValueRef
         {
             private readonly ITypeConverter _typeConverter;
             private readonly object _array;
@@ -467,7 +467,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public bool IsWritable => true;
         }
 
-        private class MapIndexingValueRef : IValueRef
+        private sealed class MapIndexingValueRef : IValueRef
         {
             private readonly Indexer _indexer;
 
@@ -509,7 +509,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public bool IsWritable => true;
         }
 
-        private class PropertyIndexingValueRef : IValueRef
+        private sealed class PropertyIndexingValueRef : IValueRef
         {
             private readonly object _targetObject;
 
@@ -619,7 +619,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public bool IsWritable => true;
         }
 
-        private class CollectionIndexingValueRef : IValueRef
+        private sealed class CollectionIndexingValueRef : IValueRef
         {
             private readonly IList _collection;
             private readonly int _index;
@@ -768,7 +768,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public bool IsWritable => true;
         }
 
-        private class StringIndexingLValue : IValueRef
+        private sealed class StringIndexingLValue : IValueRef
         {
             private readonly string _target;
 

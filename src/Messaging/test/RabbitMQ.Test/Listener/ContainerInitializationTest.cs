@@ -181,7 +181,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return services;
         }
 
-        private class TestListener : IShutDownChannelListener
+        private sealed class TestListener : IShutDownChannelListener
         {
             private readonly CountdownEvent cancelLatch;
             private readonly CountdownEvent mismatchLatch;
@@ -233,7 +233,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return container;
         }
 
-        private class TestMessageListener : IMessageListener
+        private sealed class TestMessageListener : IMessageListener
         {
             public AcknowledgeMode ContainerAckMode { get; set; }
 

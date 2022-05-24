@@ -290,7 +290,7 @@ namespace Steeltoe.Stream.Binder
             DoHandleMessage(handler, message);
         }
 
-        private class RecoveryCallbackWrapper : IRecoveryCallback
+        private sealed class RecoveryCallbackWrapper : IRecoveryCallback
         {
             private readonly IRecoveryCallback _recoveryCallback;
 

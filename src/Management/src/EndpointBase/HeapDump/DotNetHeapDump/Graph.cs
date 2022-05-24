@@ -2608,7 +2608,7 @@ internal class GraphSampler
         Debug.Assert(sampleTotal == m_newGraph.NodeCount);
     }
 
-    private class SampleStats
+    private sealed class SampleStats
     {
         public int TotalCount;          // The number of objects of this type in the original graph
         public int SampleCount;         // The number of objects of this type we have currently added to the new graph

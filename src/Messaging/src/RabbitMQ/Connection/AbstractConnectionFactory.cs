@@ -348,7 +348,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class DefaultBlockedListener : IBlockedListener
+        private sealed class DefaultBlockedListener : IBlockedListener
         {
             private readonly ILogger _logger;
 
@@ -368,7 +368,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
         }
 
-        private class DefaultRecoveryListener : IRecoveryListener
+        private sealed class DefaultRecoveryListener : IRecoveryListener
         {
             private readonly ILogger _logger;
 

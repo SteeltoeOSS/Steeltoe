@@ -169,7 +169,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             return context;
         }
 
-        private class ExceptionHandlerFeature : IExceptionHandlerFeature
+        private sealed class ExceptionHandlerFeature : IExceptionHandlerFeature
         {
             public Exception Error { get; set; }
         }

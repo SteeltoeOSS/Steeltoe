@@ -647,7 +647,7 @@ namespace Steeltoe.Common.Util
                 return 0;
             }
 
-            private class PatternInfo
+            private sealed class PatternInfo
             {
                 private readonly string _pattern;
                 private bool _catchAllPattern;
@@ -669,7 +669,7 @@ namespace Steeltoe.Common.Util
                     }
                 }
 
-                protected void InitCounters()
+                private void InitCounters()
                 {
                     var pos = 0;
                     if (_pattern != null)

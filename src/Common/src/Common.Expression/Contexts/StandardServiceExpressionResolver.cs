@@ -114,7 +114,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
         {
         }
 
-        private class ServiceExpressionParserContext : IParserContext
+        private sealed class ServiceExpressionParserContext : IParserContext
         {
             private readonly StandardServiceExpressionResolver _resolver;
 

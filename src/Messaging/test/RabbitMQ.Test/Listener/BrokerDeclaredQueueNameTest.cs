@@ -91,7 +91,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return container;
         }
 
-        private class TestConnectionListener : IConnectionListener
+        private sealed class TestConnectionListener : IConnectionListener
         {
             public TestConnectionListener(CountdownEvent latch)
             {
@@ -117,7 +117,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class TestMessageListener : IMessageListener
+        private sealed class TestMessageListener : IMessageListener
         {
             public TestMessageListener(CountdownEvent latch1, CountdownEvent latch2, AtomicReference<IMessage> message)
             {

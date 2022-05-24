@@ -216,7 +216,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
         }
 
-        private class TestAsyncDelegate
+        private sealed class TestAsyncDelegate
         {
             public Task<string> MyPojoMessageMethod(string input)
             {
@@ -228,7 +228,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
         }
 
-        private class TestDelegate2
+        private sealed class TestDelegate2
         {
             private readonly AtomicBoolean called;
 
@@ -244,7 +244,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
         }
 
-        private class TestDelegate1
+        private sealed class TestDelegate1
         {
             private readonly AtomicBoolean called;
 
@@ -260,7 +260,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
         }
 
-        private class TestDelegate
+        private sealed class TestDelegate
         {
             private readonly AtomicBoolean called;
 
@@ -285,7 +285,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             }
         }
 
-        private class ExtendedListenerAdapter : MessageListenerAdapter
+        private sealed class ExtendedListenerAdapter : MessageListenerAdapter
         {
             public ExtendedListenerAdapter(IApplicationContext context, ILogger logger = null)
                 : base(context, logger)

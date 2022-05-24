@@ -111,7 +111,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             Assert.Equal(string.Empty, binding.RoutingKey);
         }
 
-        private class CustomExchange : AbstractExchange
+        private sealed class CustomExchange : AbstractExchange
         {
             public CustomExchange(string name)
                 : base(name)

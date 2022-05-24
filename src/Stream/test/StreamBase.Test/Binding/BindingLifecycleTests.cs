@@ -55,7 +55,7 @@ namespace Steeltoe.Stream.Binding
             await lifecycle.Stop();
         }
 
-        private class TestBindable : IBindable
+        private sealed class TestBindable : IBindable
         {
             private readonly List<IBinding> _bindings = new ();
 

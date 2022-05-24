@@ -354,7 +354,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             }
         }
 
-        private class TestSmartLifecycleBean : TestLifecycleBean, ISmartLifecycle
+        private sealed class TestSmartLifecycleBean : TestLifecycleBean, ISmartLifecycle
         {
             private readonly int _shutdownDelay;
 

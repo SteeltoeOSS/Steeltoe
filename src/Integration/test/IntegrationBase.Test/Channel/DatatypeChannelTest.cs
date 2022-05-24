@@ -153,7 +153,7 @@ namespace Steeltoe.Integration.Channel.Test
             return channel;
         }
 
-        private class BoolToIntConverter : IGenericConverter
+        private sealed class BoolToIntConverter : IGenericConverter
         {
             public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(bool), typeof(int)) };
 
@@ -168,15 +168,15 @@ namespace Steeltoe.Integration.Channel.Test
         {
         }
 
-        private class Bar : Foo
+        private sealed class Bar : Foo
         {
         }
 
-        private class Baz : Foo
+        private sealed class Baz : Foo
         {
         }
 
-        private class StringToBarConverter : IGenericConverter
+        private sealed class StringToBarConverter : IGenericConverter
         {
             public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(string), typeof(Foo)), (typeof(string), typeof(Bar)) };
 
@@ -186,7 +186,7 @@ namespace Steeltoe.Integration.Channel.Test
             }
         }
 
-        private class IntegerToBazConverter : IGenericConverter
+        private sealed class IntegerToBazConverter : IGenericConverter
         {
             public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(int), typeof(Foo)), (typeof(int), typeof(Baz)) };
 

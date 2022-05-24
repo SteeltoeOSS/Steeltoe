@@ -115,7 +115,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return consumers.Count == expected;
         }
 
-        private class ReplyingMessageListener : IReplyingMessageListener<string, string>
+        private sealed class ReplyingMessageListener : IReplyingMessageListener<string, string>
         {
             public AcknowledgeMode ContainerAckMode { get; set; }
 
@@ -132,7 +132,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
         }
 
-        private class TestConsumerTagStrategy : IConsumerTagStrategy
+        private sealed class TestConsumerTagStrategy : IConsumerTagStrategy
         {
             private readonly string testName;
             private int n;

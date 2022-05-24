@@ -1075,7 +1075,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.StartsWith("Could not locate config server via discovery", exception.Message);
         }
 
-        private class TestServiceInfo : IServiceInstance
+        private sealed class TestServiceInfo : IServiceInstance
         {
             public TestServiceInfo(Uri uri, IDictionary<string, string> metadata)
             {
@@ -1156,7 +1156,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
         }
 
-        private class TestConfigServerConfigurationProvider : ConfigServerConfigurationProvider
+        private sealed class TestConfigServerConfigurationProvider : ConfigServerConfigurationProvider
         {
             public TestConfigServerConfigurationProvider(ConfigServerClientSettings settings)
                 : base(settings)

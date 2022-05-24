@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
             appLifeTime.AppStopTokenSource.Cancel(); // Trigger application lifetime stop
         }
 
-        private class MyAppLifeTime : IHostApplicationLifetime
+        private sealed class MyAppLifeTime : IHostApplicationLifetime
         {
             public CancellationTokenSource AppStartTokenSource = new ();
             public CancellationTokenSource AppStopTokenSource = new ();

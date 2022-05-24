@@ -333,7 +333,7 @@ namespace Steeltoe.Messaging.Support.Test
             return new Dictionary<string, object> { { key, value } };
         }
 
-        private class TestIdGenerator : IIDGenerator
+        private sealed class TestIdGenerator : IIDGenerator
         {
             public string Id;
 
@@ -343,7 +343,7 @@ namespace Steeltoe.Messaging.Support.Test
             }
         }
 
-        private class TestMessageHeaderAccessor : MessageHeaderAccessor
+        private sealed class TestMessageHeaderAccessor : MessageHeaderAccessor
         {
             public TestMessageHeaderAccessor()
             {

@@ -191,7 +191,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
             return pos;
         }
 
-        private class Bracket
+        private sealed class Bracket
         {
             public char BracketChar { get; }
 
