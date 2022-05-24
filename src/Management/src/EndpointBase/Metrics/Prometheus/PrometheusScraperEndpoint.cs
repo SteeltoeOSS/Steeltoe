@@ -28,21 +28,28 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var result = string.Empty;
             try
             {
-                var collectionResponse = (PrometheusCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
-                try
+                var response = _exporter.CollectionManager.EnterCollect().Result;
+                if (response is PrometheusCollectionResponse collectionResponse)
                 {
-                    if (collectionResponse.View.Count > 0)
+                    try
                     {
-                        result = Encoding.UTF8.GetString(collectionResponse.View.Array, 0, collectionResponse.View.Count);
+                        if (collectionResponse.View.Count > 0)
+                        {
+                            result = Encoding.UTF8.GetString(collectionResponse.View.Array, 0, collectionResponse.View.Count);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Collection failure.");
+                        }
                     }
-                    else
+                    finally
                     {
-                        throw new InvalidOperationException("Collection failure.");
+                        _exporter.CollectionManager.ExitCollect();
                     }
                 }
-                finally
+                else
                 {
-                    _exporter.CollectionManager.ExitCollect();
+                    _logger?.LogWarning("Please ensure Opentelemetry is configured via Steeltoe extension methods.");
                 }
             }
             catch (Exception ex)

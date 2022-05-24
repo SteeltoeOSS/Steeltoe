@@ -114,6 +114,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
             });
 
+            services.AddOpenTelemetryMetricsForSteeltoe();
+
             return services;
         }
 
