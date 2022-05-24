@@ -408,7 +408,7 @@ namespace Microsoft.Diagnostics.Runtime
             return true;
         }
 
-        virtual public void EnsureRangeInCache(ulong addr)
+        public virtual void EnsureRangeInCache(ulong addr)
         {
             if (!Contains(addr))
                 MoveToPage(addr);
@@ -446,7 +446,7 @@ namespace Microsoft.Diagnostics.Runtime
             return res;
         }
 
-        virtual protected bool MoveToPage(ulong addr)
+        protected virtual bool MoveToPage(ulong addr)
         {
             return ReadMemory(addr);
         }
@@ -583,7 +583,7 @@ namespace Microsoft.Diagnostics.Runtime
             return _data.Length - ComputeSize(GetNumSeries());
         }
 
-        static private int ComputeSize(int series)
+        private static int ComputeSize(int series)
         {
             return IntPtr.Size + series * IntPtr.Size * 2;
         }

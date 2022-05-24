@@ -65,23 +65,23 @@ namespace Steeltoe.Connector.Services
             UriString = uristring;
         }
 
-        public string Scheme { get; internal protected set; }
+        public string Scheme { get; protected internal set; }
 
-        public string Host { get; internal protected set; }
+        public string Host { get; protected internal set; }
 
-        public string[] Hosts { get; internal protected set; }
+        public string[] Hosts { get; protected internal set; }
 
-        public int Port { get; internal protected set; }
+        public int Port { get; protected internal set; }
 
-        public string UserName { get; internal protected set; }
+        public string UserName { get; protected internal set; }
 
-        public string Password { get; internal protected set; }
+        public string Password { get; protected internal set; }
 
-        public string Path { get; internal protected set; }
+        public string Path { get; protected internal set; }
 
-        public string Query { get; internal protected set; }
+        public string Query { get; protected internal set; }
 
-        public string UriString { get; internal protected set; }
+        public string UriString { get; protected internal set; }
 
         public Uri Uri => MakeUri(UriString);
 

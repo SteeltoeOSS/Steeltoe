@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         public DesktopAppDomain Shared;
     }
 
-    abstract internal class DesktopRuntimeBase : RuntimeBase
+    internal abstract class DesktopRuntimeBase : RuntimeBase
     {
         #region Variables
         protected CommonMethodTables _commonMTs;

@@ -26,7 +26,7 @@ namespace Steeltoe.Connector.Services
             Info = new UriInfo(uriString);
         }
 
-        public UriInfo Info { get; internal protected set; }
+        public UriInfo Info { get; protected internal set; }
 
         public string Uri => Info.UriString;
 

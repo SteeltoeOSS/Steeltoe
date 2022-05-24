@@ -14,6 +14,6 @@ namespace Steeltoe.Connector
             Value = value;
         }
 
-        public T Value { get; internal protected set; }
+        public T Value { get; protected internal set; }
     }
 }

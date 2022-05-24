@@ -332,15 +332,15 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsPointer { get { return true; } }
+        public override bool IsPointer { get { return true; } }
 
-        override public IList<ClrInstanceField> Fields { get { return Array.Empty<ClrInstanceField>(); } }
+        public override IList<ClrInstanceField> Fields { get { return Array.Empty<ClrInstanceField>(); } }
 
-        override public IList<ClrStaticField> StaticFields { get { return Array.Empty<ClrStaticField>(); } }
+        public override IList<ClrStaticField> StaticFields { get { return Array.Empty<ClrStaticField>(); } }
 
-        override public IList<ClrThreadStaticField> ThreadStaticFields { get { return Array.Empty<ClrThreadStaticField>(); } }
+        public override IList<ClrThreadStaticField> ThreadStaticFields { get { return Array.Empty<ClrThreadStaticField>(); } }
 
-        override public IList<ClrMethod> Methods { get { return Array.Empty<ClrMethod>(); } }
+        public override IList<ClrMethod> Methods { get { return Array.Empty<ClrMethod>(); } }
 
         public override ulong GetSize(ulong objRef)
         {
@@ -607,15 +607,15 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsArray { get { return true; } }
+        public override bool IsArray { get { return true; } }
 
-        override public IList<ClrInstanceField> Fields { get { return Array.Empty<ClrInstanceField>(); } }
+        public override IList<ClrInstanceField> Fields { get { return Array.Empty<ClrInstanceField>(); } }
 
-        override public IList<ClrStaticField> StaticFields { get { return Array.Empty<ClrStaticField>(); } }
+        public override IList<ClrStaticField> StaticFields { get { return Array.Empty<ClrStaticField>(); } }
 
-        override public IList<ClrThreadStaticField> ThreadStaticFields { get { return Array.Empty<ClrThreadStaticField>(); } }
+        public override IList<ClrThreadStaticField> ThreadStaticFields { get { return Array.Empty<ClrThreadStaticField>(); } }
 
-        override public IList<ClrMethod> Methods { get { return Array.Empty<ClrMethod>(); } }
+        public override IList<ClrMethod> Methods { get { return Array.Empty<ClrMethod>(); } }
 
         public override ulong GetSize(ulong objRef)
         {
@@ -1068,7 +1068,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             return _enumData.NameToValue.TryGetValue(name, out value);
         }
 
-        override public string GetEnumName(object value)
+        public override string GetEnumName(object value)
         {
             if (_enumData == null)
                 InitEnumData();
@@ -1077,7 +1077,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             return result;
         }
 
-        override public string GetEnumName(int value)
+        public override string GetEnumName(int value)
         {
             return GetEnumName((object)value);
         }
@@ -1781,7 +1781,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         }
 
 
-        override public bool IsInternal
+        public override bool IsInternal
         {
             get
             {
@@ -1793,7 +1793,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsPublic
+        public override bool IsPublic
         {
             get
             {
@@ -1805,7 +1805,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsPrivate
+        public override bool IsPrivate
         {
             get
             {
@@ -1817,7 +1817,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsProtected
+        public override bool IsProtected
         {
             get
             {
@@ -1829,7 +1829,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsAbstract
+        public override bool IsAbstract
         {
             get
             {
@@ -1840,7 +1840,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsSealed
+        public override bool IsSealed
         {
             get
             {
@@ -1851,7 +1851,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsInterface
+        public override bool IsInterface
         {
             get
             {

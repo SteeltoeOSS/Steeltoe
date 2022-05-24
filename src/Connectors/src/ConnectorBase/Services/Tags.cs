@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.Services
         {
         }
 
-        public IEnumerable<string> Values { get; internal protected set; }
+        public IEnumerable<string> Values { get; protected internal set; }
 
         public bool ContainsOne(IEnumerable<string> tags)
         {

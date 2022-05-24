@@ -165,12 +165,12 @@ namespace Microsoft.Diagnostics.Runtime
         /// <summary>
         /// The typename of the interface.
         /// </summary>
-        abstract public string Name { get; }
+        public abstract string Name { get; }
 
         /// <summary>
         /// The interface that this interface inherits from.
         /// </summary>
-        abstract public ClrInterface BaseInterface { get; }
+        public abstract ClrInterface BaseInterface { get; }
 
         /// <summary>
         /// Display string for this interface.
@@ -228,14 +228,14 @@ namespace Microsoft.Diagnostics.Runtime
     /// </summary>
     internal abstract class ClrType
     {
-        abstract internal GCDesc GCDesc { get; }
+        internal abstract GCDesc GCDesc { get; }
 
         /// <summary>
         /// Retrieves the first type handle in EnumerateMethodTables().  MethodTables
         /// are unique to an AppDomain/Type pair, so when there are multiple domains
         /// there will be multiple MethodTable for a class.
         /// </summary>
-        abstract public ulong MethodTable { get; }
+        public abstract ulong MethodTable { get; }
 
         /// <summary>
         /// Enumerates all MethodTable for this type in the process.  MethodTable
@@ -246,21 +246,21 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <returns>An enumeration of MethodTable in the process for this given
         /// type.</returns>
-        abstract public IEnumerable<ulong> EnumerateMethodTables();
+        public abstract IEnumerable<ulong> EnumerateMethodTables();
 
         /// <summary>
         /// Returns the metadata token of this type.
         /// </summary>
-        abstract public uint MetadataToken { get; }
+        public abstract uint MetadataToken { get; }
 
         /// <summary>
         /// Types have names.
         /// </summary>
-        abstract public string Name { get; }
+        public abstract string Name { get; }
         /// <summary>
         /// GetSize returns the size in bytes for the total overhead of the object 'objRef'.   
         /// </summary>
-        abstract public ulong GetSize(ulong objRef);
+        public abstract ulong GetSize(ulong objRef);
         /// <summary>
         /// EnumeationRefsOfObject will call 'action' once for each object reference inside 'objRef'.  
         /// 'action' is passed the address of the outgoing refernece as well as an integer that
@@ -268,13 +268,13 @@ namespace Microsoft.Diagnostics.Runtime
         /// refernece, abstractly is simply something that can be given to GetFieldForOffset to 
         /// return the field information for that object reference  
         /// </summary>
-        abstract public void EnumerateRefsOfObject(ulong objRef, Action<ulong, int> action);
+        public abstract void EnumerateRefsOfObject(ulong objRef, Action<ulong, int> action);
 
         /// <summary>
         /// Does the same as EnumerateRefsOfObject, but does additional bounds checking to ensure
         /// we don't loop forever with inconsistent data.
         /// </summary>
-        abstract public void EnumerateRefsOfObjectCarefully(ulong objRef, Action<ulong, int> action);
+        public abstract void EnumerateRefsOfObjectCarefully(ulong objRef, Action<ulong, int> action);
 
         /// <summary>
         /// Enumerates all objects that the given object references.
@@ -282,7 +282,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="obj">The object in question.</param>
         /// <param name="carefully">Whether to bounds check along the way (useful in cases where
         /// the heap may be in an inconsistent state.)</param>
-        virtual public IEnumerable<ClrObject> EnumerateObjectReferences(ulong obj, bool carefully = false)
+        public virtual IEnumerable<ClrObject> EnumerateObjectReferences(ulong obj, bool carefully = false)
         {
             Debug.Assert(Heap.GetObjectType(obj) == this);
             return Heap.EnumerateObjectReferences(obj, this, carefully);
@@ -292,18 +292,18 @@ namespace Microsoft.Diagnostics.Runtime
         /// Returns true if the type CAN contain references to other objects.  This is used in optimizations 
         /// and 'true' can always be returned safely.  
         /// </summary>
-        virtual public bool ContainsPointers { get { return true; } }
+        public virtual bool ContainsPointers { get { return true; } }
 
         /// <summary>
         /// All types know the heap they belong to.  
         /// </summary>
-        abstract public ClrHeap Heap { get; }
+        public abstract ClrHeap Heap { get; }
 
         /// <summary>
         /// Returns true if this object is a 'RuntimeType' (that is, the concrete System.RuntimeType class
         /// which is what you get when calling "typeof" in C#).
         /// </summary>
-        virtual public bool IsRuntimeType { get { return false; } }
+        public virtual bool IsRuntimeType { get { return false; } }
 
         /// <summary>
         /// Returns the concrete type (in the target process) that this RuntimeType represents.
@@ -315,12 +315,12 @@ namespace Microsoft.Diagnostics.Runtime
         ///          is actually a typehandle (which unfortunately ClrMD cannot convert into a ClrType due to
         ///          limitations in the underlying APIs.  (So always null-check the return value of this
         ///          function.) </returns>
-        virtual public ClrType GetRuntimeType(ulong obj) { throw new NotImplementedException(); }
+        public virtual ClrType GetRuntimeType(ulong obj) { throw new NotImplementedException(); }
 
         /// <summary>
         /// Returns the module this type is defined in.
         /// </summary>
-        virtual public ClrModule Module { get { return null; } }
+        public virtual ClrModule Module { get { return null; } }
 
         /// <summary>
         /// Returns a method based on its token.
@@ -332,100 +332,100 @@ namespace Microsoft.Diagnostics.Runtime
         /// <summary>
         /// Returns the ElementType of this Type.  Can return ELEMENT_TYPE_VOID on error.
         /// </summary>
-        virtual public ClrElementType ElementType { get { return ClrElementType.Unknown; } internal set { throw new NotImplementedException(); } }
+        public virtual ClrElementType ElementType { get { return ClrElementType.Unknown; } internal set { throw new NotImplementedException(); } }
 
         /// <summary>
         /// Returns true if this type is a primitive (int, float, etc), false otherwise.
         /// </summary>
         /// <returns>True if this type is a primitive (int, float, etc), false otherwise.</returns>
-        virtual public bool IsPrimitive { get { return ClrRuntime.IsPrimitive(ElementType); } }
+        public virtual bool IsPrimitive { get { return ClrRuntime.IsPrimitive(ElementType); } }
 
         /// <summary>
         /// Returns true if this type is a ValueClass (struct), false otherwise.
         /// </summary>
         /// <returns>True if this type is a ValueClass (struct), false otherwise.</returns>
-        virtual public bool IsValueClass { get { return ClrRuntime.IsValueClass(ElementType); } }
+        public virtual bool IsValueClass { get { return ClrRuntime.IsValueClass(ElementType); } }
 
         /// <summary>
         /// Returns true if this type is an object reference, false otherwise.
         /// </summary>
         /// <returns>True if this type is an object reference, false otherwise.</returns>
-        virtual public bool IsObjectReference { get { return ClrRuntime.IsObjectReference(ElementType); } }
+        public virtual bool IsObjectReference { get { return ClrRuntime.IsObjectReference(ElementType); } }
 
         /// <summary>
         /// Returns the list of interfaces this type implements.
         /// </summary>
-        abstract public IList<ClrInterface> Interfaces { get; }
+        public abstract IList<ClrInterface> Interfaces { get; }
 
         /// <summary>
         /// Returns true if the finalization is suppressed for an object.  (The user program called
         /// System.GC.SupressFinalize.  The behavior of this function is undefined if the object itself
         /// is not finalizable.
         /// </summary>
-        virtual public bool IsFinalizeSuppressed(ulong obj) { throw new NotImplementedException(); }
+        public virtual bool IsFinalizeSuppressed(ulong obj) { throw new NotImplementedException(); }
 
         /// <summary>
         /// Returns whether objects of this type are finalizable.
         /// </summary>
-        abstract public bool IsFinalizable { get; }
+        public abstract bool IsFinalizable { get; }
 
         // Visibility:
         /// <summary>
         /// Returns true if this type is marked Public.
         /// </summary>
-        abstract public bool IsPublic { get; }
+        public abstract bool IsPublic { get; }
 
         /// <summary>
         /// returns true if this type is marked Private.
         /// </summary>
-        abstract public bool IsPrivate { get; }
+        public abstract bool IsPrivate { get; }
 
         /// <summary>
         /// Returns true if this type is accessable only by items in its own assembly.
         /// </summary>
-        abstract public bool IsInternal { get; }
+        public abstract bool IsInternal { get; }
 
         /// <summary>
         /// Returns true if this nested type is accessable only by subtypes of its outer type.
         /// </summary>
-        abstract public bool IsProtected { get; }
+        public abstract bool IsProtected { get; }
 
         // Other attributes:
         /// <summary>
         /// Returns true if this class is abstract.
         /// </summary>
-        abstract public bool IsAbstract { get; }
+        public abstract bool IsAbstract { get; }
 
         /// <summary>
         /// Returns true if this class is sealed.
         /// </summary>
-        abstract public bool IsSealed { get; }
+        public abstract bool IsSealed { get; }
 
         /// <summary>
         /// Returns true if this type is an interface.
         /// </summary>
-        abstract public bool IsInterface { get; }
+        public abstract bool IsInterface { get; }
 
         /// <summary>
         /// Returns all possible fields in this type.   It does not return dynamically typed fields.  
         /// Returns an empty list if there are no fields.
         /// </summary>
-        virtual public IList<ClrInstanceField> Fields { get { return null; } }
+        public virtual IList<ClrInstanceField> Fields { get { return null; } }
 
         /// <summary>
         /// Returns a list of static fields on this type.  Returns an empty list if there are no fields.
         /// </summary>
-        virtual public IList<ClrStaticField> StaticFields { get { return null; } }
+        public virtual IList<ClrStaticField> StaticFields { get { return null; } }
 
         /// <summary>
         /// Returns a list of thread static fields on this type.  Returns an empty list if there are no fields.
         /// </summary>
-        virtual public IList<ClrThreadStaticField> ThreadStaticFields { get { return null; } }
+        public virtual IList<ClrThreadStaticField> ThreadStaticFields { get { return null; } }
 
         /// <summary>
         /// Gets the list of methods this type implements.
         /// </summary>
-        virtual public IList<ClrMethod> Methods { get { return null; } }
+        public virtual IList<ClrMethod> Methods { get { return null; } }
 
         /// <summary>
         /// When you enumerate a object, the offset within the object is returned.  This offset might represent
@@ -434,35 +434,35 @@ namespace Microsoft.Diagnostics.Runtime
         /// GetFieldForOffset repeatedly until the childFieldOffset is 0 will retrieve the whole chain.  
         /// </summary>
         /// <returns>true if successful.  Will fail if it 'this' is an array type</returns>
-        abstract public bool GetFieldForOffset(int fieldOffset, bool inner, out ClrInstanceField childField, out int childFieldOffset);
+        public abstract bool GetFieldForOffset(int fieldOffset, bool inner, out ClrInstanceField childField, out int childFieldOffset);
 
         /// <summary>
         /// Returns the field given by 'name', case sensitive.  Returns NULL if no such field name exists (or on error).
         /// </summary>
-        abstract public ClrInstanceField GetFieldByName(string name);
+        public abstract ClrInstanceField GetFieldByName(string name);
 
         /// <summary>
         /// Returns the field given by 'name', case sensitive.  Returns NULL if no such field name exists (or on error).
         /// </summary>
-        abstract public ClrStaticField GetStaticFieldByName(string name);
+        public abstract ClrStaticField GetStaticFieldByName(string name);
 
         /// <summary>
         /// If this type inherits from another type, this is that type.  Can return null if it does not inherit (or is unknown)
         /// </summary>
-        abstract public ClrType BaseType { get; }
+        public abstract ClrType BaseType { get; }
 
         /// <summary>
         /// Returns true if the given object is a Com-Callable-Wrapper.  This is only supported in v4.5 and later.
         /// </summary>
         /// <param name="obj">The object to check.</param>
         /// <returns>True if this is a CCW.</returns>
-        virtual public bool IsCCW(ulong obj) { return false; }
+        public virtual bool IsCCW(ulong obj) { return false; }
 
         /// <summary>
         /// Returns the CCWData for the given object.  Note you may only call this function if IsCCW returns true.
         /// </summary>
         /// <returns>The CCWData associated with the object, undefined result of obj is not a CCW.</returns>
-        virtual public CcwData GetCCWData(ulong obj)
+        public virtual CcwData GetCCWData(ulong obj)
         {
             return null;
         }
@@ -472,13 +472,13 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <param name="obj">The object to check.</param>
         /// <returns>True if this is an RCW.</returns>
-        virtual public bool IsRCW(ulong obj) { return false; }
+        public virtual bool IsRCW(ulong obj) { return false; }
 
         /// <summary>
         /// Returns the RCWData for the given object.  Note you may only call this function if IsRCW returns true.
         /// </summary>
         /// <returns>The RCWData associated with the object, undefined result of obj is not a RCW.</returns>
-        virtual public RcwData GetRCWData(ulong obj)
+        public virtual RcwData GetRCWData(ulong obj)
         {
             return null;
         }
@@ -487,76 +487,76 @@ namespace Microsoft.Diagnostics.Runtime
         /// Indicates if the type is in fact a pointer. If so, the pointer operators
         /// may be used.
         /// </summary>
-        virtual public bool IsPointer { get { return false; } }
+        public virtual bool IsPointer { get { return false; } }
 
         /// <summary>
         /// Gets the type of the element referenced by the pointer.
         /// </summary>
-        virtual public ClrType ComponentType { get; internal set; }
+        public virtual ClrType ComponentType { get; internal set; }
 
         /// <summary>
         /// A type is an array if you can use the array operators below, Abstractly arrays are objects 
         /// that whose children are not statically known by just knowing the type.  
         /// </summary>
-        virtual public bool IsArray { get { return false; } }
+        public virtual bool IsArray { get { return false; } }
 
         /// <summary>
         /// If the type is an array, then GetArrayLength returns the number of elements in the array.  Undefined
         /// behavior if this type is not an array.
         /// </summary>
-        abstract public int GetArrayLength(ulong objRef);
+        public abstract int GetArrayLength(ulong objRef);
 
         /// <summary>
         /// Returns the absolute address to the given array element.  You may then make a direct memory read out
         /// of the process to get the value if you want.
         /// </summary>
-        abstract public ulong GetArrayElementAddress(ulong objRef, int index);
+        public abstract ulong GetArrayElementAddress(ulong objRef, int index);
 
         /// <summary>
         /// Returns the array element value at the given index.  Returns 'null' if the array element is of type
         /// VALUE_CLASS.
         /// </summary>
-        abstract public object GetArrayElementValue(ulong objRef, int index);
+        public abstract object GetArrayElementValue(ulong objRef, int index);
 
         /// <summary>
         /// Returns the size of individual elements of an array.
         /// </summary>
-        abstract public int ElementSize { get; }
+        public abstract int ElementSize { get; }
 
         /// <summary>
         /// Returns the base size of the object.
         /// </summary>
-        abstract public int BaseSize { get; }
+        public abstract int BaseSize { get; }
 
         /// <summary>
         /// Returns true if this type is System.String.
         /// </summary>
-        virtual public bool IsString { get { return false; } }
+        public virtual bool IsString { get { return false; } }
 
         /// <summary>
         /// Returns true if this type represents free space on the heap.
         /// </summary>
-        virtual public bool IsFree { get { return false; } }
+        public virtual bool IsFree { get { return false; } }
 
         /// <summary>
         /// Returns true if this type is an exception (that is, it derives from System.Exception).
         /// </summary>
-        virtual public bool IsException { get { return false; } }
+        public virtual bool IsException { get { return false; } }
 
         /// <summary>
         /// Returns true if this type is an enum.
         /// </summary>
-        virtual public bool IsEnum { get { return false; } }
+        public virtual bool IsEnum { get { return false; } }
 
         /// <summary>
         /// Returns the element type of this enum.
         /// </summary>
-        virtual public ClrElementType GetEnumElementType() { throw new NotImplementedException(); }
+        public virtual ClrElementType GetEnumElementType() { throw new NotImplementedException(); }
 
         /// <summary>
         /// Returns a list of names in the enum.
         /// </summary>
-        virtual public IEnumerable<string> GetEnumNames() { throw new NotImplementedException(); }
+        public virtual IEnumerable<string> GetEnumNames() { throw new NotImplementedException(); }
 
         /// <summary>
         /// Gets the name of the value in the enum, or null if the value doesn't have a name.
@@ -565,7 +565,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <param name="value">The value to lookup.</param>
         /// <returns>The name of one entry in the enum with this value, or null if none exist.</returns>
-        virtual public string GetEnumName(object value) { throw new NotImplementedException(); }
+        public virtual string GetEnumName(object value) { throw new NotImplementedException(); }
 
         /// <summary>
         /// Gets the name of the value in the enum, or null if the value doesn't have a name.
@@ -574,7 +574,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <param name="value">The value to lookup.</param>
         /// <returns>The name of one entry in the enum with this value, or null if none exist.</returns>
-        virtual public string GetEnumName(int value) { throw new NotImplementedException(); }
+        public virtual string GetEnumName(int value) { throw new NotImplementedException(); }
 
         /// <summary>
         /// Attempts to get the integer value for a given enum entry.  Note you should only call this function if
@@ -583,7 +583,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="name">The name of the value to get (taken from GetEnumNames).</param>
         /// <param name="value">The value to write out.</param>
         /// <returns>True if we successfully filled value, false if 'name' is not a part of the enumeration.</returns>
-        virtual public bool TryGetEnumValue(string name, out int value) { throw new NotImplementedException(); }
+        public virtual bool TryGetEnumValue(string name, out int value) { throw new NotImplementedException(); }
 
         /// <summary>
         /// Attempts to get the value for a given enum entry.  The type of "value" can be determined by the
@@ -592,19 +592,19 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="name">The name of the value to get (taken from GetEnumNames).</param>
         /// <param name="value">The value to write out.</param>
         /// <returns>True if we successfully filled value, false if 'name' is not a part of the enumeration.</returns>
-        virtual public bool TryGetEnumValue(string name, out object value) { throw new NotImplementedException(); }
+        public virtual bool TryGetEnumValue(string name, out object value) { throw new NotImplementedException(); }
 
         /// <summary>
         /// Returns true if instances of this type have a simple value.
         /// </summary>
-        virtual public bool HasSimpleValue { get { return false; } }
+        public virtual bool HasSimpleValue { get { return false; } }
 
         /// <summary>
         /// Returns the simple value of an instance of this type.  Undefined behavior if HasSimpleValue returns false.
         /// For example ELEMENT_TYPE_I4 is an "int" and the return value of this function would be an int.
         /// </summary>
         /// <param name="address">The address of an instance of this type.</param>
-        virtual public object GetValue(ulong address) { return null; }
+        public virtual object GetValue(ulong address) { return null; }
 
         /// <summary>
         /// Returns a string representation of this object.
@@ -624,78 +624,78 @@ namespace Microsoft.Diagnostics.Runtime
         /// <summary>
         /// The name of the field.
         /// </summary>
-        abstract public string Name { get; }
+        public abstract string Name { get; }
 
         /// <summary>
         /// Returns the type token of this field.
         /// </summary>
-        abstract public uint Token { get; }
+        public abstract uint Token { get; }
 
         /// <summary>
         /// The type of the field.  Note this property may return null on error.  There is a bug in several versions
         /// of our debugging layer which causes this.  You should always null-check the return value of this field.
         /// </summary>
-        abstract public ClrType Type { get; }
+        public abstract ClrType Type { get; }
 
         /// <summary>
         /// Returns the element type of this field.  Note that even when Type is null, this should still tell you
         /// the element type of the field.
         /// </summary>
-        abstract public ClrElementType ElementType { get; }
+        public abstract ClrElementType ElementType { get; }
 
         /// <summary>
         /// Returns true if this field is a primitive (int, float, etc), false otherwise.
         /// </summary>
         /// <returns>True if this field is a primitive (int, float, etc), false otherwise.</returns>
-        virtual public bool IsPrimitive { get { return ClrRuntime.IsPrimitive(ElementType); } }
+        public virtual bool IsPrimitive { get { return ClrRuntime.IsPrimitive(ElementType); } }
 
         /// <summary>
         /// Returns true if this field is a ValueClass (struct), false otherwise.
         /// </summary>
         /// <returns>True if this field is a ValueClass (struct), false otherwise.</returns>
-        virtual public bool IsValueClass { get { return ClrRuntime.IsValueClass(ElementType); } }
+        public virtual bool IsValueClass { get { return ClrRuntime.IsValueClass(ElementType); } }
 
         /// <summary>
         /// Returns true if this field is an object reference, false otherwise.
         /// </summary>
         /// <returns>True if this field is an object reference, false otherwise.</returns>
-        virtual public bool IsObjectReference { get { return ClrRuntime.IsObjectReference(ElementType); } }
+        public virtual bool IsObjectReference { get { return ClrRuntime.IsObjectReference(ElementType); } }
 
         /// <summary>
         /// Gets the size of this field.
         /// </summary>
-        abstract public int Size { get; }
+        public abstract int Size { get; }
 
         /// <summary>
         /// Returns true if this field is public.
         /// </summary>
-        abstract public bool IsPublic { get; }
+        public abstract bool IsPublic { get; }
 
         /// <summary>
         /// Returns true if this field is private.
         /// </summary>
-        abstract public bool IsPrivate { get; }
+        public abstract bool IsPrivate { get; }
 
         /// <summary>
         /// Returns true if this field is internal.
         /// </summary>
-        abstract public bool IsInternal { get; }
+        public abstract bool IsInternal { get; }
 
         /// <summary>
         /// Returns true if this field is protected.
         /// </summary>
-        abstract public bool IsProtected { get; }
+        public abstract bool IsProtected { get; }
 
         /// <summary>
         /// Returns true if this field has a simple value (meaning you may call "GetFieldValue" in one of the subtypes
         /// of this class).
         /// </summary>
-        abstract public bool HasSimpleValue { get; }
+        public abstract bool HasSimpleValue { get; }
 
         /// <summary>
         /// If the field has a well defined offset from the base of the object, return it (otherwise -1). 
         /// </summary>
-        virtual public int Offset { get { return -1; } }
+        public virtual int Offset { get { return -1; } }
 
         /// <summary>
         /// Returns a string representation of this object.
@@ -721,7 +721,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <param name="objRef">The object to get the field value for.</param>
         /// <returns>The value of the field.</returns>
-        virtual public object GetValue(ulong objRef)
+        public virtual object GetValue(ulong objRef)
         {
             return GetValue(objRef, false, true);
         }
@@ -734,7 +734,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="interior">Whether the enclosing type of this field is a value class,
         /// and that value class is embedded in another object.</param>
         /// <returns>The value of the field.</returns>
-        virtual public object GetValue(ulong objRef, bool interior)
+        public virtual object GetValue(ulong objRef, bool interior)
         {
             return GetValue(objRef, interior, true);
         }
@@ -749,14 +749,14 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="convertStrings">When true, the value of a string field will be 
         /// returned as a System.String object; otherwise the address of the String object will be returned.</param>
         /// <returns>The value of the field.</returns>
-        abstract public object GetValue(ulong objRef, bool interior, bool convertStrings);
+        public abstract object GetValue(ulong objRef, bool interior, bool convertStrings);
 
         /// <summary>
         /// Returns the address of the value of this field.  Equivalent to GetFieldAddress(objRef, false).
         /// </summary>
         /// <param name="objRef">The object to get the field address for.</param>
         /// <returns>The value of the field.</returns>
-        virtual public ulong GetAddress(ulong objRef)
+        public virtual ulong GetAddress(ulong objRef)
         {
             return GetAddress(objRef, false);
         }
@@ -769,7 +769,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="interior">Whether the enclosing type of this field is a value class,
         /// and that value class is embedded in another object.</param>
         /// <returns>The value of the field.</returns>
-        abstract public ulong GetAddress(ulong objRef, bool interior);
+        public abstract ulong GetAddress(ulong objRef, bool interior);
     }
 
     /// <summary>
@@ -786,14 +786,14 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="appDomain">The AppDomain to see if the variable has been initialized.</param>
         /// <returns>True if the field has been initialized (even if initialized to NULL or a default
         /// value), false if the runtime has not initialized this variable.</returns>
-        abstract public bool IsInitialized(ClrAppDomain appDomain);
+        public abstract bool IsInitialized(ClrAppDomain appDomain);
 
         /// <summary>
         /// Gets the value of the static field.
         /// </summary>
         /// <param name="appDomain">The AppDomain in which to get the value.</param>
         /// <returns>The value of this static field.</returns>
-        virtual public object GetValue(ClrAppDomain appDomain)
+        public virtual object GetValue(ClrAppDomain appDomain)
         {
             return GetValue(appDomain, true);
         }
@@ -805,25 +805,25 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="convertStrings">When true, the value of a string field will be 
         /// returned as a System.String object; otherwise the address of the String object will be returned.</param>
         /// <returns>The value of this static field.</returns>
-        abstract public object GetValue(ClrAppDomain appDomain, bool convertStrings);
+        public abstract object GetValue(ClrAppDomain appDomain, bool convertStrings);
 
         /// <summary>
         /// Returns the address of the static field's value in memory.
         /// </summary>
         /// <param name="appDomain">The AppDomain in which to get the field's address.</param>
         /// <returns>The address of the field's value.</returns>
-        abstract public ulong GetAddress(ClrAppDomain appDomain);
+        public abstract ulong GetAddress(ClrAppDomain appDomain);
 
         /// <summary>
         /// Returns true if the static field has a default value (and if we can obtain it).
         /// </summary>
-        virtual public bool HasDefaultValue { get { return false; } }
+        public virtual bool HasDefaultValue { get { return false; } }
 
         /// <summary>
         /// The default value of the field.
         /// </summary>
         /// <returns>The default value of the field.</returns>
-        virtual public object GetDefaultValue() { throw new NotImplementedException(); }
+        public virtual object GetDefaultValue() { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -837,7 +837,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="appDomain">The AppDomain in which to get the field's value.</param>
         /// <param name="thread">The thread on which to get the field's value.</param>
         /// <returns>The value of the field.</returns>
-        virtual public object GetValue(ClrAppDomain appDomain, ClrThread thread)
+        public virtual object GetValue(ClrAppDomain appDomain, ClrThread thread)
         {
             return GetValue(appDomain, thread, true);
         }
@@ -850,7 +850,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="convertStrings">When true, the value of a string field will be 
         /// returned as a System.String object; otherwise the address of the String object will be returned.</param>
         /// <returns>The value of the field.</returns>
-        abstract public object GetValue(ClrAppDomain appDomain, ClrThread thread, bool convertStrings);
+        public abstract object GetValue(ClrAppDomain appDomain, ClrThread thread, bool convertStrings);
 
         /// <summary>
         /// Gets the address of the field.
@@ -858,7 +858,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="appDomain">The AppDomain in which to get the field's address.</param>
         /// <param name="thread">The thread on which to get the field's address.</param>
         /// <returns>The address of the field.</returns>
-        abstract public ulong GetAddress(ClrAppDomain appDomain, ClrThread thread);
+        public abstract ulong GetAddress(ClrAppDomain appDomain, ClrThread thread);
     }
 
     /// <summary>
@@ -871,27 +871,27 @@ namespace Microsoft.Diagnostics.Runtime
         /// <summary>
         /// Returns the GCHeapType for this exception object.
         /// </summary>
-        abstract public ClrType Type { get; }
+        public abstract ClrType Type { get; }
 
         /// <summary>
         /// Returns the exception message.
         /// </summary>
-        abstract public string Message { get; }
+        public abstract string Message { get; }
 
         /// <summary>
         /// Returns the address of the exception object.
         /// </summary>
-        abstract public ulong Address { get; }
+        public abstract ulong Address { get; }
 
         /// <summary>
         /// Returns the inner exception, if one exists, null otherwise.
         /// </summary>
-        abstract public ClrException Inner { get; }
+        public abstract ClrException Inner { get; }
 
         /// <summary>
         /// Returns the HRESULT associated with this exception (or S_OK if there isn't one).
         /// </summary>
-        abstract public int HResult { get; }
+        public abstract int HResult { get; }
 
         /// <summary>
         /// Returns the StackTrace for this exception.  Note that this may be empty or partial depending
@@ -899,7 +899,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// the middle of constructing the stackwalk.)  This returns an empty list if no stack trace is
         /// associated with this exception object.
         /// </summary>
-        abstract public IList<ClrStackFrame> StackTrace { get; }
+        public abstract IList<ClrStackFrame> StackTrace { get; }
     }
     /// <summary>
     /// The COM implementation details of a single CCW entry.
@@ -1029,7 +1029,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// are unique to an Method/AppDomain pair, so when there are multiple domains
         /// there will be multiple MethodDescs for a method.
         /// </summary>
-        abstract public ulong MethodDesc { get; }
+        public abstract ulong MethodDesc { get; }
 
         /// <summary>
         /// Enumerates all method descs for this method in the process.  MethodDescs
@@ -1038,127 +1038,127 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <returns>An enumeration of method handles in the process for this given
         /// method.</returns>
-        abstract public IEnumerable<ulong> EnumerateMethodDescs();
+        public abstract IEnumerable<ulong> EnumerateMethodDescs();
 
         /// <summary>
         /// The name of the method.  For example, "void System.Foo.Bar(object o, int i)" would return "Bar".
         /// </summary>
-        abstract public string Name { get; }
+        public abstract string Name { get; }
 
         /// <summary>
         /// Returns the full signature of the function.  For example, "void System.Foo.Bar(object o, int i)"
         /// would return "System.Foo.Bar(System.Object, System.Int32)"
         /// </summary>
-        abstract public string GetFullSignature();
+        public abstract string GetFullSignature();
 
         /// <summary>
         /// Returns the instruction pointer in the target process for the start of the method's assembly.
         /// </summary>
-        abstract public ulong NativeCode { get; }
+        public abstract ulong NativeCode { get; }
 
         /// <summary>
         /// Gets the ILOffset of the given address within this method.
         /// </summary>
         /// <param name="addr">The absolute address of the code (not a relative offset).</param>
         /// <returns>The IL offset of the given address.</returns>
-        abstract public int GetILOffset(ulong addr);
+        public abstract int GetILOffset(ulong addr);
 
         /// <summary>
         /// Returns the location in memory of the IL for this method.
         /// </summary>
-        abstract public ILInfo IL { get; }
+        public abstract ILInfo IL { get; }
         
         /// <summary>
         /// Returns the regions of memory that 
         /// </summary>
-        abstract public HotColdRegions HotColdInfo { get; }
+        public abstract HotColdRegions HotColdInfo { get; }
 
         /// <summary>
         /// Returns the way this method was compiled.
         /// </summary>
-        abstract public MethodCompilationType CompilationType { get; }
+        public abstract MethodCompilationType CompilationType { get; }
 
         /// <summary>
         /// Returns the IL to native offset mapping.
         /// </summary>
-        abstract public ILToNativeMap[] ILOffsetMap { get; }
+        public abstract ILToNativeMap[] ILOffsetMap { get; }
 
         /// <summary>
         /// Returns the metadata token of the current method.
         /// </summary>
-        abstract public uint MetadataToken { get; }
+        public abstract uint MetadataToken { get; }
 
         /// <summary>
         /// Returns the enclosing type of this method.
         /// </summary>
-        abstract public ClrType Type { get; }
+        public abstract ClrType Type { get; }
 
         // Visibility:
         /// <summary>
         /// Returns if this method is public.
         /// </summary>
-        abstract public bool IsPublic { get; }
+        public abstract bool IsPublic { get; }
 
         /// <summary>
         /// Returns if this method is private.
         /// </summary>
-        abstract public bool IsPrivate { get; }
+        public abstract bool IsPrivate { get; }
 
         /// <summary>
         /// Returns if this method is internal.
         /// </summary>
-        abstract public bool IsInternal { get; }
+        public abstract bool IsInternal { get; }
 
         /// <summary>
         /// Returns if this method is protected.
         /// </summary>
-        abstract public bool IsProtected { get; }
+        public abstract bool IsProtected { get; }
 
         // Attributes:
         /// <summary>
         /// Returns if this method is static.
         /// </summary>
-        abstract public bool IsStatic { get; }
+        public abstract bool IsStatic { get; }
         /// <summary>
         /// Returns if this method is final.
         /// </summary>
-        abstract public bool IsFinal { get; }
+        public abstract bool IsFinal { get; }
         /// <summary>
         /// Returns if this method is a PInvoke.
         /// </summary>
-        abstract public bool IsPInvoke { get; }
+        public abstract bool IsPInvoke { get; }
         /// <summary>
         /// Returns if this method is a special method.
         /// </summary>
-        abstract public bool IsSpecialName { get; }
+        public abstract bool IsSpecialName { get; }
         /// <summary>
         /// Returns if this method is runtime special method.
         /// </summary>
-        abstract public bool IsRTSpecialName { get; }
+        public abstract bool IsRTSpecialName { get; }
 
         /// <summary>
         /// Returns if this method is virtual.
         /// </summary>
-        abstract public bool IsVirtual { get; }
+        public abstract bool IsVirtual { get; }
         /// <summary>
         /// Returns if this method is abstract.
         /// </summary>
-        abstract public bool IsAbstract { get; }
+        public abstract bool IsAbstract { get; }
 
         /// <summary>
         /// Returns the location of the GCInfo for this method.
         /// </summary>
-        abstract public ulong GCInfo { get; }
+        public abstract ulong GCInfo { get; }
 
         /// <summary>
         /// Returns whether this method is an instance constructor.
         /// </summary>
-        virtual public bool IsConstructor { get { return Name == ".ctor"; } }
+        public virtual bool IsConstructor { get { return Name == ".ctor"; } }
 
         /// <summary>
         /// Returns whether this method is a static constructor.
         /// </summary>
-        virtual public bool IsClassConstructor { get { return Name == ".cctor"; } }
+        public virtual bool IsClassConstructor { get { return Name == ".cctor"; } }
     }
 
     /// <summary>

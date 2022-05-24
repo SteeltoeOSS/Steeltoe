@@ -40,11 +40,11 @@ namespace Steeltoe.Connector.Services
             ManagementUri = managementUri;
         }
 
-        public string ManagementUri { get; internal protected set; }
+        public string ManagementUri { get; protected internal set; }
 
-        public List<string> Uris { get; internal protected set; }
+        public List<string> Uris { get; protected internal set; }
 
-        public List<string> ManagementUris { get; internal protected set; }
+        public List<string> ManagementUris { get; protected internal set; }
 
         public string VirtualHost
         {

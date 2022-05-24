@@ -24,7 +24,7 @@ namespace Steeltoe.Stream.Binding
             _bindables = bindables.ToList();
         }
 
-        public async virtual Task Start()
+        public virtual async Task Start()
         {
             if (!_running)
             {
@@ -49,7 +49,7 @@ namespace Steeltoe.Stream.Binding
 
         public virtual int Phase => int.MaxValue;
 
-        public async virtual Task Stop()
+        public virtual async Task Stop()
         {
             if (_running)
             {

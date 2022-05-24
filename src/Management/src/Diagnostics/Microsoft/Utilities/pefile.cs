@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
     /// 
     /// It can read both 32 and 64 bit PE files.  
     /// </summary>
-    internal unsafe sealed class PEFile : IDisposable
+    internal sealed unsafe class PEFile : IDisposable
     {
         /// <summary>
         /// Parses a PEFile from a given stream. If it is valid, a new PEFile object is
@@ -298,7 +298,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
     /// PEFile are read or mapped into memory, this class can parse it when given a pointer to it.
     /// It can read both 32 and 64 bit PE files.  
     /// </summary>
-    internal unsafe sealed class PEHeader
+    internal sealed unsafe class PEHeader
     {
         /// <summary>
         /// Parses the given buffer for the header of a PEFile. If it can be parsed correctly,
@@ -757,7 +757,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
     /// <summary>
     /// FileVersionInfo reprents the extended version formation that is optionally placed in the PE file resource area. 
     /// </summary>
-    internal unsafe sealed class FileVersionInfo
+    internal sealed unsafe class FileVersionInfo
     {
         // TODO incomplete, but this is all I need.  
         /// <summary>
@@ -819,7 +819,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
     /// <summary>
     /// A PEBuffer represents 
     /// </summary>
-    internal unsafe sealed class PEBuffer : IDisposable
+    internal sealed unsafe class PEBuffer : IDisposable
     {
         public PEBuffer(Stream stream, int buffSize = 512)
         {
@@ -884,7 +884,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
         #endregion
     }
 
-    internal unsafe sealed class ResourceNode
+    internal sealed unsafe class ResourceNode
     {
         public string Name { get; private set; }
         public bool IsLeaf { get; private set; }
@@ -911,7 +911,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
             return sw.ToString();
         }
 
-        static public ResourceNode GetChild(ResourceNode node, string name)
+        public static ResourceNode GetChild(ResourceNode node, string name)
         {
             if (node == null)
                 return null;
@@ -1112,7 +1112,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    unsafe internal struct IMAGE_SECTION_HEADER
+    internal unsafe struct IMAGE_SECTION_HEADER
     {
         public string Name
         {

@@ -54,42 +54,42 @@ namespace Microsoft.Diagnostics.Runtime
         /// <summary>
         /// Returns the pointer size of the target process.
         /// </summary>
-        abstract public int PointerSize { get; }
+        public abstract int PointerSize { get; }
 
         /// <summary>
         /// Enumerates the list of appdomains in the process.  Note the System appdomain and Shared
         /// AppDomain are omitted.
         /// </summary>
-        abstract public IList<ClrAppDomain> AppDomains { get; }
+        public abstract IList<ClrAppDomain> AppDomains { get; }
 
         /// <summary>
         /// Give access to the System AppDomain
         /// </summary>
-        abstract public ClrAppDomain SystemDomain { get; }
+        public abstract ClrAppDomain SystemDomain { get; }
 
         /// <summary>
         /// Give access to the Shared AppDomain
         /// </summary>
-        abstract public ClrAppDomain SharedDomain { get; }
+        public abstract ClrAppDomain SharedDomain { get; }
 
         /// <summary>
         /// Enumerates all managed threads in the process.  Only threads which have previously run managed
         /// code will be enumerated.
         /// </summary>
-        abstract public IList<ClrThread> Threads { get; }
+        public abstract IList<ClrThread> Threads { get; }
 
         /// <summary>
         /// Enumerates all objects currently on the finalizer queue.  (Not finalizable objects, but objects
         /// which have been collected and will be imminently finalized.)
         /// </summary>
-        abstract public IEnumerable<ulong> EnumerateFinalizerQueueObjectAddresses();
+        public abstract IEnumerable<ulong> EnumerateFinalizerQueueObjectAddresses();
 
         /// <summary>
         /// Returns a ClrMethod by its internal runtime handle (on desktop CLR this is a MethodDesc).
         /// </summary>
         /// <param name="methodHandle">The method handle (MethodDesc) to look up.</param>
         /// <returns>The ClrMethod for the given method handle, or null if no method was found.</returns>
-        abstract public ClrMethod GetMethodByHandle(ulong methodHandle);
+        public abstract ClrMethod GetMethodByHandle(ulong methodHandle);
 
         /// <summary>
         /// Returns the CCW data associated with the given address.  This is used when looking at stowed
@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="bytesRead">The number of bytes actually read out of the process.  This will be less than
         /// bytes requested if the request falls off the end of an allocation.</param>
         /// <returns>False if the memory is not readable (free or no read permission), true if *some* memory was read.</returns>
-        abstract public bool ReadMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead);
+        public abstract bool ReadMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead);
 
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// <param name="address">The address to read from.</param>
         /// <param name="value">The value at that address.</param>
         /// <returns>True if the read was successful, false otherwise.</returns>
-        abstract public bool ReadPointer(ulong address, out ulong value);
+        public abstract bool ReadPointer(ulong address, out ulong value);
 
         /// <summary>
         /// Enumerates a list of GC handles currently in the process.  Note that this list may be incomplete
@@ -132,23 +132,23 @@ namespace Microsoft.Diagnostics.Runtime
         /// Gets the GC heap of the process.
         /// </summary>
         [Obsolete("Use the Heap property instead.")]
-        abstract public ClrHeap GetHeap();
+        public abstract ClrHeap GetHeap();
 
         /// <summary>
         /// Gets the GC heap of the process.
         /// </summary>
-        abstract public ClrHeap Heap { get; }
+        public abstract ClrHeap Heap { get; }
 
         /// <summary>
         /// Returns data on the CLR thread pool for this runtime.
         /// </summary>
-        virtual public ClrThreadPool ThreadPool { get { throw new NotImplementedException(); } }
+        public virtual ClrThreadPool ThreadPool { get { throw new NotImplementedException(); } }
 
         /// <summary>
         /// Returns data on the CLR thread pool for this runtime.
         /// </summary>
         [Obsolete("Use ThreadPool property instead.")]
-        virtual public ClrThreadPool GetThreadPool() { throw new NotImplementedException(); }
+        public virtual ClrThreadPool GetThreadPool() { throw new NotImplementedException(); }
 
         /// <summary>
         /// Enumerates regions of memory which CLR has allocated with a description of what data
@@ -156,13 +156,13 @@ namespace Microsoft.Diagnostics.Runtime
         /// that CLR allocates.
         /// </summary>
         /// <returns>An enumeration of memory regions in the process.</returns>
-        abstract public IEnumerable<ClrMemoryRegion> EnumerateMemoryRegions();
+        public abstract IEnumerable<ClrMemoryRegion> EnumerateMemoryRegions();
 
         /// <summary>
         /// Attempts to get a ClrMethod for the given instruction pointer.  This will return NULL if the
         /// given instruction pointer is not within any managed method.
         /// </summary>
-        abstract public ClrMethod GetMethodByAddress(ulong ip);
+        public abstract ClrMethod GetMethodByAddress(ulong ip);
 
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// (E.G. if you want to use the ClrHeap object after calling flush, you must call ClrRuntime.GetHeap
         /// again after Flush to get a new instance.)
         /// </summary>
-        abstract public void Flush();
+        public abstract void Flush();
 
         /// <summary>
         /// Delegate called when the RuntimeFlushed event is triggered.
@@ -307,63 +307,63 @@ namespace Microsoft.Diagnostics.Runtime
         /// <summary>
         /// The total number of threadpool worker threads in the process.
         /// </summary>
-        abstract public int TotalThreads { get; }
+        public abstract int TotalThreads { get; }
 
         /// <summary>
         /// The number of running threadpool threads in the process.
         /// </summary>
-        abstract public int RunningThreads { get; }
+        public abstract int RunningThreads { get; }
 
         /// <summary>
         /// The number of idle threadpool threads in the process.
         /// </summary>
-        abstract public int IdleThreads { get; }
+        public abstract int IdleThreads { get; }
 
         /// <summary>
         /// The minimum number of threadpool threads allowable.
         /// </summary>
-        abstract public int MinThreads { get; }
+        public abstract int MinThreads { get; }
 
         /// <summary>
         /// The maximum number of threadpool threads allowable.
         /// </summary>
-        abstract public int MaxThreads { get; }
+        public abstract int MaxThreads { get; }
 
         /// <summary>
         /// Returns the minimum number of completion ports (if any).
         /// </summary>
-        abstract public int MinCompletionPorts { get; }
+        public abstract int MinCompletionPorts { get; }
 
         /// <summary>
         /// Returns the maximum number of completion ports.
         /// </summary>
-        abstract public int MaxCompletionPorts { get; }
+        public abstract int MaxCompletionPorts { get; }
 
         /// <summary>
         /// Returns the CPU utilization of the threadpool (as a percentage out of 100).
         /// </summary>
-        abstract public int CpuUtilization { get; }
+        public abstract int CpuUtilization { get; }
 
         /// <summary>
         /// The number of free completion port threads.
         /// </summary>
-        abstract public int FreeCompletionPortCount { get; }
+        public abstract int FreeCompletionPortCount { get; }
 
         /// <summary>
         /// The maximum number of free completion port threads.
         /// </summary>
-        abstract public int MaxFreeCompletionPorts { get; }
+        public abstract int MaxFreeCompletionPorts { get; }
 
         /// <summary>
         /// Enumerates the work items on the threadpool (native side).
         /// </summary>
-        abstract public IEnumerable<NativeWorkItem> EnumerateNativeWorkItems();
+        public abstract IEnumerable<NativeWorkItem> EnumerateNativeWorkItems();
 
         /// <summary>
         /// Enumerates work items on the thread pool (managed side).
         /// </summary>
         /// <returns></returns>
-        abstract public IEnumerable<ManagedWorkItem> EnumerateManagedWorkItems();
+        public abstract IEnumerable<ManagedWorkItem> EnumerateManagedWorkItems();
     }
 
     /// <summary>
@@ -772,26 +772,26 @@ namespace Microsoft.Diagnostics.Runtime
         /// on RuntimeBase.
         /// Note:  HasAppDomainData must be true before getting this property.
         /// </summary>
-        abstract public ClrAppDomain AppDomain { get; }
+        public abstract ClrAppDomain AppDomain { get; }
 
         /// <summary>
         /// The Module pointer that corresponds to this heap.  You can obtain the
         /// filename of the module with this property.
         /// Note:  HasModuleData must be true or this property will be null.
         /// </summary>
-        abstract public string Module { get; }
+        public abstract string Module { get; }
 
         /// <summary>
         /// Returns the heap number associated with this data.  Returns -1 if no
         /// GC heap is associated with this memory region.
         /// </summary>
-        abstract public int HeapNumber { get; set; }
+        public abstract int HeapNumber { get; set; }
 
         /// <summary>
         /// Returns the gc segment type associated with this data.  Only callable if
         /// HasGCHeapData is true.
         /// </summary>
-        abstract public GCSegmentType GCSegmentType { get; set; }
+        public abstract GCSegmentType GCSegmentType { get; set; }
 
         /// <summary>
         /// Returns a string describing the region of memory (for example "JIT Code Heap"
@@ -799,7 +799,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <param name="detailed">Whether or not to include additional data such as the module,
         /// AppDomain, or GC Heap associaed with it.</param>
-        abstract public string ToString(bool detailed);
+        public abstract string ToString(bool detailed);
 
         /// <summary>
         /// Equivalent to GetDisplayString(false).
@@ -882,7 +882,7 @@ namespace Microsoft.Diagnostics.Runtime
             get { return IntPtr.Size; }
         }
 
-        internal protected bool CanWalkHeap { get; protected set; }
+        protected internal bool CanWalkHeap { get; protected set; }
 
         internal MemoryReader MemoryReader
         {

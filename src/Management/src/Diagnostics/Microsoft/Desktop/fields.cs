@@ -107,10 +107,10 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         }
 
         public override uint Token { get { return _token; } }
-        override public bool HasDefaultValue { get { return _defaultValue != null; } }
-        override public object GetDefaultValue() { return _defaultValue; }
+        public override bool HasDefaultValue { get { return _defaultValue != null; } }
+        public override object GetDefaultValue() { return _defaultValue; }
 
-        override public bool IsPublic
+        public override bool IsPublic
         {
             get
             {
@@ -118,7 +118,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsPrivate
+        public override bool IsPrivate
         {
             get
             {
@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsInternal
+        public override bool IsInternal
         {
             get
             {
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsProtected
+        public override bool IsProtected
         {
             get
             {
@@ -447,7 +447,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
     internal class DesktopInstanceField : ClrInstanceField
     {
         public override uint Token { get { return _token; } }
-        override public bool IsPublic
+        public override bool IsPublic
         {
             get
             {
@@ -455,7 +455,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsPrivate
+        public override bool IsPrivate
         {
             get
             {
@@ -463,7 +463,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsInternal
+        public override bool IsInternal
         {
             get
             {
@@ -471,7 +471,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             }
         }
 
-        override public bool IsProtected
+        public override bool IsProtected
         {
             get
             {
