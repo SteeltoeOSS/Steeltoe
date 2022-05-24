@@ -73,7 +73,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public virtual string Host
         {
-            get { return (RabbitConnectionFactory == null) ? "localhost" : RabbitConnectionFactory.HostName; }
+            get { return RabbitConnectionFactory == null ? "localhost" : RabbitConnectionFactory.HostName; }
             set { RabbitConnectionFactory.HostName = value; }
         }
 
@@ -341,7 +341,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         private void Shuffle<T>(T[] array)
         {
             var n = array.Length;
-            for (var i = 0; i < (n - 1); i++)
+            for (var i = 0; i < n - 1; i++)
             {
                 var r = i + _random.Next(n - i);
                 (array[r], array[i]) = (array[i], array[r]);

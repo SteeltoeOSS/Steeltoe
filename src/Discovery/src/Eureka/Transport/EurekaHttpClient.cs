@@ -235,7 +235,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                         "SendHeartbeatAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
                         requestUri.ToMaskedString(),
                         response.StatusCode,
-                        (infoResp != null) ? infoResp.ToString() : "null",
+                        infoResp != null ? infoResp.ToString() : "null",
                         retry);
                     var statusCode = (int)response.StatusCode;
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
@@ -348,7 +348,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                         "GetApplicationAsync {RequestUri}, status: {StatusCode}, application: {Application}, retry: {retry}",
                         requestUri.ToMaskedString(),
                         response.StatusCode,
-                        (appResp != null) ? appResp.ToString() : "null",
+                        appResp != null ? appResp.ToString() : "null",
                         retry);
                     var statusCode = (int)response.StatusCode;
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 403 || statusCode == 404)
@@ -830,7 +830,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                         "DoGetInstanceAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
                         requestUri.ToMaskedString(),
                         response.StatusCode,
-                        (infoResp != null) ? infoResp.ToString() : "null",
+                        infoResp != null ? infoResp.ToString() : "null",
                         retry);
                     var statusCode = (int)response.StatusCode;
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
@@ -910,7 +910,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                         "DoGetApplicationsAsync {RequestUri}, status: {StatusCode}, applications: {Application}, retry: {retry}",
                         requestUri.ToMaskedString(),
                         response.StatusCode,
-                        (appsResp != null) ? appsResp.ToString() : "null",
+                        appsResp != null ? appsResp.ToString() : "null",
                         retry);
                     var statusCode = (int)response.StatusCode;
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)

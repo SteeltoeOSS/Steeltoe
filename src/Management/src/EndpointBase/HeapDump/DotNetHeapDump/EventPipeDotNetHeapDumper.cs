@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
                 log.WriteLine("{0,5:n1}s: Requesting a .NET Heap Dump", getElapsed().TotalSeconds);
 
                 using EventPipeSessionController gcDumpSession = new EventPipeSessionController(processID, new List<EventPipeProvider> { 
-                    new("Microsoft-Windows-DotNETRuntime", EventLevel.Verbose, (long)(ClrTraceEventParser.Keywords.GCHeapSnapshot)) 
+                    new("Microsoft-Windows-DotNETRuntime", EventLevel.Verbose, (long)ClrTraceEventParser.Keywords.GCHeapSnapshot) 
                 });
                 log.WriteLine("{0,5:n1}s: gcdump EventPipe Session started", getElapsed().TotalSeconds);
 

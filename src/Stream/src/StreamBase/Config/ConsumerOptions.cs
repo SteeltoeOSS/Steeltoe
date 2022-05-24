@@ -86,11 +86,11 @@ namespace Steeltoe.Stream.Config
         internal void PostProcess(string name, ConsumerOptions @default = null)
         {
             BindingName = name;
-            Multiplex ??= (@default != null) ? @default.Multiplex : Multiplex_Default;
-            UseNativeDecoding ??= (@default != null) ? @default.UseNativeDecoding : UseNativeDecoding_Default;
-            HeaderMode ??= (@default != null) ? @default.HeaderMode : Config.HeaderMode.None;
-            RetryableExceptions ??= (@default != null) ? @default.RetryableExceptions : new List<string>();
-            DefaultRetryable ??= (@default != null) ? @default.DefaultRetryable : DefaultRetryable_Default;
+            Multiplex ??= @default != null ? @default.Multiplex : Multiplex_Default;
+            UseNativeDecoding ??= @default != null ? @default.UseNativeDecoding : UseNativeDecoding_Default;
+            HeaderMode ??= @default != null ? @default.HeaderMode : Config.HeaderMode.None;
+            RetryableExceptions ??= @default != null ? @default.RetryableExceptions : new List<string>();
+            DefaultRetryable ??= @default != null ? @default.DefaultRetryable : DefaultRetryable_Default;
 
             if (double.IsNaN(BackOffMultiplier))
             {
@@ -122,15 +122,15 @@ namespace Steeltoe.Stream.Config
                 InstanceCount = @default?.InstanceCount ?? InstanceCount_Default;
             }
 
-            InstanceIndexList ??= (@default != null) ? @default.InstanceIndexList : new List<int>();
-            Partitioned ??= (@default != null) ? @default.Partitioned : IsPartitioned_Default;
+            InstanceIndexList ??= @default != null ? @default.InstanceIndexList : new List<int>();
+            Partitioned ??= @default != null ? @default.Partitioned : IsPartitioned_Default;
 
             if (Concurrency == int.MinValue)
             {
                 Concurrency = @default?.Concurrency ?? Concurrency_Default;
             }
 
-            AutoStartup ??= (@default != null) ? @default.AutoStartup : AutoStartup_Default;
+            AutoStartup ??= @default != null ? @default.AutoStartup : AutoStartup_Default;
         }
     }
 }

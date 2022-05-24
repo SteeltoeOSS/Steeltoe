@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             ErrorCount = error;
             if (TotalRequests > 0)
             {
-                ErrorPercentage = (int)((ErrorCount * 100) / TotalRequests);
+                ErrorPercentage = (int)(ErrorCount * 100 / TotalRequests);
             }
             else
             {

@@ -33,7 +33,7 @@ namespace Steeltoe.Common.Order
         protected int GetOrder(int i1, int i2)
         {
 #pragma warning disable S3358 // Ternary operators should not be nested
-            return (i1 < i2) ? -1 : ((i1 == i2) ? 0 : 1);
+            return i1 < i2 ? -1 : i1 == i2 ? 0 : 1;
 #pragma warning restore S3358 // Ternary operators should not be nested
         }
 

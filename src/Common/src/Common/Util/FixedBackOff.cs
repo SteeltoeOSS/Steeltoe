@@ -54,7 +54,7 @@ namespace Steeltoe.Common.Util
 
             public override string ToString()
             {
-                var attemptValue = (_backoff.MaxAttempts == int.MaxValue) ? "unlimited" : _backoff.MaxAttempts.ToString();
+                var attemptValue = _backoff.MaxAttempts == int.MaxValue ? "unlimited" : _backoff.MaxAttempts.ToString();
                 return $"FixedBackOff{{interval={_backoff.Interval}, currentAttempts={_currentAttempts}, maxAttempts={attemptValue}}}";
             }
         }

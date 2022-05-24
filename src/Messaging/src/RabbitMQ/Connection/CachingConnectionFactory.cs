@@ -2620,7 +2620,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public override string ToString()
             {
-                return $"Proxy@{RuntimeHelpers.GetHashCode(this)} {((_factory.CacheMode == CachingMode.CHANNEL) ? "Shared " : "Dedicated ")}Rabbit Connection: {Target}";
+                return $"Proxy@{RuntimeHelpers.GetHashCode(this)} {(_factory.CacheMode == CachingMode.CHANNEL ? "Shared " : "Dedicated ")}Rabbit Connection: {Target}";
             }
 
             private int CountOpenIdleConnections()

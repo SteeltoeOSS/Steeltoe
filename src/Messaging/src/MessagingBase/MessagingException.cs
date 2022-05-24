@@ -49,7 +49,7 @@ namespace Steeltoe.Messaging
         public override string ToString()
         {
             return base.ToString() + (FailedMessage == null ? string.Empty
-                    : (", failedMessage=" + FailedMessage));
+                    : ", failedMessage=" + FailedMessage);
         }
     }
 }

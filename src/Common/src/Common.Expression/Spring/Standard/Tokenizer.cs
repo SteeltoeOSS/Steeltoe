@@ -524,7 +524,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
             // Check if this is the alternative (textual) representation of an operator (see
             // alternativeOperatorNames)
-            if ((_pos - start) == 2 || (_pos - start) == 3)
+            if (_pos - start == 2 || _pos - start == 3)
             {
                 var asString = new string(subarray).ToUpper();
                 var idx = Array.BinarySearch(ALTERNATIVE_OPERATOR_NAMES, asString);

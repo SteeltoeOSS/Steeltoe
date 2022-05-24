@@ -442,7 +442,7 @@ namespace Steeltoe.Discovery.Eureka
             _logger.LogDebug(
                 "FetchFullRegistry returned: {StatusCode}, {Response}",
                 resp.StatusCode,
-                (resp.Response != null) ? resp.Response.ToString() : "null");
+                resp.Response != null ? resp.Response.ToString() : "null");
             if (resp.StatusCode == HttpStatusCode.OK)
             {
                 fetched = resp.Response;

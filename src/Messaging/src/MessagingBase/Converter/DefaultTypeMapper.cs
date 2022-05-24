@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.Converter
         public Type ToType(IMessageHeaders headers)
         {
             var inferredType = GetInferredType(headers);
-            if (inferredType != null && (!inferredType.IsAbstract && !inferredType.IsInterface))
+            if (inferredType != null && !inferredType.IsAbstract && !inferredType.IsInterface)
             {
                 return inferredType;
             }

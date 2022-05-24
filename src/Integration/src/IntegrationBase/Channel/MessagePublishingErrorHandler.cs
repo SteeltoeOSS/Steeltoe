@@ -60,7 +60,7 @@ namespace Steeltoe.Integration.Channel
 
             if (!sent)
             {
-                var failedMessage = (exception is MessagingException ex) ? ex.FailedMessage : null;
+                var failedMessage = exception is MessagingException ex ? ex.FailedMessage : null;
                 if (failedMessage != null)
                 {
                     _logger?.LogError("failure occurred in messaging task with message: " + failedMessage, exception);
@@ -82,7 +82,7 @@ namespace Steeltoe.Integration.Channel
                 actualThrowable = exception.InnerException;
             }
 
-            var failedMessage = (actualThrowable is MessagingException ex) ? ex.FailedMessage : null;
+            var failedMessage = actualThrowable is MessagingException ex ? ex.FailedMessage : null;
             if (DefaultErrorChannel == null && ChannelResolver != null)
             {
                 Channel = ChannelResolver.ResolveDestination(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);

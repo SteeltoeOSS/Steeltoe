@@ -128,7 +128,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 throw new MessageConversionException("Message converter returned null");
             }
 
-            var builder = (convertedObject is IMessage message1) ? RabbitMessageBuilder.FromMessage(message1) : RabbitMessageBuilder.WithPayload(convertedObject);
+            var builder = convertedObject is IMessage message1 ? RabbitMessageBuilder.FromMessage(message1) : RabbitMessageBuilder.WithPayload(convertedObject);
             var message = builder.CopyHeadersIfAbsent(headers).Build();
             return message;
         }

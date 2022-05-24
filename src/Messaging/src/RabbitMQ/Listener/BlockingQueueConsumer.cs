@@ -362,7 +362,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             get
             {
                 return Cancel.Value ||
-                    (AbortStarted > 0 && (AbortStarted + ShutdownTimeout) > DateTimeOffset.Now.ToUnixTimeMilliseconds()) ||
+                    (AbortStarted > 0 && AbortStarted + ShutdownTimeout > DateTimeOffset.Now.ToUnixTimeMilliseconds()) ||
                     !ActiveObjectCounter.IsActive;
             }
         }

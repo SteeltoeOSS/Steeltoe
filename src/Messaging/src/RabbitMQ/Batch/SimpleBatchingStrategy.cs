@@ -104,7 +104,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
         {
             if (properties.TryGetValue(RabbitMessageHeaders.SPRING_BATCH_FORMAT, out var value))
             {
-                return (value as string) == RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4;
+                return value as string == RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4;
             }
 
             return false;

@@ -128,7 +128,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
             var truncated = false;
             var stackTraceAsString = stackTrace;
             var exceptionMessage = exception;
-            var truncatedExceptionMessage = exceptionMessage.Length <= MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE ? exceptionMessage : (exceptionMessage.Substring(0, MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE) + "...");
+            var truncatedExceptionMessage = exceptionMessage.Length <= MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE ? exceptionMessage : exceptionMessage.Substring(0, MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE) + "...";
             if (MaxStackTraceLength > 0 && stackTraceAsString.Length + exceptionMessage.Length > MaxStackTraceLength)
             {
                 if (!exceptionMessage.Equals(truncatedExceptionMessage))

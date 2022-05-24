@@ -158,7 +158,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         public override int GetHashCode()
         {
-            var result = (31 * 1) + ((InstanceId == null) ? 0 : InstanceId.GetHashCode());
+            var result = (31 * 1) + (InstanceId == null ? 0 : InstanceId.GetHashCode());
             return result;
         }
 
@@ -229,9 +229,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             info.DataCenterInfo = instanceConfig.DataCenterInfo;
             info.IpAddr = instanceConfig.IpAddress;
             info.HostName = defaultAddress;
-            info.Port = (instanceConfig.NonSecurePort == -1) ? EurekaInstanceConfig.Default_NonSecurePort : instanceConfig.NonSecurePort;
+            info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfig.Default_NonSecurePort : instanceConfig.NonSecurePort;
             info.IsUnsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-            info.SecurePort = (instanceConfig.SecurePort == -1) ? EurekaInstanceConfig.Default_SecurePort : instanceConfig.SecurePort;
+            info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfig.Default_SecurePort : instanceConfig.SecurePort;
             info.IsSecurePortEnabled = instanceConfig.SecurePortEnabled;
             info.VipAddress = instanceConfig.VirtualHostName;
             info.SecureVipAddress = instanceConfig.SecureVirtualHostName;
@@ -282,7 +282,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 info.VipAddress = json.VipAddress;
                 info.SecureVipAddress = json.SecureVipAddress;
                 info.CountryId = json.CountryId;
-                info.DataCenterInfo = (json.DataCenterInfo == null) ? null : AppInfo.DataCenterInfo.FromJson(json.DataCenterInfo);
+                info.DataCenterInfo = json.DataCenterInfo == null ? null : AppInfo.DataCenterInfo.FromJson(json.DataCenterInfo);
                 info.HostName = json.HostName;
                 info.Status = json.Status;
                 info.OverriddenStatus = json.OverriddenStatus;
@@ -327,7 +327,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
                 Actiontype = Actiontype,
                 AsgName = AsgName,
-                Metadata = (Metadata.Count == 0) ? new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
+                Metadata = Metadata.Count == 0 ? new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
             };
 
             return jinfo;

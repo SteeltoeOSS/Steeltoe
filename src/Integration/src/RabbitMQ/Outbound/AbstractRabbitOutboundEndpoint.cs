@@ -398,7 +398,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         private IMessageBuilder PrepareMessageBuilder(object replyObject)
         {
             var factory = IntegrationServices.MessageBuilderFactory;
-            return (replyObject is IMessage message) ? factory.FromMessage(message) : factory.WithPayload(replyObject);
+            return replyObject is IMessage message ? factory.FromMessage(message) : factory.WithPayload(replyObject);
         }
 
         private void CheckUnconfirmed(CancellationToken cancellationToken)

@@ -1426,7 +1426,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             };
             var t1 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             ccf.CreateConnection();
-            Assert.True((DateTimeOffset.Now.ToUnixTimeMilliseconds() - t1) < 30_000);
+            Assert.True(DateTimeOffset.Now.ToUnixTimeMilliseconds() - t1 < 30_000);
         }
 
         [Fact]

@@ -1402,7 +1402,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public static bool IsEven(int i)
             {
-                return (i % 2) == 0;
+                return i % 2 == 0;
             }
 
             public void M()

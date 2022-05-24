@@ -510,7 +510,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
                 var rabbitConnectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
 
                 IConnectionFactory instance =
-                    (rabbitConnectionFactory is not null && typeof(F) == typeof(CachingConnectionFactory)) ?
+                    rabbitConnectionFactory is not null && typeof(F) == typeof(CachingConnectionFactory) ?
                     new CachingConnectionFactory(rabbitConnectionFactory) :
                     (F)ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(F));
 

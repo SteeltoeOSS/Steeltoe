@@ -172,7 +172,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 {
                     if (_whenUsed.TryGetValue(c, out var howlong)
                         && !_inUseConsumerChannels.Values.Contains(c)
-                        && howlong < (now - IdleEventInterval))
+                        && howlong < now - IdleEventInterval)
                     {
                         reduce++;
                     }

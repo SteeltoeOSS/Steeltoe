@@ -235,7 +235,7 @@ internal class DotNetHeapDumpGraphReader
                 m_log.WriteLine("Found a Gen2 Induced non-background GC Start at {0:n3} msec GC Count {1}", data.TimeStampRelativeMSec, m_gcID);
                 m_ignoreEvents = false;
                 m_seenStart = true;
-                memoryGraph.Is64Bit = (data.PointerSize == 8);
+                memoryGraph.Is64Bit = data.PointerSize == 8;
             }
         };
 
@@ -782,7 +782,7 @@ internal class DotNetHeapDumpGraphReader
             if (m_curNodeBlock != null && nextBlock.Index != m_curNodeBlock.Index + 1)
             {
                 throw new ApplicationException(
-                    $"Error expected Node Index {(m_curNodeBlock.Index + 1)} Got {nextBlock.Index} Giving up on heap dump.");
+                    $"Error expected Node Index {m_curNodeBlock.Index + 1} Got {nextBlock.Index} Giving up on heap dump.");
             }
 
             m_curNodeBlock = nextBlock;
@@ -805,7 +805,7 @@ internal class DotNetHeapDumpGraphReader
             if (m_curEdgeBlock != null && nextEdgeBlock.Index != m_curEdgeBlock.Index + 1)
             {
                 throw new ApplicationException(
-                    $"Error expected Node Index {(m_curEdgeBlock.Index + 1)} Got {nextEdgeBlock.Index} Giving up on heap dump.");
+                    $"Error expected Node Index {m_curEdgeBlock.Index + 1} Got {nextEdgeBlock.Index} Giving up on heap dump.");
             }
 
             m_curEdgeBlock = nextEdgeBlock;

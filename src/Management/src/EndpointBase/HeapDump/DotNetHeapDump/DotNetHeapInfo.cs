@@ -37,7 +37,7 @@ internal class DotNetHeapInfo : IFastSerializable
     public int GenerationFor(Address obj)
     {
         // Find the segment 
-        if ((m_lastSegment == null) || !(m_lastSegment.Start <= obj && obj < m_lastSegment.End))
+        if (m_lastSegment == null || !(m_lastSegment.Start <= obj && obj < m_lastSegment.End))
         {
             if (Segments == null)
             {

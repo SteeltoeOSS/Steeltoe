@@ -387,7 +387,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 }
 
                 // ranking (https://en.wikipedia.org/wiki/Percentile#Alternative_methods)
-                var rank = (percent / 100.0) * _length;
+                var rank = percent / 100.0 * _length;
 
                 // linear interpolation between closest ranks
                 var iLow = (int)Math.Floor(rank);

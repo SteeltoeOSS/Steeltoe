@@ -73,10 +73,10 @@ namespace Steeltoe.Stream.Config
         internal void PostProcess(string name, ProducerOptions @default = null)
         {
             BindingName = name;
-            ErrorChannelEnabled ??= (@default != null) ? @default.ErrorChannelEnabled : IsErrorChannelEnabled_Default;
-            UseNativeEncoding ??= (@default != null) ? @default.UseNativeEncoding : UseNativeEncoding_Default;
-            HeaderMode ??= (@default != null) ? @default.HeaderMode : Config.HeaderMode.None;
-            RequiredGroups ??= (@default != null) ? @default.RequiredGroups : new List<string>();
+            ErrorChannelEnabled ??= @default != null ? @default.ErrorChannelEnabled : IsErrorChannelEnabled_Default;
+            UseNativeEncoding ??= @default != null ? @default.UseNativeEncoding : UseNativeEncoding_Default;
+            HeaderMode ??= @default != null ? @default.HeaderMode : Config.HeaderMode.None;
+            RequiredGroups ??= @default != null ? @default.RequiredGroups : new List<string>();
 
             if (PartitionCount == int.MinValue)
             {
@@ -87,7 +87,7 @@ namespace Steeltoe.Stream.Config
             PartitionSelectorName ??= @default?.PartitionSelectorName;
             PartitionKeyExtractorName ??= @default?.PartitionKeyExtractorName;
             PartitionKeyExpression ??= @default?.PartitionKeyExpression;
-            AutoStartup ??= (@default != null) ? @default.AutoStartup : AutoStartup_Default;
+            AutoStartup ??= @default != null ? @default.AutoStartup : AutoStartup_Default;
         }
     }
 }

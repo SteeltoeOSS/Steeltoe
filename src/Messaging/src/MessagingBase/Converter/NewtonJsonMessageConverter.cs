@@ -116,7 +116,7 @@ namespace Steeltoe.Messaging.Converter
 
         protected static Encoding GetJsonEncoding(MimeType contentType)
         {
-            if (contentType != null && (contentType.Encoding != null))
+            if (contentType != null && contentType.Encoding != null)
             {
                 return contentType.Encoding;
             }

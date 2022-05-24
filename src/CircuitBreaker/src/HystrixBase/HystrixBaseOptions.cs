@@ -45,9 +45,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected virtual string GetString(string prefix, string key, string property, string globalDefault, string instanceDefaultFromCode)
         {
             var result = globalDefault;
-            result = (_dynamic != null) ? _dynamic.GetString($"{prefix}:default:{property}", result) : result; // dynamic global default
+            result = _dynamic != null ? _dynamic.GetString($"{prefix}:default:{property}", result) : result; // dynamic global default
             result = instanceDefaultFromCode ?? result; // instance default from code
-            result = (_dynamic != null) ? _dynamic.GetString($"{prefix}:{key}:{property}", result) : result; // dynamic instance value
+            result = _dynamic != null ? _dynamic.GetString($"{prefix}:{key}:{property}", result) : result; // dynamic instance value
             return result;
         }
     }

@@ -259,7 +259,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
             {
                 var prime = 31;
                 var result = 1;
-                result = (prime * result) + ((Name == null) ? 0 : Name.GetHashCode());
+                result = (prime * result) + (Name == null ? 0 : Name.GetHashCode());
                 return result;
             }
 
@@ -307,8 +307,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
             {
                 var prime = 31;
                 var result = 1;
-                result = (prime * result) + ((Foo == null) ? 0 : Foo.GetHashCode());
-                result = (prime * result) + ((Name == null) ? 0 : Name.GetHashCode());
+                result = (prime * result) + (Foo == null ? 0 : Foo.GetHashCode());
+                result = (prime * result) + (Name == null ? 0 : Name.GetHashCode());
                 return result;
             }
 

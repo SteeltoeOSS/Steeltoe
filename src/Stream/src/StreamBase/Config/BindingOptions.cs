@@ -30,7 +30,7 @@ namespace Steeltoe.Stream.Config
         {
             Destination ??= @default?.Destination;
             Group ??= @default?.Group;
-            ContentType ??= (@default != null) ? @default.ContentType : DEFAULT_CONTENT_TYPE.ToString();
+            ContentType ??= @default != null ? @default.ContentType : DEFAULT_CONTENT_TYPE.ToString();
             Binder ??= @default?.Binder;
 
             Consumer?.PostProcess(name, @default?.Consumer);

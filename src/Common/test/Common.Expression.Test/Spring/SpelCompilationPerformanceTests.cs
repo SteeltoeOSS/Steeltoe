@@ -776,7 +776,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var compiledTotal = (double)compiledTotalTicks / 10000;
             var averageInterpreted = interpretedTotal / _iterations;
             var averageCompiled = compiledTotal / _iterations;
-            var ratio = (averageCompiled / averageInterpreted) * 100.0d;
+            var ratio = averageCompiled / averageInterpreted * 100.0d;
 
             LogLn(
                 $">>{title}: average for {_count}: compiled={averageCompiled}ms interpreted={averageInterpreted}ms: compiled takes {(int)ratio}% of the interpreted time");

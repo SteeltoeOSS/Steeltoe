@@ -852,7 +852,7 @@ namespace Graphs
 
             ret <<= 7;
             b = reader.ReadByte();
-            ret += (b & 0x7f);
+            ret += b & 0x7f;
             if ((b & 0x80) == 0)
             {
                 return ret;
@@ -860,7 +860,7 @@ namespace Graphs
 
             ret <<= 7;
             b = reader.ReadByte();
-            ret += (b & 0x7f);
+            ret += b & 0x7f;
             if ((b & 0x80) == 0)
             {
                 return ret;
@@ -868,7 +868,7 @@ namespace Graphs
 
             ret <<= 7;
             b = reader.ReadByte();
-            ret += (b & 0x7f);
+            ret += b & 0x7f;
             if ((b & 0x80) == 0)
             {
                 return ret;
@@ -2190,7 +2190,7 @@ internal class GraphSampler
             {
                 var node = m_graph.GetNode(nodeIdx, m_nodeStorage);
                 var stats = m_statsByType[(int)node.TypeIndex];
-                int quota = (int)((stats.TotalCount / m_filteringRatio) + .5);
+                int quota = (int)(stats.TotalCount / m_filteringRatio + .5);
                 int needed = quota - stats.SampleCount;
                 if (needed > 0)
                 {
@@ -2285,8 +2285,8 @@ internal class GraphSampler
             var stats = m_statsByType[typeIdx];
 
             m_log.WriteLine("{0,12:n6} {1,11:n6}  {2,9:f2} | {3,10:n0} {4,9:n0}  {5,9:f2} | {6,8:f0} | {7}",
-                stats.TotalMetric / 1000000.0, stats.SampleMetric / 1000000.0, (stats.SampleMetric == 0 ? 0.0 : (double)stats.TotalMetric / stats.SampleMetric),
-                stats.TotalCount, stats.SampleCount, (stats.SampleCount == 0 ? 0.0 : (double)stats.TotalCount / stats.SampleCount),
+                stats.TotalMetric / 1000000.0, stats.SampleMetric / 1000000.0, stats.SampleMetric == 0 ? 0.0 : (double)stats.TotalMetric / stats.SampleMetric,
+                stats.TotalCount, stats.SampleCount, stats.SampleCount == 0 ? 0.0 : (double)stats.TotalCount / stats.SampleCount,
                 (double)stats.TotalMetric / stats.TotalCount, type.Name);
         }
 

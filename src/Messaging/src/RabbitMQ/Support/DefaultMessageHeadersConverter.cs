@@ -206,13 +206,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                 return null;
             }
 
-            var valid = (value is string) || (value is byte[])
-                || (value is bool) || (value is byte) || (value is sbyte)
-                || (value is uint) || (value is int) || (value is long)
-                || (value is float) || (value is double) || (value is decimal)
-                || (value is short) || (value is RC.AmqpTimestamp)
-                || (value is IList) || (value is IDictionary) || (value is RC.BinaryTableValue)
-                || (value is object[]) || (value is Type);
+            var valid = value is string || value is byte[]
+                || value is bool || value is byte || value is sbyte
+                || value is uint || value is int || value is long
+                || value is float || value is double || value is decimal
+                || value is short || value is RC.AmqpTimestamp
+                || value is IList || value is IDictionary || value is RC.BinaryTableValue
+                || value is object[] || value is Type;
 
             if (!valid)
             {

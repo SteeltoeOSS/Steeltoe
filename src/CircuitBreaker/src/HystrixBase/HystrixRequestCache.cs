@@ -118,8 +118,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 var prime = 31;
                 var result = 1;
-                result = (prime * result) + ((_rvKey == null) ? 0 : _rvKey.GetHashCode());
-                result = (prime * result) + ((_valueCacheKey == null) ? 0 : _valueCacheKey.GetHashCode());
+                result = (prime * result) + (_rvKey == null ? 0 : _rvKey.GetHashCode());
+                result = (prime * result) + (_valueCacheKey == null ? 0 : _valueCacheKey.GetHashCode());
                 return result;
             }
 
@@ -190,7 +190,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 var prime = 31;
                 var result = 1;
-                result = (prime * result) + ((_key == null) ? 0 : _key.GetHashCode());
+                result = (prime * result) + (_key == null ? 0 : _key.GetHashCode());
                 result = (prime * result) + _type;
                 return result;
             }

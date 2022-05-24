@@ -34,7 +34,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
                 if (operation == Operation.ADD)
                 {
-                    return ((string)leftOperand) + ((bool)rightOperand);
+                    return (string)leftOperand + (bool)rightOperand;
                 }
                 else
                 {

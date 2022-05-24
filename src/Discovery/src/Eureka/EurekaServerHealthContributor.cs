@@ -75,7 +75,7 @@ namespace Steeltoe.Discovery.Eureka
                     result.Details.Add("heartbeatTime", "UNKNOWN");
                     return HealthStatus.UNKNOWN;
                 }
-                else if (lastGoodHeartbeatPeriod > ((instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond) * 2))
+                else if (lastGoodHeartbeatPeriod > instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
                 {
                     result.Details.Add("heartbeat", "Reporting failures connecting");
                     result.Details.Add("heartbeatStatus", HealthStatus.DOWN.ToString());
@@ -106,7 +106,7 @@ namespace Steeltoe.Discovery.Eureka
                     result.Details.Add("fetchTime", "UNKNOWN");
                     return HealthStatus.UNKNOWN;
                 }
-                else if (lastGoodFetchPeriod > ((clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond) * 2))
+                else if (lastGoodFetchPeriod > clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond * 2)
                 {
                     result.Details.Add("fetch", "Reporting failures connecting");
                     result.Details.Add("fetchStatus", HealthStatus.DOWN.ToString());

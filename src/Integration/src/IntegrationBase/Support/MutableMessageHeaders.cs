@@ -64,7 +64,7 @@ namespace Steeltoe.Integration.Support
             if (headers != null && headers.ContainsKey(TIMESTAMP))
             {
                 var timestamp = headers[TIMESTAMP];
-                return (timestamp is string strTimestamp) ? long.Parse(strTimestamp) : (long)timestamp;
+                return timestamp is string strTimestamp ? long.Parse(strTimestamp) : (long)timestamp;
             }
 
             return null;

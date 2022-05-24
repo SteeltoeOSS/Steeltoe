@@ -216,7 +216,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             public override int GetHashCode()
             {
-                return 31 + ((Target == null) ? 0 : Target.GetHashCode());
+                return 31 + (Target == null ? 0 : Target.GetHashCode());
             }
 
             public override bool Equals(object obj)

@@ -99,7 +99,7 @@ namespace Steeltoe.Connector
             {
                 _connection.Open();
                 var cmd = _connection.CreateCommand();
-                cmd.CommandText = (Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1) ? "SELECT 1 FROM dual" : "SELECT 1;";
+                cmd.CommandText = Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1 ? "SELECT 1 FROM dual" : "SELECT 1;";
                 var qresult = cmd.ExecuteScalar();
                 result.Details.Add("status", HealthStatus.UP.ToString());
                 result.Status = HealthStatus.UP;

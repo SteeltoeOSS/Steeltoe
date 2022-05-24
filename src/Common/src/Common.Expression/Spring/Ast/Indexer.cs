@@ -85,7 +85,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             else if (_indexedType == IndexedType.OBJECT)
             {
                 // If the string name is changing the accessor is clearly going to change (so no compilation possible)
-                return (_cachedReadAccessor is ReflectivePropertyAccessor.OptimalPropertyAccessor) && (GetChild(0) is StringLiteral);
+                return _cachedReadAccessor is ReflectivePropertyAccessor.OptimalPropertyAccessor && GetChild(0) is StringLiteral;
             }
 
             return false;
@@ -187,7 +187,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             object index;
 
             // This first part of the if clause prevents a 'double dereference' of the property (SPR-5847)
-            if (target is IDictionary && (_children[0] is PropertyOrFieldReference reference1))
+            if (target is IDictionary && _children[0] is PropertyOrFieldReference reference1)
             {
                 var reference = reference1;
                 index = reference.Name;

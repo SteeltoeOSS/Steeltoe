@@ -115,7 +115,7 @@ namespace Steeltoe.Common.Converter
                 return sourceValue;
             }
 
-            return _conversionService.Convert(sourceValue, (sourceValue != null) ? sourceValue.GetType() : sourceType, targetType);
+            return _conversionService.Convert(sourceValue, sourceValue != null ? sourceValue.GetType() : sourceType, targetType);
         }
     }
 }

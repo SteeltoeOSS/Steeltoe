@@ -559,7 +559,7 @@ public class InteropInfo : IFastSerializable
 
     public bool InteropInfoExists()
     {
-        return ((currentRCWCount != 0) || (currentCCWCount != 0));
+        return currentRCWCount != 0 || currentCCWCount != 0;
     }
 
     // The format we are writing out is:
@@ -676,7 +676,7 @@ public class InteropInfo : IFastSerializable
         for (int i = 0; i < m_countInterfaces; i++)
         {
             ComInterfaceInfo infoInterface = new ComInterfaceInfo();
-            infoInterface.fRCW = ((deserializer.ReadByte() == 1));
+            infoInterface.fRCW = deserializer.ReadByte() == 1;
             infoInterface.owner = deserializer.ReadInt();
             infoInterface.typeID = (NodeTypeIndex)deserializer.ReadInt();
             infoInterface.addrInterface = (Address)deserializer.ReadInt64();

@@ -30,7 +30,7 @@ namespace Steeltoe.Common.Transaction
 
         public int GetTimetoLiveInSeconds()
         {
-            var diff = ((double)GetTimeToLiveInMillis()) / 1000;
+            var diff = (double)GetTimeToLiveInMillis() / 1000;
             var secs = (int)Math.Ceiling(diff);
             CheckTransactionTimeout(secs <= 0);
             return secs;

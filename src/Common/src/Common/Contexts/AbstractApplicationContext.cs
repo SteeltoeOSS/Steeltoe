@@ -198,7 +198,7 @@ namespace Steeltoe.Common.Contexts
                 }
             }
 
-            var results = _instances.Values.Where(instance => (instance is T));
+            var results = _instances.Values.Where(instance => instance is T);
             foreach (var result in results)
             {
                 services.Add((T)result);

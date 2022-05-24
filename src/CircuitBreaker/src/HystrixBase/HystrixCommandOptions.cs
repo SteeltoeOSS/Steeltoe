@@ -182,7 +182,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             var result = globalDefault;
             result = instanceDefaultFromCode ?? result; // instance default from code
-            result = (_dynamic != null) ? _dynamic.GetString($"{prefix}:{key}:{property}", result) : result; // dynamic instance value
+            result = _dynamic != null ? _dynamic.GetString($"{prefix}:{key}:{property}", result) : result; // dynamic instance value
             return result;
         }
     }

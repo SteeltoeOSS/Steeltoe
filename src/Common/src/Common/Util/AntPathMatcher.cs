@@ -770,7 +770,7 @@ namespace Steeltoe.Common.Util
                         }
                         else
                         {
-                            var variablePattern = match.Substring(colonIdx + 1, (match.Length - 1) - (colonIdx + 1));
+                            var variablePattern = match.Substring(colonIdx + 1, match.Length - 1 - (colonIdx + 1));
                             patternBuilder.Append('(');
                             patternBuilder.Append(variablePattern);
                             patternBuilder.Append(')');
@@ -796,7 +796,7 @@ namespace Steeltoe.Common.Util
                     if (uriTemplateVariables != null)
                     {
                         // SPR-8455
-                        if (_variableNames.Count != (matcher.Groups.Count - 1))
+                        if (_variableNames.Count != matcher.Groups.Count - 1)
                         {
                             throw new InvalidOperationException(
                                 $"The number of capturing groups in the pattern segment {_pattern} does not match the number of URI template variables it defines, which can occur if capturing groups are used in a URI template regex. Use non-capturing groups instead.");

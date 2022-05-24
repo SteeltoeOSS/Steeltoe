@@ -104,7 +104,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                         }
 
                         ArgumentsMatchInfo matchInfo = null;
-                        if (method.IsVarArgs() && argumentTypes.Count >= (paramCount - 1))
+                        if (method.IsVarArgs() && argumentTypes.Count >= paramCount - 1)
                         {
                             // *sigh* complicated
                             matchInfo = ReflectionHelper.CompareArgumentsVarargs(paramDescriptors, argumentTypes, typeConverter);

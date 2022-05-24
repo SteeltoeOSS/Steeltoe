@@ -27,7 +27,7 @@ namespace Steeltoe.Common.Transaction
         public static IDictionary<object, object> GetResourceMap()
         {
             var resources = _resources.Value;
-            return (resources != null) ? new ReadOnlyDictionary<object, object>(resources) : _emptyDict;
+            return resources != null ? new ReadOnlyDictionary<object, object>(resources) : _emptyDict;
         }
 
         public static bool HasResource(object key)

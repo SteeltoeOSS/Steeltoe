@@ -46,7 +46,7 @@ namespace Steeltoe.Common.Transaction
 
         public override bool IsGlobalRollbackOnly
         {
-            get => (Transaction is ISmartTransactionObject transactionObject) && transactionObject.IsRollbackOnly;
+            get => Transaction is ISmartTransactionObject transactionObject && transactionObject.IsRollbackOnly;
             set => base.IsGlobalRollbackOnly = value;
         }
 

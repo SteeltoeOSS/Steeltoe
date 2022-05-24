@@ -110,7 +110,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return true;
             }
 
-            return (accessTime - LastAccess) >= GetTimeToLive();
+            return accessTime - LastAccess >= GetTimeToLive();
         }
 
         internal bool IsEnabled()

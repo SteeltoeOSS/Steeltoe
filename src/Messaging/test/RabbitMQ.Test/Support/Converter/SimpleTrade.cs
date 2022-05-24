@@ -26,14 +26,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         {
             var prime = 31;
             var result = 1;
-            result = (prime * result) + ((AccountName == null) ? 0 : AccountName.GetHashCode());
+            result = (prime * result) + (AccountName == null ? 0 : AccountName.GetHashCode());
             result = (prime * result) + (BuyRequest ? 1231 : 1237);
-            result = (prime * result) + ((OrderType == null) ? 0 : OrderType.GetHashCode());
+            result = (prime * result) + (OrderType == null ? 0 : OrderType.GetHashCode());
             result = (prime * result) + Price.GetHashCode();
             result = (prime * result) + (int)(Quantity ^ (Quantity >> 32));
-            result = (prime * result) + ((RequestId == null) ? 0 : RequestId.GetHashCode());
-            result = (prime * result) + ((Ticker == null) ? 0 : Ticker.GetHashCode());
-            result = (prime * result) + ((UserName == null) ? 0 : UserName.GetHashCode());
+            result = (prime * result) + (RequestId == null ? 0 : RequestId.GetHashCode());
+            result = (prime * result) + (Ticker == null ? 0 : Ticker.GetHashCode());
+            result = (prime * result) + (UserName == null ? 0 : UserName.GetHashCode());
             return result;
         }
 
