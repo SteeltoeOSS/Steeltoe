@@ -21,10 +21,10 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void ConfigureSpringBoot_ThrowsIfNulls()
         {
-            IHostBuilder builder = null;
-            IWebHostBuilder webHostBuilder = null;
+            const IHostBuilder builder = null;
+            const IWebHostBuilder webHostBuilder = null;
 #if NET6_0_OR_GREATER
-            WebApplicationBuilder webAppBuilder = null;
+            const WebApplicationBuilder webAppBuilder = null;
 #endif
 
             var ex = Assert.Throws<ArgumentNullException>(() => builder.AddSpringBootConfiguration());

@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_Web_ThrowsIfHostBuilderNull()
         {
-            IWebHostBuilder webHostBuilder = null;
+            const IWebHostBuilder webHostBuilder = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => webHostBuilder.UseCloudHosting());
             Assert.Contains(nameof(webHostBuilder), ex.Message);

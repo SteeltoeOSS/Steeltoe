@@ -22,8 +22,8 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
@@ -40,7 +40,7 @@ namespace Steeltoe.Connector.Hystrix.Test
         public void AddHystrixConnection_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
@@ -57,8 +57,8 @@ namespace Steeltoe.Connector.Hystrix.Test
         public void AddHystrixConnection_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex =
                 Assert.Throws<ArgumentNullException>(

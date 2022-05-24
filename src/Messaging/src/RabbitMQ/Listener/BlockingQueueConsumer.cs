@@ -575,7 +575,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     foreach (var queueToCheck in MissingQueues)
                     {
                         var available = true;
-                        IConnection connection = null;
+                        const IConnection connection = null;
                         RC.IModel channelForCheck = null;
                         try
                         {

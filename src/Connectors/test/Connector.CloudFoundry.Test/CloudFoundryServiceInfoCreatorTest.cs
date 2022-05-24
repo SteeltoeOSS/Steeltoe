@@ -22,7 +22,7 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceInfoCreator.Instance(config));
             Assert.Contains(nameof(config), ex.Message);

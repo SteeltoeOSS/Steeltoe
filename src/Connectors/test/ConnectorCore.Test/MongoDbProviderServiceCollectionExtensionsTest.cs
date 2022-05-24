@@ -23,8 +23,8 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void AddMongoClient_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config));
             Assert.Contains(nameof(services), ex.Message);
@@ -37,7 +37,7 @@ namespace Steeltoe.Connector.MongoDb.Test
         public void AddMongoClient_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config));
             Assert.Contains(nameof(config), ex.Message);
@@ -50,8 +50,8 @@ namespace Steeltoe.Connector.MongoDb.Test
         public void AddMongoClient_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);

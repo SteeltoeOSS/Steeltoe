@@ -25,9 +25,9 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         [Fact]
         public void UseNpgsql_ThrowsIfDbContextOptionsBuilderNull()
         {
-            DbContextOptionsBuilder optionsBuilder = null;
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
-            IConfigurationRoot config = null;
+            const DbContextOptionsBuilder optionsBuilder = null;
+            const DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
@@ -47,7 +47,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
         {
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(config));
             Assert.Contains(nameof(config), ex.Message);
@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             var config = new ConfigurationBuilder().Build();
-            string serviceName = null;
+            const string serviceName = null;
 
             var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseNpgsql(config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);

@@ -23,8 +23,8 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void AddRabbitMQConnection_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
@@ -41,7 +41,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void AddRabbitMQConnection_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex =
                 Assert.Throws<ArgumentNullException>(
@@ -58,8 +58,8 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void AddRabbitMQConnection_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex =
                 Assert.Throws<ArgumentNullException>(

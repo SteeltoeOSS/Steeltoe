@@ -26,7 +26,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddDistributedRedisCache_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             var config = new ConfigurationBuilder().Build();
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config));
@@ -43,7 +43,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void AddDistributedRedisCache_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
             var connectionConfig = new ConfigurationBuilder().Build();
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config));
@@ -61,7 +61,7 @@ namespace Steeltoe.Connector.Redis.Test
         {
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
-            string serviceName = null;
+            const string serviceName = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
@@ -165,7 +165,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             var config = new ConfigurationBuilder().Build();
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config));
@@ -182,7 +182,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void AddRedisConnectionMultiplexer_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
             var connectionConfig = new ConfigurationBuilder().Build();
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config));
@@ -199,8 +199,8 @@ namespace Steeltoe.Connector.Redis.Test
         public void AddRedisConnectionMultiplexer_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);

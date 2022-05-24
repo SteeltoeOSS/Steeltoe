@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void Constructor_ThrowsIfClientNull()
         {
-            IDiscoveryClient client = null;
+            const IDiscoveryClient client = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryHttpClientHandlerBase(client));
             Assert.Contains(nameof(client), ex.Message);

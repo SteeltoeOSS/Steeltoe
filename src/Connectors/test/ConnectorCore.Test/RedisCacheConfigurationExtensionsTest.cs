@@ -22,7 +22,7 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void CreateRedisServiceConnectorFactory_ThrowsIfConfigurationNull()
         {
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
             var connectorConfiguration = new ConfigurationBuilder().Build();
             var connectorOptions = new RedisCacheConnectorOptions();
 
@@ -40,7 +40,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorConfigurationNull()
         {
             var config = new ConfigurationBuilder().Build();
-            IConfigurationRoot connectorConfiguration = null;
+            const IConfigurationRoot connectorConfiguration = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
             Assert.Contains(nameof(connectorConfiguration), ex.Message);
@@ -50,7 +50,7 @@ namespace Steeltoe.Connector.Redis.Test
         public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorOptionsNull()
         {
             var config = new ConfigurationBuilder().Build();
-            RedisCacheConnectorOptions connectorOptions = null;
+            const RedisCacheConnectorOptions connectorOptions = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
             Assert.Contains(nameof(connectorOptions), ex.Message);

@@ -14,7 +14,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Constructor_ThrowsIfSchemeNull()
         {
-            string scheme = null;
+            const string scheme = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(new Tags("foo"), scheme));
             Assert.Contains(nameof(scheme), ex.Message);
@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.Services.Test
         public void Constructor_ThrowsIfTagsNull()
         {
             var scheme = "scheme";
-            Tags tags = null;
+            const Tags tags = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(tags, scheme));
             Assert.Contains(nameof(tags), ex.Message);
@@ -246,11 +246,11 @@ namespace Steeltoe.Connector.Services.Test
             var credentials = new Dictionary<string, Credential>
             {
                 {
-                    "uris", new Credential
+                    "uris",
+                    new Credential
                     {
-                            { "0", new Credential("https://foo:11") },
-                            { "1", new Credential("https://bar:11") }
-                        }
+                        { "0", new Credential("https://foo:11") }, { "1", new Credential("https://bar:11") }
+                    }
                 }
             };
             var tags = new Tags(new[] { "foo", "bar" });
@@ -278,7 +278,7 @@ namespace Steeltoe.Connector.Services.Test
                                     { "bang", new Credential("badabing") }
                                 }
                             },
-                        }
+                    }
                 }
             };
             var tags = new Tags(new[] { "foo", "bar" });

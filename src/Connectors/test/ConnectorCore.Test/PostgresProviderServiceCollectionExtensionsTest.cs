@@ -27,8 +27,8 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void AddPostgresConnection_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config));
             Assert.Contains(nameof(services), ex.Message);
@@ -41,7 +41,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void AddPostgresConnection_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config));
             Assert.Contains(nameof(config), ex.Message);
@@ -54,8 +54,8 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void AddPostgresConnection_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);

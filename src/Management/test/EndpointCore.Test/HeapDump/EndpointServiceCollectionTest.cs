@@ -16,9 +16,9 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void AddHeapDumpActuator_ThrowsOnNulls()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddHeapDumpActuator(config));
             Assert.Contains(nameof(services), ex.Message);

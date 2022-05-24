@@ -14,7 +14,7 @@ namespace Steeltoe.Connector.Services.Test
         [Fact]
         public void Constructor_ThrowsIfIdNull()
         {
-            string id = null;
+            const string id = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfo(id));
             Assert.Contains(nameof(id), ex.Message);

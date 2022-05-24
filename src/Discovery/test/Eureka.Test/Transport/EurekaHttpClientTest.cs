@@ -30,7 +30,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void Constructor_Throws_IfHeadersNull()
         {
-            IDictionary<string, string> headers = null;
+            const IDictionary<string, string> headers = null;
             var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient(new EurekaClientConfig(), headers));
             Assert.Contains("headers", ex.Message);
         }

@@ -14,8 +14,8 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
         public void Constructor_ThrowsIfTypeNull()
         {
             var config = new OracleProviderConnectorOptions();
-            OracleServiceInfo si = null;
-            Type dbContextType = null;
+            const OracleServiceInfo si = null;
+            const Type dbContextType = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new OracleDbContextConnectorFactory(si, config, dbContextType));
             Assert.Contains(nameof(dbContextType), ex.Message);
@@ -25,7 +25,7 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
         public void Create_ThrowsIfNoValidConstructorFound()
         {
             var config = new OracleProviderConnectorOptions();
-            OracleServiceInfo si = null;
+            const OracleServiceInfo si = null;
             var dbContextType = typeof(BadOracleDbContext);
 
             var ex = Assert.Throws<ConnectorException>(() => new OracleDbContextConnectorFactory(si, config, dbContextType).Create(null));

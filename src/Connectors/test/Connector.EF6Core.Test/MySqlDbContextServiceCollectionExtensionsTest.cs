@@ -22,8 +22,8 @@ namespace Steeltoe.Connector.MySql.EF6.Test
         [Fact]
         public void AddDbContext_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(config));
             Assert.Contains(nameof(services), ex.Message);
@@ -36,7 +36,7 @@ namespace Steeltoe.Connector.MySql.EF6.Test
         public void AddDbContext_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(config));
             Assert.Contains(nameof(config), ex.Message);
@@ -49,8 +49,8 @@ namespace Steeltoe.Connector.MySql.EF6.Test
         public void AddDbContext_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);

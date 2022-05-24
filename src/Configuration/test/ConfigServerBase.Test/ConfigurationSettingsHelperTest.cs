@@ -14,9 +14,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Initalize_ThrowsOnNulls()
         {
-            string configPrefix = null;
-            ConfigServerClientSettings settings = null;
-            IConfiguration config = null;
+            const string configPrefix = null;
+            const ConfigServerClientSettings settings = null;
+            const IConfiguration config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(configPrefix, settings, config));
             Assert.Contains(nameof(configPrefix), ex.Message);

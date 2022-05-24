@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         [Fact]
         public void AddHystrixStreams_ThrowsIfServiceContainerNull()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IConfiguration config = new ConfigurationBuilder().Build();
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConfigStream());

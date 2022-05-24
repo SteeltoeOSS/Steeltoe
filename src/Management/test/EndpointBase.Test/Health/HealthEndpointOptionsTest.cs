@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new HealthEndpointOptions(config));
         }
 

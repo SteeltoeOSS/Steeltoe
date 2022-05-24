@@ -14,8 +14,8 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            MySqlProviderConnectorOptions config = null;
-            MySqlServiceInfo si = null;
+            const MySqlProviderConnectorOptions config = null;
+            const MySqlServiceInfo si = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, config, typeof(MySqlConnection)));
             Assert.Contains(nameof(config), ex.Message);

@@ -17,9 +17,9 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void AddMappingsActuator_ThrowsOnNulls()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuator(config));
             Assert.Contains(nameof(services), ex.Message);

@@ -14,9 +14,9 @@ namespace Steeltoe.Management.Endpoint.Test.DbMigrations
         [Fact]
         public void AddDbMigrationsActuatorServices_ThrowsOnNulls()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbMigrationsActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);

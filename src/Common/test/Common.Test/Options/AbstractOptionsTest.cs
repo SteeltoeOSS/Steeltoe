@@ -14,8 +14,8 @@ namespace Steeltoe.Common.Test.Options
         [Fact]
         public void Constructors_ThrowsOnNulls()
         {
-            IConfigurationRoot root = null;
-            IConfiguration config = null;
+            const IConfigurationRoot root = null;
+            const IConfiguration config = null;
 
             Assert.Throws<ArgumentNullException>(() => new TestOptions(root, "foobar"));
             Assert.Throws<ArgumentNullException>(() => new TestOptions(config));

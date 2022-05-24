@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         public void AddEntityFrameworkActuator_ThrowsOnNulls()
         {
             var services = new ServiceCollection();
-            ServiceCollection nullServices = null;
+            const ServiceCollection nullServices = null;
             nullServices.Invoking(s => s.AddDbMigrationsActuator())
                 .Should()
                 .Throw<ArgumentNullException>()

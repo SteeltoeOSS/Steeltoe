@@ -20,9 +20,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void AddMetricsActuator_ThrowsOnNulls()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfiguration config = null;
+            const IConfiguration config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator(config));
             Assert.Contains(nameof(services), ex.Message);

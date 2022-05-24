@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new RefreshEndpointOptions(config));
         }
     }

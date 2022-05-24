@@ -14,8 +14,8 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         public void Constructor_ThrowsIfTypeNull()
         {
             var config = new SqlServerProviderConnectorOptions();
-            SqlServerServiceInfo si = null;
-            Type dbContextType = null;
+            const SqlServerServiceInfo si = null;
+            const Type dbContextType = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType));
             Assert.Contains(nameof(dbContextType), ex.Message);
@@ -25,7 +25,7 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         public void Create_ThrowsIfNoValidConstructorFound()
         {
             var config = new SqlServerProviderConnectorOptions();
-            SqlServerServiceInfo si = null;
+            const SqlServerServiceInfo si = null;
             var dbContextType = typeof(BadSqlServerDbContext);
 
             var ex = Assert.Throws<ConnectorException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType).Create(null));

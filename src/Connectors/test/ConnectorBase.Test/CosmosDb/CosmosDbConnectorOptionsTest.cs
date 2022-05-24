@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);

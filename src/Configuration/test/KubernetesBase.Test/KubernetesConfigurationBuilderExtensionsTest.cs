@@ -15,7 +15,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void AddKubernetes_ThrowsIfConfigBuilderNull()
         {
-            IConfigurationBuilder configurationBuilder = null;
+            const IConfigurationBuilder configurationBuilder = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddKubernetes());
             Assert.Contains(nameof(configurationBuilder), ex.Message);

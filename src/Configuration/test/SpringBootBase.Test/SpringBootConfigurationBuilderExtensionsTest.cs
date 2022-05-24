@@ -14,7 +14,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void AddSpringBootEnv_ThrowsIfConfigBuilderNull()
         {
-            IConfigurationBuilder configurationBuilder = null;
+            const IConfigurationBuilder configurationBuilder = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootEnv());
         }

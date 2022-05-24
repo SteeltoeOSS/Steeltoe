@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void TestSettingOfNullConnectionFactory()
         {
-            IConnectionFactory connectionFactory = null;
+            const IConnectionFactory connectionFactory = null;
             Assert.Throws<ArgumentNullException>(() => new RabbitAdmin(connectionFactory));
         }
 

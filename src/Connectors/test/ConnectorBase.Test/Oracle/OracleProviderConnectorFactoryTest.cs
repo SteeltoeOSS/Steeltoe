@@ -14,8 +14,8 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            OracleProviderConnectorOptions config = null;
-            OracleServiceInfo si = null;
+            const OracleProviderConnectorOptions config = null;
+            const OracleServiceInfo si = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorFactory(si, config, typeof(OracleConnection)));
             Assert.Contains(nameof(config), ex.Message);

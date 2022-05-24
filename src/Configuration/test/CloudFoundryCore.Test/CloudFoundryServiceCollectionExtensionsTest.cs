@@ -16,8 +16,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryOptions_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
             Assert.Contains(nameof(services), ex.Message);
@@ -27,7 +27,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         public void ConfigureCloudFoundryOptions_ThrowsIfConfigurtionNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
             Assert.Contains(nameof(config), ex.Message);
@@ -55,8 +55,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryService_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
         }
@@ -65,7 +65,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         public void ConfigureCloudFoundryService_ThrowsIfConfigurtionNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
         }

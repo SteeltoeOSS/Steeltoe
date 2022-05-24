@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new InfoEndpointOptions(config));
         }
 

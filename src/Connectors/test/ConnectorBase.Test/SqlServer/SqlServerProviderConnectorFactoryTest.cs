@@ -14,7 +14,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            SqlServerProviderConnectorOptions config = null;
+            const SqlServerProviderConnectorOptions config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, config, typeof(SqlConnection)));
             Assert.Contains(nameof(config), ex.Message);

@@ -136,23 +136,23 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             AssertCanCompile(_expression);
             Assert.True((bool)_expression.GetValue(intArray));
 
-            string root = null;
+            const string root1 = null;
             _expression = Parse("#root instanceof T(System.Int32)");
-            Assert.False((bool)_expression.GetValue(root));
+            Assert.False((bool)_expression.GetValue(root1));
             AssertCanCompile(_expression);
-            Assert.False((bool)_expression.GetValue(root));
+            Assert.False((bool)_expression.GetValue(root1));
 
             // root still null
             _expression = Parse("#root instanceof T(System.Object)");
-            Assert.False((bool)_expression.GetValue(root));
+            Assert.False((bool)_expression.GetValue(root1));
             AssertCanCompile(_expression);
-            Assert.False((bool)_expression.GetValue(root));
+            Assert.False((bool)_expression.GetValue(root1));
 
-            root = "howdy";
+            var root2 = "howdy";
             _expression = Parse("#root instanceof T(System.Object)");
-            Assert.True((bool)_expression.GetValue(root));
+            Assert.True((bool)_expression.GetValue(root2));
             AssertCanCompile(_expression);
-            Assert.True((bool)_expression.GetValue(root));
+            Assert.True((bool)_expression.GetValue(root2));
         }
 
         [Fact]

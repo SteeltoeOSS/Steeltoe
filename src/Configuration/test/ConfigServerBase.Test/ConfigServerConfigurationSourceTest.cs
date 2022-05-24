@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Constructors__ThrowsIfNulls()
         {
-            ConfigServerClientSettings settings = null;
+            const ConfigServerClientSettings settings = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
             ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, null, null));

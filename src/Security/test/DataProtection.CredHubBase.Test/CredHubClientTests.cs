@@ -22,7 +22,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         [Fact]
         public async Task CreateAsync_RequestsToken_Once()
         {
-            MockedRequest authRequest = null;
+            const MockedRequest authRequest = null;
             var mockHttpMessageHandler = InitializedHandlerWithLogin(authRequest);
 
             var client = await InitializeClientAsync(mockHttpMessageHandler);

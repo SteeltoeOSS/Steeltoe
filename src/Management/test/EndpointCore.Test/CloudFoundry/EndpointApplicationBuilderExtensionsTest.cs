@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void UseCloudFoundrySecurity_ThrowsIfNulls()
         {
-            IApplicationBuilder builder = null;
+            const IApplicationBuilder builder = null;
 
             Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurity());
         }

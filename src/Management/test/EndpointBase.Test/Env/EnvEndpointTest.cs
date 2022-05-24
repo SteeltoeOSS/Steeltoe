@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         {
             IEnvOptions options = null;
             IConfiguration configuration = null;
-            IHostEnvironment env = null;
+            const IHostEnvironment env = null;
 
             Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
 

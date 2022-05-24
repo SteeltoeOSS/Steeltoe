@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Constructor_ThrowsIfNulls()
         {
-            IList<IConfigurationSource> sources = null;
+            const IList<IConfigurationSource> sources = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources));
         }

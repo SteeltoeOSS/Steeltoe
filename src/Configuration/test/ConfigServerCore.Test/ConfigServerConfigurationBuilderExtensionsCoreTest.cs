@@ -23,7 +23,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void AddConfigServer_ThrowsIfConfigBuilderNull()
         {
-            IConfigurationBuilder configurationBuilder = null;
+            const IConfigurationBuilder configurationBuilder = null;
             var environment = HostingHelpers.GetHostingEnvironment();
 
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(environment));
@@ -34,7 +34,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void AddConfigServer_ThrowsIfHostingEnvironmentNull()
         {
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            IHostEnvironment env = null;
+            const IHostEnvironment env = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(env));
             Assert.Contains("environment", ex.Message);

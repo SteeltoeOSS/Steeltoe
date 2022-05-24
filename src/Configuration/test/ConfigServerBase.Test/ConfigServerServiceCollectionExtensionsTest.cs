@@ -18,7 +18,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void ConfigureConfigServerClientOptions_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions());
             Assert.Contains(nameof(services), ex.Message);
         }
@@ -28,7 +28,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void ConfigureConfigServerClientOptions_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions(config));
             Assert.Contains(nameof(config), ex.Message);

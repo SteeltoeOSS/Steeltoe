@@ -213,7 +213,7 @@ namespace Steeltoe.Stream.Binder
 
             if (result == null)
             {
-                return result;
+                return null;
             }
 
             var message = ApplyInterceptors(result);

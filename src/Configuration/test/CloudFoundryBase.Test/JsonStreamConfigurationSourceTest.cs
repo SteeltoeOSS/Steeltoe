@@ -14,7 +14,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_Throws_StreamNull()
         {
-            MemoryStream stream = null;
+            const MemoryStream stream = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new JsonStreamConfigurationSource(stream));
             Assert.Contains(nameof(stream), ex.Message);

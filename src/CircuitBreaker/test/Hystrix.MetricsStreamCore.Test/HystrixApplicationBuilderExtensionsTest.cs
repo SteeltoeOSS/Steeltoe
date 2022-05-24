@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         [Obsolete]
         public void UseHystrixMetricsStream_ThrowsIfBuilderNull()
         {
-            IApplicationBuilder builder = null;
+            const IApplicationBuilder builder = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixMetricsStream());
             Assert.Contains(nameof(builder), ex.Message);

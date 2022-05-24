@@ -18,9 +18,9 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void AddLoggersActuator_ThrowsOnNulls()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator(config));
             Assert.Contains(nameof(services), ex.Message);

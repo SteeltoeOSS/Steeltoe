@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new MappingsEndpointOptions(config));
         }
     }

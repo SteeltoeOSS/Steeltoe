@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfigurationRoot configuration = null;
+            const IConfigurationRoot configuration = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
         }
@@ -28,7 +28,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Constructor_ThrowsIfListIConfigurationProviderNull()
         {
-            IList<IConfigurationProvider> providers = null;
+            const IList<IConfigurationProvider> providers = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers));
         }

@@ -21,7 +21,7 @@ namespace Steeltoe.Common.Configuration.Test
             var dic1 = new Dictionary<string, string>
             {
                     { "foo", "bar" }
-                };
+            };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
 
@@ -37,7 +37,7 @@ namespace Steeltoe.Common.Configuration.Test
             var dic1 = new Dictionary<string, string>
             {
                     { "foo:bar", "bar" }
-                };
+            };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
 
@@ -54,7 +54,7 @@ namespace Steeltoe.Common.Configuration.Test
             {
                     { "foo", "bar" },
                     { "bar", "baz" }
-                };
+            };
             builder.AddInMemoryCollection(dic1);
 
             var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
@@ -70,7 +70,7 @@ namespace Steeltoe.Common.Configuration.Test
             {
                     { "foo:boo", "bar" },
                     { "bar:far", "baz" }
-                };
+            };
             builder.AddInMemoryCollection(dic1);
 
             var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
@@ -86,7 +86,7 @@ namespace Steeltoe.Common.Configuration.Test
             {
                     { "bar", "${baz}" },
                     { "baz", "bar" }
-                };
+            };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
 
@@ -103,7 +103,7 @@ namespace Steeltoe.Common.Configuration.Test
             {
                     { "bar:boo", "${baz.faz}" },
                     { "baz:faz", "bar" }
-                };
+            };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
 
@@ -120,7 +120,7 @@ namespace Steeltoe.Common.Configuration.Test
             {
                     { "bar", "bar" },
                     { "inner", "ar" }
-                };
+            };
             builder1.AddInMemoryCollection(dic1);
             var config1 = builder1.Build();
 
@@ -132,7 +132,7 @@ namespace Steeltoe.Common.Configuration.Test
                     { "child", "${${differentiator}.grandchild}" },
                     { "differentiator", "first" },
                     { "first.grandchild", "actualValue" }
-                };
+            };
             builder2.AddInMemoryCollection(dic2);
             var config2 = builder2.Build();
 
@@ -151,7 +151,7 @@ namespace Steeltoe.Common.Configuration.Test
             {
                     { "bar", "bar" },
                     { "inner:placeholder", "ar" }
-                };
+            };
             builder1.AddInMemoryCollection(dic1);
             var config1 = builder1.Build();
 
@@ -163,7 +163,7 @@ namespace Steeltoe.Common.Configuration.Test
                     { "child", "${${differentiator}.grandchild}" },
                     { "differentiator", "first" },
                     { "first:grandchild", "actualValue" }
-                };
+            };
             builder2.AddInMemoryCollection(dic2);
             var config2 = builder2.Build();
 
@@ -181,7 +181,7 @@ namespace Steeltoe.Common.Configuration.Test
             var dic1 = new Dictionary<string, string>
             {
                     { "foo", "bar" }
-                };
+            };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
 

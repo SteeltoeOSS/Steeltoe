@@ -59,7 +59,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             configBuilder.AddInMemoryCollection(new Dictionary<string, string>
             {
                     { "rabbit:myQueue", "secondQueue" }
-                });
+            });
             var config = configBuilder.Build();
             var queues = new List<IQueue>
             {
@@ -164,7 +164,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             configBuilder.AddInMemoryCollection(new Dictionary<string, string>
             {
                     { "rabbit:myQueue", "#{@queue1}" }
-                });
+            });
             var config = configBuilder.Build();
 
             var queue1 = QueueBuilder.Durable("metaTestQueue").Build();

@@ -16,8 +16,8 @@ namespace Steeltoe.Connector.Oracle.Test
         [Fact]
         public void AddOracleConnection_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(config));
             Assert.Contains(nameof(services), ex.Message);
@@ -30,7 +30,7 @@ namespace Steeltoe.Connector.Oracle.Test
         public void AddOracleConnection_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(config));
             Assert.Contains(nameof(config), ex.Message);
@@ -43,8 +43,8 @@ namespace Steeltoe.Connector.Oracle.Test
         public void AddOracleConnection_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);

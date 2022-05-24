@@ -14,7 +14,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         [Fact]
         public void AddRandomValueSource_ThrowsIfConfigBuilderNull()
         {
-            IConfigurationBuilder configurationBuilder = null;
+            const IConfigurationBuilder configurationBuilder = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource());
         }
@@ -22,7 +22,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         [Fact]
         public void AddRandomValueSource_ThrowsIfPrefixNull()
         {
-            string prefix = null;
+            const string prefix = null;
 
             var ex = Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddRandomValueSource(prefix));
         }

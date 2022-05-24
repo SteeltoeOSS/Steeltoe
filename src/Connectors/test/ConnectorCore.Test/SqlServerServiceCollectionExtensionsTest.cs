@@ -25,8 +25,8 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerHealthContributor_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+            const IServiceCollection services = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config));
             Assert.Contains(nameof(services), ex.Message);
@@ -39,7 +39,7 @@ namespace Steeltoe.Connector.SqlServer.Test
         public void AddSqlServerHealthContributor_ThrowsIfConfigurationNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config));
             Assert.Contains(nameof(config), ex.Message);
@@ -52,8 +52,8 @@ namespace Steeltoe.Connector.SqlServer.Test
         public void AddSqlServerHealthContributor_ThrowsIfServiceNameNull()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            const IConfigurationRoot config = null;
+            const string serviceName = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);

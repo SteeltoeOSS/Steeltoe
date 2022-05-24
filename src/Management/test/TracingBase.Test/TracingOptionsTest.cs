@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new TracingOptions(null, config));
         }
 

@@ -64,7 +64,7 @@ namespace Steeltoe.Common.Converter
                     }
                     else
                     {
-                        list.Add(sourceElement);
+                        list.Add(null);
                     }
                 }
             }

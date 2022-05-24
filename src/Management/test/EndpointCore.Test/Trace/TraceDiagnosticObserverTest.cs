@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void Constructor_ThrowsOnNulls()
         {
-            ITraceOptions options = null;
+            const ITraceOptions options = null;
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceDiagnosticObserver(options));
             Assert.Contains(nameof(options), ex2.Message);

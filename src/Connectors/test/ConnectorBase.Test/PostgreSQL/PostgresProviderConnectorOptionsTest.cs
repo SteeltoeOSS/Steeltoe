@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);

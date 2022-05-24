@@ -18,7 +18,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_ThrowsIfConfigBuilderNull()
         {
-            IConfigurationBuilder configurationBuilder = null;
+            const IConfigurationBuilder configurationBuilder = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddPlaceholderResolver());
         }
@@ -26,7 +26,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_ThrowsIfConfigNull()
         {
-            IConfiguration configuration = null;
+            const IConfiguration configuration = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => configuration.AddPlaceholderResolver());
         }

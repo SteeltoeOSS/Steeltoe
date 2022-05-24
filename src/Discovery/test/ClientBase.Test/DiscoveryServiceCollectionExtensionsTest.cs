@@ -350,7 +350,7 @@ namespace Steeltoe.Discovery.Client.Test
         [Fact]
         public void AddServiceDiscovery_ThrowsIfServiceCollectionNull()
         {
-            IServiceCollection serviceCollection = null;
+            const IServiceCollection serviceCollection = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(builder => { }));
             Assert.Contains(nameof(serviceCollection), ex.Message);

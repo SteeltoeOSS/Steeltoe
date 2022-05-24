@@ -14,9 +14,9 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
         [Fact]
         public void AddCloudFoundryActuatorServices_ThrowsOnNulls()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddCloudFoundryActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);

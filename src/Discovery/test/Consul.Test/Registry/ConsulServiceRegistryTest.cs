@@ -55,7 +55,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "spring:application:name", "foobar" }
-            });
+                });
             var config = builder.Build();
             var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
             await reg.RegisterAsync(registration);
@@ -98,7 +98,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
                     { "spring:application:name", "foobar" }
-            });
+                });
             var config = builder.Build();
             var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
             await reg.RegisterAsync(registration);
@@ -143,7 +143,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
                 { "spring:application:name", "foobar" }
-            });
+                });
             var config = builder.Build();
             var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
@@ -166,7 +166,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
                 { "spring:application:name", "foobar" }
-            });
+                });
             var config = builder.Build();
             var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 

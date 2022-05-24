@@ -14,9 +14,9 @@ namespace Steeltoe.Management.Endpoint.Test.Refresh
         [Fact]
         public void AddRefreshActuatorServices_ThrowsOnNulls()
         {
-            IServiceCollection services = null;
+            const IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            const IConfigurationRoot config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuatorServices(config));
             Assert.Contains(nameof(services), ex.Message);

@@ -14,7 +14,7 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            IConfiguration config = null;
+            const IConfiguration config = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new OAuthConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);

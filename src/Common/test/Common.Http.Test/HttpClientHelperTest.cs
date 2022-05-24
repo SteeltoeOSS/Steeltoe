@@ -68,7 +68,7 @@ namespace Steeltoe.Common.Http.Test
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 
-            RemoteCertificateValidationCallback prevValidator = null;
+            const RemoteCertificateValidationCallback prevValidator = null;
             var protocolType = SecurityProtocolType.Tls;
 
             HttpClientHelper.RestoreCertificateValidation(false, protocolType, prevValidator);
@@ -92,7 +92,7 @@ namespace Steeltoe.Common.Http.Test
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 
-            RemoteCertificateValidationCallback prevValidator = null;
+            const RemoteCertificateValidationCallback prevValidator = null;
             var protocolType = SecurityProtocolType.Tls;
 
             HttpClientHelper.RestoreCertificateValidation(true, protocolType, prevValidator);

@@ -28,7 +28,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void SettingsConstructor__ThrowsIfSettingsNull()
         {
-            ConfigServerClientSettings settings = null;
+            const ConfigServerClientSettings settings = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings));
             Assert.Contains(nameof(settings), ex.Message);
@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void SettingsConstructor__ThrowsIfHttpClientNull()
         {
             var settings = new ConfigServerClientSettings();
-            HttpClient httpClient = null;
+            const HttpClient httpClient = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
             Assert.Contains(nameof(httpClient), ex.Message);
@@ -48,7 +48,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void SettingsConstructor__ThrowsIfEnvironmentNull()
         {
             var settings = new ConfigServerClientSettings();
-            HttpClient httpClient = null;
+            const HttpClient httpClient = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
             Assert.Contains(nameof(httpClient), ex.Message);

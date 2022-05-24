@@ -203,7 +203,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             var value = valueArg;
             if (value == null)
             {
-                return value;
+                return null;
             }
 
             var valid = (value is string) || (value is byte[])

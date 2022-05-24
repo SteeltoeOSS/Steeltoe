@@ -28,7 +28,6 @@ namespace Steeltoe.Stream.Binder
             set
             {
                 // value.Initialize();
-
                 CoreBinder = value;
             }
         }

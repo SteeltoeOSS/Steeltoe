@@ -14,8 +14,8 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            HystrixProviderConnectorOptions config = null;
-            HystrixRabbitMQServiceInfo si = null;
+            const HystrixProviderConnectorOptions config = null;
+            const HystrixRabbitMQServiceInfo si = null;
 
             var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
             Assert.Contains(nameof(config), ex.Message);
