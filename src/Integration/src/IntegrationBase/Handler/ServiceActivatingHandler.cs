@@ -4,9 +4,7 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Integration.Attributes;
 using Steeltoe.Messaging;
-using System;
 using System.Reflection;
 using System.Threading.Tasks;
 

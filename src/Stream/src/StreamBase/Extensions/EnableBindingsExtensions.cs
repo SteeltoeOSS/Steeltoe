@@ -4,14 +4,12 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Messaging;
 using System;
 using System.Linq;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Extensions
 {

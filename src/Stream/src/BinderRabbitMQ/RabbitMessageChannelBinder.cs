@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;

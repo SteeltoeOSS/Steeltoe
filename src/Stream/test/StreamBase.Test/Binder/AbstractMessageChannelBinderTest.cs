@@ -9,7 +9,6 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Core;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.TestBinder;
 using System;

@@ -8,7 +8,6 @@ using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring

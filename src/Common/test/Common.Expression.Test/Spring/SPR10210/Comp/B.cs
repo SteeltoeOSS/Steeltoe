@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.SPR10210.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Comp
 {

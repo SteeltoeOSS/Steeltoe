@@ -8,7 +8,6 @@ using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

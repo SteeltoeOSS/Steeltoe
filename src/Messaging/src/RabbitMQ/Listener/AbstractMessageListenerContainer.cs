@@ -15,7 +15,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Support;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using Steeltoe.Messaging.RabbitMQ.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;

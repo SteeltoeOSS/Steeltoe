@@ -9,7 +9,6 @@ using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

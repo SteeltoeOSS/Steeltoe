@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
@@ -20,7 +19,6 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 

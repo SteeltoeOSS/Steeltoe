@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;

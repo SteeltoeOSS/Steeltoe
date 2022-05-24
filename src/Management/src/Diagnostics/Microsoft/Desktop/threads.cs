@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 //using Microsoft.Diagnostics.Runtime.ICorDebug;
 using System.Text;
-using System.Linq;
 
 namespace Microsoft.Diagnostics.Runtime.Desktop
 {

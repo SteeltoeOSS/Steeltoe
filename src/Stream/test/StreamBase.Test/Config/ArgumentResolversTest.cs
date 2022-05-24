@@ -4,7 +4,6 @@
 
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -4,12 +4,9 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
 {

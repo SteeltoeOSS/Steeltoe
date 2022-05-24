@@ -6,7 +6,6 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard

@@ -9,7 +9,6 @@ using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

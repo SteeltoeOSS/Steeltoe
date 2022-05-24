@@ -4,7 +4,6 @@
 
 using Moq;
 using Steeltoe.Messaging.RabbitMQ.Connection;
-using System;
 using Xunit;
 using RC = RabbitMQ.Client;
 

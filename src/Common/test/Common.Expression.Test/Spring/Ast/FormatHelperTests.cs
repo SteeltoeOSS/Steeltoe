@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast

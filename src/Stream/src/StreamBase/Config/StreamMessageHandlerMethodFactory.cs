@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
-using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Integration.Handler.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging.Converter;

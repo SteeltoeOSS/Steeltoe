@@ -5,12 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts

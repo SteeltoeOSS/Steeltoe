@@ -5,7 +5,6 @@
 #pragma warning disable
 using FastSerialization;    // For IStreamReader
 using Graphs;
-using Microsoft.Diagnostics.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

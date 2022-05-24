@@ -8,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
-using System.Diagnostics;
-using System.Text;
 
 #pragma warning disable 649
 

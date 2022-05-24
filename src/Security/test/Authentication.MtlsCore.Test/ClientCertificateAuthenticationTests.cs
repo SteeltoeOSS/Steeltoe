@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Security.Authentication.Mtls;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;

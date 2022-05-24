@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.CommandLine;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot
 {

@@ -22,7 +22,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
-using EndpointServiceCollectionExtensions = Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions;
 
 namespace Steeltoe.Management.Endpoint
 {

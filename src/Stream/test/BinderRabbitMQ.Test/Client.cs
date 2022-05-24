@@ -4,9 +4,7 @@
 
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using EnqBinding = EasyNetQ.Management.Client.Model.Binding;
 

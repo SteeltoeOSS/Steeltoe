@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;

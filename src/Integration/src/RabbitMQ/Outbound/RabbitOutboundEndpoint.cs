@@ -11,8 +11,6 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using static Steeltoe.Messaging.RabbitMQ.Core.RabbitTemplate;
 
 namespace Steeltoe.Integration.Rabbit.Outbound

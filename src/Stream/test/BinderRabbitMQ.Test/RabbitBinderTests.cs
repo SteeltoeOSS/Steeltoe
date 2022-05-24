@@ -28,7 +28,6 @@ using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
-using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
 using System;
 using System.Collections.Generic;

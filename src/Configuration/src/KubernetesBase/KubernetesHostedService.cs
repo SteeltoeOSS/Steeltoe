@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Configuration.Kubernetes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

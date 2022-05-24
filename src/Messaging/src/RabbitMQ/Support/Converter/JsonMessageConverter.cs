@@ -8,7 +8,6 @@ using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using Steeltoe.Messaging.Support;
 using System;
 using System.Reflection;
 using System.Text;

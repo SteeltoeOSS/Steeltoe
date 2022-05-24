@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
 
 namespace Steeltoe.Stream.Binding
 {

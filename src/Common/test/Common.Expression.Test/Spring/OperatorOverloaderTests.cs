@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring

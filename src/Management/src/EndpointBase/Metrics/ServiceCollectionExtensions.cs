@@ -4,17 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Metrics;
-using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management;
-using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
-using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

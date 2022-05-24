@@ -3,6 +3,5 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery;
-using Steeltoe.Discovery.Eureka;
 
 [assembly: DiscoveryClientAssembly(typeof(TestDiscoveryClientExtension))]

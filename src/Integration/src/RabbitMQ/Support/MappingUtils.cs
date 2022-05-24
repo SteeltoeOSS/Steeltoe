@@ -6,10 +6,6 @@ using Steeltoe.Integration.Rabbit.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Integration.RabbitMQ.Support
 {

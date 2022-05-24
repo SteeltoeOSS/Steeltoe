@@ -14,8 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using Microsoft.Diagnostics.Runtime.ICorDebug;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 

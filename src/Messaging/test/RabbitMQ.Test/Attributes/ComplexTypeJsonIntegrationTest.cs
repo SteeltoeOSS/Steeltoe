@@ -14,7 +14,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.ComplexTypeJsonIntegrationTest;
 
 namespace Steeltoe.Messaging.RabbitMQ.Attributes

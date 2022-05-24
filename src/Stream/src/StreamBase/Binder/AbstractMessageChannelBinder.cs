@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
@@ -12,7 +11,6 @@ using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;

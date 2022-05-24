@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
-using System.Net.Sockets;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 {

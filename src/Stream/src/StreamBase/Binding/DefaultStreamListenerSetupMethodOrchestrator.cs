@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 using System;
 using System.Collections.Generic;

@@ -11,10 +11,8 @@ using Steeltoe.Common.Kubernetes;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {

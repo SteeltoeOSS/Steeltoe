@@ -4,14 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using OpenTelemetry.Context.Propagation;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Trace;
-using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test

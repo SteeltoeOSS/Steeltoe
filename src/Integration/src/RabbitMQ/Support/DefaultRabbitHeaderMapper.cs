@@ -6,11 +6,9 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Integration.Mapping;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ;
-using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Steeltoe.Integration.Rabbit.Support
 {

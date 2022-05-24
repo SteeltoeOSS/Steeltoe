@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.IO;
 using Microsoft.Win32.SafeHandles;
-using System.Reflection;
 
 namespace Microsoft.Diagnostics.Runtime
 {

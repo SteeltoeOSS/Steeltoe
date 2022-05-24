@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -15,9 +14,7 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Config;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Stream.Binder.Rabbit
 {

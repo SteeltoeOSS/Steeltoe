@@ -5,7 +5,6 @@
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
-using System;
 using Xunit;
 using Xunit.Abstractions;
 

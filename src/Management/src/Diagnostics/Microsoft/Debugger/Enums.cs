@@ -4,8 +4,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
-
 #pragma warning disable 1591
 
 namespace Microsoft.Diagnostics.Runtime.Interop

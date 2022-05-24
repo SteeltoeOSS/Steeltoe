@@ -11,7 +11,6 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Xunit;
 

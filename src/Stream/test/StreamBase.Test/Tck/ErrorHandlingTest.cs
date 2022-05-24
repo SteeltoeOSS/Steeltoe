@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.TestBinder;

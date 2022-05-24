@@ -8,7 +8,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Support;
 using System;
 using System.Threading;
 using Xunit;

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
-using System;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer

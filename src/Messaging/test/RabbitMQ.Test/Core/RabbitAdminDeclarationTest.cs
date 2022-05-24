@@ -14,7 +14,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Core.RabbitAdminDeclarationTest;
 using RC = RabbitMQ.Client;
 

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Expression.Internal.Contexts;
-using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 

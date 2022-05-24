@@ -5,13 +5,11 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;

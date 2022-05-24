@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
 using System.Reflection;

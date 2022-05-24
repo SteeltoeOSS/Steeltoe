@@ -5,7 +5,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Discovery.Eureka;
 using System;
 using System.Collections.Generic;

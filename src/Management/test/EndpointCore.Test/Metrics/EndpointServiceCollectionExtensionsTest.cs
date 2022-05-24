@@ -9,7 +9,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.Diagnostics.Tracing;
 using System.Linq;
 using Xunit;
 

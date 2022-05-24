@@ -7,7 +7,6 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Tracing

@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Xunit;
-using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationCustomConfigTest;
 using RC = RabbitMQ.Client;
 
