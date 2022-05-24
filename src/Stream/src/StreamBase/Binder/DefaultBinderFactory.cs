@@ -76,7 +76,7 @@ namespace Steeltoe.Stream.Binder
 
             if (!string.IsNullOrEmpty(binderName))
             {
-                result = binders.SingleOrDefault((b) => b.ServiceName == binderName);
+                result = binders.SingleOrDefault(b => b.ServiceName == binderName);
             }
             else if (binders.Count() == 1)
             {

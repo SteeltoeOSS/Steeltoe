@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingCommandEventCounterStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
         {
-            var result = Streams.GetOrAddEx(commandKey.Name, (k) =>
+            var result = Streams.GetOrAddEx(commandKey.Name, k =>
             {
                 var stream = new RollingCommandEventCounterStream(commandKey, numBuckets, bucketSizeInMs, HystrixCommandMetrics.AppendEventToBucket, HystrixCommandMetrics.BucketAggregator);
                 stream.StartCachingStreamValuesIfUnstarted();

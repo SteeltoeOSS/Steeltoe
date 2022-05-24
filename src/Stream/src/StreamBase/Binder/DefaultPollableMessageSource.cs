@@ -128,7 +128,7 @@ namespace Steeltoe.Stream.Binder
                 }
                 else
                 {
-                    RetryTemplate.Execute((ctx) => Handle(message, handler), _recoveryCallback);
+                    RetryTemplate.Execute(ctx => Handle(message, handler), _recoveryCallback);
                 }
 
                 return true;

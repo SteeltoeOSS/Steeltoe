@@ -1101,12 +1101,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 latch1.SignalEx();
             })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
@@ -1124,12 +1124,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         latch2.SignalEx();
                     })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
@@ -1181,12 +1181,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         latch1.SignalEx();
                     })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
@@ -1204,12 +1204,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         latch2.SignalEx();
                     })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
@@ -1260,12 +1260,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         latch1.SignalEx();
                     })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
@@ -1283,12 +1283,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         latch2.SignalEx();
                     })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
@@ -1336,12 +1336,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         latch1.SignalEx();
                     })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
@@ -1359,12 +1359,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         latch2.SignalEx();
                     })
                     .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
@@ -1415,12 +1415,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch1.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
@@ -1438,12 +1438,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch2.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
@@ -1497,12 +1497,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch1.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
@@ -1520,12 +1520,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch2.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
@@ -1543,12 +1543,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch3.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s3 OnNext : " + s);
                     value3.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s3 OnError : " + e);
                     latch3.SignalEx();
@@ -1607,12 +1607,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch1.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
@@ -1630,12 +1630,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch2.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
@@ -1653,12 +1653,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch3.SignalEx();
                 })
                 .Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s3 OnNext : " + s);
                     value3.Value = s;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s3 OnError : " + e);
                     latch3.SignalEx();

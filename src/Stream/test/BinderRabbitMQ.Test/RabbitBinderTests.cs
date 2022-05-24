@@ -84,7 +84,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var latch = new CountdownEvent(3);
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     latch.Signal();
                     throw new Exception();
@@ -127,7 +127,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var latch = new CountdownEvent(2);
             ec.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     errorMessage.GetAndSet(message);
                     latch.Signal();
@@ -138,7 +138,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             globalEc.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     latch.Signal();
                 }
@@ -202,7 +202,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             binder.ApplicationContext.GetService<DirectChannel>("acksChannel")
                             .Subscribe(new TestMessageHandler
                             {
-                                OnHandleMessage = (m) =>
+                                OnHandleMessage = m =>
                                 {
                                     confirm.GetAndSet(m);
                                     confirmLatch.Signal();
@@ -700,8 +700,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var binding = bindings.First();
             Assert.Equal("propsHeader", binding.Source);
             Assert.Equal($"propsHeader.{group}", binding.Destination);
-            Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
-            Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
+            Assert.Contains(binding.Arguments, arg => arg.Key == "x-match" && arg.Value == "any");
+            Assert.Contains(binding.Arguments, arg => arg.Key == "foo" && arg.Value == "bar");
 
             bindings = await client.GetBindingsBySource("/", "propsHeader.dlx");
             n = 0;
@@ -715,8 +715,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             binding = bindings.First();
             Assert.Equal("propsHeader.dlx", binding.Source);
             Assert.Equal($"propsHeader.{group}.dlq", binding.Destination);
-            Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
-            Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
+            Assert.Contains(binding.Arguments, arg => arg.Key == "x-match" && arg.Value == "any");
+            Assert.Contains(binding.Arguments, arg => arg.Key == "foo" && arg.Value == "bar");
         }
 
         [Fact]
@@ -812,7 +812,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) => throw new Exception("foo")
+                OnHandleMessage = message => throw new Exception("foo")
             });
 
             var consumerBinding = binder.BindConsumer("durabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -860,7 +860,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             moduleInputChannel.ComponentName = "nondurabletest";
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) => throw new Exception("foo")
+                OnHandleMessage = message => throw new Exception("foo")
             });
 
             var consumerBinding = binder.BindConsumer("nondurabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -886,7 +886,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             moduleInputChannel.ComponentName = "dlqTest";
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) => throw new Exception("foo")
+                OnHandleMessage = message => throw new Exception("foo")
             });
             consumerProperties.Multiplex = true;
             var consumerBinding = binder.BindConsumer("dlqtest,dlqtest2", "default", moduleInputChannel, consumerProperties);
@@ -963,7 +963,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
                 // Wait until unacked state is reflected in the admin
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     var info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
                     var n = 0;
@@ -1077,7 +1077,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             input0.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     if (latch0.CurrentCount <= 0)
                     {
@@ -1092,7 +1092,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             input1.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     if (latch1.CurrentCount <= 0)
                     {
@@ -1186,7 +1186,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var latch0 = new CountdownEvent(1);
             input0.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                  {
                      if (latch0.CurrentCount <= 0)
                      {
@@ -1200,7 +1200,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var latch1 = new CountdownEvent(1);
             input1.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     if (latch1.CurrentCount <= 0)
                     {
@@ -1269,7 +1269,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var dontRepublish = new AtomicBoolean();
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (m) =>
+                OnHandleMessage = m =>
                 {
                     if (dontRepublish.Value)
                     {
@@ -1701,7 +1701,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var polled = inboundBindTarget.Poll(new TestMessageHandler
             {
-                OnHandleMessage = (m) =>
+                OnHandleMessage = m =>
                   {
                       Assert.Equal("testPollable", m.Payload);
                   }
@@ -1712,7 +1712,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 polled = inboundBindTarget.Poll(new TestMessageHandler
                 {
-                    OnHandleMessage = (m) =>
+                    OnHandleMessage = m =>
                       {
                           Assert.Equal("testPollable", m.Payload);
                       }
@@ -1758,7 +1758,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     polled = inboundBindTarget.Poll(new TestMessageHandler
                     {
-                        OnHandleMessage = (m) =>
+                        OnHandleMessage = m =>
                         {
                             Assert.Equal("testPollable", m.Payload);
                             throw new RequeueCurrentMessageException();
@@ -1773,7 +1773,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var isPolled = inboundBindTarget.Poll(new TestMessageHandler
             {
-                OnHandleMessage = (m) =>
+                OnHandleMessage = m =>
                {
                    Assert.Equal("testPollable", m.Payload);
                }
@@ -1805,7 +1805,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     inboundBindTarget.Poll(new TestMessageHandler
                     {
-                        OnHandleMessage = (m) => throw new Exception("test DLQ")
+                        OnHandleMessage = m => throw new Exception("test DLQ")
                     });
                     Thread.Sleep(100);
                 }
@@ -1842,7 +1842,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     inboundBindTarget.Poll(new TestMessageHandler
                     {
-                        OnHandleMessage = (m) => throw new Exception("test DLQ")
+                        OnHandleMessage = m => throw new Exception("test DLQ")
                     });
 
                     Thread.Sleep(100);
@@ -1881,7 +1881,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 Thread.Sleep(100);
                 polled = inboundBindTarget.Poll(new TestMessageHandler
                 {
-                    OnHandleMessage = (m) => throw new Exception("test DLQ")
+                    OnHandleMessage = m => throw new Exception("test DLQ")
                 });
             }
 
@@ -1960,7 +1960,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var latch0 = new CountdownEvent(1);
             input0.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     if (latch0.CurrentCount <= 0)
                     {
@@ -1974,7 +1974,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var latch1 = new CountdownEvent(1);
             input1.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     if (latch1.CurrentCount <= 0)
                     {
@@ -1995,7 +1995,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             boundErrorChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     boundErrorChannelMessage.GetAndSet(message);
                     var stackTrace = new System.Diagnostics.StackTrace().ToString();
@@ -2005,7 +2005,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             globalErrorChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     globalErrorChannelMessage.GetAndSet(message);
                 }

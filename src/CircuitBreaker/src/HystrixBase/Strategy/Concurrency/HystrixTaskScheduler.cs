@@ -111,7 +111,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         protected void RunContinuation(Task task)
         {
             System.Threading.ThreadPool.QueueUserWorkItem(
-                (t) =>
+                t =>
                 {
                     if (t is Task item)
                     {

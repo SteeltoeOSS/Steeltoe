@@ -37,10 +37,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
             var tc2 = new TaskActionClass(output, 2);
             var tc3 = new TaskActionClass(output, 3);
             var tc4 = new TaskActionClass(output, 4);
-            var t1 = new Task<int>((o) => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-            var t2 = new Task<int>((o) => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-            var t3 = new Task<int>((o) => tc3.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-            var t4 = new Task<int>((o) => tc4.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t1 = new Task<int>(o => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t2 = new Task<int>(o => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t3 = new Task<int>(o => tc3.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t4 = new Task<int>(o => tc4.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
 
             // Fill up to CoreSize
             t1.Start(scheduler);

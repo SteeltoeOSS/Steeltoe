@@ -33,11 +33,11 @@ namespace Steeltoe.Stream.Partitioning
             var mockBinder = Mock.Get(binder);
             var sink = provider.GetService<ISink>();
             IConsumerOptions captured = null;
-            mockBinder.Setup((b) => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>())).Callback<string, string, object, IConsumerOptions>((a, b, c, d) => { captured = d; });
+            mockBinder.Setup(b => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>())).Callback<string, string, object, IConsumerOptions>((a, b, c, d) => { captured = d; });
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-            mockBinder.Verify((b) => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>()));
+            mockBinder.Verify(b => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>()));
 
             Assert.Equal(0, captured.InstanceIndex);
             Assert.Equal(2, captured.InstanceCount);

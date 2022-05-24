@@ -359,7 +359,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             // Rollback of manual receive is implicit because the channel is
             // closed...
-            var ex = Assert.Throws<RabbitUncategorizedException>(() => template.Execute((c) =>
+            var ex = Assert.Throws<RabbitUncategorizedException>(() => template.Execute(c =>
             {
                 c.BasicGet(ROUTE, false);
                 c.BasicRecover(true);
@@ -377,7 +377,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             template.ConvertAndSend(ROUTE, "message");
             var messagePropertiesConverter = new DefaultMessageHeadersConverter();
-            var result = template.Execute((c) =>
+            var result = template.Execute(c =>
             {
                 var response = c.BasicGet(ROUTE, false);
                 var props = messagePropertiesConverter.ToMessageHeaders(
@@ -859,7 +859,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"), headers);
             template.Send(ROUTE, message);
             template.CorrelationKey = "baz";
-            var received = template.ReceiveAndReply<IMessage, IMessage>((message1) => Message.Create(Encoding.UTF8.GetBytes("fuz"), new MessageHeaders()));
+            var received = template.ReceiveAndReply<IMessage, IMessage>(message1 => Message.Create(Encoding.UTF8.GetBytes("fuz"), new MessageHeaders()));
             Assert.True(received);
             var message2 = template.Receive();
             Assert.NotNull(message2);
@@ -935,7 +935,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             do
             {
-                template.ReceiveAndReply<double, double>((payload) =>
+                template.ReceiveAndReply<double, double>(payload =>
                 {
                     receiveCount.IncrementAndGet();
                     return payload * 3;
@@ -964,7 +964,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 ReplyTo = REPLY_QUEUE_NAME
             };
             template.Send(Message.Create(Encoding.UTF8.GetBytes("test"), messageProperties.MessageHeaders));
-            template.ReceiveAndReply<string, string>((str) => str.ToUpper());
+            template.ReceiveAndReply<string, string>(str => str.ToUpper());
 
             this.template.ReceiveTimeout = 20000;
             var result = this.template.Receive(REPLY_QUEUE_NAME);
@@ -1234,14 +1234,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             Assert.Equal("bar", receive.Headers.Get<string>("foo"));
 
             template.ConvertAndSend(ROUTE, 1);
-            received = template.ReceiveAndReply<int, int>(ROUTE, (payload) => payload + 1);
+            received = template.ReceiveAndReply<int, int>(ROUTE, payload => payload + 1);
             Assert.True(received);
 
             var result = template.ReceiveAndConvert<int>(ROUTE);
             Assert.Equal(2, result);
 
             template.ConvertAndSend(ROUTE, 2);
-            received = template.ReceiveAndReply<int, int>(ROUTE, (payload) => payload * 2);
+            received = template.ReceiveAndReply<int, int>(ROUTE, payload => payload * 2);
             Assert.True(received);
 
             result = template.ReceiveAndConvert<int>(ROUTE);
@@ -1255,7 +1255,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             try
             {
-                received = template.ReceiveAndReply<IMessage, IMessage>((message) => message);
+                received = template.ReceiveAndReply<IMessage, IMessage>(message => message);
             }
             catch (ConsumeOkNotReceivedException)
             {
@@ -1297,7 +1297,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             template.ReceiveTimeout = timeout;
             var payloadReference = new AtomicReference<string>();
             var ttemplate = new TransactionTemplate(new TestTransactionManager());
-            var result4 = ttemplate.Execute((status) =>
+            var result4 = ttemplate.Execute(status =>
             {
                 var received1 = template.ReceiveAndReply<string, object>(
                     payload =>
@@ -1319,7 +1319,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             try
             {
                 ttemplate = new TransactionTemplate(new TestTransactionManager());
-                ttemplate.Execute((status) =>
+                ttemplate.Execute(status =>
                 {
                     template.ReceiveAndReply<IMessage, IMessage>(
                         message => message,
@@ -1350,7 +1350,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         private bool ReceiveAndReply()
         {
-            return template.ReceiveAndReply<IMessage, IMessage>((message) =>
+            return template.ReceiveAndReply<IMessage, IMessage>(message =>
             {
                 RabbitHeaderAccessor.GetMutableAccessor(message).SetHeader("foo", "bar");
                 return message;

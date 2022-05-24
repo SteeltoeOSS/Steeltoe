@@ -206,11 +206,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             RabbitListenerDeclareAtrributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
             var exchanges = services.BuildServiceProvider().GetServices<IExchange>();
-            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.DIRECT);
-            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.TOPIC);
-            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.FANOUT);
-            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.HEADERS);
-            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.SYSTEM);
+            Assert.Contains(exchanges, ex => ex.Type == ExchangeType.DIRECT);
+            Assert.Contains(exchanges, ex => ex.Type == ExchangeType.TOPIC);
+            Assert.Contains(exchanges, ex => ex.Type == ExchangeType.FANOUT);
+            Assert.Contains(exchanges, ex => ex.Type == ExchangeType.HEADERS);
+            Assert.Contains(exchanges, ex => ex.Type == ExchangeType.SYSTEM);
         }
 
         public class TestTarget
@@ -234,12 +234,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var mockChannel = new Mock<RC.IModel>();
                 mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
                 mockConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(mockChannel.Object);
-                mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-                mockConnection.Setup((c) => c.IsOpen).Returns(true);
-                mockChannel.Setup((c) => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+                mockConnection.Setup(c => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
-                    .Callback<string>((name) => queueName.Value = name);
+                    .Callback<string>(name => queueName.Value = name);
 
                 var services = new ServiceCollection();
                 var config = configuration ?? new ConfigurationBuilder().Build();

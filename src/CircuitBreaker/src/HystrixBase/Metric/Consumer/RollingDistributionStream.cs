@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
                 emptyDistributionsToStart.Add(CachedValuesHistogram.GetNewHistogram());
             }
 
-            Func<IObservable<Event>, IObservable<LongHistogram>> reduceBucketToSingleDistribution = (bucket) =>
+            Func<IObservable<Event>, IObservable<LongHistogram>> reduceBucketToSingleDistribution = bucket =>
             {
                 var result = bucket.Aggregate(CachedValuesHistogram.GetNewHistogram(), addValuesToBucket).Select(n => n);
                 return result;
@@ -38,11 +38,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             _rollingDistributionStream = stream
                     .Observe()
                     .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default) // stream of unaggregated buckets
-                    .SelectMany((d) => reduceBucketToSingleDistribution(d)) // stream of aggregated Histograms
+                    .SelectMany(d => reduceBucketToSingleDistribution(d)) // stream of aggregated Histograms
                     .StartWith(emptyDistributionsToStart) // stream of aggregated Histograms that starts with n empty
                     .Window(numBuckets, 1) // windowed stream: each OnNext is a stream of n Histograms
-                    .SelectMany((w) => ReduceWindowToSingleDistribution(w)) // reduced stream: each OnNext is a single Histogram
-                    .Map((h) => CacheHistogramValues(h)) // convert to CachedValueHistogram (commonly-accessed values are cached)
+                    .SelectMany(w => ReduceWindowToSingleDistribution(w)) // reduced stream: each OnNext is a single Histogram
+                    .Map(h => CacheHistogramValues(h)) // convert to CachedValueHistogram (commonly-accessed values are cached)
                     .Publish().RefCount();
         }
 

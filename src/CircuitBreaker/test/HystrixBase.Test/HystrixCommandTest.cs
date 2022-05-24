@@ -364,11 +364,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             TestHystrixCommand<bool> command = new TestCallbackThreadForThreadIsolation_TestHystrixCommand(commandThread, TestHystrixCommand<bool>.TestPropsBuilder());
             var latch = new CountdownEvent(1);
             command.ToObservable().Subscribe(
-            (args) =>
+            args =>
             {
                 subscribeThread.Value = Thread.CurrentThread;
             },
-            (e) =>
+            e =>
             {
                 latch.SignalEx();
                 output.WriteLine(e.ToString());
@@ -428,11 +428,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             var latch = new CountdownEvent(1);
             command.ToObservable().Subscribe(
-            (args) =>
+            args =>
             {
                 subscribeThread.Value = Thread.CurrentThread;
             },
-            (e) =>
+            e =>
             {
                 latch.SignalEx();
                 output.WriteLine(e.ToString());
@@ -1024,12 +1024,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // Schedule 2 items, one will be taken off and start running, the second will get queued
             // the thread pool won't pick it up because we're bypassing the pool and adding to the queue directly so this will keep the queue full
-            var t = new Task((o) => Time.Wait(500), d1);
+            var t = new Task(o => Time.Wait(500), d1);
             t.Start(pool.GetTaskScheduler());
 
             Time.Wait(10);
 
-            var t2 = new Task((o) => Time.Wait(500), d2);
+            var t2 = new Task(o => Time.Wait(500), d2);
             t2.Start(pool.GetTaskScheduler());
 
             var command = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
@@ -2285,8 +2285,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command.Observe().Subscribe(
-                    (n) => { },
-                    (e) =>
+                    n => { },
+                    e =>
                     {
                         t.Value = e;
                         latch.SignalEx();
@@ -2540,10 +2540,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
             Exception onErrorEvent = null;
             command.ToObservable().Subscribe(
-                (n) =>
+                n =>
                 {
                 },
-                (ex) =>
+                ex =>
                 {
                     onErrorEvent = ex;
                     output.WriteLine("onError: " + ex);
@@ -2859,11 +2859,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         output.WriteLine("OnUnsubscribe");
                         latch.SignalEx();
                     }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine("OnNext : " + b);
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine("OnError : " + e);
                     },
@@ -2910,11 +2910,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         output.WriteLine("OnUnsubscribe");
                         latch.SignalEx();
                     }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine("OnNext : " + b);
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine("OnError : " + e);
                     },
@@ -2961,11 +2961,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         output.WriteLine("OnUnsubscribe");
                         latch.SignalEx();
                     }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine("OnNext : " + b);
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine("OnError : " + e);
                     },
@@ -3015,12 +3015,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
         }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                         originalValue.Value = b;
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                         originalLatch.SignalEx();
@@ -3036,12 +3036,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
                     fromCacheLatch.SignalEx();
                 }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
                         fromCacheValue.Value = b;
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
                         fromCacheLatch.SignalEx();
@@ -3111,12 +3111,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
             }).Subscribe(
-                (b) =>
+                b =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                     originalValue.Value = b;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                     originalLatch.SignalEx();
@@ -3132,12 +3132,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
                 fromCacheLatch.SignalEx();
             }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
                         fromCacheValue.Value = b;
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
                         fromCacheLatch.SignalEx();
@@ -3211,12 +3211,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
             }).Subscribe(
-                (b) =>
+                b =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                     originalValue.Value = b;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                     originalLatch.SignalEx();
@@ -3232,12 +3232,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
                 fromCache1Latch.SignalEx();
             }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
                         fromCache1Value.Value = b;
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
                         fromCache1Latch.SignalEx();
@@ -3253,12 +3253,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
                 fromCache2Latch.SignalEx();
             }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
                         fromCache2Value.Value = b;
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
                         fromCache2Latch.SignalEx();
@@ -3348,11 +3348,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
             }).Subscribe(
-                (b) =>
+                b =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                     originalLatch.SignalEx();
@@ -3368,11 +3368,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
                 fromCache1Latch.SignalEx();
             }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
                         fromCache1Latch.SignalEx();
@@ -3388,11 +3388,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
                 fromCache2Latch.SignalEx();
             }).Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
                         fromCache2Latch.SignalEx();
@@ -3471,11 +3471,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             var o = cmd.ToObservable()
                 .Do(
-                (i) =>
+                i =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnNext : " + i);
                 },
-                (throwable) =>
+                throwable =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnError : " + throwable);
                 },
@@ -3494,7 +3494,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 .Take(1)
 
                 .ObserveOn(DefaultScheduler.Instance)
-                .Map((i) =>
+                .Map(i =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Doing some more computation in the onNext!!");
 
@@ -3519,11 +3519,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
             }).Subscribe(
-                (i) =>
+                i =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + i);
                 },
-                (e) =>
+                e =>
                 {
                     latch.SignalEx();
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
@@ -3549,11 +3549,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 100);
             var cmdResult = cmd.ToObservable()
                     .Do(
-                (integer) =>
+                integer =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
                 },
-                (ex) =>
+                ex =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + ex);
                 },
@@ -3577,11 +3577,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var latch = new CountdownEvent(1);
 
             zipped.Subscribe(
-                (s) =>
+                s =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + s);
                 },
-                (e) =>
+                e =>
                 {
                     latch.SignalEx();
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
@@ -3611,11 +3611,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine(Time.CurrentTimeMillis + " Created retried command : " + o);
 
             o.Subscribe(
-                (integer) =>
+                integer =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
                 },
-                (e) =>
+                e =>
                 {
                     latch.SignalEx();
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
@@ -3635,7 +3635,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             AssertHooksOnSuccess(
             () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS),
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
@@ -3654,7 +3654,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             AssertHooksOnFailure(
             () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.BAD_REQUEST),
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3674,7 +3674,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             AssertHooksOnFailure(
             () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, 0, FallbackResultTest.UNIMPLEMENTED),
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3700,7 +3700,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
@@ -3724,7 +3724,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3745,7 +3745,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             AssertHooksOnFailure(
             () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, 200),
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3771,7 +3771,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
@@ -3795,7 +3795,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3815,7 +3815,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             AssertHooksOnFailure(
             () => GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, 500, FallbackResultTest.UNIMPLEMENTED, 200),
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3840,7 +3840,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -3864,7 +3864,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3904,7 +3904,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
                 return GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, circuitBreaker, pool, 600);
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -3948,7 +3948,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 lat3.IsFallbackUserDefined = true;
                 return lat3;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
@@ -3991,7 +3991,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 lat3.IsFallbackUserDefined = true;
                 return lat3;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -4025,7 +4025,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
                 return GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, circuitBreaker, pool, 600);
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -4063,7 +4063,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 lat2.IsFallbackUserDefined = true;
                 return lat2;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
@@ -4098,7 +4098,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 lat1.IsFallbackUserDefined = true;
                 return lat1;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -4116,7 +4116,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             AssertHooksOnFailFast(
             () => GetCircuitOpenCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.UNIMPLEMENTED),
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -4138,7 +4138,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
@@ -4160,7 +4160,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 cmd.IsFallbackUserDefined = true;
                 return cmd;
             },
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
@@ -4180,7 +4180,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             AssertHooksOnSuccess(
             () => GetCommand(key, ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 0, FallbackResultTest.UNIMPLEMENTED, 0, new TestCircuitBreaker(), null, 100, CacheEnabledTest.YES, 42, 10, 10),
-            (command) =>
+            command =>
             {
                 var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 0, 0));

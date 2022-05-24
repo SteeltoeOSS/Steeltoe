@@ -17,8 +17,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             var mockChannel = new Mock<RC.IModel>();
             var npe = new AtomicBoolean();
-            mockChannel.SetupAdd((m) => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>())
-                .Callback<EventHandler<RC.ShutdownEventArgs>>((handler) =>
+            mockChannel.SetupAdd(m => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>())
+                .Callback<EventHandler<RC.ShutdownEventArgs>>(handler =>
                 {
                     try
                     {

@@ -158,7 +158,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             else
             {
                 var consumerDestinationNames = new List<string>();
-                var trimmed = name.Split(',', StringSplitOptions.RemoveEmptyEntries).Select((s) => s.Trim());
+                var trimmed = name.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
                 foreach (var destination in trimmed)
                 {
                     if (options.IsPartitioned && options.InstanceIndexList.Count > 0)

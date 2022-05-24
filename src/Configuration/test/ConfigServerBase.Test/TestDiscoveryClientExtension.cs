@@ -18,7 +18,7 @@ internal class TestDiscoveryClientExtension : IDiscoveryClientExtension
             .AddOptions<TestDiscoveryClientOptions>()
             .Configure<IConfiguration>((options, config) => config.GetSection("testdiscovery").Bind(options));
         services.AddSingleton<TestDiscoveryClient>();
-        services.TryAddSingleton<IDiscoveryClient>((isp) => isp.GetRequiredService<TestDiscoveryClient>());
+        services.TryAddSingleton<IDiscoveryClient>(isp => isp.GetRequiredService<TestDiscoveryClient>());
     }
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)

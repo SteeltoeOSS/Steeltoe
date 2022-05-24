@@ -35,7 +35,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private static HystrixRequestCache GetInstance(RequestCacheKey rcKey)
         {
-            return Caches.GetOrAddEx(rcKey, (k) => new HystrixRequestCache(rcKey));
+            return Caches.GetOrAddEx(rcKey, k => new HystrixRequestCache(rcKey));
         }
 
         private readonly RequestCacheKey _rcKey;

@@ -107,7 +107,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                                         break;
                                 }
                             },
-                            onError: (exception) =>
+                            onError: exception =>
                             {
                                 Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
                             },

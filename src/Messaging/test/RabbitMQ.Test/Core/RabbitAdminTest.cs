@@ -148,7 +148,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var logs = new List<string>();
             var mockLogger = new Mock<ILogger>();
-            mockLogger.Setup((l) => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()))
+            mockLogger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()))
                 .Callback(new InvocationAction(invocation =>
                 {
                     logs.Add(invocation.Arguments[2].ToString());
@@ -273,7 +273,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var rabbitConnectionFactory = new Mock<RC.IConnectionFactory>();
             var toBeThrown = new TimeoutException("test");
-            rabbitConnectionFactory.Setup((c) => c.CreateConnection(It.IsAny<string>())).Throws(toBeThrown);
+            rabbitConnectionFactory.Setup(c => c.CreateConnection(It.IsAny<string>())).Throws(toBeThrown);
             var ccf = new CachingConnectionFactory(rabbitConnectionFactory.Object);
             var admin = new RabbitAdmin(ccf)
             {
@@ -310,18 +310,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var connectionFactory = new Mock<IConnectionFactory>();
             var connection = new Mock<IConnection>();
-            connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
+            connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
 
             var channel1 = new Mock<RC.IModel>();
             var channel2 = new Mock<RC.IModel>();
 
-            connection.SetupSequence((c) => c.CreateChannel(false)).Returns(channel1.Object).Returns(channel2.Object);
+            connection.SetupSequence(c => c.CreateChannel(false)).Returns(channel1.Object).Returns(channel2.Object);
             var declareOk = new RC.QueueDeclareOk("foo", 0, 0);
-            channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Returns(declareOk);
+            channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Returns(declareOk);
             var template = new RabbitTemplate(connectionFactory.Object);
             var admin = new RabbitAdmin(template);
 
-            template.Invoke<object>((o) =>
+            template.Invoke<object>(o =>
             {
                 admin.DeclareQueue();
                 admin.DeclareQueue();
@@ -329,9 +329,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 admin.DeclareQueue();
                 return null;
             });
-            connection.Verify((c) => c.CreateChannel(false), Times.Once);
-            channel1.Verify((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(4));
-            channel1.Verify((c) => c.Close(), Times.Once);
+            connection.Verify(c => c.CreateChannel(false), Times.Once);
+            channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(4));
+            channel1.Verify(c => c.Close(), Times.Once);
             channel2.VerifyNoOtherCalls();
         }
 
@@ -341,12 +341,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var connectionFactory = new Mock<RC.IConnectionFactory>();
             var connection = new Mock<RC.IConnection>();
             connection.Setup(c => c.IsOpen).Returns(true);
-            connectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
+            connectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
 
             var channel1 = new Mock<RC.IModel>();
             channel1.Setup(c => c.IsOpen).Returns(true);
             connection.Setup(c => c.CreateModel()).Returns(channel1.Object);
-            channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Throws<Exception>();
+            channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Throws<Exception>();
             var ccf = new CachingConnectionFactory(connectionFactory.Object);
 
             var rtt = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1);
@@ -361,7 +361,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var provider = serviceCollection.BuildServiceProvider();
             var admin = provider.GetRabbitAdmin();
             Assert.Throws<RabbitUncategorizedException>(() => ccf.CreateConnection());
-            channel1.Verify((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(3));
+            channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(3));
         }
 
         [Fact]

@@ -150,7 +150,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
             // Single param; no annotation or not @Header
             if (parameterAnnotations.Length == 1 && (parameterAnnotations[0].Length == 0 ||
-                    !parameterAnnotations[0].Any((attr) => attr.GetType() == typeof(HeaderAttribute))) &&
+                    !parameterAnnotations[0].Any(attr => attr.GetType() == typeof(HeaderAttribute))) &&
                     parameters[0].ParameterType.IsAssignableFrom(payloadClass))
             {
                 return true;
@@ -161,7 +161,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             {
                 // MethodParameter methodParameter = new MethodParameter(method, i);
                 if ((parameterAnnotations[i].Length == 0 ||
-                        !parameterAnnotations[i].Any((attr) => attr.GetType() == typeof(HeaderAttribute))) &&
+                        !parameterAnnotations[i].Any(attr => attr.GetType() == typeof(HeaderAttribute))) &&
                         parameters[i].ParameterType.IsAssignableFrom(payloadClass))
                 {
                     if (foundCandidate)

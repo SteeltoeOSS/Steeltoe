@@ -172,10 +172,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             var latch = new CountdownEvent(1);
             cmdResults.Merge().Subscribe(
-                (n) =>
+                n =>
                 {
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine("Error duing command execution");
                     output.WriteLine(e.ToString());

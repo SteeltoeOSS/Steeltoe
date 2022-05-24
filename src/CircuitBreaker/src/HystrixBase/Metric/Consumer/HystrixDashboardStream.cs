@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             _delayInMs = delayInMs;
             _singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
-                                .Map((timestamp) => new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()))
+                                .Map(timestamp => new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()))
                                 .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
                                 .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })
                                 .Publish().RefCount();

@@ -40,7 +40,7 @@ namespace Steeltoe.Stream.Extensions
             // ContentTypeConfiguration
             services.TryAddSingleton<IMessageConverterFactory, CompositeMessageConverterFactory>();
             services.TryAddSingleton<ConfigurableCompositeMessageConverter>();
-            services.AddSingleton<ISmartMessageConverter>((p) => p.GetRequiredService<ConfigurableCompositeMessageConverter>());
+            services.AddSingleton<ISmartMessageConverter>(p => p.GetRequiredService<ConfigurableCompositeMessageConverter>());
 
             // SpelExpressionConverterConfiguration ?
 
@@ -49,44 +49,44 @@ namespace Steeltoe.Stream.Extensions
 
             // messageConverterConfigurer
             services.TryAddSingleton<MessageConverterConfigurer>();
-            services.TryAddSingleton<IMessageChannelConfigurer>((p) => p.GetRequiredService<MessageConverterConfigurer>());
+            services.TryAddSingleton<IMessageChannelConfigurer>(p => p.GetRequiredService<MessageConverterConfigurer>());
 
             // compositeMessageChannelConfigurer
             services.TryAddSingleton<CompositeMessageChannelConfigurer>();
 
             // channelFactory
             services.TryAddSingleton<SubscribableChannelBindingTargetFactory>();
-            services.AddSingleton<IBindingTargetFactory>((p) => p.GetRequiredService<SubscribableChannelBindingTargetFactory>());
+            services.AddSingleton<IBindingTargetFactory>(p => p.GetRequiredService<SubscribableChannelBindingTargetFactory>());
 
             // messageSourceFactory
             services.TryAddSingleton<MessageSourceBindingTargetFactory>();
-            services.AddSingleton<IBindingTargetFactory>((p) => p.GetRequiredService<MessageSourceBindingTargetFactory>());
+            services.AddSingleton<IBindingTargetFactory>(p => p.GetRequiredService<MessageSourceBindingTargetFactory>());
 
             // binderAwareChannelResolver
             services.TryAddSingleton<BinderAwareChannelResolver>();
-            services.TryAddSingleton<IDestinationResolver<IMessageChannel>>((p) => p.GetRequiredService<BinderAwareChannelResolver>());
+            services.TryAddSingleton<IDestinationResolver<IMessageChannel>>(p => p.GetRequiredService<BinderAwareChannelResolver>());
 
             // bindingService
             services.TryAddSingleton<BindingService>();
-            services.TryAddSingleton<IBindingService>((p) => p.GetRequiredService<BindingService>());
+            services.TryAddSingleton<IBindingService>(p => p.GetRequiredService<BindingService>());
 
             // dynamicDestinationsBindable
             services.TryAddSingleton<DynamicDestinationsBindable>();
-            services.AddSingleton<IBindable>((p) => p.GetRequiredService<DynamicDestinationsBindable>());
+            services.AddSingleton<IBindable>(p => p.GetRequiredService<DynamicDestinationsBindable>());
 
             // spelPropertyAccessorRegistrar
 
             // messageChannelStreamListenerResultAdapter
             services.TryAddSingleton<MessageChannelStreamListenerResultAdapter>();
-            services.AddSingleton<IStreamListenerResultAdapter>((p) => p.GetRequiredService<MessageChannelStreamListenerResultAdapter>());
+            services.AddSingleton<IStreamListenerResultAdapter>(p => p.GetRequiredService<MessageChannelStreamListenerResultAdapter>());
 
             // outputBindingLifecycle
             services.TryAddSingleton<OutputBindingLifecycle>();
-            services.AddSingleton<ILifecycle>((p) => p.GetRequiredService<OutputBindingLifecycle>());
+            services.AddSingleton<ILifecycle>(p => p.GetRequiredService<OutputBindingLifecycle>());
 
             // inputBindingLifecycle
             services.TryAddSingleton<InputBindingLifecycle>();
-            services.AddSingleton<ILifecycle>((p) => p.GetRequiredService<InputBindingLifecycle>());
+            services.AddSingleton<ILifecycle>(p => p.GetRequiredService<InputBindingLifecycle>());
 
             // contextStartAfterRefreshListener
 

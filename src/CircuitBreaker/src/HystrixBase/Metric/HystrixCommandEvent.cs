@@ -14,9 +14,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             ThreadPoolKey = threadPoolKey;
         }
 
-        public static Func<HystrixCommandEvent, bool> FilterCompletionsOnly { get; } = (commandEvent) => commandEvent.IsCommandCompletion;
+        public static Func<HystrixCommandEvent, bool> FilterCompletionsOnly { get; } = commandEvent => commandEvent.IsCommandCompletion;
 
-        public static Func<HystrixCommandEvent, bool> FilterActualExecutions { get; } = (commandEvent) => commandEvent.DidCommandExecute;
+        public static Func<HystrixCommandEvent, bool> FilterActualExecutions { get; } = commandEvent => commandEvent.DidCommandExecute;
 
         public virtual IHystrixCommandKey CommandKey { get; }
 

@@ -148,18 +148,18 @@ namespace Steeltoe.Stream.Extensions
             AddBindableTargets(services, binding);
 
             // Add the IBindable for this binding (i.e. BindableProxyFactory)
-            services.AddSingleton<IBindable>((p) =>
+            services.AddSingleton<IBindable>(p =>
             {
                 var bindingTargetFactories = p.GetServices<IBindingTargetFactory>();
                 return new BindableProxyFactory(binding, bindingTargetFactories);
             });
 
             // Add Binding (ISink, IProcessor, IFooBar)
-            services.AddSingleton(binding, (p) =>
+            services.AddSingleton(binding, p =>
             {
                 // Find the bindabe for this binding
                 var bindables = p.GetServices<IBindable>();
-                var bindable = bindables.SingleOrDefault((b) => b.BindingType == binding);
+                var bindable = bindables.SingleOrDefault(b => b.BindingType == binding);
                 if (bindable == null)
                 {
                     throw new InvalidOperationException("Unable to find bindable for binding");
@@ -171,7 +171,7 @@ namespace Steeltoe.Stream.Extensions
             var derivedInterfaces = binding.FindInterfaces((t, c) => true, null).ToList();
             foreach (var derived in derivedInterfaces)
             {
-                services.AddSingleton(derived, (p) => p.GetService(binding));
+                services.AddSingleton(derived, p => p.GetService(binding));
             }
         }
 
@@ -182,7 +182,7 @@ namespace Steeltoe.Stream.Extensions
             {
                 // Add bindable defined in a binding
                 var bindableTargetType = bindable.BindingTargetType;
-                services.AddSingleton(bindableTargetType, (p) =>
+                services.AddSingleton(bindableTargetType, p =>
                 {
                     var impl = p.GetRequiredService(binding);
                     var result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());
@@ -192,7 +192,7 @@ namespace Steeltoe.Stream.Extensions
                 // Also register an IMessageChannel if bindableTargetType is a IMessageChannel
                 if (bindableTargetType != typeof(IMessageChannel) && typeof(IMessageChannel).IsAssignableFrom(bindableTargetType))
                 {
-                    services.AddSingleton(typeof(IMessageChannel), (p) =>
+                    services.AddSingleton(typeof(IMessageChannel), p =>
                     {
                         var impl = p.GetRequiredService(binding);
                         var result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());

@@ -47,7 +47,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns><see cref="AuthenticationBuilder"/> configured to use OAuth with UAA or Pivotal SSO</returns>
         public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config)
         {
-            builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, (options) =>
+            builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, options =>
             {
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(options);
@@ -91,7 +91,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns><see cref="AuthenticationBuilder"/> configured to use OAuth with UAA or Pivotal SSO</returns>
         public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config, Action<CloudFoundryOAuthOptions, IConfiguration> configurer)
         {
-            builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, (options) =>
+            builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, options =>
             {
                 configurer(options, config);
             });
@@ -214,7 +214,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns><see cref="AuthenticationBuilder"/> configured to use JWT Bearer tokens from UAA or Pivotal SSO</returns>
         public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config)
         {
-            builder.AddJwtBearer(authenticationScheme, displayName, (options) =>
+            builder.AddJwtBearer(authenticationScheme, displayName, options =>
             {
                 var cloudFoundryOptions = new CloudFoundryJwtBearerOptions();
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
@@ -259,7 +259,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns><see cref="AuthenticationBuilder"/> configured to use JWT Bearer tokens from UAA or Pivotal SSO</returns>
         public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config, Action<JwtBearerOptions, IConfiguration> configurer)
         {
-            builder.AddJwtBearer(authenticationScheme, displayName, (jwtoptions) =>
+            builder.AddJwtBearer(authenticationScheme, displayName, jwtoptions =>
             {
                 configurer(jwtoptions, config);
             });

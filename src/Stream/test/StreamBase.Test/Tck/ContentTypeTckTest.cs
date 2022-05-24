@@ -102,7 +102,7 @@ namespace Steeltoe.Stream.Tck
         public async Task WithInternalPipeline()
         {
             _container.AddStreamListeners<InternalPipeLine>();
-            _container.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "internalchannel"));
+            _container.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "internalchannel"));
             var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart

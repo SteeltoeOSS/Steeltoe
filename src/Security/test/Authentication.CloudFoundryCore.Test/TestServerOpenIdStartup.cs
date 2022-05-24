@@ -31,12 +31,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var mockHttpMessageHandler = new MockHttpMessageHandler();
 
             services.AddOptions();
-            services.AddAuthentication((options) =>
+            services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
             })
-            .AddCookie((options) =>
+            .AddCookie(options =>
             {
                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             })

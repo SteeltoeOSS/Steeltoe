@@ -292,7 +292,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             }
 
             var copy = new List<IQueue>(Queues);
-            var filtered = copy.Where((q) => !toRemove.Contains(q.ActualName)).ToList();
+            var filtered = copy.Where(q => !toRemove.Contains(q.ActualName)).ToList();
             Queues = filtered;
             return filtered.Count != copy.Count;
         }
@@ -1032,7 +1032,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual Dictionary<string, IQueue> GetQueueNamesToQueues()
         {
-            return Queues.ToDictionary((q) => q.ActualName);
+            return Queues.ToDictionary(q => q.ActualName);
         }
 
         protected virtual bool CauseChainHasImmediateAcknowledgeRabbitException(Exception exception)
@@ -1149,7 +1149,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             if (IsDeBatchingEnabled && BatchingStrategy.CanDebatch(message.Headers))
             {
-                BatchingStrategy.DeBatch(message, (fragment) => ActualInvokeListener(channel, fragment));
+                BatchingStrategy.DeBatch(message, fragment => ActualInvokeListener(channel, fragment));
             }
             else
             {
@@ -1172,7 +1172,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private List<string> QueuesToNames()
         {
-            return Queues.Select((q) => q.ActualName).ToList();
+            return Queues.Select(q => q.ActualName).ToList();
         }
 
         private void CheckMissingQueuesFatalFromProperty()

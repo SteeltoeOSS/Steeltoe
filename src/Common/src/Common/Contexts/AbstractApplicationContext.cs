@@ -264,7 +264,7 @@ namespace Steeltoe.Common.Contexts
 
         private object FindNamedService(string name, Type serviceType)
         {
-            var found = ServiceProvider.GetServices(serviceType).SingleOrDefault((service) =>
+            var found = ServiceProvider.GetServices(serviceType).SingleOrDefault(service =>
             {
                 if (service is IServiceNameAware nameAware)
                 {

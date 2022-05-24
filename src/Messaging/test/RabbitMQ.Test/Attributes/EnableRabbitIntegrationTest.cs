@@ -737,7 +737,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitConnectionFactory();
 
                 // Manual container, register as ISmartLifecycle so auto started
-                services.AddSingleton<ISmartLifecycle>((p) =>
+                services.AddSingleton<ISmartLifecycle>(p =>
                 {
                     var context = p.GetRequiredService<IApplicationContext>();
                     var loggerFactory = p.GetService<ILoggerFactory>();
@@ -752,7 +752,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 });
 
                 // Manual container, register as ISmartLifecycle so auto started
-                services.AddSingleton<ISmartLifecycle>((p) =>
+                services.AddSingleton<ISmartLifecycle>(p =>
                 {
                     var context = p.GetRequiredService<IApplicationContext>();
                     var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DEFAULT_SERVICE_NAME); // as DirectRabbitListenerContainerFactory;
@@ -883,7 +883,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 services.AddRabbitExchange(new TopicExchange("amqp656.topic", true, true));
                 services.AddRabbitBindings(new QueueBinding("amqp656.binding", "amqp656", "amqp656.topic", "foo", null));
 
-                services.AddSingleton<IErrorHandler>((p) =>
+                services.AddSingleton<IErrorHandler>(p =>
                 {
                     var result = new ConditionalRejectingErrorHandler1(ErrorHandlerLatch, ErrorHandlerError)
                     {
@@ -892,7 +892,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     return result;
                 });
 
-                services.AddSingleton<IConsumerTagStrategy>((p) =>
+                services.AddSingleton<IConsumerTagStrategy>(p =>
                 {
                     var result = new ConsumerTagStrategy
                     {

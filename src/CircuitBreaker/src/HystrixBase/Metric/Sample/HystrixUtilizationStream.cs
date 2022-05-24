@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         {
             IntervalInMilliseconds = intervalInMilliseconds;
             _allUtilizationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
-                    .Map((t) => AllUtilization(t))
+                    .Map(t => AllUtilization(t))
                     .OnSubscribe(() =>
                     {
                         _isSourceCurrentlySubscribed.Value = true;
@@ -53,12 +53,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 
         public IObservable<Dictionary<IHystrixCommandKey, HystrixCommandUtilization>> ObserveCommandUtilization()
         {
-            return _allUtilizationStream.Map((a) => OnlyCommandUtilization(a));
+            return _allUtilizationStream.Map(a => OnlyCommandUtilization(a));
         }
 
         public IObservable<Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>> ObserveThreadPoolUtilization()
         {
-            return _allUtilizationStream.Map((a) => OnlyThreadPoolUtilization(a));
+            return _allUtilizationStream.Map(a => OnlyThreadPoolUtilization(a));
         }
 
         public int IntervalInMilliseconds { get; }

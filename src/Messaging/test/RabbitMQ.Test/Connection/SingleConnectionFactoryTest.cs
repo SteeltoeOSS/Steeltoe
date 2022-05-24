@@ -36,14 +36,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel.Close();
             con.Close();
 
-            mockConnection.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
 
             con = connectionFactory.CreateConnection();
             channel = con.CreateChannel();
             Assert.Equal(2, called.Value);
 
             connectionFactory.Destroy();
-            mockConnection.Verify((c) => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
+            mockConnection.Verify(c => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
             mockConnectionFactory.Verify(c => c.CreateConnection(It.IsAny<string>()));
         }
 

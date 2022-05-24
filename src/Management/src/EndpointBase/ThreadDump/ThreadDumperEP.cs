@@ -98,7 +98,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
                     var samplesForThread = new Dictionary<int, List<StackSourceSample>>();
 
-                    stackSource.ForEach((sample) =>
+                    stackSource.ForEach(sample =>
                     {
                         var stackIndex = sample.StackIndex;
                         while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread ("))

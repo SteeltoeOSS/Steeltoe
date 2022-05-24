@@ -352,7 +352,7 @@ namespace Steeltoe.Discovery.Client.Test
         {
             IServiceCollection serviceCollection = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery((builder) => { }));
+            var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(builder => { }));
             Assert.Contains(nameof(serviceCollection), ex.Message);
         }
 
@@ -578,7 +578,7 @@ namespace Steeltoe.Discovery.Client.Test
 
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
 
-            services.AddServiceDiscovery((options) => options.UseEureka());
+            services.AddServiceDiscovery(options => options.UseEureka());
             var sp = services.BuildServiceProvider();
 
             var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());

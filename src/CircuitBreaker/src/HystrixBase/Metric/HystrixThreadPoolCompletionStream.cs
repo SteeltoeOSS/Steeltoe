@@ -20,7 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public static HystrixThreadPoolCompletionStream GetInstance(IHystrixThreadPoolKey threadPoolKey)
         {
-            return Streams.GetOrAddEx(threadPoolKey.Name, (k) => new HystrixThreadPoolCompletionStream(threadPoolKey));
+            return Streams.GetOrAddEx(threadPoolKey.Name, k => new HystrixThreadPoolCompletionStream(threadPoolKey));
         }
 
         internal HystrixThreadPoolCompletionStream(IHystrixThreadPoolKey threadPoolKey)

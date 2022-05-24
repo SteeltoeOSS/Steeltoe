@@ -127,7 +127,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             try
             {
-                var names = queueNames.Select((n) => n ?? throw new ArgumentNullException("queue names cannot be null"));
+                var names = queueNames.Select(n => n ?? throw new ArgumentNullException("queue names cannot be null"));
                 AddQueues(names);
             }
             catch (Exception e)
@@ -148,7 +148,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             try
             {
-                var names = queues.Select((q) => q != null ? q.QueueName : throw new ArgumentNullException("queues cannot contain nulls"));
+                var names = queues.Select(q => q != null ? q.QueueName : throw new ArgumentNullException("queues cannot contain nulls"));
                 AddQueues(names);
             }
             catch (Exception e)
@@ -168,7 +168,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public override void RemoveQueues(params IQueue[] queues)
         {
-            RemoveQueues(queues.Select((q) => q.ActualName));
+            RemoveQueues(queues.Select(q => q.ActualName));
             base.RemoveQueues(queues);
         }
 

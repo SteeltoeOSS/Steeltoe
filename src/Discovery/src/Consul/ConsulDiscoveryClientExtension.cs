@@ -70,7 +70,7 @@ namespace Steeltoe.Discovery.Consul
 
         private static void AddConsulServices(IServiceCollection services)
         {
-            services.AddSingleton((p) =>
+            services.AddSingleton(p =>
             {
                 var consulOptions = p.GetRequiredService<IOptions<ConsulOptions>>();
                 return ConsulClientFactory.CreateClient(consulOptions.Value);
@@ -78,7 +78,7 @@ namespace Steeltoe.Discovery.Consul
 
             services.AddSingleton<IScheduler, TtlScheduler>();
             services.AddSingleton<IConsulServiceRegistry, ConsulServiceRegistry>();
-            services.AddSingleton<IConsulRegistration>((p) =>
+            services.AddSingleton<IConsulRegistration>(p =>
             {
                 var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
                 var appInfo = p.GetService<IApplicationInstanceInfo>();

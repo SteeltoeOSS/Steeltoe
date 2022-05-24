@@ -152,7 +152,7 @@ namespace Steeltoe.Integration.Channel.Test
             channel.Subscribe(mockHandler.Object);
             channel.Send(Message.Create("foo"));
             Assert.True(latch.Wait(10000));
-            mockHandler.Verify((h) => h.HandleMessage(mockExpected.Object));
+            mockHandler.Verify(h => h.HandleMessage(mockExpected.Object));
             Assert.Equal(1, interceptor.Counter);
             Assert.True(interceptor.AfterHandledInvoked);
         }
@@ -166,7 +166,7 @@ namespace Steeltoe.Integration.Channel.Test
 
             var expected = new InvalidOperationException("Fake exception");
             var latch = new CountdownEvent(2);
-            mockHandler.Setup((h) => h.HandleMessage(message)).Throws(expected);
+            mockHandler.Setup(h => h.HandleMessage(message)).Throws(expected);
             var interceptor = new BeforeHandleInterceptor(latch);
             channel.AddInterceptor(interceptor);
             channel.Subscribe(mockHandler.Object);

@@ -58,7 +58,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         {
             var message = MessageBuilder.WithPayload("test").Build();
             var parameter = method.GetParameters()[1];
-            mock.Setup((c) => c.FromMessage(message, typeof(int))).Returns(4);
+            mock.Setup(c => c.FromMessage(message, typeof(int))).Returns(4);
 
             var actual = (IMessage)resolver.ResolveArgument(parameter, message);
 

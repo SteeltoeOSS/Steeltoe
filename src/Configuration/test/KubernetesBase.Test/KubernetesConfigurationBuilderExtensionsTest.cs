@@ -65,6 +65,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             Assert.DoesNotContain(configurationBuilder.Sources, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretSource)));
         }
 
-        private Action<KubernetesClientConfiguration> FakeClientSetup => (fakeClient) => fakeClient.Host = "http://127.0.0.1";
+        private Action<KubernetesClientConfiguration> FakeClientSetup => fakeClient => fakeClient.Host = "http://127.0.0.1";
     }
 }

@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingCollapserBatchSizeDistributionStream GetInstance(IHystrixCollapserKey collapserKey, int numBuckets, int bucketSizeInMs)
         {
-            return Streams.GetOrAddEx(collapserKey.Name, (k) =>
+            return Streams.GetOrAddEx(collapserKey.Name, k =>
             {
                 var stream = new RollingCollapserBatchSizeDistributionStream(collapserKey, numBuckets, bucketSizeInMs);
                 stream.StartCachingStreamValuesIfUnstarted();

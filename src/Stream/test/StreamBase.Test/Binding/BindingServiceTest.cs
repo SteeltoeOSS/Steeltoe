@@ -312,7 +312,7 @@ namespace Steeltoe.Stream.Binding
             Assert.Single(bindings);
             Assert.Same(mockBinding.Object, bindings.Single());
             service.UnbindConsumers("input");
-            mockBinding.Verify((b) => b.Unbind());
+            mockBinding.Verify(b => b.Unbind());
         }
 
         [Fact]
@@ -353,7 +353,7 @@ namespace Steeltoe.Stream.Binding
             Assert.NotNull(binding);
             Assert.Same(mockBinding.Object, binding);
             service.UnbindProducers("output");
-            mockBinding.Verify((b) => b.Unbind());
+            mockBinding.Verify(b => b.Unbind());
         }
 
         [Fact]

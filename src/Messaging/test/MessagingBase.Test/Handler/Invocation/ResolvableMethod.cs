@@ -80,7 +80,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             {
                 AddFilter($"argTypes={string.Join<Type>(",", argTypes)}", method =>
                 {
-                    var paramTypes = method.GetParameters().Select((p) => p.ParameterType).ToArray();
+                    var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
                     if (paramTypes.Length != argTypes.Length)
                     {
                         return false;

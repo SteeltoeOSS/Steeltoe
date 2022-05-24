@@ -166,7 +166,7 @@ namespace Steeltoe.Stream.TestBinder
                     RetryTemplate.RegisterListener(messageListener);
                 }
 
-                _messageListenerContainer.MessageListener = (m) => messageListener.Accept(m);
+                _messageListenerContainer.MessageListener = m => messageListener.Accept(m);
             }
 
             protected class Listener : IRetryListener
@@ -195,7 +195,7 @@ namespace Steeltoe.Stream.TestBinder
                         }
                         else
                         {
-                            _adapter.RetryTemplate.Execute((ctx) => ProcessMessage(message), _adapter.RecoveryCallback);
+                            _adapter.RetryTemplate.Execute(ctx => ProcessMessage(message), _adapter.RecoveryCallback);
                         }
                     }
                     catch (Exception e)

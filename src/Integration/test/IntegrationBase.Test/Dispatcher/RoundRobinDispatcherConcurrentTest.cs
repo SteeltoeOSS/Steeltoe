@@ -79,10 +79,10 @@ namespace Steeltoe.Integration.Dispatcher.Test
             start.Signal();
             Assert.True(allDone.Wait(10000));
             Assert.False(failed);
-            handlerMock1.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-            handlerMock2.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-            handlerMock3.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-            handlerMock4.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+            handlerMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+            handlerMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+            handlerMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+            handlerMock4.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         {
             dispatcher.AddHandler(handlerMock1.Object);
             dispatcher.AddHandler(handlerMock2.Object);
-            handlerMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessageRejectedException(messageMock.Object, null));
+            handlerMock1.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessageRejectedException(messageMock.Object, null));
             var start = new CountdownEvent(1);
             var allDone = new CountdownEvent(TOTAL_EXECUTIONS);
             var message = messageMock.Object;
@@ -150,8 +150,8 @@ namespace Steeltoe.Integration.Dispatcher.Test
             start.Signal();
             Assert.True(allDone.Wait(10000));
             Assert.False(failed);
-            handlerMock1.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 2));
-            handlerMock2.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS));
+            handlerMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 2));
+            handlerMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS));
         }
     }
 }

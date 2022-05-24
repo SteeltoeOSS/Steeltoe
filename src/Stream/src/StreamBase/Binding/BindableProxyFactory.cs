@@ -28,7 +28,7 @@ namespace Steeltoe.Stream.Binding
                 return boundTarget;
             }
 
-            var bindable = _bindables.Values.SingleOrDefault((c) => c.FactoryMethod == info);
+            var bindable = _bindables.Values.SingleOrDefault(c => c.FactoryMethod == info);
 
             // Doesn't exist, return null
             if (bindable.Name == null)

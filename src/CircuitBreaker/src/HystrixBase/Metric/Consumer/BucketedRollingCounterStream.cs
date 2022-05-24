@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         protected BucketedRollingCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> appendRawEventToBucket, Func<Output, Bucket, Output> reduceBucket)
             : base(stream, numBuckets, bucketSizeInMs, appendRawEventToBucket)
         {
-            Func<IObservable<Bucket>, IObservable<Output>> reduceWindowToSummary = (window) =>
+            Func<IObservable<Bucket>, IObservable<Output>> reduceWindowToSummary = window =>
             {
                 var result = window.Aggregate(EmptyOutputValue, reduceBucket).Select(n => n);
                 return result;
@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
                 .Window(numBuckets, 1) // emit overlapping windows of buckets
 
-                .FlatMap((w) =>
+                .FlatMap(w =>
                     reduceWindowToSummary(w)) // convert a window of bucket-summaries into a single summary
 
                 .OnSubscribe(() =>

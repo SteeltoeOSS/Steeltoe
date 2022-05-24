@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static CumulativeThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
         {
-            return Streams.GetOrAddEx(threadPoolKey.Name, (k) =>
+            return Streams.GetOrAddEx(threadPoolKey.Name, k =>
             {
                 var stream = new CumulativeThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket, HystrixThreadPoolMetrics.CounterAggregator);
                 stream.StartCachingStreamValuesIfUnstarted();

@@ -46,7 +46,7 @@ namespace Steeltoe.Integration.Channel.Test
         {
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
+            services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
             var provider = services.BuildServiceProvider();
 
             var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
@@ -71,7 +71,7 @@ namespace Steeltoe.Integration.Channel.Test
         {
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
+            services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
             var provider = services.BuildServiceProvider();
 
             var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;

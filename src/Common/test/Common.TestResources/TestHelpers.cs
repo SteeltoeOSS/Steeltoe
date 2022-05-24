@@ -41,7 +41,7 @@ namespace Steeltoe
         {
             IServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-            serviceCollection.AddLogging(builder => builder.AddConsole((opts) =>
+            serviceCollection.AddLogging(builder => builder.AddConsole(opts =>
             {
 #if NETCOREAPP3_1
                 opts.DisableColors = true;

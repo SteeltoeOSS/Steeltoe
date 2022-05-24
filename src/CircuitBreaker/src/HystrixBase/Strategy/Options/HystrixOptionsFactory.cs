@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             var cacheKey = hystrixPropertiesStrategy.GetCommandOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
-                return CommandProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCommandOptions(key, builder));
+                return CommandProperties.GetOrAddEx(cacheKey, k => hystrixPropertiesStrategy.GetCommandOptions(key, builder));
             }
             else
             {
@@ -41,7 +41,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             var cacheKey = hystrixPropertiesStrategy.GetThreadPoolOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
-                return ThreadPoolProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetThreadPoolOptions(key, builder));
+                return ThreadPoolProperties.GetOrAddEx(cacheKey, k => hystrixPropertiesStrategy.GetThreadPoolOptions(key, builder));
             }
             else
             {
@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             var cacheKey = hystrixPropertiesStrategy.GetCollapserOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
-                return CollapserProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCollapserOptions(key, builder));
+                return CollapserProperties.GetOrAddEx(cacheKey, k => hystrixPropertiesStrategy.GetCollapserOptions(key, builder));
             }
             else
             {

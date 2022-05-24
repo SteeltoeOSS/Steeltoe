@@ -29,14 +29,14 @@ namespace Steeltoe.Integration.Extensions
         public static IServiceCollection AddErrorChannel(this IServiceCollection services)
         {
             services.RegisterService(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, typeof(IMessageChannel));
-            services.AddSingleton<IMessageChannel>((p) =>
+            services.AddSingleton<IMessageChannel>(p =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return new PublishSubscribeChannel(context, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
             });
 
             services.RegisterService(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, typeof(ISubscribableChannel));
-            services.AddSingleton((p) =>
+            services.AddSingleton(p =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<ISubscribableChannel>(context, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
@@ -50,7 +50,7 @@ namespace Steeltoe.Integration.Extensions
             services.RegisterService(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME, typeof(IMessageChannel));
             services.AddSingleton<IMessageChannel, NullChannel>();
             services.RegisterService(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME, typeof(IPollableChannel));
-            services.AddSingleton((p) =>
+            services.AddSingleton(p =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<IPollableChannel>(context, IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME);
@@ -72,7 +72,7 @@ namespace Steeltoe.Integration.Extensions
             }
 
             services.RegisterService(channelName, typeof(IMessageChannel));
-            services.AddSingleton<IMessageChannel>((p) =>
+            services.AddSingleton<IMessageChannel>(p =>
             {
                 var context = p.GetService<IApplicationContext>();
                 var chan = new QueueChannel(context)
@@ -86,7 +86,7 @@ namespace Steeltoe.Integration.Extensions
             });
 
             services.RegisterService(channelName, typeof(IPollableChannel));
-            services.AddSingleton((p) =>
+            services.AddSingleton(p =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<IPollableChannel>(context, channelName);
@@ -108,7 +108,7 @@ namespace Steeltoe.Integration.Extensions
             }
 
             services.RegisterService(channelName, typeof(IMessageChannel));
-            services.AddSingleton<IMessageChannel>((p) =>
+            services.AddSingleton<IMessageChannel>(p =>
             {
                 var context = p.GetService<IApplicationContext>();
                 var chan = new DirectChannel(context)
@@ -122,7 +122,7 @@ namespace Steeltoe.Integration.Extensions
             });
 
             services.RegisterService(channelName, typeof(ISubscribableChannel));
-            services.AddSingleton((p) =>
+            services.AddSingleton(p =>
             {
                 var context = p.GetService<IApplicationContext>();
                 return GetRequiredChannel<ISubscribableChannel>(context, channelName);
@@ -133,7 +133,7 @@ namespace Steeltoe.Integration.Extensions
 
         public static IServiceCollection AddLoggingEndpoint(this IServiceCollection services)
         {
-            services.AddSingleton<ILifecycle>((p) =>
+            services.AddSingleton<ILifecycle>(p =>
             {
                 var context = p.GetRequiredService<IApplicationContext>();
                 var logger = p.GetRequiredService<ILogger<LoggingHandler>>();
@@ -210,7 +210,7 @@ namespace Steeltoe.Integration.Extensions
         private static T GetRequiredChannel<T>(IApplicationContext context, string name)
             where T : class
         {
-            if (context.GetServices<IMessageChannel>().FirstOrDefault((chan) => chan.ServiceName == name) is not T result)
+            if (context.GetServices<IMessageChannel>().FirstOrDefault(chan => chan.ServiceName == name) is not T result)
             {
                 throw new InvalidOperationException($"Unable to resolve channel:{name}");
             }

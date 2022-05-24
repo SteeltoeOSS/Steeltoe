@@ -46,19 +46,19 @@ namespace Steeltoe.Integration.Dispatcher.Test
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.Dispatch(messageMock.Object);
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
         public void SingleTargetWithTaskExecutor()
         {
             var latch = new CountdownEvent(1);
-            targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.Dispatch(messageMock.Object);
             Assert.True(latch.Wait(3000));
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
@@ -69,81 +69,81 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
             dispatcher.Dispatch(messageMock.Object);
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
         public void MultipleTargetsWithTaskExecutor()
         {
             var latch = new CountdownEvent(3);
-            targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
             dispatcher.Dispatch(messageMock.Object);
             Assert.True(latch.Wait(3000));
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
         public void MultipleTargetsPartialFailureFirst()
         {
             var latch = new CountdownEvent(2);
-            targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(false, true, true));
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
             dispatcher.Dispatch(messageMock.Object);
             Assert.True(latch.Wait(3000));
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object), Times.Never());
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
         public void MultipleTargetsPartialFailureMiddle()
         {
             var latch = new CountdownEvent(2);
-            targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, false, true));
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
             dispatcher.Dispatch(messageMock.Object);
             Assert.True(latch.Wait(3000));
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object), Times.Never());
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
         public void MultipleTargetsPartialFailureLast()
         {
             var latch = new CountdownEvent(2);
-            targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
+            targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, true, false));
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
             dispatcher.Dispatch(messageMock.Object);
             Assert.True(latch.Wait(3000));
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object), Times.Never());
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
         }
 
         [Fact]
@@ -154,9 +154,9 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
             dispatcher.Dispatch(messageMock.Object);
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object), Times.Never());
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object), Times.Never());
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object), Times.Never());
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.Dispatch(messageMock.Object);
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
@@ -179,9 +179,9 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.AddHandler(targetMock3.Object);
             dispatcher.RemoveHandler(targetMock2.Object);
             dispatcher.Dispatch(messageMock.Object);
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object), Times.Never());
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
@@ -194,9 +194,9 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.Dispatch(messageMock.Object);
             dispatcher.RemoveHandler(targetMock2.Object);
             dispatcher.Dispatch(messageMock.Object);
-            targetMock1.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(2));
-            targetMock2.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(1));
-            targetMock3.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(2));
+            targetMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(2));
+            targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(1));
+            targetMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(2));
         }
 
         [Fact]
@@ -273,7 +273,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         {
             var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
-            targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessagingException("Mock Exception"));
+            targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException("Mock Exception"));
 
             try
             {
@@ -293,7 +293,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.AddHandler(targetMock1.Object);
             targetMock1.Object.HandleMessage(messageMock.Object);
             var dontReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
-            targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
+            targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
 
             try
             {

@@ -34,8 +34,8 @@ namespace Steeltoe.Common.Kubernetes
                     serviceCollection.Remove(appInfo);
                 }
 
-                serviceCollection.AddSingleton(typeof(KubernetesApplicationOptions), (serviceProvider) => new KubernetesApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
-                serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), (serviceProvider) => serviceProvider.GetRequiredService<KubernetesApplicationOptions>());
+                serviceCollection.AddSingleton(typeof(KubernetesApplicationOptions), serviceProvider => new KubernetesApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
+                serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), serviceProvider => serviceProvider.GetRequiredService<KubernetesApplicationOptions>());
             }
 
             return serviceCollection;
@@ -74,7 +74,7 @@ namespace Steeltoe.Common.Kubernetes
             }
 
             serviceCollection.AddKubernetesApplicationInstanceInfo();
-            serviceCollection.TryAddSingleton((serviceProvider) =>
+            serviceCollection.TryAddSingleton(serviceProvider =>
             {
                 var logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Common.KubernetesClientHelpers");
                 var appInfo = serviceProvider.GetRequiredService<KubernetesApplicationOptions>();

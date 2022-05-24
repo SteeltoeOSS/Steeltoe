@@ -24,9 +24,9 @@ namespace Steeltoe.Security.DataProtection
 
             builder.Services.TryAddSingleton<IXmlRepository, CloudFoundryRedisXmlRepository>();
 
-            builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>((p) =>
+            builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(p =>
             {
-                var config = new ConfigureNamedOptions<KeyManagementOptions>(Options.DefaultName, (options) =>
+                var config = new ConfigureNamedOptions<KeyManagementOptions>(Options.DefaultName, options =>
                 {
                     options.XmlRepository = p.GetRequiredService<IXmlRepository>();
                 });

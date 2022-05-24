@@ -267,7 +267,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 services.AddRabbitBinding(binding);
 
                 // Add a container "replyListenerContainer"
-                services.AddSingleton<ILifecycle>((p) =>
+                services.AddSingleton<ILifecycle>(p =>
                 {
                     var context = p.GetApplicationContext();
                     var factory = p.GetService<IConnectionFactory>();
@@ -281,7 +281,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 });
 
                 // Add a container "serviceListenerContainer"
-                services.AddSingleton<ILifecycle>((p) =>
+                services.AddSingleton<ILifecycle>(p =>
                 {
                     var context = p.GetApplicationContext();
                     var factory = p.GetService<IConnectionFactory>();
@@ -295,7 +295,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 });
 
                 // Add a container "dlListenerContainer"
-                services.AddSingleton<ILifecycle>((p) =>
+                services.AddSingleton<ILifecycle>(p =>
                 {
                     var context = p.GetApplicationContext();
                     var factory = p.GetService<IConnectionFactory>();

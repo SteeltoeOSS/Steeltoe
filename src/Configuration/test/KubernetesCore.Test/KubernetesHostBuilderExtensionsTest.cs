@@ -100,7 +100,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
 #endif
 
         private Action<KubernetesClientConfiguration> GetFakeClientSetup(string host) =>
-            (fakeClient) =>
+            fakeClient =>
             {
                 fakeClient.Namespace = "default";
                 fakeClient.Host = host;

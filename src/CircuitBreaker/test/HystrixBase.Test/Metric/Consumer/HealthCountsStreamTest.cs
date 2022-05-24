@@ -440,12 +440,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var reduced = zipped.Aggregate(true, (a, b) => a && b).Select(n => n);
 
             var rdisp = reduced.Subscribe(
-                (b) =>
+                b =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnNext : " + b);
                     allEqual.Value = b;
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnError : " + e);
                     output.WriteLine(e.ToString());
@@ -491,12 +491,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                         latch1.SignalEx();
                     })
                     .Subscribe(
-                    (healthCounts) =>
+                    healthCounts =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnNext : " + healthCounts);
                         healthCounts1.IncrementAndGet();
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnError : " + e);
                         latch1.SignalEx();
@@ -515,12 +515,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                         latch2.SignalEx();
                     })
                     .Subscribe(
-                        (healthCounts) =>
+                        healthCounts =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnNext : " + healthCounts + " : " + healthCounts2.Value);
                             healthCounts2.IncrementAndGet();
                         },
-                        (e) =>
+                        e =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnError : " + e);
                             latch2.SignalEx();

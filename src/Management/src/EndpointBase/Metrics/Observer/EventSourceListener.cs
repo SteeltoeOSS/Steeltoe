@@ -152,12 +152,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (longValue.HasValue)
             {
-                var currentMetric = LongCounters.GetOrAddEx(metricName, (name) => OpenTelemetryMetrics.Meter.CreateCounter<long>(name));
+                var currentMetric = LongCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<long>(name));
                 currentMetric.Add(longValue.Value, labels.AsReadonlySpan());
             }
             else if (doubleValue.HasValue)
             {
-                var currentMetric = DoubleCounters.GetOrAddEx(metricName, (name) => OpenTelemetryMetrics.Meter.CreateCounter<double>(name));
+                var currentMetric = DoubleCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<double>(name));
                 currentMetric.Add(doubleValue.Value, labels.AsReadonlySpan());
             }
         }

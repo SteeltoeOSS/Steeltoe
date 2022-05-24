@@ -42,7 +42,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             services.AddSingleton<IConnectionFactory, CachingConnectionFactory>();
             services.AddSingleton<RabbitExchangeQueueProvisioner>();
             services.AddSingleton<RabbitMessageChannelBinder>();
-            services.AddSingleton<IBinder>((p) =>
+            services.AddSingleton<IBinder>(p =>
             {
                 var logger = p.GetRequiredService<ILogger<RabbitMessageChannelBinder>>();
                 var exchangeprov = p.GetRequiredService<RabbitExchangeQueueProvisioner>();

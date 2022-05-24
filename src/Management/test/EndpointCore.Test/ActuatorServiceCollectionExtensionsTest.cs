@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             var hostBuilder = new WebHostBuilder().Configure(config => { });
 
-            var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration, (myPolicy) => myPolicy.WithOrigins("http://google.com"))).Build();
+            var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration, myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
             var options = new ApplicationBuilder(host.Services)
                                 .ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 

@@ -27,12 +27,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
-            connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
-            connection.Setup((c) => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
+            connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
+            connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
 
-            connection.Setup((c) => c.IsOpen).Returns(true);
+            connection.Setup(c => c.IsOpen).Returns(true);
             var isOpen = new AtomicBoolean(true);
-            channel.Setup((c) => c.IsOpen).Returns(() => isOpen.Value);
+            channel.Setup(c => c.IsOpen).Returns(() => isOpen.Value);
             rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
             channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new RC.QueueDeclareOk("test", 0, 0));
@@ -78,10 +78,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var channel = new Mock<IChannelProxy>();
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
-            connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
-            connection.Setup((c) => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
-            connection.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.IsOpen).Returns(true);
+            connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
+            connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
+            connection.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.IsOpen).Returns(true);
             rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new RC.QueueDeclareOk("test", 0, 0));
 
@@ -176,7 +176,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             await container.Stop();
             Assert.True(latch5.Wait(TimeSpan.FromSeconds(10)));
-            channel.Verify((c) => c.BasicAck(20ul, true));
+            channel.Verify(c => c.BasicAck(20ul, true));
         }
 
         [Fact(Skip = "Fails, needs investigation")]
@@ -188,11 +188,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
-            connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
-            connection.Setup((c) => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
-            connection.Setup((c) => c.IsOpen).Returns(true);
+            connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
+            connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
+            connection.Setup(c => c.IsOpen).Returns(true);
             var isOpen = new AtomicBoolean(true);
-            channel.Setup((c) => c.IsOpen).Returns(
+            channel.Setup(c => c.IsOpen).Returns(
                 () =>
                 isOpen.Value);
             rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
@@ -200,7 +200,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var declare = new AtomicReference<string>();
             channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>()))
                 .Callback<string>(
-                (name) =>
+                name =>
                 declare.Value = name)
                 .Returns(() =>
                     new RC.QueueDeclareOk(declare.Value, 0, 0));
@@ -280,9 +280,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
-            connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
-            connection.Setup((c) => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
-            connection.Setup((c) => c.IsOpen).Returns(true);
+            connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
+            connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
+            connection.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.IsOpen).Returns(true);
             rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
@@ -334,9 +334,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             var target = new AtomicReference<RC.IModel>(rabbitChannel1.Object);
             channel.Setup(c => c.TargetChannel).Returns(() => target.Value);
 
-            connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
-            connection.Setup((c) => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
-            connection.Setup((c) => c.IsOpen).Returns(true);
+            connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
+            connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
+            connection.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.IsOpen).Returns(true);
 
             rabbitChannel1.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());

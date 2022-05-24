@@ -35,10 +35,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             var sorted = new List<IMessagePostProcessor>();
 
             priorityOrdered.Sort(OrderComparer.Instance);
-            sorted.AddRange(priorityOrdered.Select((o) => (IMessagePostProcessor)o));
+            sorted.AddRange(priorityOrdered.Select(o => (IMessagePostProcessor)o));
 
             ordered.Sort(OrderComparer.Instance);
-            sorted.AddRange(ordered.Select((o) => (IMessagePostProcessor)o));
+            sorted.AddRange(ordered.Select(o => (IMessagePostProcessor)o));
 
             sorted.AddRange(unOrdered);
             return sorted;

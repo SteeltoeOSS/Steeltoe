@@ -49,7 +49,7 @@ namespace Steeltoe.Integration.Handler.Support
             }
             else
             {
-                var payloads = messages.Select((m) => m.Payload).ToList();
+                var payloads = messages.Select(m => m.Payload).ToList();
                 return EvaluationContext.TypeConverter.ConvertValue(payloads, payloads.GetType(), parameter.ParameterType);
             }
         }

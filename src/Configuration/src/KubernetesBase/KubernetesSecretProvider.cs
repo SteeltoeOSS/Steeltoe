@@ -100,7 +100,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                                         break;
                                 }
                             },
-                            onError: (exception) =>
+                            onError: exception =>
                             {
                                 Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
                             },

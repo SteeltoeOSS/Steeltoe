@@ -279,12 +279,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var mockChannel = new Mock<RC.IModel>();
                 mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
                 mockConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(mockChannel.Object);
-                mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-                mockConnection.Setup((c) => c.IsOpen).Returns(true);
-                mockChannel.Setup((c) => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+                mockConnection.Setup(c => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
-                    .Callback<string>((name) => queueName.Value = name);
+                    .Callback<string>(name => queueName.Value = name);
 
                 var services = new ServiceCollection();
                 var config = new ConfigurationBuilder().Build();
@@ -325,12 +325,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var mockChannel = new Mock<RC.IModel>();
                 mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
                 mockConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(mockChannel.Object);
-                mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-                mockConnection.Setup((c) => c.IsOpen).Returns(true);
-                mockChannel.Setup((c) => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+                mockConnection.Setup(c => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
-                    .Callback<string>((name) => queueName.Value = name);
+                    .Callback<string>(name => queueName.Value = name);
 
                 var services = new ServiceCollection();
                 var config = new ConfigurationBuilder().Build();
@@ -397,12 +397,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var mockChannel = new Mock<RC.IModel>();
                 mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
                 mockConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(mockChannel.Object);
-                mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-                mockConnection.Setup((c) => c.IsOpen).Returns(true);
-                mockChannel.Setup((c) => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+                mockConnection.Setup(c => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
-                    .Callback<string>((name) => queueName.Value = name);
+                    .Callback<string>(name => queueName.Value = name);
 
                 var services = new ServiceCollection();
                 var config = new ConfigurationBuilder().Build();
@@ -439,12 +439,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var mockChannel = new Mock<RC.IModel>();
                 mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
                 mockConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(mockChannel.Object);
-                mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-                mockConnection.Setup((c) => c.IsOpen).Returns(true);
-                mockChannel.Setup((c) => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+                mockConnection.Setup(c => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
-                    .Callback<string>((name) => queueName.Value = name);
+                    .Callback<string>(name => queueName.Value = name);
 
                 var services = new ServiceCollection();
                 var configBuilder = new ConfigurationBuilder();
@@ -537,12 +537,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var mockChannel = new Mock<RC.IModel>();
                 mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
                 mockConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(mockChannel.Object);
-                mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-                mockConnection.Setup((c) => c.IsOpen).Returns(true);
-                mockChannel.Setup((c) => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+                mockConnection.Setup(c => c.IsOpen).Returns(true);
+                mockChannel.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
-                    .Callback<string>((name) => queueName.Value = name);
+                    .Callback<string>(name => queueName.Value = name);
 
                 var services = new ServiceCollection();
                 var configBuilder = new ConfigurationBuilder();

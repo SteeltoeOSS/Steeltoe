@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Tracing
 
             services.AddOptions();
             services.RegisterDefaultApplicationInstanceInfo();
-            services.TryAddSingleton<ITracingOptions>((serviceProvider) => new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
+            services.TryAddSingleton<ITracingOptions>(serviceProvider => new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
             services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
 
             var exportToZipkin = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");

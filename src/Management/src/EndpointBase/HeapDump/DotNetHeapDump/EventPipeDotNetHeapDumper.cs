@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.GCDump
                 }, false))
                 {
                     log.WriteLine("{0,5:n1}s: Flushing the type table", getElapsed().TotalSeconds);
-                    typeFlushSession.Source.AllEvents += (traceEvent) => {
+                    typeFlushSession.Source.AllEvents += traceEvent => {
                         if (!fDone)
                         {
                             fDone = true;

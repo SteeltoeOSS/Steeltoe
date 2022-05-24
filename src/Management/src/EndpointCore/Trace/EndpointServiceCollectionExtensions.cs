@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             {
                 case MediaTypeVersion.V1:
                     services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
-                    services.TryAddSingleton<ITraceRepository>((p) => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
+                    services.TryAddSingleton<ITraceRepository>(p => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
                     services.AddActuatorEndpointMapping<TraceEndpoint>();
                     break;
                 default:

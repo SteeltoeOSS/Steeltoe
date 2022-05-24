@@ -153,14 +153,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
                 var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
                     metricName,
-                    (name) => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
+                    name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
             }
             else if (longValue.HasValue)
             {
                 _lastLongValue[metricName] = longValue.Value;
                 var longMetric = _longMeasureMetrics.GetOrAddEx(
                     metricName,
-                    (name) => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
+                    name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
             }
         }
 

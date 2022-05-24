@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public TestServiceOptions()
         {
             CurrentValue = new HealthCheckServiceOptions();
-            CurrentValue.Registrations.Add(new HealthCheckRegistration("test", (provider) => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
+            CurrentValue.Registrations.Add(new HealthCheckRegistration("test", provider => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
         }
 
         public HealthCheckServiceOptions CurrentValue { get; }

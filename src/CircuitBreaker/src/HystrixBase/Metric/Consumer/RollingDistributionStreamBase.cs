@@ -17,7 +17,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             return initialDistribution;
         };
 
-        protected static Func<IObservable<LongHistogram>, IObservable<LongHistogram>> ReduceWindowToSingleDistribution { get; } = (window) =>
+        protected static Func<IObservable<LongHistogram>, IObservable<LongHistogram>> ReduceWindowToSingleDistribution { get; } = window =>
         {
             var result = window.Aggregate((arg1, arg2) => DistributionAggregator(arg1, arg2)).Select(n => n);
             return result;
@@ -25,6 +25,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         protected static Func<LongHistogram, CachedValuesHistogram> CacheHistogramValues { get; } = CachedValuesHistogram.BackedBy;
 
-        protected static Func<IObservable<CachedValuesHistogram>, IObservable<IList<CachedValuesHistogram>>> ConvertToList { get; } = (windowOf2) => windowOf2.ToList();
+        protected static Func<IObservable<CachedValuesHistogram>, IObservable<IList<CachedValuesHistogram>>> ConvertToList { get; } = windowOf2 => windowOf2.ToList();
     }
 }

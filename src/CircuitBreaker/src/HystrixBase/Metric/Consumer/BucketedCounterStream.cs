@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             this.numBuckets = numBuckets;
             this.bucketSizeInMs = bucketSizeInMs;
-            _reduceBucketToSummary = (eventsObservable) =>
+            _reduceBucketToSummary = eventsObservable =>
             {
                 var result = eventsObservable.Aggregate(EmptyBucketSummary, appendRawEventToBucket).Select(n => n);
                 return result;
@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
                 return inputEventStream
                     .Observe()
                     .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default) // bucket it by the counter window so we can emit to the next operator in time chunks, not on every OnNext
-                    .SelectMany((b) => _reduceBucketToSummary(b))
+                    .SelectMany(b => _reduceBucketToSummary(b))
                     .StartWith(emptyEventCountsToStart);           // start it with empty arrays to make consumer logic as generic as possible (windows are always full)
             });
         }

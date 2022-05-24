@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingCollapserEventCounterStream GetInstance(IHystrixCollapserKey collapserKey, int numBuckets, int bucketSizeInMs)
         {
-            var result = Streams.GetOrAddEx(collapserKey.Name, (k) =>
+            var result = Streams.GetOrAddEx(collapserKey.Name, k =>
             {
                 var stream = new RollingCollapserEventCounterStream(collapserKey, numBuckets, bucketSizeInMs, HystrixCollapserMetrics.AppendEventToBucket, HystrixCollapserMetrics.BucketAggregator);
                 stream.StartCachingStreamValuesIfUnstarted();

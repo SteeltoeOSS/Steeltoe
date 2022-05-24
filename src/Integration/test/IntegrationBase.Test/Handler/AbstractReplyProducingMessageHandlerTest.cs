@@ -42,8 +42,8 @@ namespace Steeltoe.Integration.Handler.Test
         public void ErrorMessageShouldContainChannelName()
         {
             handler.OutputChannel = mockChannel.Object;
-            mockChannel.Setup((c) => c.Send(message)).Returns(false);
-            mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
+            mockChannel.Setup(c => c.Send(message)).Returns(false);
+            mockChannel.Setup(c => c.ToString()).Returns("testChannel");
             try
             {
                 handler.HandleMessage(message);
@@ -63,8 +63,8 @@ namespace Steeltoe.Integration.Handler.Test
             handler.NotPropagatedHeaders = new List<string> { "f*", "*r" };
             handler.OutputChannel = mockChannel.Object;
             IMessage captor = null;
-            mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
-            mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
+            mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
+            mockChannel.Setup(c => c.ToString()).Returns("testChannel");
 
             handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("foo", "FOO")
@@ -86,8 +86,8 @@ namespace Steeltoe.Integration.Handler.Test
             handler.AddNotPropagatedHeaders("boom");
             handler.OutputChannel = mockChannel.Object;
             IMessage captor = null;
-            mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
-            mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
+            mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
+            mockChannel.Setup(c => c.ToString()).Returns("testChannel");
 
             handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("boom", "FOO")
@@ -110,8 +110,8 @@ namespace Steeltoe.Integration.Handler.Test
             handler.AddNotPropagatedHeaders("b*r");
             handler.OutputChannel = mockChannel.Object;
             IMessage captor = null;
-            mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
-            mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
+            mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
+            mockChannel.Setup(c => c.ToString()).Returns("testChannel");
 
             handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("foo", "FOO")

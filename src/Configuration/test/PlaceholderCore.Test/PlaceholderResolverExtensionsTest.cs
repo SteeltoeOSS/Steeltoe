@@ -105,7 +105,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             var hostBuilder = new WebHostBuilder()
                 .UseStartup<TestServerStartup1>()
-                .ConfigureAppConfiguration((configurationBuilder) =>
+                .ConfigureAppConfiguration(configurationBuilder =>
                 {
                     configurationBuilder.SetBasePath(directory);
                     configurationBuilder.AddJsonFile(jsonfileName);
@@ -153,7 +153,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var directory = Path.GetDirectoryName(jsonpath);
 
             var hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer())
-                 .ConfigureAppConfiguration((configurationBuilder) =>
+                 .ConfigureAppConfiguration(configurationBuilder =>
                  {
                      configurationBuilder.SetBasePath(directory);
                      configurationBuilder.AddJsonFile(jsonfileName);

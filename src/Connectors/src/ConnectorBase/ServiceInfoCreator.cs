@@ -76,7 +76,7 @@ namespace Steeltoe.Connector
         /// <param name="type">Service Info Type to retrieve</param>
         /// <returns>List of matching Service Infos</returns>
         public IEnumerable<IServiceInfo> GetServiceInfos(Type type)
-            => ServiceInfos.Where((info) => info.GetType() == type);
+            => ServiceInfos.Where(info => info.GetType() == type);
 
         /// <summary>
         /// Get a named service
@@ -105,7 +105,7 @@ namespace Steeltoe.Connector
         /// </summary>
         /// <param name="name">Name of service info</param>
         /// <returns>Service info</returns>
-        public IServiceInfo GetServiceInfo(string name) => ServiceInfos.FirstOrDefault((info) => info.Id.Equals(name));
+        public IServiceInfo GetServiceInfo(string name) => ServiceInfos.FirstOrDefault(info => info.Id.Equals(name));
 
         internal IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)
         {

@@ -55,10 +55,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             var o = command.Observe();
             o.Subscribe(
-                (n) =>
+                n =>
                 {
                 },
-                (e) =>
+                e =>
                 {
                     latch.SignalEx();
                 },

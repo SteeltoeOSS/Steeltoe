@@ -28,11 +28,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         public void TestRequestContextPropagatesAcrossObserveOnPool()
         {
             var s1 = new SimpleCommand(output).Execute();
-            var s2 = new SimpleCommand(output).Observe().Map((s) =>
+            var s2 = new SimpleCommand(output).Observe().Map(s =>
             {
                 output.WriteLine("Map => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
                 return s;
-            }).ForEachAsync((s) =>
+            }).ForEachAsync(s =>
             {
                 output.WriteLine("Result [" + s + "] => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
             });
@@ -46,10 +46,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
           {
               await new TimeoutCommand(output).ToObservable()
                 .Do(
-                (n) =>
+                n =>
                 {
                     output.WriteLine("OnNext = " + n);
-                }, (e) =>
+                }, e =>
                 {
                     output.WriteLine("OnError = " + HystrixRequestContext.IsCurrentThreadInitialized);
                     isInitialized.Value = HystrixRequestContext.IsCurrentThreadInitialized;

@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Kubernetes
                         options.Namespace = appOptions.NameSpace;
                     }
                 });
-            services.AddSingleton((p) =>
+            services.AddSingleton(p =>
             {
                 var kubernetesOptions = p.GetRequiredService<IOptionsMonitor<KubernetesDiscoveryOptions>>();
                 var kubernetes = p.GetRequiredService<IKubernetes>();

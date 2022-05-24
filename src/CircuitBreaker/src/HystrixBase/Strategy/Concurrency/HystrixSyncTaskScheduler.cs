@@ -71,7 +71,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             input.WorkerStartTime = Time.CurrentTimeMillis;
             System.Threading.ThreadPool.QueueUserWorkItem(
-                (queue) =>
+                queue =>
             {
 #pragma warning disable S2696 // Instance members should not write to "static" fields
                 isHystrixThreadPoolThread = true;

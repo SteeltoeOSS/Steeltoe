@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddDbMigrationsActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddDbMigrationsActuator().Build();
             var managementEndpoint = host.Services.GetServices<DbMigrationsEndpoint>();
@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddEnvActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddEnvActuator().Build();
             var managementEndpoint = host.Services.GetServices<EnvEndpoint>();
@@ -97,7 +97,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddHealthActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddHealthActuator().Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
@@ -111,7 +111,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddHealthActuator_IWebHostBuilder_WithTypes()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddHealthActuator(new[] { typeof(DownContributor) }).Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
@@ -125,7 +125,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddHealthActuator_IWebHostBuilder_WithAggregator()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[] { typeof(DownContributor) }).Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
@@ -176,7 +176,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             if (Platform.IsWindows)
             {
-                var hostBuilder = new WebHostBuilder().Configure((b) => { });
+                var hostBuilder = new WebHostBuilder().Configure(b => { });
 
                 var host = hostBuilder.AddHeapDumpActuator().Build();
                 var managementEndpoint = host.Services.GetServices<HeapDumpEndpoint>();
@@ -205,7 +205,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddHypermediaActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddHypermediaActuator().Build();
             var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
@@ -230,7 +230,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddInfoActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddInfoActuator().Build();
             var managementEndpoint = host.Services.GetServices<InfoEndpoint>();
@@ -244,7 +244,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddInfoActuator_IWebHostBuilder_WithTypes()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddInfoActuator(new IInfoContributor[] { new AppSettingsInfoContributor(new ConfigurationBuilder().Build()) }).Build();
             var managementEndpoint = host.Services.GetServices<InfoEndpoint>();
@@ -269,7 +269,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddLoggersActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddLoggersActuator().Build();
             var managementEndpoint = host.Services.GetServices<LoggersEndpoint>();
@@ -317,7 +317,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddMappingsActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddMappingsActuator().Build();
             var managementEndpoint = host.Services.GetServices<IRouteMappings>();
@@ -342,7 +342,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddMetricsActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddMetricsActuator().Build();
             var managementEndpoint = host.Services.GetServices<MetricsEndpoint>();
@@ -367,7 +367,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddRefreshActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddRefreshActuator().Build();
             var managementEndpoint = host.Services.GetServices<RefreshEndpoint>();
@@ -394,7 +394,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             if (Platform.IsWindows)
             {
-                var hostBuilder = new WebHostBuilder().Configure((b) => { });
+                var hostBuilder = new WebHostBuilder().Configure(b => { });
 
                 var host = hostBuilder.AddThreadDumpActuator().Build();
                 var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint_v2>();
@@ -423,7 +423,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddTraceActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddTraceActuator().Build();
             var managementEndpoint = host.Services.GetServices<HttpTraceEndpoint>();
@@ -448,7 +448,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddCloudFoundryActuator_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddCloudFoundryActuator().Build();
             var managementEndpoint = host.Services.GetServices<CloudFoundryEndpoint>();
@@ -494,7 +494,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void AddAllActuators_IWebHostBuilder()
         {
-            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+            var hostBuilder = new WebHostBuilder().Configure(b => { });
 
             var host = hostBuilder.AddAllActuators().Build();
             var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();

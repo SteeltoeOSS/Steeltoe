@@ -49,7 +49,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 connection.Setup(c => c.IsOpen).Returns(true);
                 channel.Setup(c => c.IsOpen).Returns(true);
                 channel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-                channel.Setup((c) => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO))
+                channel.Setup(c => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO))
                     .Returns(() => new RC.QueueDeclareOk(Address.AMQ_RABBITMQ_REPLY_TO, 0, 0));
                 return channel;
             }

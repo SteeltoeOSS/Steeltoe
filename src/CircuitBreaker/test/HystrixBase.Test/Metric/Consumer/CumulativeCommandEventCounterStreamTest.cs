@@ -422,11 +422,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : UnSubscribe From command.Observe()");
                     }).Subscribe(
-                    (i) =>
+                    i =>
                     {
                         output.WriteLine("Command OnNext : " + i);
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine("Command OnError : " + e);
                     },

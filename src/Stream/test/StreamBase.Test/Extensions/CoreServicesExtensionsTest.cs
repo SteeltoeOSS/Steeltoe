@@ -21,7 +21,7 @@ namespace Steeltoe.Stream.Extensions
         {
             var container = new ServiceCollection();
             container.AddOptions();
-            container.AddLogging((b) => b.AddConsole());
+            container.AddLogging(b => b.AddConsole());
             var config = new ConfigurationBuilder().Build();
             container.AddSingleton<IConfiguration>(config);
             container.AddCoreServices();

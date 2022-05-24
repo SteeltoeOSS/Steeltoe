@@ -39,7 +39,7 @@ namespace Steeltoe.Stream
             var configuration = CreateTestConfiguration(properties);
             var container = new ServiceCollection();
             container.AddOptions();
-            container.AddLogging((b) =>
+            container.AddLogging(b =>
             {
                 b.AddDebug();
                 b.SetMinimumLevel(LogLevel.Trace);

@@ -99,7 +99,7 @@ namespace Steeltoe.Integration.Endpoint.Test
         [Fact]
         public async Task TestWithChannelName()
         {
-            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
+            services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
             var provider = services.BuildServiceProvider();
             var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
             {

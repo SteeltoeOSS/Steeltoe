@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
             SampleSubscription = SampleStream
                 .ObserveOn(NewThreadScheduler.Default)
                 .Subscribe(
-                    async (sampleDataAsString) =>
+                    async sampleDataAsString =>
                     {
                         if (sampleDataAsString != null)
                         {
@@ -51,7 +51,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
                             }
                         }
                     },
-                    (error) =>
+                    error =>
                     {
                         if (SampleSubscription != null)
                         {

@@ -124,7 +124,7 @@ namespace Steeltoe.Stream.Binding
             IPartitionKeyExtractorStrategy strategy = null;
             if (!string.IsNullOrEmpty(options.PartitionKeyExtractorName))
             {
-                strategy = _extractors?.FirstOrDefault((s) => s.ServiceName == options.PartitionKeyExtractorName);
+                strategy = _extractors?.FirstOrDefault(s => s.ServiceName == options.PartitionKeyExtractorName);
                 if (strategy == null)
                 {
                     throw new InvalidOperationException($"PartitionKeyExtractorStrategy bean with the name '{options.PartitionKeyExtractorName}' can not be found.");
@@ -151,7 +151,7 @@ namespace Steeltoe.Stream.Binding
             IPartitionSelectorStrategy strategy = null;
             if (!string.IsNullOrEmpty(options.PartitionSelectorName))
             {
-                strategy = _selectors.FirstOrDefault((s) => s.ServiceName == options.PartitionSelectorName);
+                strategy = _selectors.FirstOrDefault(s => s.ServiceName == options.PartitionSelectorName);
                 if (strategy == null)
                 {
                     throw new InvalidOperationException($"IPartitionSelectorStrategy bean with the name '{options.PartitionSelectorName}' can not be found.");

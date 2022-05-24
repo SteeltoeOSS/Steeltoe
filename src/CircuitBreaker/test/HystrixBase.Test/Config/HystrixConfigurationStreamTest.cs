@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
             }
 
             stream.Observe().Take(num).Subscribe(
-                (configuration) =>
+                configuration =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Received data with : " + configuration.CommandConfig.Count + " commands");
                     if (configuration.CommandConfig.ContainsKey(CommandKey))
@@ -59,7 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                         threadPoolShowsUp.Value = true;
                     }
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                     latch.SignalEx();
@@ -91,12 +91,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                         latch1.SignalEx();
                     })
                     .Subscribe(
-                    (configuration) =>
+                    configuration =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                         payloads1.IncrementAndGet();
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnError : " + e);
                         latch1.SignalEx();
@@ -115,12 +115,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     latch2.SignalEx();
                 })
                 .Subscribe(
-                (configuration) =>
+                configuration =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnError : " + e);
                     latch2.SignalEx();
@@ -165,12 +165,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     latch1.SignalEx();
                 })
                 .Subscribe(
-                (configuration) =>
+                configuration =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads1.IncrementAndGet();
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
                     latch1.SignalEx();
@@ -189,12 +189,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     latch2.SignalEx();
                 })
                 .Subscribe(
-                (configuration) =>
+                configuration =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
                     latch2.SignalEx();
@@ -258,11 +258,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
             var s1 = checkZippedEqual
                     .Take(10000)
                     .Subscribe(
-                    (b) =>
+                    b =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " :  OnNext : " + b);
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                         foundError.Value = true;

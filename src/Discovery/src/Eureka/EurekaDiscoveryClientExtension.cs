@@ -129,7 +129,7 @@ namespace Steeltoe.Discovery.Eureka
             services.AddSingleton<EurekaApplicationInfoManager>();
             services.AddSingleton<EurekaDiscoveryManager>();
             services.AddSingleton<EurekaDiscoveryClient>();
-            services.AddSingleton<IDiscoveryClient>((p) =>
+            services.AddSingleton<IDiscoveryClient>(p =>
             {
                 var eurekaService = p.GetService<EurekaDiscoveryClient>();
 

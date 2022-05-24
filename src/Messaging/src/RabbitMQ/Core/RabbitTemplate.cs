@@ -258,7 +258,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 lock (_directReplyToContainers)
                 {
                     return _directReplyToContainers.Values
-                            .Any((c) => c.IsRunning);
+                            .Any(c => c.IsRunning);
                 }
             }
         }
@@ -293,7 +293,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 throw new ArgumentNullException(nameof(beforePublishPostProcessors));
             }
 
-            Array.ForEach(beforePublishPostProcessors, (e) =>
+            Array.ForEach(beforePublishPostProcessors, e =>
             {
                 if (e == null)
                 {
@@ -350,7 +350,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 throw new ArgumentNullException(nameof(afterReceivePostProcessors));
             }
 
-            Array.ForEach(afterReceivePostProcessors, (e) =>
+            Array.ForEach(afterReceivePostProcessors, e =>
             {
                 if (e == null)
                 {
@@ -1171,7 +1171,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public virtual int GetUnconfirmedCount()
         {
             return _publisherConfirmChannels.Keys
-                    .Select((m) =>
+                    .Select(m =>
                     {
                         if (m is IPublisherCallbackChannel pubCallbackChan)
                         {
@@ -1186,7 +1186,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public virtual void Execute(Action<RC.IModel> action)
         {
             _ = Execute<object>(
-                (channel) =>
+                channel =>
             {
                 action(channel);
                 return null;

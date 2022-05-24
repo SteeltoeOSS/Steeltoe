@@ -110,7 +110,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             {
                 return _pendingConfirms
                     .Values
-                    .Select((p) => p.Count)
+                    .Select(p => p.Count)
                     .Sum();
             }
         }
@@ -565,10 +565,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             // Piggy-backed ack - extract all Listeners for this and earlier
             // sequences. Then, for each Listener, handle each of it's acks.
             // Finally, remove the sequences from listenerForSeq.
-            var involvedListeners = _listenerForSeq.Where((kvp) => kvp.Key < seq + 1);
+            var involvedListeners = _listenerForSeq.Where(kvp => kvp.Key < seq + 1);
 
             // eliminate duplicates
-            var listenersForAcks = involvedListeners.Select((kvp) => kvp.Value).Distinct();
+            var listenersForAcks = involvedListeners.Select(kvp => kvp.Value).Distinct();
 
             // Set<Listener> listenersForAcks = new HashSet<IListener>(involvedListeners.values());
             foreach (var involvedListener in listenersForAcks)
@@ -576,7 +576,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 // find all unack'd confirms for this listener and handle them
                 if (_pendingConfirms.TryGetValue(involvedListener, out var confirmsMap))
                 {
-                    var confirms = confirmsMap.Where((kvp) => kvp.Key < seq + 1);
+                    var confirms = confirmsMap.Where(kvp => kvp.Key < seq + 1);
 
                     // Iterator<Entry<Long, PendingConfirm>> iterator = confirms.entrySet().iterator();
                     // while (iterator.hasNext())
@@ -601,7 +601,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 }
             }
 
-            var seqs = new List<ulong>(involvedListeners.Select((kvp) => kvp.Key));
+            var seqs = new List<ulong>(involvedListeners.Select(kvp => kvp.Key));
             foreach (var key in seqs)
             {
                 _listenerForSeq.Remove(key);

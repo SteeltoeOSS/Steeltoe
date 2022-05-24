@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var listOfContribs = contribs.ToList();
             Assert.Equal(4, listOfContribs.Count);
 
-            Assert.Contains(contribs, (item) =>
+            Assert.Contains(contribs, item =>
                 item.GetType() == typeof(GitInfoContributor) ||
                 item.GetType() == typeof(AppSettingsInfoContributor) ||
                 item.GetType() == typeof(BuildInfoContributor) ||

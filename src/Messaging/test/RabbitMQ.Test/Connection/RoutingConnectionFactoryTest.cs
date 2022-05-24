@@ -41,9 +41,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 connectionFactory.CreateConnection();
             }
 
-            connectionFactory1.Verify((f) => f.CreateConnection(), Times.Exactly(2));
-            connectionFactory2.Verify((f) => f.CreateConnection());
-            defaultConnectionFactory.Verify((f) => f.CreateConnection(), Times.Exactly(2));
+            connectionFactory1.Verify(f => f.CreateConnection(), Times.Exactly(2));
+            connectionFactory2.Verify(f => f.CreateConnection());
+            defaultConnectionFactory.Verify(f => f.CreateConnection(), Times.Exactly(2));
         }
 
         [Fact]
@@ -73,8 +73,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
 
             Assert.True(Task.WaitAll(tasks.ToArray(), 10000));
-            connectionFactory1.Verify((f) => f.CreateConnection(), Times.Exactly(2));
-            connectionFactory2.Verify((f) => f.CreateConnection());
+            connectionFactory1.Verify(f => f.CreateConnection(), Times.Exactly(2));
+            connectionFactory2.Verify(f => f.CreateConnection());
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             routingFactory.AddConnectionListener(new Mock<IConnectionListener>().Object);
             var targetConnectionFactory = new Mock<IConnectionFactory>();
             routingFactory.AddTargetConnectionFactory("1", targetConnectionFactory.Object);
-            targetConnectionFactory.Verify((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()), Times.Exactly(2));
+            targetConnectionFactory.Verify(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()), Times.Exactly(2));
         }
 
         [Fact]
@@ -116,23 +116,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var channel2 = new Mock<RC.IModel>();
             var defaultChannel = new Mock<RC.IModel>();
 
-            connectionFactory1.SetupSequence((f) => f.CreateConnection())
+            connectionFactory1.SetupSequence(f => f.CreateConnection())
                 .Returns(connection1.Object);
 
-            connectionFactory2.SetupSequence((f) => f.CreateConnection())
+            connectionFactory2.SetupSequence(f => f.CreateConnection())
                 .Returns(connection1.Object)
                 .Returns(connection2.Object);
 
-            defaultConnectionFactory.SetupSequence((f) => f.CreateConnection())
+            defaultConnectionFactory.SetupSequence(f => f.CreateConnection())
                 .Returns(defautConnection.Object);
 
-            connection1.Setup((c) => c.IsOpen).Returns(true);
+            connection1.Setup(c => c.IsOpen).Returns(true);
             connection1.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel1.Object);
 
-            connection2.Setup((c) => c.IsOpen).Returns(true);
+            connection2.Setup(c => c.IsOpen).Returns(true);
             connection2.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel2.Object);
 
-            defautConnection.Setup((c) => c.IsOpen).Returns(true);
+            defautConnection.Setup(c => c.IsOpen).Returns(true);
             defautConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(defaultChannel.Object);
 
             channel1.Setup(c => c.IsOpen).Returns(true);
@@ -159,27 +159,27 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
 
-            connectionFactory1.Verify((f) => f.CreateConnection(), Times.Never);
-            connectionFactory2.Verify((f) => f.CreateConnection(), Times.Exactly(2));
-            defaultConnectionFactory.Verify((f) => f.CreateConnection(), Times.Once); // Checks connection
+            connectionFactory1.Verify(f => f.CreateConnection(), Times.Never);
+            connectionFactory2.Verify(f => f.CreateConnection(), Times.Exactly(2));
+            defaultConnectionFactory.Verify(f => f.CreateConnection(), Times.Once); // Checks connection
 
             connectionFactory1.Invocations.Clear();
             connectionFactory2.Invocations.Clear();
             defaultConnectionFactory.Invocations.Clear();
 
             container.SetQueueNames("baz");
-            connectionFactory1.Verify((f) => f.CreateConnection());
-            connectionFactory2.Verify((f) => f.CreateConnection(), Times.Never);
-            defaultConnectionFactory.Verify((f) => f.CreateConnection(), Times.Never);
+            connectionFactory1.Verify(f => f.CreateConnection());
+            connectionFactory2.Verify(f => f.CreateConnection(), Times.Never);
+            defaultConnectionFactory.Verify(f => f.CreateConnection(), Times.Never);
 
             connectionFactory1.Invocations.Clear();
             connectionFactory2.Invocations.Clear();
             defaultConnectionFactory.Invocations.Clear();
 
             container.SetQueueNames("qux");
-            connectionFactory1.Verify((f) => f.CreateConnection(), Times.Never);
-            connectionFactory2.Verify((f) => f.CreateConnection(), Times.Never);
-            defaultConnectionFactory.Verify((f) => f.CreateConnection());
+            connectionFactory1.Verify(f => f.CreateConnection(), Times.Never);
+            connectionFactory2.Verify(f => f.CreateConnection(), Times.Never);
+            defaultConnectionFactory.Verify(f => f.CreateConnection());
 
             await container.Stop();
         }
@@ -198,14 +198,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var connectionFactory = new SimpleRoutingConnectionFactory();
 
-            connection1.Setup((c) => c.IsOpen).Returns(true);
+            connection1.Setup(c => c.IsOpen).Returns(true);
             connection1.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel1.Object);
 
             channel1.Setup(c => c.IsOpen).Returns(true);
 
             var connectionMakerKey1 = new AtomicReference<object>();
             var latch = new CountdownEvent(1);
-            connectionFactory1.Setup((f) => f.CreateConnection())
+            connectionFactory1.Setup(f => f.CreateConnection())
              .Returns(connection1.Object)
              .Callback(() =>
              {
@@ -246,14 +246,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var connectionFactory = new SimpleRoutingConnectionFactory();
             SimpleResourceHolder.Bind(connectionFactory, "foo");
 
-            connection1.Setup((c) => c.IsOpen).Returns(true);
+            connection1.Setup(c => c.IsOpen).Returns(true);
             connection1.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel1.Object);
 
             channel1.Setup(c => c.IsOpen).Returns(true);
 
             var connectionMakerKey1 = new AtomicReference<object>();
             var latch = new CountdownEvent(1);
-            connectionFactory1.Setup((f) => f.CreateConnection())
+            connectionFactory1.Setup(f => f.CreateConnection())
              .Returns(connection1.Object)
              .Callback(() =>
              {

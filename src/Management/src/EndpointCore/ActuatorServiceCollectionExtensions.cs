@@ -80,7 +80,7 @@ namespace Steeltoe.Management.Endpoint
         private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
             => services.AddCors(setup =>
                 {
-                    setup.AddPolicy("SteeltoeManagement", (policy) =>
+                    setup.AddPolicy("SteeltoeManagement", policy =>
                     {
                         policy.WithMethods("GET", "POST");
                         if (Platform.IsCloudFoundry)

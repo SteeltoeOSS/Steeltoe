@@ -18,7 +18,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
 
             // var mockLogger = new Mock<ILoggerFactory>();
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
@@ -30,13 +30,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             // mockLogger.Verify((l) => l.Log(LogLevel.Information, 0, It.IsAny<It.IsAnyType>(), null, (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.AtLeast(2));
             con.Close();
             Assert.Equal(1, listener.Called);
-            mockConnection.Verify((c) => c.Close(It.IsAny<int>()), Times.Never);
+            mockConnection.Verify(c => c.Close(It.IsAny<int>()), Times.Never);
             connectionFactory.CreateConnection();
             Assert.Equal(1, listener.Called);
             connectionFactory.Destroy();
             Assert.Equal(0, listener.Called);
-            mockConnection.Verify((c) => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
-            mockConnectionFactory.Verify((f) => f.CreateConnection(It.IsAny<string>()), Times.Once);
+            mockConnection.Verify(c => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
+            mockConnectionFactory.Verify(f => f.CreateConnection(It.IsAny<string>()), Times.Once);
 
             connectionFactory.SetAddresses("foo:5672,bar:5672");
             con = connectionFactory.CreateConnection();
@@ -54,7 +54,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var listener = new IncrementConnectionListener();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
             var con = connectionFactory.CreateConnection();
             Assert.Equal(0, listener.Called);
@@ -62,13 +62,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(1, listener.Called);
             con.Close();
             Assert.Equal(1, listener.Called);
-            mockConnection.Verify((c) => c.Close(It.IsAny<int>()), Times.Never);
+            mockConnection.Verify(c => c.Close(It.IsAny<int>()), Times.Never);
             _ = connectionFactory.CreateConnection();
             Assert.Equal(1, listener.Called);
             connectionFactory.Destroy();
             Assert.Equal(0, listener.Called);
-            mockConnection.Verify((c) => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
-            mockConnectionFactory.Verify((f) => f.CreateConnection(It.IsAny<string>()), Times.Once);
+            mockConnection.Verify(c => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
+            mockConnectionFactory.Verify(f => f.CreateConnection(It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
@@ -78,20 +78,20 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnection1 = new Mock<RC.IConnection>();
             var mockConnection2 = new Mock<RC.IConnection>();
             var mockChanel2 = new Mock<RC.IModel>();
-            mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection1.Object)
                 .Returns(mockConnection2.Object);
-            mockConnection1.Setup((c) => c.IsOpen).Returns(false);
-            mockConnection2.Setup((c) => c.CreateModel()).Returns(mockChanel2.Object);
+            mockConnection1.Setup(c => c.IsOpen).Returns(false);
+            mockConnection2.Setup(c => c.CreateModel()).Returns(mockChanel2.Object);
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
             var connection = connectionFactory.CreateConnection();
 
             // the dead connection should be discarded
             _ = connection.CreateChannel();
-            mockConnectionFactory.Verify((f) => f.CreateConnection(It.IsAny<string>()), Times.Exactly(2));
-            mockConnection2.Verify((c) => c.CreateModel(), Times.Once);
+            mockConnectionFactory.Verify(f => f.CreateConnection(It.IsAny<string>()), Times.Exactly(2));
+            mockConnection2.Verify(c => c.CreateModel(), Times.Once);
             connectionFactory.Destroy();
-            mockConnection2.Verify((c) => c.Close(It.IsAny<int>()), Times.Once);
+            mockConnection2.Verify(c => c.Close(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
             connectionFactory.Destroy();
-            mockConnectionFactory.Verify((f) => f.CreateConnection(It.IsAny<string>()), Times.Never);
+            mockConnectionFactory.Verify(f => f.CreateConnection(It.IsAny<string>()), Times.Never);
         }
 
         protected abstract AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory = null);

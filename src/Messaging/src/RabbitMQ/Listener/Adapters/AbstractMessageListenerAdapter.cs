@@ -179,7 +179,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                     }
 
                     asTask.ContinueWith(
-                        (t) =>
+                        t =>
                         {
                             if (t.IsCompletedSuccessfully)
                             {

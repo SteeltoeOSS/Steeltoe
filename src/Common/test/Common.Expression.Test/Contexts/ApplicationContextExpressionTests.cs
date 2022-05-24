@@ -27,7 +27,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 .Build();
             var collection = new ServiceCollection();
             collection.AddSingleton<IConfiguration>(config);
-            collection.AddSingleton((p) =>
+            collection.AddSingleton(p =>
             {
                 var tb = new TestService
                 {
@@ -36,7 +36,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 return tb;
             });
 
-            collection.AddSingleton((p) =>
+            collection.AddSingleton(p =>
             {
                 var tb = new TestService
                 {
@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 return tb;
             });
 
-            collection.AddSingleton<IApplicationContext>((p) =>
+            collection.AddSingleton<IApplicationContext>(p =>
             {
                 var context = new GenericApplicationContext(p, config)
                 {

@@ -243,7 +243,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             listenerContainer.ConsumersPerQueue = concurrency;
             listenerContainer.PrefetchCount = properties.Prefetch ?? listenerContainer.PrefetchCount;
             listenerContainer.RecoveryInterval = properties.RecoveryInterval ?? listenerContainer.RecoveryInterval;
-            var queueNames = destinationName.Split(',', StringSplitOptions.RemoveEmptyEntries).Select((s) => s.Trim());
+            var queueNames = destinationName.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
             listenerContainer.SetQueueNames(queueNames.ToArray());
             listenerContainer.SetAfterReceivePostProcessors(DecompressingPostProcessor);
             listenerContainer.MessageHeadersConverter = _inboundMessagePropertiesConverter;

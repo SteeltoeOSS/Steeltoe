@@ -13,7 +13,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 
         public static ICircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {
-            return CircuitBreakersByCommand.GetOrAddEx(key.Name, (k) => new HystrixCircuitBreakerImpl(key, group, options, metrics));
+            return CircuitBreakersByCommand.GetOrAddEx(key.Name, k => new HystrixCircuitBreakerImpl(key, group, options, metrics));
         }
 
         public static ICircuitBreaker GetInstance(IHystrixCommandKey key)

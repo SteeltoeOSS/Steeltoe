@@ -26,10 +26,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChanel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChanel.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChanel.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChanel.Setup(c => c.IsOpen).Returns(true);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
             var con = ccf.CreateConnection();
             var channel = con.CreateChannel();
@@ -44,8 +44,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             Assert.Same(con, con2);
             Assert.Same(channel, channel2);
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChanel.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChanel.Verify(c => c.Close(), Times.Never);
         }
 
         [Fact]
@@ -54,10 +54,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChanel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChanel.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChanel.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChanel.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
             var con = ccf.PublisherConnectionFactory.CreateConnection();
@@ -73,8 +73,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             Assert.Same(con, con2);
             Assert.Same(channel, channel2);
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChanel.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChanel.Verify(c => c.Close(), Times.Never);
         }
 
         [Fact]
@@ -86,17 +86,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockChanel2 = new Mock<RC.IModel>();
             var mockTxChanel = new Mock<RC.IModel>();
 
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.SetupSequence((c) => c.CreateModel())
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.SetupSequence(c => c.CreateModel())
                 .Returns(mockChannel1.Object)
                 .Returns(mockChanel2.Object)
                 .Returns(mockTxChanel.Object);
 
-            mockChannel1.Setup((c) => c.BasicGet("foo", false)).Returns(new RC.BasicGetResult(0, false, null, null, 1, null, null));
-            mockChanel2.Setup((c) => c.BasicGet("foo", false)).Returns(new RC.BasicGetResult(0, false, null, null, 1, null, null));
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel2.Setup((c) => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.BasicGet("foo", false)).Returns(new RC.BasicGetResult(0, false, null, null, 1, null, null));
+            mockChanel2.Setup(c => c.BasicGet("foo", false)).Returns(new RC.BasicGetResult(0, false, null, null, 1, null, null));
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockChanel2.Setup(c => c.IsOpen).Returns(true);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
                 ChannelCacheSize = 2
@@ -106,7 +106,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var channel2 = con.CreateChannel();
             var txChannel = (IChannelProxy)con.CreateChannel(true);
             Assert.True(txChannel.IsTransactional);
-            mockTxChanel.Verify((c) => c.TxSelect(), Times.Once);
+            mockTxChanel.Verify(c => c.TxSelect(), Times.Once);
             txChannel.Close();
             channel1.BasicGet("foo", true);
             channel2.BasicGet("bar", true);
@@ -123,12 +123,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             ch1.Close();
             ch2.Close();
 
-            mockConnection.Verify((c) => c.CreateModel(), Times.Exactly(3));
+            mockConnection.Verify(c => c.CreateModel(), Times.Exactly(3));
 
             con.Close();
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChannel1.Verify((c) => c.Close(), Times.Never);
-            mockChanel2.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close(), Times.Never);
+            mockChanel2.Verify(c => c.Close(), Times.Never);
         }
 
         [Fact]
@@ -139,16 +139,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockChannel1 = new Mock<RC.IModel>();
             var mockChanel2 = new Mock<RC.IModel>();
             var mockChanel3 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.SetupSequence((c) => c.CreateModel())
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.SetupSequence(c => c.CreateModel())
                 .Returns(mockChannel1.Object)
                 .Returns(mockChanel2.Object)
                 .Returns(mockChanel3.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
 
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel2.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel3.Setup((c) => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockChanel2.Setup(c => c.IsOpen).Returns(true);
+            mockChanel3.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -183,13 +183,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             ch1.Close();
             ch2.Close();
 
-            mockConnection.Verify((c) => c.CreateModel(), Times.Exactly(3));
+            mockConnection.Verify(c => c.CreateModel(), Times.Exactly(3));
 
             con.Close();
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChannel1.Verify((c) => c.Close(), Times.Never);
-            mockChanel2.Verify((c) => c.Close(), Times.AtLeastOnce);
-            mockChanel3.Verify((c) => c.Close(), Times.AtLeastOnce);
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close(), Times.Never);
+            mockChanel2.Verify(c => c.Close(), Times.AtLeastOnce);
+            mockChanel3.Verify(c => c.Close(), Times.AtLeastOnce);
         }
 
         [Fact]
@@ -199,10 +199,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
 
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -230,11 +230,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             Assert.Same(channel1, ch1);
             ch1.Close();
-            mockConnection.Verify((c) => c.CreateModel(), Times.Once);
+            mockConnection.Verify(c => c.CreateModel(), Times.Once);
             con.Close(); // should be ignored
 
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChannel1.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close(), Times.Never);
 
             ccf.Destroy();
         }
@@ -248,15 +248,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             var brokerDown = new AtomicBoolean(false);
 
-            mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection.Object)
                 .Throws(new RabbitConnectException(null)) // Happens when brokerdown
                 .Returns(mockConnection.Object);
 
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
 
-            mockConnection.Setup((c) => c.IsOpen).Returns(() => !brokerDown.Value);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(() => !brokerDown.Value);
+            mockConnection.Setup(c => c.IsOpen).Returns(() => !brokerDown.Value);
+            mockChannel1.Setup(c => c.IsOpen).Returns(() => !brokerDown.Value);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -309,8 +309,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
             {
@@ -373,11 +373,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -409,8 +409,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             channel2.Close();
 
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChannel1.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close(), Times.Never);
 
             ccf.Destroy();
         }
@@ -434,16 +434,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
             var mockProperties = new Mock<RC.IBasicProperties>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
 
             var open = new AtomicBoolean(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(() => open.Value);
-            mockChannel1.Setup((c) => c.CreateBasicProperties()).Returns(mockProperties.Object);
-            mockChannel1.Setup((c) => c.NextPublishSeqNo).Returns(1);
-            mockChannel1.Setup((c) => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()))
+            mockChannel1.Setup(c => c.IsOpen).Returns(() => open.Value);
+            mockChannel1.Setup(c => c.CreateBasicProperties()).Returns(mockProperties.Object);
+            mockChannel1.Setup(c => c.NextPublishSeqNo).Returns(1);
+            mockChannel1.Setup(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()))
                 .Callback(() => open.Value = false);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -455,7 +455,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             rabbitTemplate.ConvertAndSend("foo", "bar");
             open.Value = true;
             rabbitTemplate.ConvertAndSend("foo", "bar");
-            mockChannel1.Verify((c) => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()), Times.Exactly(2));
+            mockChannel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()), Times.Exactly(2));
         }
 
         [Fact]
@@ -464,10 +464,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
                 ChannelCacheSize = 1,
@@ -494,8 +494,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             RabbitUtils.SetPhysicalCloseRequired(channel1, false);
             con.Close();
 
-            mockChannel1.Verify((c) => c.Close());
-            mockConnection.Verify((c) => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close());
+            mockConnection.Verify(c => c.Close(), Times.Never);
             Assert.Equal(1, slim.CurrentCount);
 
             ccf.Destroy();
@@ -508,10 +508,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
                 ChannelCacheSize = 1,
@@ -534,8 +534,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             con.Close();
 
-            mockChannel1.Verify((c) => c.Close(), Times.Never);
-            mockConnection.Verify((c) => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
 
             ccf.Destroy();
             Assert.Equal(1, slim.CurrentCount);
@@ -548,11 +548,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
             var mockChannel2 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.SetupSequence((c) => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChannel2.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel2.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChannel2.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockChannel2.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -581,12 +581,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             ch1.Close();
             ch2.Close();
 
-            mockConnection.Verify((c) => c.CreateModel(), Times.Exactly(2));
+            mockConnection.Verify(c => c.CreateModel(), Times.Exactly(2));
             con.Close(); // should be ignored
 
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChannel1.Verify((c) => c.Close(), Times.Never);
-            mockChannel2.Verify((c) => c.Close(), Times.AtLeastOnce());
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close(), Times.Never);
+            mockChannel2.Verify(c => c.Close(), Times.AtLeastOnce());
         }
 
         [Fact]
@@ -596,11 +596,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
             var mockChannel2 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.SetupSequence((c) => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChannel2.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel2.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChannel2.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockChannel2.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -627,12 +627,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             ch1.Close();
             ch2.Close();
 
-            mockConnection.Verify((c) => c.CreateModel(), Times.Exactly(2));
+            mockConnection.Verify(c => c.CreateModel(), Times.Exactly(2));
             con.Close(); // should be ignored
 
-            mockConnection.Verify((c) => c.Close(), Times.Never);
-            mockChannel1.Verify((c) => c.Close(), Times.Never);
-            mockChannel2.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
+            mockChannel1.Verify(c => c.Close(), Times.Never);
+            mockChannel2.Verify(c => c.Close(), Times.Never);
 
             Assert.Single(ccf._cachedChannelsNonTransactional);
             Assert.Single(ccf._cachedChannelsTransactional);
@@ -649,22 +649,22 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockChannel2 = new Mock<RC.IModel>();
             var mockChannel3 = new Mock<RC.IModel>();
 
-            mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection1.Object)
                 .Returns(mockConnection2.Object);
 
-            mockConnection1.SetupSequence((c) => c.CreateModel())
+            mockConnection1.SetupSequence(c => c.CreateModel())
                 .Returns(mockChannel1.Object)
                 .Returns(mockChannel2.Object);
-            mockConnection1.Setup((c) => c.IsOpen).Returns(true);
+            mockConnection1.Setup(c => c.IsOpen).Returns(true);
 
-            mockConnection2.SetupSequence((c) => c.CreateModel())
+            mockConnection2.SetupSequence(c => c.CreateModel())
                 .Returns(mockChannel3.Object);
-            mockConnection2.Setup((c) => c.IsOpen).Returns(true);
+            mockConnection2.Setup(c => c.IsOpen).Returns(true);
 
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel2.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel3.Setup((c) => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockChannel2.Setup(c => c.IsOpen).Returns(true);
+            mockChannel3.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -704,10 +704,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             ccf.Destroy();
 
-            mockConnection1.Verify((c) => c.CreateModel(), Times.Exactly(2));
-            mockConnection1.Verify((c) => c.Close(It.IsAny<int>()));
+            mockConnection1.Verify(c => c.CreateModel(), Times.Exactly(2));
+            mockConnection1.Verify(c => c.Close(It.IsAny<int>()));
 
-            mockChannel2.Verify((c) => c.Close());
+            mockChannel2.Verify(c => c.Close());
 
             var con1 = ccf.CreateConnection();
 
@@ -728,10 +728,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
 
             var called = new AtomicInteger(0);
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
@@ -745,14 +745,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel.Close();
             con.Close();
 
-            mockConnection.Verify((c) => c.Close(), Times.Never);
+            mockConnection.Verify(c => c.Close(), Times.Never);
             connectionFactory.CreateConnection();
             con.CreateChannel();
             Assert.Equal(1, called.Value);
 
             connectionFactory.Destroy();
-            mockConnection.Verify((c) => c.Close(It.IsAny<int>()));
-            mockConnectionFactory.Verify((c) => c.CreateConnection(It.IsAny<string>()));
+            mockConnection.Verify(c => c.Close(It.IsAny<int>()));
+            mockConnectionFactory.Verify(c => c.CreateConnection(It.IsAny<string>()));
         }
 
         [Fact]
@@ -760,17 +760,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection1 = new Mock<RC.IConnection>();
-            mockConnection1.Setup((c) => c.ToString()).Returns("conn1");
+            mockConnection1.Setup(c => c.ToString()).Returns("conn1");
             var mockConnection2 = new Mock<RC.IConnection>();
-            mockConnection2.Setup((c) => c.ToString()).Returns("conn2");
+            mockConnection2.Setup(c => c.ToString()).Returns("conn2");
             var mockChannel1 = new Mock<RC.IModel>();
-            mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection1.Object)
                 .Returns(mockConnection2.Object);
-            mockConnection1.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection1.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-            mockConnection2.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection1.Setup(c => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockConnection1.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnection2.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
 
             var created = new AtomicReference<IConnection>();
             var closed = new AtomicReference<IConnection>();
@@ -784,7 +784,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel.Close();
 
             con.Close();
-            mockConnection1.Verify((c) => c.Close(), Times.Never);
+            mockConnection1.Verify(c => c.Close(), Times.Never);
 
             var same = connectionFactory.CreateConnection();
             channel = con.CreateChannel();
@@ -794,8 +794,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var asProxy = con as CachingConnectionFactory.ChannelCachingConnectionProxy;
             var conDelegate = asProxy.TargetConnection.Connection;
 
-            mockConnection1.Setup((c) => c.IsOpen).Returns(false);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(false);
+            mockConnection1.Setup(c => c.IsOpen).Returns(false);
+            mockChannel1.Setup(c => c.IsOpen).Returns(false);
 
             channel.BasicCancel("foo");
             channel.Close();
@@ -810,11 +810,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Same(created.Value, notSame);
 
             connectionFactory.Destroy();
-            mockConnection2.Verify((c) => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
+            mockConnection2.Verify(c => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
             Assert.Same(closed.Value, notSame);
             Assert.Equal(2, timesClosed.Value);
 
-            mockConnectionFactory.Verify((f) => f.CreateConnection(It.IsAny<string>()), Times.Exactly(2));
+            mockConnectionFactory.Verify(f => f.CreateConnection(It.IsAny<string>()), Times.Exactly(2));
         }
 
         [Fact]
@@ -827,23 +827,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var connectionNumber = new AtomicInteger();
             var channelNumber = new AtomicInteger();
 
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     var connection = new Mock<RC.IConnection>();
-                    connection.Setup((c) => c.CreateModel())
+                    connection.Setup(c => c.CreateModel())
                         .Callback(() =>
                         {
                             var channel = new Mock<RC.IModel>();
-                            channel.Setup((c) => c.IsOpen).Returns(true);
+                            channel.Setup(c => c.IsOpen).Returns(true);
                             var channelNum = channelNumber.IncrementAndGet();
-                            channel.Setup((c) => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
+                            channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
                             mockChannels.Add(channel);
                         })
                         .Returns(() => mockChannels[channelNumber.Value - 1].Object);
                     var connectionNum = connectionNumber.IncrementAndGet();
-                    connection.Setup((c) => c.ToString()).Returns($"mockConnection{connectionNum}");
-                    connection.Setup((c) => c.IsOpen).Returns(true);
+                    connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
+                    connection.Setup(c => c.IsOpen).Returns(true);
                     mockConnections.Add(connection);
                 })
                 .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
@@ -871,10 +871,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel1.Close();
 
             // AMQP-358
-            mockChannels[0].Verify((c) => c.Close(), Times.Never);
+            mockChannels[0].Verify(c => c.Close(), Times.Never);
 
             con1.Close();
-            mockConnections[0].Verify((c) => c.Close(), Times.Never);
+            mockConnections[0].Verify(c => c.Close(), Times.Never);
             Assert.Single(ccf._allocatedConnections);
             Assert.Single(ccf._idleConnections);
             Assert.Null(closedNotification.Value);
@@ -885,9 +885,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var channel2 = con2.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel2);
             channel2.Close();
-            mockChannels[0].Verify((c) => c.Close(), Times.Never);
+            mockChannels[0].Verify(c => c.Close(), Times.Never);
             con2.Close();
-            mockConnections[0].Verify((c) => c.Close(), Times.Never);
+            mockConnections[0].Verify(c => c.Close(), Times.Never);
             Assert.Single(ccf._allocatedConnections);
             Assert.Single(ccf._idleConnections);
             Assert.Null(createNotification.Value);
@@ -909,9 +909,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             // put mock1 in cache
             channel1.Close();
-            mockChannels[1].Verify((c) => c.Close(), Times.Never);
+            mockChannels[1].Verify(c => c.Close(), Times.Never);
             con1.Close();
-            mockConnections[0].Verify((c) => c.Close(), Times.Never);
+            mockConnections[0].Verify(c => c.Close(), Times.Never);
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
             Assert.Null(closedNotification.Value);
@@ -937,19 +937,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             // Cache size is 1; con3 (mock1) should have been a real close.
             // con2 (mock2) should still be in the cache.
-            mockConnections[0].Verify((c) => c.Close(30_000));
+            mockConnections[0].Verify(c => c.Close(30_000));
             Assert.NotNull(closedNotification.Value);
             val = closedNotification.GetAndSet(null);
             Assert.Same(val, mockConnections[0].Object);
-            mockChannels[1].Verify((c) => c.Close(), Times.Never);
-            mockConnections[1].Verify((c) => c.Close(30_000), Times.Never);
+            mockChannels[1].Verify(c => c.Close(), Times.Never);
+            mockConnections[1].Verify(c => c.Close(30_000), Times.Never);
 
             // verify(mockChannels.get(1), never()).close();
             VerifyConnectionIs(mockConnections[1].Object, ccf._idleConnections.First.Value);
 
             // Now a closed cached connection
-            mockConnections[1].Setup((c) => c.IsOpen).Returns(false);
-            mockChannels[1].Setup((c) => c.IsOpen).Returns(false);
+            mockConnections[1].Setup(c => c.IsOpen).Returns(false);
+            mockChannels[1].Setup(c => c.IsOpen).Returns(false);
             con3 = ccf.CreateConnection();
             Assert.NotNull(closedNotification.Value);
             val = closedNotification.GetAndSet(null);
@@ -976,7 +976,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Null(createNotification.Value);
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
-            mockConnections[2].Setup((c) => c.IsOpen).Returns(false);
+            mockConnections[2].Setup(c => c.IsOpen).Returns(false);
             channel3 = con3.CreateChannel();
             val = closedNotification.GetAndSet(null);
             Assert.NotNull(val);
@@ -992,7 +992,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             ccf.Destroy();
             Assert.NotNull(closedNotification.Value);
-            mockConnections[3].Verify((c) => c.Close(30_000));
+            mockConnections[3].Verify(c => c.Close(30_000));
         }
 
         [Fact]
@@ -1005,23 +1005,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var connectionNumber = new AtomicInteger();
             var channelNumber = new AtomicInteger();
 
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     var connection = new Mock<RC.IConnection>();
-                    connection.Setup((c) => c.CreateModel())
+                    connection.Setup(c => c.CreateModel())
                         .Callback(() =>
                         {
                             var channel = new Mock<RC.IModel>();
-                            channel.Setup((c) => c.IsOpen).Returns(true);
+                            channel.Setup(c => c.IsOpen).Returns(true);
                             var channelNum = channelNumber.IncrementAndGet();
-                            channel.Setup((c) => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
+                            channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
                             mockChannels.Add(channel);
                         })
                         .Returns(() => mockChannels[channelNumber.Value - 1].Object);
                     var connectionNum = connectionNumber.IncrementAndGet();
-                    connection.Setup((c) => c.ToString()).Returns($"mockConnection{connectionNum}");
-                    connection.Setup((c) => c.IsOpen).Returns(true);
+                    connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
+                    connection.Setup(c => c.IsOpen).Returns(true);
                     mockConnections.Add(connection);
                 })
                 .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
@@ -1054,10 +1054,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             channel1.Close();
 
             // AMQP-358
-            mockChannels[0].Verify((c) => c.Close(), Times.Never);
+            mockChannels[0].Verify(c => c.Close(), Times.Never);
 
             con1.Close();
-            mockConnections[0].Verify((c) => c.Close(), Times.Never);
+            mockConnections[0].Verify(c => c.Close(), Times.Never);
             Assert.Single(ccf._allocatedConnections);
             Assert.Single(ccf._idleConnections);
             var con1Proxy = con1 as CachingConnectionFactory.ChannelCachingConnectionProxy;
@@ -1070,9 +1070,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var channel2 = con2.CreateChannel();
             VerifyChannelIs(mockChannels[0].Object, channel2);
             channel2.Close();
-            mockChannels[0].Verify((c) => c.Close(), Times.Never);
+            mockChannels[0].Verify(c => c.Close(), Times.Never);
             con2.Close();
-            mockConnections[0].Verify((c) => c.Close(), Times.Never);
+            mockConnections[0].Verify(c => c.Close(), Times.Never);
             Assert.Single(ccf._allocatedConnections);
             Assert.Single(ccf._idleConnections);
             Assert.Null(createNotification.Value);
@@ -1094,9 +1094,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             // put mock1 in cache
             channel1.Close();
-            mockChannels[1].Verify((c) => c.Close(), Times.Never);
+            mockChannels[1].Verify(c => c.Close(), Times.Never);
             con1.Close();
-            mockConnections[0].Verify((c) => c.Close(), Times.Never);
+            mockConnections[0].Verify(c => c.Close(), Times.Never);
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
             Assert.Null(closedNotification.Value);
@@ -1125,10 +1125,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             // Cache size is 1; con3 (mock1) should have been a real close.
             // con2 (mock2) should still be in the cache.
-            mockConnections[0].Verify((c) => c.Close(30_000), Times.Never);
+            mockConnections[0].Verify(c => c.Close(30_000), Times.Never);
             Assert.Null(closedNotification.Value);
-            mockChannels[1].Verify((c) => c.Close(), Times.Never);
-            mockConnections[1].Verify((c) => c.Close(30_000), Times.Never);
+            mockChannels[1].Verify(c => c.Close(), Times.Never);
+            mockConnections[1].Verify(c => c.Close(30_000), Times.Never);
 
             // verify(mockChannels.get(1), never()).close();
             Assert.Equal(2, ccf._idleConnections.Count);
@@ -1139,7 +1139,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             VerifyConnectionIs(mockConnections[0].Object, idleEnumerator.Current);
 
             // Now a closed cached connection
-            mockConnections[1].Setup((c) => c.IsOpen).Returns(false);
+            mockConnections[1].Setup(c => c.IsOpen).Returns(false);
             con3 = ccf.CreateConnection();
             Assert.NotNull(closedNotification.Value);
             val = closedNotification.GetAndSet(null);
@@ -1162,7 +1162,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Null(createNotification.Value);
             Assert.Equal(2, ccf._allocatedConnections.Count);
             Assert.Single(ccf._idleConnections);
-            mockConnections[0].Setup((c) => c.IsOpen).Returns(false);
+            mockConnections[0].Setup(c => c.IsOpen).Returns(false);
             channel3 = con3.CreateChannel();
             val = closedNotification.GetAndSet(null);
             Assert.NotNull(val);
@@ -1194,9 +1194,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             ccf.Destroy();
             Assert.NotNull(closedNotification.Value);
-            mockConnections[0].Verify((c) => c.Close(30_000));
-            mockConnections[1].Verify((c) => c.Close(30_000));
-            mockConnections[2].Verify((c) => c.Close(30_000));
+            mockConnections[0].Verify(c => c.Close(30_000));
+            mockConnections[1].Verify(c => c.Close(30_000));
+            mockConnections[2].Verify(c => c.Close(30_000));
         }
 
         [Fact]
@@ -1209,23 +1209,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var connectionNumber = new AtomicInteger();
             var channelNumber = new AtomicInteger();
 
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     var connection = new Mock<RC.IConnection>();
-                    connection.Setup((c) => c.CreateModel())
+                    connection.Setup(c => c.CreateModel())
                         .Callback(() =>
                         {
                             var channel = new Mock<RC.IModel>();
-                            channel.Setup((c) => c.IsOpen).Returns(true);
+                            channel.Setup(c => c.IsOpen).Returns(true);
                             var channelNum = channelNumber.IncrementAndGet();
-                            channel.Setup((c) => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
+                            channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
                             mockChannels.Add(channel);
                         })
                         .Returns(() => mockChannels[channelNumber.Value - 1].Object);
                     var connectionNum = connectionNumber.IncrementAndGet();
-                    connection.Setup((c) => c.ToString()).Returns($"mockConnection{connectionNum}");
-                    connection.Setup((c) => c.IsOpen).Returns(true);
+                    connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
+                    connection.Setup(c => c.IsOpen).Returns(true);
                     mockConnections.Add(connection);
                 })
                 .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
@@ -1249,8 +1249,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal(3, ccf._allocatedConnections.Count);
             Assert.Equal(3, ccf._idleConnections.Count);
 
-            mockConnections[0].Setup((c) => c.IsOpen).Returns(false);
-            mockConnections[1].Setup((c) => c.IsOpen).Returns(false);
+            mockConnections[0].Setup(c => c.IsOpen).Returns(false);
+            mockConnections[1].Setup(c => c.IsOpen).Returns(false);
             var conn4 = ccf.CreateConnection();
             Assert.Equal(3, ccf._allocatedConnections.Count);
             Assert.Equal(2, ccf._idleConnections.Count);
@@ -1288,9 +1288,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             };
             ccf.SetAddresses(string.Empty);
             ccf.CreateConnection();
-            mock.VerifyGet((f) => f.AutomaticRecoveryEnabled);
-            mock.VerifySet((f) => f.HostName = "abc");
-            mock.Verify((f) => f.CreateConnection(It.IsAny<string>()));
+            mock.VerifyGet(f => f.AutomaticRecoveryEnabled);
+            mock.VerifySet(f => f.HostName = "abc");
+            mock.Verify(f => f.CreateConnection(It.IsAny<string>()));
         }
 
         [Fact(Skip = "Can't Mock sealed class: RC.ConnectionFactory")]
@@ -1298,13 +1298,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             var mock = new Mock<RC.ConnectionFactory>();
             IList<RC.AmqpTcpEndpoint> captured = null;
-            mock.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
+            mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
                 .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
             var ccf = new CachingConnectionFactory(mock.Object);
             ccf.SetAddresses("mq1");
             ccf.CreateConnection();
-            mock.VerifyGet((f) => f.AutomaticRecoveryEnabled);
-            mock.Verify((f) => f.CreateConnection(It.IsAny<IList<string>>(), It.IsAny<string>()));
+            mock.VerifyGet(f => f.AutomaticRecoveryEnabled);
+            mock.Verify(f => f.CreateConnection(It.IsAny<IList<string>>(), It.IsAny<string>()));
             Assert.NotNull(captured);
             Assert.Equal("mq1", captured[0].HostName);
         }
@@ -1314,15 +1314,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             var mock = new Mock<RC.ConnectionFactory>();
             IList<RC.AmqpTcpEndpoint> captured = null;
-            mock.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
+            mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
                 .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
-            mock.Setup((f) => f.AutomaticRecoveryEnabled).Returns(true);
+            mock.Setup(f => f.AutomaticRecoveryEnabled).Returns(true);
             var ccf = new CachingConnectionFactory(mock.Object);
             ccf.SetAddresses("mq1,mq2");
             ccf.CreateConnection();
-            mock.VerifyGet((f) => f.AutomaticRecoveryEnabled);
-            mock.VerifySet((f) => f.AutomaticRecoveryEnabled = false);
-            mock.Verify((f) => f.CreateConnection(It.IsAny<IList<string>>(), It.IsAny<string>()));
+            mock.VerifyGet(f => f.AutomaticRecoveryEnabled);
+            mock.VerifySet(f => f.AutomaticRecoveryEnabled = false);
+            mock.Verify(f => f.CreateConnection(It.IsAny<IList<string>>(), It.IsAny<string>()));
             Assert.NotNull(captured);
             Assert.Equal("mq1", captured[0].HostName);
             Assert.Equal("mq2", captured[1].HostName);
@@ -1338,8 +1338,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 Uri = uri
             };
             ccf.CreateConnection();
-            mock.VerifySet((f) => f.Uri = uri);
-            mock.Verify((f) => f.CreateConnection(It.IsAny<string>()));
+            mock.VerifySet(f => f.Uri = uri);
+            mock.Verify(f => f.CreateConnection(It.IsAny<string>()));
         }
 
         [Fact]
@@ -1348,10 +1348,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.SetupSequence((c) => c.IsOpen).Returns(true).Returns(false);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.SetupSequence(c => c.IsOpen).Returns(true).Returns(false);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
             var con = ccf.CreateConnection();
@@ -1369,10 +1369,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
@@ -1380,14 +1380,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             };
 
             var pccMock = new Mock<IPublisherCallbackChannel>();
-            pccMock.Setup((p) => p.IsOpen).Returns(true);
+            pccMock.Setup(p => p.IsOpen).Returns(true);
             var asyncClosingLatch = new CountdownEvent(1);
-            pccMock.Setup((p) => p.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
+            pccMock.Setup(p => p.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
                 .Callback(() => asyncClosingLatch.Signal());
             var rejected = new AtomicBoolean(true);
             var closeLatch = new CountdownEvent(1);
             ccf.PublisherCallbackChannelFactory = new TestOrderlyShutdownPublisherCallbackChannelFactory(pccMock);
-            pccMock.Setup((p) => p.Close())
+            pccMock.Setup(p => p.Close())
                 .Callback(() =>
                 {
                     closeLatch.Signal();
@@ -1416,10 +1416,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
             {
                 ChannelCheckoutTimeout = 60_000
@@ -1436,12 +1436,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-                .Callback<IList<RC.AmqpTcpEndpoint>>((arg1) => captors.Add(arg1))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
+                .Callback<IList<RC.AmqpTcpEndpoint>>(arg1 => captors.Add(arg1))
                 .Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
             ccf.SetAddresses("host1:5672,host2:5672,host3:5672");
             ccf.ShuffleAddresses = true;
@@ -1451,7 +1451,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
 
             ccf.Destroy();
-            var firstAddress = captors.SelectMany((e) => e).Select((e) => e.HostName).Distinct().ToList();
+            var firstAddress = captors.SelectMany(e => e).Select(e => e.HostName).Distinct().ToList();
             firstAddress.Sort();
             Assert.Equal(3, firstAddress.Count);
             Assert.Equal("host1", firstAddress[0]);
@@ -1506,10 +1506,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 var mockConnection = new Mock<RC.IConnection>();
                 var mockChannel1 = new Mock<RC.IModel>();
 
-                mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-                mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
-                mockConnection.Setup((c) => c.IsOpen).Returns(true);
-                mockChannel1.Setup((c) => c.IsOpen).Returns(true);
+                mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+                mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
+                mockConnection.Setup(c => c.IsOpen).Returns(true);
+                mockChannel1.Setup(c => c.IsOpen).Returns(true);
 
                 var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
                 if (confirms)
@@ -1520,10 +1520,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 var con = ccf.CreateConnection();
                 var channel = con.CreateChannel();
                 RabbitUtils.SetPhysicalCloseRequired(channel, true);
-                mockChannel1.Setup((c) => c.IsOpen).Returns(true);
+                mockChannel1.Setup(c => c.IsOpen).Returns(true);
                 var physicalCloseLatch = new CountdownEvent(1);
 
-                mockChannel1.Setup((c) => c.Close())
+                mockChannel1.Setup(c => c.Close())
                     .Callback(() => physicalCloseLatch.Signal());
                 channel.Close();
                 RabbitUtils.SetPhysicalCloseRequired(channel, false);
@@ -1556,22 +1556,22 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
             var mockProperties = new Mock<RC.IBasicProperties>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(mockProperties.Object);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.CreateBasicProperties()).Returns(mockProperties.Object);
             var confirmsLatch = new CountdownEvent(1);
-            mockChannel.Setup((c) => c.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
+            mockChannel.Setup(c => c.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
                 .Callback(() =>
                 {
                     confirmsLatch.Wait(TimeSpan.FromSeconds(10));
                 });
 
-            mockChannel.SetupAdd((c) => c.BasicAcks += It.IsAny<EventHandler<BasicAckEventArgs>>());
+            mockChannel.SetupAdd(c => c.BasicAcks += It.IsAny<EventHandler<BasicAckEventArgs>>());
 
-            mockChannel.Setup((c) => c.NextPublishSeqNo).Returns(1);
+            mockChannel.Setup(c => c.NextPublishSeqNo).Returns(1);
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
             {
                 ChannelCacheSize = 1,
@@ -1614,7 +1614,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
             else
             {
-                mockChannel.Raise((m) => m.BasicAcks += null, new BasicAckEventArgs { DeliveryTag = 1, Multiple = false });
+                mockChannel.Raise(m => m.BasicAcks += null, new BasicAckEventArgs { DeliveryTag = 1, Multiple = false });
                 var ok = false;
                 while (!ok && n++ < 100)
                 {
@@ -1642,22 +1642,22 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockChanel2 = new Mock<RC.IModel>();
             var mockChanel3 = new Mock<RC.IModel>();
             var mockChanel4 = new Mock<RC.IModel>();
-            mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection1.Object)
                 .Returns(mockConnection2.Object);
-            mockConnection1.SetupSequence((c) => c.CreateModel())
+            mockConnection1.SetupSequence(c => c.CreateModel())
                 .Returns(mockChannel1.Object)
                 .Returns(mockChanel2.Object);
-            mockConnection1.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection2.SetupSequence((c) => c.CreateModel())
+            mockConnection1.Setup(c => c.IsOpen).Returns(true);
+            mockConnection2.SetupSequence(c => c.CreateModel())
                 .Returns(mockChanel3.Object)
                 .Returns(mockChanel4.Object);
-            mockConnection2.Setup((c) => c.IsOpen).Returns(true);
+            mockConnection2.Setup(c => c.IsOpen).Returns(true);
 
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel2.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel3.Setup((c) => c.IsOpen).Returns(true);
-            mockChanel4.Setup((c) => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockChanel2.Setup(c => c.IsOpen).Returns(true);
+            mockChanel3.Setup(c => c.IsOpen).Returns(true);
+            mockChanel4.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, mode)
             {
@@ -1678,9 +1678,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
             Assert.Equal(2, slim.CurrentCount);
 
-            mockConnection1.Setup((c) => c.IsOpen).Returns(false);
-            mockChannel1.Setup((c) => c.IsOpen).Returns(false);
-            mockChanel2.Setup((c) => c.IsOpen).Returns(false);
+            mockConnection1.Setup(c => c.IsOpen).Returns(false);
+            mockChannel1.Setup(c => c.IsOpen).Returns(false);
+            mockChanel2.Setup(c => c.IsOpen).Returns(false);
 
             con.CreateChannel().Close();
             con = ccf.CreateConnection();
@@ -1690,11 +1690,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             con.CreateChannel().Close();
             con.CreateChannel().Close();
 
-            mockConnection1.Verify((c) => c.CreateModel(), Times.Once);
-            mockConnection2.Verify((c) => c.CreateModel(), Times.Exactly(2));
+            mockConnection1.Verify(c => c.CreateModel(), Times.Once);
+            mockConnection2.Verify(c => c.CreateModel(), Times.Exactly(2));
 
             con.Close();
-            mockConnection2.Verify((c) => c.Close(), Times.Never);
+            mockConnection2.Verify(c => c.Close(), Times.Never);
 
             Assert.Equal(2, slim.CurrentCount);
 

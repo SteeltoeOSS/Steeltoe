@@ -49,7 +49,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             template.SetAfterReceivePostProcessors(new DelegatingDecompressingPostProcessor());
             return new Spy
             {
-                Receive = (expectNull) =>
+                Receive = expectNull =>
                 {
                     if (expectNull)
                     {

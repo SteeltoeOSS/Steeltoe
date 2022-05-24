@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Contexts
     {
         public static IServiceCollection AddGenericApplicationContext(this IServiceCollection services, Action<IServiceProvider, GenericApplicationContext> configure)
         {
-            services.TryAddSingleton<IApplicationContext>((p) =>
+            services.TryAddSingleton<IApplicationContext>(p =>
             {
                 var config = p.GetService<IConfiguration>();
                 var context = new GenericApplicationContext(p, config);

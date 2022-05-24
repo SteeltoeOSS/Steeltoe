@@ -196,8 +196,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             return Consumers
                 .Values
-                .Select((c) => c.ConsumerTag)
-                .Where((tag) => tag != null)
+                .Select(c => c.ConsumerTag)
+                .Where(tag => tag != null)
                 .ToList();
         }
 
@@ -275,8 +275,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             RabbitUtils.SetPhysicalCloseRequired(Channel, true);
             ConnectionFactoryUtils.ReleaseResources(ResourceHolder);
             DeliveryTags.Clear();
-            _ = Consumers.TakeWhile((kvp) => Consumers.Count > 0);
-            _ = Queue.TakeWhile((d) => Queue.Count > 0);
+            _ = Consumers.TakeWhile(kvp => Consumers.Count > 0);
+            _ = Queue.TakeWhile(d => Queue.Count > 0);
         }
 
         public void RollbackOnExceptionIfNecessary(Exception ex)
@@ -739,7 +739,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                         if (!Consumer.Queue.TryAdd(delivery, Consumer.ShutdownTimeout))
                         {
                             RabbitUtils.SetPhysicalCloseRequired(Model, true);
-                            _ = Consumer.Queue.TakeWhile((d) => Consumer.Queue.Count > 0);
+                            _ = Consumer.Queue.TakeWhile(d => Consumer.Queue.Count > 0);
                             if (!Canceled)
                             {
                                 RabbitUtils.Cancel(Model, consumerTag);

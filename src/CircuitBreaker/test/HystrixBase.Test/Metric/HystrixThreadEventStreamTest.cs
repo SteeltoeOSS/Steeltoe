@@ -286,7 +286,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             IObserver<IList<HystrixCommandCompletion>> commandListSubscriber = new LatchedObserver<IList<HystrixCommandCompletion>>(commandLatch);
             readCommandStream.Observe().Buffer(TimeSpan.FromMilliseconds(500)).Take(1)
-                            .Do((hystrixCommandCompletions) =>
+                            .Do(hystrixCommandCompletions =>
                             {
                                 output.WriteLine("LIST : " + hystrixCommandCompletions);
                                 Assert.Equal(3, hystrixCommandCompletions.Count);
@@ -315,7 +315,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             IObserver<IList<HystrixCommandCompletion>> commandListSubscriber = new LatchedObserver<IList<HystrixCommandCompletion>>(commandLatch);
             readCommandStream.Observe().Buffer(TimeSpan.FromMilliseconds(500)).Take(1)
-                            .Do((hystrixCommandCompletions) =>
+                            .Do(hystrixCommandCompletions =>
                             {
                                 output.WriteLine("LIST : " + hystrixCommandCompletions);
                                 Assert.Equal(3, hystrixCommandCompletions.Count);

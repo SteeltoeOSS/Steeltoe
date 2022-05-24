@@ -30,11 +30,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
             var connectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
             var template = new RabbitTemplate(connectionFactory)
@@ -50,8 +50,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             {
                 template.ConvertAndSend("baz", "qux");
             });
-            mockConnectionFactory.Verify((c) => c.CreateConnection(It.IsAny<string>()), Times.Once);
-            mockConnection.Verify((c) => c.CreateModel(), Times.Once);
+            mockConnectionFactory.Verify(c => c.CreateConnection(It.IsAny<string>()), Times.Once);
+            mockConnection.Verify(c => c.CreateModel(), Times.Once);
         }
 
         [Fact]
@@ -89,16 +89,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
             var consumer = new AtomicReference<RC.IBasicConsumer>();
-            mockChannel.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            mockChannel.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(new RC.QueueDeclareOk("foo", 0, 0));
-            mockChannel.Setup((c) => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+            mockChannel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
                 .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((arg1, arg2, arg3, arg4, arg5, arg6, arg7) => consumer.Value = arg7);
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
             var template = new RabbitTemplate(connectionFactory)
@@ -118,7 +118,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var count = new AtomicInteger();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Callback(() => count.IncrementAndGet())
                 .Throws(new AuthenticationFailureException("foo"));
 
@@ -143,7 +143,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public void TestEvaluateDirectReplyToWithConnectException()
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection())
+            mockConnectionFactory.Setup(f => f.CreateConnection())
                 .Throws(new RabbitConnectException(null));
             var template = new RabbitTemplate(mockConnectionFactory.Object);
             Assert.Throws<RabbitConnectException>(() => template.ConvertSendAndReceive<object>("foo"));
@@ -154,7 +154,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         public void TestEvaluateDirectReplyToWithIOException()
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection())
+            mockConnectionFactory.Setup(f => f.CreateConnection())
                 .Throws(new RabbitIOException(null));
             var template = new RabbitTemplate(mockConnectionFactory.Object);
             Assert.Throws<RabbitIOException>(() => template.ConvertSendAndReceive<object>("foo"));
@@ -167,15 +167,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
 
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            mockChannel.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockChannel.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
-            mockChannel.Setup((c) => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO)).Throws(new ShutdownSignalException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.Queue_ClassId, RabbitUtils.Declare_MethodId)));
+            mockChannel.Setup(c => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO)).Throws(new ShutdownSignalException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.Queue_ClassId, RabbitUtils.Declare_MethodId)));
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
             var template = new RabbitTemplate(connectionFactory)
             {
@@ -192,13 +192,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
 
-            mockChannel.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            mockChannel.Setup((c) => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO))
+            mockChannel.Setup(c => c.IsOpen).Returns(true);
+            mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockChannel.Setup(c => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO))
                  .Returns(() => new RC.QueueDeclareOk(Address.AMQ_RABBITMQ_REPLY_TO, 0, 0));
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
             var template = new RabbitTemplate(connectionFactory)
@@ -215,7 +215,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var count = new AtomicInteger();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>()))
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
                 .Callback(() => count.IncrementAndGet())
                 .Throws(new AuthenticationFailureException("foo"));
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
@@ -237,15 +237,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<IPublisherCallbackChannel>();
-            mockChannel.Setup((m) => m.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            mockConnectionFactory.Setup((f) => f.IsPublisherConfirms).Returns(true);
-            mockConnectionFactory.Setup((f) => f.IsPublisherReturns).Returns(true);
-            mockConnectionFactory.Setup((f) => f.CreateConnection())
+            mockChannel.Setup(m => m.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockConnectionFactory.Setup(f => f.IsPublisherConfirms).Returns(true);
+            mockConnectionFactory.Setup(f => f.IsPublisherReturns).Returns(true);
+            mockConnectionFactory.Setup(f => f.CreateConnection())
                 .Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.CreateChannel(false)).Returns(mockChannel.Object);
+            mockConnection.Setup(c => c.CreateChannel(false)).Returns(mockChannel.Object);
             var template = new RabbitTemplate(mockConnectionFactory.Object);
             template.ConvertAndSend("foo");
-            mockChannel.Verify((c) => c.AddListener(template));
+            mockChannel.Verify(c => c.AddListener(template));
         }
 
         [Fact]
@@ -279,17 +279,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockChannel1 = new Mock<RC.IModel>();
             var mockChannel2 = new Mock<RC.IModel>();
 
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockChannel2.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockChannel2.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
 
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.SetupSequence((c) => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChannel2.Object);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChannel2.Object);
 
-            mockChannel1.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            mockChannel2.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockChannel1.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockChannel2.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
-            mockChannel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            mockChannel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
 
@@ -299,21 +299,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             };
             var admin = new RabbitAdmin(rabbitTemplate);
             var mockContext = new Mock<IApplicationContext>();
-            mockContext.Setup((c) => c.GetServices<IQueue>()).Returns(new List<IQueue> { new Queue("foo") });
+            mockContext.Setup(c => c.GetServices<IQueue>()).Returns(new List<IQueue> { new Queue("foo") });
             admin.ApplicationContext = mockContext.Object;
             var templateChannel = new AtomicReference<RC.IModel>();
             var transTemplate = new TransactionTemplate(new TestTransactionManager());
-            transTemplate.Execute((s) =>
+            transTemplate.Execute(s =>
             {
-                return rabbitTemplate.Execute((c) =>
+                return rabbitTemplate.Execute(c =>
                 {
                     templateChannel.Value = ((IChannelProxy)c).TargetChannel;
                     return true;
                 });
             });
-            mockChannel1.Verify((c) => c.TxSelect());
-            mockChannel1.Verify((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()));
-            mockChannel1.Verify((c) => c.TxCommit());
+            mockChannel1.Verify(c => c.TxSelect());
+            mockChannel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()));
+            mockChannel1.Verify(c => c.TxCommit());
             Assert.Same(templateChannel.Value, mockChannel1.Object);
         }
 
@@ -324,21 +324,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel1 = new Mock<RC.IModel>();
 
-            mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
+            mockChannel1.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
 
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-            mockConnection.SetupSequence((c) => c.CreateModel()).Returns(mockChannel1.Object);
+            mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
+            mockConnection.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object);
 
-            mockChannel1.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
+            mockChannel1.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
-            mockChannel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            mockChannel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
 
             var listener = new AtomicReference<EventHandler<RC.ShutdownEventArgs>>();
             var shutdownLatch = new CountdownEvent(1);
-            mockChannel1.SetupAdd((m) => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>())
-                .Callback<EventHandler<RC.ShutdownEventArgs>>((handler) =>
+            mockChannel1.SetupAdd(m => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>())
+                .Callback<EventHandler<RC.ShutdownEventArgs>>(handler =>
                 {
                     listener.Value = handler;
                     shutdownLatch.Signal();
@@ -411,7 +411,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var cf = new Mock<IConnectionFactory>();
             var pcf = new Mock<IConnectionFactory>();
-            cf.SetupGet((c) => c.PublisherConnectionFactory).Returns(pcf.Object);
+            cf.SetupGet(c => c.PublisherConnectionFactory).Returns(pcf.Object);
             var template = new RabbitTemplate(cf.Object)
             {
                 UsePublisherConnection = true
@@ -419,12 +419,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<IPublisherCallbackChannel>();
-            pcf.Setup((c) => c.CreateConnection()).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.CreateChannel(false)).Returns(mockChannel.Object);
-            template.Invoke<object>((t) => null);
-            pcf.Verify((c) => c.CreateConnection());
-            mockConnection.Verify((c) => c.CreateChannel(false));
+            pcf.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateChannel(false)).Returns(mockChannel.Object);
+            template.Invoke<object>(t => null);
+            pcf.Verify(c => c.CreateConnection());
+            mockConnection.Verify(c => c.CreateChannel(false));
         }
 
         [Fact]
@@ -432,7 +432,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var cf = new Mock<IConnectionFactory>();
             var pcf = new Mock<IConnectionFactory>();
-            cf.SetupGet((c) => c.PublisherConnectionFactory).Returns(pcf.Object);
+            cf.SetupGet(c => c.PublisherConnectionFactory).Returns(pcf.Object);
             var template = new RabbitTemplate(cf.Object)
             {
                 UsePublisherConnection = true,
@@ -442,12 +442,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<RC.IModel>();
 
-            pcf.Setup((c) => c.CreateConnection()).Returns(mockConnection.Object);
-            mockConnection.Setup((c) => c.IsOpen).Returns(true);
-            mockConnection.Setup((c) => c.CreateChannel(true)).Returns(mockChannel.Object);
-            template.Invoke<object>((t) => null);
-            pcf.Verify((c) => c.CreateConnection());
-            mockConnection.Verify((c) => c.CreateChannel(true));
+            pcf.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(c => c.IsOpen).Returns(true);
+            mockConnection.Setup(c => c.CreateChannel(true)).Returns(mockChannel.Object);
+            template.Invoke<object>(t => null);
+            pcf.Verify(c => c.CreateConnection());
+            mockConnection.Verify(c => c.CreateChannel(true));
         }
 
         private class DoNothingMPP : IMessagePostProcessor

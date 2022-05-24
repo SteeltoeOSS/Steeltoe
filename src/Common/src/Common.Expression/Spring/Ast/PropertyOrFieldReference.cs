@@ -380,7 +380,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             var resolvers = new List<IPropertyAccessor>(specificAccessors);
-            generalAccessors.RemoveAll((a) => specificAccessors.Contains(a));
+            generalAccessors.RemoveAll(a => specificAccessors.Contains(a));
             resolvers.AddRange(generalAccessors);
             return resolvers;
         }

@@ -80,7 +80,7 @@ namespace Steeltoe.Discovery.Eureka
             }
 
             var regApps = _discoveryClient.Applications.GetRegisteredApplications();
-            return regApps.Select((app) => app.Name).ToList();
+            return regApps.Select(app => app.Name).ToList();
         }
 
         internal IList<string> GetApplicationsFromConfig(IEurekaClientConfig clientConfig)

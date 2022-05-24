@@ -72,7 +72,7 @@ namespace Steeltoe.Common.Security.Test
 
             var changeCalled = false;
             var token = config.GetReloadToken();
-            token.RegisterChangeCallback((o) => changeCalled = true, "state");
+            token.RegisterChangeCallback(o => changeCalled = true, "state");
             Assert.Equal("cert1", config["certificate"]);
             Assert.Equal("key1", config["privateKey"]);
 
@@ -83,7 +83,7 @@ namespace Steeltoe.Common.Security.Test
             Assert.True(changeCalled, "Change wasn't called for tempFile1");
 
             token = config.GetReloadToken();
-            token.RegisterChangeCallback((o) => changeCalled = true, "state");
+            token.RegisterChangeCallback(o => changeCalled = true, "state");
 
             changeCalled = false;
             await File.WriteAllTextAsync(tempFile2, "barbar");
@@ -128,7 +128,7 @@ namespace Steeltoe.Common.Security.Test
 
             var changeCalled = false;
             var token = config.GetReloadToken();
-            token.RegisterChangeCallback((o) => changeCalled = true, "state");
+            token.RegisterChangeCallback(o => changeCalled = true, "state");
             Assert.Equal("cert1", await File.ReadAllTextAsync(config["certificate"]));
 
             await File.WriteAllTextAsync(filename, "barfoo");

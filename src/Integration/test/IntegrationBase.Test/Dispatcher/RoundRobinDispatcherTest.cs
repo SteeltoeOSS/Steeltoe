@@ -44,7 +44,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         {
             dispatcher.AddHandler(handlerMock.Object);
             dispatcher.Dispatch(messageMock.Object);
-            handlerMock.Verify((h) => h.HandleMessage(messageMock.Object));
+            handlerMock.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
@@ -54,8 +54,8 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.AddHandler(differentHandlerMock.Object);
             dispatcher.Dispatch(messageMock.Object);
             dispatcher.Dispatch(messageMock.Object);
-            handlerMock.Verify((h) => h.HandleMessage(messageMock.Object));
-            differentHandlerMock.Verify((h) => h.HandleMessage(messageMock.Object));
+            handlerMock.Verify(h => h.HandleMessage(messageMock.Object));
+            differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object));
         }
 
         [Fact]
@@ -68,8 +68,8 @@ namespace Steeltoe.Integration.Dispatcher.Test
                 dispatcher.Dispatch(messageMock.Object);
             }
 
-            handlerMock.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(4));
-            differentHandlerMock.Verify((h) => h.HandleMessage(messageMock.Object), Times.Exactly(3));
+            handlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(4));
+            differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(3));
         }
 
         [Fact]
@@ -85,15 +85,15 @@ namespace Steeltoe.Integration.Dispatcher.Test
                 dispatcher.Dispatch(messageMock.Object);
             }
 
-            handlerMock.Verify((h) => h.HandleMessage(messageMock.Object), Times.AtLeast(18));
-            differentHandlerMock.Verify((h) => h.HandleMessage(messageMock.Object), Times.AtLeast(18));
+            handlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.AtLeast(18));
+            differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.AtLeast(18));
         }
 
         [Fact]
         public void TestExceptionEnhancement()
         {
             dispatcher.AddHandler(handlerMock.Object);
-            handlerMock.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessagingException("Mock Exception"));
+            handlerMock.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException("Mock Exception"));
             var ex = Assert.Throws<MessageDeliveryException>(() => dispatcher.Dispatch(messageMock.Object));
             Assert.Equal(messageMock.Object, ex.FailedMessage);
         }
@@ -103,7 +103,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         {
             dispatcher.AddHandler(handlerMock.Object);
             var dontReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
-            handlerMock.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
+            handlerMock.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
             var ex = Assert.Throws<MessagingException>(() => dispatcher.Dispatch(messageMock.Object));
             Assert.Equal("Mock Exception", ex.Message);
             Assert.Equal(dontReplaceThisMessage, ex.FailedMessage);
@@ -113,14 +113,14 @@ namespace Steeltoe.Integration.Dispatcher.Test
         public void TestFailOver()
         {
             var testException = new Exception("intentional");
-            handlerMock.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(testException);
+            handlerMock.Setup(h => h.HandleMessage(messageMock.Object)).Throws(testException);
 
             dispatcher.AddHandler(handlerMock.Object);
             dispatcher.AddHandler(differentHandlerMock.Object);
 
             dispatcher.Dispatch(messageMock.Object);
-            handlerMock.Verify((h) => h.HandleMessage(messageMock.Object));
-            differentHandlerMock.Verify((h) => h.HandleMessage(messageMock.Object));
+            handlerMock.Verify(h => h.HandleMessage(messageMock.Object));
+            differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object));
         }
     }
 }

@@ -261,7 +261,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var result = template2.ReceiveAndConvert<string>(queue.QueueName);
             Assert.Equal("message", result);
 
-            Assert.Throws<RabbitIOException>(() => template2.Execute<object>((c) =>
+            Assert.Throws<RabbitIOException>(() => template2.Execute<object>(c =>
             {
                 c.TxRollback();
                 return null;
@@ -279,7 +279,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var latch = new CountdownEvent(1);
             try
             {
-                template.Execute((channel) =>
+                template.Execute(channel =>
                 {
                     channel.ModelShutdown += (sender, args) =>
                     {

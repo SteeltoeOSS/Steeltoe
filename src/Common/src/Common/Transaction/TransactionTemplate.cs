@@ -33,7 +33,7 @@ namespace Steeltoe.Common.Transaction
 
         public void Execute(Action<ITransactionStatus> action)
         {
-            Execute<object>((s) =>
+            Execute<object>(s =>
             {
                 action(s);
                 return null;

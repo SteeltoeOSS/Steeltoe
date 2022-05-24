@@ -73,7 +73,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 throw new ArgumentException(nameof(serviceName));
             }
 
-            services.Configure<TOption>(serviceName, (option) =>
+            services.Configure<TOption>(serviceName, option =>
             {
                 option.Bind(config, serviceName);
             });

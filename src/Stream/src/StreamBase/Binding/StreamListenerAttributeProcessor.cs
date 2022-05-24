@@ -191,7 +191,7 @@ namespace Steeltoe.Stream.Binding
             var streamListener = PostProcessAttribute(listenerMethod.Attribute);
             var beanType = listenerMethod.ImplementationType;
 
-            var orchestrators = _methodOrchestrators.Select((o) => o.Supports(method) ? o : null);
+            var orchestrators = _methodOrchestrators.Select(o => o.Supports(method) ? o : null);
             if (orchestrators.Count() != 1)
             {
                 throw new InvalidOperationException("Unable to determine IStreamListenerSetupMethodOrchestrator to utilize");

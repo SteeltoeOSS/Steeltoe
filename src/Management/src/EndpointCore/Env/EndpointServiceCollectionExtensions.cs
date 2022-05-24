@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Env
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IHostEnvironment>((provider) =>
+            services.TryAddSingleton<IHostEnvironment>(provider =>
             {
                 var service = provider.GetRequiredService<IWebHostEnvironment>();
                 return new GenericHostingEnvironment

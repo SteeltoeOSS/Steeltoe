@@ -39,7 +39,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                 .SubscribeOn(NewThreadScheduler.Default)
                 .ObserveOn(NewThreadScheduler.Default)
                 .Subscribe(
-                   (data) =>
+                   data =>
                    {
                        result = Serialize.ToJsonList(data, null);
                        if (result.Count > 0)
@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                            latch.SignalEx();
                        }
                    },
-                   (e) =>
+                   e =>
                    {
                        latch.SignalEx();
                    },

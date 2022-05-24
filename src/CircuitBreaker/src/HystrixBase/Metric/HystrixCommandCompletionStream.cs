@@ -20,7 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public static HystrixCommandCompletionStream GetInstance(IHystrixCommandKey commandKey)
         {
-            return Streams.GetOrAddEx(commandKey.Name, (k) => new HystrixCommandCompletionStream(commandKey));
+            return Streams.GetOrAddEx(commandKey.Name, k => new HystrixCommandCompletionStream(commandKey));
         }
 
         internal HystrixCommandCompletionStream(IHystrixCommandKey commandKey)

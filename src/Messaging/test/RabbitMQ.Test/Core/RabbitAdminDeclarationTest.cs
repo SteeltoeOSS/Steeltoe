@@ -46,16 +46,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var cf = new Mock<IConnectionFactory>();
             var conn = new Mock<IConnection>();
             var channel = new Mock<RC.IModel>();
-            cf.Setup((f) => f.CreateConnection()).Returns(conn.Object);
-            cf.SetupGet((f) => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
-            conn.Setup((c) => c.CreateChannel(false)).Returns(channel.Object);
-            conn.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
+            cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+            conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
+            conn.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
             var listener = new AtomicReference<IConnectionListener>();
-            cf.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-                .Callback<IConnectionListener>((l) => listener.Value = l);
+            cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
+                .Callback<IConnectionListener>(l => listener.Value = l);
             var queue = new Queue("foo");
             services.AddRabbitQueue(queue);
             var exchange = new DirectExchange("bar");
@@ -142,16 +142,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var cf = new Mock<IConnectionFactory>();
             var conn = new Mock<IConnection>();
             var channel = new Mock<RC.IModel>();
-            cf.Setup((f) => f.CreateConnection()).Returns(conn.Object);
-            cf.SetupGet((f) => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
-            conn.Setup((c) => c.CreateChannel(false)).Returns(channel.Object);
-            conn.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
+            cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+            conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
+            conn.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
             var listener = new AtomicReference<IConnectionListener>();
-            cf.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-                .Callback<IConnectionListener>((l) => listener.Value = l);
+            cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
+                .Callback<IConnectionListener>(l => listener.Value = l);
             var queue = new Queue("foo");
             services.AddRabbitQueue(queue);
             var exchange = new DirectExchange("bar");
@@ -190,16 +190,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var cf = new Mock<IConnectionFactory>();
             var conn = new Mock<IConnection>();
             var channel = new Mock<RC.IModel>();
-            cf.Setup((f) => f.CreateConnection()).Returns(conn.Object);
-            cf.SetupGet((f) => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
-            conn.Setup((c) => c.CreateChannel(false)).Returns(channel.Object);
-            conn.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
+            cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+            conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
+            conn.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
             var listener = new AtomicReference<IConnectionListener>();
-            cf.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-                .Callback<IConnectionListener>((l) => listener.Value = l);
+            cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
+                .Callback<IConnectionListener>(l => listener.Value = l);
 
             var queue = new Queue("foo");
             services.AddRabbitQueue(queue);
@@ -241,16 +241,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var cf = new Mock<IConnectionFactory>();
             var conn = new Mock<IConnection>();
             var channel = new Mock<RC.IModel>();
-            cf.Setup((f) => f.CreateConnection()).Returns(conn.Object);
-            cf.SetupGet((f) => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
-            conn.Setup((c) => c.CreateChannel(false)).Returns(channel.Object);
-            conn.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.IsOpen).Returns(true);
-            channel.Setup((c) => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
+            cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+            conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
+            conn.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.IsOpen).Returns(true);
+            channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                 .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
             var listener = new AtomicReference<IConnectionListener>();
-            cf.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-                .Callback<IConnectionListener>((l) => listener.Value = l);
+            cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
+                .Callback<IConnectionListener>(l => listener.Value = l);
 
             var queue = new Queue("foo")
             {
@@ -393,62 +393,62 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 // services.AddRabbitListenerAttributeProcessor();
 
                 // ConnectionFactory cf1
-                services.AddSingleton((p) =>
+                services.AddSingleton(p =>
                 {
                     var mockConnectionFactory = new Mock<IConnectionFactory>();
                     Conn1 = new Mock<IConnection>();
                     Channel1 = new Mock<RC.IModel>();
-                    mockConnectionFactory.Setup((f) => f.CreateConnection()).Returns(Conn1.Object);
-                    mockConnectionFactory.SetupGet((f) => f.ServiceName).Returns("cf1");
-                    Conn1.Setup((c) => c.CreateChannel(false)).Returns(Channel1.Object);
-                    Conn1.Setup((c) => c.IsOpen).Returns(true);
-                    Channel1.Setup((c) => c.IsOpen).Returns(true);
+                    mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(Conn1.Object);
+                    mockConnectionFactory.SetupGet(f => f.ServiceName).Returns("cf1");
+                    Conn1.Setup(c => c.CreateChannel(false)).Returns(Channel1.Object);
+                    Conn1.Setup(c => c.IsOpen).Returns(true);
+                    Channel1.Setup(c => c.IsOpen).Returns(true);
                     var queueName = new AtomicReference<string>();
-                    Channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+                    Channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                         .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
                         .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
-                    mockConnectionFactory.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-                        .Callback<IConnectionListener>((l) => Listener1.Value = l);
+                    mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
+                        .Callback<IConnectionListener>(l => Listener1.Value = l);
                     return mockConnectionFactory.Object;
                 });
 
                 // ConnectionFactory cf2
-                services.AddSingleton((p) =>
+                services.AddSingleton(p =>
                 {
                     var mockConnectionFactory = new Mock<IConnectionFactory>();
                     Conn2 = new Mock<IConnection>();
                     Channel2 = new Mock<RC.IModel>();
-                    mockConnectionFactory.Setup((f) => f.CreateConnection()).Returns(Conn2.Object);
-                    mockConnectionFactory.SetupGet((f) => f.ServiceName).Returns("cf2");
-                    Conn2.Setup((c) => c.CreateChannel(false)).Returns(Channel2.Object);
-                    Conn2.Setup((c) => c.IsOpen).Returns(true);
-                    Channel2.Setup((c) => c.IsOpen).Returns(true);
+                    mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(Conn2.Object);
+                    mockConnectionFactory.SetupGet(f => f.ServiceName).Returns("cf2");
+                    Conn2.Setup(c => c.CreateChannel(false)).Returns(Channel2.Object);
+                    Conn2.Setup(c => c.IsOpen).Returns(true);
+                    Channel2.Setup(c => c.IsOpen).Returns(true);
                     var queueName = new AtomicReference<string>();
-                    Channel2.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+                    Channel2.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                          .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
                         .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
-                    mockConnectionFactory.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-                        .Callback<IConnectionListener>((l) => Listener2.Value = l);
+                    mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
+                        .Callback<IConnectionListener>(l => Listener2.Value = l);
                     return mockConnectionFactory.Object;
                 });
 
                 // ConnectionFactory cf3
-                services.AddSingleton((p) =>
+                services.AddSingleton(p =>
                 {
                     var mockConnectionFactory = new Mock<IConnectionFactory>();
                     Conn3 = new Mock<IConnection>();
                     Channel3 = new Mock<RC.IModel>();
-                    mockConnectionFactory.Setup((f) => f.CreateConnection()).Returns(Conn3.Object);
-                    mockConnectionFactory.SetupGet((f) => f.ServiceName).Returns("cf3");
-                    Conn3.Setup((c) => c.CreateChannel(false)).Returns(Channel3.Object);
-                    Conn3.Setup((c) => c.IsOpen).Returns(true);
-                    Channel3.Setup((c) => c.IsOpen).Returns(true);
+                    mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(Conn3.Object);
+                    mockConnectionFactory.SetupGet(f => f.ServiceName).Returns("cf3");
+                    Conn3.Setup(c => c.CreateChannel(false)).Returns(Channel3.Object);
+                    Conn3.Setup(c => c.IsOpen).Returns(true);
+                    Channel3.Setup(c => c.IsOpen).Returns(true);
                     var queueName = new AtomicReference<string>();
-                    Channel3.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+                    Channel3.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                         .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
                         .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
-                    mockConnectionFactory.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-                        .Callback<IConnectionListener>((l) => Listener3.Value = l);
+                    mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
+                        .Callback<IConnectionListener>(l => Listener3.Value = l);
                     return mockConnectionFactory.Object;
                 });
 

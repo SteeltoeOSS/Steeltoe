@@ -116,7 +116,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             if (_method == null)
             {
-                _method = typeof(IEvaluationContext).GetMethods().Single((m) => m.Name == "LookupVariable" && !m.IsGenericMethod);
+                _method = typeof(IEvaluationContext).GetMethods().Single(m => m.Name == "LookupVariable" && !m.IsGenericMethod);
             }
 
             return _method;

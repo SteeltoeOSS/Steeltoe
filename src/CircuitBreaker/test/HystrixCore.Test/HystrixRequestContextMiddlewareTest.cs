@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public async Task Invoke_CreatesContext_ThenDisposes()
         {
-            RequestDelegate del = (ctx) =>
+            RequestDelegate del = ctx =>
             {
                 Assert.True(HystrixRequestContext.IsCurrentThreadInitialized);
                 return Task.FromResult(1);
@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void HystrixRequestContextMiddleware_RegistersStoppingAction()
         {
-            RequestDelegate del = (ctx) =>
+            RequestDelegate del = ctx =>
             {
                 Assert.True(HystrixRequestContext.IsCurrentThreadInitialized);
                 return Task.FromResult(1);

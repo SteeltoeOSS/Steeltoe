@@ -21,12 +21,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         private static Func<int, int, int> ReduceToMax { get; } = Math.Max;
 
-        private static Func<IObservable<int>, IObservable<int>> ReduceStreamToMax { get; } = (observedConcurrency) =>
+        private static Func<IObservable<int>, IObservable<int>> ReduceStreamToMax { get; } = observedConcurrency =>
         {
             return observedConcurrency.Aggregate(0, (arg1, arg2) => ReduceToMax(arg1, arg2)).Select(n => n);
         };
 
-        private static Func<HystrixCommandExecutionStarted, int> GetConcurrencyCountFromEvent { get; } = (@event) => @event.CurrentConcurrency;
+        private static Func<HystrixCommandExecutionStarted, int> GetConcurrencyCountFromEvent { get; } = @event => @event.CurrentConcurrency;
 
         protected RollingConcurrencyStream(IHystrixEventStream<HystrixCommandExecutionStarted> inputEventStream, int numBuckets, int bucketSizeInMs)
         {
@@ -38,12 +38,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
             _rollingMaxStream = inputEventStream
                     .Observe()
-                    .Map((arg) => GetConcurrencyCountFromEvent(arg))
+                    .Map(arg => GetConcurrencyCountFromEvent(arg))
                     .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default)
-                    .SelectMany((arg) => ReduceStreamToMax(arg))
+                    .SelectMany(arg => ReduceStreamToMax(arg))
                     .StartWith(emptyRollingMaxBuckets)
                     .Window(numBuckets, 1)
-                    .SelectMany((arg) => ReduceStreamToMax(arg))
+                    .SelectMany(arg => ReduceStreamToMax(arg))
                     .Publish().RefCount();
         }
 

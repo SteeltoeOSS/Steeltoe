@@ -30,7 +30,7 @@ namespace Steeltoe.Integration.Endpoint.Test
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
+            services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
             provider = services.BuildServiceProvider();
         }
 

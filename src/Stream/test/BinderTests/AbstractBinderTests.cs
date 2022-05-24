@@ -110,7 +110,7 @@ namespace Steeltoe.Stream.Binder
             var inboundMessageRef = new AtomicReference<IMessage>();
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     inboundMessageRef.GetAndSet(message);
                     latch.Signal();
@@ -160,8 +160,8 @@ namespace Steeltoe.Stream.Binder
             Assert.NotNull(messages[0]);
             Assert.NotNull(messages[1]);
 
-            Assert.Contains(messages, (m) => ((byte[])m.Payload).GetString() == testPayload1);
-            Assert.Contains(messages, (m) => ((byte[])m.Payload).GetString() == testPayload2);
+            Assert.Contains(messages, m => ((byte[])m.Payload).GetString() == testPayload1);
+            Assert.Contains(messages, m => ((byte[])m.Payload).GetString() == testPayload2);
 
             producerBinding1.Unbind();
             producerBinding2.Unbind();
@@ -195,7 +195,7 @@ namespace Steeltoe.Stream.Binder
             var inboundMessageRef = new AtomicReference<IMessage>();
             moduleInputChannel.Subscribe(new TestMessageHandler
             {
-                OnHandleMessage = (message) =>
+                OnHandleMessage = message =>
                 {
                     inboundMessageRef.GetAndSet(message);
                     latch.Signal();

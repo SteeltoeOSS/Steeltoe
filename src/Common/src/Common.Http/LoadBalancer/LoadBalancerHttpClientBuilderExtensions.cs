@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(httpClientBuilder));
             }
 
-            httpClientBuilder.AddHttpMessageHandler((services) => new LoadBalancerDelegatingHandler(services.GetRequiredService<T>()));
+            httpClientBuilder.AddHttpMessageHandler(services => new LoadBalancerDelegatingHandler(services.GetRequiredService<T>()));
             return httpClientBuilder;
         }
     }

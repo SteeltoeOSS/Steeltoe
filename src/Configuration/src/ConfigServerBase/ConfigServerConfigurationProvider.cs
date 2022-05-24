@@ -814,7 +814,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         protected internal virtual string ConvertArrayKey(string key)
         {
-            return Regex.Replace(key, ArrayPattern, (match) =>
+            return Regex.Replace(key, ArrayPattern, match =>
             {
                 var result = match.Value.Replace("[", ":").Replace("]", string.Empty);
                 return result;

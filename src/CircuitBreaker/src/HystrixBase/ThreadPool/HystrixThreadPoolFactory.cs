@@ -15,7 +15,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
             var key = threadPoolKey.Name;
 
             // if we get here this is the first time so we need to initialize
-            return ThreadPools.GetOrAddEx(key, (k) => new HystrixThreadPoolDefault(threadPoolKey, propertiesBuilder));
+            return ThreadPools.GetOrAddEx(key, k => new HystrixThreadPoolDefault(threadPoolKey, propertiesBuilder));
         }
 
         private static readonly object ShutdownLock = new ();

@@ -93,7 +93,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var updated = false;
             var number = numberOfUpdates;
 
-            using (observable.Subscribe((item) =>
+            using (observable.Subscribe(item =>
             {
                 number--;
                 if (number <= 0)

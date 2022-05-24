@@ -44,7 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
 
             stream.Observe().Take(num).Subscribe(
-                (dashboardData) =>
+                dashboardData =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : Received data with : " + dashboardData.CommandMetrics.Count + " commands");
                     foreach (var metrics in dashboardData.CommandMetrics)
@@ -55,7 +55,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                         }
                     }
                 },
-                (e) =>
+                e =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                 },
@@ -85,12 +85,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                         latch1.SignalEx();
                     })
                     .Subscribe(
-                        (dashboardData) =>
+                        dashboardData =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + dashboardData);
                             payloads1.IncrementAndGet();
                         },
-                        (e) =>
+                        e =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnError : " + e);
                             latch1.SignalEx();
@@ -109,12 +109,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     latch2.SignalEx();
                 })
                 .Subscribe(
-                    (dashboardData) =>
+                    dashboardData =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + dashboardData);
                         payloads2.IncrementAndGet();
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnError : " + e);
                         latch2.SignalEx();
@@ -160,12 +160,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                         latch1.SignalEx();
                     })
                     .Subscribe(
-                        (dashboardData) =>
+                        dashboardData =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + dashboardData);
                             payloads1.IncrementAndGet();
                         },
-                        (e) =>
+                        e =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnError : " + e);
                             latch1.SignalEx();
@@ -184,12 +184,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     latch2.SignalEx();
                 })
                 .Subscribe(
-                    (dashboardData) =>
+                    dashboardData =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + dashboardData);
                         payloads2.IncrementAndGet();
                     },
-                    (e) =>
+                    e =>
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnError : " + e);
                         latch2.SignalEx();
@@ -234,7 +234,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var slow = stream
                     .Observe()
                     .ObserveOn(NewThreadScheduler.Default)
-                    .Map((n) =>
+                    .Map(n =>
                     {
                         try
                         {
@@ -252,11 +252,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var s1 = checkZippedEqual
                     .Take(10000)
                     .Subscribe(
-                        (b) =>
+                        b =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + b);
                         },
-                        (e) =>
+                        e =>
                         {
                             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
                             output.WriteLine(e.ToString());

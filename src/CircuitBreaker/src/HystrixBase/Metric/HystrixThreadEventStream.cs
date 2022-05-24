@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
         private readonly ISubject<HystrixCommandCompletion, HystrixCommandCompletion> _writeOnlyCommandCompletionSubject;
         private readonly ISubject<HystrixCollapserEvent, HystrixCollapserEvent> _writeOnlyCollapserSubject;
 
-        private static Action<HystrixCommandExecutionStarted> WriteCommandStartsToShardedStreams { get; } = (@event) =>
+        private static Action<HystrixCommandExecutionStarted> WriteCommandStartsToShardedStreams { get; } = @event =>
         {
             var commandStartStream = HystrixCommandStartStream.GetInstance(@event.CommandKey);
             commandStartStream.Write(@event);
@@ -33,7 +33,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             }
         };
 
-        private static Action<HystrixCommandCompletion> WriteCommandCompletionsToShardedStreams { get; } = (commandCompletion) =>
+        private static Action<HystrixCommandCompletion> WriteCommandCompletionsToShardedStreams { get; } = commandCompletion =>
         {
             var commandStream = HystrixCommandCompletionStream.GetInstance(commandCompletion.CommandKey);
             commandStream.Write(commandCompletion);
@@ -45,7 +45,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             }
         };
 
-        private static Action<HystrixCollapserEvent> WriteCollapserExecutionsToShardedStreams { get; } = (collapserEvent) =>
+        private static Action<HystrixCollapserEvent> WriteCollapserExecutionsToShardedStreams { get; } = collapserEvent =>
         {
             var collapserStream = HystrixCollapserEventStream.GetInstance(collapserEvent.CollapserKey);
             collapserStream.Write(collapserEvent);
@@ -61,16 +61,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             _writeOnlyCollapserSubject = Subject.Synchronize<HystrixCollapserEvent, HystrixCollapserEvent>(new Subject<HystrixCollapserEvent>());
 
             _writeOnlyCommandStartSubject
-                    .Do((n) => WriteCommandStartsToShardedStreams(n))
-                    .Subscribe(Observer.Create<HystrixCommandExecutionStarted>((v) => { }));
+                    .Do(n => WriteCommandStartsToShardedStreams(n))
+                    .Subscribe(Observer.Create<HystrixCommandExecutionStarted>(v => { }));
 
             _writeOnlyCommandCompletionSubject
-                    .Do((n) => WriteCommandCompletionsToShardedStreams(n))
-                    .Subscribe(Observer.Create<HystrixCommandCompletion>((v) => { }));
+                    .Do(n => WriteCommandCompletionsToShardedStreams(n))
+                    .Subscribe(Observer.Create<HystrixCommandCompletion>(v => { }));
 
             _writeOnlyCollapserSubject
-                    .Do((n) => WriteCollapserExecutionsToShardedStreams(n))
-                    .Subscribe(Observer.Create<HystrixCollapserEvent>((v) => { }));
+                    .Do(n => WriteCollapserExecutionsToShardedStreams(n))
+                    .Subscribe(Observer.Create<HystrixCollapserEvent>(v => { }));
         }
 
         public static HystrixThreadEventStream GetInstance()

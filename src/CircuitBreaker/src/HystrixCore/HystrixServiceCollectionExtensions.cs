@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             };
 
             opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
-            services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
+            services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
         }
 
         public static void AddHystrixCommand<TService, TImplementation>(this IServiceCollection services, IHystrixCommandGroupKey groupKey, IHystrixCommandKey commandKey, IConfiguration config)
@@ -81,7 +81,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 ThreadPoolKey = threadPoolKey
             };
             opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
-            services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
+            services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
         }
 
         public static void AddHystrixCommand<TService>(this IServiceCollection services, IHystrixCommandGroupKey groupKey, IConfiguration config)
@@ -114,7 +114,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 ThreadPoolKey = threadPoolKey
             };
             opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
-            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient(p => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCommand<TService>(this IServiceCollection services, IHystrixCommandGroupKey groupKey, IHystrixCommandKey commandKey, IConfiguration config)
@@ -151,7 +151,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 ThreadPoolKey = threadPoolKey
             };
             opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
-            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient(p => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCommand<TService>(this IServiceCollection services, string groupKey, IConfiguration config)
@@ -274,7 +274,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
-            services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
+            services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
         }
 
         public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope, IConfiguration config)
@@ -300,7 +300,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var dynOpts = strategy.GetDynamicOptions(config);
 
             var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
-            services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
+            services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
         }
 
         public static void AddHystrixCollapser<TService>(this IServiceCollection services, IHystrixCollapserKey collapserKey, IConfiguration config)
@@ -326,7 +326,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
-            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient(p => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCollapser<TService>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope, IConfiguration config)
@@ -352,7 +352,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
 
-            services.AddTransient((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+            services.AddTransient(p => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
 
         public static void AddHystrixCollapser<TService>(this IServiceCollection services, string collapserKey, IConfiguration config)

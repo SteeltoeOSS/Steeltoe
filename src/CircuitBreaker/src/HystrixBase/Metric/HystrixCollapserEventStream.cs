@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public static HystrixCollapserEventStream GetInstance(IHystrixCollapserKey collapserKey)
         {
-            return Streams.GetOrAddEx(collapserKey.Name, (k) => new HystrixCollapserEventStream(collapserKey));
+            return Streams.GetOrAddEx(collapserKey.Name, k => new HystrixCollapserEventStream(collapserKey));
         }
 
         internal HystrixCollapserEventStream(IHystrixCollapserKey collapserKey)

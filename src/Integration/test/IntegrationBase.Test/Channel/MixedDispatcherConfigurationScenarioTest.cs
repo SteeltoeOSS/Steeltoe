@@ -58,7 +58,7 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 Failover = false
             };
-            handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+            handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
             dispatcher.AddHandler(handlerB.Object);
@@ -78,8 +78,8 @@ namespace Steeltoe.Integration.Channel.Test
             {
             }
 
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(2));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(0));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(2));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 Failover = false
             };
-            handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+            handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
             dispatcher.AddHandler(handlerB.Object);
@@ -125,10 +125,10 @@ namespace Steeltoe.Integration.Channel.Test
             Assert.True(allDone.Wait(10000));
 
             Assert.Equal(1, failed);
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(0));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
 
-            exceptionRegistry.Verify((list) => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
+            exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
         }
 
         [Fact]
@@ -138,7 +138,7 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 Failover = false
             };
-            handlerA.Setup((h) => h.HandleMessage(message)).Callback(() =>
+            handlerA.Setup(h => h.HandleMessage(message)).Callback(() =>
             {
                 var e = new Exception();
                 failed = 1;
@@ -166,10 +166,10 @@ namespace Steeltoe.Integration.Channel.Test
             Assert.True(allDone.Wait(10000));
 
             Assert.Equal(1, failed);
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(0));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
 
-            exceptionRegistry.Verify((list) => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
+            exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 Failover = false
             };
-            handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+            handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
             dispatcher.AddHandler(handlerB.Object);
@@ -193,9 +193,9 @@ namespace Steeltoe.Integration.Channel.Test
             {
             }
 
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(0));
-            handlerC.Verify((h) => h.HandleMessage(message), Times.Exactly(0));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
+            handlerC.Verify(h => h.HandleMessage(message), Times.Exactly(0));
             try
             {
                 channel.Send(message);
@@ -204,9 +204,9 @@ namespace Steeltoe.Integration.Channel.Test
             {
             }
 
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
-            handlerC.Verify((h) => h.HandleMessage(message), Times.Exactly(0));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+            handlerC.Verify(h => h.HandleMessage(message), Times.Exactly(0));
             try
             {
                 channel.Send(message);
@@ -215,9 +215,9 @@ namespace Steeltoe.Integration.Channel.Test
             {
             }
 
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
-            handlerC.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+            handlerC.Verify(h => h.HandleMessage(message), Times.Exactly(1));
         }
 
         [Fact]
@@ -227,7 +227,7 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 Failover = false
             };
-            handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+            handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
             dispatcher.AddHandler(handlerB.Object);
@@ -268,10 +268,10 @@ namespace Steeltoe.Integration.Channel.Test
             Assert.True(allDone1.Wait(10000));
 
             Assert.Equal(1, failed1);
-            handlerA.Verify((h) => h.HandleMessage(message2), Times.Exactly(14));
-            handlerB.Verify((h) => h.HandleMessage(message2), Times.Exactly(13));
-            handlerC.Verify((h) => h.HandleMessage(message2), Times.Exactly(13));
-            exceptionRegistry.Verify((list) => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
+            handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(14));
+            handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+            handlerC.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+            exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
         }
 
         [Fact]
@@ -291,7 +291,7 @@ namespace Steeltoe.Integration.Channel.Test
             var allDone1 = new CountdownEvent(TOTAL_EXECUTIONS);
             var message2 = message;
             var failed1 = 0;
-            handlerA.Setup((h) => h.HandleMessage(message)).Callback(() =>
+            handlerA.Setup(h => h.HandleMessage(message)).Callback(() =>
             {
                 failed1 = 1;
                 var e = new Exception();
@@ -299,11 +299,11 @@ namespace Steeltoe.Integration.Channel.Test
                 allDone1.Signal();
                 throw e;
             });
-            handlerB.Setup((h) => h.HandleMessage(message)).Callback(() =>
+            handlerB.Setup(h => h.HandleMessage(message)).Callback(() =>
             {
                 allDone1.Signal();
             });
-            handlerC.Setup((h) => h.HandleMessage(message)).Callback(() =>
+            handlerC.Setup(h => h.HandleMessage(message)).Callback(() =>
             {
                 allDone1.Signal();
             });
@@ -323,10 +323,10 @@ namespace Steeltoe.Integration.Channel.Test
             start1.Signal();
             Assert.True(allDone1.Wait(10000));
             Assert.Equal(1, failed1);
-            handlerA.Verify((h) => h.HandleMessage(message2), Times.Exactly(14));
-            handlerB.Verify((h) => h.HandleMessage(message2), Times.Exactly(13));
-            handlerC.Verify((h) => h.HandleMessage(message2), Times.Exactly(13));
-            exceptionRegistry.Verify((list) => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
+            handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(14));
+            handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+            handlerC.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+            exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
         }
 
         [Fact]
@@ -336,7 +336,7 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 Failover = true
             };
-            handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+            handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
             dispatcher.AddHandler(handlerB.Object);
@@ -349,8 +349,8 @@ namespace Steeltoe.Integration.Channel.Test
             { /* ignore */
             }
 
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(1));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(1));
 
             try
             {
@@ -360,8 +360,8 @@ namespace Steeltoe.Integration.Channel.Test
             { /* ignore */
             }
 
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(2));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(2));
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(2));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(2));
         }
 
         [Fact]
@@ -371,7 +371,7 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 Failover = true
             };
-            handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+            handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
             dispatcher.AddHandler(handlerA.Object);
             dispatcher.AddHandler(handlerB.Object);
@@ -412,10 +412,10 @@ namespace Steeltoe.Integration.Channel.Test
             start1.Signal();
             Assert.True(allDone1.Wait(10000));
             Assert.Equal(0, failed1);
-            handlerA.Verify((h) => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
-            handlerB.Verify((h) => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
-            handlerC.Verify((h) => h.HandleMessage(message2), Times.Never());
-            exceptionRegistry.Verify((list) => list.Add(It.IsAny<Exception>()), Times.Never());
+            handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
+            handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
+            handlerC.Verify(h => h.HandleMessage(message2), Times.Never());
+            exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Never());
         }
 
         [Fact]
@@ -431,13 +431,13 @@ namespace Steeltoe.Integration.Channel.Test
             dispatcher.AddHandler(handlerB.Object);
             dispatcher.AddHandler(handlerC.Object);
 
-            handlerA.Setup((h) => h.HandleMessage(message)).Callback(() =>
+            handlerA.Setup(h => h.HandleMessage(message)).Callback(() =>
             {
                 failed = 1;
                 var e = new Exception();
                 throw e;
             });
-            handlerB.Setup((h) => h.HandleMessage(message)).Callback(() =>
+            handlerB.Setup(h => h.HandleMessage(message)).Callback(() =>
             {
                 allDone.Signal();
             });
@@ -456,9 +456,9 @@ namespace Steeltoe.Integration.Channel.Test
 
             start.Signal();
             Assert.True(allDone.Wait(10000));
-            handlerA.Verify((h) => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-            handlerB.Verify((h) => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-            handlerC.Verify((h) => h.HandleMessage(message), Times.Never());
+            handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
+            handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
+            handlerC.Verify(h => h.HandleMessage(message), Times.Never());
         }
     }
 }

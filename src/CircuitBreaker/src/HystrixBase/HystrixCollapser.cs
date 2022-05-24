@@ -110,7 +110,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 request = entry.CachedTask.AsyncState as CollapsedRequest<RequestResponseType, RequestArgumentType>;
                 request.AddLinkedToken(_token);
                 var continued = origTask.ContinueWith(
-                    (parent) =>
+                    parent =>
                     {
                         if (parent.AsyncState is CollapsedRequest<RequestResponseType, RequestArgumentType> req)
                         {
@@ -162,7 +162,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public IObservable<RequestResponseType> ToObservable()
         {
-            var observable = Observable.FromAsync((ct) =>
+            var observable = Observable.FromAsync(ct =>
             {
                 _token = ct;
                 var toStart = ToTask();

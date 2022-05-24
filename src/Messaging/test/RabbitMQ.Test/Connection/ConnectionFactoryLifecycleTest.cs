@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             services.AddRabbitConnectionFactory((p, f) => f.Host = "localhost");
             services.AddRabbitAdmin();
             services.AddSingleton<MyLifecycle>();
-            services.AddSingleton<ILifecycle>((p) => p.GetService<MyLifecycle>());
+            services.AddSingleton<ILifecycle>(p => p.GetService<MyLifecycle>());
             var provider = services.BuildServiceProvider();
 
             var hostService = provider.GetRequiredService<IHostedService>();

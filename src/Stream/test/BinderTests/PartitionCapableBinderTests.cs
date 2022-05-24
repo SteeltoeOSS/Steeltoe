@@ -227,7 +227,7 @@ namespace Steeltoe.Stream.Binder
             var receive2 = Receive(input2);
             Assert.NotNull(receive2);
 
-            Func<IMessage, bool> correlationHeadersForPayload2 = (m) =>
+            Func<IMessage, bool> correlationHeadersForPayload2 = m =>
                                        {
                                            var accessor = new IntegrationMessageHeaderAccessor(m);
                                            return "foo".Equals(accessor.GetCorrelationId()) && accessor.GetSequenceNumber() == 42 && accessor.GetSequenceSize() == 43;
@@ -246,7 +246,7 @@ namespace Steeltoe.Stream.Binder
                 Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "1");
                 Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "2");
 
-                Func<IMessage, bool> payloadIs2 = (m) => m.Payload.Equals("2".GetBytes());
+                Func<IMessage, bool> payloadIs2 = m => m.Payload.Equals("2".GetBytes());
                 Assert.Single(receivedMessages.Where(payloadIs2).Where(correlationHeadersForPayload2));
             }
 

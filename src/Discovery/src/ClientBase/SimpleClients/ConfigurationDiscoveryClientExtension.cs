@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Client.SimpleClients
         public void ApplyServices(IServiceCollection services)
         {
             services.AddOptions<List<ConfigurationServiceInstance>>().Configure<IConfiguration>((options, configuration) => configuration.GetSection(CONFIG_PREFIX).Bind(options));
-            services.AddSingleton<IDiscoveryClient>((serviceProvider) => new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
+            services.AddSingleton<IDiscoveryClient>(serviceProvider => new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
         }
 
         public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
