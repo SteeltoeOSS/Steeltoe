@@ -140,7 +140,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.NotNull(content);
             Assert.Equal(HttpMethod.Post, message.Method);
 
-            message.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json"));
+            Assert.Contains(new MediaTypeWithQualityHeaderValue("application/json"), message.Headers.Accept);
         }
 
         [Fact]

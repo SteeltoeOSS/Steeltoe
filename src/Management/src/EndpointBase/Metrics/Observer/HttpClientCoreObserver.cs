@@ -121,14 +121,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
         {
-            var uri = request.RequestUri.ToString();
+            var uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
             var statusCode = GetStatusCode(response, taskStatus);
-            var labels = new List<KeyValuePair<string, object>>();
-            labels.Add(KeyValuePair.Create(_uriTagKey, (object)uri));
-            labels.Add(KeyValuePair.Create(_statusTagKey, (object)statusCode));
-            labels.Add(KeyValuePair.Create(_clientTagKey, (object)request.RequestUri.Host));
-            labels.Add(KeyValuePair.Create(_methodTagKey, (object)request.Method.ToString()));
-            return labels;
+            var clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
+
+            return new Dictionary<string, object>
+            {
+                { _uriTagKey, uri },
+                { _statusTagKey, statusCode },
+                { _clientTagKey, clientName },
+                { _methodTagKey, request.Method.ToString() }
+            };
         }
 
         protected internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)

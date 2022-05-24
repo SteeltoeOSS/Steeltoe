@@ -114,15 +114,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             var statusCode = arg.Response.StatusCode.ToString();
             var exception = GetException(arg);
 
-            var tagValues = new List<KeyValuePair<string, object>>
+            return new Dictionary<string, object>
             {
-                new KeyValuePair<string, object>(_uriTagKey, uri),
-                new KeyValuePair<string, object>(_statusTagKey, statusCode),
-                new KeyValuePair<string, object>(_exceptionTagKey, exception),
-                new KeyValuePair<string, object>(_methodTagKey, arg.Request.Method)
+                { _uriTagKey, uri },
+                { _statusTagKey, statusCode },
+                { _exceptionTagKey, exception },
+                { _methodTagKey, arg.Request.Method }
             };
-
-            return tagValues;
         }
 
         protected internal string GetException(HttpContext arg)

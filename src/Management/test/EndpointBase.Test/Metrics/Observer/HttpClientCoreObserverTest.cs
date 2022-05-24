@@ -96,10 +96,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
             var tagContext = obs.GetLabels(req, resp, TaskStatus.RanToCompletion);
             var tagValues = tagContext.ToList();
-            tagValues.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"));
-            tagValues.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"));
-            tagValues.Contains(KeyValuePair.Create("status", (object)"500"));
-            tagValues.Contains(KeyValuePair.Create("method", (object)"GET"));
+
+            Assert.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"), tagValues);
+            Assert.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"), tagValues);
+            Assert.Contains(KeyValuePair.Create("status", (object)"500"), tagValues);
+            Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagValues);
         }
 
         [Fact]
