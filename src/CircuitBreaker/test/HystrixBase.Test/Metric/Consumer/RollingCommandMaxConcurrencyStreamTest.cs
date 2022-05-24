@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
-    public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest, IDisposable
+    public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Command-Concurrency");
         private RollingCommandMaxConcurrencyStream stream;

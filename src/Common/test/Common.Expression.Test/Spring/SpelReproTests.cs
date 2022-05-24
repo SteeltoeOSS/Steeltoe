@@ -2026,7 +2026,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
         }
 
-        public class StaticFinalImpl1 : AbstractStaticFinal, IStaticFinal
+        public class StaticFinalImpl1 : AbstractStaticFinal
         {
         }
 

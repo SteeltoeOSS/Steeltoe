@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test
 {
-    public class HystrixUtilizationStreamTest : CommandStreamTest, IDisposable
+    public class HystrixUtilizationStreamTest : CommandStreamTest
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Util");
         private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("Command");

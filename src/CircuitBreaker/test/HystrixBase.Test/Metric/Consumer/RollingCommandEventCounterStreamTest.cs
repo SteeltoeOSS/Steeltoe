@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
-    public class RollingCommandEventCounterStreamTest : CommandStreamTest, IDisposable
+    public class RollingCommandEventCounterStreamTest : CommandStreamTest
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("RollingCommandCounter");
         private readonly ITestOutputHelper output;

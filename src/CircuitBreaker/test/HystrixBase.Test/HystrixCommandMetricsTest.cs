@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
-    public class HystrixCommandMetricsTest : HystrixTestBase, IDisposable
+    public class HystrixCommandMetricsTest : HystrixTestBase
     {
         private readonly ITestOutputHelper output;
 

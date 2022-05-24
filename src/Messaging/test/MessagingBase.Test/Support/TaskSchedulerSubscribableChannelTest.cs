@@ -251,7 +251,7 @@ namespace Steeltoe.Messaging.Support.Test
             }
         }
 
-        internal class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor, IChannelInterceptor
+        internal class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
         {
             private volatile int counter;
 

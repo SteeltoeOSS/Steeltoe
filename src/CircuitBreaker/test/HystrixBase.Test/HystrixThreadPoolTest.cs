@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
-    public class HystrixThreadPoolTest : HystrixTestBase, IDisposable
+    public class HystrixThreadPoolTest : HystrixTestBase
     {
         private readonly ITestOutputHelper output;
 

@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
-    public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest, IDisposable
+    public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
     {
         private readonly ITestOutputHelper output;
         private RollingThreadPoolEventCounterStream stream;

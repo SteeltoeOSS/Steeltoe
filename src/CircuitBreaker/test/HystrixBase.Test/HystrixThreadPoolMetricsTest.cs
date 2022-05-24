@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
-    public class HystrixThreadPoolMetricsTest : HystrixTestBase, IDisposable
+    public class HystrixThreadPoolMetricsTest : HystrixTestBase
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
         private static readonly IHystrixThreadPoolKey TpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");

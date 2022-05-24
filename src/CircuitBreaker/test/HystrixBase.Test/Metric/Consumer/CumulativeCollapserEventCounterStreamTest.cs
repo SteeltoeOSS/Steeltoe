@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
-    public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest, IDisposable
+    public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
     {
         private class LatchedObserver : TestObserverBase<long[]>
         {

@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
-    public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest, IDisposable
+    public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatency");
         private readonly ITestOutputHelper output;

@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
-    public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest, IDisposable
+    public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
     {
         private readonly ITestOutputHelper output;
         private RollingCollapserBatchSizeDistributionStream stream;

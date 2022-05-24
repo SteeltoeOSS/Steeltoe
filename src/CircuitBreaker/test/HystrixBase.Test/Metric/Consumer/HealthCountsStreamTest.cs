@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
-    public class HealthCountsStreamTest : CommandStreamTest, IDisposable
+    public class HealthCountsStreamTest : CommandStreamTest
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("HealthCounts");
         private readonly ITestOutputHelper output;
