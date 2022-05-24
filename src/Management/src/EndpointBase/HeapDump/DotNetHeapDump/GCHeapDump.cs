@@ -676,7 +676,7 @@ public class InteropInfo : IFastSerializable
         for (int i = 0; i < m_countInterfaces; i++)
         {
             ComInterfaceInfo infoInterface = new ComInterfaceInfo();
-            infoInterface.fRCW = ((deserializer.ReadByte() == 1) ? true : false);
+            infoInterface.fRCW = ((deserializer.ReadByte() == 1));
             infoInterface.owner = deserializer.ReadInt();
             infoInterface.typeID = (NodeTypeIndex)deserializer.ReadInt();
             infoInterface.addrInterface = (Address)deserializer.ReadInt64();
