@@ -360,11 +360,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             public Mock<RC.IModel> Channel3 { get; set; }
 
-            public AtomicReference<IConnectionListener> Listener1 { get; set; } = new AtomicReference<IConnectionListener>();
+            public AtomicReference<IConnectionListener> Listener1 { get; set; } = new ();
 
-            public AtomicReference<IConnectionListener> Listener2 { get; set; } = new AtomicReference<IConnectionListener>();
+            public AtomicReference<IConnectionListener> Listener2 { get; set; } = new ();
 
-            public AtomicReference<IConnectionListener> Listener3 { get; set; } = new AtomicReference<IConnectionListener>();
+            public AtomicReference<IConnectionListener> Listener3 { get; set; } = new ();
 
             public RabbitAdminDeclarationTestStartupFixture()
             {

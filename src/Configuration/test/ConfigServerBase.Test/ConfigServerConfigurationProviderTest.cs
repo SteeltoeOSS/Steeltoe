@@ -182,7 +182,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 State = "teststate",
                 PropertySources = new List<PropertySource>
                 {
-                    new PropertySource
+                    new ()
                     {
                         Name = "source",
                         Source = new Dictionary<string, object>

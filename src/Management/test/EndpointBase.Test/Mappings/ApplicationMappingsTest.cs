@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
 
             var mappDescs = new List<MappingDescription>
             {
-                new MappingDescription("foobar", routeDetail)
+                new ("foobar", routeDetail)
             };
 
             var mappingDict = new Dictionary<string, IList<MappingDescription>>

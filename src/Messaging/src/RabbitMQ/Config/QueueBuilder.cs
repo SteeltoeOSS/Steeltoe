@@ -11,9 +11,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
     {
         public class OverFlow
         {
-            public static OverFlow DropHead { get; } = new OverFlow("drop-head");
+            public static OverFlow DropHead { get; } = new ("drop-head");
 
-            public static OverFlow RejectPublish { get; } = new OverFlow("reject-publish");
+            public static OverFlow RejectPublish { get; } = new ("reject-publish");
 
             public string Value { get; }
 
@@ -25,11 +25,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public class MasterLocator
         {
-            public static MasterLocator MinMasters { get; } = new MasterLocator("min-masters");
+            public static MasterLocator MinMasters { get; } = new ("min-masters");
 
-            public static MasterLocator ClientLocal { get; } = new MasterLocator("client-local");
+            public static MasterLocator ClientLocal { get; } = new ("client-local");
 
-            public static MasterLocator Random { get; } = new MasterLocator("random");
+            public static MasterLocator Random { get; } = new ("random");
 
             public string Value { get; }
 

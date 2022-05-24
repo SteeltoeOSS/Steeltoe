@@ -708,8 +708,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var queryString = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("credential_name", "/example-password"),
-                new KeyValuePair<string, string>("actor", "uaa-user:credhub_client")
+                new ("credential_name", "/example-password"),
+                new ("actor", "uaa-user:credhub_client")
             };
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Delete, $"{credHubBase}/v1/permissions")
@@ -728,8 +728,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var queryString = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("credential_name", "/example-password"),
-                new KeyValuePair<string, string>("actor", "uaa-user:credhub_client")
+                new ("credential_name", "/example-password"),
+                new ("actor", "uaa-user:credhub_client")
             };
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Delete, $"{credHubBase}/v1/permissions")

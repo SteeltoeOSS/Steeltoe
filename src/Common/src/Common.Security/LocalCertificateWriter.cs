@@ -117,7 +117,7 @@ namespace Steeltoe.Common.Security
 
             request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
             request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, false));
-            request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new Oid("1.3.6.1.5.5.7.3.2") }, false));
+            request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new ("1.3.6.1.5.5.7.3.2") }, false));
 
             if (altNames != null)
             {

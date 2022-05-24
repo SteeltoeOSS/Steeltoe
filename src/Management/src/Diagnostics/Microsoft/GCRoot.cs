@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Runtime
     /// </summary>
     internal class GCRoot
     {
-        private static readonly Stack<ClrObject> s_emptyStack = new Stack<ClrObject>();
+        private static readonly Stack<ClrObject> s_emptyStack = new();
         private readonly ClrHeap _heap;
         private int _maxTasks;
 

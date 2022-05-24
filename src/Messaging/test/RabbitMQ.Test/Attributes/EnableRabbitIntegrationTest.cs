@@ -674,17 +674,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public ServiceProvider Provider { get; set; }
 
-            public CountdownEvent ManualContainerLatch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent ManualContainerLatch { get; set; } = new (1);
 
-            public CountdownEvent NoListenerLatch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent NoListenerLatch { get; set; } = new (1);
 
-            public CountdownEvent ErrorHandlerLatch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent ErrorHandlerLatch { get; set; } = new (1);
 
-            public AtomicReference<Exception> ErrorHandlerError { get; set; } = new AtomicReference<Exception>();
+            public AtomicReference<Exception> ErrorHandlerError { get; set; } = new ();
 
-            public AtomicReference<IMessage> Message { get; set; } = new AtomicReference<IMessage>();
+            public AtomicReference<IMessage> Message { get; set; } = new ();
 
-            public AtomicReference<RC.IModel> ErrorHandlerChannel { get; set; } = new AtomicReference<RC.IModel>();
+            public AtomicReference<RC.IModel> ErrorHandlerChannel { get; set; } = new ();
 
             public StartupFixture()
             {
@@ -931,7 +931,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.FANOUT)]
         public class FanoutListener
         {
-            public CountdownEvent Latch { get; } = new CountdownEvent(2);
+            public CountdownEvent Latch { get; } = new (2);
 
             [DeclareAnonymousQueue("fanout1")]
             [DeclareQueueBinding(Name = "fanout1.binding", ExchangeName = "test.metaFanout", QueueName = "#{@fanout1}")]
@@ -952,15 +952,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public bool? ChannelBoundOk { get; set; }
 
-            public CountdownEvent Latch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Latch { get; set; } = new (1);
 
-            public List<object> Foos { get; set; } = new List<object>();
+            public List<object> Foos { get; set; } = new ();
 
-            public CountdownEvent Batch1Latch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Batch1Latch { get; set; } = new (1);
 
-            public CountdownEvent Batch2Latch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Batch2Latch { get; set; } = new (1);
 
-            public CountdownEvent Batch3Latch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Batch3Latch { get; set; } = new (1);
 
             public List<IMessage<byte[]>> AmqpMessagesReceived { get; set; }
 

@@ -301,7 +301,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
         {
             public string Name { get; set; } = "bar";
 
-            public Foo Foo { get; set; } = new Foo();
+            public Foo Foo { get; set; } = new ();
 
             public override int GetHashCode()
             {

@@ -12,7 +12,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     {
         public HttpRequestMessage LastRequest { get; set; }
 
-        public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+        public HttpResponseMessage Response { get; set; } = new (System.Net.HttpStatusCode.OK);
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

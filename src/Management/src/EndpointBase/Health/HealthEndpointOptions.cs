@@ -69,6 +69,6 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public string Role { get; set; }
 
-        public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new Dictionary<string, HealthGroupOptions>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new (StringComparer.InvariantCultureIgnoreCase);
     }
 }

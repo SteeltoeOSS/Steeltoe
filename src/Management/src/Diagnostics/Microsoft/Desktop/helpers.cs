@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             CacheEntryHeap
         }
 
-        private List<MemoryRegion> _regions = new List<MemoryRegion>();
+        private List<MemoryRegion> _regions = new();
         private DesktopRuntimeBase.LoaderHeapTraverse _delegate;
         private ClrMemoryRegionType _type;
         private ulong _appDomain;

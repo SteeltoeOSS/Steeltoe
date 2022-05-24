@@ -72,7 +72,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
         }
 
-        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ConcurrentDictionary<string, InstanceInfo>();
+        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ();
 
         internal static Application FromJsonApplication(JsonApplication japp)
         {

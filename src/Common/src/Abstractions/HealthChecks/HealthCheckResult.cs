@@ -27,6 +27,6 @@ namespace Steeltoe.Common.HealthChecks
         /// Gets or sets details of the checked item
         /// </summary>
         /// <remarks>For parity with Spring Boot, repeat status [with a call to .ToString()] here</remarks>
-        public Dictionary<string, object> Details { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Details { get; set; } = new ();
     }
 }

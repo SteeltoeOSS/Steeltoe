@@ -159,9 +159,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             return new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsClientId, _options.ClientId),
-                new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsClientSecret, _options.ClientSecret),
-                new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsScope, scopes)
+                new (CloudFoundryDefaults.ParamsClientId, _options.ClientId),
+                new (CloudFoundryDefaults.ParamsClientSecret, _options.ClientSecret),
+                new (CloudFoundryDefaults.ParamsScope, scopes)
             };
         }
 
@@ -186,9 +186,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             claimsId.AddClaims(new List<Claim>
                     {
-                        new Claim(ClaimTypes.NameIdentifier, userId),
-                        new Claim(ClaimTypes.Name, userName),
-                        new Claim(ClaimTypes.Email, email),
+                        new (ClaimTypes.NameIdentifier, userId),
+                        new (ClaimTypes.Name, userName),
+                        new (ClaimTypes.Email, email),
                     });
 
             _logger?.LogTrace("Adding scope claims from token");

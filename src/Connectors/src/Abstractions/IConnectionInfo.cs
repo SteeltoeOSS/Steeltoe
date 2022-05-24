@@ -62,6 +62,6 @@ namespace Steeltoe.Connector
         /// <summary>
         /// Gets a list of additional properties for this connection
         /// </summary>
-        public Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Properties { get; } = new ();
     }
 }

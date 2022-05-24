@@ -825,7 +825,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Payload
         {
-            public Two[] DR { get; } = new Two[] { new Two() };
+            public Two[] DR { get; } = new Two[] { new () };
         }
 
         public class Two

@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                     count -= _previousCollectionCounts[i];
                 }
 
-                var genKeylabelSet = new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(_generationKey, GENERATION_TAGVALUE_NAME + i) };
+                var genKeylabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GENERATION_TAGVALUE_NAME + i) };
                 _collectionCount.Add(count, genKeylabelSet.AsReadonlySpan());
             }
 

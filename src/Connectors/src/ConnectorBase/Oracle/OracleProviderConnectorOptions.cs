@@ -47,7 +47,7 @@ namespace Steeltoe.Connector.Oracle
 
         public int ConnectionTimeout { get; set; } = 15;
 
-        internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
+        internal Dictionary<string, string> Options { get; set; } = new ();
 
         public override string ToString()
         {

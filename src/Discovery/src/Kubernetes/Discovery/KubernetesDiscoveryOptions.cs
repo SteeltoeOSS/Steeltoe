@@ -35,7 +35,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         /// <summary>
         /// Gets or sets a list of port numbers that are considered secure and use HTTPS
         /// </summary>
-        public List<int> KnownSecurePorts { get; set; } = new List<int> { 443, 8443 };
+        public List<int> KnownSecurePorts { get; set; } = new () { 443, 8443 };
 
         /// <summary>
         /// Gets or sets a list of labels to filter on when fetching services from the Kubernetes API
@@ -50,7 +50,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         /// <summary>
         /// Gets or sets additional service data
         /// </summary>
-        public Metadata Metadata { get; set; } = new Metadata();
+        public Metadata Metadata { get; set; } = new ();
 
         /// <summary>
         /// Gets or sets the time in seconds that service instance cache records should remain active

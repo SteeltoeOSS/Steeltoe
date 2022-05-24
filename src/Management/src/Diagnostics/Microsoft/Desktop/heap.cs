@@ -943,7 +943,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
         
         protected List<ClrType> _types;
-        protected Dictionary<ModuleEntry, int> _typeEntry = new Dictionary<ModuleEntry, int>(new ModuleEntryCompare());
+        protected Dictionary<ModuleEntry, int> _typeEntry = new(new ModuleEntryCompare());
         private Dictionary<ArrayRankHandle, BaseDesktopHeapType> _arrayTypes;
 
         private ClrInstanceField _firstChar, _stringLength;
@@ -952,7 +952,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         private bool _loadedTypes = false;
 
         internal readonly ClrInterface[] EmptyInterfaceList = Array.Empty<ClrInterface>();
-        internal Dictionary<string, ClrInterface> Interfaces = new Dictionary<string, ClrInterface>();
+        internal Dictionary<string, ClrInterface> Interfaces = new();
         private Lazy<ClrType> _arrayType,  _exceptionType;
         private ClrType _free;
 
@@ -1391,7 +1391,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             private const int Secondary = 0x1000000;
             private const int Complete = 0x4000000;
 
-            private List<T[]> _lists = new List<T[]>();
+            private List<T[]> _lists = new();
             private int _curr = 0;
 
             public long Count
@@ -1490,7 +1490,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         internal class DictionaryList
         {
             private const int MaxEntries = 40000000;
-            private List<Entry> _entries = new List<Entry>();
+            private List<Entry> _entries = new();
 
             public IEnumerable<KeyValuePair<ulong,int>> Enumerate()
             {
@@ -2003,8 +2003,8 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
     internal class LegacyGCHeap : DesktopGCHeap
     {
-        private ClrObject _lastObject = new ClrObject();
-        private Dictionary<TypeHandle, int> _indices = new Dictionary<TypeHandle, int>(TypeHandle.EqualityComparer);
+        private ClrObject _lastObject = new();
+        private Dictionary<TypeHandle, int> _indices = new(TypeHandle.EqualityComparer);
 
         public LegacyGCHeap(DesktopRuntimeBase runtime)
             : base(runtime)
@@ -2180,7 +2180,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
     internal class V46GCHeap : DesktopGCHeap
     {
         private ClrObject _lastObject;
-        private Dictionary<ulong, int> _indices = new Dictionary<ulong, int>();
+        private Dictionary<ulong, int> _indices = new();
         
         public V46GCHeap(DesktopRuntimeBase runtime)
             : base(runtime)

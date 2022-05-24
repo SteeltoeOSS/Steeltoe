@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Kubernetes.Test
 {
     internal class FakePodUtilities : IPodUtilities
     {
-        internal static V1Pod SamplePod { get; } = new V1Pod
+        internal static V1Pod SamplePod { get; } = new ()
         {
             Metadata = new V1ObjectMeta { NamespaceProperty = "mynamespace", Name = "mypod" },
             Status = new V1PodStatus { PodIP = "mypodip", HostIP = "myhostip" },

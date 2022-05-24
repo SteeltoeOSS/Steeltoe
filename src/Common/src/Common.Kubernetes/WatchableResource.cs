@@ -10,6 +10,6 @@ namespace Steeltoe.Common.Kubernetes
     {
         public bool Enabled { get; set; } = true;
 
-        public List<NamespacedResource> Sources { get; set; } = new List<NamespacedResource>();
+        public List<NamespacedResource> Sources { get; set; } = new ();
     }
 }

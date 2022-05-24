@@ -19,7 +19,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class CredHubClient : ICredHubClient
     {
-        internal JsonSerializerOptions SerializerOptions { get; set; } = new JsonSerializerOptions
+        internal JsonSerializerOptions SerializerOptions { get; set; } = new ()
         {
             IgnoreNullValues = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

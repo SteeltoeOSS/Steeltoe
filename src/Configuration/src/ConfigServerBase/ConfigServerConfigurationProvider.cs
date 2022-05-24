@@ -176,7 +176,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual ConfigServerClientSettings Settings => _settings;
 
         internal JsonSerializerOptions SerializerOptions { get; private set; } =
-            new JsonSerializerOptions
+            new ()
             {
                 IgnoreNullValues = true,
                 PropertyNameCaseInsensitive = true,

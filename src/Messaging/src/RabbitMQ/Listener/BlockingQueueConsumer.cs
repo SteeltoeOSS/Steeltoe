@@ -152,15 +152,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public bool NoLocal { get; }
 
-        public AtomicBoolean Cancel { get; } = new AtomicBoolean(false);
+        public AtomicBoolean Cancel { get; } = new (false);
 
         public bool DefaultRequeueRejected { get; }
 
-        public Dictionary<string, object> ConsumerArgs { get; } = new Dictionary<string, object>();
+        public Dictionary<string, object> ConsumerArgs { get; } = new ();
 
         public RC.ShutdownEventArgs Shutdown { get; private set; }
 
-        public HashSet<ulong> DeliveryTags { get; internal set; } = new HashSet<ulong>();
+        public HashSet<ulong> DeliveryTags { get; internal set; } = new ();
 
         public long AbortStarted { get; private set; }
 
@@ -190,7 +190,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public RabbitResourceHolder ResourceHolder { get; set; }
 
-        private ConcurrentDictionary<string, InternalConsumer> Consumers { get; } = new ConcurrentDictionary<string, InternalConsumer>();
+        private ConcurrentDictionary<string, InternalConsumer> Consumers { get; } = new ();
 
         public List<string> GetConsumerTags()
         {
@@ -784,7 +784,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             {
             }
 
-            public List<string> FailedQueues { get; } = new List<string>();
+            public List<string> FailedQueues { get; } = new ();
 
             public void AddFailedQueue(string queue)
             {

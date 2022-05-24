@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
     [Obsolete]
     public class HttpClientCoreObserverTest : BaseTest
     {
-        private readonly PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 100 };
+        private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
 
         [Fact]
         public void Constructor_RegistersExpectedViews()

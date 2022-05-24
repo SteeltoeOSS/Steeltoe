@@ -197,7 +197,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 _output.WriteLine("Listen3 " + input);
                 var list = new List<Three>
                 {
-                    new Three()
+                    new ()
                 };
                 return list;
             }

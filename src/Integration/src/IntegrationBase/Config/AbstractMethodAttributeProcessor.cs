@@ -26,7 +26,7 @@ namespace Steeltoe.Integration.Config
         protected const string INPUT_CHANNEL_PROPERTY = "InputChannel";
         private readonly ILogger _logger;
 
-        protected virtual List<string> MessageHandlerProperties { get; } = new List<string>();
+        protected virtual List<string> MessageHandlerProperties { get; } = new ();
 
         protected IApplicationContext ApplicationContext { get; }
 

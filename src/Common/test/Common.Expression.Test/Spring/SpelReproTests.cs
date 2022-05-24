@@ -483,12 +483,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var list = new List<D>
             {
-                new D("aaa"),
-                new D("bbb"),
-                new D(null),
-                new D("ccc"),
-                new D(null),
-                new D("zzz")
+                new ("aaa"),
+                new ("bbb"),
+                new (null),
+                new ("ccc"),
+                new (null),
+                new ("zzz")
             };
 
             var context = new StandardEvaluationContext(list);

@@ -1035,8 +1035,8 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         private class EnumData
         {
             internal ClrElementType ElementType;
-            internal Dictionary<string, object> NameToValue = new Dictionary<string, object>();
-            internal Dictionary<object, string> ValueToName = new Dictionary<object, string>();
+            internal Dictionary<string, object> NameToValue = new();
+            internal Dictionary<object, string> ValueToName = new();
         }
 
         public override ClrElementType GetEnumElementType()

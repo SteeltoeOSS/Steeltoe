@@ -63,7 +63,7 @@ namespace Steeltoe.Connector.PostgreSql
 
         public bool? TrustServerCertificate { get; set; } = null;
 
-        internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
+        internal Dictionary<string, string> Options { get; set; } = new ();
 
         public override string ToString()
         {

@@ -16,6 +16,6 @@ namespace Steeltoe.Common.Options
 
         public X509Certificate2 Certificate { get; set; }
 
-        public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
+        public List<X509Certificate2> IssuerChain { get; set; } = new ();
     }
 }

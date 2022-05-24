@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var messageList = new HashSet<RabbitHeaderAccessor>
             {
-                new RabbitHeaderAccessor()
+                new ()
             };
             Assert.Single(messageList);
         }

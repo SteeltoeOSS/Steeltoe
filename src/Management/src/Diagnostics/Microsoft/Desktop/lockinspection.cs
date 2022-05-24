@@ -17,11 +17,11 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         private DesktopGCHeap _heap;
         private DesktopRuntimeBase _runtime;
         private ClrType _rwType, _rwsType;
-        private Dictionary<ulong, DesktopBlockingObject> _monitors = new Dictionary<ulong, DesktopBlockingObject>();
-        private Dictionary<ulong, DesktopBlockingObject> _locks = new Dictionary<ulong, DesktopBlockingObject>();
-        private Dictionary<ClrThread, DesktopBlockingObject> _joinLocks = new Dictionary<ClrThread, DesktopBlockingObject>();
-        private Dictionary<ulong, DesktopBlockingObject> _waitLocks = new Dictionary<ulong, DesktopBlockingObject>();
-        private Dictionary<ulong, ulong> _syncblks = new Dictionary<ulong, ulong>();
+        private Dictionary<ulong, DesktopBlockingObject> _monitors = new();
+        private Dictionary<ulong, DesktopBlockingObject> _locks = new();
+        private Dictionary<ClrThread, DesktopBlockingObject> _joinLocks = new();
+        private Dictionary<ulong, DesktopBlockingObject> _waitLocks = new();
+        private Dictionary<ulong, ulong> _syncblks = new();
         private DesktopBlockingObject[] _result = null;
 
         internal LockInspection(DesktopGCHeap heap, DesktopRuntimeBase runtime)

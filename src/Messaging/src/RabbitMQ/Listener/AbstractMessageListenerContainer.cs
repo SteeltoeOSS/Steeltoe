@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         private string _listenerid;
         private IConnectionFactory _connectionFactory;
 
-        private List<IQueue> Queues { get; set; } = new List<IQueue>();
+        private List<IQueue> Queues { get; set; } = new ();
 
         protected AbstractMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
         {
@@ -109,7 +109,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public virtual IConsumerTagStrategy ConsumerTagStrategy { get; set; }
 
-        public virtual Dictionary<string, object> ConsumerArguments { get; set; } = new Dictionary<string, object>();
+        public virtual Dictionary<string, object> ConsumerArguments { get; set; } = new ();
 
         public virtual bool Exclusive { get; set; }
 

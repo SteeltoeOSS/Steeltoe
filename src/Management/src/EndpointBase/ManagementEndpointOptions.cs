@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint
 
         public bool UseStatusCodeFromResponse { get; set; } = true;
 
-        public JsonSerializerOptions SerializerOptions { get; set; } = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        public JsonSerializerOptions SerializerOptions { get; set; } = new () { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         /// <summary>
         /// Gets or sets a list of <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">assembly-qualified</see> custom JsonCoverters

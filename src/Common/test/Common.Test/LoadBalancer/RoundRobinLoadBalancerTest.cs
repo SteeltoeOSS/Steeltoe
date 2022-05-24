@@ -26,12 +26,12 @@ namespace Steeltoe.Common.LoadBalancer.Test
         {
             var services = new List<ConfigurationServiceInstance>
             {
-                new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
-                new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitballer", Port = 8001 },
-                new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitballerz", Port = 8002 },
-                new ConfigurationServiceInstance { ServiceId = "vegetableservice", Host = "vegemite", Port = 8010, IsSecure = true },
-                new ConfigurationServiceInstance { ServiceId = "vegetableservice", Host = "carrot", Port = 8011 },
-                new ConfigurationServiceInstance { ServiceId = "vegetableservice", Host = "beet", Port = 8012 },
+                new () { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
+                new () { ServiceId = "fruitservice", Host = "fruitballer", Port = 8001 },
+                new () { ServiceId = "fruitservice", Host = "fruitballerz", Port = 8002 },
+                new () { ServiceId = "vegetableservice", Host = "vegemite", Port = 8010, IsSecure = true },
+                new () { ServiceId = "vegetableservice", Host = "carrot", Port = 8011 },
+                new () { ServiceId = "vegetableservice", Host = "beet", Port = 8012 },
             };
             var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
             var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
@@ -54,12 +54,12 @@ namespace Steeltoe.Common.LoadBalancer.Test
         {
             var services = new List<ConfigurationServiceInstance>
             {
-                new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
-                new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitballer", Port = 8001 },
-                new ConfigurationServiceInstance { ServiceId = "fruitservice", Host = "fruitballerz", Port = 8002 },
-                new ConfigurationServiceInstance { ServiceId = "vegetableservice", Host = "vegemite", Port = 8010, IsSecure = true },
-                new ConfigurationServiceInstance { ServiceId = "vegetableservice", Host = "carrot", Port = 8011 },
-                new ConfigurationServiceInstance { ServiceId = "vegetableservice", Host = "beet", Port = 8012 },
+                new () { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
+                new () { ServiceId = "fruitservice", Host = "fruitballer", Port = 8001 },
+                new () { ServiceId = "fruitservice", Host = "fruitballerz", Port = 8002 },
+                new () { ServiceId = "vegetableservice", Host = "vegemite", Port = 8010, IsSecure = true },
+                new () { ServiceId = "vegetableservice", Host = "carrot", Port = 8011 },
+                new () { ServiceId = "vegetableservice", Host = "beet", Port = 8012 },
             };
             var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
             var provider = new ConfigurationServiceInstanceProvider(serviceOptions);

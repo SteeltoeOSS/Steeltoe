@@ -45,12 +45,12 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
 
     internal class DesktopModule : DesktopBaseModule
     {
-        static PdbInfo s_failurePdb = new PdbInfo();
+        static PdbInfo s_failurePdb = new();
 
         private bool _reflection, _isPE;
         private string _name, _assemblyName;
         private ICorDebug.IMetadataImport _metadata;
-        private Dictionary<ClrAppDomain, ulong> _mapping = new Dictionary<ClrAppDomain, ulong>();
+        private Dictionary<ClrAppDomain, ulong> _mapping = new();
         private ulong _address;
         private ulong _imageBase;
         private Lazy<ulong> _size;

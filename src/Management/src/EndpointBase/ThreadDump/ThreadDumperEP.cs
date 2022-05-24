@@ -21,14 +21,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
     /// </summary>
     public class ThreadDumperEP : IThreadDumper
     {
-        private static readonly StackTraceElement _unknownStackTraceElement = new StackTraceElement
+        private static readonly StackTraceElement _unknownStackTraceElement = new ()
         {
             ClassName = "[UnknownClass]",
             MethodName = "[UnknownMethod]",
             IsNativeMethod = true
         };
 
-        private static readonly StackTraceElement _nativeStackTraceElement = new StackTraceElement
+        private static readonly StackTraceElement _nativeStackTraceElement = new ()
         {
             ClassName = "[NativeClasses]",
             MethodName = "[NativeMethods]",
@@ -58,7 +58,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 var client = new DiagnosticsClient(System.Diagnostics.Process.GetCurrentProcess().Id);
                 var providers = new List<EventPipeProvider>
                 {
-                    new EventPipeProvider("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
+                    new ("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
                 };
 
                 using var session = client.StartEventPipeSession(providers);

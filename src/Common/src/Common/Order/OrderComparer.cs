@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Order
 {
     public class OrderComparer : IComparer<IOrdered>
     {
-        public static OrderComparer Instance { get; } = new OrderComparer();
+        public static OrderComparer Instance { get; } = new ();
 
         public int Compare(IOrdered o1, IOrdered o2)
         {

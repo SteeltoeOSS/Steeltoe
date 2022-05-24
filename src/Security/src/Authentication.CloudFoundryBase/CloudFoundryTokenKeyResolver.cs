@@ -16,7 +16,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryTokenKeyResolver
     {
-        internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new ConcurrentDictionary<string, SecurityKey>();
+        internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new ();
 
         private readonly string _jwtKeyUrl;
         private readonly HttpMessageHandler _httpHandler;

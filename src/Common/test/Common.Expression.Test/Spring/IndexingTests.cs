@@ -192,7 +192,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var property = new List<List<int>>
             {
-                new List<int> { 3 }
+                new () { 3 }
             };
             ParameterizedListOfList = property;
             var parser = new SpelExpressionParser();

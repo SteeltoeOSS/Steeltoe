@@ -53,9 +53,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public string Id { get; set; }
 
-        public List<IQueue> Queues { get; } = new List<IQueue>();
+        public List<IQueue> Queues { get; } = new ();
 
-        public List<string> QueueNames { get; } = new List<string>();
+        public List<string> QueueNames { get; } = new ();
 
         public bool Exclusive { get; set; }
 

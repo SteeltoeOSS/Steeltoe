@@ -24,9 +24,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private const string GENERATION_TAGVALUE_NAME = "gen";
         private const string GENERATION_KEY = "generation";
 
-        private readonly Dictionary<string, object> _heapTags = new Dictionary<string, object> { { "area", "heap" } };
-        private readonly Dictionary<string, object> _workerTags = new Dictionary<string, object> { { "kind", "worker" } };
-        private readonly Dictionary<string, object> _comPortTags = new Dictionary<string, object> { { "kind", "completionPort" } };
+        private readonly Dictionary<string, object> _heapTags = new () { { "area", "heap" } };
+        private readonly Dictionary<string, object> _workerTags = new () { { "kind", "worker" } };
+        private readonly Dictionary<string, object> _comPortTags = new () { { "kind", "completionPort" } };
 
         private ObservableGauge<double> _memoryUsedMeasure;
         private ObservableGauge<long> _collectionCountMeasure;

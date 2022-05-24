@@ -254,8 +254,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var health = new HealthCheckResult();
             var sources = new List<PropertySource>
             {
-                new PropertySource("foo", new Dictionary<string, object>()),
-                new PropertySource("bar", new Dictionary<string, object>()),
+                new ("foo", new Dictionary<string, object>()),
+                new ("bar", new Dictionary<string, object>()),
             };
             contributor.UpdateHealth(health, sources);
 

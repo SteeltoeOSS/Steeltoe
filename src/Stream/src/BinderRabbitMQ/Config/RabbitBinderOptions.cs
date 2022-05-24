@@ -27,9 +27,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             config.Bind(this);
         }
 
-        public List<string> AdminAddresses { get; set; } = new List<string>();
+        public List<string> AdminAddresses { get; set; } = new ();
 
-        public List<string> Nodes { get; set; } = new List<string>();
+        public List<string> Nodes { get; set; } = new ();
 
         public CompressionLevel CompressionLevel { get; set; }
 

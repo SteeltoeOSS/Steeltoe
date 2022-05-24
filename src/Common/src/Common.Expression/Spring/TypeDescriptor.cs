@@ -9,25 +9,25 @@ namespace Steeltoe.Common.Expression.Internal.Spring
     public class TypeDescriptor
     {
 #pragma warning disable IDE0090
-        public static readonly TypeDescriptor V = new TypeDescriptor(typeof(void));
-        public static readonly TypeDescriptor I = new TypeDescriptor(typeof(int));
-        public static readonly TypeDescriptor J = new TypeDescriptor(typeof(long));
-        public static readonly TypeDescriptor F = new TypeDescriptor(typeof(float));
-        public static readonly TypeDescriptor D = new TypeDescriptor(typeof(double));
-        public static readonly TypeDescriptor B = new TypeDescriptor(typeof(byte));
-        public static readonly TypeDescriptor C = new TypeDescriptor(typeof(char));
-        public static readonly TypeDescriptor S = new TypeDescriptor(typeof(short));
-        public static readonly TypeDescriptor Z = new TypeDescriptor(typeof(bool));
-        public static readonly TypeDescriptor A = new TypeDescriptor(typeof(sbyte));
-        public static readonly TypeDescriptor M = new TypeDescriptor(typeof(ushort));
-        public static readonly TypeDescriptor N = new TypeDescriptor(typeof(uint));
-        public static readonly TypeDescriptor O = new TypeDescriptor(typeof(ulong));
-        public static readonly TypeDescriptor P = new TypeDescriptor(typeof(IntPtr));
-        public static readonly TypeDescriptor Q = new TypeDescriptor(typeof(UIntPtr));
+        public static readonly TypeDescriptor V = new (typeof(void));
+        public static readonly TypeDescriptor I = new (typeof(int));
+        public static readonly TypeDescriptor J = new (typeof(long));
+        public static readonly TypeDescriptor F = new (typeof(float));
+        public static readonly TypeDescriptor D = new (typeof(double));
+        public static readonly TypeDescriptor B = new (typeof(byte));
+        public static readonly TypeDescriptor C = new (typeof(char));
+        public static readonly TypeDescriptor S = new (typeof(short));
+        public static readonly TypeDescriptor Z = new (typeof(bool));
+        public static readonly TypeDescriptor A = new (typeof(sbyte));
+        public static readonly TypeDescriptor M = new (typeof(ushort));
+        public static readonly TypeDescriptor N = new (typeof(uint));
+        public static readonly TypeDescriptor O = new (typeof(ulong));
+        public static readonly TypeDescriptor P = new (typeof(IntPtr));
+        public static readonly TypeDescriptor Q = new (typeof(UIntPtr));
 
-        public static readonly TypeDescriptor OBJECT = new TypeDescriptor(typeof(object));
-        public static readonly TypeDescriptor STRING = new TypeDescriptor(typeof(string));
-        public static readonly TypeDescriptor TYPE = new TypeDescriptor(typeof(Type));
+        public static readonly TypeDescriptor OBJECT = new (typeof(object));
+        public static readonly TypeDescriptor STRING = new (typeof(string));
+        public static readonly TypeDescriptor TYPE = new (typeof(Type));
 #pragma warning restore IDE0090
 
         private TypeDescriptor _boxed;

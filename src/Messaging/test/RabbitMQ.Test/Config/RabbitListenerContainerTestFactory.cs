@@ -18,7 +18,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             ServiceName = name ?? $"RabbitListenerContainerTestFactory@{GetHashCode()}";
         }
 
-        public Dictionary<string, MessageListenerTestContainer> ListenerContainers { get; } = new Dictionary<string, MessageListenerTestContainer>();
+        public Dictionary<string, MessageListenerTestContainer> ListenerContainers { get; } = new ();
 
         public List<MessageListenerTestContainer> GetListenerContainers()
         {

@@ -20,7 +20,7 @@ namespace Steeltoe.Management.OpenTelemetry
 
         public static readonly string InstrumentationVersion = AssemblyName.Version.ToString();
 
-        public static Meter Meter => new Meter(InstrumentationName, InstrumentationVersion);
+        public static Meter Meter => new (InstrumentationName, InstrumentationVersion);
 
         public static string InstrumentationName { get; set; } = AssemblyName.Name;
     }

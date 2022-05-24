@@ -47,7 +47,7 @@ namespace Steeltoe.Connector.MongoDb
 
         public string Database { get; set; }
 
-        public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, string> Options { get; set; } = new (StringComparer.InvariantCultureIgnoreCase);
 
         internal string Uri { get; set; }
 

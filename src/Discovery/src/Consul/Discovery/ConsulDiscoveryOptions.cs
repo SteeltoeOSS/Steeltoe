@@ -59,12 +59,12 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <summary>
         /// Gets or sets values related to Heartbeat
         /// </summary>
-        public ConsulHeartbeatOptions Heartbeat { get; set; } = new ConsulHeartbeatOptions();
+        public ConsulHeartbeatOptions Heartbeat { get; set; } = new ();
 
         /// <summary>
         /// Gets or sets values related to Retrying requests
         /// </summary>
-        public ConsulRetryOptions Retry { get; set; } = new ConsulRetryOptions();
+        public ConsulRetryOptions Retry { get; set; } = new ();
 
         /// <summary>
         /// Gets or sets Tag to query for in service list if one is not listed in serverListQueryTags.

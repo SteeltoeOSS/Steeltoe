@@ -51,7 +51,7 @@ namespace Steeltoe.Connector.Services
 
         protected Tags ServiceInfoTags { get; set; }
 
-        protected List<string> UriKeys { get; set; } = new List<string> { "uri", "url" };
+        protected List<string> UriKeys { get; set; } = new () { "uri", "url" };
 
         protected IEnumerable<string> UriSchemes { get; set; }
 

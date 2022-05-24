@@ -101,7 +101,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         internal class TestController
         {
-            public Dictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
+            public Dictionary<string, object> Arguments { get; } = new ();
 
             public string Method { get; set; }
 

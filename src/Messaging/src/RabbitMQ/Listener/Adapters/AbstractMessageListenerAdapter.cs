@@ -67,7 +67,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         public virtual bool IsManualAck => ContainerAckMode == AcknowledgeMode.MANUAL;
 
-        public virtual StandardEvaluationContext EvalContext { get; set; } = new StandardEvaluationContext();
+        public virtual StandardEvaluationContext EvalContext { get; set; } = new ();
 
         public virtual IMessageHeadersConverter MessagePropertiesConverter { get; set; } = new DefaultMessageHeadersConverter();
 

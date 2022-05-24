@@ -44,11 +44,11 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             results = new List<HealthCheckResult>
             {
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.DOWN
                 },
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.UP
                 }
@@ -56,11 +56,11 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(HealthStatus.DOWN, handler.AggregateStatus(results));
             results = new List<HealthCheckResult>
             {
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.UP
                 },
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.DOWN
                 }
@@ -69,11 +69,11 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             results = new List<HealthCheckResult>
             {
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.UP
                 },
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.OUT_OF_SERVICE
                 }
@@ -82,11 +82,11 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             results = new List<HealthCheckResult>
             {
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.UP
                 },
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.WARNING
                 }
@@ -95,11 +95,11 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(HealthStatus.UP, handler.AggregateStatus(results));
             results = new List<HealthCheckResult>
             {
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.WARNING
                 },
-                new HealthCheckResult
+                new ()
                 {
                     Status = HealthStatus.WARNING
                 }

@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
     internal class ConfigurationView : IConfigurationRoot
     {
         private readonly IList<IConfigurationProvider> _providers;
-        private readonly ConfigurationReloadToken _changeToken = new ConfigurationReloadToken();
+        private readonly ConfigurationReloadToken _changeToken = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationView"/> class.

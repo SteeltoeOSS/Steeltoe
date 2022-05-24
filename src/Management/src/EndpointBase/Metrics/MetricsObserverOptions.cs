@@ -65,6 +65,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
         public bool HystrixEvents { get; set; } = false;
 
         /// <inheritdoc/>
-        public List<string> ExcludedMetrics { get; set; } = new List<string>();
+        public List<string> ExcludedMetrics { get; set; } = new ();
     }
 }

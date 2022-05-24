@@ -695,7 +695,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             }
 
             private static readonly X509KeyUsageExtension DigitalSignatureOnlyUsage =
-                   new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, true);
+                   new (X509KeyUsageFlags.DigitalSignature, true);
 
             private static X509Certificate2 MakeCert(
                 string subjectName,
@@ -724,7 +724,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     request.CertificateExtensions.Add(
                         new X509EnhancedKeyUsageExtension(
-                            new OidCollection { new Oid(eku, null) }, false));
+                            new OidCollection { new (eku, null) }, false));
                 }
 
                 return request.CreateSelfSigned(notBefore, notAfter);

@@ -28,6 +28,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions
             }
         }
 
-        public List<IMessage> FailedMessages { get; } = new List<IMessage>();
+        public List<IMessage> FailedMessages { get; } = new ();
     }
 }

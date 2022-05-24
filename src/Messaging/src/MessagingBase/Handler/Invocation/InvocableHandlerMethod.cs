@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
         private static readonly object[] EMPTY_ARGS = Array.Empty<object>();
         private readonly ILogger _logger;
 
-        public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new HandlerMethodArgumentResolverComposite();
+        public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new ();
 
         public InvocableHandlerMethod(HandlerMethod handlerMethod, ILogger logger = null)
         : base(handlerMethod)

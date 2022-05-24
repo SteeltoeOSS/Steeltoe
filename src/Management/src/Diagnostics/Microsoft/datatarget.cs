@@ -1074,7 +1074,7 @@ namespace Microsoft.Diagnostics.Runtime
         //    return null;
         //}
 
-        private static Regex s_invalidChars = new Regex($"[{Regex.Escape(new string(Path.GetInvalidPathChars()))}]");
+        private static Regex s_invalidChars = new($"[{Regex.Escape(new string(Path.GetInvalidPathChars()))}]");
 
         private ModuleInfo[] InitModules()
         {
@@ -1151,7 +1151,7 @@ namespace Microsoft.Diagnostics.Runtime
         private DacDataTarget _dacDataTarget;
         private IXCLRDataProcess _dac;
         private ISOSDac _sos;
-        private HashSet<object> _release = new HashSet<object>();
+        private HashSet<object> _release = new();
         #endregion
 
         //public DacDataTarget DacDataTarget { get { return _dacDataTarget; } }

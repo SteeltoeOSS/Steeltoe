@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return new HealthCounts(updatedTotalCount, updatedErrorCount);
         }
 
-        public static HealthCounts Empty { get; } = new HealthCounts(0, 0);
+        public static HealthCounts Empty { get; } = new (0, 0);
 
         public override string ToString()
         {

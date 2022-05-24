@@ -185,21 +185,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public class CacheOptions
         {
-            public ChannelOptions Channel { get; set; } = new ChannelOptions();
+            public ChannelOptions Channel { get; set; } = new ();
 
-            public ConnectionOptions Connection { get; set; } = new ConnectionOptions();
+            public ConnectionOptions Connection { get; set; } = new ();
         }
 
         public class ListenerOptions
         {
             public ContainerType Type { get; } = ContainerType.DIRECT;
 
-            public DirectContainerOptions Direct { get; set; } = new DirectContainerOptions();
+            public DirectContainerOptions Direct { get; set; } = new ();
         }
 
         public class TemplateOptions
         {
-            public RetryOptions Retry { get; set; } = new RetryOptions();
+            public RetryOptions Retry { get; set; } = new ();
 
             public bool Mandatory { get; set; } = false;
 
@@ -240,7 +240,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
             public TimeSpan? IdleEventInterval { get; set; }
 
-            public ListenerRetryOptions Retry { get; set; } = new ListenerRetryOptions();
+            public ListenerRetryOptions Retry { get; set; } = new ();
 
             public bool MissingQueuesFatal { get; set; } = false;
 

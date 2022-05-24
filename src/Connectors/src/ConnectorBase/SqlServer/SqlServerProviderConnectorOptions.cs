@@ -79,7 +79,7 @@ namespace Steeltoe.Connector.SqlServer
         /// <remarks>Default value is 15</remarks>
         public int? Timeout { get; set; }
 
-        internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
+        internal Dictionary<string, string> Options { get; set; } = new ();
 
         public override string ToString()
         {

@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         private ulong _address;
         private string _name;
         private int _id, _internalId;
-        private List<ClrModule> _modules = new List<ClrModule>();
+        private List<ClrModule> _modules = new();
         private DesktopRuntimeBase _runtime;
 
         private static int s_internalId;

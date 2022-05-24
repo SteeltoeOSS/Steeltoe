@@ -15,6 +15,6 @@ namespace Steeltoe.Extensions.Configuration
         /// <summary>
         /// Gets or sets the connection information and credentials for using the service
         /// </summary>
-        public Dictionary<string, Credential> Credentials { get; set; } = new Dictionary<string, Credential>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, Credential> Credentials { get; set; } = new (StringComparer.InvariantCultureIgnoreCase);
     }
 }

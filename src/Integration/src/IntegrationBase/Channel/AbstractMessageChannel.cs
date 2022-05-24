@@ -56,7 +56,7 @@ namespace Steeltoe.Integration.Channel
 
         public virtual string ComponentName { get; set; }
 
-        public virtual List<Type> DataTypes { get; set; } = new List<Type>();
+        public virtual List<Type> DataTypes { get; set; } = new ();
 
         public virtual IMessageConverter MessageConverter
         {

@@ -5828,7 +5828,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class Two
         {
-            public Three Threeee { get; } = new Three();
+            public Three Threeee { get; } = new ();
 
             public override string ToString()
             {
@@ -6604,7 +6604,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class FooObjectHolder
         {
-            public FooObject Foo { get; set; } = new FooObject();
+            public FooObject Foo { get; set; } = new ();
         }
 
         public class FooObject

@@ -349,7 +349,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public class DeadListener
         {
-            public CountdownEvent Latch { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Latch { get; set; } = new (1);
 
             public void HandleMessage(string foo)
             {

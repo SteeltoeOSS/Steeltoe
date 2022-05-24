@@ -48,7 +48,7 @@ namespace Steeltoe.Extensions.Configuration
         /// </summary>
         public string Plan { get; set; }
 
-        public Dictionary<string, IEnumerable<Service>> Services { get; set; } = new Dictionary<string, IEnumerable<Service>>();
+        public Dictionary<string, IEnumerable<Service>> Services { get; set; } = new ();
 
         public IEnumerable<Service> GetServicesList()
         {

@@ -374,9 +374,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var alltags = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
+                new ("a", "v1"),
+                new ("b", "v1"),
+                new ("c", "v1")
             };
 
             ep.GetMetricsCollection(out var measurements, out var tags);
@@ -392,7 +392,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var atags = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("a", "v1"),
+                new ("a", "v1"),
             };
 
             var result = ep.GetMetricSamplesByTags(measurements, "test.test1", atags);
@@ -405,7 +405,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var btags = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("b", "v1"),
+                new ("b", "v1"),
             };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", btags);
@@ -420,7 +420,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var ctags = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("c", "v1"),
+                new ("c", "v1"),
             };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", ctags);
@@ -433,8 +433,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var abtags = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
+                new ("a", "v1"),
+                new ("b", "v1"),
             };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", abtags);
@@ -448,8 +448,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var actags = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("c", "v1"),
+                new ("a", "v1"),
+                new ("c", "v1"),
             };
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", actags);
 
@@ -463,8 +463,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var bctags = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1"),
+                new ("b", "v1"),
+                new ("c", "v1"),
             };
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", bctags);
 

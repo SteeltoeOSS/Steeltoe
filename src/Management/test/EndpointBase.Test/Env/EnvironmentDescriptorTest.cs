@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             };
             var propDescs = new List<PropertySourceDescriptor>
             {
-                new PropertySourceDescriptor("name", properties)
+                new ("name", properties)
             };
             var desc = new EnvironmentDescriptor(profiles, propDescs);
             var result = Serialize(desc);

@@ -45,7 +45,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         private static readonly char[] COLON_DELIMIT = new[] { ':' };
         private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
-        private JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        private JsonSerializerOptions JsonSerializerOptions { get; set; } = new () { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IHttpClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
         {

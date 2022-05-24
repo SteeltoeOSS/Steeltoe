@@ -304,7 +304,7 @@ namespace Steeltoe.Integration.Mapping
 
         protected class PatternBasedHeaderMatcher : IHeaderMatcher
         {
-            private List<string> Patterns { get; } = new List<string>();
+            private List<string> Patterns { get; } = new ();
 
             public PatternBasedHeaderMatcher(List<string> patterns)
             {

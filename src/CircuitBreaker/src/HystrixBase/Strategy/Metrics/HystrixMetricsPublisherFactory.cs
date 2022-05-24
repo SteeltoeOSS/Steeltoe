@@ -58,11 +58,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
             });
         }
 
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherCommand>();
+        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers { get; } = new ();
 
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool>();
+        internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers { get; } = new ();
 
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser>();
+        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers { get; } = new ();
 
         internal IHystrixMetricsPublisherCollapser GetPublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
         {

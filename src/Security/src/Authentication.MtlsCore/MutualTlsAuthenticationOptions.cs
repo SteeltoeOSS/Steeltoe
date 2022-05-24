@@ -13,6 +13,6 @@ namespace Steeltoe.Security.Authentication.Mtls
         /// <summary>
         /// Gets or sets partial or full certificate chain for validation
         /// </summary>
-        public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
+        public List<X509Certificate2> IssuerChain { get; set; } = new ();
     }
 }

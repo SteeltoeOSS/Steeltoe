@@ -15,12 +15,12 @@ namespace Steeltoe.Common.Discovery.Test
         {
             var services = new List<ConfigurationServiceInstance>
             {
-                new ConfigurationServiceInstance { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
-                new ConfigurationServiceInstance { ServiceId = "fruitService", Host = "fruitballer", Port = 8081 },
-                new ConfigurationServiceInstance { ServiceId = "fruitService", Host = "fruitballerz", Port = 8082 },
-                new ConfigurationServiceInstance { ServiceId = "vegetableService", Host = "vegemite", Port = 443, IsSecure = true },
-                new ConfigurationServiceInstance { ServiceId = "vegetableService", Host = "carrot", Port = 8081 },
-                new ConfigurationServiceInstance { ServiceId = "vegetableService", Host = "beet", Port = 8082 },
+                new () { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
+                new () { ServiceId = "fruitService", Host = "fruitballer", Port = 8081 },
+                new () { ServiceId = "fruitService", Host = "fruitballerz", Port = 8082 },
+                new () { ServiceId = "vegetableService", Host = "vegemite", Port = 443, IsSecure = true },
+                new () { ServiceId = "vegetableService", Host = "carrot", Port = 8081 },
+                new () { ServiceId = "vegetableService", Host = "beet", Port = 8082 },
             };
             var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
 
@@ -36,7 +36,7 @@ namespace Steeltoe.Common.Discovery.Test
         {
             var services = new List<ConfigurationServiceInstance>
             {
-                new ConfigurationServiceInstance { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
+                new () { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
             };
             var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
             var provider = new ConfigurationServiceInstanceProvider(serviceOptions);

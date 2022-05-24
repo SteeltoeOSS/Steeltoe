@@ -234,11 +234,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             return hashcodeBuilder.ToString();
         }
 
-        internal ConcurrentDictionary<string, Application> ApplicationMap { get; } = new ConcurrentDictionary<string, Application>();
+        internal ConcurrentDictionary<string, Application> ApplicationMap { get; } = new ();
 
-        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
+        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new ();
 
-        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
+        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new ();
 
         internal static Applications FromJsonApplications(JsonApplications japps)
         {

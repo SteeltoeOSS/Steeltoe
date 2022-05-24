@@ -43,8 +43,8 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
         private ErrorModule _errorModule;
         private Lazy<DomainContainer> _appDomains;
         private Lazy<Dictionary<ulong, uint>> _moduleSizes;
-        private Dictionary<ulong, DesktopModule> _modules = new Dictionary<ulong, DesktopModule>();
-        private Dictionary<string, DesktopModule> _moduleFiles = new Dictionary<string, DesktopModule>();
+        private Dictionary<ulong, DesktopModule> _modules = new();
+        private Dictionary<string, DesktopModule> _moduleFiles = new();
         private Lazy<ClrModule> _mscorlib;
         #endregion
 

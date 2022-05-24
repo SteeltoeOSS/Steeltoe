@@ -20,9 +20,9 @@ namespace Steeltoe.Messaging.Support
         {
             MimeTypeUtils.APPLICATION_JSON,
             MimeTypeUtils.APPLICATION_XML,
-            new MimeType("text", "*"),
-            new MimeType("application", "*+json"),
-            new MimeType("application", "*+xml")
+            new ("text", "*"),
+            new ("application", "*+json"),
+            new ("application", "*+xml")
         };
 
         private bool _leaveMutable;

@@ -201,17 +201,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public class Listener
         {
-            public AtomicBoolean FooFirst { get; set; } = new AtomicBoolean(true);
+            public AtomicBoolean FooFirst { get; set; } = new (true);
 
-            public AtomicBoolean BarFirst { get; set; } = new AtomicBoolean(true);
+            public AtomicBoolean BarFirst { get; set; } = new (true);
 
-            public CountdownEvent Latch4 { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Latch4 { get; set; } = new (1);
 
-            public CountdownEvent Latch5 { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Latch5 { get; set; } = new (1);
 
-            public CountdownEvent Latch6 { get; set; } = new CountdownEvent(1);
+            public CountdownEvent Latch6 { get; set; } = new (1);
 
-            public AtomicBoolean First7 { get; set; } = new AtomicBoolean(true);
+            public AtomicBoolean First7 { get; set; } = new (true);
 
             [RabbitListener("queue1", Id = "foo")]
             public Task<string> Listen1(string foo)

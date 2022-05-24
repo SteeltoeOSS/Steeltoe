@@ -27,7 +27,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         internal string ExpressionString { get; private set; }
 
-        internal List<Token> TokenStream { get; private set; } = new List<Token>();
+        internal List<Token> TokenStream { get; private set; } = new ();
 
         internal int TokenStreamLength { get; private set; }
 

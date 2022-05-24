@@ -16,12 +16,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var samples = new List<MetricSample>
             {
-                new MetricSample(MetricStatistic.TOTAL_TIME, 100.00)
+                new (MetricStatistic.TOTAL_TIME, 100.00)
             };
 
             var tags = new List<MetricTag>
             {
-                new MetricTag("tag", new HashSet<string> { "tagValue" })
+                new ("tag", new HashSet<string> { "tagValue" })
             };
 
             var resp = new MetricsResponse("foo.bar", samples, tags);
@@ -35,12 +35,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var samples = new List<MetricSample>
             {
-                new MetricSample(MetricStatistic.TOTAL_TIME, 100.1)
+                new (MetricStatistic.TOTAL_TIME, 100.1)
             };
 
             var tags = new List<MetricTag>
             {
-                new MetricTag("tag", new HashSet<string> { "tagValue" })
+                new ("tag", new HashSet<string> { "tagValue" })
             };
 
             var resp = new MetricsResponse("foo.bar", samples, tags);

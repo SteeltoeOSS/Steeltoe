@@ -27,9 +27,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         {
             var infos = new List<InstanceInfo>
             {
-                new InstanceInfo { InstanceId = "1" },
-                new InstanceInfo { InstanceId = "2" },
-                new InstanceInfo { InstanceId = "2" } // Note duplicate
+                new () { InstanceId = "1" },
+                new () { InstanceId = "2" },
+                new () { InstanceId = "2" } // Note duplicate
             };
 
             var app = new Application("foobar", infos);
