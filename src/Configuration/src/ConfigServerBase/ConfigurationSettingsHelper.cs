@@ -61,6 +61,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.DiscoveryServiceId = GetDiscoveryServiceId(clientConfigsection, settings.DiscoveryServiceId);
             settings.HealthEnabled = GetHealthEnabled(clientConfigsection, settings.HealthEnabled);
             settings.HealthTimeToLive = GetHealthTimeToLive(clientConfigsection, settings.HealthTimeToLive);
+            settings.PollingInterval = GetPollingInterval(clientConfigsection, settings.PollingInterval);
 
             // Override Config server URI
             settings.Uri = GetCloudFoundryUri(configPrefix, config, settings.Uri);
@@ -174,6 +175,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private static int GetTokenTtl(IConfigurationSection configServerSection)
         {
             return configServerSection.GetValue("tokenTtl", ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL);
+        }
+
+        private static TimeSpan GetPollingInterval(IConfigurationSection clientConfigsection, TimeSpan def)
+        {
+            return clientConfigsection.GetValue("pollingInterval", def);
         }
 
         private static string GetClientSecret(string configPrefix, IConfiguration config)
