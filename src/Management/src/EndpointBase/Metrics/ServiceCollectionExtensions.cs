@@ -92,11 +92,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 return new SteeltoePrometheusExporter(exporterOptions);
             }));
 
+            services.AddOpenTelemetryMetricsForSteeltoe();
+
             return services;
         }
 
         /// <summary>
-        /// Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by Opentelemetry.
+        /// Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by OpenTelemetry.
         /// </summary>
         /// <param name="services">Reference to the service collection</param>
         /// <param name="configure">The Action to configure OpenTelemetry</param>
@@ -119,6 +121,14 @@ namespace Microsoft.Extensions.DependencyInjection
             return services.AddOpenTelemetryMetrics(builder => builder.ConfigureSteeltoeMetrics());
         }
 
+        /// <summary>
+        /// Configures the <see cref="MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />
+        /// </summary>
+        /// <param name="builder">MeterProviderBuilder </param>
+        /// <param name="configure"> Configuration callback</param>
+        /// <param name="name">Instrumentation Name</param>
+        /// <param name="version">Instrumentation Version</param>
+        /// <returns>Configured MeterProviderBuilder</returns>
         public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
         {
             if (configure != null)
@@ -130,7 +140,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var views = provider.GetService<IViewRegistry>();
                 var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
-                var services = deferredBuilder.GetServices();
 
                 deferredBuilder
                     .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)

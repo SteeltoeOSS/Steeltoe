@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 }
                 else
                 {
-                    _logger?.LogWarning("Please ensure Opentelemetry is configured via Steeltoe extension methods.");
+                    _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
                 }
             }
             catch (Exception ex)
