@@ -13,7 +13,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
 {
 #pragma warning disable SX1309 // Field names should begin with underscore
 
-    // Adapted from Opentelemetry.Net project
+    // Adapted from OpenTelemetry.Net project
     internal sealed partial class PullmetricsCollectionManager
     {
         private readonly IMetricsExporter exporter;
@@ -165,7 +165,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters
             this.exporter.OnExport = this.onCollectRef;
             var result = this.exporter.Collect?.Invoke(Timeout.Infinite);
             this.exporter.OnExport = null;
-            return result.HasValue ? result.Value : false;
+            return result.GetValueOrDefault();
         }
 
         private ExportResult OnCollect(Batch<Metric> metrics)

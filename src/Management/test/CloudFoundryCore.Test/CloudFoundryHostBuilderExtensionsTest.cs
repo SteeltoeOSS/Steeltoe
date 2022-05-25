@@ -45,14 +45,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
 
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
+            Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
 
             Assert.NotNull(filters);
             Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
@@ -72,15 +65,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             var filters = host.Services.GetServices<IStartupFilter>();
 
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
+            Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
 
             Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
@@ -99,15 +84,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
-            }
+            Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
 
             Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
@@ -164,15 +141,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             var filters = host.Services.GetServices<IStartupFilter>();
 
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
+            Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
 
             Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 

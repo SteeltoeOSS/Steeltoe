@@ -57,10 +57,8 @@ namespace Steeltoe.Management.Endpoint
             }
 
             services.AddHypermediaActuator(config);
-            if (Platform.IsWindows)
-            {
-                services.AddThreadDumpActuator(config, version);
-            }
+
+            services.AddThreadDumpActuator(config, version);
 
             services.AddHeapDumpActuator(config);
 
