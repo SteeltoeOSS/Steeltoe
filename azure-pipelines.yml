@@ -16,7 +16,7 @@ jobs:
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[format('3.2.0-{0}', variables['Build.BuildId'])]
+    PackageVersion: $[format('4.0.0-{0}', variables['Build.BuildId'])]
     BUILD_PACKAGES: true
   steps:
   - pwsh: |
