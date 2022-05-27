@@ -1,10 +1,6 @@
-<!-- Thank you for submitting a pull request to our repo. -->
+<!-- Thank you for submitting a pull request! -->
 
 <!-- If this is your first PR in this repo, please read our [Contributing Guidelines (https://github.com/SteeltoeOSS/.github/blob/master/CONTRIBUTING.md) and remember to sign the [Contributor License Agreement](https://github.com/SteeltoeOSS/.github/blob/main/contributing-docs/contributing-license.md). Our bot will notify you shortly after the PR has been created. -->
-
-## Summary
-
-{Summary of the changes, less than 80 chars}
 
 ## Description
 
