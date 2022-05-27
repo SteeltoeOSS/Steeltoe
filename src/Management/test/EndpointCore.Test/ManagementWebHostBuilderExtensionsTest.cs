@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.Diagnostics;
@@ -35,6 +36,7 @@ using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -600,6 +602,118 @@ namespace Steeltoe.Management.Endpoint.Test
 
             var exporters = host.Services.GetServices<WavefrontMetricsExporter>();
             Assert.Single(exporters);
+        }
+
+        [Fact]
+        public async Task AddAllActuators_Doesnt_Interfere_With_OpenTelemetryExtensions_Called_Before_SteeltoeExtensions()
+        {
+            var hostBuilder = _testServerWithRouting;
+
+            var appSettings = new Dictionary<string, string>() { ["management:endpoints:actuator:exposure:include:0"] = "*" };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                var host = hostBuilder
+                .ConfigureServices(services => services.AddOpenTelemetryMetrics(
+                    builder => builder
+                    .AddMeter("TestMeter")
+                    .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                .AddAllActuators()
+                .Start();
+                var client = host.GetTestServer().CreateClient();
+
+                var meter = new Meter("TestMeter");
+                var counter = meter.CreateCounter<int>("TestCounter");
+                counter.Add(1);
+
+                await Task.Delay(3000); // wait for metrics to be collected
+                var response = await client.GetAsync("/actuator/metrics");
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+                // Assert warning is printed to Console
+                var output = unConsole.ToString();
+                Assert.Contains("Warning", output);
+                Assert.Contains("OpenTelemetry for Steeltoe", output);
+
+                // Assert Otel configuration is respected
+                Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            }
+        }
+
+        [Fact]
+        public async Task AddAllActuators_Doesnt_Interfere_With_OpenTelemetryExtensions_Called_With_SteeltoeExtensions()
+        {
+            var hostBuilder = _testServerWithRouting;
+
+            var appSettings = new Dictionary<string, string>() { ["management:endpoints:actuator:exposure:include:0"] = "*" };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                var host = hostBuilder
+                .ConfigureServices(services => services.AddOpenTelemetryMetrics(
+                    builder => builder
+                    .ConfigureSteeltoeMetrics()
+                    .AddMeter("TestMeter")
+                    .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                .AddAllActuators()
+                .Start();
+                var client = host.GetTestServer().CreateClient();
+
+                var meter = new Meter("TestMeter");
+                var counter = meter.CreateCounter<int>("TestCounter");
+                counter.Add(1);
+
+                await Task.Delay(3000); // wait for metrics to be collected
+                var response = await client.GetAsync("/actuator/metrics");
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+                // Assert warning is printed to Console
+                var output = unConsole.ToString();
+                Assert.Contains("Warning", output);
+                Assert.Contains("OpenTelemetry for Steeltoe", output);
+
+                // Assert Otel configuration is respected
+                Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+
+                // Assert Steeltoe configuration is respected
+                Assert.Contains("Export clr.process.uptime", output);
+            }
+        }
+
+        [Fact]
+        public async Task AddAllActuators_Doesnt_Interfere_With_OpenTelemetryExtensions_Called_After_SteeltoeExtensions()
+        {
+            var hostBuilder = _testServerWithRouting;
+
+            var appSettings = new Dictionary<string, string>() { ["management:endpoints:actuator:exposure:include:0"] = "*" };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                var host = hostBuilder
+                .AddAllActuators()
+                .ConfigureServices(services => services.AddOpenTelemetryMetrics(
+                   builder => builder
+                   .AddMeter("TestMeter")
+                   .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                .Start();
+                var client = host.GetTestServer().CreateClient();
+
+                var meter = new Meter("TestMeter");
+                var counter = meter.CreateCounter<int>("TestCounter");
+                counter.Add(1);
+
+                await Task.Delay(5000); // wait for metrics to be collected
+                var response = await client.GetAsync("/actuator/metrics");
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+                // Assert warning is not printed to Console
+                var output = unConsole.ToString();
+                Assert.DoesNotContain("Warning", output);
+                Assert.DoesNotContain("OpenTelemetry for Steeltoe", output);
+
+                // Assert Otel configuration is respected
+                Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            }
         }
 
         private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());

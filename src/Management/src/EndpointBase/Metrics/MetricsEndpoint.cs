@@ -101,9 +101,21 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
         {
-            var collectionResponse = (SteeltoeCollectionResponse)_exporter.CollectionManager.EnterCollect().Result;
-            metricSamples = collectionResponse.MetricSamples;
-            availTags = collectionResponse.AvailableTags;
+            var response = _exporter.CollectionManager.EnterCollect().Result;
+
+            if (response is SteeltoeCollectionResponse collectionResponse)
+            {
+                metricSamples = collectionResponse.MetricSamples;
+                availTags = collectionResponse.AvailableTags;
+                return;
+            }
+            else
+            {
+                _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
+            }
+
+            metricSamples = new MetricsCollection<List<MetricSample>>();
+            availTags = new MetricsCollection<List<MetricTag>>();
 
             // TODO: update the response header with actual updatetime
         }

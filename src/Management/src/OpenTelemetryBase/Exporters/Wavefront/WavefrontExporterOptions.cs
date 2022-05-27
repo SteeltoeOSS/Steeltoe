@@ -24,11 +24,11 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront
 
         public string ApiToken { get; set; }
 
-        public int Step { get; set; } = 30000; // milliseconds
+        public int Step { get; set; } = 30_000; // milliseconds
 
-        public int BatchSize { get; set; } = 10000;
+        public int BatchSize { get; set; } = 10_000;
 
-        public int MaxQueueSize { get; set; } = 1000;
+        public int MaxQueueSize { get; set; } = 500_000;
 
         public WavefrontApplicationOptions ApplicationOptions { get; }
 
