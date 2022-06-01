@@ -10,41 +10,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public static class HystrixEventTypeHelper
 {
-    static HystrixEventTypeHelper()
-    {
-        ExceptionProducingEventTypes.Add(HystrixEventType.BAD_REQUEST);
-        ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_FAILURE);
-        ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_MISSING);
-        ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_REJECTION);
-
-        foreach (var evName in Enum.GetNames(typeof(HystrixEventType)))
-        {
-            var e = (HystrixEventType)Enum.Parse(typeof(HystrixEventType), evName);
-            if (e.IsTerminal())
-            {
-                TerminalEventTypes.Add(e);
-            }
-        }
-
-        Values.Add(HystrixEventType.EMIT);
-        Values.Add(HystrixEventType.SUCCESS);
-        Values.Add(HystrixEventType.FAILURE);
-        Values.Add(HystrixEventType.TIMEOUT);
-        Values.Add(HystrixEventType.BAD_REQUEST);
-        Values.Add(HystrixEventType.SHORT_CIRCUITED);
-        Values.Add(HystrixEventType.THREAD_POOL_REJECTED);
-        Values.Add(HystrixEventType.SEMAPHORE_REJECTED);
-        Values.Add(HystrixEventType.FALLBACK_EMIT);
-        Values.Add(HystrixEventType.FALLBACK_SUCCESS);
-        Values.Add(HystrixEventType.FALLBACK_FAILURE);
-        Values.Add(HystrixEventType.FALLBACK_REJECTION);
-        Values.Add(HystrixEventType.FALLBACK_MISSING);
-        Values.Add(HystrixEventType.EXCEPTION_THROWN);
-        Values.Add(HystrixEventType.RESPONSE_FROM_CACHE);
-        Values.Add(HystrixEventType.CANCELLED);
-        Values.Add(HystrixEventType.COLLAPSED);
-    }
-
     public static bool IsTerminal(this HystrixEventType evType)
     {
         return evType switch
@@ -94,9 +59,50 @@ public static class HystrixEventTypeHelper
         };
     }
 
-    public static IList<HystrixEventType> Values { get; } = new List<HystrixEventType>();
+    public static IList<HystrixEventType> Values { get; } = new List<HystrixEventType>
+    {
+        HystrixEventType.EMIT,
+        HystrixEventType.SUCCESS,
+        HystrixEventType.FAILURE,
+        HystrixEventType.TIMEOUT,
+        HystrixEventType.BAD_REQUEST,
+        HystrixEventType.SHORT_CIRCUITED,
+        HystrixEventType.THREAD_POOL_REJECTED,
+        HystrixEventType.SEMAPHORE_REJECTED,
+        HystrixEventType.FALLBACK_EMIT,
+        HystrixEventType.FALLBACK_SUCCESS,
+        HystrixEventType.FALLBACK_FAILURE,
+        HystrixEventType.FALLBACK_REJECTION,
+        HystrixEventType.FALLBACK_MISSING,
+        HystrixEventType.EXCEPTION_THROWN,
+        HystrixEventType.RESPONSE_FROM_CACHE,
+        HystrixEventType.CANCELLED,
+        HystrixEventType.COLLAPSED
+    };
 
-    public static IList<HystrixEventType> ExceptionProducingEventTypes { get; } = new List<HystrixEventType>();
+    public static IList<HystrixEventType> ExceptionProducingEventTypes { get; } = new List<HystrixEventType>
+    {
+        HystrixEventType.BAD_REQUEST,
+        HystrixEventType.FALLBACK_FAILURE,
+        HystrixEventType.FALLBACK_MISSING,
+        HystrixEventType.FALLBACK_REJECTION
+    };
 
-    public static IList<HystrixEventType> TerminalEventTypes { get; } = new List<HystrixEventType>();
+    public static IList<HystrixEventType> TerminalEventTypes { get; } = GetTerminalEventTypes();
+
+    private static List<HystrixEventType> GetTerminalEventTypes()
+    {
+        var terminalEventTypes = new List<HystrixEventType>();
+
+        foreach (var evName in Enum.GetNames(typeof(HystrixEventType)))
+        {
+            var e = (HystrixEventType)Enum.Parse(typeof(HystrixEventType), evName);
+            if (e.IsTerminal())
+            {
+                terminalEventTypes.Add(e);
+            }
+        }
+
+        return terminalEventTypes;
+    }
 }
