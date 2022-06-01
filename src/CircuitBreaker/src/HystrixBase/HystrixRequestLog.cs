@@ -115,21 +115,6 @@ public class HystrixRequestLog
                                 }
 
                                 break;
-                            case HystrixEventType.SUCCESS:
-                            case HystrixEventType.FAILURE:
-                            case HystrixEventType.TIMEOUT:
-                            case HystrixEventType.BAD_REQUEST:
-                            case HystrixEventType.SHORT_CIRCUITED:
-                            case HystrixEventType.THREAD_POOL_REJECTED:
-                            case HystrixEventType.SEMAPHORE_REJECTED:
-                            case HystrixEventType.FALLBACK_SUCCESS:
-                            case HystrixEventType.FALLBACK_FAILURE:
-                            case HystrixEventType.FALLBACK_REJECTION:
-                            case HystrixEventType.FALLBACK_MISSING:
-                            case HystrixEventType.EXCEPTION_THROWN:
-                            case HystrixEventType.RESPONSE_FROM_CACHE:
-                            case HystrixEventType.CANCELLED:
-                            case HystrixEventType.COLLAPSED:
                             default:
                                 builder.Append(ev).Append(", ");
                                 break;
