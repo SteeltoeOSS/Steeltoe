@@ -361,7 +361,9 @@ internal class DesktopPointerType : BaseDesktopHeapType
 
     public override IList<ClrInterface> Interfaces
     {
+#pragma warning disable S4275 // Getters and setters should access the expected fields
         get { return Array.Empty<ClrInterface>(); }
+#pragma warning restore S4275 // Getters and setters should access the expected fields
     }
 
     public override bool IsFinalizable
@@ -636,7 +638,9 @@ internal class DesktopArrayType : BaseDesktopHeapType
 
     public override IList<ClrInterface> Interfaces
     { // todo
+#pragma warning disable S4275 // Getters and setters should access the expected fields
         get { return Array.Empty<ClrInterface>(); }
+#pragma warning restore S4275 // Getters and setters should access the expected fields
     }
 
     public override bool IsFinalizable

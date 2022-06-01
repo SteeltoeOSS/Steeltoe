@@ -40,7 +40,9 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     public override int ConsumersPerQueue
     {
+#pragma warning disable S4275 // Getters and setters should access the expected fields
         get
+#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             return base.ConsumersPerQueue;
         }
@@ -53,7 +55,9 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     public override long MonitorInterval
     {
+#pragma warning disable S4275 // Getters and setters should access the expected fields
         get
+#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             return base.MonitorInterval;
         }

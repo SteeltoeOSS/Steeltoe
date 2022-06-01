@@ -815,7 +815,9 @@ class ErrorType : BaseDesktopHeapType
 
     public override IList<ClrInterface> Interfaces
     {
+#pragma warning disable S4275 // Getters and setters should access the expected fields
         get
+#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             return Array.Empty<ClrInterface>();
         }
