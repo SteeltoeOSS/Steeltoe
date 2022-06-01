@@ -5,12 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Common.Logging
-{
-    public interface IBoostrapLoggerFactory : ILoggerFactory
-    {
-        void Update(IConfiguration value);
+namespace Steeltoe.Common.Logging;
 
-        void Update(ILoggerFactory value);
-    }
+public interface IBoostrapLoggerFactory : ILoggerFactory
+{
+    void Update(IConfiguration value);
+
+    void Update(ILoggerFactory value);
 }

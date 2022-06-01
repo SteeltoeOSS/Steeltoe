@@ -1,20 +1,19 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka;
+
+public interface ILookupService
 {
-    public interface ILookupService
-    {
-        Applications Applications { get; }
+    Applications Applications { get; }
 
-        Application GetApplication(string appName);
+    Application GetApplication(string appName);
 
-        IList<InstanceInfo> GetInstanceById(string id);
+    IList<InstanceInfo> GetInstanceById(string id);
 
-        InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
-    }
+    InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
 }

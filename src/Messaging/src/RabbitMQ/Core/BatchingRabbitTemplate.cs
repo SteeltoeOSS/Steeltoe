@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,140 +12,139 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public class BatchingRabbitTemplate : RabbitTemplate
 {
-    public class BatchingRabbitTemplate : RabbitTemplate
+    private readonly IBatchingStrategy _batchingStrategy;
+    private readonly object _batchlock = new ();
+    private CancellationTokenSource _cancellationTokenSource;
+    private Task _scheduledTask;
+    private int _count;
+
+    public BatchingRabbitTemplate(
+        IOptionsMonitor<RabbitOptions> optionsMonitor,
+        IConnectionFactory connectionFactory,
+        ISmartMessageConverter messageConverter,
+        IBatchingStrategy batchingStrategy,
+        ILogger logger = null)
+        : base(optionsMonitor, connectionFactory, messageConverter, logger)
     {
-        private readonly IBatchingStrategy _batchingStrategy;
-        private readonly object _batchlock = new ();
-        private CancellationTokenSource _cancellationTokenSource;
-        private Task _scheduledTask;
-        private int _count;
+        _batchingStrategy = batchingStrategy;
+    }
 
-        public BatchingRabbitTemplate(
-            IOptionsMonitor<RabbitOptions> optionsMonitor,
-            IConnectionFactory connectionFactory,
-            ISmartMessageConverter messageConverter,
-            IBatchingStrategy batchingStrategy,
-            ILogger logger = null)
-            : base(optionsMonitor, connectionFactory, messageConverter, logger)
-        {
-            _batchingStrategy = batchingStrategy;
-        }
+    public BatchingRabbitTemplate(
+        RabbitOptions options,
+        IConnectionFactory connectionFactory,
+        ISmartMessageConverter messageConverter,
+        IBatchingStrategy batchingStrategy,
+        ILogger logger = null)
+        : base(options, connectionFactory, messageConverter, logger)
+    {
+        _batchingStrategy = batchingStrategy;
+    }
 
-        public BatchingRabbitTemplate(
-            RabbitOptions options,
-            IConnectionFactory connectionFactory,
-            ISmartMessageConverter messageConverter,
-            IBatchingStrategy batchingStrategy,
-            ILogger logger = null)
-            : base(options, connectionFactory, messageConverter, logger)
-        {
-            _batchingStrategy = batchingStrategy;
-        }
+    public BatchingRabbitTemplate(
+        IOptionsMonitor<RabbitOptions> optionsMonitor,
+        IConnectionFactory connectionFactory,
+        IBatchingStrategy batchingStrategy,
+        ILogger logger = null)
+        : base(optionsMonitor, connectionFactory, logger)
+    {
+        _batchingStrategy = batchingStrategy;
+    }
 
-        public BatchingRabbitTemplate(
-            IOptionsMonitor<RabbitOptions> optionsMonitor,
-            IConnectionFactory connectionFactory,
-            IBatchingStrategy batchingStrategy,
-            ILogger logger = null)
-            : base(optionsMonitor, connectionFactory, logger)
-        {
-            _batchingStrategy = batchingStrategy;
-        }
+    public BatchingRabbitTemplate(
+        RabbitOptions options,
+        IConnectionFactory connectionFactory,
+        IBatchingStrategy batchingStrategy,
+        ILogger logger = null)
+        : base(options, connectionFactory, logger)
+    {
+        _batchingStrategy = batchingStrategy;
+    }
 
-        public BatchingRabbitTemplate(
-            RabbitOptions options,
-            IConnectionFactory connectionFactory,
-            IBatchingStrategy batchingStrategy,
-            ILogger logger = null)
-            : base(options, connectionFactory, logger)
-        {
-            _batchingStrategy = batchingStrategy;
-        }
+    public BatchingRabbitTemplate(IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy)
+        : base(connectionFactory)
+    {
+        _batchingStrategy = batchingStrategy;
+    }
 
-        public BatchingRabbitTemplate(IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy)
-            : base(connectionFactory)
-        {
-            _batchingStrategy = batchingStrategy;
-        }
+    public BatchingRabbitTemplate(IBatchingStrategy batchingStrategy)
+    {
+        _batchingStrategy = batchingStrategy;
+    }
 
-        public BatchingRabbitTemplate(IBatchingStrategy batchingStrategy)
+    public override void Send(string exchange, string routingKey, IMessage message, CorrelationData correlationData)
+    {
+        lock (_batchlock)
         {
-            _batchingStrategy = batchingStrategy;
-        }
-
-        public override void Send(string exchange, string routingKey, IMessage message, CorrelationData correlationData)
-        {
-            lock (_batchlock)
+            _count++;
+            if (correlationData != null)
             {
-                _count++;
-                if (correlationData != null)
+                _logger?.LogDebug("Cannot use batching with correlation data");
+                base.Send(exchange, routingKey, message, correlationData);
+            }
+            else
+            {
+                // if (_scheduledTask != null)
+                // {
+                //    _cancellationTokenSource.Cancel(false);
+                // }
+                var batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
+                if (batch != null)
                 {
-                    _logger?.LogDebug("Cannot use batching with correlation data");
-                    base.Send(exchange, routingKey, message, correlationData);
+                    if (_scheduledTask != null)
+                    {
+                        _cancellationTokenSource.Cancel(false);
+                        _scheduledTask = null;
+                    }
+
+                    base.Send(batch.Value.Exchange, batch.Value.RoutingKey, batch.Value.Message, null);
                 }
-                else
+
+                var next = _batchingStrategy.NextRelease();
+                if (next != null && _scheduledTask == null)
                 {
-                    // if (_scheduledTask != null)
-                    // {
-                    //    _cancellationTokenSource.Cancel(false);
-                    // }
-                    var batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
-                    if (batch != null)
-                    {
-                        if (_scheduledTask != null)
-                        {
-                            _cancellationTokenSource.Cancel(false);
-                            _scheduledTask = null;
-                        }
-
-                        base.Send(batch.Value.Exchange, batch.Value.RoutingKey, batch.Value.Message, null);
-                    }
-
-                    var next = _batchingStrategy.NextRelease();
-                    if (next != null && _scheduledTask == null)
-                    {
-                        _cancellationTokenSource = new CancellationTokenSource();
-                        var delay = next.Value - DateTime.Now;
-                        _scheduledTask = Task.Run(() => ReleaseBatches(delay, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
-                    }
+                    _cancellationTokenSource = new CancellationTokenSource();
+                    var delay = next.Value - DateTime.Now;
+                    _scheduledTask = Task.Run(() => ReleaseBatches(delay, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
                 }
             }
         }
+    }
 
-        public void Flush()
+    public void Flush()
+    {
+        FlushAsync(default).Wait();
+    }
+
+    public async Task FlushAsync(CancellationToken cancellationToken)
+    {
+        await ReleaseBatches(TimeSpan.Zero, cancellationToken);
+    }
+
+    private async Task ReleaseBatches(TimeSpan delay, CancellationToken cancellationToken)
+    {
+        await Task.Delay(delay, cancellationToken);
+        if (cancellationToken.IsCancellationRequested)
         {
-            FlushAsync(default).Wait();
+            return;
         }
 
-        public async Task FlushAsync(CancellationToken cancellationToken)
+        lock (_batchlock)
         {
-            await ReleaseBatches(TimeSpan.Zero, cancellationToken);
-        }
-
-        private async Task ReleaseBatches(TimeSpan delay, CancellationToken cancellationToken)
-        {
-            await Task.Delay(delay, cancellationToken);
-            if (cancellationToken.IsCancellationRequested)
+            foreach (var batch in _batchingStrategy.ReleaseBatches())
             {
-                return;
-            }
-
-            lock (_batchlock)
-            {
-                foreach (var batch in _batchingStrategy.ReleaseBatches())
+                if (cancellationToken.IsCancellationRequested)
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return;
-                    }
-
-                    base.Send(batch.Exchange, batch.RoutingKey, batch.Message, null);
+                    return;
                 }
 
-                _scheduledTask = null;
+                base.Send(batch.Exchange, batch.RoutingKey, batch.Message, null);
             }
+
+            _scheduledTask = null;
         }
     }
 }

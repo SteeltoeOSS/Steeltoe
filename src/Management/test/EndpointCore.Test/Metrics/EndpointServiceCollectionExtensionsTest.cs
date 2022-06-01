@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,63 +12,62 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Test
+namespace Steeltoe.Management.Endpoint.Metrics.Test;
+
+public class EndpointServiceCollectionExtensionsTest : BaseTest
 {
-    public class EndpointServiceCollectionExtensionsTest : BaseTest
+    [Fact]
+    public void AddMetricsActuator_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddMetricsActuator_ThrowsOnNulls()
-        {
-            const IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            const IConfiguration config = null;
+        const IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        const IConfiguration config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator(config));
-            Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMetricsActuator(config));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator(config));
+        Assert.Contains(nameof(services), ex.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMetricsActuator(config));
+        Assert.Contains(nameof(config), ex2.Message);
+    }
 
-        [Fact]
-        public void AddMetricsActuator_AddsCorrectServices()
-        {
-            var services = new ServiceCollection();
-            var config = GetConfiguration();
+    [Fact]
+    public void AddMetricsActuator_AddsCorrectServices()
+    {
+        var services = new ServiceCollection();
+        var config = GetConfiguration();
 
-            services.AddOptions();
-            services.AddLogging();
-            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddSingleton(config);
-            services.AddMetricsActuator();
+        services.AddOptions();
+        services.AddLogging();
+        services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+        services.AddSingleton(config);
+        services.AddMetricsActuator();
 
-            var serviceProvider = services.BuildServiceProvider();
+        var serviceProvider = services.BuildServiceProvider();
 
-            var mgr = serviceProvider.GetService<IDiagnosticsManager>();
-            Assert.NotNull(mgr);
-            var hst = serviceProvider.GetService<IHostedService>();
-            Assert.NotNull(hst);
-            var opts = serviceProvider.GetService<IMetricsObserverOptions>();
-            Assert.NotNull(opts);
+        var mgr = serviceProvider.GetService<IDiagnosticsManager>();
+        Assert.NotNull(mgr);
+        var hst = serviceProvider.GetService<IHostedService>();
+        Assert.NotNull(hst);
+        var opts = serviceProvider.GetService<IMetricsObserverOptions>();
+        Assert.NotNull(opts);
 
-            var observers = serviceProvider.GetServices<IDiagnosticObserver>();
-            var list = observers.ToList();
-            Assert.Single(list);
+        var observers = serviceProvider.GetServices<IDiagnosticObserver>();
+        var list = observers.ToList();
+        Assert.Single(list);
 
-            var ep = serviceProvider.GetService<MetricsEndpoint>();
-            Assert.NotNull(ep);
-        }
+        var ep = serviceProvider.GetService<MetricsEndpoint>();
+        Assert.NotNull(ep);
+    }
 
-        [Fact]
-        public void AddWavefront_ThrowsWhenNull()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(null));
-            Assert.Contains("services", ex.Message);
-        }
+    [Fact]
+    public void AddWavefront_ThrowsWhenNull()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(null));
+        Assert.Contains("services", ex.Message);
+    }
 
-        private IConfiguration GetConfiguration()
-        {
-            var builder = new ConfigurationBuilder();
-            return builder.Build();
-        }
+    private IConfiguration GetConfiguration()
+    {
+        var builder = new ConfigurationBuilder();
+        return builder.Build();
     }
 }

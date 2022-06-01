@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,268 +11,267 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Integration.Handler
+namespace Steeltoe.Integration.Handler;
+
+public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, IMessageProducer, IHeaderPropagation
 {
-    public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, IMessageProducer, IHeaderPropagation
+    private readonly MessagingTemplate _messagingTemplate;
+
+    private string _outputChannelName;
+
+    private IMessageChannel _outputChannel;
+
+    private List<string> _notPropagatedHeaders = new ();
+
+    private bool _noHeadersPropagation;
+
+    private bool _selectiveHeaderPropagation;
+
+    protected AbstractMessageProducingHandler(IApplicationContext context)
+        : base(context)
     {
-        private readonly MessagingTemplate _messagingTemplate;
+        _messagingTemplate = new MessagingTemplate(context);
+    }
 
-        private string _outputChannelName;
-
-        private IMessageChannel _outputChannel;
-
-        private List<string> _notPropagatedHeaders = new ();
-
-        private bool _noHeadersPropagation;
-
-        private bool _selectiveHeaderPropagation;
-
-        protected AbstractMessageProducingHandler(IApplicationContext context)
-            : base(context)
+    public virtual IMessageChannel OutputChannel
+    {
+        get
         {
-            _messagingTemplate = new MessagingTemplate(context);
+            if (_outputChannelName != null)
+            {
+                _outputChannel = IntegrationServices.ChannelResolver.ResolveDestination(_outputChannelName);
+                _outputChannelName = null;
+            }
+
+            return _outputChannel;
         }
 
-        public virtual IMessageChannel OutputChannel
+        set => _outputChannel = value;
+    }
+
+    public virtual string OutputChannelName
+    {
+        get => _outputChannelName;
+
+        set
         {
-            get
+            if (string.IsNullOrEmpty(value))
             {
-                if (_outputChannelName != null)
+                throw new ArgumentException("outputChannelName must not be empty");
+            }
+
+            _outputChannelName = value;
+        }
+    }
+
+    public virtual IList<string> NotPropagatedHeaders
+    {
+        get => new List<string>(_notPropagatedHeaders);
+        set => UpdateNotPropagatedHeaders(value, false);
+    }
+
+    public virtual void AddNotPropagatedHeaders(params string[] headers) => UpdateNotPropagatedHeaders(headers, true);
+
+    public virtual int SendTimeout
+    {
+        get => _messagingTemplate.SendTimeout;
+        set => _messagingTemplate.SendTimeout = value;
+    }
+
+    protected virtual bool ShouldCopyRequestHeaders => true;
+
+    protected virtual void UpdateNotPropagatedHeaders(IList<string> headers, bool merge)
+    {
+        var headerPatterns = new HashSet<string>();
+
+        if (merge && _notPropagatedHeaders.Count > 0)
+        {
+            foreach (var h in _notPropagatedHeaders)
+            {
+                headerPatterns.Add(h);
+            }
+        }
+
+        if (headers.Count > 0)
+        {
+            foreach (var h in headers)
+            {
+                if (string.IsNullOrEmpty(h))
                 {
-                    _outputChannel = IntegrationServices.ChannelResolver.ResolveDestination(_outputChannelName);
-                    _outputChannelName = null;
+                    throw new ArgumentException("null or empty elements are not allowed in 'headers'");
                 }
 
-                return _outputChannel;
+                headerPatterns.Add(h);
             }
 
-            set => _outputChannel = value;
+            _notPropagatedHeaders = headerPatterns.ToList();
         }
 
-        public virtual string OutputChannelName
-        {
-            get => _outputChannelName;
+        var hasAsterisk = headerPatterns.Contains("*");
 
-            set
+        if (hasAsterisk)
+        {
+            _notPropagatedHeaders = new List<string> { "*" };
+            _noHeadersPropagation = true;
+        }
+
+        if (_notPropagatedHeaders.Count > 0)
+        {
+            _selectiveHeaderPropagation = true;
+        }
+    }
+
+    protected void SendOutputs(object reply, IMessage requestMessage)
+    {
+        if (reply == null)
+        {
+            return;
+        }
+
+        if (IsEnumerable(reply))
+        {
+            var multiReply = (IEnumerable)reply;
+            if (ShouldSplitOutput(multiReply))
             {
-                if (string.IsNullOrEmpty(value))
+                foreach (var r in multiReply)
                 {
-                    throw new ArgumentException("outputChannelName must not be empty");
-                }
-
-                _outputChannelName = value;
-            }
-        }
-
-        public virtual IList<string> NotPropagatedHeaders
-        {
-            get => new List<string>(_notPropagatedHeaders);
-            set => UpdateNotPropagatedHeaders(value, false);
-        }
-
-        public virtual void AddNotPropagatedHeaders(params string[] headers) => UpdateNotPropagatedHeaders(headers, true);
-
-        public virtual int SendTimeout
-        {
-            get => _messagingTemplate.SendTimeout;
-            set => _messagingTemplate.SendTimeout = value;
-        }
-
-        protected virtual bool ShouldCopyRequestHeaders => true;
-
-        protected virtual void UpdateNotPropagatedHeaders(IList<string> headers, bool merge)
-        {
-            var headerPatterns = new HashSet<string>();
-
-            if (merge && _notPropagatedHeaders.Count > 0)
-            {
-                foreach (var h in _notPropagatedHeaders)
-                {
-                    headerPatterns.Add(h);
+                    ProduceOutput(r, requestMessage);
                 }
             }
+        }
 
-            if (headers.Count > 0)
-            {
-                foreach (var h in headers)
+        ProduceOutput(reply, requestMessage);
+    }
+
+    protected virtual void ProduceOutput(object reply, IMessage requestMessage)
+    {
+        var requestHeaders = requestMessage.Headers;
+        object replyChannel = null;
+        if (OutputChannel == null)
+        {
+            replyChannel = ObtainReplyChannel(requestMessage.Headers, reply);
+        }
+
+        DoProduceOutput(requestHeaders, reply, replyChannel);
+    }
+
+    protected virtual void SendOutput(object output, object replyChannelArg, bool useArgChannel)
+    {
+        var replyChannel = replyChannelArg;
+        var outChannel = OutputChannel;
+        if (!useArgChannel && outChannel != null)
+        {
+            replyChannel = outChannel;
+        }
+
+        if (replyChannel == null)
+        {
+            throw new DestinationResolutionException("no output-channel or replyChannel header available");
+        }
+
+        var outputAsMessage = output as IMessage;
+
+        switch (replyChannel)
+        {
+            case IMessageChannel channel:
+                if (outputAsMessage != null)
                 {
-                    if (string.IsNullOrEmpty(h))
-                    {
-                        throw new ArgumentException("null or empty elements are not allowed in 'headers'");
-                    }
-
-                    headerPatterns.Add(h);
+                    _messagingTemplate.Send(channel, outputAsMessage);
+                }
+                else
+                {
+                    _messagingTemplate.ConvertAndSend(channel, output);
                 }
 
-                _notPropagatedHeaders = headerPatterns.ToList();
-            }
-
-            var hasAsterisk = headerPatterns.Contains("*");
-
-            if (hasAsterisk)
-            {
-                _notPropagatedHeaders = new List<string> { "*" };
-                _noHeadersPropagation = true;
-            }
-
-            if (_notPropagatedHeaders.Count > 0)
-            {
-                _selectiveHeaderPropagation = true;
-            }
-        }
-
-        protected void SendOutputs(object reply, IMessage requestMessage)
-        {
-            if (reply == null)
-            {
-                return;
-            }
-
-            if (IsEnumerable(reply))
-            {
-                var multiReply = (IEnumerable)reply;
-                if (ShouldSplitOutput(multiReply))
+                break;
+            case string strChannel:
+                if (outputAsMessage != null)
                 {
-                    foreach (var r in multiReply)
-                    {
-                        ProduceOutput(r, requestMessage);
-                    }
+                    _messagingTemplate.Send(strChannel, outputAsMessage);
                 }
-            }
-
-            ProduceOutput(reply, requestMessage);
-        }
-
-        protected virtual void ProduceOutput(object reply, IMessage requestMessage)
-        {
-            var requestHeaders = requestMessage.Headers;
-            object replyChannel = null;
-            if (OutputChannel == null)
-            {
-                replyChannel = ObtainReplyChannel(requestMessage.Headers, reply);
-            }
-
-            DoProduceOutput(requestHeaders, reply, replyChannel);
-        }
-
-        protected virtual void SendOutput(object output, object replyChannelArg, bool useArgChannel)
-        {
-            var replyChannel = replyChannelArg;
-            var outChannel = OutputChannel;
-            if (!useArgChannel && outChannel != null)
-            {
-                replyChannel = outChannel;
-            }
-
-            if (replyChannel == null)
-            {
-                throw new DestinationResolutionException("no output-channel or replyChannel header available");
-            }
-
-            var outputAsMessage = output as IMessage;
-
-            switch (replyChannel)
-            {
-                case IMessageChannel channel:
-                    if (outputAsMessage != null)
-                    {
-                        _messagingTemplate.Send(channel, outputAsMessage);
-                    }
-                    else
-                    {
-                        _messagingTemplate.ConvertAndSend(channel, output);
-                    }
-
-                    break;
-                case string strChannel:
-                    if (outputAsMessage != null)
-                    {
-                        _messagingTemplate.Send(strChannel, outputAsMessage);
-                    }
-                    else
-                    {
-                        _messagingTemplate.ConvertAndSend(strChannel, output);
-                    }
-
-                    break;
-                default:
-                    throw new MessagingException("replyChannel must be a IMessageChannel or String");
-            }
-        }
-
-        protected virtual bool ShouldSplitOutput(IEnumerable reply)
-        {
-            foreach (var next in reply)
-            {
-                if (next is IMessage)
+                else
                 {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        protected virtual IMessage CreateOutputMessage(object output, IMessageHeaders requestHeaders)
-        {
-            IMessageBuilder builder;
-            if (output is IMessage outputAsMessage)
-            {
-                if (_noHeadersPropagation || !ShouldCopyRequestHeaders)
-                {
-                    return outputAsMessage;
+                    _messagingTemplate.ConvertAndSend(strChannel, output);
                 }
 
-                builder = IntegrationServices.MessageBuilderFactory.FromMessage(outputAsMessage);
-            }
-            else
-            {
-                builder = IntegrationServices.MessageBuilderFactory.WithPayload(output);
-            }
-
-            if (!_noHeadersPropagation && ShouldCopyRequestHeaders)
-            {
-                builder.FilterAndCopyHeadersIfAbsent(requestHeaders, _selectiveHeaderPropagation ? _notPropagatedHeaders.ToArray() : null);
-            }
-
-            return builder.Build();
+                break;
+            default:
+                throw new MessagingException("replyChannel must be a IMessageChannel or String");
         }
+    }
 
-        private bool IsEnumerable(object reply)
+    protected virtual bool ShouldSplitOutput(IEnumerable reply)
+    {
+        foreach (var next in reply)
         {
-            if (reply is string || reply is Array)
-            {
-                return false;
-            }
-
-            if (reply is IEnumerable)
+            if (next is IMessage)
             {
                 return true;
             }
+        }
 
+        return false;
+    }
+
+    protected virtual IMessage CreateOutputMessage(object output, IMessageHeaders requestHeaders)
+    {
+        IMessageBuilder builder;
+        if (output is IMessage outputAsMessage)
+        {
+            if (_noHeadersPropagation || !ShouldCopyRequestHeaders)
+            {
+                return outputAsMessage;
+            }
+
+            builder = IntegrationServices.MessageBuilderFactory.FromMessage(outputAsMessage);
+        }
+        else
+        {
+            builder = IntegrationServices.MessageBuilderFactory.WithPayload(output);
+        }
+
+        if (!_noHeadersPropagation && ShouldCopyRequestHeaders)
+        {
+            builder.FilterAndCopyHeadersIfAbsent(requestHeaders, _selectiveHeaderPropagation ? _notPropagatedHeaders.ToArray() : null);
+        }
+
+        return builder.Build();
+    }
+
+    private bool IsEnumerable(object reply)
+    {
+        if (reply is string || reply is Array)
+        {
             return false;
         }
 
-        private object ObtainReplyChannel(IMessageHeaders requestHeaders, object reply)
+        if (reply is IEnumerable)
         {
-            var replyChannel = requestHeaders.ReplyChannel;
-
-            if (replyChannel == null)
-            {
-                if (reply is IMessage replyAsMessage)
-                {
-                    replyChannel = replyAsMessage.Headers.ReplyChannel;
-                }
-                else if (reply is IMessageBuilder replyAsBuilder)
-                {
-                    replyAsBuilder.Headers.TryGetValue(MessageHeaders.REPLY_CHANNEL, out replyChannel);
-                }
-            }
-
-            return replyChannel;
+            return true;
         }
 
-        private void DoProduceOutput(IMessageHeaders requestHeaders, object reply, object replyChannel)
-            => SendOutput(CreateOutputMessage(reply, requestHeaders), replyChannel, false);
+        return false;
     }
+
+    private object ObtainReplyChannel(IMessageHeaders requestHeaders, object reply)
+    {
+        var replyChannel = requestHeaders.ReplyChannel;
+
+        if (replyChannel == null)
+        {
+            if (reply is IMessage replyAsMessage)
+            {
+                replyChannel = replyAsMessage.Headers.ReplyChannel;
+            }
+            else if (reply is IMessageBuilder replyAsBuilder)
+            {
+                replyAsBuilder.Headers.TryGetValue(MessageHeaders.REPLY_CHANNEL, out replyChannel);
+            }
+        }
+
+        return replyChannel;
+    }
+
+    private void DoProduceOutput(IMessageHeaders requestHeaders, object reply, object replyChannel)
+        => SendOutput(CreateOutputMessage(reply, requestHeaders), replyChannel, false);
 }

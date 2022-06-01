@@ -1,51 +1,50 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Converter;
 using System;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Support
+namespace Steeltoe.Common.Expression.Internal.Spring.Support;
+
+public class StandardTypeConverter : ITypeConverter
 {
-    public class StandardTypeConverter : ITypeConverter
+    public StandardTypeConverter()
     {
-        public StandardTypeConverter()
+        ConversionService = DefaultConversionService.Singleton;
+    }
+
+    public StandardTypeConverter(IConversionService conversionService)
+    {
+        ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
+    }
+
+    public IConversionService ConversionService { get; set; }
+
+    public bool CanConvert(Type source, Type target)
+    {
+        return ConversionService.CanConvert(source, target);
+    }
+
+    public object ConvertValue(object value, Type source, Type target)
+    {
+        try
         {
-            ConversionService = DefaultConversionService.Singleton;
+            return ConversionService.Convert(value, source, target);
         }
-
-        public StandardTypeConverter(IConversionService conversionService)
+        catch (ConversionException ex)
         {
-            ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
-        }
-
-        public IConversionService ConversionService { get; set; }
-
-        public bool CanConvert(Type source, Type target)
-        {
-            return ConversionService.CanConvert(source, target);
-        }
-
-        public object ConvertValue(object value, Type source, Type target)
-        {
-            try
+            var message = "null";
+            if (source != null)
             {
-                return ConversionService.Convert(value, source, target);
+                message = source.ToString();
             }
-            catch (ConversionException ex)
+            else if (value != null)
             {
-                var message = "null";
-                if (source != null)
-                {
-                    message = source.ToString();
-                }
-                else if (value != null)
-                {
-                    message = value.GetType().FullName;
-                }
-
-                throw new SpelEvaluationException(ex, SpelMessage.TYPE_CONVERSION_ERROR, message, target.ToString());
+                message = value.GetType().FullName;
             }
+
+            throw new SpelEvaluationException(ex, SpelMessage.TYPE_CONVERSION_ERROR, message, target.ToString());
         }
     }
 }

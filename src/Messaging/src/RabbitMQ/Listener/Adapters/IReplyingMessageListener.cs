@@ -1,11 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+
+public interface IReplyingMessageListener<in T, out R>
 {
-    public interface IReplyingMessageListener<in T, out R>
-    {
-        R HandleMessage(T t);
-    }
+    R HandleMessage(T t);
 }

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -22,78 +22,77 @@ using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint;
+
+public static class ActuatorServiceCollectionExtensions
 {
-    public static class ActuatorServiceCollectionExtensions
+    [Obsolete("No longer in use. Retained for binary compatibility")]
+    [ExcludeFromCodeCoverage]
+    public static void RegisterEndpointOptions(this IServiceCollection services, IEndpointOptions options)
     {
-        [Obsolete("No longer in use. Retained for binary compatibility")]
-        [ExcludeFromCodeCoverage]
-        public static void RegisterEndpointOptions(this IServiceCollection services, IEndpointOptions options)
-        {
-            // the code that was running here is now handled in ActuatorRouteBuilderExtensions
-        }
-
-        public static void AddAllActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy)
-            => services.AddAllActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
-
-        public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            services.AddSteeltoeCors(buildCorsPolicy);
-            if (Platform.IsCloudFoundry)
-            {
-                services.AddCloudFoundryActuator(config);
-            }
-
-            services.AddHypermediaActuator(config);
-
-            services.AddThreadDumpActuator(config, version);
-
-            services.AddHeapDumpActuator(config);
-
-            services.AddDbMigrationsActuator(config);
-            services.AddEnvActuator(config);
-            services.AddInfoActuator(config);
-            services.AddHealthActuator(config);
-            services.AddLoggersActuator(config);
-            services.AddTraceActuator(config, version);
-            services.AddMappingsActuator(config);
-            services.AddMetricsActuator(config);
-            services.AddPrometheusActuator(config);
-            services.AddRefreshActuator(config);
-            return services;
-        }
-
-        private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
-            => services.AddCors(setup =>
-                {
-                    setup.AddPolicy("SteeltoeManagement", policy =>
-                    {
-                        policy.WithMethods("GET", "POST");
-                        if (Platform.IsCloudFoundry)
-                        {
-                            policy.WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
-                        }
-
-                        if (buildCorsPolicy != null)
-                        {
-                            buildCorsPolicy(policy);
-                        }
-                        else
-                        {
-                            policy.AllowAnyOrigin();
-                        }
-                    });
-                });
+        // the code that was running here is now handled in ActuatorRouteBuilderExtensions
     }
+
+    public static void AddAllActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy)
+        => services.AddAllActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
+
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    {
+        if (services == null)
+        {
+            throw new ArgumentNullException(nameof(services));
+        }
+
+        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        services.AddSteeltoeCors(buildCorsPolicy);
+        if (Platform.IsCloudFoundry)
+        {
+            services.AddCloudFoundryActuator(config);
+        }
+
+        services.AddHypermediaActuator(config);
+
+        services.AddThreadDumpActuator(config, version);
+
+        services.AddHeapDumpActuator(config);
+
+        services.AddDbMigrationsActuator(config);
+        services.AddEnvActuator(config);
+        services.AddInfoActuator(config);
+        services.AddHealthActuator(config);
+        services.AddLoggersActuator(config);
+        services.AddTraceActuator(config, version);
+        services.AddMappingsActuator(config);
+        services.AddMetricsActuator(config);
+        services.AddPrometheusActuator(config);
+        services.AddRefreshActuator(config);
+        return services;
+    }
+
+    private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        => services.AddCors(setup =>
+        {
+            setup.AddPolicy("SteeltoeManagement", policy =>
+            {
+                policy.WithMethods("GET", "POST");
+                if (Platform.IsCloudFoundry)
+                {
+                    policy.WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
+                }
+
+                if (buildCorsPolicy != null)
+                {
+                    buildCorsPolicy(policy);
+                }
+                else
+                {
+                    policy.AllowAnyOrigin();
+                }
+            });
+        });
 }

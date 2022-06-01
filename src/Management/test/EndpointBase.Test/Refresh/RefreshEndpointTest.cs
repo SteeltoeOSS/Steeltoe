@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,58 +11,57 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test
+namespace Steeltoe.Management.Endpoint.Refresh.Test;
+
+public class RefreshEndpointTest : BaseTest
 {
-    public class RefreshEndpointTest : BaseTest
+    private readonly ITestOutputHelper _output;
+
+    public RefreshEndpointTest(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output;
+    }
 
-        public RefreshEndpointTest(ITestOutputHelper output)
+    [Fact]
+    public void Constructor_ThrowsIfNulls()
+    {
+        IRefreshOptions options = null;
+        const IConfigurationRoot configuration = null;
+
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
+
+        options = new RefreshEndpointOptions();
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
+    }
+
+    [Fact]
+    public void DoInvoke_ReturnsExpected()
+    {
+        var appsettings = new Dictionary<string, string>
         {
-            _output = output;
-        }
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:loggers:enabled"] = "false",
+            ["management:endpoints:heapdump:enabled"] = "true",
+            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:cloudfoundry:enabled"] = "true"
+        };
 
-        [Fact]
-        public void Constructor_ThrowsIfNulls()
+        using var tc = new TestContext(_output);
+        tc.AdditionalServices = (services, configuration) =>
         {
-            IRefreshOptions options = null;
-            const IConfigurationRoot configuration = null;
-
-            Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
-
-            options = new RefreshEndpointOptions();
-            Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
-        }
-
-        [Fact]
-        public void DoInvoke_ReturnsExpected()
+            services.AddRefreshActuatorServices(configuration);
+        };
+        tc.AdditionalConfiguration = configuration =>
         {
-            var appsettings = new Dictionary<string, string>
-            {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:heapdump:enabled"] = "true",
-                ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-                ["management:endpoints:cloudfoundry:enabled"] = "true"
-            };
+            configuration.AddInMemoryCollection(appsettings);
+        };
 
-            using var tc = new TestContext(_output);
-            tc.AdditionalServices = (services, configuration) =>
-            {
-                services.AddRefreshActuatorServices(configuration);
-            };
-            tc.AdditionalConfiguration = configuration =>
-            {
-                configuration.AddInMemoryCollection(appsettings);
-            };
+        var ep = tc.GetService<IRefreshEndpoint>();
+        var result = ep.Invoke();
+        Assert.NotNull(result);
 
-            var ep = tc.GetService<IRefreshEndpoint>();
-            var result = ep.Invoke();
-            Assert.NotNull(result);
-
-            Assert.Contains("management:endpoints:loggers:enabled", result);
-            Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
-        }
+        Assert.Contains("management:endpoints:loggers:enabled", result);
+        Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
     }
 }

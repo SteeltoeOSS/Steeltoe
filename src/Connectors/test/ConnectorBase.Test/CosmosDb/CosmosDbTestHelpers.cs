@@ -1,12 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.CosmosDb.Test
+namespace Steeltoe.Connector.CosmosDb.Test;
+
+public static class CosmosDbTestHelpers
 {
-    public static class CosmosDbTestHelpers
-    {
-        public static string SingleVCAPBinding = @"
+    public static string SingleVCAPBinding = @"
             {
                 ""azure-cosmosdb"": [
                 {
@@ -28,5 +28,4 @@ namespace Steeltoe.Connector.CosmosDb.Test
                     ""volume_mounts"": []
                 }]
             }";
-    }
 }

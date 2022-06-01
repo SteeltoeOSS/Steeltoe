@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,31 +7,30 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 
-namespace Steeltoe.Management.Endpoint.Info.Test
+namespace Steeltoe.Management.Endpoint.Info.Test;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; set; }
+    public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddCloudFoundryActuator(Configuration);
-            services.AddInfoActuator(Configuration);
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddCloudFoundryActuator(Configuration);
+        services.AddInfoActuator(Configuration);
+    }
 
-        public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<InfoEndpoint>();
-            });
-        }
+            endpoints.Map<InfoEndpoint>();
+        });
     }
 }

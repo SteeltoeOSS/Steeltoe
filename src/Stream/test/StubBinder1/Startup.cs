@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,26 +9,25 @@ using Steeltoe.Stream.Binder;
 
 [assembly: Binder(Steeltoe.Stream.StubBinder1.StubBinder1.BINDER_NAME, typeof(Steeltoe.Stream.StubBinder1.Startup))]
 
-namespace Steeltoe.Stream.StubBinder1
+namespace Steeltoe.Stream.StubBinder1;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; }
+    public IConfiguration Configuration { get; }
 
-        public bool ConfigureServicesInvoked { get; set; }
+    public bool ConfigureServicesInvoked { get; set; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            ConfigureServicesInvoked = true; // Testing
-            var config = Configuration.GetSection("binder1");
-            config["name"] = "foobar"; // Unit test checks for this change to verify access to configuration
-            services.AddSingleton<IBinder, StubBinder1>();
-        }
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        ConfigureServicesInvoked = true; // Testing
+        var config = Configuration.GetSection("binder1");
+        config["name"] = "foobar"; // Unit test checks for this change to verify access to configuration
+        services.AddSingleton<IBinder, StubBinder1>();
     }
 }

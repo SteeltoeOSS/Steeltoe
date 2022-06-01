@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,79 +8,78 @@ using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using System;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class PartitionHandler
 {
-    public class PartitionHandler
+    internal readonly IPartitionKeyExtractorStrategy _partitionKeyExtractorStrategy;
+    internal readonly IPartitionSelectorStrategy _partitionSelectorStrategy;
+
+    private readonly IProducerOptions _producerOptions;
+
+    private IExpressionParser _expressionParser;
+    private IEvaluationContext _evaluationContext;
+
+    public PartitionHandler(
+        IExpressionParser expressionParser,
+        IEvaluationContext evaluationContext,
+        IProducerOptions options,
+        IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy,
+        IPartitionSelectorStrategy partitionSelectorStrategy)
     {
-        internal readonly IPartitionKeyExtractorStrategy _partitionKeyExtractorStrategy;
-        internal readonly IPartitionSelectorStrategy _partitionSelectorStrategy;
+        _expressionParser = expressionParser;
+        _evaluationContext = evaluationContext ?? new StandardEvaluationContext();
+        _producerOptions = options;
+        _partitionKeyExtractorStrategy = partitionKeyExtractorStrategy;
+        _partitionSelectorStrategy = partitionSelectorStrategy;
+        PartitionCount = _producerOptions.PartitionCount;
+    }
 
-        private readonly IProducerOptions _producerOptions;
+    public int PartitionCount { get; set; }
 
-        private IExpressionParser _expressionParser;
-        private IEvaluationContext _evaluationContext;
+    public int DeterminePartition(IMessage message)
+    {
+        var key = ExtractKey(message);
 
-        public PartitionHandler(
-                IExpressionParser expressionParser,
-                IEvaluationContext evaluationContext,
-                IProducerOptions options,
-                IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy,
-                IPartitionSelectorStrategy partitionSelectorStrategy)
+        int partition;
+        if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && _expressionParser != null)
         {
-            _expressionParser = expressionParser;
-            _evaluationContext = evaluationContext ?? new StandardEvaluationContext();
-            _producerOptions = options;
-            _partitionKeyExtractorStrategy = partitionKeyExtractorStrategy;
-            _partitionSelectorStrategy = partitionSelectorStrategy;
-            PartitionCount = _producerOptions.PartitionCount;
+            var expr = _expressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
+            partition = expr.GetValue<int>(_evaluationContext, key);
+        }
+        else
+        {
+            partition = _partitionSelectorStrategy.SelectPartition(key, PartitionCount);
         }
 
-        public int PartitionCount { get; set; }
+        //// protection in case a user selector returns a negative.
+        return Math.Abs(partition % PartitionCount);
+    }
 
-        public int DeterminePartition(IMessage message)
+    private object ExtractKey(IMessage message)
+    {
+        var key = InvokeKeyExtractor(message);
+        if (key == null && !string.IsNullOrEmpty(_producerOptions.PartitionKeyExpression) && _expressionParser != null)
         {
-            var key = ExtractKey(message);
-
-            int partition;
-            if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && _expressionParser != null)
-            {
-                var expr = _expressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
-                partition = expr.GetValue<int>(_evaluationContext, key);
-            }
-            else
-            {
-                partition = _partitionSelectorStrategy.SelectPartition(key, PartitionCount);
-            }
-
-            //// protection in case a user selector returns a negative.
-            return Math.Abs(partition % PartitionCount);
+            var expr = _expressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
+            key = expr.GetValue(_evaluationContext ?? new StandardEvaluationContext(), message);
         }
 
-        private object ExtractKey(IMessage message)
+        if (key == null)
         {
-            var key = InvokeKeyExtractor(message);
-            if (key == null && !string.IsNullOrEmpty(_producerOptions.PartitionKeyExpression) && _expressionParser != null)
-            {
-                var expr = _expressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
-                key = expr.GetValue(_evaluationContext ?? new StandardEvaluationContext(), message);
-            }
-
-            if (key == null)
-            {
-                throw new ArgumentException("Partition key cannot be null");
-            }
-
-            return key;
+            throw new ArgumentException("Partition key cannot be null");
         }
 
-        private object InvokeKeyExtractor(IMessage message)
-        {
-            if (_partitionKeyExtractorStrategy != null)
-            {
-                return _partitionKeyExtractorStrategy.ExtractKey(message);
-            }
+        return key;
+    }
 
-            return null;
+    private object InvokeKeyExtractor(IMessage message)
+    {
+        if (_partitionKeyExtractorStrategy != null)
+        {
+            return _partitionKeyExtractorStrategy.ExtractKey(message);
         }
+
+        return null;
     }
 }

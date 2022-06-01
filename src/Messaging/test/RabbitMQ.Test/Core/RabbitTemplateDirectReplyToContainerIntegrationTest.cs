@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -14,89 +14,88 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+[Trait("Category", "Integration")]
+public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplateIntegrationTest
 {
-    [Trait("Category", "Integration")]
-    public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplateIntegrationTest
+    [Fact]
+    public void ChannelReleasedOnTimeout()
     {
-        [Fact]
-        public void ChannelReleasedOnTimeout()
+        var connectionFactory = new CachingConnectionFactory("localhost");
+        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(connectionFactory);
+        rabbitTemplate.ReplyTimeout = 1;
+        var exception = new AtomicReference<Exception>();
+        var latch = new CountdownEvent(1);
+        rabbitTemplate.ReplyErrorHandler = new TestErrorHandler(exception, latch);
+        var reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
+        Assert.Null(reply);
+        var directReplyToContainers = rabbitTemplate._directReplyToContainers;
+        var container = rabbitTemplate.UsePublisherConnection ? directReplyToContainers[connectionFactory.PublisherConnectionFactory] : directReplyToContainers[connectionFactory];
+        Assert.Empty(container._inUseConsumerChannels);
+        Assert.Same(rabbitTemplate.ReplyErrorHandler, container.ErrorHandler);
+        var replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
+
+        var ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
+        Assert.Contains("No correlation header in reply", ex.Message);
+
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
+        accessor.CorrelationId = "foo";
+
+        ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
+        Assert.Contains("Reply received after timeout", ex.Message);
+
+        _ = Task.Run(() =>
         {
-            var connectionFactory = new CachingConnectionFactory("localhost");
-            var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(connectionFactory);
-            rabbitTemplate.ReplyTimeout = 1;
-            var exception = new AtomicReference<Exception>();
-            var latch = new CountdownEvent(1);
-            rabbitTemplate.ReplyErrorHandler = new TestErrorHandler(exception, latch);
-            var reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
-            Assert.Null(reply);
-            var directReplyToContainers = rabbitTemplate._directReplyToContainers;
-            var container = rabbitTemplate.UsePublisherConnection ? directReplyToContainers[connectionFactory.PublisherConnectionFactory] : directReplyToContainers[connectionFactory];
-            Assert.Empty(container._inUseConsumerChannels);
-            Assert.Same(rabbitTemplate.ReplyErrorHandler, container.ErrorHandler);
-            var replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
+            var message = rabbitTemplate.Receive(ROUTE, 10000);
+            Assert.NotNull(message);
+            rabbitTemplate.Send(message.Headers.ReplyTo(), replyMessage);
+            return message;
+        });
 
-            var ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
-            Assert.Contains("No correlation header in reply", ex.Message);
-
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
-            accessor.CorrelationId = "foo";
-
-            ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
-            Assert.Contains("Reply received after timeout", ex.Message);
-
-            _ = Task.Run(() =>
-            {
-                var message = rabbitTemplate.Receive(ROUTE, 10000);
-                Assert.NotNull(message);
-                rabbitTemplate.Send(message.Headers.ReplyTo(), replyMessage);
-                return message;
-            });
-
-            while (rabbitTemplate.Receive(ROUTE, 100) != null)
-            {
-            }
-
-            reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
-            Assert.Null(reply);
-            Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
-            Assert.IsType<ListenerExecutionFailedException>(exception.Value);
-            var listException = exception.Value as ListenerExecutionFailedException;
-            Assert.Contains("Reply received after timeout", exception.Value.InnerException.Message);
-            Assert.Equal(replyMessage.Payload, listException.FailedMessage.Payload);
-            Assert.Empty(container._inUseConsumerChannels);
-            rabbitTemplate.Stop().Wait();
-            connectionFactory.Destroy();
+        while (rabbitTemplate.Receive(ROUTE, 100) != null)
+        {
         }
 
-        protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
+        reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
+        Assert.Null(reply);
+        Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.IsType<ListenerExecutionFailedException>(exception.Value);
+        var listException = exception.Value as ListenerExecutionFailedException;
+        Assert.Contains("Reply received after timeout", exception.Value.InnerException.Message);
+        Assert.Equal(replyMessage.Payload, listException.FailedMessage.Payload);
+        Assert.Empty(container._inUseConsumerChannels);
+        rabbitTemplate.Stop().Wait();
+        connectionFactory.Destroy();
+    }
+
+    protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
+    {
+        var rabbitTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
+        rabbitTemplate.UseDirectReplyToContainer = true;
+        rabbitTemplate.ServiceName = $"{nameof(RabbitTemplateDirectReplyToContainerIntegrationTest)}.SendReceiveRabbitTemplate";
+        return rabbitTemplate;
+    }
+
+    private sealed class TestErrorHandler : IErrorHandler
+    {
+        public TestErrorHandler(AtomicReference<Exception> atomicReference, CountdownEvent latch)
         {
-            var rabbitTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
-            rabbitTemplate.UseDirectReplyToContainer = true;
-            rabbitTemplate.ServiceName = $"{nameof(RabbitTemplateDirectReplyToContainerIntegrationTest)}.SendReceiveRabbitTemplate";
-            return rabbitTemplate;
+            AtomicReference = atomicReference;
+            Latch = latch;
         }
 
-        private sealed class TestErrorHandler : IErrorHandler
+        public string ServiceName { get; set; } = nameof(TestErrorHandler);
+
+        public AtomicReference<Exception> AtomicReference { get; }
+
+        public CountdownEvent Latch { get; }
+
+        public bool HandleError(Exception exception)
         {
-            public TestErrorHandler(AtomicReference<Exception> atomicReference, CountdownEvent latch)
-            {
-                AtomicReference = atomicReference;
-                Latch = latch;
-            }
-
-            public string ServiceName { get; set; } = nameof(TestErrorHandler);
-
-            public AtomicReference<Exception> AtomicReference { get; }
-
-            public CountdownEvent Latch { get; }
-
-            public bool HandleError(Exception exception)
-            {
-                AtomicReference.Value = exception;
-                Latch.Signal();
-                return true;
-            }
+            AtomicReference.Value = exception;
+            Latch.Signal();
+            return true;
         }
     }
 }

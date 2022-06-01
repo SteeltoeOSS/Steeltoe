@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,89 +10,88 @@ using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
+
+public class HystrixCommandCompletionStreamTest : CommandStreamTest
 {
-    public class HystrixCommandCompletionStreamTest : CommandStreamTest
+    private sealed class LatchedObserver : ObserverBase<HystrixCommandCompletion>
     {
-        private sealed class LatchedObserver : ObserverBase<HystrixCommandCompletion>
+        private readonly CountdownEvent latch;
+
+        public LatchedObserver(CountdownEvent latch)
         {
-            private readonly CountdownEvent latch;
-
-            public LatchedObserver(CountdownEvent latch)
-            {
-                this.latch = latch;
-            }
-
-            protected override void OnCompletedCore()
-            {
-                latch.SignalEx();
-            }
-
-            protected override void OnErrorCore(Exception error)
-            {
-                Assert.False(true, error.Message);
-            }
-
-            protected override void OnNextCore(HystrixCommandCompletion value)
-            {
-            }
+            this.latch = latch;
         }
 
-        private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("COMMAND");
-        private static readonly IHystrixThreadPoolKey ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
-        private readonly HystrixCommandCompletionStream commandStream = new (CommandKey);
-        private readonly ITestOutputHelper output;
-
-        public HystrixCommandCompletionStreamTest(ITestOutputHelper output)
+        protected override void OnCompletedCore()
         {
-            this.output = output;
+            latch.SignalEx();
         }
 
-        [Fact]
-        public void TestNoEvents()
+        protected override void OnErrorCore(Exception error)
         {
-            var latch = new CountdownEvent(1);
-            IObserver<HystrixCommandCompletion> subscriber = new LatchedObserver(latch);
-
-            commandStream.Observe().Take(1).Subscribe(subscriber);
-
-            // no writes
-            Assert.False(latch.Wait(TimeSpan.FromMilliseconds(1000)));
+            Assert.False(true, error.Message);
         }
 
-        [Fact]
-        public void TestSingleWriteSingleSubscriber()
+        protected override void OnNextCore(HystrixCommandCompletion value)
         {
-            var latch = new CountdownEvent(1);
-            IObserver<HystrixCommandCompletion> subscriber = new LatchedObserver(latch);
-
-            commandStream.Observe().Take(1).Subscribe(subscriber);
-
-            var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
-            var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
-            commandStream.Write(@event);
-
-            Assert.True(latch.Wait(TimeSpan.FromMilliseconds(1000)));
         }
+    }
 
-        [Fact]
-        public void TestSingleWriteMultipleSubscribers()
-        {
-            var latch1 = new CountdownEvent(1);
-            IObserver<HystrixCommandCompletion> subscriber1 = new LatchedObserver(latch1);
+    private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("COMMAND");
+    private static readonly IHystrixThreadPoolKey ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
+    private readonly HystrixCommandCompletionStream commandStream = new (CommandKey);
+    private readonly ITestOutputHelper output;
 
-            var latch2 = new CountdownEvent(1);
-            IObserver<HystrixCommandCompletion> subscriber2 = new LatchedObserver(latch2);
+    public HystrixCommandCompletionStreamTest(ITestOutputHelper output)
+    {
+        this.output = output;
+    }
 
-            commandStream.Observe().Take(1).Subscribe(subscriber1);
-            commandStream.Observe().Take(1).Subscribe(subscriber2);
+    [Fact]
+    public void TestNoEvents()
+    {
+        var latch = new CountdownEvent(1);
+        IObserver<HystrixCommandCompletion> subscriber = new LatchedObserver(latch);
 
-            var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
-            var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
-            commandStream.Write(@event);
+        commandStream.Observe().Take(1).Subscribe(subscriber);
 
-            Assert.True(latch1.Wait(TimeSpan.FromMilliseconds(1000)));
-            Assert.True(latch2.Wait(TimeSpan.FromMilliseconds(10)));
-        }
+        // no writes
+        Assert.False(latch.Wait(TimeSpan.FromMilliseconds(1000)));
+    }
+
+    [Fact]
+    public void TestSingleWriteSingleSubscriber()
+    {
+        var latch = new CountdownEvent(1);
+        IObserver<HystrixCommandCompletion> subscriber = new LatchedObserver(latch);
+
+        commandStream.Observe().Take(1).Subscribe(subscriber);
+
+        var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
+        var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
+        commandStream.Write(@event);
+
+        Assert.True(latch.Wait(TimeSpan.FromMilliseconds(1000)));
+    }
+
+    [Fact]
+    public void TestSingleWriteMultipleSubscribers()
+    {
+        var latch1 = new CountdownEvent(1);
+        IObserver<HystrixCommandCompletion> subscriber1 = new LatchedObserver(latch1);
+
+        var latch2 = new CountdownEvent(1);
+        IObserver<HystrixCommandCompletion> subscriber2 = new LatchedObserver(latch2);
+
+        commandStream.Observe().Take(1).Subscribe(subscriber1);
+        commandStream.Observe().Take(1).Subscribe(subscriber2);
+
+        var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
+        var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
+        commandStream.Write(@event);
+
+        Assert.True(latch1.Wait(TimeSpan.FromMilliseconds(1000)));
+        Assert.True(latch2.Wait(TimeSpan.FromMilliseconds(10)));
     }
 }

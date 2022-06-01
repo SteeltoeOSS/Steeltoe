@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,81 +12,80 @@ using System.Threading.Tasks;
 using Xunit;
 using static Steeltoe.Management.Endpoint.ContentNegotiation.Test.TestStartupExtensions;
 
-namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test
+namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
+
+public class ContentNegotiationTests
 {
-    public class ContentNegotiationTests
+    private static readonly Dictionary<string, string> AppSettings = new ()
     {
-        private static readonly Dictionary<string, string> AppSettings = new ()
-        {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        };
+        ["management:endpoints:actuator:exposure:include:0"] = "*"
+    };
 
-        public static IEnumerable<object[]> EndpointMiddleware_ContentNegotiation_TestCases
+    public static IEnumerable<object[]> EndpointMiddleware_ContentNegotiation_TestCases
+    {
+        get
         {
-            get
+            var endpoints = new[]
             {
-                var endpoints = new[]
-                {
-                    new { epName = EndpointNames.Hypermedia, epPath = "http://localhost/actuator" },
-                    new { epName = EndpointNames.Cloudfoundry, epPath = "http://localhost/cloudfoundryapplication" },
-                    new { epName = EndpointNames.Info, epPath = "http://localhost/actuator/info" },
-                    new { epName = EndpointNames.Metrics, epPath = "http://localhost/actuator/metrics" },
-                    new { epName = EndpointNames.Loggers, epPath = "http://localhost/actuator/loggers" },
-                    new { epName = EndpointNames.Health, epPath = "http://localhost/actuator/health" },
-                    new { epName = EndpointNames.Trace, epPath = "http://localhost/actuator/httptrace" },
-                    new { epName = EndpointNames.Env, epPath = "http://localhost/actuator/env" },
-                    new { epName = EndpointNames.Mappings, epPath = "http://localhost/actuator/mappings" },
-                    new { epName = EndpointNames.Refresh, epPath = "http://localhost/actuator/refresh" }
-                };
+                new { epName = EndpointNames.Hypermedia, epPath = "http://localhost/actuator" },
+                new { epName = EndpointNames.Cloudfoundry, epPath = "http://localhost/cloudfoundryapplication" },
+                new { epName = EndpointNames.Info, epPath = "http://localhost/actuator/info" },
+                new { epName = EndpointNames.Metrics, epPath = "http://localhost/actuator/metrics" },
+                new { epName = EndpointNames.Loggers, epPath = "http://localhost/actuator/loggers" },
+                new { epName = EndpointNames.Health, epPath = "http://localhost/actuator/health" },
+                new { epName = EndpointNames.Trace, epPath = "http://localhost/actuator/httptrace" },
+                new { epName = EndpointNames.Env, epPath = "http://localhost/actuator/env" },
+                new { epName = EndpointNames.Mappings, epPath = "http://localhost/actuator/mappings" },
+                new { epName = EndpointNames.Refresh, epPath = "http://localhost/actuator/refresh" }
+            };
 
-                var negotations = new[]
-                {
-                    new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptAppJson_RetrunsAppJson" },
-                    new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptInvalid_RetrunsAppJson" },
-                    new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptV1_RetrunsAppJson_WhenV2Configured" },
-                    new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptV2_RetrunsV2_WhenV2Configured" },
-                    new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.ANY }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptANY_RetrunsV2_WhenV2Configured" },
-                    new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleAscOrdered_RetrunsV2_WhenV2Configured" },
-                    new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleDescOrdered_RetrunsV2_WhenV2Configured" }
-                };
+            var negotations = new[]
+            {
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptAppJson_RetrunsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptInvalid_RetrunsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptV1_RetrunsAppJson_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptV2_RetrunsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.ANY }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptANY_RetrunsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleAscOrdered_RetrunsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleDescOrdered_RetrunsV2_WhenV2Configured" }
+            };
 
-                foreach (var endpoint in endpoints)
+            foreach (var endpoint in endpoints)
+            {
+                foreach (var negotation in negotations)
                 {
-                    foreach (var negotation in negotations)
-                    {
-                        yield return new object[] { endpoint.epName, endpoint.epPath, negotation.accepts, negotation.contentType };
-                    }
+                    yield return new object[] { endpoint.epName, endpoint.epPath, negotation.accepts, negotation.contentType };
                 }
             }
         }
+    }
 
-        [Theory]
-        [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
-        public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
-        {
-            // arrange a server and client
-            var builder = new WebHostBuilder()
-                .StartupByEpName(epName)
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-                .ConfigureLogging((webhostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
-
-            using var server = new TestServer(builder);
-            var client = server.CreateClient();
-            foreach (var accept in accepts)
+    [Theory]
+    [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
+    public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
+    {
+        // arrange a server and client
+        var builder = new WebHostBuilder()
+            .StartupByEpName(epName)
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+            .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
-            }
+                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddDynamicConsole();
+            });
 
-            // send the request
-            var result = await client.GetAsync(epPath);
-            var json = await result.Content.ReadAsStringAsync();
-
-            var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-            Assert.Contains(contentHeaders, header => header.StartsWith(contentType));
+        using var server = new TestServer(builder);
+        var client = server.CreateClient();
+        foreach (var accept in accepts)
+        {
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
         }
+
+        // send the request
+        var result = await client.GetAsync(epPath);
+        var json = await result.Content.ReadAsStringAsync();
+
+        var contentHeaders = result.Content.Headers.GetValues("Content-Type");
+        Assert.Contains(contentHeaders, header => header.StartsWith(contentType));
     }
 }

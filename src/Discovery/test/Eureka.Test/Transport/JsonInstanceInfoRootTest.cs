@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,14 +7,14 @@ using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test;
+
+public class JsonInstanceInfoRootTest : AbstractBaseTest
 {
-    public class JsonInstanceInfoRootTest : AbstractBaseTest
+    [Fact]
+    public void Deserialize_GoodJson()
     {
-        [Fact]
-        public void Deserialize_GoodJson()
-        {
-            var json = @"
+        var json = @"
 { 
     ""instance"":
     {
@@ -45,14 +45,13 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         ""asgName"":null
     }
 }";
-            var result = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(json);
-            Assert.NotNull(result);
-            Assert.NotNull(result.Instance);
+        var result = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(json);
+        Assert.NotNull(result);
+        Assert.NotNull(result.Instance);
 
-            // Random check some values
-            Assert.Equal(ActionType.ADDED, result.Instance.Actiontype);
-            Assert.Equal("http://DESKTOP-GNQ5SUT:80/healthcheck", result.Instance.HealthCheckUrl);
-            Assert.Equal("FOOBAR", result.Instance.AppName);
-        }
+        // Random check some values
+        Assert.Equal(ActionType.ADDED, result.Instance.Actiontype);
+        Assert.Equal("http://DESKTOP-GNQ5SUT:80/healthcheck", result.Instance.HealthCheckUrl);
+        Assert.Equal("FOOBAR", result.Instance.AppName);
     }
 }

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,115 +10,114 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public class RabbitListenerMetadata
 {
-    public class RabbitListenerMetadata
+    internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new ();
+    internal static readonly HashSet<string> _groups = new ();
+
+    internal RabbitListenerMetadata(Type targetClass, List<ListenerMethod> methods, List<MethodInfo> multiMethods, List<RabbitListenerAttribute> classLevelListeners)
     {
-        internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new ();
-        internal static readonly HashSet<string> _groups = new ();
+        TargetClass = targetClass;
+        ListenerMethods = methods;
+        HandlerMethods = multiMethods;
+        ClassAnnotations = classLevelListeners;
+    }
 
-        internal RabbitListenerMetadata(Type targetClass, List<ListenerMethod> methods, List<MethodInfo> multiMethods, List<RabbitListenerAttribute> classLevelListeners)
+    internal RabbitListenerMetadata()
+    {
+        ListenerMethods = new List<ListenerMethod>();
+        HandlerMethods = new List<MethodInfo>();
+        ClassAnnotations = new List<RabbitListenerAttribute>();
+    }
+
+    internal List<ListenerMethod> ListenerMethods { get; }
+
+    internal List<MethodInfo> HandlerMethods { get; }
+
+    internal List<RabbitListenerAttribute> ClassAnnotations { get; }
+
+    internal Type TargetClass { get; }
+
+    internal static RabbitListenerMetadata BuildMetadata(IServiceCollection services, Type targetClass)
+    {
+        if (targetClass == null)
         {
-            TargetClass = targetClass;
-            ListenerMethods = methods;
-            HandlerMethods = multiMethods;
-            ClassAnnotations = classLevelListeners;
+            throw new ArgumentNullException(nameof(targetClass));
         }
 
-        internal RabbitListenerMetadata()
+        if (_typeCache.TryGetValue(targetClass, out _))
         {
-            ListenerMethods = new List<ListenerMethod>();
-            HandlerMethods = new List<MethodInfo>();
-            ClassAnnotations = new List<RabbitListenerAttribute>();
+            return null;
         }
 
-        internal List<ListenerMethod> ListenerMethods { get; }
-
-        internal List<MethodInfo> HandlerMethods { get; }
-
-        internal List<RabbitListenerAttribute> ClassAnnotations { get; }
-
-        internal Type TargetClass { get; }
-
-        internal static RabbitListenerMetadata BuildMetadata(IServiceCollection services, Type targetClass)
+        var classLevelListeners = targetClass.GetCustomAttributes<RabbitListenerAttribute>().ToList();
+        Validate(services, classLevelListeners);
+        var methods = new List<ListenerMethod>();
+        var multiMethods = new List<MethodInfo>();
+        var reflectMethods = targetClass.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+        foreach (var m in reflectMethods)
         {
-            if (targetClass == null)
+            var methodLevelListeners = m.GetCustomAttributes<RabbitListenerAttribute>().ToList();
+            if (methodLevelListeners.Count > 0)
             {
-                throw new ArgumentNullException(nameof(targetClass));
+                Validate(services, methodLevelListeners);
+                methods.Add(new ListenerMethod(m, methodLevelListeners));
             }
 
-            if (_typeCache.TryGetValue(targetClass, out _))
+            if (classLevelListeners.Count > 0)
             {
-                return null;
-            }
-
-            var classLevelListeners = targetClass.GetCustomAttributes<RabbitListenerAttribute>().ToList();
-            Validate(services, classLevelListeners);
-            var methods = new List<ListenerMethod>();
-            var multiMethods = new List<MethodInfo>();
-            var reflectMethods = targetClass.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var m in reflectMethods)
-            {
-                var methodLevelListeners = m.GetCustomAttributes<RabbitListenerAttribute>().ToList();
-                if (methodLevelListeners.Count > 0)
+                var handlerAttributes = m.GetCustomAttributes<RabbitHandlerAttribute>();
+                if (handlerAttributes.Any())
                 {
-                    Validate(services, methodLevelListeners);
-                    methods.Add(new ListenerMethod(m, methodLevelListeners));
-                }
-
-                if (classLevelListeners.Count > 0)
-                {
-                    var handlerAttributes = m.GetCustomAttributes<RabbitHandlerAttribute>();
-                    if (handlerAttributes.Any())
-                    {
-                        multiMethods.Add(m);
-                    }
-                }
-            }
-
-            if (methods.Count == 0 && multiMethods.Count == 0)
-            {
-                return null;
-            }
-
-            return new RabbitListenerMetadata(targetClass, methods, multiMethods, classLevelListeners);
-        }
-
-        private static void Validate(IServiceCollection services, List<RabbitListenerAttribute> listenerAttributes)
-        {
-            foreach (var listener in listenerAttributes)
-            {
-                var queues = listener.Queues;
-                var bindings = listener.Bindings;
-                if (bindings.Length > 0 && queues.Length > 0)
-                {
-                    throw new InvalidOperationException("RabbitListenerAttribute can have either 'Queues' or 'Bindings' set, but not both");
-                }
-
-                if (!string.IsNullOrEmpty(listener.Group) && !_groups.Contains(listener.Group))
-                {
-                    _groups.Add(listener.Group);
-                    services.AddSingleton<IMessageListenerContainerCollection>(new MessageListenerContainerCollection(listener.Group));
+                    multiMethods.Add(m);
                 }
             }
         }
 
-        internal class ListenerMethod
+        if (methods.Count == 0 && multiMethods.Count == 0)
         {
-            public MethodInfo Method { get; }
+            return null;
+        }
 
-            public List<RabbitListenerAttribute> Attributes { get; }
+        return new RabbitListenerMetadata(targetClass, methods, multiMethods, classLevelListeners);
+    }
 
-            public ListenerMethod(MethodInfo method, List<RabbitListenerAttribute> attributes)
+    private static void Validate(IServiceCollection services, List<RabbitListenerAttribute> listenerAttributes)
+    {
+        foreach (var listener in listenerAttributes)
+        {
+            var queues = listener.Queues;
+            var bindings = listener.Bindings;
+            if (bindings.Length > 0 && queues.Length > 0)
             {
-                Method = method;
-                Attributes = attributes;
+                throw new InvalidOperationException("RabbitListenerAttribute can have either 'Queues' or 'Bindings' set, but not both");
+            }
+
+            if (!string.IsNullOrEmpty(listener.Group) && !_groups.Contains(listener.Group))
+            {
+                _groups.Add(listener.Group);
+                services.AddSingleton<IMessageListenerContainerCollection>(new MessageListenerContainerCollection(listener.Group));
             }
         }
+    }
 
-        internal static void Reset()
+    internal class ListenerMethod
+    {
+        public MethodInfo Method { get; }
+
+        public List<RabbitListenerAttribute> Attributes { get; }
+
+        public ListenerMethod(MethodInfo method, List<RabbitListenerAttribute> attributes)
         {
-            _typeCache.Clear();
+            Method = method;
+            Attributes = attributes;
         }
+    }
+
+    internal static void Reset()
+    {
+        _typeCache.Clear();
     }
 }

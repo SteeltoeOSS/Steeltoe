@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,88 +10,87 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Test;
+
+public class HystrixThreadPoolMetricsTest : HystrixTestBase
 {
-    public class HystrixThreadPoolMetricsTest : HystrixTestBase
+    private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
+    private static readonly IHystrixThreadPoolKey TpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
+    private readonly ITestOutputHelper output;
+
+    public HystrixThreadPoolMetricsTest(ITestOutputHelper output)
     {
-        private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
-        private static readonly IHystrixThreadPoolKey TpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
+        this.output = output;
+        HystrixThreadPoolMetrics.Reset();
+    }
+
+    [Fact]
+    [Trait("Category", "FlakyOnHostedAgents")]
+    public void ShouldYieldNoExecutedTasksOnStartup()
+    {
+        // given
+        var instances = HystrixThreadPoolMetrics.GetInstances();
+
+        // then
+        Assert.Equal(0, instances.Count);
+    }
+
+    [Fact]
+    [Trait("Category", "FlakyOnHostedAgents")]
+    public async Task ShouldReturnOneExecutedTask()
+    {
+        // given
+        var stream = RollingThreadPoolEventCounterStream.GetInstance(TpKey, 10, 100);
+        stream.StartCachingStreamValuesIfUnstarted();
+
+        var cmd = new NoOpHystrixCommand(output);
+        await cmd.ExecuteAsync();
+        Time.Wait(250);
+
+        var instances = HystrixThreadPoolMetrics.GetInstances();
+
+        // then
+        output.WriteLine($"Instance count: {instances.Count}");
+        Assert.Equal(1, instances.Count);
+        var metrics = instances.First();
+        output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
+        Assert.Equal(1, metrics.RollingCountThreadsExecuted);
+    }
+
+    private sealed class NoOpHystrixCommand : HystrixCommand<bool>
+    {
         private readonly ITestOutputHelper output;
 
-        public HystrixThreadPoolMetricsTest(ITestOutputHelper output)
+        public NoOpHystrixCommand(ITestOutputHelper output)
+            : base(GetCommandOptions())
         {
             this.output = output;
-            HystrixThreadPoolMetrics.Reset();
         }
 
-        [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void ShouldYieldNoExecutedTasksOnStartup()
+        protected override bool Run()
         {
-            // given
-            var instances = HystrixThreadPoolMetrics.GetInstances();
-
-            // then
-            Assert.Equal(0, instances.Count);
+            output.WriteLine("Run in thread : " + Thread.CurrentThread.ManagedThreadId);
+            return false;
         }
 
-        [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async Task ShouldReturnOneExecutedTask()
+        private static IHystrixThreadPoolOptions GetThreadPoolOptions()
         {
-            // given
-            var stream = RollingThreadPoolEventCounterStream.GetInstance(TpKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
-            var cmd = new NoOpHystrixCommand(output);
-            await cmd.ExecuteAsync();
-            Time.Wait(250);
-
-            var instances = HystrixThreadPoolMetrics.GetInstances();
-
-            // then
-            output.WriteLine($"Instance count: {instances.Count}");
-            Assert.Equal(1, instances.Count);
-            var metrics = instances.First();
-            output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
-            Assert.Equal(1, metrics.RollingCountThreadsExecuted);
+            var opts = new HystrixThreadPoolOptions(TpKey)
+            {
+                MetricsRollingStatisticalWindowInMilliseconds = 100
+            };
+            return opts;
         }
 
-        private sealed class NoOpHystrixCommand : HystrixCommand<bool>
+        private static IHystrixCommandOptions GetCommandOptions()
         {
-            private readonly ITestOutputHelper output;
-
-            public NoOpHystrixCommand(ITestOutputHelper output)
-                : base(GetCommandOptions())
+            var opts = new HystrixCommandOptions
             {
-                this.output = output;
-            }
-
-            protected override bool Run()
-            {
-                output.WriteLine("Run in thread : " + Thread.CurrentThread.ManagedThreadId);
-                return false;
-            }
-
-            private static IHystrixThreadPoolOptions GetThreadPoolOptions()
-            {
-                var opts = new HystrixThreadPoolOptions(TpKey)
-                {
-                    MetricsRollingStatisticalWindowInMilliseconds = 100
-                };
-                return opts;
-            }
-
-            private static IHystrixCommandOptions GetCommandOptions()
-            {
-                var opts = new HystrixCommandOptions
-                {
-                    GroupKey = GroupKey,
-                    ThreadPoolKey = TpKey,
-                    ThreadPoolOptions = GetThreadPoolOptions()
-                };
-                return opts;
-            }
+                GroupKey = GroupKey,
+                ThreadPoolKey = TpKey,
+                ThreadPoolOptions = GetThreadPoolOptions()
+            };
+            return opts;
         }
     }
 }

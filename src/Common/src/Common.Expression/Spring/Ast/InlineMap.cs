@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,156 +7,155 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+
+public class InlineMap : SpelNode
 {
-    public class InlineMap : SpelNode
+    // If the map is purely literals, it is a constant value and can be computed and cached
+    private ITypedValue _constant;
+
+    public InlineMap(int startPos, int endPos, params SpelNode[] args)
+        : base(startPos, endPos, args)
     {
-        // If the map is purely literals, it is a constant value and can be computed and cached
-        private ITypedValue _constant;
+        CheckIfConstant();
+    }
 
-        public InlineMap(int startPos, int endPos, params SpelNode[] args)
-            : base(startPos, endPos, args)
+    public override ITypedValue GetValueInternal(ExpressionState state)
+    {
+        if (_constant != null)
         {
-            CheckIfConstant();
+            return _constant;
         }
-
-        public override ITypedValue GetValueInternal(ExpressionState state)
+        else
         {
-            if (_constant != null)
+            var returnValue = new Dictionary<object, object>();
+            var childcount = ChildCount;
+            for (var c = 0; c < childcount; c++)
             {
-                return _constant;
-            }
-            else
-            {
-                var returnValue = new Dictionary<object, object>();
-                var childcount = ChildCount;
-                for (var c = 0; c < childcount; c++)
+                // Allow for key being PropertyOrFieldReference like Indexer on maps
+                var keyChild = GetChild(c++);
+                object key = null;
+                if (keyChild is PropertyOrFieldReference reference)
                 {
-                    // Allow for key being PropertyOrFieldReference like Indexer on maps
-                    var keyChild = GetChild(c++);
-                    object key = null;
-                    if (keyChild is PropertyOrFieldReference reference)
-                    {
-                        key = reference.Name;
-                    }
-                    else
-                    {
-                        key = keyChild.GetValue(state);
-                    }
-
-                    var value = GetChild(c).GetValue(state);
-                    returnValue[key] = value;
+                    key = reference.Name;
+                }
+                else
+                {
+                    key = keyChild.GetValue(state);
                 }
 
-                return new TypedValue(returnValue);
+                var value = GetChild(c).GetValue(state);
+                returnValue[key] = value;
             }
+
+            return new TypedValue(returnValue);
+        }
+    }
+
+    public override string ToStringAST()
+    {
+        var sb = new StringBuilder("{");
+        var count = ChildCount;
+        for (var c = 0; c < count; c++)
+        {
+            if (c > 0)
+            {
+                sb.Append(',');
+            }
+
+            sb.Append(GetChild(c++).ToStringAST());
+            sb.Append(':');
+            sb.Append(GetChild(c).ToStringAST());
         }
 
-        public override string ToStringAST()
+        sb.Append('}');
+        return sb.ToString();
+    }
+
+    public bool IsConstant => _constant != null;
+
+    public IDictionary<object, object> GetConstantValue()
+    {
+        if (_constant == null)
         {
-            var sb = new StringBuilder("{");
-            var count = ChildCount;
-            for (var c = 0; c < count; c++)
+            throw new InvalidOperationException("No constant");
+        }
+
+        return (IDictionary<object, object>)_constant.Value;
+    }
+
+    private void CheckIfConstant()
+    {
+        var isConstant = true;
+        for (int c = 0, max = ChildCount; c < max; c++)
+        {
+            var child = GetChild(c);
+            if (child is not Literal)
             {
-                if (c > 0)
+                if (child is InlineList inlineList)
                 {
-                    sb.Append(',');
-                }
-
-                sb.Append(GetChild(c++).ToStringAST());
-                sb.Append(':');
-                sb.Append(GetChild(c).ToStringAST());
-            }
-
-            sb.Append('}');
-            return sb.ToString();
-        }
-
-        public bool IsConstant => _constant != null;
-
-        public IDictionary<object, object> GetConstantValue()
-        {
-            if (_constant == null)
-            {
-                throw new InvalidOperationException("No constant");
-            }
-
-            return (IDictionary<object, object>)_constant.Value;
-        }
-
-        private void CheckIfConstant()
-        {
-            var isConstant = true;
-            for (int c = 0, max = ChildCount; c < max; c++)
-            {
-                var child = GetChild(c);
-                if (child is not Literal)
-                {
-                    if (child is InlineList inlineList)
-                    {
-                        if (!inlineList.IsConstant)
-                        {
-                            isConstant = false;
-                            break;
-                        }
-                    }
-                    else if (child is InlineMap inlineMap)
-                    {
-                        if (!inlineMap.IsConstant)
-                        {
-                            isConstant = false;
-                            break;
-                        }
-                    }
-                    else if (!(c % 2 == 0 && child is PropertyOrFieldReference))
+                    if (!inlineList.IsConstant)
                     {
                         isConstant = false;
                         break;
                     }
                 }
-            }
-
-            if (isConstant)
-            {
-                var constantMap = new Dictionary<object, object>();
-                var childCount = ChildCount;
-                for (var c = 0; c < childCount; c++)
+                else if (child is InlineMap inlineMap)
                 {
-                    var keyChild = GetChild(c++);
-                    var valueChild = GetChild(c);
-                    object key = null;
-                    object value = null;
-                    if (keyChild is Literal literal)
+                    if (!inlineMap.IsConstant)
                     {
-                        key = literal.GetLiteralValue().Value;
+                        isConstant = false;
+                        break;
                     }
-                    else if (keyChild is PropertyOrFieldReference reference)
-                    {
-                        key = reference.Name;
-                    }
-                    else
-                    {
-                        return;
-                    }
+                }
+                else if (!(c % 2 == 0 && child is PropertyOrFieldReference))
+                {
+                    isConstant = false;
+                    break;
+                }
+            }
+        }
 
-                    if (valueChild is Literal literal1)
-                    {
-                        value = literal1.GetLiteralValue().Value;
-                    }
-                    else if (valueChild is InlineList list)
-                    {
-                        value = list.GetConstantValue();
-                    }
-                    else if (valueChild is InlineMap map)
-                    {
-                        value = map.GetConstantValue();
-                    }
-
-                    constantMap[key] = value;
+        if (isConstant)
+        {
+            var constantMap = new Dictionary<object, object>();
+            var childCount = ChildCount;
+            for (var c = 0; c < childCount; c++)
+            {
+                var keyChild = GetChild(c++);
+                var valueChild = GetChild(c);
+                object key = null;
+                object value = null;
+                if (keyChild is Literal literal)
+                {
+                    key = literal.GetLiteralValue().Value;
+                }
+                else if (keyChild is PropertyOrFieldReference reference)
+                {
+                    key = reference.Name;
+                }
+                else
+                {
+                    return;
                 }
 
-                _constant = new TypedValue(new ReadOnlyDictionary<object, object>(constantMap));
+                if (valueChild is Literal literal1)
+                {
+                    value = literal1.GetLiteralValue().Value;
+                }
+                else if (valueChild is InlineList list)
+                {
+                    value = list.GetConstantValue();
+                }
+                else if (valueChild is InlineMap map)
+                {
+                    value = map.GetConstantValue();
+                }
+
+                constantMap[key] = value;
             }
+
+            _constant = new TypedValue(new ReadOnlyDictionary<object, object>(constantMap));
         }
     }
 }

@@ -4,12 +4,11 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations
-{
-    public class DbMigrationsDescriptor
-    {
-        public List<string> PendingMigrations { get; set; } = new ();
+namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-        public List<string> AppliedMigrations { get; set; } = new ();
-    }
+public class DbMigrationsDescriptor
+{
+    public List<string> PendingMigrations { get; set; } = new ();
+
+    public List<string> AppliedMigrations { get; set; } = new ();
 }

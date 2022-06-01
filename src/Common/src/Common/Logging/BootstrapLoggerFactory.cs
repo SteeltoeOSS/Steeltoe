@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Logging
+namespace Steeltoe.Common.Logging;
+
+internal static class BootstrapLoggerFactory
 {
-    internal static class BootstrapLoggerFactory
-    {
-        public static IBoostrapLoggerFactory Instance { get; } = new UpgradableBootstrapLoggerFactory();
-    }
+    public static IBoostrapLoggerFactory Instance { get; } = new UpgradableBootstrapLoggerFactory();
 }

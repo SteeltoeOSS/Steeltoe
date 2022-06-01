@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,67 +7,66 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Steeltoe.Messaging.RabbitMQ.Util
+namespace Steeltoe.Messaging.RabbitMQ.Util;
+
+public class ActiveObjectCounter<T>
 {
-    public class ActiveObjectCounter<T>
+    private readonly ConcurrentDictionary<T, CountdownEvent> _locks = new ();
+
+    public void Add(T activeObject)
     {
-        private readonly ConcurrentDictionary<T, CountdownEvent> _locks = new ();
+        var latch = new CountdownEvent(1);
+        _locks.TryAdd(activeObject, latch);
+    }
 
-        public void Add(T activeObject)
+    public void Release(T activeObject)
+    {
+        if (_locks.TryRemove(activeObject, out var remove))
         {
-            var latch = new CountdownEvent(1);
-            _locks.TryAdd(activeObject, latch);
+            remove.Signal();
         }
+    }
 
-        public void Release(T activeObject)
+    public bool Wait(TimeSpan timeout)
+    {
+        var t0 = DateTimeOffset.Now.Ticks;
+        var t1 = t0 + timeout.Ticks;
+        while (DateTimeOffset.Now.Ticks <= t1)
         {
-            if (_locks.TryRemove(activeObject, out var remove))
+            if (_locks.Count == 0)
             {
-                remove.Signal();
-            }
-        }
-
-        public bool Wait(TimeSpan timeout)
-        {
-            var t0 = DateTimeOffset.Now.Ticks;
-            var t1 = t0 + timeout.Ticks;
-            while (DateTimeOffset.Now.Ticks <= t1)
-            {
-                if (_locks.Count == 0)
-                {
-                    return true;
-                }
-
-                var objects = new HashSet<T>(_locks.Keys);
-                foreach (var activeObject in objects)
-                {
-                    if (!_locks.TryGetValue(activeObject, out var latch))
-                    {
-                        continue;
-                    }
-
-                    t0 = DateTimeOffset.Now.Ticks;
-
-                    if (latch.Wait(TimeSpan.FromTicks(t1 - t0)))
-                    {
-                        _locks.TryRemove(activeObject, out _);
-                    }
-                }
+                return true;
             }
 
-            return false;
+            var objects = new HashSet<T>(_locks.Keys);
+            foreach (var activeObject in objects)
+            {
+                if (!_locks.TryGetValue(activeObject, out var latch))
+                {
+                    continue;
+                }
+
+                t0 = DateTimeOffset.Now.Ticks;
+
+                if (latch.Wait(TimeSpan.FromTicks(t1 - t0)))
+                {
+                    _locks.TryRemove(activeObject, out _);
+                }
+            }
         }
 
-        public int Count => _locks.Count;
+        return false;
+    }
 
-        public bool IsActive { get; private set; } = true;
+    public int Count => _locks.Count;
 
-        public void Deactivate() => IsActive = false;
+    public bool IsActive { get; private set; } = true;
 
-        public void Reset()
-        {
-            _locks.Clear();
-            IsActive = false;
-        }
+    public void Deactivate() => IsActive = false;
+
+    public void Reset()
+    {
+        _locks.Clear();
+        IsActive = false;
     }
 }

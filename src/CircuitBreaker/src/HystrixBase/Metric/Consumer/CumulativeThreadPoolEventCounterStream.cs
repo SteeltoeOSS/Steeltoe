@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,63 +6,62 @@ using Steeltoe.Common;
 using System;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+
+public class CumulativeThreadPoolEventCounterStream : BucketedCumulativeCounterStream<HystrixCommandCompletion, long[], long[]>
 {
-    public class CumulativeThreadPoolEventCounterStream : BucketedCumulativeCounterStream<HystrixCommandCompletion, long[], long[]>
+    private static readonly ConcurrentDictionary<string, CumulativeThreadPoolEventCounterStream> Streams = new ();
+
+    private static readonly int ALL_EVENT_TYPES_SIZE = ThreadPoolEventTypeHelper.Values.Count;
+
+    public static CumulativeThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
     {
-        private static readonly ConcurrentDictionary<string, CumulativeThreadPoolEventCounterStream> Streams = new ();
+        var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
+        var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
+        var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
 
-        private static readonly int ALL_EVENT_TYPES_SIZE = ThreadPoolEventTypeHelper.Values.Count;
+        return GetInstance(threadPoolKey, numCounterBuckets, counterBucketSizeInMs);
+    }
 
-        public static CumulativeThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
+    public static CumulativeThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
+    {
+        return Streams.GetOrAddEx(threadPoolKey.Name, k =>
         {
-            var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
-            var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
-            var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
+            var stream = new CumulativeThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket, HystrixThreadPoolMetrics.CounterAggregator);
+            stream.StartCachingStreamValuesIfUnstarted();
+            return stream;
+        });
+    }
 
-            return GetInstance(threadPoolKey, numCounterBuckets, counterBucketSizeInMs);
+    public static void Reset()
+    {
+        foreach (var stream in Streams.Values)
+        {
+            stream.Unsubscribe();
         }
 
-        public static CumulativeThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
-        {
-            return Streams.GetOrAddEx(threadPoolKey.Name, k =>
-            {
-                var stream = new CumulativeThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket, HystrixThreadPoolMetrics.CounterAggregator);
-                stream.StartCachingStreamValuesIfUnstarted();
-                return stream;
-            });
-        }
+        HystrixThreadPoolCompletionStream.Reset();
 
-        public static void Reset()
-        {
-            foreach (var stream in Streams.Values)
-            {
-                stream.Unsubscribe();
-            }
+        Streams.Clear();
+    }
 
-            HystrixThreadPoolCompletionStream.Reset();
+    private CumulativeThreadPoolEventCounterStream(IHystrixThreadPoolKey threadPoolKey, int numCounterBuckets, int counterBucketSizeInMs, Func<long[], HystrixCommandCompletion, long[]> reduceCommandCompletion, Func<long[], long[], long[]> reduceBucket)
+        : base(HystrixThreadPoolCompletionStream.GetInstance(threadPoolKey), numCounterBuckets, counterBucketSizeInMs, reduceCommandCompletion, reduceBucket)
+    {
+    }
 
-            Streams.Clear();
-        }
+    public override long[] EmptyBucketSummary
+    {
+        get { return new long[ALL_EVENT_TYPES_SIZE]; }
+    }
 
-        private CumulativeThreadPoolEventCounterStream(IHystrixThreadPoolKey threadPoolKey, int numCounterBuckets, int counterBucketSizeInMs, Func<long[], HystrixCommandCompletion, long[]> reduceCommandCompletion, Func<long[], long[], long[]> reduceBucket)
-                    : base(HystrixThreadPoolCompletionStream.GetInstance(threadPoolKey), numCounterBuckets, counterBucketSizeInMs, reduceCommandCompletion, reduceBucket)
-        {
-        }
+    public override long[] EmptyOutputValue
+    {
+        get { return new long[ALL_EVENT_TYPES_SIZE]; }
+    }
 
-        public override long[] EmptyBucketSummary
-        {
-            get { return new long[ALL_EVENT_TYPES_SIZE]; }
-        }
-
-        public override long[] EmptyOutputValue
-        {
-            get { return new long[ALL_EVENT_TYPES_SIZE]; }
-        }
-
-        public long GetLatestCount(ThreadPoolEventType eventType)
-        {
-            return Latest[(int)eventType];
-        }
+    public long GetLatestCount(ThreadPoolEventType eventType)
+    {
+        return Latest[(int)eventType];
     }
 }

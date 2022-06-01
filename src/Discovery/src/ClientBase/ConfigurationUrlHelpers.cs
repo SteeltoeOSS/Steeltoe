@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,32 +6,31 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Discovery.Client;
+
+public static class ConfigurationUrlHelpers
 {
-    public static class ConfigurationUrlHelpers
+    public const string WILDCARD_HOST = "---asterisk---";
+
+    public static List<Uri> GetAspNetCoreUrls(this IConfiguration config)
     {
-        public const string WILDCARD_HOST = "---asterisk---";
-
-        public static List<Uri> GetAspNetCoreUrls(this IConfiguration config)
+        var urls = config["urls"];
+        var uris = new List<Uri>();
+        if (!string.IsNullOrEmpty(urls))
         {
-            var urls = config["urls"];
-            var uris = new List<Uri>();
-            if (!string.IsNullOrEmpty(urls))
+            var addresses = urls.Split(';');
+            foreach (var address in addresses)
             {
-                var addresses = urls.Split(';');
-                foreach (var address in addresses)
+                if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
+                    && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
                 {
-                    if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
-                            && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
-                    {
-                        Uri.TryCreate(address.Replace("*", WILDCARD_HOST).Replace("::", $"{WILDCARD_HOST}:").Replace("+", $"{WILDCARD_HOST}"), UriKind.Absolute, out uri);
-                    }
-
-                    uris.Add(uri);
+                    Uri.TryCreate(address.Replace("*", WILDCARD_HOST).Replace("::", $"{WILDCARD_HOST}:").Replace("+", $"{WILDCARD_HOST}"), UriKind.Absolute, out uri);
                 }
-            }
 
-            return uris;
+                uris.Add(uri);
+            }
         }
+
+        return uris;
     }
 }

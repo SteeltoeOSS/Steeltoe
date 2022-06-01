@@ -13,107 +13,106 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Observer
+namespace Steeltoe.Management.Endpoint.Metrics.Observer;
+
+/// <summary>
+/// This EventSourceListener listens on the following events:
+/// ThreadPoolWorkerThreadStart, ThreadPoolWorkerThreadWait, ThreadPoolWorkerThreadStop,
+/// IOThreadCreate_V1, IOThreadRetire_V1, IOThreadUnretire_V1, IOThreadTerminate
+/// And Records the following values:
+/// ActiveWorkerThreadCount - UInt32 - Number of worker threads available to process work, including those that are already processing work.
+/// RetiredWorkerThreadCount - UInt32 - Number of worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
+/// </summary>
+[Obsolete("Use CLRRuntimeObserver instead")]
+public class ThreadPoolEventsListener : EventSourceListener
 {
-    /// <summary>
-    /// This EventSourceListener listens on the following events:
-    /// ThreadPoolWorkerThreadStart, ThreadPoolWorkerThreadWait, ThreadPoolWorkerThreadStop,
-    /// IOThreadCreate_V1, IOThreadRetire_V1, IOThreadUnretire_V1, IOThreadTerminate
-    /// And Records the following values:
-    /// ActiveWorkerThreadCount - UInt32 - Number of worker threads available to process work, including those that are already processing work.
-    /// RetiredWorkerThreadCount - UInt32 - Number of worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
-    /// </summary>
-    [Obsolete("Use CLRRuntimeObserver instead")]
-    public class ThreadPoolEventsListener : EventSourceListener
+    private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
+    private const EventKeywords ThreadPoolEvents = (EventKeywords)0x10000;
+
+    private static string[] _allowedEvents = new string[]
     {
-        private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
-        private const EventKeywords ThreadPoolEvents = (EventKeywords)0x10000;
+        "ThreadPoolWorkerThreadStart",
+        "ThreadPoolWorkerThreadWait",
+        "ThreadPoolWorkerThreadStop",
+        "IOThreadCreate_V1",
+        "IOThreadRetire_V1",
+        "IOThreadUnretire_V1",
+        "IOThreadTerminate"
+    };
 
-        private static string[] _allowedEvents = new string[]
+    private static string[] _ignorePayloadNames = new string[]
+    {
+        "ClrInstanceID"
+    };
+
+    private readonly ILogger<EventSourceListener> _logger;
+    private readonly Counter<long> _availableThreads;
+
+    public ThreadPoolEventsListener(ILogger<EventSourceListener> logger = null)
+    {
+        _logger = logger;
+        _availableThreads = OpenTelemetryMetrics.Meter.CreateCounter<long>("clr.threadpool.available");
+    }
+
+    protected override void OnEventWritten(EventWrittenEventArgs eventData)
+    {
+        if (eventData == null)
         {
-            "ThreadPoolWorkerThreadStart",
-            "ThreadPoolWorkerThreadWait",
-            "ThreadPoolWorkerThreadStop",
-            "IOThreadCreate_V1",
-            "IOThreadRetire_V1",
-            "IOThreadUnretire_V1",
-            "IOThreadTerminate"
-        };
-
-        private static string[] _ignorePayloadNames = new string[]
-        {
-            "ClrInstanceID"
-        };
-
-        private readonly ILogger<EventSourceListener> _logger;
-        private readonly Counter<long> _availableThreads;
-
-        public ThreadPoolEventsListener(ILogger<EventSourceListener> logger = null)
-        {
-            _logger = logger;
-            _availableThreads = OpenTelemetryMetrics.Meter.CreateCounter<long>("clr.threadpool.available");
+            throw new ArgumentNullException(nameof(eventData));
         }
 
-        protected override void OnEventWritten(EventWrittenEventArgs eventData)
+        try
         {
-            if (eventData == null)
+            if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
             {
-                throw new ArgumentNullException(nameof(eventData));
-            }
-
-            try
-            {
-                if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
-                {
-                    ExtractAndRecordMetric(EventSourceName, eventData, GetLabelSet(eventData.EventName), _ignorePayloadNames);
-                    RecordAdditionalMetrics(eventData);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex.Message);
+                ExtractAndRecordMetric(EventSourceName, eventData, GetLabelSet(eventData.EventName), _ignorePayloadNames);
+                RecordAdditionalMetrics(eventData);
             }
         }
-
-        protected IDictionary<string, object> GetLabelSet(string eventName)
+        catch (Exception ex)
         {
-            return eventName switch
-            {
-                _ when eventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase) =>
+            _logger?.LogError(ex.Message);
+        }
+    }
+
+    protected IDictionary<string, object> GetLabelSet(string eventName)
+    {
+        return eventName switch
+        {
+            _ when eventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase) =>
                 new Dictionary<string, object> { { "kind", "completionPort" } },
-                _ when eventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase) =>
+            _ when eventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase) =>
                 new Dictionary<string, object> { { "kind", "worker" } },
-                _ => new Dictionary<string, object>()
-            };
-        }
+            _ => new Dictionary<string, object>()
+        };
+    }
 
-        protected override void OnEventSourceCreated(EventSource eventSource)
+    protected override void OnEventSourceCreated(EventSource eventSource)
+    {
+        if (eventSource.Name == EventSourceName)
         {
-            if (eventSource.Name == EventSourceName)
-            {
-                SafelyEnableEvents(eventSource, EventLevel.Verbose, ThreadPoolEvents);
-            }
+            SafelyEnableEvents(eventSource, EventLevel.Verbose, ThreadPoolEvents);
         }
+    }
 
-        private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
+    private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
+    {
+        ThreadPool.GetMaxThreads(out var maxWorker, out var maxComPort);
+        using var nameEnumerator = eventData.PayloadNames.GetEnumerator();
+        using var payloadEnumerator = eventData.Payload.GetEnumerator();
+
+        while (nameEnumerator.MoveNext())
         {
-            ThreadPool.GetMaxThreads(out var maxWorker, out var maxComPort);
-            using var nameEnumerator = eventData.PayloadNames.GetEnumerator();
-            using var payloadEnumerator = eventData.Payload.GetEnumerator();
+            payloadEnumerator.MoveNext();
 
-            while (nameEnumerator.MoveNext())
-            {
-                payloadEnumerator.MoveNext();
-
-                if ((eventData.EventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase)
-                    && nameEnumerator.Current.Equals("ActiveWorkerThreadCount", StringComparison.OrdinalIgnoreCase))
-                    || (eventData.EventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase)
+            if ((eventData.EventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase)
+                 && nameEnumerator.Current.Equals("ActiveWorkerThreadCount", StringComparison.OrdinalIgnoreCase))
+                || (eventData.EventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase)
                     && nameEnumerator.Current.EndsWith("Count", StringComparison.OrdinalIgnoreCase)))
-                {
-                    var activeCount = Convert.ToInt64(payloadEnumerator.Current, CultureInfo.InvariantCulture);
-                    var available = maxWorker - activeCount;
-                    _availableThreads.Add(available, GetLabelSet(eventData.EventName).AsReadonlySpan());
-                }
+            {
+                var activeCount = Convert.ToInt64(payloadEnumerator.Current, CultureInfo.InvariantCulture);
+                var available = maxWorker - activeCount;
+                _availableThreads.Add(available, GetLabelSet(eventData.EventName).AsReadonlySpan());
             }
         }
     }

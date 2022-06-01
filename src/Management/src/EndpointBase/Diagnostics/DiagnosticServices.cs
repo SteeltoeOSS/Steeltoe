@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,29 +8,28 @@ using Steeltoe.Common.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Diagnostics
+namespace Steeltoe.Management.Endpoint.Diagnostics;
+
+public class DiagnosticServices : IHostedService
 {
-    public class DiagnosticServices : IHostedService
+    private readonly IDiagnosticsManager _observerManager;
+    private readonly ILogger<DiagnosticServices> _logger;
+
+    public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger = null)
     {
-        private readonly IDiagnosticsManager _observerManager;
-        private readonly ILogger<DiagnosticServices> _logger;
+        _observerManager = observerManager;
+        _logger = logger;
+    }
 
-        public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger = null)
-        {
-            _observerManager = observerManager;
-            _logger = logger;
-        }
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _observerManager.Start();
+        return Task.CompletedTask;
+    }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _observerManager.Start();
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _observerManager.Stop();
-            return Task.CompletedTask;
-        }
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _observerManager.Stop();
+        return Task.CompletedTask;
     }
 }

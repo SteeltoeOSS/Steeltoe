@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,60 +8,59 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
-namespace Steeltoe.Connector.CloudFoundry
-{
-    public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
-    {
-        private static readonly object _lock = new ();
-        private static CloudFoundryServiceInfoCreator _me;
+namespace Steeltoe.Connector.CloudFoundry;
 
-        private CloudFoundryServiceInfoCreator(IConfiguration configuration)
-            : base(configuration)
+public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
+{
+    private static readonly object _lock = new ();
+    private static CloudFoundryServiceInfoCreator _me;
+
+    private CloudFoundryServiceInfoCreator(IConfiguration configuration)
+        : base(configuration)
+    {
+        BuildServiceInfoFactories();
+        BuildServiceInfos();
+    }
+
+    public static new CloudFoundryServiceInfoCreator Instance(IConfiguration configuration)
+    {
+        if (configuration == null)
         {
-            BuildServiceInfoFactories();
-            BuildServiceInfos();
+            throw new ArgumentNullException(nameof(configuration));
         }
 
-        public static new CloudFoundryServiceInfoCreator Instance(IConfiguration configuration)
+        if (configuration != _me?.Configuration)
         {
-            if (configuration == null)
+            lock (_lock)
             {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            if (configuration != _me?.Configuration)
-            {
-                lock (_lock)
+                if (configuration != _me?.Configuration)
                 {
-                    if (configuration != _me?.Configuration)
-                    {
-                        _me = new CloudFoundryServiceInfoCreator(configuration);
-                    }
+                    _me = new CloudFoundryServiceInfoCreator(configuration);
                 }
             }
-
-            return _me;
         }
 
-        public static new bool IsRelevant => Platform.IsCloudFoundry;
+        return _me;
+    }
 
-        private void BuildServiceInfos()
+    public static new bool IsRelevant => Platform.IsCloudFoundry;
+
+    private void BuildServiceInfos()
+    {
+        ServiceInfos.Clear();
+
+        var appInfo = new CloudFoundryApplicationOptions(Configuration);
+        var serviceOpts = new CloudFoundryServicesOptions(Configuration);
+
+        foreach (var serviceopt in serviceOpts.Services)
         {
-            ServiceInfos.Clear();
-
-            var appInfo = new CloudFoundryApplicationOptions(Configuration);
-            var serviceOpts = new CloudFoundryServicesOptions(Configuration);
-
-            foreach (var serviceopt in serviceOpts.Services)
+            foreach (var s in serviceopt.Value)
             {
-                foreach (var s in serviceopt.Value)
+                var factory = FindFactory(s);
+                if (factory != null && factory.Create(s) is ServiceInfo info)
                 {
-                    var factory = FindFactory(s);
-                    if (factory != null && factory.Create(s) is ServiceInfo info)
-                    {
-                        info.ApplicationInfo = appInfo;
-                        ServiceInfos.Add(info);
-                    }
+                    info.ApplicationInfo = appInfo;
+                    ServiceInfos.Add(info);
                 }
             }
         }

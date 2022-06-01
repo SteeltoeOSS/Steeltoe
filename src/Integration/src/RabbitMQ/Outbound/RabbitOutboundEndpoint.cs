@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -13,140 +13,139 @@ using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 using static Steeltoe.Messaging.RabbitMQ.Core.RabbitTemplate;
 
-namespace Steeltoe.Integration.Rabbit.Outbound
+namespace Steeltoe.Integration.Rabbit.Outbound;
+
+public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCallback, IReturnCallback
 {
-    public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCallback, IReturnCallback
+    public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)
+        : base(context, logger)
     {
-        public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)
-            : base(context, logger)
+        Template = rabbitTemplate ?? throw new ArgumentNullException(nameof(rabbitTemplate));
+        ConnectionFactory = Template.ConnectionFactory;
+    }
+
+    public RabbitTemplate Template { get; }
+
+    public bool ExpectReply { get; set; }
+
+    public bool ShouldWaitForConfirm { get; set; }
+
+    public TimeSpan WaitForConfirmTimeout { get; set; }
+
+    public new void Initialize() => base.Initialize();
+
+    public void Confirm(CorrelationData correlationData, bool ack, string cause)
+    {
+        HandleConfirm(correlationData, ack, cause);
+    }
+
+    public void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
+    {
+        // no need for null check; we asserted we have a RabbitTemplate in doInit()
+        var converter = Template.MessageConverter;
+        var returned = BuildReturnedMessage(message, replyCode, replyText, exchange, routingKey, converter);
+        ReturnChannel.Send(returned);
+    }
+
+    protected override RabbitTemplate GetRabbitTemplate()
+    {
+        return Template;
+    }
+
+    protected override void EndpointInit()
+    {
+        if (ConfirmCorrelationExpression != null)
         {
-            Template = rabbitTemplate ?? throw new ArgumentNullException(nameof(rabbitTemplate));
-            ConnectionFactory = Template.ConnectionFactory;
+            Template.ConfirmCallback = this;
         }
 
-        public RabbitTemplate Template { get; }
-
-        public bool ExpectReply { get; set; }
-
-        public bool ShouldWaitForConfirm { get; set; }
-
-        public TimeSpan WaitForConfirmTimeout { get; set; }
-
-        public new void Initialize() => base.Initialize();
-
-        public void Confirm(CorrelationData correlationData, bool ack, string cause)
+        if (ReturnChannel != null)
         {
-            HandleConfirm(correlationData, ack, cause);
+            Template.ReturnCallback = this;
         }
 
-        public void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
+        var confirmTimeout = ConfirmTimeout;
+        if (confirmTimeout != null)
         {
-            // no need for null check; we asserted we have a RabbitTemplate in doInit()
-            var converter = Template.MessageConverter;
-            var returned = BuildReturnedMessage(message, replyCode, replyText, exchange, routingKey, converter);
-            ReturnChannel.Send(returned);
+            WaitForConfirmTimeout = confirmTimeout.Value;
         }
+    }
 
-        protected override RabbitTemplate GetRabbitTemplate()
+    protected override void DoStop()
+    {
+        Template.Stop().Wait();
+    }
+
+    protected override object HandleRequestMessage(IMessage requestMessage)
+    {
+        var correlationData = GenerateCorrelationData(requestMessage);
+        var exchangeName = GenerateExchangeName(requestMessage);
+        var routingKey = GenerateRoutingKey(requestMessage);
+        if (ExpectReply)
         {
-            return Template;
+            return SendAndReceive(exchangeName, routingKey, requestMessage, correlationData);
         }
-
-        protected override void EndpointInit()
+        else
         {
-            if (ConfirmCorrelationExpression != null)
+            Send(exchangeName, routingKey, requestMessage, correlationData);
+            if (ShouldWaitForConfirm && correlationData != null)
             {
-                Template.ConfirmCallback = this;
+                WaitForConfirm(requestMessage, correlationData);
             }
 
-            if (ReturnChannel != null)
-            {
-                Template.ReturnCallback = this;
-            }
-
-            var confirmTimeout = ConfirmTimeout;
-            if (confirmTimeout != null)
-            {
-                WaitForConfirmTimeout = confirmTimeout.Value;
-            }
+            return null;
         }
+    }
 
-        protected override void DoStop()
+    private void WaitForConfirm(IMessage requestMessage, CorrelationData correlationData)
+    {
+        try
         {
-            Template.Stop().Wait();
-        }
+            if (!correlationData.Future.Wait(WaitForConfirmTimeout))
+            {
+                throw new MessageTimeoutException(requestMessage, $"{this}: Timed out awaiting publisher confirm");
+            }
 
-        protected override object HandleRequestMessage(IMessage requestMessage)
+            var confirm = correlationData.Future.Result;
+            if (!confirm.Ack)
+            {
+                throw new RabbitException($"Negative publisher confirm received: {confirm}");
+            }
+
+            if (correlationData.ReturnedMessage != null)
+            {
+                throw new RabbitException("Message was returned by the broker");
+            }
+        }
+        catch (Exception e)
         {
-            var correlationData = GenerateCorrelationData(requestMessage);
-            var exchangeName = GenerateExchangeName(requestMessage);
-            var routingKey = GenerateRoutingKey(requestMessage);
-            if (ExpectReply)
-            {
-                return SendAndReceive(exchangeName, routingKey, requestMessage, correlationData);
-            }
-            else
-            {
-                Send(exchangeName, routingKey, requestMessage, correlationData);
-                if (ShouldWaitForConfirm && correlationData != null)
-                {
-                    WaitForConfirm(requestMessage, correlationData);
-                }
-
-                return null;
-            }
+            throw new RabbitException("Failed to get publisher confirm", e);
         }
+    }
 
-        private void WaitForConfirm(IMessage requestMessage, CorrelationData correlationData)
+    private void Send(string exchangeName, string routingKey, IMessage requestMessage, CorrelationData correlationData)
+    {
+        var converter = Template.MessageConverter;
+
+        var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
+        AddDelayProperty(message);
+        Template.Send(exchangeName, routingKey, message, correlationData);
+    }
+
+    private IMessageBuilder SendAndReceive(string exchangeName, string routingKey, IMessage requestMessage, CorrelationData correlationData)
+    {
+        var converter = Template.MessageConverter;
+
+        var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
+        AddDelayProperty(message);
+
+        var amqpReplyMessage = Template.SendAndReceive(exchangeName, routingKey, message, correlationData);
+
+        if (amqpReplyMessage == null)
         {
-            try
-            {
-                if (!correlationData.Future.Wait(WaitForConfirmTimeout))
-                {
-                    throw new MessageTimeoutException(requestMessage, $"{this}: Timed out awaiting publisher confirm");
-                }
-
-                var confirm = correlationData.Future.Result;
-                if (!confirm.Ack)
-                {
-                    throw new RabbitException($"Negative publisher confirm received: {confirm}");
-                }
-
-                if (correlationData.ReturnedMessage != null)
-                {
-                    throw new RabbitException("Message was returned by the broker");
-                }
-            }
-            catch (Exception e)
-            {
-                throw new RabbitException("Failed to get publisher confirm", e);
-            }
+            return null;
         }
 
-        private void Send(string exchangeName, string routingKey, IMessage requestMessage, CorrelationData correlationData)
-        {
-            var converter = Template.MessageConverter;
-
-            var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
-            AddDelayProperty(message);
-            Template.Send(exchangeName, routingKey, message, correlationData);
-        }
-
-        private IMessageBuilder SendAndReceive(string exchangeName, string routingKey, IMessage requestMessage, CorrelationData correlationData)
-        {
-            var converter = Template.MessageConverter;
-
-            var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
-            AddDelayProperty(message);
-
-            var amqpReplyMessage = Template.SendAndReceive(exchangeName, routingKey, message, correlationData);
-
-            if (amqpReplyMessage == null)
-            {
-                return null;
-            }
-
-            return BuildReply(converter, amqpReplyMessage);
-        }
+        return BuildReply(converter, amqpReplyMessage);
     }
 }

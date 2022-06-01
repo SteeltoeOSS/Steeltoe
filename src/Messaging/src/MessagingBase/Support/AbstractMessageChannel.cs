@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,304 +10,303 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Support
+namespace Steeltoe.Messaging.Support;
+
+public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChannel, IInterceptableChannel
 {
-    public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChannel, IInterceptableChannel
+    public const int INDEFINITE_TIMEOUT = -1;
+
+    private object _lock = new ();
+    private List<IChannelInterceptor> _interceptors = new ();
+
+    protected AbstractMessageChannel(ILogger logger = null)
     {
-        public const int INDEFINITE_TIMEOUT = -1;
+        ServiceName = $"{GetType().Name}@{GetHashCode()}";
+        Logger = logger;
+    }
 
-        private object _lock = new ();
-        private List<IChannelInterceptor> _interceptors = new ();
+    public virtual string ServiceName { get; set; }
 
-        protected AbstractMessageChannel(ILogger logger = null)
+    public ILogger Logger { get; set; }
+
+    public virtual void SetInterceptors(List<IChannelInterceptor> interceptors)
+    {
+        lock (_lock)
         {
-            ServiceName = $"{GetType().Name}@{GetHashCode()}";
-            Logger = logger;
+            interceptors.Sort(new OrderComparer());
+            _interceptors = interceptors;
+        }
+    }
+
+    public virtual void AddInterceptor(IChannelInterceptor interceptor)
+    {
+        lock (_lock)
+        {
+            var interceptors = new List<IChannelInterceptor>(_interceptors) { interceptor };
+            _interceptors = interceptors;
+        }
+    }
+
+    public virtual void AddInterceptor(int index, IChannelInterceptor interceptor)
+    {
+        lock (_lock)
+        {
+            var interceptors = new List<IChannelInterceptor>(_interceptors);
+            interceptors.Insert(index, interceptor);
+            _interceptors = interceptors;
+        }
+    }
+
+    public virtual List<IChannelInterceptor> GetInterceptors()
+    {
+        lock (_lock)
+        {
+            return new List<IChannelInterceptor>(_interceptors);
+        }
+    }
+
+    public virtual bool RemoveInterceptor(IChannelInterceptor interceptor)
+    {
+        lock (_lock)
+        {
+            var interceptors = new List<IChannelInterceptor>(_interceptors);
+            var result = interceptors.Remove(interceptor);
+            _interceptors = interceptors;
+            return result;
+        }
+    }
+
+    public virtual IChannelInterceptor RemoveInterceptor(int index)
+    {
+        lock (_lock)
+        {
+            var interceptors = new List<IChannelInterceptor>(_interceptors);
+            var existing = interceptors[index];
+            interceptors.RemoveAt(index);
+            _interceptors = interceptors;
+            return existing;
+        }
+    }
+
+    public virtual bool Send(IMessage message)
+    {
+        return Send(message, INDEFINITE_TIMEOUT);
+    }
+
+    public virtual bool Send(IMessage message, int timeout)
+    {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
         }
 
-        public virtual string ServiceName { get; set; }
+        return DoSend(message, timeout);
+    }
 
-        public ILogger Logger { get; set; }
+    public virtual ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default)
+    {
+        return new ValueTask<bool>(DoSend(message, cancellationToken));
+    }
 
-        public virtual void SetInterceptors(List<IChannelInterceptor> interceptors)
+    public override string ToString()
+    {
+        return ServiceName;
+    }
+
+    protected virtual bool DoSend(IMessage message, int timeout)
+    {
+        if (timeout <= 0)
         {
-            lock (_lock)
+            return DoSend(message, CancellationToken.None);
+        }
+        else
+        {
+            using var source = new CancellationTokenSource();
+            source.CancelAfter(timeout);
+            return DoSend(message, source.Token);
+        }
+    }
+
+    protected virtual bool DoSend(IMessage message, CancellationToken cancellationToken)
+    {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        var messageToUse = message;
+        var interceptors = _interceptors;
+        ChannelInterceptorChain chain = null;
+        if (interceptors.Count > 0)
+        {
+            chain = new ChannelInterceptorChain(this);
+        }
+
+        var sent = false;
+        try
+        {
+            if (chain != null)
             {
-                interceptors.Sort(new OrderComparer());
-                _interceptors = interceptors;
+                messageToUse = chain.ApplyPreSend(messageToUse, this);
+                if (messageToUse == null)
+                {
+                    return false;
+                }
             }
-        }
 
-        public virtual void AddInterceptor(IChannelInterceptor interceptor)
+            sent = DoSendInternal(messageToUse, cancellationToken);
+            chain?.ApplyPostSend(messageToUse, this, sent);
+            chain?.TriggerAfterSendCompletion(messageToUse, this, sent, null);
+            return sent;
+        }
+        catch (Exception ex)
         {
-            lock (_lock)
+            chain?.TriggerAfterSendCompletion(messageToUse, this, sent, ex);
+            if (ex is MessagingException)
             {
-                var interceptors = new List<IChannelInterceptor>(_interceptors) { interceptor };
-                _interceptors = interceptors;
-            }
-        }
-
-        public virtual void AddInterceptor(int index, IChannelInterceptor interceptor)
-        {
-            lock (_lock)
-            {
-                var interceptors = new List<IChannelInterceptor>(_interceptors);
-                interceptors.Insert(index, interceptor);
-                _interceptors = interceptors;
-            }
-        }
-
-        public virtual List<IChannelInterceptor> GetInterceptors()
-        {
-            lock (_lock)
-            {
-                return new List<IChannelInterceptor>(_interceptors);
-            }
-        }
-
-        public virtual bool RemoveInterceptor(IChannelInterceptor interceptor)
-        {
-            lock (_lock)
-            {
-                var interceptors = new List<IChannelInterceptor>(_interceptors);
-                var result = interceptors.Remove(interceptor);
-                _interceptors = interceptors;
-                return result;
-            }
-        }
-
-        public virtual IChannelInterceptor RemoveInterceptor(int index)
-        {
-            lock (_lock)
-            {
-                var interceptors = new List<IChannelInterceptor>(_interceptors);
-                var existing = interceptors[index];
-                interceptors.RemoveAt(index);
-                _interceptors = interceptors;
-                return existing;
-            }
-        }
-
-        public virtual bool Send(IMessage message)
-        {
-            return Send(message, INDEFINITE_TIMEOUT);
-        }
-
-        public virtual bool Send(IMessage message, int timeout)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
+                throw;
             }
 
-            return DoSend(message, timeout);
+            throw new MessageDeliveryException(messageToUse, $"Failed to send message to {ServiceName}", ex);
+        }
+    }
+
+    protected abstract bool DoSendInternal(IMessage message, CancellationToken cancellationToken);
+
+    protected class ChannelInterceptorChain
+    {
+        private AbstractMessageChannel _channel;
+        private List<IChannelInterceptor> _interceptors;
+        private int _sendInterceptorIndex;
+
+        private int _receiveInterceptorIndex;
+
+        public ChannelInterceptorChain(AbstractMessageChannel channel)
+        {
+            _channel = channel;
+            _interceptors = channel._interceptors;
+            _sendInterceptorIndex = -1;
+            _receiveInterceptorIndex = -1;
         }
 
-        public virtual ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default)
+        public IMessage ApplyPreSend(IMessage message, IMessageChannel channel)
         {
-            return new ValueTask<bool>(DoSend(message, cancellationToken));
-        }
-
-        public override string ToString()
-        {
-            return ServiceName;
-        }
-
-        protected virtual bool DoSend(IMessage message, int timeout)
-        {
-            if (timeout <= 0)
+            if (_interceptors.Count == 0)
             {
-                return DoSend(message, CancellationToken.None);
-            }
-            else
-            {
-                using var source = new CancellationTokenSource();
-                source.CancelAfter(timeout);
-                return DoSend(message, source.Token);
-            }
-        }
-
-        protected virtual bool DoSend(IMessage message, CancellationToken cancellationToken)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
+                return message;
             }
 
             var messageToUse = message;
-            var interceptors = _interceptors;
-            ChannelInterceptorChain chain = null;
-            if (interceptors.Count > 0)
+            foreach (var interceptor in _interceptors)
             {
-                chain = new ChannelInterceptorChain(this);
-            }
-
-            var sent = false;
-            try
-            {
-                if (chain != null)
+                var resolvedMessage = interceptor.PreSend(messageToUse, channel);
+                if (resolvedMessage == null)
                 {
-                    messageToUse = chain.ApplyPreSend(messageToUse, this);
-                    if (messageToUse == null)
-                    {
-                        return false;
-                    }
+                    var name = interceptor.GetType().Name;
+                    _channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
+                    TriggerAfterSendCompletion(messageToUse, channel, false, null);
+                    return null;
                 }
 
-                sent = DoSendInternal(messageToUse, cancellationToken);
-                chain?.ApplyPostSend(messageToUse, this, sent);
-                chain?.TriggerAfterSendCompletion(messageToUse, this, sent, null);
-                return sent;
+                messageToUse = resolvedMessage;
+                _sendInterceptorIndex++;
             }
-            catch (Exception ex)
-            {
-                chain?.TriggerAfterSendCompletion(messageToUse, this, sent, ex);
-                if (ex is MessagingException)
-                {
-                    throw;
-                }
 
-                throw new MessageDeliveryException(messageToUse, $"Failed to send message to {ServiceName}", ex);
+            return messageToUse;
+        }
+
+        public void ApplyPostSend(IMessage message, IMessageChannel channel, bool sent)
+        {
+            if (_interceptors.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var interceptor in _interceptors)
+            {
+                interceptor.PostSend(message, channel, sent);
             }
         }
 
-        protected abstract bool DoSendInternal(IMessage message, CancellationToken cancellationToken);
-
-        protected class ChannelInterceptorChain
+        public void TriggerAfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
         {
-            private AbstractMessageChannel _channel;
-            private List<IChannelInterceptor> _interceptors;
-            private int _sendInterceptorIndex;
-
-            private int _receiveInterceptorIndex;
-
-            public ChannelInterceptorChain(AbstractMessageChannel channel)
+            if (_sendInterceptorIndex == -1)
             {
-                _channel = channel;
-                _interceptors = channel._interceptors;
-                _sendInterceptorIndex = -1;
-                _receiveInterceptorIndex = -1;
+                return;
             }
 
-            public IMessage ApplyPreSend(IMessage message, IMessageChannel channel)
+            for (var i = _sendInterceptorIndex; i >= 0; i--)
             {
-                if (_interceptors.Count == 0)
+                var interceptor = _interceptors[i];
+                try
                 {
-                    return message;
+                    interceptor.AfterSendCompletion(message, channel, sent, ex);
                 }
-
-                var messageToUse = message;
-                foreach (var interceptor in _interceptors)
+                catch (Exception ex2)
                 {
-                    var resolvedMessage = interceptor.PreSend(messageToUse, channel);
-                    if (resolvedMessage == null)
-                    {
-                        var name = interceptor.GetType().Name;
-                        _channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
-                        TriggerAfterSendCompletion(messageToUse, channel, false, null);
-                        return null;
-                    }
-
-                    messageToUse = resolvedMessage;
-                    _sendInterceptorIndex++;
-                }
-
-                return messageToUse;
-            }
-
-            public void ApplyPostSend(IMessage message, IMessageChannel channel, bool sent)
-            {
-                if (_interceptors.Count == 0)
-                {
-                    return;
-                }
-
-                foreach (var interceptor in _interceptors)
-                {
-                    interceptor.PostSend(message, channel, sent);
+                    _channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
                 }
             }
+        }
 
-            public void TriggerAfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
+        public bool ApplyPreReceive(IMessageChannel channel)
+        {
+            if (_interceptors.Count == 0)
             {
-                if (_sendInterceptorIndex == -1)
-                {
-                    return;
-                }
-
-                for (var i = _sendInterceptorIndex; i >= 0; i--)
-                {
-                    var interceptor = _interceptors[i];
-                    try
-                    {
-                        interceptor.AfterSendCompletion(message, channel, sent, ex);
-                    }
-                    catch (Exception ex2)
-                    {
-                        _channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
-                    }
-                }
-            }
-
-            public bool ApplyPreReceive(IMessageChannel channel)
-            {
-                if (_interceptors.Count == 0)
-                {
-                    return true;
-                }
-
-                foreach (var interceptor in _interceptors)
-                {
-                    if (!interceptor.PreReceive(channel))
-                    {
-                        TriggerAfterReceiveCompletion(null, channel, null);
-                        return false;
-                    }
-
-                    _receiveInterceptorIndex++;
-                }
-
                 return true;
             }
 
-            public IMessage ApplyPostReceive(IMessage message, IMessageChannel channel)
+            foreach (var interceptor in _interceptors)
             {
-                if (_interceptors.Count == 0)
+                if (!interceptor.PreReceive(channel))
                 {
-                    return message;
+                    TriggerAfterReceiveCompletion(null, channel, null);
+                    return false;
                 }
 
-                var messageToUse = message;
-                foreach (var interceptor in _interceptors)
-                {
-                    messageToUse = interceptor.PostReceive(messageToUse, channel);
-                    if (messageToUse == null)
-                    {
-                        return null;
-                    }
-                }
-
-                return messageToUse;
+                _receiveInterceptorIndex++;
             }
 
-            public void TriggerAfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception ex)
-            {
-                if (_receiveInterceptorIndex == -1)
-                {
-                    return;
-                }
+            return true;
+        }
 
-                for (var i = _receiveInterceptorIndex; i >= 0; i--)
+        public IMessage ApplyPostReceive(IMessage message, IMessageChannel channel)
+        {
+            if (_interceptors.Count == 0)
+            {
+                return message;
+            }
+
+            var messageToUse = message;
+            foreach (var interceptor in _interceptors)
+            {
+                messageToUse = interceptor.PostReceive(messageToUse, channel);
+                if (messageToUse == null)
                 {
-                    var interceptor = _interceptors[i];
-                    try
-                    {
-                        interceptor.AfterReceiveCompletion(message, channel, ex);
-                    }
-                    catch (Exception ex2)
-                    {
-                        _channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
-                    }
+                    return null;
+                }
+            }
+
+            return messageToUse;
+        }
+
+        public void TriggerAfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception ex)
+        {
+            if (_receiveInterceptorIndex == -1)
+            {
+                return;
+            }
+
+            for (var i = _receiveInterceptorIndex; i >= 0; i--)
+            {
+                var interceptor = _interceptors[i];
+                try
+                {
+                    interceptor.AfterReceiveCompletion(message, channel, ex);
+                }
+                catch (Exception ex2)
+                {
+                    _channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
                 }
             }
         }

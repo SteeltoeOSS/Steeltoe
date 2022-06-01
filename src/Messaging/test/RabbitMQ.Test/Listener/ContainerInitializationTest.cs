@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -19,231 +19,230 @@ using System.Threading.Tasks;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+[Trait("Category", "Integration")]
+public class ContainerInitializationTest : AbstractTest, IDisposable
 {
-    [Trait("Category", "Integration")]
-    public class ContainerInitializationTest : AbstractTest, IDisposable
+    public const string TEST_MISMATCH = "test.mismatch";
+    public const string TEST_MISMATCH2 = "test.mismatch2";
+
+    private ServiceProvider provider;
+
+    [Fact]
+    public async Task TestNoAdmin()
     {
-        public const string TEST_MISMATCH = "test.mismatch";
-        public const string TEST_MISMATCH2 = "test.mismatch2";
+        var services = CreateServiceCollection();
+        services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
-        private ServiceProvider provider;
+        services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
 
-        [Fact]
-        public async Task TestNoAdmin()
+        provider = services.BuildServiceProvider();
+        try
         {
-            var services = CreateServiceCollection();
-            services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
-            services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
+            await provider.GetRequiredService<IHostedService>().StartAsync(default);
+        }
+        catch (LifecycleException le)
+        {
+            Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
+            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
+        }
+    }
 
-            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
+    [Fact]
+    public async Task TestMismatchedQueue()
+    {
+        var services = CreateServiceCollection();
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
 
-            provider = services.BuildServiceProvider();
+        services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
+        services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
+        services.AddRabbitAdmin();
+
+        provider = services.BuildServiceProvider();
+        try
+        {
+            await provider.GetRequiredService<IHostedService>().StartAsync(default);
+        }
+        catch (LifecycleException le)
+        {
+            Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
+            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
+        }
+    }
+
+    [Fact]
+    public async Task TestMismatchedQueueDuringRestart()
+    {
+        var services = CreateServiceCollection();
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
+
+        services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
+        services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
+        services.AddRabbitAdmin();
+        provider = services.BuildServiceProvider();
+
+        var latches = SetUpChannelLatches(provider);
+        await provider.GetRequiredService<IHostedService>().StartAsync(default);
+        var container = provider.GetService<DirectMessageListenerContainer>();
+        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+
+        var admin = provider.GetRabbitAdmin() as RabbitAdmin;
+        admin.RetryTemplate = null;
+        admin.DeleteQueue(TEST_MISMATCH);
+        Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
+        admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
+        latches[2].Signal();
+        Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
+
+        var n = 0;
+        while (n++ < 200 && container.IsRunning)
+        {
+            await Task.Delay(100);
+        }
+
+        Assert.False(container.IsRunning);
+    }
+
+    [Fact]
+    public async Task TestMismatchedQueueDuringRestartMultiQueue()
+    {
+        var services = CreateServiceCollection();
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH, TEST_MISMATCH2));
+
+        services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
+        services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
+        services.AddRabbitQueue(new Queue(TEST_MISMATCH2, true, false, false));
+        services.AddRabbitAdmin();
+        provider = services.BuildServiceProvider();
+
+        var latches = SetUpChannelLatches(provider);
+        await provider.GetRequiredService<IHostedService>().StartAsync(default);
+        var container = provider.GetService<DirectMessageListenerContainer>();
+        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+
+        var admin = provider.GetRabbitAdmin() as RabbitAdmin;
+        admin.RetryTemplate = null;
+        admin.DeleteQueue(TEST_MISMATCH);
+        Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
+        admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
+        latches[2].Signal();
+        Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
+
+        var n = 0;
+        while (n++ < 200 && container.IsRunning)
+        {
+            await Task.Delay(100);
+        }
+
+        Assert.False(container.IsRunning);
+    }
+
+    public void Dispose()
+    {
+        if (provider.GetService<IRabbitAdmin>() is RabbitAdmin admin)
+        {
+            admin.IgnoreDeclarationExceptions = true;
             try
             {
-                await provider.GetRequiredService<IHostedService>().StartAsync(default);
+                admin.DeleteQueue(TEST_MISMATCH);
+                admin.DeleteQueue(TEST_MISMATCH2);
             }
-            catch (LifecycleException le)
+            catch (Exception)
             {
-                Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
-                Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
-            }
-        }
-
-        [Fact]
-        public async Task TestMismatchedQueue()
-        {
-            var services = CreateServiceCollection();
-            services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
-
-            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-            services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
-            services.AddRabbitAdmin();
-
-            provider = services.BuildServiceProvider();
-            try
-            {
-                await provider.GetRequiredService<IHostedService>().StartAsync(default);
-            }
-            catch (LifecycleException le)
-            {
-                Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
-                Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
+                // Ignore
             }
         }
 
-        [Fact]
-        public async Task TestMismatchedQueueDuringRestart()
+        provider.Dispose();
+    }
+
+    private CountdownEvent[] SetUpChannelLatches(IServiceProvider context)
+    {
+        var cf = context.GetService<IConnectionFactory>() as CachingConnectionFactory;
+        var cancelLatch = new CountdownEvent(1);
+        var mismatchLatch = new CountdownEvent(1);
+        var preventContainerRedeclareQueueLatch = new CountdownEvent(1);
+        var listener = new TestListener(cancelLatch, mismatchLatch, preventContainerRedeclareQueueLatch);
+        cf.AddChannelListener(listener);
+        return new[] { cancelLatch, mismatchLatch, preventContainerRedeclareQueueLatch };
+    }
+
+    private ServiceCollection CreateServiceCollection()
+    {
+        var services = CreateContainer();
+
+        services.AddHostedService<RabbitHostService>();
+        services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
+        services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
+        services.TryAddSingleton<IConnectionFactory, CachingConnectionFactory>();
+        services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
+        return services;
+    }
+
+    private sealed class TestListener : IShutDownChannelListener
+    {
+        private readonly CountdownEvent cancelLatch;
+        private readonly CountdownEvent mismatchLatch;
+        private readonly CountdownEvent preventContainerRedeclareQueueLatch;
+
+        public TestListener(CountdownEvent cancelLatch, CountdownEvent mismatchLatch, CountdownEvent preventContainerRedeclareQueueLatch)
         {
-            var services = CreateServiceCollection();
-            services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
-
-            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-            services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
-            services.AddRabbitAdmin();
-            provider = services.BuildServiceProvider();
-
-            var latches = SetUpChannelLatches(provider);
-            await provider.GetRequiredService<IHostedService>().StartAsync(default);
-            var container = provider.GetService<DirectMessageListenerContainer>();
-            Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
-
-            var admin = provider.GetRabbitAdmin() as RabbitAdmin;
-            admin.RetryTemplate = null;
-            admin.DeleteQueue(TEST_MISMATCH);
-            Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
-            admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
-            latches[2].Signal();
-            Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
-
-            var n = 0;
-            while (n++ < 200 && container.IsRunning)
-            {
-                await Task.Delay(100);
-            }
-
-            Assert.False(container.IsRunning);
+            this.cancelLatch = cancelLatch;
+            this.mismatchLatch = mismatchLatch;
+            this.preventContainerRedeclareQueueLatch = preventContainerRedeclareQueueLatch;
         }
 
-        [Fact]
-        public async Task TestMismatchedQueueDuringRestartMultiQueue()
+        public void OnCreate(RC.IModel channel, bool transactional)
         {
-            var services = CreateServiceCollection();
-            services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH, TEST_MISMATCH2));
-
-            services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-            services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
-            services.AddRabbitQueue(new Queue(TEST_MISMATCH2, true, false, false));
-            services.AddRabbitAdmin();
-            provider = services.BuildServiceProvider();
-
-            var latches = SetUpChannelLatches(provider);
-            await provider.GetRequiredService<IHostedService>().StartAsync(default);
-            var container = provider.GetService<DirectMessageListenerContainer>();
-            Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
-
-            var admin = provider.GetRabbitAdmin() as RabbitAdmin;
-            admin.RetryTemplate = null;
-            admin.DeleteQueue(TEST_MISMATCH);
-            Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
-            admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
-            latches[2].Signal();
-            Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
-
-            var n = 0;
-            while (n++ < 200 && container.IsRunning)
-            {
-                await Task.Delay(100);
-            }
-
-            Assert.False(container.IsRunning);
         }
 
-        public void Dispose()
+        public void OnShutDown(RC.ShutdownEventArgs args)
         {
-            if (provider.GetService<IRabbitAdmin>() is RabbitAdmin admin)
+            if (RabbitUtils.IsNormalChannelClose(args))
             {
-                admin.IgnoreDeclarationExceptions = true;
+                cancelLatch.Signal();
                 try
                 {
-                    admin.DeleteQueue(TEST_MISMATCH);
-                    admin.DeleteQueue(TEST_MISMATCH2);
+                    preventContainerRedeclareQueueLatch.Wait(TimeSpan.FromSeconds(10));
                 }
                 catch (Exception)
                 {
                     // Ignore
                 }
             }
-
-            provider.Dispose();
-        }
-
-        private CountdownEvent[] SetUpChannelLatches(IServiceProvider context)
-        {
-            var cf = context.GetService<IConnectionFactory>() as CachingConnectionFactory;
-            var cancelLatch = new CountdownEvent(1);
-            var mismatchLatch = new CountdownEvent(1);
-            var preventContainerRedeclareQueueLatch = new CountdownEvent(1);
-            var listener = new TestListener(cancelLatch, mismatchLatch, preventContainerRedeclareQueueLatch);
-            cf.AddChannelListener(listener);
-            return new[] { cancelLatch, mismatchLatch, preventContainerRedeclareQueueLatch };
-        }
-
-        private ServiceCollection CreateServiceCollection()
-        {
-            var services = CreateContainer();
-
-            services.AddHostedService<RabbitHostService>();
-            services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
-            services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
-            services.TryAddSingleton<IConnectionFactory, CachingConnectionFactory>();
-            services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
-            return services;
-        }
-
-        private sealed class TestListener : IShutDownChannelListener
-        {
-            private readonly CountdownEvent cancelLatch;
-            private readonly CountdownEvent mismatchLatch;
-            private readonly CountdownEvent preventContainerRedeclareQueueLatch;
-
-            public TestListener(CountdownEvent cancelLatch, CountdownEvent mismatchLatch, CountdownEvent preventContainerRedeclareQueueLatch)
+            else if (RabbitUtils.IsMismatchedQueueArgs(args))
             {
-                this.cancelLatch = cancelLatch;
-                this.mismatchLatch = mismatchLatch;
-                this.preventContainerRedeclareQueueLatch = preventContainerRedeclareQueueLatch;
-            }
-
-            public void OnCreate(RC.IModel channel, bool transactional)
-            {
-            }
-
-            public void OnShutDown(RC.ShutdownEventArgs args)
-            {
-                if (RabbitUtils.IsNormalChannelClose(args))
-                {
-                    cancelLatch.Signal();
-                    try
-                    {
-                        preventContainerRedeclareQueueLatch.Wait(TimeSpan.FromSeconds(10));
-                    }
-                    catch (Exception)
-                    {
-                        // Ignore
-                    }
-                }
-                else if (RabbitUtils.IsMismatchedQueueArgs(args))
-                {
-                    mismatchLatch.Signal();
-                }
+                mismatchLatch.Signal();
             }
         }
+    }
 
-        private DirectMessageListenerContainer CreateMessageListenerContainer(IServiceProvider services, params string[] queueNames)
+    private DirectMessageListenerContainer CreateMessageListenerContainer(IServiceProvider services, params string[] queueNames)
+    {
+        var cf = services.GetRequiredService<IConnectionFactory>();
+        var ctx = services.GetRequiredService<IApplicationContext>();
+        var queue2 = services.GetRequiredService<IQueue>();
+        var listener = new TestMessageListener();
+        var container = new DirectMessageListenerContainer(ctx, cf);
+        container.SetQueueNames(queueNames);
+        container.SetupMessageListener(listener);
+        container.MismatchedQueuesFatal = true;
+
+        return container;
+    }
+
+    private sealed class TestMessageListener : IMessageListener
+    {
+        public AcknowledgeMode ContainerAckMode { get; set; }
+
+        public void OnMessage(IMessage message)
         {
-            var cf = services.GetRequiredService<IConnectionFactory>();
-            var ctx = services.GetRequiredService<IApplicationContext>();
-            var queue2 = services.GetRequiredService<IQueue>();
-            var listener = new TestMessageListener();
-            var container = new DirectMessageListenerContainer(ctx, cf);
-            container.SetQueueNames(queueNames);
-            container.SetupMessageListener(listener);
-            container.MismatchedQueuesFatal = true;
-
-            return container;
         }
 
-        private sealed class TestMessageListener : IMessageListener
+        public void OnMessageBatch(List<IMessage> messages)
         {
-            public AcknowledgeMode ContainerAckMode { get; set; }
-
-            public void OnMessage(IMessage message)
-            {
-            }
-
-            public void OnMessageBatch(List<IMessage> messages)
-            {
-            }
         }
     }
 }

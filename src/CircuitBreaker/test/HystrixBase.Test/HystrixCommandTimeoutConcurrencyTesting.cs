@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,130 +11,129 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Test;
+
+public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
 {
-    public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
+    private const int NUM_CONCURRENT_COMMANDS = 30;
+    private readonly ITestOutputHelper output;
+
+    public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
     {
-        private const int NUM_CONCURRENT_COMMANDS = 30;
-        private readonly ITestOutputHelper output;
+        this.output = output;
+    }
 
-        public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
+    [Fact]
+    public async Task TestTimeoutRace()
+    {
+        var num_trials = 10;
+
+        for (var i = 0; i < num_trials; i++)
         {
-            this.output = output;
-        }
+            var observables = new List<IObservable<string>>();
+            HystrixRequestContext context = null;
 
-        [Fact]
-        public async Task TestTimeoutRace()
-        {
-            var num_trials = 10;
-
-            for (var i = 0; i < num_trials; i++)
+            try
             {
-                var observables = new List<IObservable<string>>();
-                HystrixRequestContext context = null;
-
-                try
+                context = HystrixRequestContext.InitializeContext();
+                for (var j = 0; j < NUM_CONCURRENT_COMMANDS; j++)
                 {
-                    context = HystrixRequestContext.InitializeContext();
-                    for (var j = 0; j < NUM_CONCURRENT_COMMANDS; j++)
-                    {
-                        observables.Add(new TestCommand().Observe());
-                    }
-
-                    var overall = observables.Merge();
-
-                    var results = await overall.ToList().FirstAsync(); // wait for all commands to complete
-
-                    foreach (var s in results)
-                    {
-                        if (s == null)
-                        {
-                            output.WriteLine("Received NULL!");
-                            Assert.True(false, "Received NULL result");
-                        }
-                    }
-
-                    foreach (var hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands)
-                    {
-                        if (!hi.IsResponseTimedOut)
-                        {
-                            output.WriteLine("Timeout not found in executed command");
-                            Assert.True(false, "Timeout not found in executed command");
-                        }
-
-                        if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count == 1)
-                        {
-                            output.WriteLine("Missing fallback status!");
-                            Assert.True(false, "Missing fallback status on timeout.");
-                        }
-                    }
+                    observables.Add(new TestCommand().Observe());
                 }
-                catch (Exception e)
+
+                var overall = observables.Merge();
+
+                var results = await overall.ToList().FirstAsync(); // wait for all commands to complete
+
+                foreach (var s in results)
                 {
-                    output.WriteLine("Error: " + e.Message);
-                    output.WriteLine(e.ToString());
-                    throw;
-                }
-                finally
-                {
-                    output.WriteLine(HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                    if (context != null)
+                    if (s == null)
                     {
-                        context.Dispose();
+                        output.WriteLine("Received NULL!");
+                        Assert.True(false, "Received NULL result");
                     }
                 }
 
-                output.WriteLine("*************** TRIAL " + i + " ******************");
-                output.WriteLine(" ");
-                Time.Wait(50);
+                foreach (var hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands)
+                {
+                    if (!hi.IsResponseTimedOut)
+                    {
+                        output.WriteLine("Timeout not found in executed command");
+                        Assert.True(false, "Timeout not found in executed command");
+                    }
+
+                    if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count == 1)
+                    {
+                        output.WriteLine("Missing fallback status!");
+                        Assert.True(false, "Missing fallback status on timeout.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                output.WriteLine("Error: " + e.Message);
+                output.WriteLine(e.ToString());
+                throw;
+            }
+            finally
+            {
+                output.WriteLine(HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                if (context != null)
+                {
+                    context.Dispose();
+                }
             }
 
-            Reset();
+            output.WriteLine("*************** TRIAL " + i + " ******************");
+            output.WriteLine(" ");
+            Time.Wait(50);
         }
 
-        private sealed class TestCommand : HystrixCommand<string>
-        {
-            public TestCommand()
+        Reset();
+    }
+
+    private sealed class TestCommand : HystrixCommand<string>
+    {
+        public TestCommand()
             : base(GetOptions())
-            {
-                IsFallbackUserDefined = true;
-            }
+        {
+            IsFallbackUserDefined = true;
+        }
 
-            protected override string Run()
-            {
-                Time.Wait(500);
-                return "hello";
-            }
+        protected override string Run()
+        {
+            Time.Wait(500);
+            return "hello";
+        }
 
-            protected override string RunFallback()
-            {
-                return "failed";
-            }
+        protected override string RunFallback()
+        {
+            return "failed";
+        }
 
-            private static IHystrixCommandOptions GetOptions()
+        private static IHystrixCommandOptions GetOptions()
+        {
+            var opts = new HystrixCommandOptions
             {
-                var opts = new HystrixCommandOptions
-                {
-                    GroupKey = HystrixCommandGroupKeyDefault.AsKey("testTimeoutConcurrency"),
-                    CommandKey = HystrixCommandKeyDefault.AsKey("testTimeoutConcurrencyCommand"),
-                    ExecutionTimeoutInMilliseconds = 3,
-                    CircuitBreakerEnabled = false,
-                    FallbackIsolationSemaphoreMaxConcurrentRequests = NUM_CONCURRENT_COMMANDS,
-                    ThreadPoolOptions = GetThreadPoolOptions()
-                };
-                return opts;
-            }
+                GroupKey = HystrixCommandGroupKeyDefault.AsKey("testTimeoutConcurrency"),
+                CommandKey = HystrixCommandKeyDefault.AsKey("testTimeoutConcurrencyCommand"),
+                ExecutionTimeoutInMilliseconds = 3,
+                CircuitBreakerEnabled = false,
+                FallbackIsolationSemaphoreMaxConcurrentRequests = NUM_CONCURRENT_COMMANDS,
+                ThreadPoolOptions = GetThreadPoolOptions()
+            };
+            return opts;
+        }
 
-            private static IHystrixThreadPoolOptions GetThreadPoolOptions()
+        private static IHystrixThreadPoolOptions GetThreadPoolOptions()
+        {
+            var opts = new HystrixThreadPoolOptions
             {
-                var opts = new HystrixThreadPoolOptions
-                {
-                    CoreSize = NUM_CONCURRENT_COMMANDS,
-                    MaxQueueSize = NUM_CONCURRENT_COMMANDS,
-                    QueueSizeRejectionThreshold = NUM_CONCURRENT_COMMANDS
-                };
-                return opts;
-            }
+                CoreSize = NUM_CONCURRENT_COMMANDS,
+                MaxQueueSize = NUM_CONCURRENT_COMMANDS,
+                QueueSizeRejectionThreshold = NUM_CONCURRENT_COMMANDS
+            };
+            return opts;
         }
     }
 }

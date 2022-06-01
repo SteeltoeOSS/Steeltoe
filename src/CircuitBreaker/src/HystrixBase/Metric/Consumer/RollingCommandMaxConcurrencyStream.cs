@@ -1,51 +1,50 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+
+public class RollingCommandMaxConcurrencyStream : RollingConcurrencyStream
 {
-    public class RollingCommandMaxConcurrencyStream : RollingConcurrencyStream
+    private static readonly ConcurrentDictionary<string, RollingCommandMaxConcurrencyStream> Streams = new ();
+
+    public static RollingCommandMaxConcurrencyStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
     {
-        private static readonly ConcurrentDictionary<string, RollingCommandMaxConcurrencyStream> Streams = new ();
+        var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
+        var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
+        var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
 
-        public static RollingCommandMaxConcurrencyStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
+        return GetInstance(commandKey, numCounterBuckets, counterBucketSizeInMs);
+    }
+
+    public static RollingCommandMaxConcurrencyStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
+    {
+        var result = Streams.GetOrAddEx(commandKey.Name, k =>
         {
-            var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
-            var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
-            var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
+            var stream = new RollingCommandMaxConcurrencyStream(commandKey, numBuckets, bucketSizeInMs);
+            stream.StartCachingStreamValuesIfUnstarted();
+            return stream;
+        });
+        return result;
+    }
 
-            return GetInstance(commandKey, numCounterBuckets, counterBucketSizeInMs);
+    public static void Reset()
+    {
+        foreach (var stream in Streams.Values)
+        {
+            stream.Unsubscribe();
         }
 
-        public static RollingCommandMaxConcurrencyStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
-        {
-            var result = Streams.GetOrAddEx(commandKey.Name, k =>
-            {
-                var stream = new RollingCommandMaxConcurrencyStream(commandKey, numBuckets, bucketSizeInMs);
-                stream.StartCachingStreamValuesIfUnstarted();
-                return stream;
-            });
-            return result;
-        }
+        HystrixCommandStartStream.Reset();
 
-        public static void Reset()
-        {
-            foreach (var stream in Streams.Values)
-            {
-                stream.Unsubscribe();
-            }
+        Streams.Clear();
+    }
 
-            HystrixCommandStartStream.Reset();
-
-            Streams.Clear();
-        }
-
-        private RollingCommandMaxConcurrencyStream(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
-            : base(HystrixCommandStartStream.GetInstance(commandKey), numBuckets, bucketSizeInMs)
-        {
-        }
+    private RollingCommandMaxConcurrencyStream(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
+        : base(HystrixCommandStartStream.GetInstance(commandKey), numBuckets, bucketSizeInMs)
+    {
     }
 }

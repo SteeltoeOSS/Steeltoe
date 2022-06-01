@@ -1,18 +1,17 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+/// <summary>
+/// TODO: See if this can be made internal
+/// </summary>
+public interface IBinderType
 {
-    /// <summary>
-    /// TODO: See if this can be made internal
-    /// </summary>
-    public interface IBinderType
-    {
-        string Name { get; }
+    string Name { get; }
 
-        string ConfigureClass { get; }
+    string ConfigureClass { get; }
 
-        string AssemblyPath { get; }
-    }
+    string AssemblyPath { get; }
 }

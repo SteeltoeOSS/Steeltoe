@@ -4,23 +4,22 @@
 
 using System;
 
-namespace Steeltoe.Common.Utils.Diagnostics
-{
-    /// <summary>
-    /// The exception that is thrown when a system error occurs running a command.
-    /// </summary>
-    public class CommandException : Exception
-    {
-        /// <inheritdoc cref="Exception"/>
-        public CommandException(string message)
-            : base(message)
-        {
-        }
+namespace Steeltoe.Common.Utils.Diagnostics;
 
-        /// <inheritdoc cref="Exception"/>
-        public CommandException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+/// <summary>
+/// The exception that is thrown when a system error occurs running a command.
+/// </summary>
+public class CommandException : Exception
+{
+    /// <inheritdoc cref="Exception"/>
+    public CommandException(string message)
+        : base(message)
+    {
+    }
+
+    /// <inheritdoc cref="Exception"/>
+    public CommandException(string message, Exception innerException)
+        : base(message, innerException)
+    {
     }
 }

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,21 +6,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
-namespace Steeltoe.Management.Endpoint.Metrics
+namespace Steeltoe.Management.Endpoint.Metrics;
+
+[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+public class MetricsStartupFilter : IStartupFilter
 {
-    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
-    public class MetricsStartupFilter : IStartupFilter
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        return app =>
         {
-            return app =>
+            next(app);
+            app.UseEndpoints(endpoints =>
             {
-                next(app);
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<MetricsEndpoint>();
-                });
-            };
-        }
+                endpoints.Map<MetricsEndpoint>();
+            });
+        };
     }
 }

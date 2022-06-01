@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,83 +7,82 @@ using Steeltoe.Messaging.Handler.Invocation;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support
+namespace Steeltoe.Messaging.Handler.Attributes.Support;
+
+public class PayloadArgumentResolver : IHandlerMethodArgumentResolver
 {
-    public class PayloadArgumentResolver : IHandlerMethodArgumentResolver
-    {
-        private readonly IMessageConverter _converter;
-        private readonly bool _useDefaultResolution;
+    private readonly IMessageConverter _converter;
+    private readonly bool _useDefaultResolution;
 
-        public PayloadArgumentResolver(IMessageConverter messageConverter)
+    public PayloadArgumentResolver(IMessageConverter messageConverter)
         : this(messageConverter, true)
+    {
+    }
+
+    public PayloadArgumentResolver(IMessageConverter messageConverter, bool useDefaultResolution)
+    {
+        _converter = messageConverter ?? throw new ArgumentNullException(nameof(messageConverter));
+        _useDefaultResolution = useDefaultResolution;
+    }
+
+    public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
+
+    public object ResolveArgument(ParameterInfo parameter, IMessage message)
+    {
+        var ann = parameter.GetCustomAttribute<PayloadAttribute>();
+
+        if (ann != null && !string.IsNullOrEmpty(ann.Expression))
         {
+            throw new InvalidOperationException("Payload Attribute expressions not supported by this resolver");
         }
 
-        public PayloadArgumentResolver(IMessageConverter messageConverter, bool useDefaultResolution)
+        var payload = message.Payload;
+        if (IsEmptyPayload(payload))
         {
-            _converter = messageConverter ?? throw new ArgumentNullException(nameof(messageConverter));
-            _useDefaultResolution = useDefaultResolution;
-        }
-
-        public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
-
-        public object ResolveArgument(ParameterInfo parameter, IMessage message)
-        {
-            var ann = parameter.GetCustomAttribute<PayloadAttribute>();
-
-            if (ann != null && !string.IsNullOrEmpty(ann.Expression))
+            if (ann == null || ann.Required)
             {
-                throw new InvalidOperationException("Payload Attribute expressions not supported by this resolver");
-            }
-
-            var payload = message.Payload;
-            if (IsEmptyPayload(payload))
-            {
-                if (ann == null || ann.Required)
-                {
-                    throw new MethodArgumentNotValidException(message, parameter, "Payload value must not be empty");
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            var targetClass = parameter.ParameterType;
-            var payloadClass = payload.GetType();
-            if (targetClass.IsAssignableFrom(payloadClass))
-            {
-                return payload;
+                throw new MethodArgumentNotValidException(message, parameter, "Payload value must not be empty");
             }
             else
             {
-                if (_converter is ISmartMessageConverter smartConverter)
-                {
-                    payload = smartConverter.FromMessage(message, targetClass, parameter);
-                }
-                else
-                {
-                    payload = _converter.FromMessage(message, targetClass);
-                }
-
-                if (payload == null)
-                {
-                    throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
-                }
-
-                return payload;
+                return null;
             }
         }
 
-        protected virtual bool IsEmptyPayload(object payload)
+        var targetClass = parameter.ParameterType;
+        var payloadClass = payload.GetType();
+        if (targetClass.IsAssignableFrom(payloadClass))
         {
-            return payload switch
-            {
-                null => true,
-                byte[] bytes => bytes.Length == 0,
-                string sPayload => string.IsNullOrEmpty(sPayload),
-                _ => false
-            };
+            return payload;
         }
+        else
+        {
+            if (_converter is ISmartMessageConverter smartConverter)
+            {
+                payload = smartConverter.FromMessage(message, targetClass, parameter);
+            }
+            else
+            {
+                payload = _converter.FromMessage(message, targetClass);
+            }
+
+            if (payload == null)
+            {
+                throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
+            }
+
+            return payload;
+        }
+    }
+
+    protected virtual bool IsEmptyPayload(object payload)
+    {
+        return payload switch
+        {
+            null => true,
+            byte[] bytes => bytes.Length == 0,
+            string sPayload => string.IsNullOrEmpty(sPayload),
+            _ => false
+        };
     }
 }

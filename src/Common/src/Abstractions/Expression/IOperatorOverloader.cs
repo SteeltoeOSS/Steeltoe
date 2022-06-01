@@ -1,13 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Expression.Internal
-{
-    public interface IOperatorOverloader
-    {
-        bool OverridesOperation(Operation operation, object leftOperand, object rightOperand);
+namespace Steeltoe.Common.Expression.Internal;
 
-        object Operate(Operation operation, object leftOperand, object rightOperand);
-    }
+public interface IOperatorOverloader
+{
+    bool OverridesOperation(Operation operation, object leftOperand, object rightOperand);
+
+    object Operate(Operation operation, object leftOperand, object rightOperand);
 }

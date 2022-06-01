@@ -1,15 +1,14 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Transaction
+namespace Steeltoe.Common.Transaction;
+
+public interface IPlatformTransactionManager
 {
-    public interface IPlatformTransactionManager
-    {
-        ITransactionStatus GetTransaction(ITransactionDefinition definition);
+    ITransactionStatus GetTransaction(ITransactionDefinition definition);
 
-        void Commit(ITransactionStatus status);
+    void Commit(ITransactionStatus status);
 
-        void Rollback(ITransactionStatus status);
-    }
+    void Rollback(ITransactionStatus status);
 }

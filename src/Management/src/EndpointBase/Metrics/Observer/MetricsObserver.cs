@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,45 +6,44 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Observer
+namespace Steeltoe.Management.Endpoint.Metrics.Observer;
+
+public abstract class MetricsObserver : DiagnosticObserver
 {
-    public abstract class MetricsObserver : DiagnosticObserver
+    protected IMetricsObserverOptions Options { get; }
+
+    private Regex _pathMatcher;
+
+    protected Regex GetPathMatcher()
     {
-        protected IMetricsObserverOptions Options { get; }
+        return _pathMatcher;
+    }
 
-        private Regex _pathMatcher;
+    protected void SetPathMatcher(Regex value)
+    {
+        _pathMatcher = value;
+    }
 
-        protected Regex GetPathMatcher()
+    protected MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
+        : base(observerName, diagnosticName, logger)
+    {
+        Options = options;
+    }
+
+    public abstract override void ProcessEvent(string evnt, object arg);
+
+    protected internal double MilliToSeconds(double totalMilliseconds)
+    {
+        return totalMilliseconds / 1000;
+    }
+
+    protected internal virtual bool ShouldIgnoreRequest(string path)
+    {
+        if (string.IsNullOrEmpty(path))
         {
-            return _pathMatcher;
+            return false;
         }
 
-        protected void SetPathMatcher(Regex value)
-        {
-            _pathMatcher = value;
-        }
-
-        protected MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
-            : base(observerName, diagnosticName, logger)
-        {
-            Options = options;
-        }
-
-        public abstract override void ProcessEvent(string evnt, object arg);
-
-        protected internal double MilliToSeconds(double totalMilliseconds)
-        {
-            return totalMilliseconds / 1000;
-        }
-
-        protected internal virtual bool ShouldIgnoreRequest(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return false;
-            }
-
-            return GetPathMatcher().IsMatch(path);
-        }
+        return GetPathMatcher().IsMatch(path);
     }
 }

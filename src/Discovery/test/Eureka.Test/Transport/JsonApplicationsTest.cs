@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,14 +6,14 @@ using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test;
+
+public class JsonApplicationsTest : AbstractBaseTest
 {
-    public class JsonApplicationsTest : AbstractBaseTest
+    [Fact]
+    public void Deserialize_GoodJson()
     {
-        [Fact]
-        public void Deserialize_GoodJson()
-        {
-            var json = @"
+        var json = @"
                 { 
                     ""versions__delta"":""1"",
                     ""apps__hashcode"":""UP_1_"",
@@ -44,14 +44,13 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                         }]
                     }]
                 }";
-            var result = JsonSerializer.Deserialize<JsonApplications>(json);
-            Assert.NotNull(result);
-            Assert.Equal("UP_1_", result.AppsHashCode);
-            Assert.Equal(1, result.VersionDelta);
-            Assert.NotNull(result.Applications);
-            Assert.Equal(1, result.Applications.Count);
+        var result = JsonSerializer.Deserialize<JsonApplications>(json);
+        Assert.NotNull(result);
+        Assert.Equal("UP_1_", result.AppsHashCode);
+        Assert.Equal(1, result.VersionDelta);
+        Assert.NotNull(result.Applications);
+        Assert.Equal(1, result.Applications.Count);
 
-            // Rest is validated by JsonApplicationTest
-        }
+        // Rest is validated by JsonApplicationTest
     }
 }

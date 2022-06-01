@@ -1,56 +1,55 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring;
+
+public class OperatorOverloaderTests : AbstractExpressionTests
 {
-    public class OperatorOverloaderTests : AbstractExpressionTests
+    [Fact]
+    public void TestSimpleOperations()
     {
-        [Fact]
-        public void TestSimpleOperations()
+        // no built in support for this:
+        EvaluateAndCheckError("'abc'-true", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
+
+        var eContext = TestScenarioCreator.GetTestEvaluationContext();
+        eContext.OperatorOverloader = new StringAndBooleanAddition();
+
+        var expr = (SpelExpression)_parser.ParseExpression("'abc'+true");
+        Assert.Equal("abcTrue", expr.GetValue(eContext));
+
+        expr = (SpelExpression)_parser.ParseExpression("'abc'-true");
+        Assert.Equal("abc", expr.GetValue(eContext));
+
+        expr = (SpelExpression)_parser.ParseExpression("'abc'+null");
+        Assert.Equal("abcnull", expr.GetValue(eContext));
+    }
+
+    public class StringAndBooleanAddition : IOperatorOverloader
+    {
+        public object Operate(Operation operation, object leftOperand, object rightOperand)
         {
-            // no built in support for this:
-            EvaluateAndCheckError("'abc'-true", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
-
-            var eContext = TestScenarioCreator.GetTestEvaluationContext();
-            eContext.OperatorOverloader = new StringAndBooleanAddition();
-
-            var expr = (SpelExpression)_parser.ParseExpression("'abc'+true");
-            Assert.Equal("abcTrue", expr.GetValue(eContext));
-
-            expr = (SpelExpression)_parser.ParseExpression("'abc'-true");
-            Assert.Equal("abc", expr.GetValue(eContext));
-
-            expr = (SpelExpression)_parser.ParseExpression("'abc'+null");
-            Assert.Equal("abcnull", expr.GetValue(eContext));
+            if (operation == Operation.ADD)
+            {
+                return (string)leftOperand + (bool)rightOperand;
+            }
+            else
+            {
+                return leftOperand;
+            }
         }
 
-        public class StringAndBooleanAddition : IOperatorOverloader
+        public bool OverridesOperation(Operation operation, object leftOperand, object rightOperand)
         {
-            public object Operate(Operation operation, object leftOperand, object rightOperand)
+            if (leftOperand is string && rightOperand is bool)
             {
-                if (operation == Operation.ADD)
-                {
-                    return (string)leftOperand + (bool)rightOperand;
-                }
-                else
-                {
-                    return leftOperand;
-                }
+                return true;
             }
 
-            public bool OverridesOperation(Operation operation, object leftOperand, object rightOperand)
-            {
-                if (leftOperand is string && rightOperand is bool)
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            return false;
         }
     }
 }

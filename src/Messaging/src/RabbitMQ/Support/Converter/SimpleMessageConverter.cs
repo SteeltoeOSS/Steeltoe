@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,143 +10,142 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
+
+public class SimpleMessageConverter : AbstractMessageConverter
 {
-    public class SimpleMessageConverter : AbstractMessageConverter
+    public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
+
+    public string DefaultCharset { get; set; } = "utf-8";
+
+    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
+    public SimpleMessageConverter(ILogger<SimpleMessageConverter> logger = null)
+        : base(logger)
     {
-        public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
+    }
 
-        public string DefaultCharset { get; set; } = "utf-8";
-
-        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
-
-        public SimpleMessageConverter(ILogger<SimpleMessageConverter> logger = null)
-            : base(logger)
+    public override object FromMessage(IMessage from, Type targetType, object convertionsHint)
+    {
+        if (from is not IMessage<byte[]> message)
         {
+            throw new MessageConversionException($"Failed to convert non byte[] Message content{from.GetType()}");
         }
 
-        public override object FromMessage(IMessage from, Type targetType, object convertionsHint)
+        object content = null;
+        var properties = message.Headers;
+        if (properties != null)
         {
-            if (from is not IMessage<byte[]> message)
+            var contentType = properties.ContentType();
+            if (contentType != null && contentType.StartsWith("text"))
             {
-                throw new MessageConversionException($"Failed to convert non byte[] Message content{from.GetType()}");
+                var encoding = properties.ContentEncoding() ?? DefaultCharset;
+
+                try
+                {
+                    var enc = EncodingUtils.GetEncoding(encoding);
+                    content = enc.GetString(message.Payload);
+                }
+                catch (Exception e)
+                {
+                    throw new MessageConversionException(
+                        "failed to convert text-based Message content", e);
+                }
+            }
+            else if (contentType != null &&
+                     contentType.Equals(MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT))
+            {
+                try
+                {
+                    var formatter = new BinaryFormatter();
+                    var stream = new MemoryStream(message.Payload);
+
+                    // TODO: don't disable this warning! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
+#pragma warning disable S5773 // Types allowed to be deserialized should be restricted
+                    content = formatter.Deserialize(stream);
+#pragma warning restore S5773 // Types allowed to be deserialized should be restricted
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
+                }
+                catch (Exception e)
+                {
+                    throw new MessageConversionException("failed to convert serialized Message content", e);
+                }
+            }
+            else if (contentType != null &&
+                     contentType.Equals(MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT))
+            {
+                throw new MessageConversionException($"Content type: {MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT} unsupported");
+            }
+        }
+
+        if (content == null)
+        {
+            _logger?.LogDebug("FromMessage() returning message payload unchanged");
+            content = message.Payload;
+        }
+
+        return content;
+    }
+
+    protected override IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint)
+    {
+        byte[] bytes = null;
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
+        switch (payload)
+        {
+            case byte[] v:
+                bytes = v;
+                accessor.ContentType = MessageHeaders.CONTENT_TYPE_BYTES;
+                break;
+            case string sPayload:
+            {
+                try
+                {
+                    var enc = EncodingUtils.GetEncoding(DefaultCharset);
+                    bytes = enc.GetBytes(sPayload);
+                }
+                catch (Exception e)
+                {
+                    throw new MessageConversionException("failed to convert to Message content", e);
+                }
+
+                accessor.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
+                accessor.ContentEncoding = DefaultCharset;
+                break;
             }
 
-            object content = null;
-            var properties = message.Headers;
-            if (properties != null)
-            {
-                var contentType = properties.ContentType();
-                if (contentType != null && contentType.StartsWith("text"))
-                {
-                    var encoding = properties.ContentEncoding() ?? DefaultCharset;
-
-                    try
-                    {
-                        var enc = EncodingUtils.GetEncoding(encoding);
-                        content = enc.GetString(message.Payload);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new MessageConversionException(
-                                "failed to convert text-based Message content", e);
-                    }
-                }
-                else if (contentType != null &&
-                    contentType.Equals(MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT))
+            default:
+                if (payload.GetType().IsSerializable)
                 {
                     try
                     {
                         var formatter = new BinaryFormatter();
-                        var stream = new MemoryStream(message.Payload);
+                        var stream = new MemoryStream(512);
 
                         // TODO: don't disable this warning! https://aka.ms/binaryformatter
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
-#pragma warning disable S5773 // Types allowed to be deserialized should be restricted
-                        content = formatter.Deserialize(stream);
-#pragma warning restore S5773 // Types allowed to be deserialized should be restricted
+                        formatter.Serialize(stream, payload);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
+                        bytes = stream.ToArray();
+                        accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
                     }
                     catch (Exception e)
                     {
                         throw new MessageConversionException("failed to convert serialized Message content", e);
                     }
                 }
-                else if (contentType != null &&
-                        contentType.Equals(MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT))
-                {
-                    throw new MessageConversionException($"Content type: {MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT} unsupported");
-                }
-            }
 
-            if (content == null)
-            {
-                _logger?.LogDebug("FromMessage() returning message payload unchanged");
-                content = message.Payload;
-            }
-
-            return content;
+                break;
         }
 
-        protected override IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint)
+        if (bytes == null)
         {
-            byte[] bytes = null;
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
-            switch (payload)
-            {
-                case byte[] v:
-                    bytes = v;
-                    accessor.ContentType = MessageHeaders.CONTENT_TYPE_BYTES;
-                    break;
-                case string sPayload:
-                    {
-                        try
-                        {
-                            var enc = EncodingUtils.GetEncoding(DefaultCharset);
-                            bytes = enc.GetBytes(sPayload);
-                        }
-                        catch (Exception e)
-                        {
-                            throw new MessageConversionException("failed to convert to Message content", e);
-                        }
-
-                        accessor.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
-                        accessor.ContentEncoding = DefaultCharset;
-                        break;
-                    }
-
-                default:
-                    if (payload.GetType().IsSerializable)
-                    {
-                        try
-                        {
-                            var formatter = new BinaryFormatter();
-                            var stream = new MemoryStream(512);
-
-                            // TODO: don't disable this warning! https://aka.ms/binaryformatter
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-                            formatter.Serialize(stream, payload);
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
-                            bytes = stream.ToArray();
-                            accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
-                        }
-                        catch (Exception e)
-                        {
-                            throw new MessageConversionException("failed to convert serialized Message content", e);
-                        }
-                    }
-
-                    break;
-            }
-
-            if (bytes == null)
-            {
-                throw new ArgumentException($"SimpleMessageConverter only supports string, byte[] and serializable payloads, received: {payload?.GetType().Name}");
-            }
-
-            var message = Message.Create(bytes, messageProperties);
-            accessor.ContentLength = bytes.Length;
-            return message;
+            throw new ArgumentException($"SimpleMessageConverter only supports string, byte[] and serializable payloads, received: {payload?.GetType().Name}");
         }
+
+        var message = Message.Create(bytes, messageProperties);
+        accessor.ContentLength = bytes.Length;
+        return message;
     }
 }

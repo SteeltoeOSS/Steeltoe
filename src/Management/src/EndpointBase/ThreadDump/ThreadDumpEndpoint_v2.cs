@@ -1,38 +1,37 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+public class ThreadDumpEndpoint_v2 : AbstractEndpoint<ThreadDumpResult>, IThreadDumpEndpointV2
 {
-    public class ThreadDumpEndpoint_v2 : AbstractEndpoint<ThreadDumpResult>, IThreadDumpEndpointV2
+    private readonly ILogger<ThreadDumpEndpoint_v2> _logger;
+    private readonly IThreadDumper _threadDumper;
+
+    public ThreadDumpEndpoint_v2(IThreadDumpOptions options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint_v2> logger = null)
+        : base(options)
     {
-        private readonly ILogger<ThreadDumpEndpoint_v2> _logger;
-        private readonly IThreadDumper _threadDumper;
+        _threadDumper = threadDumper ?? throw new ArgumentNullException(nameof(threadDumper));
+        _logger = logger;
+    }
 
-        public ThreadDumpEndpoint_v2(IThreadDumpOptions options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint_v2> logger = null)
-            : base(options)
+    public new IThreadDumpOptions Options
+    {
+        get
         {
-            _threadDumper = threadDumper ?? throw new ArgumentNullException(nameof(threadDumper));
-            _logger = logger;
+            return options as IThreadDumpOptions;
         }
+    }
 
-        public new IThreadDumpOptions Options
+    public override ThreadDumpResult Invoke()
+    {
+        return new ThreadDumpResult
         {
-            get
-            {
-                return options as IThreadDumpOptions;
-            }
-        }
-
-        public override ThreadDumpResult Invoke()
-        {
-            return new ThreadDumpResult
-            {
-                Threads = _threadDumper.DumpThreads()
-            };
-        }
+            Threads = _threadDumper.DumpThreads()
+        };
     }
 }

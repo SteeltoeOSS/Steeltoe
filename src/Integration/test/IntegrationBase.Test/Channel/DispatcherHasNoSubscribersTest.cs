@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,59 +10,58 @@ using Steeltoe.Messaging;
 using System;
 using Xunit;
 
-namespace Steeltoe.Integration.Channel.Test
+namespace Steeltoe.Integration.Channel.Test;
+
+public class DispatcherHasNoSubscribersTest
 {
-    public class DispatcherHasNoSubscribersTest
+    private IServiceProvider provider;
+
+    public DispatcherHasNoSubscribersTest()
     {
-        private IServiceProvider provider;
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var config = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        provider = services.BuildServiceProvider();
+    }
 
-        public DispatcherHasNoSubscribersTest()
+    [Fact]
+    public void OneChannel()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var provider = services.BuildServiceProvider();
+        var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+        try
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var config = new ConfigurationBuilder().Build();
-            services.AddSingleton<IConfiguration>(config);
-            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-            provider = services.BuildServiceProvider();
+            noSubscribersChannel.Send(Message.Create("Hello, world!"));
+            throw new Exception("Exception expected");
         }
-
-        [Fact]
-        public void OneChannel()
+        catch (MessagingException e)
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            try
-            {
-                noSubscribersChannel.Send(Message.Create("Hello, world!"));
-                throw new Exception("Exception expected");
-            }
-            catch (MessagingException e)
-            {
-                Assert.Contains("Dispatcher has no subscribers", e.Message);
-            }
+            Assert.Contains("Dispatcher has no subscribers", e.Message);
         }
+    }
 
-        [Fact]
-        public void BridgedChannel()
+    [Fact]
+    public void BridgedChannel()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var provider = services.BuildServiceProvider();
+        var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var subscribedChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var bridgeHandler = new BridgeHandler(provider.GetService<IApplicationContext>()) { OutputChannel = noSubscribersChannel };
+        subscribedChannel.Subscribe(bridgeHandler);
+        try
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var subscribedChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-            var bridgeHandler = new BridgeHandler(provider.GetService<IApplicationContext>()) { OutputChannel = noSubscribersChannel };
-            subscribedChannel.Subscribe(bridgeHandler);
-            try
-            {
-                subscribedChannel.Send(Message.Create("Hello, world!"));
-                throw new Exception("Exception expected");
-            }
-            catch (MessagingException e)
-            {
-                Assert.Contains("Dispatcher has no subscribers", e.Message);
-            }
+            subscribedChannel.Send(Message.Create("Hello, world!"));
+            throw new Exception("Exception expected");
+        }
+        catch (MessagingException e)
+        {
+            Assert.Contains("Dispatcher has no subscribers", e.Message);
         }
     }
 }

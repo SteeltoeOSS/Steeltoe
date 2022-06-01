@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,92 +9,90 @@ using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection
-{
+namespace Steeltoe.Messaging.RabbitMQ.Connection;
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class SimpleConnection : IConnection, RC.NetworkConnection
+public class SimpleConnection : IConnection, RC.NetworkConnection
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
+{
+    private readonly int _closeTimeout;
+    private readonly ILogger _logger;
+
+    public int LocalPort => Connection.LocalPort;
+
+    public RC.IConnection Connection { get; }
+
+    public bool IsOpen => Connection.IsOpen;
+
+    public string Address => Connection.Endpoint.HostName;
+
+    public int Port => Connection.Endpoint.Port;
+
+    public int RemotePort => Connection.Endpoint.Port;
+
+    public SimpleConnection(RC.IConnection connection, int closeTimeout, ILogger logger = null)
     {
-        private readonly int _closeTimeout;
-        private readonly ILogger _logger;
+        Connection = connection;
+        _closeTimeout = closeTimeout;
+        _logger = logger;
+    }
 
-        public int LocalPort => Connection.LocalPort;
-
-        public RC.IConnection Connection { get; }
-
-        public bool IsOpen => Connection.IsOpen;
-
-        public string Address => Connection.Endpoint.HostName;
-
-        public int Port => Connection.Endpoint.Port;
-
-        public int RemotePort => Connection.Endpoint.Port;
-
-        public SimpleConnection(RC.IConnection connection, int closeTimeout, ILogger logger = null)
+    public RC.IModel CreateChannel(bool transactional = false)
+    {
+        try
         {
-            Connection = connection;
-            _closeTimeout = closeTimeout;
-            _logger = logger;
-        }
-
-        public RC.IModel CreateChannel(bool transactional = false)
-        {
-            try
+            var result = Connection.CreateModel();
+            if (result == null)
             {
-                var result = Connection.CreateModel();
-                if (result == null)
-                {
-                    throw new RabbitResourceNotAvailableException("The channelMax limit is reached. Try later.");
-                }
-
-                if (transactional)
-                {
-                    result.TxSelect();
-                }
-
-                return result;
+                throw new RabbitResourceNotAvailableException("The channelMax limit is reached. Try later.");
             }
-            catch (Exception e)
+
+            if (transactional)
             {
-                throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
+                result.TxSelect();
             }
-        }
 
-        public void Close()
+            return result;
+        }
+        catch (Exception e)
         {
-            try
-            {
-                // _explicitlyClosed = true;
-
-                // let the physical close time out if necessary
-                Connection.Close(_closeTimeout);
-            }
-            catch (AlreadyClosedException)
-            {
-                // Ignore
-            }
-            catch (Exception e)
-            {
-                throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
-            }
+            throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
         }
+    }
 
-        public void Dispose()
+    public void Close()
+    {
+        try
         {
-            Connection.Dispose();
-        }
+            // _explicitlyClosed = true;
 
-        public void AddBlockedListener(IBlockedListener listener)
-        {
-            Connection.ConnectionBlocked += listener.HandleBlocked;
-            Connection.ConnectionUnblocked += listener.HandleUnblocked;
+            // let the physical close time out if necessary
+            Connection.Close(_closeTimeout);
         }
+        catch (AlreadyClosedException)
+        {
+            // Ignore
+        }
+        catch (Exception e)
+        {
+            throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
+        }
+    }
 
-        public bool RemoveBlockedListener(IBlockedListener listener)
-        {
-            Connection.ConnectionBlocked -= listener.HandleBlocked;
-            Connection.ConnectionUnblocked -= listener.HandleUnblocked;
-            return true;
-        }
+    public void Dispose()
+    {
+        Connection.Dispose();
+    }
+
+    public void AddBlockedListener(IBlockedListener listener)
+    {
+        Connection.ConnectionBlocked += listener.HandleBlocked;
+        Connection.ConnectionUnblocked += listener.HandleUnblocked;
+    }
+
+    public bool RemoveBlockedListener(IBlockedListener listener)
+    {
+        Connection.ConnectionBlocked -= listener.HandleBlocked;
+        Connection.ConnectionUnblocked -= listener.HandleUnblocked;
+        return true;
     }
 }
