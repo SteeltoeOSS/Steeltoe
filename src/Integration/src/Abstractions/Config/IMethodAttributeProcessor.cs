@@ -8,7 +8,9 @@ using System.Reflection;
 
 namespace Steeltoe.Integration.Config;
 
+#pragma warning disable S2326 // Unused type parameters should be removed
 public interface IMethodAttributeProcessor<A>
+#pragma warning restore S2326 // Unused type parameters should be removed
     where A : Attribute
 {
     object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes);
