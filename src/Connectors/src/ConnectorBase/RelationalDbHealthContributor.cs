@@ -100,7 +100,7 @@ public class RelationalDbHealthContributor : IHealthContributor
             _connection.Open();
             var cmd = _connection.CreateCommand();
             cmd.CommandText = Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1 ? "SELECT 1 FROM dual" : "SELECT 1;";
-            var qresult = cmd.ExecuteScalar();
+            cmd.ExecuteScalar();
             result.Details.Add("status", HealthStatus.UP.ToString());
             result.Status = HealthStatus.UP;
             _logger?.LogTrace("{DbConnection} up!", Id);

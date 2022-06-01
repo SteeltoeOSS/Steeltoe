@@ -108,7 +108,6 @@ public static class EndpointServiceCollectionExtensions
 
         services.TryAddSingleton(provider =>
         {
-            var options = provider.GetService<IMetricsEndpointOptions>();
             var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
             var configuration = provider.GetService<IConfiguration>();
             return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);

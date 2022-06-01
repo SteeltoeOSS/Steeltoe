@@ -42,8 +42,6 @@ public class Startup
         services.AddSingleton<RabbitMessageChannelBinder>();
         services.AddSingleton<IBinder>(p =>
         {
-            var logger = p.GetRequiredService<ILogger<RabbitMessageChannelBinder>>();
-            var exchangeprov = p.GetRequiredService<RabbitExchangeQueueProvisioner>();
             return p.GetRequiredService<RabbitMessageChannelBinder>();
         });
     }

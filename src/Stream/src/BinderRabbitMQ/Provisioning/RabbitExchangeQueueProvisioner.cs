@@ -148,7 +148,6 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
     public IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions options)
     {
-        var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
         IConsumerDestination consumerDestination;
         if (!options.Multiplex)
         {

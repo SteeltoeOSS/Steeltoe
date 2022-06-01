@@ -2315,7 +2315,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         channel.BasicQos(0, 1, false);
         var latch = new CountdownEvent(1);
         var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName, cancelationToken);
-        var consumeResult = RC.IModelExensions.BasicConsume(channel, queueName, false, consumer);
+        RC.IModelExensions.BasicConsume(channel, queueName, false, consumer);
 
         // Waiting for consumeOK, if latch hasn't signaled, then consumeOK response never hit
         if (!latch.Wait(TimeSpan.FromMilliseconds(timeoutMillis)))

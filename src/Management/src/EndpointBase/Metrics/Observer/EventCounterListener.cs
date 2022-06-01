@@ -123,7 +123,7 @@ public class EventCounterListener : EventListener
                     longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
                     break;
                 case var kn when key.Equals("IntervalSec", StringComparison.OrdinalIgnoreCase):
-                    var actualInterval = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
+                    doubleValue = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
                     break;
                 case var kn when key.Equals("Count", StringComparison.OrdinalIgnoreCase):
                     longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
@@ -150,14 +150,14 @@ public class EventCounterListener : EventListener
         {
             _lastDoubleValue[metricName] = doubleValue.Value;
 
-            var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
+            _doubleMeasureMetrics.GetOrAddEx(
                 metricName,
                 name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
         else if (longValue.HasValue)
         {
             _lastLongValue[metricName] = longValue.Value;
-            var longMetric = _longMeasureMetrics.GetOrAddEx(
+            _longMeasureMetrics.GetOrAddEx(
                 metricName,
                 name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
