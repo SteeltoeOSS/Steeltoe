@@ -23,7 +23,7 @@ public class KubernetesServiceInstanceTest
         AssertServiceInstance(true);
     }
 
-    private KubernetesServiceInstance AssertServiceInstance(bool secure)
+    private void AssertServiceInstance(bool secure)
     {
         var address = new V1EndpointAddress { Ip = "1.2.3.4" };
         var port = new Corev1EndpointPort { Port = 8080 };
@@ -34,6 +34,5 @@ public class KubernetesServiceInstanceTest
         Assert.Equal(expected: 8080, actual: instance.Port);
         Assert.Equal(expected: secure, actual: instance.IsSecure);
         Assert.Equal(expected: secure ? "https" : "http", actual: instance.GetScheme());
-        return instance;
     }
 }

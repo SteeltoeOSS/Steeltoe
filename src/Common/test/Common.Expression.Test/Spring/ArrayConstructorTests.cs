@@ -106,7 +106,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         EvaluateAndCheckError("new int[3]{'3','ghi','5'}", SpelMessage.TYPE_CONVERSION_ERROR, 0);
     }
 
-    private string EvaluateArrayBuildingExpression(string expression, string expectedTostring)
+    private void EvaluateArrayBuildingExpression(string expression, string expectedTostring)
     {
         var parser = new SpelExpressionParser();
         var e = parser.ParseExpression(expression);
@@ -218,6 +218,5 @@ public class ArrayConstructorTests : AbstractExpressionTests
 
         s.Append(']');
         Assert.Equal(expectedTostring, s.ToString());
-        return s.ToString();
     }
 }

@@ -1489,23 +1489,18 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    private Exception WrapWithOnFallbackErrorHook(Exception e)
+    private void WrapWithOnFallbackErrorHook(Exception e)
     {
         try
         {
             if (IsFallbackUserDefined)
             {
-                return _executionHook.OnFallbackError(this, e);
-            }
-            else
-            {
-                return e;
+                _executionHook.OnFallbackError(this, e);
             }
         }
         catch (Exception hookEx)
         {
             _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onFallbackError - {0}", hookEx);
-            return e;
         }
     }
     #endregion Wraps

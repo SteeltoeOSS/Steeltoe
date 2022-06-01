@@ -68,10 +68,8 @@ public static class RabbitListenerDeclareAtrributeProcessor
         return bindings;
     }
 
-    private static List<IExchange> ProcessDeclareExchanges(IServiceCollection services, IConfiguration config, List<DeclareExchangeAttribute> declareExchanges)
+    private static void ProcessDeclareExchanges(IServiceCollection services, IConfiguration config, List<DeclareExchangeAttribute> declareExchanges)
     {
-        var exchanges = new List<IExchange>();
-
         foreach (var e in declareExchanges)
         {
             var exchangeName = PropertyPlaceholderHelper.ResolvePlaceholders(e.Name, config);
@@ -115,10 +113,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
             }
 
             services.AddRabbitExchange(exchange);
-            exchanges.Add(exchange);
         }
-
-        return exchanges;
     }
 
     private static void UpdateBindingDeclarations(List<QueueBinding> bindings)
