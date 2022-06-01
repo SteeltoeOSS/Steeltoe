@@ -23,28 +23,22 @@ namespace Steeltoe.Integration.Handler;
 
 public class MethodInvokingMessageProcessor<T> : AbstractMessageProcessor<T>, ILifecycle
 {
-    private readonly object _targetObject;
-    private readonly MethodInfo _method;
-    private readonly IMessageHandlerMethodFactory _messageHandlerMethodFactory;
     private readonly IInvocableHandlerMethod _invocableHandlerMethod;
     private IConversionService _conversionService;
 
     public MethodInvokingMessageProcessor(IApplicationContext context, object targetObject, MethodInfo method)
         : base(context)
     {
-        _targetObject = targetObject;
-        _method = method;
-        _messageHandlerMethodFactory = ConfigureMessageHandlerFactory();
-        _invocableHandlerMethod = _messageHandlerMethodFactory.CreateInvocableHandlerMethod(_targetObject, _method);
+        var messageHandlerMethodFactory = ConfigureMessageHandlerFactory();
+        _invocableHandlerMethod = messageHandlerMethodFactory.CreateInvocableHandlerMethod(targetObject, method);
     }
 
     public MethodInvokingMessageProcessor(IApplicationContext context, object targetObject, Type attribute)
         : base(context)
     {
-        _targetObject = targetObject;
-        _method = FindAnnotatedMethod(targetObject, attribute);
-        _messageHandlerMethodFactory = ConfigureMessageHandlerFactory();
-        _invocableHandlerMethod = _messageHandlerMethodFactory.CreateInvocableHandlerMethod(_targetObject, _method);
+        var method = FindAnnotatedMethod(targetObject, attribute);
+        var messageHandlerMethodFactory = ConfigureMessageHandlerFactory();
+        _invocableHandlerMethod = messageHandlerMethodFactory.CreateInvocableHandlerMethod(targetObject, method);
     }
 
     public virtual IConversionService ConversionService

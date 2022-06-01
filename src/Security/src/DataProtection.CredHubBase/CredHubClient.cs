@@ -29,7 +29,6 @@ public class CredHubClient : ICredHubClient
     private const int DEFAULT_TIMEOUT = 3000;
 
     private static HttpClient _httpClient;
-    private static HttpClientHandler _httpClientHandler;
     private static ILogger _logger;
     private static string _baseCredHubUrl;
 
@@ -52,8 +51,8 @@ public class CredHubClient : ICredHubClient
         _logger = logger;
         _baseCredHubUrl = credHubOptions.CredHubUrl;
         var client = new CredHubClient(credHubOptions.ValidateCertificates);
-        _httpClientHandler = new HttpClientHandler();
-        _httpClient = httpClient ?? client.InitializeHttpClient(_httpClientHandler);
+        var httpClientHandler = new HttpClientHandler();
+        _httpClient = httpClient ?? client.InitializeHttpClient(httpClientHandler);
         return client.InitializeAsync(credHubOptions);
     }
 

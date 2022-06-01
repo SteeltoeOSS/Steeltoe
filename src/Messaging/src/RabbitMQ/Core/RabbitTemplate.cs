@@ -2657,7 +2657,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         private readonly CountdownEvent _latch;
         private readonly TaskCompletionSource<Delivery> _completionSource;
         private readonly string _queueName;
-        private readonly CancellationToken _cancellationToken;
 
         public DefaultTemplateConsumer(RC.IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancelationToken)
             : base(channel)
@@ -2665,8 +2664,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             _latch = latch;
             _completionSource = completionSource;
             _queueName = queueName;
-            _cancellationToken = cancelationToken;
-            _cancellationToken.Register(() =>
+            cancelationToken.Register(() =>
             {
                 Signal();
                 _completionSource.TrySetCanceled();

@@ -15,15 +15,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public class CloudFoundryCertificateIdentityAuthorizationHandler : IAuthorizationHandler
 {
-    private readonly IOptionsMonitor<CertificateOptions> _identityCert;
     private readonly ILogger<CloudFoundryCertificateIdentityAuthorizationHandler> _logger;
     private CloudFoundryInstanceCertificate _cloudFoundryCertificate;
 
     public CloudFoundryCertificateIdentityAuthorizationHandler(IOptionsMonitor<CertificateOptions> identityCert, ILogger<CloudFoundryCertificateIdentityAuthorizationHandler> logger)
     {
         _logger = logger;
-        _identityCert = identityCert;
-        _identityCert.OnChange(OnCertRefresh);
+        identityCert.OnChange(OnCertRefresh);
         OnCertRefresh(identityCert.CurrentValue);
     }
 
