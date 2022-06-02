@@ -34,5 +34,6 @@ public sealed class XunitLoggerFactory : ILoggerFactory
 
     public void Dispose()
     {
+        _factory.Dispose();
     }
 }
