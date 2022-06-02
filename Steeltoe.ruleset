@@ -240,7 +240,7 @@
     <Rule Id="S3603" Action="Warning" />
     <Rule Id="S3604" Action="Warning" />
     <Rule Id="S3610" Action="Warning" />
-    <Rule Id="S3626" Action="Info" />
+    <Rule Id="S3626" Action="Warning" />
     <Rule Id="S3655" Action="Warning" />
     <Rule Id="S3693" Action="Warning" />
     <Rule Id="S3717" Action="None" />

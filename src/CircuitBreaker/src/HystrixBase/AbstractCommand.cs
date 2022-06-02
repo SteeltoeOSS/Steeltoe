@@ -698,7 +698,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
                     {
                         WrapWithOnFallbackErrorHook(ex);
                         HandleFallbackError(ex, failureType, message, originalException);
+
+                        // Suppress S3626 to workaround bug at https://github.com/SonarSource/sonar-dotnet/issues/5691.
+#pragma warning disable S3626 // Jump statements should not be redundant
                         return;
+#pragma warning restore S3626 // Jump statements should not be redundant
                     }
                     finally
                     {
