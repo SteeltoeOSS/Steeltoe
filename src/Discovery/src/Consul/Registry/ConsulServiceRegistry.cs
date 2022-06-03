@@ -16,12 +16,8 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// </summary>
 public class ConsulServiceRegistry : IConsulServiceRegistry
 {
-#pragma warning disable S1144 // Unused private types or members should be removed
-    private const string UNKNOWN = "UNKNOWN";
     private const string UP = "UP";
-    private const string DOWN = "DOWN";
     private const string OUT_OF_SERVICE = "OUT_OF_SERVICE";
-#pragma warning restore S1144 // Unused private types or members should be removed
 
     private readonly IConsulClient _client;
     private readonly IScheduler _scheduler;
