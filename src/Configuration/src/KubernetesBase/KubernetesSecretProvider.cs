@@ -82,29 +82,7 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
             switch (Settings.ReloadSettings.Mode)
             {
                 case ReloadMethods.Event:
-                    SecretWatcher = K8sClient.WatchNamespacedSecretAsync(
-                        Settings.Name,
-                        Settings.Namespace,
-                        onEvent: (eventType, item) =>
-                        {
-                            Logger?.LogInformation("Receved {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
-                            switch (eventType)
-                            {
-                                case WatchEventType.Added:
-                                case WatchEventType.Modified:
-                                case WatchEventType.Deleted:
-                                    ProcessData(item);
-                                    break;
-                                default:
-                                    Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
-                                    break;
-                            }
-                        },
-                        onError: exception =>
-                        {
-                            Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
-                        },
-                        onClosed: () => { Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
+                    EnableEventReloading();
                     break;
                 case ReloadMethods.Polling:
                     if (!Polling)
@@ -118,6 +96,30 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
                     break;
             }
         }
+    }
+
+    private void EnableEventReloading()
+    {
+        SecretWatcher = K8sClient.WatchNamespacedSecretAsync(
+            Settings.Name,
+            Settings.Namespace,
+            onEvent: (eventType, item) =>
+            {
+                Logger?.LogInformation("Receved {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
+                switch (eventType)
+                {
+                    case WatchEventType.Added:
+                    case WatchEventType.Modified:
+                    case WatchEventType.Deleted:
+                        ProcessData(item);
+                        break;
+                    default:
+                        Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
+                        break;
+                }
+            },
+            onError: exception => Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
+            onClosed: () => Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name)).GetAwaiter().GetResult();
     }
 
     private void ProcessData(V1Secret item)

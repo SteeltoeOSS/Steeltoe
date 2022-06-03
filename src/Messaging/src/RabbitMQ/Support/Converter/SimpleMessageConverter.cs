@@ -118,22 +118,8 @@ public class SimpleMessageConverter : AbstractMessageConverter
             default:
                 if (payload.GetType().IsSerializable)
                 {
-                    try
-                    {
-                        var formatter = new BinaryFormatter();
-                        var stream = new MemoryStream(512);
-
-                        // TODO: don't disable this warning! https://aka.ms/binaryformatter
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-                        formatter.Serialize(stream, payload);
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
-                        bytes = stream.ToArray();
-                        accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
-                    }
-                    catch (Exception e)
-                    {
-                        throw new MessageConversionException("failed to convert serialized Message content", e);
-                    }
+                    bytes = SerializeObject(payload);
+                    accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
                 }
 
                 break;
@@ -147,5 +133,24 @@ public class SimpleMessageConverter : AbstractMessageConverter
         var message = Message.Create(bytes, messageProperties);
         accessor.ContentLength = bytes.Length;
         return message;
+    }
+
+    private static byte[] SerializeObject(object payload)
+    {
+        try
+        {
+            var formatter = new BinaryFormatter();
+            var stream = new MemoryStream(512);
+
+            // TODO: don't disable this warning! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
+            formatter.Serialize(stream, payload);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
+            return stream.ToArray();
+        }
+        catch (Exception e)
+        {
+            throw new MessageConversionException("failed to convert serialized Message content", e);
+        }
     }
 }
