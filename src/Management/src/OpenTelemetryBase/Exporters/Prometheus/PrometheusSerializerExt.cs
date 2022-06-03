@@ -93,7 +93,7 @@ internal static partial class PrometheusSerializer
 
                     cursor = WriteAsciiStringNoEscape(buffer, cursor, "le=\"");
 
-                    cursor = histogramMeasurement.ExplicitBound != double.PositiveInfinity
+                    cursor = !double.IsPositiveInfinity(histogramMeasurement.ExplicitBound)
                         ? WriteDouble(buffer, cursor, histogramMeasurement.ExplicitBound)
                         : WriteAsciiStringNoEscape(buffer, cursor, "+Inf");
 

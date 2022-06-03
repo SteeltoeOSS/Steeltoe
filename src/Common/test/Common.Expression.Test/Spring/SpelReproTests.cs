@@ -850,67 +850,61 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatEqFloatUnaryMinus()
     {
-        var expectedResult = -10.21f == -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("-10.21f == -10.2f");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatEqDoubleUnaryMinus()
     {
-        var expectedResult = -10.21f == -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("-10.21f == -10.2");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatEqFloat()
     {
-        var expectedResult = 10.215f == 10.2109f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f == 10.2109f");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatEqDouble()
     {
-        var expectedResult = 10.215f == 10.2109;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f == 10.2109");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatNotEqFloat()
     {
-        var expectedResult = 10.215f != 10.2109f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f != 10.2109f");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(true, result);
     }
 
     [Fact]
     public void SPR9486_FloatNotEqDouble()
     {
-        var expectedResult = 10.215f != 10.2109;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f != 10.2109");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(true, result);
     }
 
     [Fact]
