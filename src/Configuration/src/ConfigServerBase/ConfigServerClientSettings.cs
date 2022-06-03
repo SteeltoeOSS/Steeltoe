@@ -332,6 +332,7 @@ public class ConfigServerClientSettings
         }
         catch (UriFormatException)
         {
+            // Intentionally left empty.
         }
 
         return Uri;
@@ -346,9 +347,8 @@ public class ConfigServerClientSettings
         }
         catch (UriFormatException)
         {
+            return null;
         }
-
-        return null;
     }
 
     internal string[] GetRawUris()

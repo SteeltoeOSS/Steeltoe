@@ -535,6 +535,7 @@ public class BlockingQueueConsumer
                     }
                     catch (TimeoutException)
                     {
+                        // Intentionally left empty.
                     }
 
                     throw new FatalListenerStartupException("Illegal Argument on Queue Declaration", e);
