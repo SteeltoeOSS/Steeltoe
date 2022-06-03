@@ -94,7 +94,7 @@ public class SelectionAndProjectionTests
     public void SelectionWithIEnumerable()
     {
         var expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
-        var context = new StandardEvaluationContext(new IEnumerableTestBean());
+        var context = new StandardEvaluationContext(new EnumerableTestBean());
         var value = expression.GetValue(context);
         var condition = value is List<object>;
         Assert.True(condition);
@@ -317,11 +317,11 @@ public class SelectionAndProjectionTests
         public ISet<int> Integers { get; } = new HashSet<int>();
     }
 
-    public class IEnumerableTestBean
+    public class EnumerableTestBean
     {
         private readonly ISet<int> _integers = new HashSet<int>();
 
-        public IEnumerableTestBean()
+        public EnumerableTestBean()
         {
             for (var i = 0; i < 10; i++)
             {

@@ -7,7 +7,10 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
+// TODO: [BREAKING] Rename type and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
 public class ThreadDumpEndpoint_v2 : AbstractEndpoint<ThreadDumpResult>, IThreadDumpEndpointV2
+#pragma warning restore S101 // Types should be named in PascalCase
 {
     private readonly ILogger<ThreadDumpEndpoint_v2> _logger;
     private readonly IThreadDumper _threadDumper;

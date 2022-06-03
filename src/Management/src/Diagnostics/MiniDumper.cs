@@ -80,7 +80,10 @@ internal class MiniDumper
         return minidumpFlags;
     }
 
+// TODO: [BREAKING] Rename type and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
     internal struct MINIDUMP_CALLBACK_INFORMATION
+#pragma warning restore S101 // Types should be named in PascalCase
     {
         public IntPtr CallbackRoutine;
         public IntPtr CallbackParam;
@@ -139,7 +142,10 @@ internal class MiniDumper
         MiniDumpFilterTriage = 0x00100000,
     }
 
+// TODO: [BREAKING] Rename type and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
     internal struct MINIDUMP_CALLBACK_OUTPUT
+#pragma warning restore S101 // Types should be named in PascalCase
     {
         public int Status; // HRESULT
     }

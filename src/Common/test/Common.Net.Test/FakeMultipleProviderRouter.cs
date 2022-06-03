@@ -7,14 +7,14 @@ using System.Text;
 
 namespace Steeltoe.Common.Net.Test;
 
-internal class FakeMPR : IMPR
+internal class FakeMultipleProviderRouter : IMPR
 {
     internal string _username;
     internal string _password;
     internal string _networkpath;
     internal bool _shouldConnect;
 
-    public FakeMPR(bool shouldConnect = true)
+    public FakeMultipleProviderRouter(bool shouldConnect = true)
     {
         _shouldConnect = shouldConnect;
     }

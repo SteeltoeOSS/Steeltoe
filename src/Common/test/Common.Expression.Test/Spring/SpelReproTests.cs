@@ -751,7 +751,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var expectedResult = Math.Abs(-10.2f);
         var parser = new SpelExpressionParser();
-        var testObject = new SPR9486_FunctionsClass();
+        var testObject = new FunctionsClass();
 
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("Abs(-10.2f)");
@@ -1722,15 +1722,6 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class CCC
-    {
-        public bool Method(object o)
-        {
-            Console.WriteLine(o);
-            return false;
-        }
-    }
-
     public class C
     {
         public List<string> Ls;
@@ -1802,7 +1793,7 @@ public class SpelReproTests : AbstractExpressionTests
         public Dictionary<string, string> Map = new ();
     }
 
-    public class SPR9486_FunctionsClass
+    public class FunctionsClass // SPR9486
     {
         public int Abs(int value) => Math.Abs(value);
 

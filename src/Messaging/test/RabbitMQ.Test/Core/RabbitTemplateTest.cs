@@ -377,9 +377,9 @@ public class RabbitTemplateTest
     [Fact]
     public void TestAddAndRemoveBeforePublishPostProcessors()
     {
-        var mpp1 = new DoNothingMPP();
-        var mpp2 = new DoNothingMPP();
-        var mpp3 = new DoNothingMPP();
+        var mpp1 = new DoNothingMessagePostProcessor();
+        var mpp2 = new DoNothingMessagePostProcessor();
+        var mpp3 = new DoNothingMessagePostProcessor();
         var rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.AddBeforePublishPostProcessors(mpp1, mpp2);
         rabbitTemplate.AddBeforePublishPostProcessors(mpp3);
@@ -393,9 +393,9 @@ public class RabbitTemplateTest
     [Fact]
     public void TestAddAndRemoveAfterReceivePostProcessors()
     {
-        var mpp1 = new DoNothingMPP();
-        var mpp2 = new DoNothingMPP();
-        var mpp3 = new DoNothingMPP();
+        var mpp1 = new DoNothingMessagePostProcessor();
+        var mpp2 = new DoNothingMessagePostProcessor();
+        var mpp3 = new DoNothingMessagePostProcessor();
         var rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.AddAfterReceivePostProcessors(mpp1, mpp2);
         rabbitTemplate.AddAfterReceivePostProcessors(mpp3);
@@ -450,7 +450,7 @@ public class RabbitTemplateTest
         mockConnection.Verify(c => c.CreateChannel(true));
     }
 
-    private sealed class DoNothingMPP : IMessagePostProcessor
+    private sealed class DoNothingMessagePostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message)
         {

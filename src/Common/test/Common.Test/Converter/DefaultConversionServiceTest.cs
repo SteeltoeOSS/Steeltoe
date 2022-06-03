@@ -814,49 +814,49 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertObjectToStringWithValueOfMethodPresentUsingToString()
     {
-        ISBN.Reset();
-        Assert.Equal("123456789", ConversionService.Convert<string>(new ISBN("123456789")));
+        Isbn.Reset();
+        Assert.Equal("123456789", ConversionService.Convert<string>(new Isbn("123456789")));
 
-        Assert.Equal(1, ISBN.ConstructorCount);
-        Assert.Equal(0, ISBN.ValueOfCount);
-        Assert.Equal(1, ISBN.ToStringCount);
+        Assert.Equal(1, Isbn.ConstructorCount);
+        Assert.Equal(0, Isbn.ValueOfCount);
+        Assert.Equal(1, Isbn.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToObjectUsingValueOfMethod()
     {
-        ISBN.Reset();
-        Assert.Equal(new ISBN("123456789"), ConversionService.Convert<ISBN>("123456789"));
+        Isbn.Reset();
+        Assert.Equal(new Isbn("123456789"), ConversionService.Convert<Isbn>("123456789"));
 
-        Assert.Equal(2, ISBN.ConstructorCount);
-        Assert.Equal(1, ISBN.ValueOfCount);
-        Assert.Equal(0, ISBN.ToStringCount);
+        Assert.Equal(2, Isbn.ConstructorCount);
+        Assert.Equal(1, Isbn.ValueOfCount);
+        Assert.Equal(0, Isbn.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToStringUsingToString()
     {
-        SSN.Reset();
-        Assert.Equal("123456789", ConversionService.Convert<string>(new SSN("123456789")));
+        SocialSecurityNumber.Reset();
+        Assert.Equal("123456789", ConversionService.Convert<string>(new SocialSecurityNumber("123456789")));
 
-        Assert.Equal(1, SSN.ConstructorCount);
-        Assert.Equal(1, SSN.ToStringCount);
+        Assert.Equal(1, SocialSecurityNumber.ConstructorCount);
+        Assert.Equal(1, SocialSecurityNumber.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToObjectUsingObjectConstructor()
     {
-        SSN.Reset();
-        Assert.Equal(new SSN("123456789"), ConversionService.Convert<SSN>("123456789"));
+        SocialSecurityNumber.Reset();
+        Assert.Equal(new SocialSecurityNumber("123456789"), ConversionService.Convert<SocialSecurityNumber>("123456789"));
 
-        Assert.Equal(2, SSN.ConstructorCount);
-        Assert.Equal(0, SSN.ToStringCount);
+        Assert.Equal(2, SocialSecurityNumber.ConstructorCount);
+        Assert.Equal(0, SocialSecurityNumber.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToObjectNoValueOfMethodOrConstructor()
     {
-        Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<SSN>(3L));
+        Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<SocialSecurityNumber>(3L));
     }
 
     [Fact]
@@ -898,7 +898,7 @@ public class DefaultConversionServiceTest
         Assert.Equal("utf-8", ConversionService.Convert<string>(Encoding.UTF8));
     }
 
-    private sealed class ISBN
+    private sealed class Isbn
     {
         public static int ConstructorCount;
         public static int ToStringCount;
@@ -911,15 +911,15 @@ public class DefaultConversionServiceTest
             ValueOfCount = 0;
         }
 
-        public static ISBN ValueOf(string value)
+        public static Isbn ValueOf(string value)
         {
             ValueOfCount++;
-            return new ISBN(value);
+            return new Isbn(value);
         }
 
         private readonly string value;
 
-        public ISBN(string value)
+        public Isbn(string value)
         {
             ConstructorCount++;
             this.value = value;
@@ -927,7 +927,7 @@ public class DefaultConversionServiceTest
 
         public override bool Equals(object o)
         {
-            if (o is not ISBN isbn)
+            if (o is not Isbn isbn)
             {
                 return false;
             }
@@ -944,7 +944,7 @@ public class DefaultConversionServiceTest
         }
     }
 
-    private sealed class SSN
+    private sealed class SocialSecurityNumber
     {
         public static int ConstructorCount;
 
@@ -958,7 +958,7 @@ public class DefaultConversionServiceTest
 
         private readonly string value;
 
-        public SSN(string value)
+        public SocialSecurityNumber(string value)
         {
             ConstructorCount++;
             this.value = value;
@@ -966,7 +966,7 @@ public class DefaultConversionServiceTest
 
         public override bool Equals(object o)
         {
-            if (o is not SSN ssn)
+            if (o is not SocialSecurityNumber ssn)
             {
                 return false;
             }

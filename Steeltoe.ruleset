@@ -3,7 +3,7 @@
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="None" />
     <Rule Id="S1006" Action="Warning" />
-    <Rule Id="S101" Action="Info" />
+    <Rule Id="S101" Action="Warning" />
     <Rule Id="S103" Action="None" />
     <Rule Id="S104" Action="None" />
     <Rule Id="S1048" Action="Warning" />

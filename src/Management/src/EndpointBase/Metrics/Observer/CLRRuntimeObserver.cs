@@ -13,7 +13,10 @@ using System.Diagnostics.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
+// TODO: [BREAKING] Rename type and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
 public class CLRRuntimeObserver : IRuntimeDiagnosticSource
+#pragma warning restore S101 // Types should be named in PascalCase
 {
     internal const string OBSERVER_NAME = "CLRRuntimeObserver";
     internal const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";

@@ -17,11 +17,11 @@ public class MessagePostProcessorUtilsTest
     {
         var pps = new[]
         {
-            new MPP(),
-            new OMPP().Order(3),
-            new OMPP().Order(1),
-            new POMPP().Order(6),
-            new POMPP().Order(2)
+            new MessagePostProcessor(),
+            new OrderedMessagePostProcessor().Order(3),
+            new OrderedMessagePostProcessor().Order(1),
+            new PriorityOrderedMessagePostProcessor().Order(6),
+            new PriorityOrderedMessagePostProcessor().Order(2)
         };
         var list = new List<IMessagePostProcessor>();
         list.AddRange(pps);
@@ -29,26 +29,26 @@ public class MessagePostProcessorUtilsTest
         using var iterator = sorted.GetEnumerator();
 
         iterator.MoveNext();
-        Assert.IsType<POMPP>(iterator.Current);
+        Assert.IsType<PriorityOrderedMessagePostProcessor>(iterator.Current);
         Assert.Equal(2, ((IOrdered)iterator.Current).Order);
 
         iterator.MoveNext();
-        Assert.IsType<POMPP>(iterator.Current);
+        Assert.IsType<PriorityOrderedMessagePostProcessor>(iterator.Current);
         Assert.Equal(6, ((IOrdered)iterator.Current).Order);
 
         iterator.MoveNext();
-        Assert.IsType<OMPP>(iterator.Current);
+        Assert.IsType<OrderedMessagePostProcessor>(iterator.Current);
         Assert.Equal(1, ((IOrdered)iterator.Current).Order);
 
         iterator.MoveNext();
-        Assert.IsType<OMPP>(iterator.Current);
+        Assert.IsType<OrderedMessagePostProcessor>(iterator.Current);
         Assert.Equal(3, ((IOrdered)iterator.Current).Order);
 
         iterator.MoveNext();
-        Assert.IsType<MPP>(iterator.Current);
+        Assert.IsType<MessagePostProcessor>(iterator.Current);
     }
 
-    private class MPP : IMessagePostProcessor
+    private class MessagePostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message)
         {
@@ -61,20 +61,20 @@ public class MessagePostProcessorUtilsTest
         }
     }
 
-    private class OMPP : MPP, IOrdered
+    private class OrderedMessagePostProcessor : MessagePostProcessor, IOrdered
     {
         private int _order;
 
         int IOrdered.Order => _order;
 
-        public OMPP Order(int order)
+        public OrderedMessagePostProcessor Order(int order)
         {
             _order = order;
             return this;
         }
     }
 
-    private sealed class POMPP : OMPP, IPriorityOrdered
+    private sealed class PriorityOrderedMessagePostProcessor : OrderedMessagePostProcessor, IPriorityOrdered
     {
     }
 }
