@@ -905,7 +905,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfiguration_DisableClientShouldNotComplainAboutInvalidConfiguration()
         {
-
             var clientOptions = new EurekaClientOptions()
             {
                 Enabled = false
