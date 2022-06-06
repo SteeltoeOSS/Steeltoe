@@ -47,6 +47,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Util
                     }
 
                     t0 = DateTimeOffset.Now.Ticks;
+                    if (t0 >= t1)
+                    {
+                        break;
+                    }
 
                     if (latch.Wait(TimeSpan.FromTicks(t1 - t0)))
                     {
