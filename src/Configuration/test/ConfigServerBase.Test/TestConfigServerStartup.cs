@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
@@ -16,11 +17,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             LastRequest = null;
             RequestCount = 0;
             Label = AppName = Env = string.Empty;
+            InitialRequestLatch = new CountdownEvent(1);
         }
 
         public TestConfigServerStartup()
         {
         }
+
+        public static CountdownEvent InitialRequestLatch = new CountdownEvent(1);
 
         public static string Response { get; set; }
 
@@ -47,6 +51,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 {
                     context.Response.Headers.Add("content-type", "application/json");
                     await context.Response.WriteAsync(Response);
+                }
+
+                if (RequestCount == 1)
+                {
+                    InitialRequestLatch.Signal();
                 }
             });
         }
