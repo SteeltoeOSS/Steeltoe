@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -117,7 +117,12 @@ public class LocalCertificateWriter
 
         request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, false));
-        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new ("1.3.6.1.5.5.7.3.2") }, false));
+        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(
+            new OidCollection
+            {
+                new ("1.3.6.1.5.5.7.3.1"), // serverAuth
+                new ("1.3.6.1.5.5.7.3.2") // clientAuth
+            }, false));
 
         if (altNames != null)
         {
