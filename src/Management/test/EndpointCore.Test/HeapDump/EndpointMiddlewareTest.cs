@@ -34,7 +34,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:heapdump:enabled"] = "true"
+            ["management:endpoints:heapdump:enabled"] = "true",
+            ["management:endpoints:heapdump:heapdumptype"] = "gcdump",
         };
 
         [Fact]
