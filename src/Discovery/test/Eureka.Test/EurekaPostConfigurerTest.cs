@@ -901,4 +901,20 @@ public class EurekaPostConfigurerTest
         Assert.Equal(1234, instOpts.SecurePort);
         Assert.Equal(1233, instOpts.Port);
     }
+
+    [Fact]
+    public void UpdateConfiguration_DisableClientShouldNotComplainAboutInvalidConfiguration()
+    {
+        var clientOptions = new EurekaClientOptions
+        {
+            Enabled = false
+        };
+
+        Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
+
+        var ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, null, clientOptions));
+        Assert.Null(ex);
+
+        Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
+    }
 }

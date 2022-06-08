@@ -48,6 +48,11 @@ public class ActiveObjectCounter<T>
 
                 t0 = DateTimeOffset.Now.Ticks;
 
+                if (t0 >= t1)
+                {
+                    break;
+                }
+
                 if (latch.Wait(TimeSpan.FromTicks(t1 - t0)))
                 {
                     _locks.TryRemove(activeObject, out _);

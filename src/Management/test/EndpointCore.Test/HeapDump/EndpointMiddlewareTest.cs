@@ -32,7 +32,8 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:heapdump:enabled"] = "true"
+        ["management:endpoints:heapdump:enabled"] = "true",
+        ["management:endpoints:heapdump:heapdumptype"] = "gcdump"
     };
 
     [Fact]

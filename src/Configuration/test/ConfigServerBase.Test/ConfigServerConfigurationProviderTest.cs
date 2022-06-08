@@ -389,17 +389,13 @@ public class ConfigServerConfigurationProviderTest
         };
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
-        var token = provider.GetReloadToken();
-        await Task.Delay(2000);
-        var postInitialLoadToken = provider.GetReloadToken();
+        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
+        Assert.True(TestConfigServerStartup.RequestCount >= 1);
+        await Task.Delay(1000);
 
-        Assert.NotSame(token, postInitialLoadToken);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.True(TestConfigServerStartup.RequestCount > 1);
-        Assert.True(token.HasChanged);
-
-        await Task.Delay(500);
-        Assert.False(postInitialLoadToken.HasChanged);
+        Assert.True(TestConfigServerStartup.RequestCount >= 2);
+        Assert.False(provider.GetReloadToken().HasChanged);
     }
 
     [Fact]

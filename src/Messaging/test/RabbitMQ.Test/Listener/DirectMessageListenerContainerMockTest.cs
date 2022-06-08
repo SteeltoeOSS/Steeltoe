@@ -103,7 +103,7 @@ public class DirectMessageListenerContainerMockTest
             {
                 qos.Value = count;
             });
-        var latch2 = new CountdownEvent(1);
+        var latch2 = new CountdownEvent(2);
         var latch3 = new CountdownEvent(1);
         channel.Setup(c => c.BasicAck(It.IsAny<ulong>(), It.IsAny<bool>()))
             .Callback<ulong, bool>((tag, multi) =>
@@ -152,7 +152,7 @@ public class DirectMessageListenerContainerMockTest
         Assert.True(latch2.Wait(TimeSpan.FromSeconds(10)));
         consumer.Value.HandleBasicDeliver("consumerTag", 17ul, false, string.Empty, string.Empty, props, body);
         channel.Verify(c => c.BasicAck(10ul, true));
-        channel.Verify(c => c.BasicAck(15ul, true));
+        channel.Verify(c => c.BasicAck(16ul, true));
 
         Assert.True(latch3.Wait(TimeSpan.FromSeconds(10)));
 

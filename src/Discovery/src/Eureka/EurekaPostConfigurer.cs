@@ -36,10 +36,13 @@ public static class EurekaPostConfigurer
     /// <param name="clientOptions">Eureka client configuration (for interacting with the Eureka Server)</param>
     public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
     {
-        if ((Platform.IsContainerized || Platform.IsCloudHosted) &&
+        var clientOpts = clientOptions ?? new EurekaClientOptions();
+
+        if (clientOpts.Enabled &&
+            (Platform.IsContainerized || Platform.IsCloudHosted) &&
             si == null &&
-            clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfig.Default_ServerServiceUrl.TrimEnd('/')) &&
-            (clientOptions.Enabled || clientOptions.ShouldRegisterWithEureka || clientOptions.ShouldFetchRegistry))
+            clientOpts.EurekaServerServiceUrls.Contains(EurekaClientConfig.Default_ServerServiceUrl.TrimEnd('/')) &&
+            (clientOpts.ShouldRegisterWithEureka || clientOpts.ShouldFetchRegistry))
         {
             throw new InvalidOperationException($"Eureka URL {EurekaClientConfig.Default_ServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
         }
