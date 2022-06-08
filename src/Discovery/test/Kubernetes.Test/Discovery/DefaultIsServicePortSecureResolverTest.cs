@@ -6,44 +6,43 @@ using Steeltoe.Discovery.Kubernetes.Discovery;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;
+
+public class DefaultIsServicePortSecureResolverTest
 {
-    public class DefaultIsServicePortSecureResolverTest
+    [Fact]
+    public void PortNumbers_ShouldBeSecuredIfDefaultOrAdded()
     {
-        [Fact]
-        public void PortNumbers_ShouldBeSecuredIfDefaultOrAdded()
-        {
-            var properties = new KubernetesDiscoveryOptions();
-            properties.KnownSecurePorts.Add(12345);
-            var sut = new DefaultIsServicePortSecureResolver(properties);
+        var properties = new KubernetesDiscoveryOptions();
+        properties.KnownSecurePorts.Add(12345);
+        var sut = new DefaultIsServicePortSecureResolver(properties);
 
-            Assert.False(sut.Resolve(new Input("dummy")));
-            Assert.False(sut.Resolve(new Input("dummy", 8080)));
-            Assert.False(sut.Resolve(new Input("dummy", 1234)));
+        Assert.False(sut.Resolve(new Input("dummy")));
+        Assert.False(sut.Resolve(new Input("dummy", 8080)));
+        Assert.False(sut.Resolve(new Input("dummy", 1234)));
 
-            Assert.True(sut.Resolve(new Input("dummy", 443)));
-            Assert.True(sut.Resolve(new Input("dummy", 8443)));
-            Assert.True(sut.Resolve(new Input("dummy", 12345)));
-        }
+        Assert.True(sut.Resolve(new Input("dummy", 443)));
+        Assert.True(sut.Resolve(new Input("dummy", 8443)));
+        Assert.True(sut.Resolve(new Input("dummy", 12345)));
+    }
 
-        [Fact]
-        public void InputWithSecuredLabel_ShouldResolveToTrue()
-        {
-            var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
+    [Fact]
+    public void InputWithSecuredLabel_ShouldResolveToTrue()
+    {
+        var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
 
-            Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
+        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
 
-            Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));
-        }
+        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));
+    }
 
-        [Fact]
-        public void InputWithSecuredAnnotation_ShouldResolveToTrue()
-        {
-            var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
+    [Fact]
+    public void InputWithSecuredAnnotation_ShouldResolveToTrue()
+    {
+        var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
 
-            Assert.True(sut.Resolve(new Input("dummy", 8080, null, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
+        Assert.True(sut.Resolve(new Input("dummy", 8080, null, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
 
-            Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));
-        }
+        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));
     }
 }

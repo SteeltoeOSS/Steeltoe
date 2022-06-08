@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,42 +6,41 @@ using Castle.DynamicProxy;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public class BindingProxyGenerator
 {
-    public class BindingProxyGenerator
+    public static object CreateProxy(IBindableProxyFactory factory)
     {
-        public static object CreateProxy(IBindableProxyFactory factory)
+        return GenerateProxy(factory);
+    }
+
+    internal static object GenerateProxy(IBindableProxyFactory factory)
+    {
+        if (factory == null)
         {
-            return GenerateProxy(factory);
+            throw new ArgumentNullException(nameof(factory));
         }
 
-        internal static object GenerateProxy(IBindableProxyFactory factory)
-        {
-            if (factory == null)
-            {
-                throw new ArgumentNullException(nameof(factory));
-            }
+        var generator = new ProxyGenerator();
+        Func<MethodInfo, object> del = factory.Invoke;
+        var proxy = generator.CreateInterfaceProxyWithoutTarget(factory.BindingType, new BindingInterceptor(del));
+        return proxy;
+    }
 
-            var generator = new ProxyGenerator();
-            Func<MethodInfo, object> del = (m) => factory.Invoke(m);
-            var proxy = generator.CreateInterfaceProxyWithoutTarget(factory.BindingType, new BindingInterceptor(del));
-            return proxy;
+    private sealed class BindingInterceptor : IInterceptor
+    {
+        private readonly Delegate _impl;
+
+        public BindingInterceptor(Delegate impl)
+        {
+            _impl = impl;
         }
 
-        private class BindingInterceptor : IInterceptor
+        public void Intercept(IInvocation invocation)
         {
-            private readonly Delegate _impl;
-
-            public BindingInterceptor(Delegate impl)
-            {
-                _impl = impl;
-            }
-
-            public void Intercept(IInvocation invocation)
-            {
-                var result = _impl.DynamicInvoke(invocation.Method);
-                invocation.ReturnValue = result;
-            }
+            var result = _impl.DynamicInvoke(invocation.Method);
+            invocation.ReturnValue = result;
         }
     }
 }

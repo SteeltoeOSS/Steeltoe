@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,123 +8,117 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+
+public class CloudFoundryConfigurationProvider : ConfigurationProvider
 {
-    public class CloudFoundryConfigurationProvider : ConfigurationProvider
+    private readonly ICloudFoundrySettingsReader _settingsReader;
+
+    public CloudFoundryConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
     {
-        private readonly ICloudFoundrySettingsReader _settingsReader;
+        _settingsReader = settingsReader ?? throw new ArgumentNullException(nameof(settingsReader));
+    }
 
-        public CloudFoundryConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
+    internal IDictionary<string, string> Properties => Data;
+
+    public override void Load()
+    {
+        Process();
+    }
+
+    internal static MemoryStream GetMemoryStream(string json)
+    {
+        var memStream = new MemoryStream();
+        var textWriter = new StreamWriter(memStream);
+        textWriter.Write(json);
+        textWriter.Flush();
+        memStream.Seek(0, SeekOrigin.Begin);
+        return memStream;
+    }
+
+    internal void AddDiegoVariables(IDictionary<string, string> data)
+    {
+        if (!data.ContainsKey("vcap:application:instance_id"))
         {
-            if (settingsReader == null)
-            {
-                throw new ArgumentNullException(nameof(settingsReader));
-            }
-
-            _settingsReader = settingsReader;
+            data["vcap:application:instance_id"] = !string.IsNullOrEmpty(_settingsReader.InstanceId) ? _settingsReader.InstanceId : "-1";
         }
 
-        internal IDictionary<string, string> Properties => Data;
-
-        public override void Load()
+        if (!data.ContainsKey("vcap:application:instance_index"))
         {
-            Process();
+            data["vcap:application:instance_index"] = !string.IsNullOrEmpty(_settingsReader.InstanceIndex) ? _settingsReader.InstanceIndex : "-1";
         }
 
-        internal static MemoryStream GetMemoryStream(string json)
+        if (!data.ContainsKey("vcap:application:port"))
         {
-            var memStream = new MemoryStream();
-            var textWriter = new StreamWriter(memStream);
-            textWriter.Write(json);
-            textWriter.Flush();
-            memStream.Seek(0, SeekOrigin.Begin);
-            return memStream;
+            data["vcap:application:port"] = !string.IsNullOrEmpty(_settingsReader.InstancePort) ? _settingsReader.InstancePort : "-1";
         }
 
-        internal void AddDiegoVariables(IDictionary<string, string> data)
+        data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
+        data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIp;
+    }
+
+    private void Process()
+    {
+        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        var appJson = _settingsReader.ApplicationJson;
+        if (!string.IsNullOrEmpty(appJson))
         {
-            if (!data.ContainsKey("vcap:application:instance_id"))
+            var memStream = GetMemoryStream(appJson);
+            var builder = new ConfigurationBuilder();
+            builder.Add(new JsonStreamConfigurationSource(memStream));
+            var applicationData = builder.Build();
+
+            if (applicationData != null)
             {
-                data["vcap:application:instance_id"] = !string.IsNullOrEmpty(_settingsReader.InstanceId) ? _settingsReader.InstanceId : "-1";
-            }
-
-            if (!data.ContainsKey("vcap:application:instance_index"))
-            {
-                data["vcap:application:instance_index"] = !string.IsNullOrEmpty(_settingsReader.InstanceIndex) ? _settingsReader.InstanceIndex : "-1";
-            }
-
-            if (!data.ContainsKey("vcap:application:port"))
-            {
-                data["vcap:application:port"] = !string.IsNullOrEmpty(_settingsReader.InstancePort) ? _settingsReader.InstancePort : "-1";
-            }
-
-            data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
-            data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIp;
-        }
-
-        private void Process()
-        {
-            var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            var appJson = _settingsReader.ApplicationJson;
-            if (!string.IsNullOrEmpty(appJson))
-            {
-                var memStream = GetMemoryStream(appJson);
-                var builder = new ConfigurationBuilder();
-                builder.Add(new JsonStreamConfigurationSource(memStream));
-                var applicationData = builder.Build();
-
-                if (applicationData != null)
-                {
-                    LoadData("vcap:application", applicationData.GetChildren(), data);
-                    AddDiegoVariables(data);
-                }
-            }
-
-            var appServicesJson = _settingsReader.ServicesJson;
-            if (!string.IsNullOrEmpty(appServicesJson))
-            {
-                var memStream = GetMemoryStream(appServicesJson);
-                var builder = new ConfigurationBuilder();
-                builder.Add(new JsonStreamConfigurationSource(memStream));
-                var servicesData = builder.Build();
-
-                if (servicesData != null)
-                {
-                    LoadData("vcap:services", servicesData.GetChildren(), data);
-                }
-            }
-
-            Data = data;
-        }
-
-        private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string> data)
-        {
-            if (sections == null || !sections.Any())
-            {
-                return;
-            }
-
-            foreach (var section in sections)
-            {
-                LoadSection(prefix, section, data);
-                LoadData(prefix, section.GetChildren(), data);
+                LoadData("vcap:application", applicationData.GetChildren(), data);
+                AddDiegoVariables(data);
             }
         }
 
-        private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string> data)
+        var appServicesJson = _settingsReader.ServicesJson;
+        if (!string.IsNullOrEmpty(appServicesJson))
         {
-            if (section == null)
-            {
-                return;
-            }
+            var memStream = GetMemoryStream(appServicesJson);
+            var builder = new ConfigurationBuilder();
+            builder.Add(new JsonStreamConfigurationSource(memStream));
+            var servicesData = builder.Build();
 
-            if (string.IsNullOrEmpty(section.Value))
+            if (servicesData != null)
             {
-                return;
+                LoadData("vcap:services", servicesData.GetChildren(), data);
             }
-
-            data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
         }
+
+        Data = data;
+    }
+
+    private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string> data)
+    {
+        if (sections == null || !sections.Any())
+        {
+            return;
+        }
+
+        foreach (var section in sections)
+        {
+            LoadSection(prefix, section, data);
+            LoadData(prefix, section.GetChildren(), data);
+        }
+    }
+
+    private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string> data)
+    {
+        if (section == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(section.Value))
+        {
+            return;
+        }
+
+        data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
     }
 }

@@ -1,36 +1,35 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.Reflection.Emit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring;
+
+public interface ISpelNode
 {
-    public interface ISpelNode
-    {
-        int StartPosition { get; }
+    int StartPosition { get; }
 
-        int EndPosition { get; }
+    int EndPosition { get; }
 
-        int ChildCount { get; }
+    int ChildCount { get; }
 
-        bool IsCompilable();
+    bool IsCompilable();
 
-        object GetValue(ExpressionState state);
+    object GetValue(ExpressionState state);
 
-        ITypedValue GetTypedValue(ExpressionState state);
+    ITypedValue GetTypedValue(ExpressionState state);
 
-        bool IsWritable(ExpressionState state);
+    bool IsWritable(ExpressionState state);
 
-        void SetValue(ExpressionState state, object newValue);
+    void SetValue(ExpressionState state, object newValue);
 
-        string ToStringAST();
+    string ToStringAST();
 
-        ISpelNode GetChild(int index);
+    ISpelNode GetChild(int index);
 
-        Type GetObjectType(object obj);
+    Type GetObjectType(object obj);
 
-        void GenerateCode(ILGenerator gen, CodeFlow cf);
-    }
+    void GenerateCode(ILGenerator gen, CodeFlow cf);
 }

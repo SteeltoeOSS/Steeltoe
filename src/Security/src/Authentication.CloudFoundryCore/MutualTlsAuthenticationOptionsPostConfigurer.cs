@@ -11,41 +11,40 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry;
+
+public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOptions<MutualTlsAuthenticationOptions>
 {
-    public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOptions<MutualTlsAuthenticationOptions>
+    private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
+    private readonly ILogger<CloudFoundryInstanceCertificate> _logger;
+
+    public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions, ILogger<CloudFoundryInstanceCertificate> logger = null)
     {
-        private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
-        private readonly ILogger<CloudFoundryInstanceCertificate> _logger;
+        _containerIdentityOptions = containerIdentityOptions;
+        _logger = logger;
+    }
 
-        public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions, ILogger<CloudFoundryInstanceCertificate> logger = null)
+    public void PostConfigure(string name, MutualTlsAuthenticationOptions options)
+    {
+        options.IssuerChain = _containerIdentityOptions.CurrentValue.IssuerChain;
+        options.Events = new CertificateAuthenticationEvents
         {
-            _containerIdentityOptions = containerIdentityOptions;
-            _logger = logger;
-        }
-
-        public void PostConfigure(string name, MutualTlsAuthenticationOptions options)
-        {
-            options.IssuerChain = _containerIdentityOptions.CurrentValue.IssuerChain;
-            options.Events = new CertificateAuthenticationEvents()
+            OnCertificateValidated = context =>
             {
-                OnCertificateValidated = context =>
+                var claims = new List<Claim>(context.Principal.Claims);
+                if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert, _logger))
                 {
-                    var claims = new List<Claim>(context.Principal.Claims);
-                    if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert, _logger))
-                    {
-                        claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                        claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryAppId, cfCert.AppId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                        claims.Add(new Claim(ApplicationClaimTypes.CloudFoundrySpaceId, cfCert.SpaceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                        claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryOrgId, cfCert.OrgId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                    }
-
-                    var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);
-                    context.Principal = new ClaimsPrincipal(identity);
-                    context.Success();
-                    return Task.CompletedTask;
+                    claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                    claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryAppId, cfCert.AppId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                    claims.Add(new Claim(ApplicationClaimTypes.CloudFoundrySpaceId, cfCert.SpaceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                    claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryOrgId, cfCert.OrgId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
                 }
-            };
-        }
+
+                var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);
+                context.Principal = new ClaimsPrincipal(identity);
+                context.Success();
+                return Task.CompletedTask;
+            }
+        };
     }
 }

@@ -24,7 +24,7 @@ using Address = System.UInt64;
 /// <summary>
 /// Reads a .NET Heap dump generated from ETW
 /// </summary>
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 internal class DotNetHeapDumpGraphReader
 {
     /// <summary>
@@ -59,10 +59,8 @@ internal class DotNetHeapDumpGraphReader
     }
     public void Append(MemoryGraph memoryGraph, string etlName, string processNameOrId = null, double startTimeRelativeMSec = 0)
     {
-        using (var source = TraceEventDispatcher.GetDispatcherFromFileName(etlName))
-        {
-            Append(memoryGraph, source, processNameOrId, startTimeRelativeMSec);
-        }
+        using var source = TraceEventDispatcher.GetDispatcherFromFileName(etlName);
+        Append(memoryGraph, source, processNameOrId, startTimeRelativeMSec);
     }
     public void Append(MemoryGraph memoryGraph, TraceEventDispatcher source, string processNameOrId = null, double startTimeRelativeMSec = 0)
     {
@@ -74,11 +72,7 @@ internal class DotNetHeapDumpGraphReader
     /// <summary>
     /// If set before Read or Append is called, keep track of the additional information about GC generations associated with .NET Heaps.  
     /// </summary>
-    public DotNetHeapInfo DotNetHeapInfo
-    {
-        get { return m_dotNetHeapInfo; }
-        set { m_dotNetHeapInfo = value; }
-    }
+    public DotNetHeapInfo DotNetHeapInfo { get; set; }
 
     #region private
     /// <summary>
@@ -132,10 +126,10 @@ internal class DotNetHeapDumpGraphReader
 
             m_log.WriteLine("Found Module {0} ID 0x{1:x}", data.ModuleILFileName, (Address)data.ModuleID);
         };
-        source.Clr.AddCallbackForEvents<ModuleLoadUnloadTraceData>(moduleCallback); // Get module events for clr provider
+        source.Clr.AddCallbackForEvents(moduleCallback); // Get module events for clr provider
         // TODO should not be needed if we use CAPTURE_STATE when collecting.  
         var clrRundown = new ClrRundownTraceEventParser(source);
-        clrRundown.AddCallbackForEvents<ModuleLoadUnloadTraceData>(moduleCallback); // and its rundown provider.  
+        clrRundown.AddCallbackForEvents(moduleCallback); // and its rundown provider.  
 
         DbgIDRSDSTraceData lastDbgData = null;
         var symbolParser = new SymbolTraceEventParser(source);
@@ -161,10 +155,13 @@ internal class DotNetHeapDumpGraphReader
                 return;
             }
 
-            Module module = new Module(data.ImageBase);
-            module.Path = data.FileName;
-            module.Size = data.ImageSize;
-            module.BuildTime = data.BuildTime;
+            Module module = new Module(data.ImageBase)
+            {
+                Path = data.FileName,
+                Size = data.ImageSize,
+                BuildTime = data.BuildTime
+            };
+
             if (lastDbgData != null && data.TimeStampRelativeMSec == lastDbgData.TimeStampRelativeMSec)
             {
                 module.PdbGuid = lastDbgData.GuidSig;
@@ -238,7 +235,7 @@ internal class DotNetHeapDumpGraphReader
                 m_log.WriteLine("Found a Gen2 Induced non-background GC Start at {0:n3} msec GC Count {1}", data.TimeStampRelativeMSec, m_gcID);
                 m_ignoreEvents = false;
                 m_seenStart = true;
-                memoryGraph.Is64Bit = (data.PointerSize == 8);
+                memoryGraph.Is64Bit = data.PointerSize == 8;
             }
         };
 
@@ -370,12 +367,12 @@ internal class DotNetHeapDumpGraphReader
                                     m_children.Add(m_graph.GetNodeIndex(value.RootedNodeAddress));
                                     m_graph.SetNode(staticNodeIdx, staticTypeIdx, 0, m_children);
                                     staticRoot.AddChild(staticNodeIdx);
-                                    Trace.WriteLine("Got Static 0x" + gcRootId.ToString("x") + " pointing at 0x" + value.RootedNodeAddress.ToString("x") + " kind " + value.GCRootKind + " flags " + value.GCRootFlag);
+                                    Trace.WriteLine($"Got Static 0x{gcRootId:x} pointing at 0x{value.RootedNodeAddress:x} kind {value.GCRootKind} flags {value.GCRootFlag}");
                                     continue;
                                 }
                             }
 
-                            Trace.WriteLine("Got GC Root 0x" + gcRootId.ToString("x") + " pointing at 0x" + value.RootedNodeAddress.ToString("x") + " kind " + value.GCRootKind + " flags " + value.GCRootFlag);
+                            Trace.WriteLine($"Got GC Root 0x{gcRootId:x} pointing at 0x{value.RootedNodeAddress:x} kind {value.GCRootKind} flags {value.GCRootFlag}");
                         }
                     }
 
@@ -448,7 +445,7 @@ internal class DotNetHeapDumpGraphReader
                 return;
             }
 
-            if (m_dotNetHeapInfo == null)
+            if (DotNetHeapInfo == null)
             {
                 return;
             }
@@ -462,14 +459,9 @@ internal class DotNetHeapDumpGraphReader
             Address start = data.RangeStart;
             Address end = start + data.RangeUsedLength;
 
-            if (m_dotNetHeapInfo.Segments == null)
-            {
-                m_dotNetHeapInfo.Segments = new List<GCHeapDumpSegment>();
-            }
+            DotNetHeapInfo.Segments ??= new List<GCHeapDumpSegment>();
 
-            GCHeapDumpSegment segment = new GCHeapDumpSegment();
-            segment.Start = start;
-            segment.End = end;
+            GCHeapDumpSegment segment = new GCHeapDumpSegment { Start = start, End = end };
 
             switch (data.Generation)
             {
@@ -488,7 +480,7 @@ internal class DotNetHeapDumpGraphReader
                 default:
                     throw new Exception("Invalid generation in GCGenerationRangeTraceData");
             }
-            m_dotNetHeapInfo.Segments.Add(segment);
+            DotNetHeapInfo.Segments.Add(segment);
         };
     }
 
@@ -512,10 +504,10 @@ internal class DotNetHeapDumpGraphReader
         {
             if (m_processName != null)
             {
-                throw new ApplicationException("ETL file did not include a Heap Dump for process " + m_processName);
+                throw new ApplicationException($"ETL file did not include a Heap Dump for process {m_processName}");
             }
 
-            throw new ApplicationException("ETL file did not include a Heap Dump for process ID " + m_processId);
+            throw new ApplicationException($"ETL file did not include a Heap Dump for process ID {m_processId}");
         }
 
         if (!m_ignoreEvents)
@@ -558,11 +550,11 @@ internal class DotNetHeapDumpGraphReader
                     {
                         if ((typeData.Flags & TypeFlags.Array) != 0)
                         {
-                            typeName = "ArrayType(0x" + typeData.TypeNameID.ToString("x") + ")";
+                            typeName = $"ArrayType(0x{typeData.TypeNameID:x})";
                         }
                         else
                         {
-                            typeName = "Type(0x" + typeData.TypeNameID.ToString("x") + ")";
+                            typeName = $"Type(0x{typeData.TypeNameID:x})";
                         }
                     }
                     // TODO FIX NOW these are kind of hacks
@@ -574,14 +566,14 @@ internal class DotNetHeapDumpGraphReader
                     string moduleName;
                     if (!m_moduleID2Name.TryGetValue(typeData.ModuleID, out moduleName))
                     {
-                        moduleName = "Module(0x" + typeData.ModuleID.ToString("x") + ")";
+                        moduleName = $"Module(0x{typeData.ModuleID:x})";
                         m_moduleID2Name[typeData.ModuleID] = moduleName;
                     }
 
                     // Is this type a an RCW?   If so mark the type name that way.   
                     if ((typeData.Flags & TypeFlags.ExternallyImplementedCOMObject) != 0)
                     {
-                        typeName = "[RCW " + typeName + "]";
+                        typeName = $"[RCW {typeName}]";
                     }
 
                     m_typeID2TypeIndex[typeData.TypeID] = CreateType(typeName, moduleName);
@@ -615,7 +607,7 @@ internal class DotNetHeapDumpGraphReader
                     var ccwTypeIndex = GetTypeIndex(ccwInfo.TypeID, 200);
                     var ccwType = m_graph.GetType(ccwTypeIndex, m_typeStorage);
 
-                    var typeName = "[CCW 0x" + ccwInfo.IUnknown.ToString("x") + " for type " + ccwType.Name + "]";
+                    var typeName = $"[CCW 0x{ccwInfo.IUnknown:x} for type {ccwType.Name}]";
                     ccwTypeIndex = CreateType(typeName);
 
                     ccwChildren.Clear();
@@ -650,12 +642,12 @@ internal class DotNetHeapDumpGraphReader
                 }
                 else
                 {
-                    typeName = "Type(0x" + staticVarData.TypeID.ToString("x") + ")";
+                    typeName = $"Type(0x{staticVarData.TypeID:x})";
                 }
 
-                string fullFieldName = typeName + "." + staticVarData.FieldName;
+                string fullFieldName = $"{typeName}.{staticVarData.FieldName}";
 
-                rootToAddTo = rootToAddTo.FindOrCreateChild("[static var " + fullFieldName + "]");
+                rootToAddTo = rootToAddTo.FindOrCreateChild($"[static var {fullFieldName}]");
                 var nodeIdx = m_graph.GetNodeIndex(staticVarData.ObjectID);
                 rootToAddTo.AddChild(nodeIdx);
             }
@@ -711,7 +703,7 @@ internal class DotNetHeapDumpGraphReader
             if (m_graph.NodeCount >= maxNodeCount)
             {
                 doCompletionCheck = false;
-                var userMessage = string.Format("Exceeded max node count {0}", maxNodeCount);
+                var userMessage = $"Exceeded max node count {maxNodeCount}";
                 m_log.WriteLine("[WARNING: ]", userMessage);
                 break;
             }
@@ -743,12 +735,10 @@ internal class DotNetHeapDumpGraphReader
             m_log.WriteLine("No PDB information for {0} in ETL file, looking for it directly", module.Path);
             if (File.Exists(module.Path))
             {
-                using (var modulePEFile = new PEFile.PEFile(module.Path))
+                using var modulePEFile = new PEFile.PEFile(module.Path);
+                if (!modulePEFile.GetPdbSignature(out module.PdbName, out module.PdbGuid, out module.PdbAge))
                 {
-                    if (!modulePEFile.GetPdbSignature(out module.PdbName, out module.PdbGuid, out module.PdbAge))
-                    {
-                        m_log.WriteLine("Could not get PDB information for {0}", module.Path);
-                    }
+                    m_log.WriteLine("Could not get PDB information for {0}", module.Path);
                 }
             }
         }
@@ -791,7 +781,8 @@ internal class DotNetHeapDumpGraphReader
             var nextBlock = m_nodeBlocks.Dequeue();
             if (m_curNodeBlock != null && nextBlock.Index != m_curNodeBlock.Index + 1)
             {
-                throw new ApplicationException("Error expected Node Index " + (m_curNodeBlock.Index + 1) + " Got " + nextBlock.Index + " Giving up on heap dump.");
+                throw new ApplicationException(
+                    $"Error expected Node Index {m_curNodeBlock.Index + 1} Got {nextBlock.Index} Giving up on heap dump.");
             }
 
             m_curNodeBlock = nextBlock;
@@ -813,7 +804,8 @@ internal class DotNetHeapDumpGraphReader
             var nextEdgeBlock = m_edgeBlocks.Dequeue();
             if (m_curEdgeBlock != null && nextEdgeBlock.Index != m_curEdgeBlock.Index + 1)
             {
-                throw new ApplicationException("Error expected Node Index " + (m_curEdgeBlock.Index + 1) + " Got " + nextEdgeBlock.Index + " Giving up on heap dump.");
+                throw new ApplicationException(
+                    $"Error expected Node Index {m_curEdgeBlock.Index + 1} Got {nextEdgeBlock.Index} Giving up on heap dump.");
             }
 
             m_curEdgeBlock = nextEdgeBlock;
@@ -828,9 +820,9 @@ internal class DotNetHeapDumpGraphReader
         if (!m_typeID2TypeIndex.TryGetValue(typeID, out ret))
         {
             m_log.WriteLine("Error: Did not have a type definition for typeID 0x{0:x}", typeID);
-            Trace.WriteLine(string.Format("Error: Did not have a type definition for typeID 0x{0:x}", typeID));
+            Trace.WriteLine($"Error: Did not have a type definition for typeID 0x{typeID:x}");
 
-            var typeName = "UNKNOWN 0x" + typeID.ToString("x");
+            var typeName = $"UNKNOWN 0x{typeID:x}";
             ret = CreateType(typeName);
             m_typeID2TypeIndex[typeID] = ret;
         }
@@ -893,7 +885,7 @@ internal class DotNetHeapDumpGraphReader
             size = "100M";
         }
 
-        return " (Bytes > " + size + ")";
+        return $" (Bytes > {size})";
     }
 
     private NodeTypeIndex CreateType(string typeName, string moduleName = null)
@@ -901,7 +893,7 @@ internal class DotNetHeapDumpGraphReader
         var fullTypeName = typeName;
         if (moduleName != null)
         {
-            fullTypeName = moduleName + "!" + typeName;
+            fullTypeName = $"{moduleName}!{typeName}";
         }
 
         NodeTypeIndex ret;
@@ -923,7 +915,7 @@ internal class DotNetHeapDumpGraphReader
     /// <summary>
     /// Remembers addition information about RCWs.  
     /// </summary>
-    private class RCWInfo
+    private sealed class RCWInfo
     {
         public RCWInfo(GCBulkRCWValues data) { IUnknown = data.IUnknown; }
         public Address IUnknown;
@@ -994,6 +986,6 @@ internal class DotNetHeapDumpGraphReader
     private MemoryNodeBuilder m_root;       // Used to create pseduo-nodes for the roots of the graph.  
 
     // Heap information for .NET heaps.
-    private DotNetHeapInfo m_dotNetHeapInfo;
+
     #endregion
 }

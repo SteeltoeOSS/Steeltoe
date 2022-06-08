@@ -1,22 +1,21 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Batch
+namespace Steeltoe.Messaging.RabbitMQ.Batch;
+
+public interface IBatchingStrategy
 {
-    public interface IBatchingStrategy
-    {
-        MessageBatch? AddToBatch(string exchange, string routingKey, IMessage message);
+    MessageBatch? AddToBatch(string exchange, string routingKey, IMessage message);
 
-        DateTime? NextRelease();
+    DateTime? NextRelease();
 
-        ICollection<MessageBatch> ReleaseBatches();
+    ICollection<MessageBatch> ReleaseBatches();
 
-        bool CanDebatch(IMessageHeaders properties);
+    bool CanDebatch(IMessageHeaders properties);
 
-        void DeBatch(IMessage message, Action<IMessage> fragmentConsumer);
-    }
+    void DeBatch(IMessage message, Action<IMessage> fragmentConsumer);
 }

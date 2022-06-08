@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,54 +6,53 @@ using Steeltoe.Messaging;
 using System;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.Stream.TestBinder
+namespace Steeltoe.Stream.TestBinder;
+
+public class OutputDestination : AbstractDestination
 {
-    public class OutputDestination : AbstractDestination
+    private BlockingCollection<IMessage> _messages;
+
+    public IMessage Receive(long timeout)
     {
-        private BlockingCollection<IMessage> _messages;
-
-        public IMessage Receive(long timeout)
+        try
         {
-            try
-            {
-                _messages.TryTake(out var result, TimeSpan.FromMilliseconds(timeout));
-                return result;
-            }
-            catch (Exception)
-            {
-                // Log
-            }
-
-            return null;
+            _messages.TryTake(out var result, TimeSpan.FromMilliseconds(timeout));
+            return result;
+        }
+        catch (Exception)
+        {
+            // Log
         }
 
-        public IMessage Receive()
+        return null;
+    }
+
+    public IMessage Receive()
+    {
+        return Receive(0);
+    }
+
+    protected internal override void AfterChannelIsSet()
+    {
+        _messages = new BlockingCollection<IMessage>();
+        Channel.Subscribe(new MessageHandler(this));
+    }
+
+    private class MessageHandler : IMessageHandler
+    {
+        private readonly OutputDestination _outputDestination;
+
+        public virtual string ServiceName { get; set; }
+
+        public MessageHandler(OutputDestination thiz)
         {
-            return Receive(0);
+            _outputDestination = thiz;
+            ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        protected internal override void AfterChannelIsSet()
+        public void HandleMessage(IMessage message)
         {
-            _messages = new BlockingCollection<IMessage>();
-            Channel.Subscribe(new MessageHandler(this));
-        }
-
-        private class MessageHandler : IMessageHandler
-        {
-            private readonly OutputDestination _outputDestination;
-
-            public virtual string ServiceName { get; set; }
-
-            public MessageHandler(OutputDestination thiz)
-            {
-                _outputDestination = thiz;
-                ServiceName = GetType().Name + "@" + GetHashCode();
-            }
-
-            public void HandleMessage(IMessage message)
-            {
-                _outputDestination._messages.Add(message);
-            }
+            _outputDestination._messages.Add(message);
         }
     }
 }

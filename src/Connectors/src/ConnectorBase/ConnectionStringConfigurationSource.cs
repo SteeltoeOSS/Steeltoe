@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,23 +7,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Connector
+namespace Steeltoe.Connector;
+
+public class ConnectionStringConfigurationSource : IConfigurationSource
 {
-    public class ConnectionStringConfigurationSource : IConfigurationSource
+    internal IList<IConfigurationSource> _sources;
+
+    public ConnectionStringConfigurationSource(IList<IConfigurationSource> sources)
     {
-        internal IList<IConfigurationSource> _sources;
-
-        public ConnectionStringConfigurationSource(IList<IConfigurationSource> sources)
+        if (sources is null)
         {
-            if (sources is null)
-            {
-                throw new ArgumentNullException(nameof(sources));
-            }
-
-            _sources = new List<IConfigurationSource>(sources);
+            throw new ArgumentNullException(nameof(sources));
         }
 
-        /// <inheritdoc />
-        public IConfigurationProvider Build(IConfigurationBuilder builder) => new ConnectionStringConfigurationProvider(_sources.Select(s => s.Build(builder)));
+        _sources = new List<IConfigurationSource>(sources);
     }
+
+    /// <inheritdoc />
+    public IConfigurationProvider Build(IConfigurationBuilder builder) => new ConnectionStringConfigurationProvider(_sources.Select(s => s.Build(builder)));
 }

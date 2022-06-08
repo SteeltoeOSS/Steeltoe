@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -13,88 +13,85 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Health.Test
+namespace Steeltoe.Management.Endpoint.Health.Test;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; set; }
+    public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        switch (Configuration.GetValue<string>("HealthCheckType"))
         {
-            services.AddRouting();
-            switch (Configuration.GetValue<string>("HealthCheckType"))
-            {
-                case "down":
-                    services.AddHealthActuator(Configuration, new Type[] { typeof(DownContributor) });
-                    break;
-                case "out":
-                    services.AddHealthActuator(Configuration, new Type[] { typeof(OutOfSserviceContributor) });
-                    break;
-                case "unknown":
-                    services.AddHealthActuator(Configuration, new Type[] { typeof(UnknownContributor) });
-                    break;
-                case "defaultAggregator":
-                    services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
-                    break;
-                case "microsoftHealthAggregator":
-                    services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
-                    services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), new Type[] { typeof(DiskSpaceContributor) });
-                    break;
-                default:
-                    services.AddHealthActuator(Configuration);
-                    break;
-            }
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<HealthEndpointCore>();
-            });
+            case "down":
+                services.AddHealthActuator(Configuration, typeof(DownContributor));
+                break;
+            case "out":
+                services.AddHealthActuator(Configuration, typeof(OutOfSserviceContributor));
+                break;
+            case "unknown":
+                services.AddHealthActuator(Configuration, typeof(UnknownContributor));
+                break;
+            case "defaultAggregator":
+                services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
+                break;
+            case "microsoftHealthAggregator":
+                services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
+                services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), typeof(DiskSpaceContributor));
+                break;
+            default:
+                services.AddHealthActuator(Configuration);
+                break;
         }
     }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.Map<HealthEndpointCore>();
+        });
+    }
+}
 
 #pragma warning disable SA1402 // File may only contain a single type
-    public class TestHealthCheck : IHealthCheck
+public class TestHealthCheck : IHealthCheck
+{
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-        {
-            return Task.Run(() => new HealthCheckResult(HealthStatus.Healthy));
-        }
+        return Task.Run(() => new HealthCheckResult(HealthStatus.Healthy));
+    }
+}
+
+public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
+#pragma warning restore SA1402 // File may only contain a single type
+{
+    public TestServiceOptions()
+    {
+        CurrentValue = new HealthCheckServiceOptions();
+        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", provider => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
     }
 
-    public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
-#pragma warning restore SA1402 // File may only contain a single type
+    public HealthCheckServiceOptions CurrentValue { get; }
+
+    public void Dispose()
     {
-        private HealthCheckServiceOptions serviceOptions;
+    }
 
-        public TestServiceOptions()
-        {
-            serviceOptions = new HealthCheckServiceOptions();
-            serviceOptions.Registrations.Add(new HealthCheckRegistration("test", (provider) => new TestHealthCheck(), HealthStatus.Unhealthy, new string[] { "tags" }.ToList()));
-        }
+    public HealthCheckServiceOptions Get(string name)
+    {
+        return CurrentValue;
+    }
 
-        public HealthCheckServiceOptions CurrentValue => serviceOptions;
-
-        public void Dispose()
-        {
-        }
-
-        public HealthCheckServiceOptions Get(string name)
-        {
-            return serviceOptions;
-        }
-
-        public IDisposable OnChange(Action<HealthCheckServiceOptions, string> listener)
-        {
-            return this;
-        }
+    public IDisposable OnChange(Action<HealthCheckServiceOptions, string> listener)
+    {
+        return this;
     }
 }

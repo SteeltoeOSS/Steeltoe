@@ -192,7 +192,7 @@ public class Program
         }
     }
 
-    private class CounterHandler : IMessageHandler
+    private sealed class CounterHandler : IMessageHandler
     {
         public int Count;
 
@@ -201,7 +201,6 @@ public class Program
         public void HandleMessage(IMessage message)
         {
             Count++;
-            return;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,105 +12,104 @@ using System.Diagnostics.Tracing;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources;
+
+public class HystrixEventSourceServiceTests
 {
-    public class HystrixEventSourceServiceTests
+    [Fact]
+    public void Constructor_SetsupStream()
     {
-        [Fact]
-        public void Constructor_SetsupStream()
+        var stream = HystrixDashboardStream.GetInstance();
+        var service = new HystrixEventSourceService(stream);
+        Assert.NotNull(service.Stream);
+    }
+
+    [Fact]
+    public void TestSubscription()
+    {
+        var stream = HystrixDashboardStream.GetInstance();
+        var service = new HystrixEventSourceService(stream);
+
+        using var listener = new HystrixEventsListener();
+        var token = new CancellationTokenSource().Token;
+
+        service.OnNext(GetTestData());
+
+        var i = 0;
+        while (i++ < 100
+               && listener.CommandEvents.Count <= 0
+               && listener.ThreadPoolEvents.Count <= 0
+               && listener.CollapserEvents.Count <= 0)
         {
-            var stream = HystrixDashboardStream.GetInstance();
-            var service = new HystrixEventSourceService(stream);
-            Assert.NotNull(service.Stream);
+            Thread.Sleep(1000);
         }
 
-        [Fact]
-        public void TestSubscription()
+        Assert.True(listener.CommandEvents.Count > 0);
+    }
+
+    public HystrixDashboardStream.DashboardData GetTestData()
+    {
+        var commandKey = new HystrixCommandKeyDefault("command");
+        var tpKey = new HystrixThreadPoolKeyDefault("threadPool");
+        var collapserKey = new HystrixCollapserKeyDefault("collapser");
+
+        var commandMetric = new HystrixCommandMetrics(
+            commandKey,
+            new HystrixCommandGroupKeyDefault("group"),
+            tpKey,
+            new HystrixCommandOptions(),
+            HystrixEventNotifierDefault.GetInstance());
+        var threadPoolMetric = HystrixThreadPoolMetrics.GetInstance(
+            tpKey,
+            new HystrixSyncTaskScheduler(new HystrixThreadPoolOptions()),
+            new HystrixThreadPoolOptions());
+        var commandMetrics = new List<HystrixCommandMetrics> { commandMetric };
+        var collapserOptions = new HystrixCollapserOptions(collapserKey);
+        var threadPoolMetrics = new List<HystrixThreadPoolMetrics> { threadPoolMetric };
+
+        var collapserMetrics = new List<HystrixCollapserMetrics> { HystrixCollapserMetrics.GetInstance(collapserKey, collapserOptions) };
+        return new HystrixDashboardStream.DashboardData(commandMetrics, threadPoolMetrics, collapserMetrics);
+    }
+
+    public class HystrixEventsListener : EventListener
+    {
+        private const string EventSourceName = "Steeltoe.Hystrix.Events";
+
+        private enum EventTypes
         {
-            var stream = HystrixDashboardStream.GetInstance();
-            var service = new HystrixEventSourceService(stream);
-
-            using var listener = new HystrixEventsListener();
-            var token = new CancellationTokenSource().Token;
-
-            service.OnNext(GetTestData());
-
-            var i = 0;
-            while (i++ < 100
-                && listener.CommandEvents.Count <= 0
-                && listener.ThreadPoolEvents.Count <= 0
-                && listener.CollapserEvents.Count <= 0)
-            {
-                Thread.Sleep(1000);
-            }
-
-            Assert.True(listener.CommandEvents.Count > 0);
+            CommandMetrics,
+            ThreadPoolMetrics,
+            CollapserMetrics
         }
 
-        public HystrixDashboardStream.DashboardData GetTestData()
+        public List<EventWrittenEventArgs> CommandEvents = new ();
+        public List<EventWrittenEventArgs> ThreadPoolEvents = new ();
+        public List<EventWrittenEventArgs> CollapserEvents = new ();
+
+        protected override void OnEventWritten(EventWrittenEventArgs eventData)
         {
-            var commandKey = new HystrixCommandKeyDefault("command");
-            var tpKey = new HystrixThreadPoolKeyDefault("threadPool");
-            var collapserKey = new HystrixCollapserKeyDefault("collapser");
-
-            var commandMetric = new HystrixCommandMetrics(
-                commandKey,
-                new HystrixCommandGroupKeyDefault("group"),
-                tpKey,
-                new HystrixCommandOptions(),
-                HystrixEventNotifierDefault.GetInstance());
-            var threadPoolMetric = HystrixThreadPoolMetrics.GetInstance(
-                tpKey,
-                new HystrixSyncTaskScheduler(new HystrixThreadPoolOptions()),
-                new HystrixThreadPoolOptions());
-            var commandMetrics = new List<HystrixCommandMetrics>() { commandMetric };
-            var collapserOptions = new HystrixCollapserOptions(collapserKey);
-            var threadPoolMetrics = new List<HystrixThreadPoolMetrics>() { threadPoolMetric };
-
-            var collapserMetrics = new List<HystrixCollapserMetrics>() { HystrixCollapserMetrics.GetInstance(collapserKey, collapserOptions) };
-            return new HystrixDashboardStream.DashboardData(commandMetrics, threadPoolMetrics, collapserMetrics);
-        }
-
-        public class HystrixEventsListener : EventListener
-        {
-            private const string EventSourceName = "Steeltoe.Hystrix.Events";
-
-            private enum EventTypes
+            if (Enum.TryParse<EventTypes>(eventData.EventName, out var eventType))
             {
-                CommandMetrics,
-                ThreadPoolMetrics,
-                CollapserMetrics
-            }
-
-            public List<EventWrittenEventArgs> CommandEvents = new ();
-            public List<EventWrittenEventArgs> ThreadPoolEvents = new ();
-            public List<EventWrittenEventArgs> CollapserEvents = new ();
-
-            protected override void OnEventWritten(EventWrittenEventArgs eventData)
-            {
-                if (Enum.TryParse<EventTypes>(eventData.EventName, out var eventType))
+                switch (eventType)
                 {
-                    switch (eventType)
-                    {
-                        case EventTypes.CommandMetrics:
-                            CommandEvents.Add(eventData);
-                            break;
-                        case EventTypes.ThreadPoolMetrics:
-                            ThreadPoolEvents.Add(eventData);
-                            break;
-                        case EventTypes.CollapserMetrics:
-                            CollapserEvents.Add(eventData);
-                            break;
-                    }
+                    case EventTypes.CommandMetrics:
+                        CommandEvents.Add(eventData);
+                        break;
+                    case EventTypes.ThreadPoolMetrics:
+                        ThreadPoolEvents.Add(eventData);
+                        break;
+                    case EventTypes.CollapserMetrics:
+                        CollapserEvents.Add(eventData);
+                        break;
                 }
             }
+        }
 
-            protected override void OnEventSourceCreated(EventSource eventSource)
+        protected override void OnEventSourceCreated(EventSource eventSource)
+        {
+            if (eventSource.Name == EventSourceName)
             {
-                if (eventSource.Name == EventSourceName)
-                {
-                    EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
-                }
+                EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
             }
         }
     }

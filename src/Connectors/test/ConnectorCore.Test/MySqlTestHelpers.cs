@@ -1,12 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.MySql.Test
+namespace Steeltoe.Connector.MySql.Test;
+
+public static class MySqlTestHelpers
 {
-    public static class MySqlTestHelpers
-    {
-        public static string SingleServerVCAP = @"
+    public static string SingleServerVCAP = @"
             {
                 ""p-mysql"": [
                 {
@@ -31,7 +31,7 @@ namespace Steeltoe.Connector.MySql.Test
                 }]
             }";
 
-        public static string SingleServerAzureVCAP = @"
+    public static string SingleServerAzureVCAP = @"
             {
                 ""azure-mysql-5-7"": [{
                     ""name"": ""azure-beetmysql"",
@@ -64,7 +64,7 @@ namespace Steeltoe.Connector.MySql.Test
                 }]
             }";
 
-        public static string TwoServerVCAP = @"
+    public static string TwoServerVCAP = @"
             {
                 ""p-mysql"": [
                 {
@@ -108,5 +108,4 @@ namespace Steeltoe.Connector.MySql.Test
                     ]
                 }]
             }";
-    }
 }

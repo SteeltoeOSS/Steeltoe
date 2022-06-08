@@ -4,9 +4,8 @@
 
 using Microsoft.AspNetCore.Authorization;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry;
+
+public class SameOrgRequirement : IAuthorizationRequirement
 {
-    public class SameOrgRequirement : IAuthorizationRequirement
-    {
-    }
 }

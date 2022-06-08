@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,42 +12,39 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
+
+public class HystrixMetricsStreamPublisher : IDisposable
 {
-    public class HystrixMetricsStreamPublisher : IDisposable
+    protected const string SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE = "spring.cloud.hystrix.stream";
+
+    protected IDisposable sampleSubscription;
+    protected IObservable<List<string>> observable;
+    protected IDiscoveryClient discoveryClient;
+    protected ILogger logger;
+    protected HystrixMetricsStreamOptions options;
+
+    protected internal IDisposable SampleSubscription { get => sampleSubscription; set => sampleSubscription = value; }
+
+    public HystrixMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, ILogger logger = null, IDiscoveryClient discoveryClient = null)
     {
-        protected const string SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE = "spring.cloud.hystrix.stream";
+        this.discoveryClient = discoveryClient;
+        this.logger = logger;
+        this.options = options.Value;
 
-        protected IDisposable sampleSubscription;
-        protected IObservable<List<string>> observable;
-        protected IDiscoveryClient discoveryClient;
-        protected ILogger logger;
-        protected HystrixMetricsStreamOptions options;
+        observable = stream.Observe().Map(data => Serialize.ToJsonList(data, this.discoveryClient));
 
-        protected internal IDisposable SampleSubscription { get => sampleSubscription; set => sampleSubscription = value; }
+        StartMetricsPublishing();
+    }
 
-        public HystrixMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, ILogger logger = null, IDiscoveryClient discoveryClient = null)
-        {
-            this.discoveryClient = discoveryClient;
-            this.logger = logger;
-            this.options = options.Value;
+    public void StartMetricsPublishing()
+    {
+        logger?.LogInformation("Hystrix Metrics starting");
 
-            observable = stream.Observe().Map((data) =>
-            {
-                return Serialize.ToJsonList(data, this.discoveryClient);
-            });
-
-            StartMetricsPublishing();
-        }
-
-        public void StartMetricsPublishing()
-        {
-            logger?.LogInformation("Hystrix Metrics starting");
-
-            SampleSubscription = observable
+        SampleSubscription = observable
             .ObserveOn(NewThreadScheduler.Default)
             .Subscribe(
-                (jsonList) =>
+                jsonList =>
                 {
                     try
                     {
@@ -72,7 +69,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                         Dispose();
                     }
                 },
-                (error) =>
+                error =>
                 {
                     OnError(error);
 
@@ -98,33 +95,32 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
                     Dispose();
                 });
-        }
+    }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        protected virtual void Dispose(bool disposing)
-        {
-        }
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 
-        protected virtual bool EnsureConnection()
-        {
-            return true;
-        }
+    protected virtual bool EnsureConnection()
+    {
+        return true;
+    }
 
-        protected virtual void OnNext(List<string> jsonList)
-        {
-        }
+    protected virtual void OnNext(List<string> jsonList)
+    {
+    }
 
-        protected virtual void OnError(Exception error)
-        {
-        }
+    protected virtual void OnError(Exception error)
+    {
+    }
 
-        protected virtual void OnComplete()
-        {
-        }
+    protected virtual void OnComplete()
+    {
     }
 }

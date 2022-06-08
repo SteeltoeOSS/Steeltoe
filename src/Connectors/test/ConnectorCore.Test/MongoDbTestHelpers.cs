@@ -1,15 +1,15 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test;
+
+public static class MongoDbTestHelpers
 {
-    public static class MongoDbTestHelpers
-    {
-        /// <summary>
-        /// Sample User-Provided Service
-        /// </summary>
-        public static string Single_UserProvidedService = @"
+    /// <summary>
+    /// Sample User-Provided Service
+    /// </summary>
+    public static string Single_UserProvidedService = @"
             {
                 ""user-provided"": [{
                     ""name"": ""mongodb-user-provided-service"",
@@ -25,10 +25,10 @@ namespace Steeltoe.Connector.MongoDb.Test
                 }]
             }";
 
-        /// <summary>
-        /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF
-        /// </summary>
-        public static string SingleBinding_a9s_SingleServer_VCAP = @"
+    /// <summary>
+    /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF
+    /// </summary>
+    public static string SingleBinding_a9s_SingleServer_VCAP = @"
             {
                 ""a9s-mongodb36"": [{
                     ""name"": ""steeltoe"",
@@ -65,10 +65,10 @@ namespace Steeltoe.Connector.MongoDb.Test
                 }]
             }";
 
-        /// <summary>
-        /// Sample VCAP_SERVICES entry for a9s MongoDB with replicas
-        /// </summary>
-        public static string SingleBinding_a9s_WithReplicas_VCAP = @"
+    /// <summary>
+    /// Sample VCAP_SERVICES entry for a9s MongoDB with replicas
+    /// </summary>
+    public static string SingleBinding_a9s_WithReplicas_VCAP = @"
             {
                 ""a9s-mongodb36"": [{
                     ""name"": ""steeltoe"",
@@ -109,10 +109,10 @@ namespace Steeltoe.Connector.MongoDb.Test
                 }]
             }";
 
-        /// <summary>
-        /// Sample VCAP_SERVICES entry for MongoDB Enterprise Service for PCF
-        /// </summary>
-        public static string SingleBinding_Enterprise_VCAP = @"
+    /// <summary>
+    /// Sample VCAP_SERVICES entry for MongoDB Enterprise Service for PCF
+    /// </summary>
+    public static string SingleBinding_Enterprise_VCAP = @"
             {
                 ""mongodb-odb"": [{
                     ""name"": ""steeltoe"",
@@ -138,10 +138,10 @@ namespace Steeltoe.Connector.MongoDb.Test
                 }]
             }";
 
-        /// <summary>
-        /// Sample VCAP_SERVICES entry for two instances of MongoDB Enterprise Service for PCF
-        /// </summary>
-        public static string DoubleBinding_Enterprise_VCAP = @"
+    /// <summary>
+    /// Sample VCAP_SERVICES entry for two instances of MongoDB Enterprise Service for PCF
+    /// </summary>
+    public static string DoubleBinding_Enterprise_VCAP = @"
             {
                 ""mongodb-odb"": [{
                     ""name"": ""steeltoe"",
@@ -187,5 +187,4 @@ namespace Steeltoe.Connector.MongoDb.Test
                     ]
                 }]
             }";
-    }
 }

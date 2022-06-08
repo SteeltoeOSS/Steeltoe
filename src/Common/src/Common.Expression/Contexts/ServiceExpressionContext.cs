@@ -1,100 +1,91 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
 using System;
 
-namespace Steeltoe.Common.Expression.Internal.Contexts
+namespace Steeltoe.Common.Expression.Internal.Contexts;
+
+// Used as root context with StandardServiceExpressionResolver
+public class ServiceExpressionContext : IServiceExpressionContext
 {
-    // Used as root context with StandardServiceExpressionResolver
-    public class ServiceExpressionContext : IServiceExpressionContext
+    private const string _environmentName = "configuration";
+
+    public ServiceExpressionContext(IApplicationContext applicationContext)
     {
-        private const string _environmentName = "configuration";
+        ApplicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
+    }
 
-        private readonly IApplicationContext _applicationContext;
+    public IApplicationContext ApplicationContext { get; }
 
-        public ServiceExpressionContext(IApplicationContext applicationContext)
+    public bool ContainsService(string serviceName, Type serviceType)
+    {
+        if (serviceName == _environmentName)
         {
-            if (applicationContext == null)
-            {
-                throw new ArgumentNullException(nameof(applicationContext));
-            }
-
-            _applicationContext = applicationContext;
+            return true;
         }
 
-        public IApplicationContext ApplicationContext => _applicationContext;
+        return ApplicationContext.ContainsService(serviceName, serviceType);
+    }
 
-        public bool ContainsService(string serviceName, Type serviceType)
+    public bool ContainsService(string serviceName)
+    {
+        if (serviceName == _environmentName)
         {
-            if (serviceName == _environmentName)
-            {
-                return true;
-            }
-
-            return _applicationContext.ContainsService(serviceName, serviceType);
+            return true;
         }
 
-        public bool ContainsService(string serviceName)
-        {
-            if (serviceName == _environmentName)
-            {
-                return true;
-            }
+        return ApplicationContext.ContainsService(serviceName);
+    }
 
-            return _applicationContext.ContainsService(serviceName);
+    public object GetService(string serviceName)
+    {
+        if (serviceName == _environmentName)
+        {
+            return ApplicationContext.Configuration;
         }
 
-        public object GetService(string serviceName)
+        if (ApplicationContext.ContainsService(serviceName))
         {
-            if (serviceName == _environmentName)
-            {
-                return _applicationContext.Configuration;
-            }
-
-            if (_applicationContext.ContainsService(serviceName))
-            {
-                return _applicationContext.GetService(serviceName);
-            }
-
-            return null;
+            return ApplicationContext.GetService(serviceName);
         }
 
-        public object GetService(string serviceName, Type serviceType)
+        return null;
+    }
+
+    public object GetService(string serviceName, Type serviceType)
+    {
+        if (serviceName == _environmentName)
         {
-            if (serviceName == _environmentName)
-            {
-                return _applicationContext.Configuration;
-            }
-
-            if (_applicationContext.ContainsService(serviceName, serviceType))
-            {
-                return _applicationContext.GetService(serviceName, serviceType);
-            }
-
-            return null;
+            return ApplicationContext.Configuration;
         }
 
-        public override bool Equals(object other)
+        if (ApplicationContext.ContainsService(serviceName, serviceType))
         {
-            if (this == other)
-            {
-                return true;
-            }
-
-            if (other is not ServiceExpressionContext)
-            {
-                return false;
-            }
-
-            var otherContext = (ServiceExpressionContext)other;
-            return _applicationContext == otherContext._applicationContext;
+            return ApplicationContext.GetService(serviceName, serviceType);
         }
 
-        public override int GetHashCode()
+        return null;
+    }
+
+    public override bool Equals(object other)
+    {
+        if (this == other)
         {
-            return _applicationContext.GetHashCode();
+            return true;
         }
+
+        if (other is not ServiceExpressionContext otherContext)
+        {
+            return false;
+        }
+
+        return ApplicationContext == otherContext.ApplicationContext;
+    }
+
+    public override int GetHashCode()
+    {
+        return ApplicationContext.GetHashCode();
     }
 }

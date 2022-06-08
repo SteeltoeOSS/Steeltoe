@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,137 +8,136 @@ using Steeltoe.Connector.Services;
 using System.Net;
 using Xunit;
 
-namespace Steeltoe.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test;
+
+[Collection("Redis")]
+public class RedisCacheConfigurerTest
 {
-    [Collection("Redis")]
-    public class RedisCacheConfigurerTest
+    // [Fact]
+    // public void UpdateOptions_FromConfig_WithConnectionString_ReturnsExpected()
+    // {
+    //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
+    //    RedisCacheOptions redisOptions = new RedisCacheOptions();
+    //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+    //    {
+    //        ConnectionString = "foobar",
+    //        InstanceName = "instanceId"
+    //    };
+    //    configurer.UpdateOptions(config, redisOptions);
+    //    Assert.Equal("foobar", redisOptions.Configuration);
+    //    Assert.Equal("instanceId", redisOptions.InstanceName);
+    // }
+
+    // [Fact]
+    // public void UpdateOptions_FromConfig_WithOutConnectionString_ReturnsExcpected()
+    // {
+    //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
+    //    RedisCacheOptions redisOptions = new RedisCacheOptions();
+    //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+    //    {
+    //        Host = "localhost",
+    //        Port = 1234,
+    //        Password = "password",
+    //        InstanceName = "instanceId"
+    //    };
+    //    configurer.UpdateOptions(config, redisOptions);
+    //    Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
+    //    Assert.Equal("instanceId", redisOptions.InstanceName);
+    //// }
+
+    [Fact]
+    public void UpdateOptions_FromServiceInfo_ReturnsExcpected()
     {
-        // [Fact]
-        // public void UpdateOptions_FromConfig_WithConnectionString_ReturnsExpected()
-        // {
-        //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-        //    RedisCacheOptions redisOptions = new RedisCacheOptions();
-        //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
-        //    {
-        //        ConnectionString = "foobar",
-        //        InstanceName = "instanceId"
-        //    };
-        //    configurer.UpdateOptions(config, redisOptions);
-        //    Assert.Equal("foobar", redisOptions.Configuration);
-        //    Assert.Equal("instanceId", redisOptions.InstanceName);
-        // }
+        var configurer = new RedisCacheConfigurer();
+        var connOptions = new RedisCacheConnectorOptions();
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
+        configurer.UpdateOptions(si, connOptions);
 
-        // [Fact]
-        // public void UpdateOptions_FromConfig_WithOutConnectionString_ReturnsExcpected()
-        // {
-        //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-        //    RedisCacheOptions redisOptions = new RedisCacheOptions();
-        //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
-        //    {
-        //        Host = "localhost",
-        //        Port = 1234,
-        //        Password = "password",
-        //        InstanceName = "instanceId"
-        //    };
-        //    configurer.UpdateOptions(config, redisOptions);
-        //    Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
-        //    Assert.Equal("instanceId", redisOptions.InstanceName);
-        //// }
+        Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
+        Assert.Null(connOptions.InstanceName);
+    }
 
-        [Fact]
-        public void UpdateOptions_FromServiceInfo_ReturnsExcpected()
+    [Fact]
+    public void Configure_NoServiceInfo_ReturnsExpected()
+    {
+        var configurer = new RedisCacheConfigurer();
+        var config = new RedisCacheConnectorOptions
         {
-            var configurer = new RedisCacheConfigurer();
-            var connOptions = new RedisCacheConnectorOptions();
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
-            configurer.UpdateOptions(si, connOptions);
+            Host = "localhost",
+            Port = 1234,
+            Password = "password",
+            InstanceName = "instanceId"
+        };
+        var opts = configurer.Configure(null, config);
+        Assert.NotNull(opts);
+        var redisOptions = (RedisCacheOptions)opts.ToMicrosoftExtensionObject(typeof(RedisCacheOptions));
+        Assert.NotNull(redisOptions);
 
-            Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
-            Assert.Null(connOptions.InstanceName);
-        }
+        Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
+        Assert.Equal("instanceId", redisOptions.InstanceName);
+    }
 
-        [Fact]
-        public void Configure_NoServiceInfo_ReturnsExpected()
+    [Fact]
+    public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    {
+        var configurer = new RedisCacheConfigurer();
+        var config = new RedisCacheConnectorOptions
         {
-            var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Password = "password",
-                InstanceName = "instanceId"
-            };
-            var opts = configurer.Configure(null, config);
-            Assert.NotNull(opts);
-            var redisOptions = (RedisCacheOptions)opts.ToMicrosoftExtensionObject(typeof(RedisCacheOptions));
-            Assert.NotNull(redisOptions);
+            Host = "localhost",
+            Port = 1234,
+            Password = "password",
+            InstanceName = "instanceId"
+        };
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
+        var connectionSettings = configurer.Configure(si, config);
+        Assert.NotNull(connectionSettings);
 
-            Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
-            Assert.Equal("instanceId", redisOptions.InstanceName);
-        }
+        Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionSettings.ToString());
+        Assert.Equal("instanceId", connectionSettings.InstanceName);
+    }
 
-        [Fact]
-        public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    [Fact]
+    public void ConfigureConnection_NoServiceInfo_ReturnsExpected()
+    {
+        var configurer = new RedisCacheConfigurer();
+        var config = new RedisCacheConnectorOptions
         {
-            var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Password = "password",
-                InstanceName = "instanceId"
-            };
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
-            var connectionSettings = configurer.Configure(si, config);
-            Assert.NotNull(connectionSettings);
+            Host = "localhost",
+            Port = 1234,
+            Password = "password"
+        };
 
-            Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionSettings.ToString());
-            Assert.Equal("instanceId", connectionSettings.InstanceName);
-        }
+        var opts = configurer.Configure(null, config);
+        Assert.NotNull(opts);
 
-        [Fact]
-        public void ConfigureConnection_NoServiceInfo_ReturnsExpected()
+        Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
+        var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
+        Assert.NotNull(ep);
+        Assert.Equal("localhost", ep.Host);
+        Assert.Equal(1234, ep.Port);
+        Assert.Equal("password", opts.Password);
+    }
+
+    [Fact]
+    public void ConfigureConnection_ServiceInfoOveridesConfig_ReturnsExpected()
+    {
+        var configurer = new RedisCacheConfigurer();
+        var config = new RedisCacheConnectorOptions
         {
-            var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Password = "password"
-            };
+            Host = "localhost",
+            Port = 1234,
+            Password = "password"
+        };
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
 
-            var opts = configurer.Configure(null, config);
-            Assert.NotNull(opts);
+        var opts = configurer.Configure(si, config);
+        Assert.NotNull(opts);
 
-            Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
-            var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
-            Assert.NotNull(ep);
-            Assert.Equal("localhost", ep.Host);
-            Assert.Equal(1234, ep.Port);
-            Assert.Equal("password", opts.Password);
-        }
-
-        [Fact]
-        public void ConfigureConnection_ServiceInfoOveridesConfig_ReturnsExpected()
-        {
-            var configurer = new RedisCacheConfigurer();
-            var config = new RedisCacheConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Password = "password"
-            };
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
-
-            var opts = configurer.Configure(si, config);
-            Assert.NotNull(opts);
-
-            Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
-            var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
-            Assert.NotNull(ep);
-            Assert.Equal("foobar", ep.Host);
-            Assert.Equal(4321, ep.Port);
-            Assert.Equal("sipassword", opts.Password);
-        }
+        Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
+        var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
+        Assert.NotNull(ep);
+        Assert.Equal("foobar", ep.Host);
+        Assert.Equal(4321, ep.Port);
+        Assert.Equal("sipassword", opts.Password);
     }
 }

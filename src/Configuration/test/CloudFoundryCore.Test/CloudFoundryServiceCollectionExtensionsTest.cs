@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,81 +9,81 @@ using System;
 
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+
+public class CloudFoundryServiceCollectionExtensionsTest
 {
-    public class CloudFoundryServiceCollectionExtensionsTest
+    [Fact]
+    public void ConfigureCloudFoundryOptions_ThrowsIfServiceCollectionNull()
     {
-        [Fact]
-        public void ConfigureCloudFoundryOptions_ThrowsIfServiceCollectionNull()
-        {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+        const IServiceCollection services = null;
+        const IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config));
-            Assert.Contains(nameof(services), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
+        Assert.Contains(nameof(services), ex.Message);
+    }
 
-        [Fact]
-        public void ConfigureCloudFoundryOptions_ThrowsIfConfigurtionNull()
-        {
-            IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+    [Fact]
+    public void ConfigureCloudFoundryOptions_ThrowsIfConfigurtionNull()
+    {
+        IServiceCollection services = new ServiceCollection();
+        const IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config));
-            Assert.Contains(nameof(config), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
+        Assert.Contains(nameof(config), ex.Message);
+    }
 
-        [Fact]
-        public void ConfigureCloudFoundryOptions_ConfiguresCloudFoundryOptions()
-        {
-            var services = new ServiceCollection();
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", @"{ ""cf_api"": ""https://api.run.pcfone.io"", ""limits"": { ""fds"": 16384 }, ""application_name"": ""foo"", ""application_uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""name"": ""foo"", ""space_name"": ""playground"", ""space_id"": ""f03f2ab0-cf33-416b-999c-fb01c1247753"", ""organization_id"": ""d7afe5cb-2d42-487b-a415-f47c0665f1ba"", ""organization_name"": ""pivot-thess"", ""uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""users"": null, ""application_id"": ""f69a6624-7669-43e3-a3c8-34d23a17e3db"" }");
+    [Fact]
+    public void ConfigureCloudFoundryOptions_ConfiguresCloudFoundryOptions()
+    {
+        var services = new ServiceCollection();
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", @"{ ""cf_api"": ""https://api.run.pcfone.io"", ""limits"": { ""fds"": 16384 }, ""application_name"": ""foo"", ""application_uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""name"": ""foo"", ""space_name"": ""playground"", ""space_id"": ""f03f2ab0-cf33-416b-999c-fb01c1247753"", ""organization_id"": ""d7afe5cb-2d42-487b-a415-f47c0665f1ba"", ""organization_name"": ""pivot-thess"", ""uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""users"": null, ""application_id"": ""f69a6624-7669-43e3-a3c8-34d23a17e3db"" }");
 
-            var builder = new ConfigurationBuilder().AddCloudFoundry();
-            var config = builder.Build();
-            CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config);
+        var builder = new ConfigurationBuilder().AddCloudFoundry();
+        var config = builder.Build();
+        services.ConfigureCloudFoundryOptions(config);
 
-            var serviceProvider = services.BuildServiceProvider();
-            var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
-            Assert.NotNull(app.Value);
-            Assert.Equal("foo", app.Value.ApplicationName);
-            Assert.Equal("playground", app.Value.SpaceName);
-            var service = serviceProvider.GetService<IOptions<CloudFoundryServicesOptions>>();
-            Assert.NotNull(service.Value);
-        }
+        var serviceProvider = services.BuildServiceProvider();
+        var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
+        Assert.NotNull(app.Value);
+        Assert.Equal("foo", app.Value.ApplicationName);
+        Assert.Equal("playground", app.Value.SpaceName);
+        var service = serviceProvider.GetService<IOptions<CloudFoundryServicesOptions>>();
+        Assert.NotNull(service.Value);
+    }
 
-        [Fact]
-        public void ConfigureCloudFoundryService_ThrowsIfServiceCollectionNull()
-        {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+    [Fact]
+    public void ConfigureCloudFoundryService_ThrowsIfServiceCollectionNull()
+    {
+        const IServiceCollection services = null;
+        const IConfigurationRoot config = null;
 
-            Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "foobar"));
-        }
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
+    }
 
-        [Fact]
-        public void ConfigureCloudFoundryService_ThrowsIfConfigurtionNull()
-        {
-            IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+    [Fact]
+    public void ConfigureCloudFoundryService_ThrowsIfConfigurtionNull()
+    {
+        IServiceCollection services = new ServiceCollection();
+        const IConfigurationRoot config = null;
 
-            Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "foobar"));
-        }
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
+    }
 
-        [Fact]
-        public void ConfigureCloudFoundryService_BadServiceName()
-        {
-            IServiceCollection services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
+    [Fact]
+    public void ConfigureCloudFoundryService_BadServiceName()
+    {
+        IServiceCollection services = new ServiceCollection();
+        var config = new ConfigurationBuilder().Build();
 
-            Assert.Throws<ArgumentException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, null));
-            Assert.Throws<ArgumentException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, string.Empty));
-        }
+        Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, null));
+        Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, string.Empty));
+    }
 
-        [Fact]
-        public void ConfigureCloudFoundryService_ConfiguresService()
-        {
-            var configJson = @"
+    [Fact]
+    public void ConfigureCloudFoundryService_ConfiguresService()
+    {
+        var configJson = @"
                 {
                   ""vcap"": {
                     ""services"" : {
@@ -126,33 +126,33 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                         }
                     }
                 }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
-            var services = new ServiceCollection();
-            services.AddOptions();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
+        var services = new ServiceCollection();
+        services.AddOptions();
 
-            CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "mySql2");
+        services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "mySql2");
 
-            var serviceProvider = services.BuildServiceProvider();
-            var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
-            var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServiceOption>>();
-            var snapOpt = snapShot.Get("mySql2");
-            var monOpt = monitor.Get("mySql2");
-            Assert.NotNull(snapOpt);
-            Assert.NotNull(monOpt);
+        var serviceProvider = services.BuildServiceProvider();
+        var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
+        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServiceOption>>();
+        var snapOpt = snapShot.Get("mySql2");
+        var monOpt = monitor.Get("mySql2");
+        Assert.NotNull(snapOpt);
+        Assert.NotNull(monOpt);
 
-            Assert.Equal("mySql2", snapOpt.Name);
-            Assert.Equal("p-mysql", snapOpt.Label);
-            Assert.Equal("mySql2", monOpt.Name);
-            Assert.Equal("p-mysql", monOpt.Label);
-        }
+        Assert.Equal("mySql2", snapOpt.Name);
+        Assert.Equal("p-mysql", snapOpt.Label);
+        Assert.Equal("mySql2", monOpt.Name);
+        Assert.Equal("p-mysql", monOpt.Label);
+    }
 
-        [Fact]
-        public void ConfigureCloudFoundryServices_ConfiguresServices()
-        {
-            var configJson = @"
+    [Fact]
+    public void ConfigureCloudFoundryServices_ConfiguresServices()
+    {
+        var configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -195,38 +195,37 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                         }
                     }
                 }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
-            var services = new ServiceCollection();
-            services.AddOptions();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
+        var services = new ServiceCollection();
+        services.AddOptions();
 
-            CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryServices<MySqlServiceOption>(services, config, "p-mysql");
+        services.ConfigureCloudFoundryServices<MySqlServiceOption>(config, "p-mysql");
 
-            var serviceProvider = services.BuildServiceProvider();
-            var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
-            var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServiceOption>>();
+        var serviceProvider = services.BuildServiceProvider();
+        var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
+        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServiceOption>>();
 
-            var snapOpt1 = snapShot.Get("mySql1");
-            var monOpt1 = monitor.Get("mySql1");
-            Assert.NotNull(snapOpt1);
-            Assert.NotNull(monOpt1);
+        var snapOpt1 = snapShot.Get("mySql1");
+        var monOpt1 = monitor.Get("mySql1");
+        Assert.NotNull(snapOpt1);
+        Assert.NotNull(monOpt1);
 
-            Assert.Equal("mySql1", snapOpt1.Name);
-            Assert.Equal("p-mysql", snapOpt1.Label);
-            Assert.Equal("mySql1", monOpt1.Name);
-            Assert.Equal("p-mysql", monOpt1.Label);
+        Assert.Equal("mySql1", snapOpt1.Name);
+        Assert.Equal("p-mysql", snapOpt1.Label);
+        Assert.Equal("mySql1", monOpt1.Name);
+        Assert.Equal("p-mysql", monOpt1.Label);
 
-            var snapOpt2 = snapShot.Get("mySql2");
-            var monOpt2 = monitor.Get("mySql2");
-            Assert.NotNull(snapOpt2);
-            Assert.NotNull(monOpt2);
+        var snapOpt2 = snapShot.Get("mySql2");
+        var monOpt2 = monitor.Get("mySql2");
+        Assert.NotNull(snapOpt2);
+        Assert.NotNull(monOpt2);
 
-            Assert.Equal("mySql2", snapOpt2.Name);
-            Assert.Equal("p-mysql", snapOpt2.Label);
-            Assert.Equal("mySql2", monOpt2.Name);
-            Assert.Equal("p-mysql", monOpt2.Label);
-        }
+        Assert.Equal("mySql2", snapOpt2.Name);
+        Assert.Equal("p-mysql", snapOpt2.Label);
+        Assert.Equal("mySql2", monOpt2.Name);
+        Assert.Equal("p-mysql", monOpt2.Label);
     }
 }

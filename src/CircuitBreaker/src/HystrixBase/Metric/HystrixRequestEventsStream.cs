@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,40 +7,39 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
+
+public class HystrixRequestEventsStream
 {
-    public class HystrixRequestEventsStream
+    private readonly ISubject<HystrixRequestEvents, HystrixRequestEvents> _writeOnlyRequestEventsSubject;
+    private readonly IObservable<HystrixRequestEvents> _readOnlyRequestEvents;
+
+    internal HystrixRequestEventsStream()
     {
-        private readonly ISubject<HystrixRequestEvents, HystrixRequestEvents> _writeOnlyRequestEventsSubject;
-        private readonly IObservable<HystrixRequestEvents> _readOnlyRequestEvents;
+        _writeOnlyRequestEventsSubject = Subject.Synchronize<HystrixRequestEvents, HystrixRequestEvents>(new Subject<HystrixRequestEvents>());
+        _readOnlyRequestEvents = _writeOnlyRequestEventsSubject.AsObservable();
+    }
 
-        internal HystrixRequestEventsStream()
-        {
-            _writeOnlyRequestEventsSubject = Subject.Synchronize<HystrixRequestEvents, HystrixRequestEvents>(new Subject<HystrixRequestEvents>());
-            _readOnlyRequestEvents = _writeOnlyRequestEventsSubject.AsObservable();
-        }
+    private static readonly HystrixRequestEventsStream INSTANCE = new ();
 
-        private static readonly HystrixRequestEventsStream INSTANCE = new ();
+    public static HystrixRequestEventsStream GetInstance()
+    {
+        return INSTANCE;
+    }
 
-        public static HystrixRequestEventsStream GetInstance()
-        {
-            return INSTANCE;
-        }
+    public void Shutdown()
+    {
+        _writeOnlyRequestEventsSubject.OnCompleted();
+    }
 
-        public void Shutdown()
-        {
-            _writeOnlyRequestEventsSubject.OnCompleted();
-        }
+    public void Write(ICollection<IHystrixInvokableInfo> executions)
+    {
+        var requestEvents = new HystrixRequestEvents(executions);
+        _writeOnlyRequestEventsSubject.OnNext(requestEvents);
+    }
 
-        public void Write(ICollection<IHystrixInvokableInfo> executions)
-        {
-            var requestEvents = new HystrixRequestEvents(executions);
-            _writeOnlyRequestEventsSubject.OnNext(requestEvents);
-        }
-
-        public IObservable<HystrixRequestEvents> Observe()
-        {
-            return _readOnlyRequestEvents;
-        }
+    public IObservable<HystrixRequestEvents> Observe()
+    {
+        return _readOnlyRequestEvents;
     }
 }

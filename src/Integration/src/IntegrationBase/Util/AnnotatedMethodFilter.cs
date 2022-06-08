@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,55 +8,54 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration.Util
+namespace Steeltoe.Integration.Util;
+
+public class AnnotatedMethodFilter : IMethodFilter
 {
-    public class AnnotatedMethodFilter : IMethodFilter
+    private readonly Type _annotationType;
+
+    private readonly string _methodName;
+
+    private readonly bool _requiresReply;
+
+    public AnnotatedMethodFilter(Type annotationType, string methodName, bool requiresReply)
     {
-        private readonly Type _annotationType;
+        _annotationType = annotationType;
+        _methodName = methodName;
+        _requiresReply = requiresReply;
+    }
 
-        private readonly string _methodName;
-
-        private readonly bool _requiresReply;
-
-        public AnnotatedMethodFilter(Type annotationType, string methodName, bool requiresReply)
+    public List<MethodInfo> Filter(List<MethodInfo> methods)
+    {
+        var annotatedCandidates = new List<MethodInfo>();
+        var fallbackCandidates = new List<MethodInfo>();
+        foreach (var method in methods)
         {
-            _annotationType = annotationType;
-            _methodName = methodName;
-            _requiresReply = requiresReply;
-        }
-
-        public List<MethodInfo> Filter(List<MethodInfo> methods)
-        {
-            var annotatedCandidates = new List<MethodInfo>();
-            var fallbackCandidates = new List<MethodInfo>();
-            foreach (var method in methods)
+            if (_requiresReply && (method.ReturnType == typeof(void) || method.ReturnType == typeof(Task)))
             {
-                if (_requiresReply && (method.ReturnType == typeof(void) || method.ReturnType == typeof(Task)))
-                {
-                    continue;
-                }
-
-                if (!string.IsNullOrEmpty(_methodName) && !_methodName.Equals(method.Name))
-                {
-                    continue;
-                }
-
-                if (_annotationType != null && method.GetCustomAttribute(_annotationType) != null)
-                {
-                    annotatedCandidates.Add(method);
-                }
-                else
-                {
-                    fallbackCandidates.Add(method);
-                }
+                continue;
             }
 
-            if (annotatedCandidates.Count > 0)
+            if (!string.IsNullOrEmpty(_methodName) && !_methodName.Equals(method.Name))
             {
-                return annotatedCandidates;
+                continue;
             }
 
-            return fallbackCandidates;
+            if (_annotationType != null && method.GetCustomAttribute(_annotationType) != null)
+            {
+                annotatedCandidates.Add(method);
+            }
+            else
+            {
+                fallbackCandidates.Add(method);
+            }
         }
+
+        if (annotatedCandidates.Count > 0)
+        {
+            return annotatedCandidates;
+        }
+
+        return fallbackCandidates;
     }
 }

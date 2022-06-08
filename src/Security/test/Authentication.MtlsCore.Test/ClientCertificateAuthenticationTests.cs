@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Security.Authentication.Mtls;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -23,558 +22,558 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Xunit;
 
-namespace Steeltoe.Security.Authentication.MtlsCore.Test
+namespace Steeltoe.Security.Authentication.MtlsCore.Test;
+
+public class ClientCertificateAuthenticationTests
 {
-    public class ClientCertificateAuthenticationTests
+    [Fact]
+    public async Task VerifySchemeDefaults()
     {
-        [Fact]
-        public async Task VerifySchemeDefaults()
+        var services = new ServiceCollection();
+        services.AddAuthentication().AddMutualTls();
+        var sp = services.BuildServiceProvider();
+        var schemeProvider = sp.GetRequiredService<IAuthenticationSchemeProvider>();
+        var scheme = await schemeProvider.GetSchemeAsync(CertificateAuthenticationDefaults.AuthenticationScheme);
+        Assert.NotNull(scheme);
+        Assert.Equal("MutualTlsAuthenticationHandler", scheme.HandlerType.Name);
+        Assert.Null(scheme.DisplayName);
+    }
+
+    [Fact]
+    public void VerifyIsSelfSignedExtensionMethod()
+    {
+        Assert.True(Certificates.SelfSignedValidWithNoEku.IsSelfSigned());
+    }
+
+    [Fact]
+    public async Task NonHttpsIsForbidden()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions(),
+            Certificates.SelfSignedValidWithClientEku);
+
+        var response = await server.CreateClient().GetAsync("http://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyValidSelfSignedWithClientEkuAuthenticates()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedValidWithClientEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyValidSelfSignedWithNoEkuAuthenticates()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedValidWithNoEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyValidSelfSignedWithClientEkuFailsWhenSelfSignedCertsNotAllowed()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.Chained
+            },
+            Certificates.SelfSignedValidWithClientEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyValidSelfSignedWithNoEkuFailsWhenSelfSignedCertsNotAllowed()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.Chained,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedValidWithNoEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyValidSelfSignedWithServerFailsEvenIfSelfSignedCertsAreAllowed()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedValidWithServerEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyValidSelfSignedWithServerPassesWhenSelfSignedCertsAreAllowedAndPurposeValidationIsOff()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                ValidateCertificateUse = false,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedValidWithServerEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyValidSelfSignedWithServerFailsPurposeValidationIsOffButSelfSignedCertsAreNotAllowed()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.Chained,
+                ValidateCertificateUse = false,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedValidWithServerEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    [Trait("Category", "SkipOnLinux")]
+    public async Task VerifyExpiredSelfSignedFails()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                ValidateCertificateUse = false,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedExpired);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyExpiredSelfSignedPassesIfDateRangeValidationIsDisabled()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                ValidateValidityPeriod = false,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedExpired);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    // https://github.com/dotnet/aspnetcore/issues/32813
+    [Fact]
+    [Trait("Category", "SkipOnLinux")]
+    public async Task VerifyNotYetValidSelfSignedFails()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                ValidateCertificateUse = false,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedNotYetValid);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyNotYetValidSelfSignedPassesIfDateRangeValidationIsDisabled()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                ValidateValidityPeriod = false,
+                Events = successfulValidationEvents
+            },
+            Certificates.SelfSignedNotYetValid);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyFailingInTheValidationEventReturnsForbidden()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                ValidateCertificateUse = false,
+                Events = failedValidationEvents
+            },
+            Certificates.SelfSignedValidWithServerEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DoingNothingInTheValidationEventReturnsOK()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                ValidateCertificateUse = false,
+                Events = unprocessedValidationEvents
+            },
+            Certificates.SelfSignedValidWithServerEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyNotSendingACertificateEndsUpInForbidden()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                Events = successfulValidationEvents
+            });
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyUntrustedClientCertEndsUpInForbidden()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                Events = successfulValidationEvents
+            }, Certificates.SignedClient);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifySideloadedCASignedCertReturnsOK()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                Events = successfulValidationEvents,
+                IssuerChain = new List<X509Certificate2> { Certificates.SelfSignedPrimaryRoot, Certificates.SignedSecondaryRoot }
+            }, Certificates.SignedClient);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyHeaderIsUsedIfCertIsNotPresent()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                Events = successfulValidationEvents
+            },
+            wireUpHeaderMiddleware: true);
+
+        var client = server.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Client-Cert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
+        var response = await client.GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyHeaderEncodedCertFailsOnBadEncoding()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                Events = successfulValidationEvents
+            },
+            wireUpHeaderMiddleware: true);
+
+        var client = server.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Client-Cert", $"OOPS{Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData)}");
+        var response = await client.GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifySettingTheAzureHeaderOnTheForwarderOptionsWorks()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                Events = successfulValidationEvents
+            },
+            wireUpHeaderMiddleware: true,
+            headerName: "X-ARR-ClientCert");
+
+        var client = server.CreateClient();
+        client.DefaultRequestHeaders.Add("X-ARR-ClientCert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
+        var response = await client.GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyACustomHeaderFailsIfTheHeaderIsNotPresent()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                Events = successfulValidationEvents
+            },
+            wireUpHeaderMiddleware: true,
+            headerName: "X-ARR-ClientCert");
+
+        var client = server.CreateClient();
+        client.DefaultRequestHeaders.Add("random-Weird-header", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
+        var response = await client.GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyNoEventWireupWithAValidCertificateCreatesADefaultUser()
+    {
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned
+            },
+            Certificates.SelfSignedValidWithNoEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        XElement responseAsXml = null;
+        if (response.Content != null &&
+            response.Content.Headers.ContentType != null &&
+            response.Content.Headers.ContentType.MediaType == "text/xml")
         {
-            var services = new ServiceCollection();
-            services.AddAuthentication().AddMutualTls();
-            var sp = services.BuildServiceProvider();
-            var schemeProvider = sp.GetRequiredService<IAuthenticationSchemeProvider>();
-            var scheme = await schemeProvider.GetSchemeAsync(CertificateAuthenticationDefaults.AuthenticationScheme);
-            Assert.NotNull(scheme);
-            Assert.Equal("MutualTlsAuthenticationHandler", scheme.HandlerType.Name);
-            Assert.Null(scheme.DisplayName);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            responseAsXml = XElement.Parse(responseContent);
         }
 
-        [Fact]
-        public void VerifyIsSelfSignedExtensionMethod()
+        Assert.NotNull(responseAsXml);
+
+        // There should always be an Issuer and a Thumbprint.
+        var actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == "issuer");
+        Assert.Single(actual);
+        Assert.Equal(Certificates.SelfSignedValidWithNoEku.Issuer, actual.First().Value);
+
+        actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Thumbprint);
+        Assert.Single(actual);
+        Assert.Equal(Certificates.SelfSignedValidWithNoEku.Thumbprint, actual.First().Value);
+
+        // Now the optional ones
+        if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.SubjectName.Name))
         {
-            Assert.True(Certificates.SelfSignedValidWithNoEku.IsSelfSigned());
+            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.X500DistinguishedName);
+            if (actual.Any())
+            {
+                Assert.Single(actual);
+                Assert.Equal(Certificates.SelfSignedValidWithNoEku.SubjectName.Name, actual.First().Value);
+            }
         }
 
-        [Fact]
-        public async Task NonHttpsIsForbidden()
+        if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.SerialNumber))
         {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions(),
-                Certificates.SelfSignedValidWithClientEku);
-
-            var response = await server.CreateClient().GetAsync("http://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.SerialNumber);
+            if (actual.Any())
+            {
+                Assert.Single(actual);
+                Assert.Equal(Certificates.SelfSignedValidWithNoEku.SerialNumber, actual.First().Value);
+            }
         }
 
-        [Fact]
-        public async Task VerifyValidSelfSignedWithClientEkuAuthenticates()
+        if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.DnsName, false)))
         {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
+            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Dns);
+            if (actual.Any())
+            {
+                Assert.Single(actual);
+                Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.DnsName, false), actual.First().Value);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.EmailName, false)))
+        {
+            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Email);
+            if (actual.Any())
+            {
+                Assert.Single(actual);
+                Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.EmailName, false), actual.First().Value);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.SimpleName, false)))
+        {
+            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Name);
+            if (actual.Any())
+            {
+                Assert.Single(actual);
+                Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.SimpleName, false), actual.First().Value);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UpnName, false)))
+        {
+            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Upn);
+            if (actual.Any())
+            {
+                Assert.Single(actual);
+                Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UpnName, false), actual.First().Value);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UrlName, false)))
+        {
+            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Uri);
+            if (actual.Any())
+            {
+                Assert.Single(actual);
+                Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UrlName, false), actual.First().Value);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task VerifyValidationEventPrincipalIsPropogated()
+    {
+        const string Expected = "John Doe";
+
+        var server = CreateServer(
+            new MutualTlsAuthenticationOptions
+            {
+                AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                Events = new CertificateAuthenticationEvents
                 {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedValidWithClientEku);
+                    OnCertificateValidated = context =>
+                    {
+                        // Make sure we get the validated principal
+                        Assert.NotNull(context.Principal);
+                        var claims = new[]
+                        {
+                            new Claim(ClaimTypes.Name, Expected, ClaimValueTypes.String, context.Options.ClaimsIssuer)
+                        };
 
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                        context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
+                        context.Success();
+                        return Task.CompletedTask;
+                    }
+                }
+            },
+            Certificates.SelfSignedValidWithNoEku);
+
+        var response = await server.CreateClient().GetAsync("https://example.com/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        XElement responseAsXml = null;
+        if (response.Content != null &&
+            response.Content.Headers.ContentType != null &&
+            response.Content.Headers.ContentType.MediaType == "text/xml")
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+            responseAsXml = XElement.Parse(responseContent);
         }
 
-        [Fact]
-        public async Task VerifyValidSelfSignedWithNoEkuAuthenticates()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
+        Assert.NotNull(responseAsXml);
+        var actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Name);
+        Assert.Single(actual);
+        Assert.Equal(Expected, actual.First().Value);
+        Assert.Single(responseAsXml.Elements("claim"));
+    }
+
+    private static TestServer CreateServer(
+        MutualTlsAuthenticationOptions configureOptions,
+        X509Certificate2 clientCertificate = null,
+        Uri baseAddress = null,
+        bool wireUpHeaderMiddleware = false,
+        string headerName = "")
+    {
+        var builder = new WebHostBuilder()
+            .Configure(app =>
+            {
+                app.Use((context, next) =>
                 {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedValidWithNoEku);
+                    if (clientCertificate != null)
+                    {
+                        context.Connection.ClientCertificate = clientCertificate;
+                    }
 
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyValidSelfSignedWithClientEkuFailsWhenSelfSignedCertsNotAllowed()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.Chained
-                },
-                Certificates.SelfSignedValidWithClientEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyValidSelfSignedWithNoEkuFailsWhenSelfSignedCertsNotAllowed()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.Chained,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedValidWithNoEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyValidSelfSignedWithServerFailsEvenIfSelfSignedCertsAreAllowed()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedValidWithServerEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyValidSelfSignedWithServerPassesWhenSelfSignedCertsAreAllowedAndPurposeValidationIsOff()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    ValidateCertificateUse = false,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedValidWithServerEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyValidSelfSignedWithServerFailsPurposeValidationIsOffButSelfSignedCertsAreNotAllowed()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.Chained,
-                    ValidateCertificateUse = false,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedValidWithServerEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        [Trait("Category", "SkipOnLinux")]
-        public async Task VerifyExpiredSelfSignedFails()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    ValidateCertificateUse = false,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedExpired);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyExpiredSelfSignedPassesIfDateRangeValidationIsDisabled()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    ValidateValidityPeriod = false,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedExpired);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        // https://github.com/dotnet/aspnetcore/issues/32813
-        [Fact]
-        [Trait("Category", "SkipOnLinux")]
-        public async Task VerifyNotYetValidSelfSignedFails()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    ValidateCertificateUse = false,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedNotYetValid);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyNotYetValidSelfSignedPassesIfDateRangeValidationIsDisabled()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    ValidateValidityPeriod = false,
-                    Events = successfulValidationEvents
-                },
-                Certificates.SelfSignedNotYetValid);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyFailingInTheValidationEventReturnsForbidden()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    ValidateCertificateUse = false,
-                    Events = failedValidationEvents
-                },
-                Certificates.SelfSignedValidWithServerEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task DoingNothingInTheValidationEventReturnsOK()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    ValidateCertificateUse = false,
-                    Events = unprocessedValidationEvents
-                },
-                Certificates.SelfSignedValidWithServerEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyNotSendingACertificateEndsUpInForbidden()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    Events = successfulValidationEvents
+                    return next();
                 });
 
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyUntrustedClientCertEndsUpInForbidden()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
+                if (wireUpHeaderMiddleware)
                 {
-                    Events = successfulValidationEvents
-                }, Certificates.SignedClient);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifySideloadedCASignedCertReturnsOK()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = successfulValidationEvents,
-                    IssuerChain = new List<X509Certificate2>() { Certificates.SelfSignedPrimaryRoot, Certificates.SignedSecondaryRoot }
-                }, Certificates.SignedClient);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyHeaderIsUsedIfCertIsNotPresent()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = successfulValidationEvents
-                },
-                wireUpHeaderMiddleware: true);
-
-            var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("X-Client-Cert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
-            var response = await client.GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyHeaderEncodedCertFailsOnBadEncoding()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    Events = successfulValidationEvents
-                },
-                wireUpHeaderMiddleware: true);
-
-            var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("X-Client-Cert", "OOPS" + Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
-            var response = await client.GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifySettingTheAzureHeaderOnTheForwarderOptionsWorks()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = successfulValidationEvents
-                },
-                wireUpHeaderMiddleware: true,
-                headerName: "X-ARR-ClientCert");
-
-            var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("X-ARR-ClientCert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
-            var response = await client.GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyACustomHeaderFailsIfTheHeaderIsNotPresent()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    Events = successfulValidationEvents
-                },
-                wireUpHeaderMiddleware: true,
-                headerName: "X-ARR-ClientCert");
-
-            var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("random-Weird-header", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
-            var response = await client.GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyNoEventWireupWithAValidCertificateCreatesADefaultUser()
-        {
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned
-                },
-                Certificates.SelfSignedValidWithNoEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            XElement responseAsXml = null;
-            if (response.Content != null &&
-                response.Content.Headers.ContentType != null &&
-                response.Content.Headers.ContentType.MediaType == "text/xml")
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                responseAsXml = XElement.Parse(responseContent);
-            }
-
-            Assert.NotNull(responseAsXml);
-
-            // There should always be an Issuer and a Thumbprint.
-            var actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == "issuer");
-            Assert.Single(actual);
-            Assert.Equal(Certificates.SelfSignedValidWithNoEku.Issuer, actual.First().Value);
-
-            actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Thumbprint);
-            Assert.Single(actual);
-            Assert.Equal(Certificates.SelfSignedValidWithNoEku.Thumbprint, actual.First().Value);
-
-            // Now the optional ones
-            if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.SubjectName.Name))
-            {
-                actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.X500DistinguishedName);
-                if (actual.Any())
-                {
-                    Assert.Single(actual);
-                    Assert.Equal(Certificates.SelfSignedValidWithNoEku.SubjectName.Name, actual.First().Value);
+                    app.UseCertificateForwarding();
                 }
-            }
 
-            if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.SerialNumber))
-            {
-                actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.SerialNumber);
-                if (actual.Any())
+                app.UseAuthentication();
+
+                app.Run(async context =>
                 {
-                    Assert.Single(actual);
-                    Assert.Equal(Certificates.SelfSignedValidWithNoEku.SerialNumber, actual.First().Value);
-                }
-            }
+                    var request = context.Request;
+                    var response = context.Response;
 
-            if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.DnsName, false)))
-            {
-                actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Dns);
-                if (actual.Any())
-                {
-                    Assert.Single(actual);
-                    Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.DnsName, false), actual.First().Value);
-                }
-            }
+                    var authenticationResult = await context.AuthenticateAsync();
 
-            if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.EmailName, false)))
-            {
-                actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Email);
-                if (actual.Any())
-                {
-                    Assert.Single(actual);
-                    Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.EmailName, false), actual.First().Value);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.SimpleName, false)))
-            {
-                actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Name);
-                if (actual.Any())
-                {
-                    Assert.Single(actual);
-                    Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.SimpleName, false), actual.First().Value);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UpnName, false)))
-            {
-                actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Upn);
-                if (actual.Any())
-                {
-                    Assert.Single(actual);
-                    Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UpnName, false), actual.First().Value);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UrlName, false)))
-            {
-                actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Uri);
-                if (actual.Any())
-                {
-                    Assert.Single(actual);
-                    Assert.Equal(Certificates.SelfSignedValidWithNoEku.GetNameInfo(X509NameType.UrlName, false), actual.First().Value);
-                }
-            }
-        }
-
-        [Fact]
-        public async Task VerifyValidationEventPrincipalIsPropogated()
-        {
-            const string Expected = "John Doe";
-
-            var server = CreateServer(
-                new MutualTlsAuthenticationOptions
-                {
-                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = new CertificateAuthenticationEvents
+                    if (authenticationResult.Succeeded)
                     {
-                        OnCertificateValidated = context =>
-                        {
-                            // Make sure we get the validated principal
-                            Assert.NotNull(context.Principal);
-                            var claims = new[]
-                            {
-                                new Claim(ClaimTypes.Name, Expected, ClaimValueTypes.String, context.Options.ClaimsIssuer)
-                            };
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.ContentType = "text/xml";
 
-                            context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
-                            context.Success();
-                            return Task.CompletedTask;
+                        await response.WriteAsync("<claims>");
+                        foreach (var claim in context.User.Claims)
+                        {
+                            await response.WriteAsync($"<claim Type=\"{claim.Type}\" Issuer=\"{claim.Issuer}\">{claim.Value}</claim>");
                         }
+
+                        await response.WriteAsync("</claims>");
                     }
-                },
-                Certificates.SelfSignedValidWithNoEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            XElement responseAsXml = null;
-            if (response.Content != null &&
-                response.Content.Headers.ContentType != null &&
-                response.Content.Headers.ContentType.MediaType == "text/xml")
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                responseAsXml = XElement.Parse(responseContent);
-            }
-
-            Assert.NotNull(responseAsXml);
-            var actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Name);
-            Assert.Single(actual);
-            Assert.Equal(Expected, actual.First().Value);
-            Assert.Single(responseAsXml.Elements("claim"));
-        }
-
-        private static TestServer CreateServer(
-            MutualTlsAuthenticationOptions configureOptions,
-            X509Certificate2 clientCertificate = null,
-            Uri baseAddress = null,
-            bool wireUpHeaderMiddleware = false,
-            string headerName = "")
-        {
-            var builder = new WebHostBuilder()
-                .Configure(app =>
-                {
-                    app.Use((context, next) =>
+                    else
                     {
-                        if (clientCertificate != null)
-                        {
-                            context.Connection.ClientCertificate = clientCertificate;
-                        }
-
-                        return next();
-                    });
-
-                    if (wireUpHeaderMiddleware)
-                    {
-                        app.UseCertificateForwarding();
+                        await context.ChallengeAsync();
                     }
-
-                    app.UseAuthentication();
-
-                    app.Run(async (context) =>
-                    {
-                        var request = context.Request;
-                        var response = context.Response;
-
-                        var authenticationResult = await context.AuthenticateAsync();
-
-                        if (authenticationResult.Succeeded)
-                        {
-                            response.StatusCode = (int)HttpStatusCode.OK;
-                            response.ContentType = "text/xml";
-
-                            await response.WriteAsync("<claims>");
-                            foreach (var claim in context.User.Claims)
-                            {
-                                await response.WriteAsync($"<claim Type=\"{claim.Type}\" Issuer=\"{claim.Issuer}\">{claim.Value}</claim>");
-                            }
-
-                            await response.WriteAsync("</claims>");
-                        }
-                        else
-                        {
-                            await context.ChallengeAsync();
-                        }
-                    });
-                })
+                });
+            })
             .ConfigureServices(services =>
             {
                 if (configureOptions != null)
@@ -604,152 +603,146 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 }
             });
 
-            var server = new TestServer(builder)
+        var server = new TestServer(builder)
+        {
+            BaseAddress = baseAddress
+        };
+
+        return server;
+    }
+
+    private readonly CertificateAuthenticationEvents successfulValidationEvents = new ()
+    {
+        OnCertificateValidated = context =>
+        {
+            var claims = new[]
             {
-                BaseAddress = baseAddress
+                new Claim(ClaimTypes.NameIdentifier, context.ClientCertificate.Subject, ClaimValueTypes.String, context.Options.ClaimsIssuer),
+                new Claim(ClaimTypes.Name, context.ClientCertificate.Subject, ClaimValueTypes.String, context.Options.ClaimsIssuer)
             };
 
-            return server;
+            context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
+            context.Success();
+            return Task.CompletedTask;
+        }
+    };
+
+    private readonly CertificateAuthenticationEvents failedValidationEvents = new ()
+    {
+        OnCertificateValidated = context =>
+        {
+            context.Fail("Not validated");
+            return Task.CompletedTask;
+        }
+    };
+
+    private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new ()
+    {
+        OnCertificateValidated = context => Task.CompletedTask
+    };
+
+    private static class Certificates
+    {
+        private static readonly string ServerEku = "1.3.6.1.5.5.7.3.1";
+        private static readonly string ClientEku = "1.3.6.1.5.5.7.3.2";
+
+        static Certificates()
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            SelfSignedPrimaryRoot = MakeCert(
+                "CN=Valid Self Signed Client EKU,OU=dev,DC=idunno-dev,DC=org",
+                ClientEku,
+                now);
+
+            SignedSecondaryRoot = MakeCert(
+                "CN=Valid Signed Secondary Root EKU,OU=dev,DC=idunno-dev,DC=org",
+                ClientEku,
+                now);
+
+            SelfSignedValidWithServerEku = MakeCert(
+                "CN=Valid Self Signed Server EKU,OU=dev,DC=idunno-dev,DC=org",
+                ServerEku,
+                now);
+
+            SelfSignedValidWithClientEku = MakeCert(
+                "CN=Valid Self Signed Server EKU,OU=dev,DC=idunno-dev,DC=org",
+                ClientEku,
+                now);
+
+            SelfSignedValidWithNoEku = MakeCert(
+                "CN=Valid Self Signed No EKU,OU=dev,DC=idunno-dev,DC=org",
+                eku: null,
+                now);
+
+            SelfSignedExpired = MakeCert(
+                "CN=Expired Self Signed,OU=dev,DC=idunno-dev,DC=org",
+                eku: null,
+                now.AddYears(-2),
+                now.AddYears(-1));
+
+            SelfSignedNotYetValid = MakeCert(
+                "CN=Not Valid Yet Self Signed,OU=dev,DC=idunno-dev,DC=org",
+                eku: null,
+                now.AddYears(2),
+                now.AddYears(3));
+
+            SignedClient = MakeCert(
+                "CN=Valid Signed Client,OU=dev,DC=idunno-dev,DC=org",
+                ClientEku,
+                now);
         }
 
-        private readonly CertificateAuthenticationEvents successfulValidationEvents = new ()
+        private static readonly X509KeyUsageExtension DigitalSignatureOnlyUsage =
+            new (X509KeyUsageFlags.DigitalSignature, true);
+
+        private static X509Certificate2 MakeCert(
+            string subjectName,
+            string eku,
+            DateTimeOffset now)
         {
-            OnCertificateValidated = context =>
-            {
-                var claims = new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, context.ClientCertificate.Subject, ClaimValueTypes.String, context.Options.ClaimsIssuer),
-                    new Claim(ClaimTypes.Name, context.ClientCertificate.Subject, ClaimValueTypes.String, context.Options.ClaimsIssuer)
-                };
-
-                context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
-                context.Success();
-                return Task.CompletedTask;
-            }
-        };
-
-        private readonly CertificateAuthenticationEvents failedValidationEvents = new ()
-        {
-            OnCertificateValidated = context =>
-            {
-                context.Fail("Not validated");
-                return Task.CompletedTask;
-            }
-        };
-
-        private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new ()
-        {
-            OnCertificateValidated = context =>
-            {
-                return Task.CompletedTask;
-            }
-        };
-
-        private static class Certificates
-        {
-            private static readonly string ServerEku = "1.3.6.1.5.5.7.3.1";
-            private static readonly string ClientEku = "1.3.6.1.5.5.7.3.2";
-
-            static Certificates()
-            {
-                var now = DateTimeOffset.UtcNow;
-
-                SelfSignedPrimaryRoot = MakeCert(
-                    "CN=Valid Self Signed Client EKU,OU=dev,DC=idunno-dev,DC=org",
-                    ClientEku,
-                    now);
-
-                SignedSecondaryRoot = MakeCert(
-                    "CN=Valid Signed Secondary Root EKU,OU=dev,DC=idunno-dev,DC=org",
-                    ClientEku,
-                    now);
-
-                SelfSignedValidWithServerEku = MakeCert(
-                    "CN=Valid Self Signed Server EKU,OU=dev,DC=idunno-dev,DC=org",
-                    ServerEku,
-                    now);
-
-                SelfSignedValidWithClientEku = MakeCert(
-                    "CN=Valid Self Signed Server EKU,OU=dev,DC=idunno-dev,DC=org",
-                    ClientEku,
-                    now);
-
-                SelfSignedValidWithNoEku = MakeCert(
-                    "CN=Valid Self Signed No EKU,OU=dev,DC=idunno-dev,DC=org",
-                    eku: null,
-                    now);
-
-                SelfSignedExpired = MakeCert(
-                    "CN=Expired Self Signed,OU=dev,DC=idunno-dev,DC=org",
-                    eku: null,
-                    now.AddYears(-2),
-                    now.AddYears(-1));
-
-                SelfSignedNotYetValid = MakeCert(
-                    "CN=Not Valid Yet Self Signed,OU=dev,DC=idunno-dev,DC=org",
-                    eku: null,
-                    now.AddYears(2),
-                    now.AddYears(3));
-
-                SignedClient = MakeCert(
-                    "CN=Valid Signed Client,OU=dev,DC=idunno-dev,DC=org",
-                    ClientEku,
-                    now);
-            }
-
-            private static readonly X509KeyUsageExtension DigitalSignatureOnlyUsage =
-                   new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, true);
-
-            private static X509Certificate2 MakeCert(
-                string subjectName,
-                string eku,
-                DateTimeOffset now)
-            {
-                return MakeCert(subjectName, eku, now, now.AddYears(5));
-            }
-
-            private static X509Certificate2 MakeCert(
-                string subjectName,
-                string eku,
-                DateTimeOffset notBefore,
-                DateTimeOffset notAfter)
-            {
-                using (var key = RSA.Create(2048))
-                {
-                    var request = new CertificateRequest(
-                        subjectName,
-                        key,
-                        HashAlgorithmName.SHA256,
-                        RSASignaturePadding.Pkcs1);
-
-                    request.CertificateExtensions.Add(DigitalSignatureOnlyUsage);
-
-                    if (eku != null)
-                    {
-                        request.CertificateExtensions.Add(
-                            new X509EnhancedKeyUsageExtension(
-                                new OidCollection { new Oid(eku, null) }, false));
-                    }
-
-                    return request.CreateSelfSigned(notBefore, notAfter);
-                }
-            }
-
-            public static X509Certificate2 SelfSignedPrimaryRoot { get; private set; }
-
-            public static X509Certificate2 SignedSecondaryRoot { get; private set; }
-
-            public static X509Certificate2 SignedClient { get; private set; }
-
-            public static X509Certificate2 SelfSignedValidWithClientEku { get; private set; }
-
-            public static X509Certificate2 SelfSignedValidWithNoEku { get; private set; }
-
-            public static X509Certificate2 SelfSignedValidWithServerEku { get; private set; }
-
-            public static X509Certificate2 SelfSignedNotYetValid { get; private set; }
-
-            public static X509Certificate2 SelfSignedExpired { get; private set; }
+            return MakeCert(subjectName, eku, now, now.AddYears(5));
         }
+
+        private static X509Certificate2 MakeCert(
+            string subjectName,
+            string eku,
+            DateTimeOffset notBefore,
+            DateTimeOffset notAfter)
+        {
+            using var key = RSA.Create(2048);
+            var request = new CertificateRequest(
+                subjectName,
+                key,
+                HashAlgorithmName.SHA256,
+                RSASignaturePadding.Pkcs1);
+
+            request.CertificateExtensions.Add(DigitalSignatureOnlyUsage);
+
+            if (eku != null)
+            {
+                request.CertificateExtensions.Add(
+                    new X509EnhancedKeyUsageExtension(
+                        new OidCollection { new (eku, null) }, false));
+            }
+
+            return request.CreateSelfSigned(notBefore, notAfter);
+        }
+
+        public static X509Certificate2 SelfSignedPrimaryRoot { get; private set; }
+
+        public static X509Certificate2 SignedSecondaryRoot { get; private set; }
+
+        public static X509Certificate2 SignedClient { get; private set; }
+
+        public static X509Certificate2 SelfSignedValidWithClientEku { get; private set; }
+
+        public static X509Certificate2 SelfSignedValidWithNoEku { get; private set; }
+
+        public static X509Certificate2 SelfSignedValidWithServerEku { get; private set; }
+
+        public static X509Certificate2 SelfSignedNotYetValid { get; private set; }
+
+        public static X509Certificate2 SelfSignedExpired { get; private set; }
     }
 }

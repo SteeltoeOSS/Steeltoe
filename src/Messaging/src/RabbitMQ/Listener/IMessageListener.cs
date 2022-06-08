@@ -1,18 +1,17 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public interface IMessageListener
 {
-    public interface IMessageListener
-    {
-        AcknowledgeMode ContainerAckMode { get; set; }
+    AcknowledgeMode ContainerAckMode { get; set; }
 
-        void OnMessage(IMessage message);
+    void OnMessage(IMessage message);
 
-        void OnMessageBatch(List<IMessage> messages);
-    }
+    void OnMessageBatch(List<IMessage> messages);
 }

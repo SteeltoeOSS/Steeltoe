@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,81 +11,80 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Host
+namespace Steeltoe.Messaging.RabbitMQ.Host;
+
+public class RabbitMQHostBuilder : IHostBuilder
 {
-    public class RabbitMQHostBuilder : IHostBuilder
+    public IDictionary<object, object> Properties => _hostbuilder.Properties;
+
+    private readonly IHostBuilder _hostbuilder;
+
+    public RabbitMQHostBuilder(IHostBuilder hostbuilder)
     {
-        public IDictionary<object, object> Properties => _hostbuilder.Properties;
+        _hostbuilder = hostbuilder;
 
-        private readonly IHostBuilder _hostbuilder;
+        _hostbuilder
+            .ConfigureAppConfiguration(configBuilder =>
+            {
+                configBuilder.AddSpringBootEnv();
+            })
+            .ConfigureServices((hostBuilderContext, services) =>
+            {
+                var rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.PREFIX);
+                services.Configure<RabbitOptions>(rabbitConfigSection);
 
-        public RabbitMQHostBuilder(IHostBuilder hostbuilder)
-        {
-            _hostbuilder = hostbuilder;
+                services.AddRabbitServices();
+                services.AddRabbitAdmin();
+                services.AddRabbitTemplate();
+            });
+    }
 
-            _hostbuilder
-                .ConfigureAppConfiguration(configBuilder =>
-                {
-                    configBuilder.AddSpringBootEnv();
-                })
-                .ConfigureServices((hostBuilderContext, services) =>
-                {
-                    var rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.PREFIX);
-                    services.Configure<RabbitOptions>(rabbitConfigSection);
+    public IHost Build()
+    {
+        var host = _hostbuilder.Build();
 
-                    services.AddRabbitServices();
-                    services.AddRabbitAdmin();
-                    services.AddRabbitTemplate();
-                });
-        }
+        return new RabbitMQHost(host);
+    }
 
-        public IHost Build()
-        {
-            var host = _hostbuilder.Build();
+    public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
+    {
+        _hostbuilder.ConfigureAppConfiguration(configureDelegate);
 
-            return new RabbitMQHost(host);
-        }
+        return this;
+    }
 
-        public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
-        {
-            _hostbuilder.ConfigureAppConfiguration(configureDelegate);
+    public IHostBuilder ConfigureContainer<TContainerBuilder>(Action<HostBuilderContext, TContainerBuilder> configureDelegate)
+    {
+        _hostbuilder.ConfigureContainer(configureDelegate);
 
-            return this;
-        }
+        return this;
+    }
 
-        public IHostBuilder ConfigureContainer<TContainerBuilder>(Action<HostBuilderContext, TContainerBuilder> configureDelegate)
-        {
-            _hostbuilder.ConfigureContainer(configureDelegate);
+    public IHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configureDelegate)
+    {
+        _hostbuilder.ConfigureHostConfiguration(configureDelegate);
 
-            return this;
-        }
+        return this;
+    }
 
-        public IHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configureDelegate)
-        {
-            _hostbuilder.ConfigureHostConfiguration(configureDelegate);
+    public IHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configureDelegate)
+    {
+        _hostbuilder.ConfigureServices(configureDelegate);
 
-            return this;
-        }
+        return this;
+    }
 
-        public IHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configureDelegate)
-        {
-            _hostbuilder.ConfigureServices(configureDelegate);
+    public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
+    {
+        _hostbuilder.UseServiceProviderFactory(factory);
 
-            return this;
-        }
+        return this;
+    }
 
-        public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
-        {
-            _hostbuilder.UseServiceProviderFactory(factory);
+    public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
+    {
+        _hostbuilder.UseServiceProviderFactory(factory);
 
-            return this;
-        }
-
-        public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
-        {
-            _hostbuilder.UseServiceProviderFactory(factory);
-
-            return this;
-        }
+        return this;
     }
 }

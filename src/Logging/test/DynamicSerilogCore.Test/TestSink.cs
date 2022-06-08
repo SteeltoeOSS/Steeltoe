@@ -1,42 +1,36 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Serilog;
-using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Xunit.Abstractions;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+
+public class TestSink : ILogEventSink
 {
-    public class TestSink : ILogEventSink
+    private static TestSink _currentSink;
+
+    public static TestSink GetCurrentSink(bool createNew = false)
     {
-        private static TestSink _currentSink;
-
-        public static TestSink GetCurrentSink(bool createNew = false)
+        if (createNew)
         {
-            if (createNew)
-            {
-                _currentSink = new TestSink();
-            }
-
-            return _currentSink ??= new TestSink();
+            _currentSink = new TestSink();
         }
 
-        private readonly List<string> logs = new ();
+        return _currentSink ??= new TestSink();
+    }
 
-        public void Emit(LogEvent logEvent)
-        {
-            logs.Add(logEvent.RenderMessage());
-        }
+    private readonly List<string> logs = new ();
 
-        public List<string> GetLogs()
-        {
-            return logs;
-        }
+    public void Emit(LogEvent logEvent)
+    {
+        logs.Add(logEvent.RenderMessage());
+    }
+
+    public List<string> GetLogs()
+    {
+        return logs;
     }
 }

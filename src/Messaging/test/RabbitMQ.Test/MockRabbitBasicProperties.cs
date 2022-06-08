@@ -1,183 +1,182 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ
+namespace Steeltoe.Messaging.RabbitMQ;
+
+public class MockRabbitBasicProperties : RC.IBasicProperties
 {
-    public class MockRabbitBasicProperties : RC.IBasicProperties
+    public string AppId { get; set; }
+
+    public string ClusterId { get; set; }
+
+    public string ContentEncoding { get; set; }
+
+    public string ContentType { get; set; }
+
+    public string CorrelationId { get; set; }
+
+    public byte DeliveryMode { get; set; } = 0xff;
+
+    public string Expiration { get; set; }
+
+    public IDictionary<string, object> Headers { get; set; } = new Dictionary<string, object>();
+
+    public string MessageId { get; set; }
+
+    public bool Persistent { get; set; }
+
+    public byte Priority { get; set; } = 0xff;
+
+    public string ReplyTo { get; set; }
+
+    public RC.PublicationAddress ReplyToAddress { get; set; }
+
+    public RC.AmqpTimestamp Timestamp { get; set; }
+
+    public string Type { get; set; }
+
+    public string UserId { get; set; }
+
+    int RC.IContentHeader.ProtocolClassId => 0;
+
+    string RC.IContentHeader.ProtocolClassName => string.Empty;
+
+    public ushort ProtocolClassId;
+
+    public string ProtocolClassName;
+
+    public void ClearAppId()
     {
-        public string AppId { get; set; }
+    }
 
-        public string ClusterId { get; set; }
+    public void ClearClusterId()
+    {
+    }
 
-        public string ContentEncoding { get; set; }
+    public void ClearContentEncoding()
+    {
+    }
 
-        public string ContentType { get; set; }
+    public void ClearContentType()
+    {
+    }
 
-        public string CorrelationId { get; set; }
+    public void ClearCorrelationId()
+    {
+    }
 
-        public byte DeliveryMode { get; set; } = 0xff;
+    public void ClearDeliveryMode()
+    {
+    }
 
-        public string Expiration { get; set; }
+    public void ClearExpiration()
+    {
+    }
 
-        public IDictionary<string, object> Headers { get; set; } = new Dictionary<string, object>();
+    public void ClearHeaders()
+    {
+    }
 
-        public string MessageId { get; set; }
+    public void ClearMessageId()
+    {
+    }
 
-        public bool Persistent { get; set; }
+    public void ClearPriority()
+    {
+    }
 
-        public byte Priority { get; set; } = 0xff;
+    public void ClearReplyTo()
+    {
+    }
 
-        public string ReplyTo { get; set; }
+    public void ClearTimestamp()
+    {
+    }
 
-        public RC.PublicationAddress ReplyToAddress { get; set; }
+    public void ClearType()
+    {
+    }
 
-        public RC.AmqpTimestamp Timestamp { get; set; }
+    public void ClearUserId()
+    {
+    }
 
-        public string Type { get; set; }
+    public bool IsAppIdPresent()
+    {
+        return AppId != null;
+    }
 
-        public string UserId { get; set; }
+    public bool IsClusterIdPresent()
+    {
+        return ClusterId != null;
+    }
 
-        int RC.IContentHeader.ProtocolClassId => 0;
+    public bool IsContentEncodingPresent()
+    {
+        return ContentEncoding != null;
+    }
 
-        string RC.IContentHeader.ProtocolClassName => string.Empty;
+    public bool IsContentTypePresent()
+    {
+        return ContentType != null;
+    }
 
-        public ushort ProtocolClassId;
+    public bool IsCorrelationIdPresent()
+    {
+        return CorrelationId != null;
+    }
 
-        public string ProtocolClassName;
+    public bool IsDeliveryModePresent()
+    {
+        return DeliveryMode != 0xff;
+    }
 
-        public void ClearAppId()
-        {
-        }
+    public bool IsExpirationPresent()
+    {
+        return Expiration != null;
+    }
 
-        public void ClearClusterId()
-        {
-        }
+    public bool IsHeadersPresent()
+    {
+        return Headers != null;
+    }
 
-        public void ClearContentEncoding()
-        {
-        }
+    public bool IsMessageIdPresent()
+    {
+        return MessageId != null;
+    }
 
-        public void ClearContentType()
-        {
-        }
+    public bool IsPriorityPresent()
+    {
+        return Priority != 0xff;
+    }
 
-        public void ClearCorrelationId()
-        {
-        }
+    public bool IsReplyToPresent()
+    {
+        return ReplyTo != null;
+    }
 
-        public void ClearDeliveryMode()
-        {
-        }
+    public bool IsTimestampPresent()
+    {
+        return !default(RC.AmqpTimestamp).Equals(Timestamp);
+    }
 
-        public void ClearExpiration()
-        {
-        }
+    public bool IsTypePresent()
+    {
+        return Type != null;
+    }
 
-        public void ClearHeaders()
-        {
-        }
+    public bool IsUserIdPresent()
+    {
+        return UserId != null;
+    }
 
-        public void ClearMessageId()
-        {
-        }
-
-        public void ClearPriority()
-        {
-        }
-
-        public void ClearReplyTo()
-        {
-        }
-
-        public void ClearTimestamp()
-        {
-        }
-
-        public void ClearType()
-        {
-        }
-
-        public void ClearUserId()
-        {
-        }
-
-        public bool IsAppIdPresent()
-        {
-            return AppId != null;
-        }
-
-        public bool IsClusterIdPresent()
-        {
-            return ClusterId != null;
-        }
-
-        public bool IsContentEncodingPresent()
-        {
-            return ContentEncoding != null;
-        }
-
-        public bool IsContentTypePresent()
-        {
-            return ContentType != null;
-        }
-
-        public bool IsCorrelationIdPresent()
-        {
-            return CorrelationId != null;
-        }
-
-        public bool IsDeliveryModePresent()
-        {
-            return DeliveryMode != 0xff;
-        }
-
-        public bool IsExpirationPresent()
-        {
-            return Expiration != null;
-        }
-
-        public bool IsHeadersPresent()
-        {
-            return Headers != null;
-        }
-
-        public bool IsMessageIdPresent()
-        {
-            return MessageId != null;
-        }
-
-        public bool IsPriorityPresent()
-        {
-            return Priority != 0xff;
-        }
-
-        public bool IsReplyToPresent()
-        {
-            return ReplyTo != null;
-        }
-
-        public bool IsTimestampPresent()
-        {
-            return !default(RC.AmqpTimestamp).Equals(Timestamp);
-        }
-
-        public bool IsTypePresent()
-        {
-            return Type != null;
-        }
-
-        public bool IsUserIdPresent()
-        {
-            return UserId != null;
-        }
-
-        public void SetPersistent(bool persistent)
-        {
-            Persistent = persistent;
-        }
+    public void SetPersistent(bool persistent)
+    {
+        Persistent = persistent;
     }
 }

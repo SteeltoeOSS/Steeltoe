@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,67 +9,66 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+
+public class HystrixDashboardStream
 {
-    public class HystrixDashboardStream
+    private const int Default_Dashboard_IntervalInMilliseconds = 500;
+    private readonly int _delayInMs;
+    private readonly IObservable<DashboardData> _singleSource;
+    private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
+
+    private HystrixDashboardStream(int delayInMs)
     {
-        private const int Default_Dashboard_IntervalInMilliseconds = 500;
-        private readonly int _delayInMs;
-        private readonly IObservable<DashboardData> _singleSource;
-        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
+        _delayInMs = delayInMs;
+        _singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
+            .Map(timestamp => new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()))
+            .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
+            .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })
+            .Publish().RefCount();
+    }
 
-        private HystrixDashboardStream(int delayInMs)
+    // The data emission interval is looked up on startup only
+    private static readonly HystrixDashboardStream Instance =
+        new (Default_Dashboard_IntervalInMilliseconds);
+
+    public static HystrixDashboardStream GetInstance()
+    {
+        return Instance;
+    }
+
+    // Return a ref-counted stream that will only do work when at least one subscriber is present
+    public IObservable<DashboardData> Observe()
+    {
+        return _singleSource;
+    }
+
+    public bool IsSourceCurrentlySubscribed
+    {
+        get
         {
-            _delayInMs = delayInMs;
-            _singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
-                                .Map((timestamp) => { return new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()); })
-                                .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
-                                .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })
-                                .Publish().RefCount();
+            return _isSourceCurrentlySubscribed.Value;
+        }
+    }
+
+    internal static HystrixDashboardStream GetNonSingletonInstanceOnlyUsedInUnitTests(int delayInMs)
+    {
+        return new HystrixDashboardStream(delayInMs);
+    }
+
+    public class DashboardData
+    {
+        public DashboardData(ICollection<HystrixCommandMetrics> commandMetrics, ICollection<HystrixThreadPoolMetrics> threadPoolMetrics, ICollection<HystrixCollapserMetrics> collapserMetrics)
+        {
+            CommandMetrics = commandMetrics;
+            ThreadPoolMetrics = threadPoolMetrics;
+            CollapserMetrics = collapserMetrics;
         }
 
-        // The data emission interval is looked up on startup only
-        private static readonly HystrixDashboardStream Instance =
-                new (Default_Dashboard_IntervalInMilliseconds);
+        public ICollection<HystrixCommandMetrics> CommandMetrics { get; }
 
-        public static HystrixDashboardStream GetInstance()
-        {
-            return Instance;
-        }
+        public ICollection<HystrixThreadPoolMetrics> ThreadPoolMetrics { get; }
 
-        // Return a ref-counted stream that will only do work when at least one subscriber is present
-        public IObservable<DashboardData> Observe()
-        {
-            return _singleSource;
-        }
-
-        public bool IsSourceCurrentlySubscribed
-        {
-            get
-            {
-                return _isSourceCurrentlySubscribed.Value;
-            }
-        }
-
-        internal static HystrixDashboardStream GetNonSingletonInstanceOnlyUsedInUnitTests(int delayInMs)
-        {
-            return new HystrixDashboardStream(delayInMs);
-        }
-
-        public class DashboardData
-        {
-            public DashboardData(ICollection<HystrixCommandMetrics> commandMetrics, ICollection<HystrixThreadPoolMetrics> threadPoolMetrics, ICollection<HystrixCollapserMetrics> collapserMetrics)
-            {
-                CommandMetrics = commandMetrics;
-                ThreadPoolMetrics = threadPoolMetrics;
-                CollapserMetrics = collapserMetrics;
-            }
-
-            public ICollection<HystrixCommandMetrics> CommandMetrics { get; }
-
-            public ICollection<HystrixThreadPoolMetrics> ThreadPoolMetrics { get; }
-
-            public ICollection<HystrixCollapserMetrics> CollapserMetrics { get; }
-        }
+        public ICollection<HystrixCollapserMetrics> CollapserMetrics { get; }
     }
 }

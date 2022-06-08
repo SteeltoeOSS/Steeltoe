@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,78 +9,78 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Connector.CloudFoundry.Test
+namespace Steeltoe.Connector.CloudFoundry.Test;
+
+public class CloudFoundryServiceInfoCreatorTest
 {
-    public class CloudFoundryServiceInfoCreatorTest
+    public CloudFoundryServiceInfoCreatorTest()
     {
-        public CloudFoundryServiceInfoCreatorTest()
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+    }
 
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
-        {
-            IConfiguration config = null;
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
+    {
+        const IConfiguration config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceInfoCreator.Instance(config));
-            Assert.Contains(nameof(config), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceInfoCreator.Instance(config));
+        Assert.Contains(nameof(config), ex.Message);
+    }
 
-        [Fact]
-        public void Constructor_ReturnsInstance()
-        {
-            IConfiguration config = new ConfigurationBuilder().Build();
+    [Fact]
+    public void Constructor_ReturnsInstance()
+    {
+        IConfiguration config = new ConfigurationBuilder().Build();
 
-            var inst = CloudFoundryServiceInfoCreator.Instance(config);
-            Assert.NotNull(inst);
-        }
+        var inst = CloudFoundryServiceInfoCreator.Instance(config);
+        Assert.NotNull(inst);
+    }
 
-        [Fact]
-        public void Constructor_ReturnsNewInstance()
-        {
-            IConfiguration config = new ConfigurationBuilder().Build();
-            IConfiguration config2 = new ConfigurationBuilder().Build();
+    [Fact]
+    public void Constructor_ReturnsNewInstance()
+    {
+        IConfiguration config = new ConfigurationBuilder().Build();
+        IConfiguration config2 = new ConfigurationBuilder().Build();
 
-            var inst = CloudFoundryServiceInfoCreator.Instance(config);
-            Assert.NotNull(inst);
+        var inst = CloudFoundryServiceInfoCreator.Instance(config);
+        Assert.NotNull(inst);
 
-            var inst2 = CloudFoundryServiceInfoCreator.Instance(config2);
-            Assert.NotSame(inst, inst2);
-        }
+        var inst2 = CloudFoundryServiceInfoCreator.Instance(config2);
+        Assert.NotSame(inst, inst2);
+    }
 
-        [Fact]
-        public void BuildServiceInfoFactories_BuildsExpected()
-        {
-            IConfiguration config = new ConfigurationBuilder().Build();
+    [Fact]
+    public void BuildServiceInfoFactories_BuildsExpected()
+    {
+        IConfiguration config = new ConfigurationBuilder().Build();
 
-            var inst = CloudFoundryServiceInfoCreator.Instance(config);
-            Assert.NotNull(inst);
-            Assert.NotNull(inst.Factories);
-            Assert.Equal(12, inst.Factories.Count);
-        }
+        var inst = CloudFoundryServiceInfoCreator.Instance(config);
+        Assert.NotNull(inst);
+        Assert.NotNull(inst.Factories);
+        Assert.Equal(12, inst.Factories.Count);
+    }
 
-        [Fact]
-        public void BuildServiceInfos_NoCloudFoundryServices_BuildsExpected()
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+    [Fact]
+    public void BuildServiceInfos_NoCloudFoundryServices_BuildsExpected()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
 
-            var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        var creator = CloudFoundryServiceInfoCreator.Instance(config);
 
-            Assert.NotNull(creator.ServiceInfos);
-            Assert.Equal(0, creator.ServiceInfos.Count);
-        }
+        Assert.NotNull(creator.ServiceInfos);
+        Assert.Equal(0, creator.ServiceInfos.Count);
+    }
 
-        [Fact]
-        public void BuildServiceInfos_WithCloudFoundryServices_BuildsExpected()
-        {
-            var environment2 = @"
+    [Fact]
+    public void BuildServiceInfos_WithCloudFoundryServices_BuildsExpected()
+    {
+        var environment2 = @"
                 {
                     ""p-mysql"": [{
                         ""credentials"": {
@@ -157,57 +157,57 @@ namespace Steeltoe.Connector.CloudFoundry.Test
                     }]
                 }";
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
-            var creator = CloudFoundryServiceInfoCreator.Instance(config);
-            Assert.NotNull(creator.ServiceInfos);
-            Assert.Equal(2, creator.ServiceInfos.Count);
-        }
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        Assert.NotNull(creator.ServiceInfos);
+        Assert.Equal(2, creator.ServiceInfos.Count);
+    }
 
-        [Fact]
-        public void GetServiceInfo_NoVCAPs_ReturnsExpected()
-        {
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
-            var creator = CloudFoundryServiceInfoCreator.Instance(config);
-            var result = creator.GetServiceInfos<RedisServiceInfo>();
-            Assert.NotNull(result);
-            Assert.Empty(result);
+    [Fact]
+    public void GetServiceInfo_NoVCAPs_ReturnsExpected()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        var result = creator.GetServiceInfos<RedisServiceInfo>();
+        Assert.NotNull(result);
+        Assert.Empty(result);
 
-            var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
-            Assert.NotNull(result2);
-            Assert.Empty(result2);
+        var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
+        Assert.NotNull(result2);
+        Assert.Empty(result2);
 
-            var result3 = creator.GetServiceInfos<RedisServiceInfo>();
-            Assert.NotNull(result3);
-            Assert.Empty(result3);
+        var result3 = creator.GetServiceInfos<RedisServiceInfo>();
+        Assert.NotNull(result3);
+        Assert.Empty(result3);
 
-            var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
-            Assert.NotNull(result4);
-            Assert.Empty(result4);
+        var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
+        Assert.NotNull(result4);
+        Assert.Empty(result4);
 
-            var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
-            Assert.Null(result5);
+        var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
+        Assert.Null(result5);
 
-            var result6 = creator.GetServiceInfo<MySqlServiceInfo>("spring-cloud-broker-db2");
-            Assert.Null(result6);
+        var result6 = creator.GetServiceInfo<MySqlServiceInfo>("spring-cloud-broker-db2");
+        Assert.Null(result6);
 
-            var result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
-            Assert.Null(result7);
+        var result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
+        Assert.Null(result7);
 
-            var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
-            Assert.Null(result8);
-        }
+        var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
+        Assert.Null(result8);
+    }
 
-        [Fact]
-        public void GetServiceInfosType_WithVCAPs_ReturnsExpected()
-        {
-            var environment2 = @"
+    [Fact]
+    public void GetServiceInfosType_WithVCAPs_ReturnsExpected()
+    {
+        var environment2 = @"
                 {
                     ""p-mysql"": [{
                         ""credentials"": {
@@ -251,47 +251,46 @@ namespace Steeltoe.Connector.CloudFoundry.Test
                     }]
                 }";
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
-            var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(config);
 
-            var result = creator.GetServiceInfos<MySqlServiceInfo>();
-            Assert.Equal(2, result.Count(si => si is MySqlServiceInfo));
+        var result = creator.GetServiceInfos<MySqlServiceInfo>();
+        Assert.Equal(2, result.Count(si => si != null));
 
-            var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
-            Assert.Equal(2, result2.Count(si => si is MySqlServiceInfo));
+        var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
+        Assert.Equal(2, result2.Count(si => si is MySqlServiceInfo));
 
-            var result3 = creator.GetServiceInfos<RedisServiceInfo>();
-            Assert.NotNull(result3);
-            Assert.Empty(result3);
+        var result3 = creator.GetServiceInfos<RedisServiceInfo>();
+        Assert.NotNull(result3);
+        Assert.Empty(result3);
 
-            var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
-            Assert.NotNull(result4);
-            Assert.Empty(result4);
+        var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
+        Assert.NotNull(result4);
+        Assert.Empty(result4);
 
-            var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
-            Assert.Null(result5);
+        var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
+        Assert.Null(result5);
 
-            var result6 = creator.GetServiceInfo<MySqlServiceInfo>("spring-cloud-broker-db2");
-            Assert.NotNull(result6);
-            Assert.True(result6 is MySqlServiceInfo);
+        var result6 = creator.GetServiceInfo<MySqlServiceInfo>("spring-cloud-broker-db2");
+        Assert.NotNull(result6);
 
-            var result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
-            Assert.NotNull(result7);
-            Assert.True(result7 is MySqlServiceInfo);
+        var result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
+        Assert.NotNull(result7);
+        Assert.True(result7 is MySqlServiceInfo);
 
-            var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
-            Assert.Null(result8);
-        }
+        var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
+        Assert.Null(result8);
+    }
 
-        [Fact]
-        public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMonogoBinding_BuildsExpected()
-        {
-            var environment2 = @"
+    [Fact]
+    public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMonogoBinding_BuildsExpected()
+    {
+        var environment2 = @"
                 {
                     ""p-redis"": [{
                         ""credentials"": {
@@ -402,29 +401,28 @@ namespace Steeltoe.Connector.CloudFoundry.Test
                     }]
                 }";
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
-            var creator = CloudFoundryServiceInfoCreator.Instance(config);
-            Assert.NotNull(creator.ServiceInfos);
-            Assert.Equal(4, creator.ServiceInfos.Count);
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        Assert.NotNull(creator.ServiceInfos);
+        Assert.Equal(4, creator.ServiceInfos.Count);
 
-            var result1 = creator.GetServiceInfos<RedisServiceInfo>();
-            Assert.NotNull(result1);
-            Assert.Single(result1);
+        var result1 = creator.GetServiceInfos<RedisServiceInfo>();
+        Assert.NotNull(result1);
+        Assert.Single(result1);
 
-            var redis1 = result1.First();
-            Assert.Equal("10.66.32.54", redis1.Host);
+        var redis1 = result1.First();
+        Assert.Equal("10.66.32.54", redis1.Host);
 
-            var resutlt2 = creator.GetServiceInfos<MongoDbServiceInfo>();
-            Assert.Equal(2, resutlt2.Count());
+        var resutlt2 = creator.GetServiceInfos<MongoDbServiceInfo>();
+        Assert.Equal(2, resutlt2.Count());
 
-            var result3 = creator.GetServiceInfos<EurekaServiceInfo>();
-            Assert.Single(result3);
-            Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3.First().Host);
-        }
+        var result3 = creator.GetServiceInfos<EurekaServiceInfo>();
+        Assert.Single(result3);
+        Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3.First().Host);
     }
 }

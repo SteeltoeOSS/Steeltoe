@@ -5,7 +5,6 @@
 #pragma warning disable
 using FastSerialization;    // For IStreamReader
 using Graphs;
-using Microsoft.Diagnostics.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -75,7 +74,7 @@ namespace Graphs
     /// see code:Graph.SizeOfGraphDescription to determine the overhead for any particular graph.
     /// 
     /// </summary>
-    [ExcludeFromCodeCoverageAttribute()]
+    [ExcludeFromCodeCoverage]
     internal class Graph : IFastSerializable, IFastSerializableVersion
     {
         /// <summary>
@@ -319,10 +318,10 @@ namespace Graphs
 
             var ret = (NodeTypeIndex)m_types.Count;
             // We still use the m_types array for the size. 
-            m_types.Add(new TypeInfo() { Size = size });
+            m_types.Add(new TypeInfo { Size = size });
 
             // but we put the real information into the m_deferedTypes.  
-            m_deferedTypes.Add(new DeferedTypeInfo() { Module = module, TypeID = typeID, TypeNameSuffix = typeNameSuffix });
+            m_deferedTypes.Add(new DeferedTypeInfo { Module = module, TypeID = typeID, TypeNameSuffix = typeNameSuffix });
             Debug.Assert(m_deferedTypes.Count == m_types.Count);
             return ret;
         }
@@ -379,10 +378,7 @@ namespace Graphs
                 sizeAndCount.Size += node.Size;
             }
 
-            Array.Sort(ret, delegate (SizeAndCount x, SizeAndCount y)
-            {
-                return y.Size.CompareTo(x.Size);
-            });
+            Array.Sort(ret, (x, y) => y.Size.CompareTo(x.Size));
 #if DEBUG
             int totalCount = 0;
             long totalSize = 0;
@@ -427,7 +423,7 @@ namespace Graphs
 
         internal void SetNodeTypeAndSize(NodeIndex nodeIndex, NodeTypeIndex typeIndex, int sizeInBytes)
         {
-            Debug.Assert(m_nodes[(int)nodeIndex] == m_undefinedObjDef, "Calling SetNode twice for node index " + nodeIndex);
+            Debug.Assert(m_nodes[(int)nodeIndex] == m_undefinedObjDef, $"Calling SetNode twice for node index {nodeIndex}");
             m_nodes[(int)nodeIndex] = m_writer.GetLabel();
 
             Debug.Assert(sizeInBytes >= 0);
@@ -473,10 +469,7 @@ namespace Graphs
         private void ClearWorker()
         {
             RootIndex = NodeIndex.Invalid;
-            if (m_writer == null)
-            {
-                m_writer = new SegmentedMemoryStreamWriter(m_expectedNodeCount * 8);
-            }
+            m_writer ??= new SegmentedMemoryStreamWriter(m_expectedNodeCount * 8);
 
             m_totalSize = 0;
             m_totalRefs = 0;
@@ -548,7 +541,7 @@ namespace Graphs
                 // it is create a deferred (lazy region).   The key is that ALL readers know how to skip this region, which allows
                 // you to add new fields 'at the end' of the region (just like for sealed objects).  
                 DeferedRegion expansion = new DeferedRegion();
-                expansion.Write(serializer, delegate ()
+                expansion.Write(serializer, delegate
                 {
                     // I don't need to use Tagged types for my 'first' version of this new region 
                     serializer.Write(m_deferedTypes.Count);
@@ -617,13 +610,13 @@ namespace Graphs
                 // it is create a deferred (lazy region).   The key is that ALL readers know how to skip this region, which allows
                 // you to add new fields 'at the end' of the region (just like for sealed objects).  
                 DeferedRegion expansion = new DeferedRegion();
-                expansion.Read(deserializer, delegate ()
+                expansion.Read(deserializer, delegate
                 {
                     // I don't need to use Tagged types for my 'first' version of this new region 
                     int count = deserializer.ReadInt();
                     for (int i = 0; i < count; i++)
                     {
-                        m_deferedTypes.Add(new DeferedTypeInfo()
+                        m_deferedTypes.Add(new DeferedTypeInfo
                         {
                             TypeID = deserializer.ReadInt(),
                             Module = (Module)deserializer.ReadObject(),
@@ -676,7 +669,7 @@ namespace Graphs
     /// 
     /// A node implicitly knows where the 'next' child is (that is it is an iterator).  
     /// </summary>
-    [ExcludeFromCodeCoverageAttribute()]
+    [ExcludeFromCodeCoverage]
     internal class Node
     {
         public int Size
@@ -795,10 +788,7 @@ namespace Graphs
         public virtual void WriteXml(TextWriter writer, bool includeChildren = true, string prefix = "", NodeType typeStorage = null, string additinalAttribs = "")
         {
             Debug.Assert(Index != NodeIndex.Invalid);
-            if (typeStorage == null)
-            {
-                typeStorage = m_graph.AllocTypeNodeStorage();
-            }
+            typeStorage ??= m_graph.AllocTypeNodeStorage();
 
             if (m_graph.m_nodes[(int)Index] == StreamLabel.Invalid)
             {
@@ -862,7 +852,7 @@ namespace Graphs
 
             ret <<= 7;
             b = reader.ReadByte();
-            ret += (b & 0x7f);
+            ret += b & 0x7f;
             if ((b & 0x80) == 0)
             {
                 return ret;
@@ -870,7 +860,7 @@ namespace Graphs
 
             ret <<= 7;
             b = reader.ReadByte();
-            ret += (b & 0x7f);
+            ret += b & 0x7f;
             if ((b & 0x80) == 0)
             {
                 return ret;
@@ -878,7 +868,7 @@ namespace Graphs
 
             ret <<= 7;
             b = reader.ReadByte();
-            ret += (b & 0x7f);
+            ret += b & 0x7f;
             if ((b & 0x80) == 0)
             {
                 return ret;
@@ -934,7 +924,7 @@ namespace Graphs
     /// <summary>
     /// Represents the nodeId of a particular node in the graph.  
     /// </summary>
-    [ExcludeFromCodeCoverageAttribute()]
+    [ExcludeFromCodeCoverage]
     internal class NodeType
     {
         /// <summary>
@@ -958,10 +948,7 @@ namespace Graphs
 
                         m_graph.m_types.UnderlyingArray[(int)m_index].Name = ret;
                     }
-                    if (ret == null)
-                    {
-                        ret = "TypeID(0x" + info.TypeID.ToString("x") + ")";
-                    }
+                    ret ??= $"TypeID(0x{info.TypeID:x})";
                 }
                 return ret;
             }
@@ -984,7 +971,7 @@ namespace Graphs
                     moduleName = "?";
                 }
 
-                return moduleName + "!" + Name;
+                return $"{moduleName}!{Name}";
             }
         }
         /// <summary>
@@ -1050,7 +1037,7 @@ namespace Graphs
     /// <summary>
     /// Holds all interesting data about a module (in particular enough to look up PDB information)
     /// </summary>
-    [ExcludeFromCodeCoverageAttribute()]
+    [ExcludeFromCodeCoverage]
     public class Module : IFastSerializable
     {
         /// <summary>
@@ -1135,7 +1122,7 @@ namespace Graphs
     /// <summary>
     /// Stuff that is useful but does not need to be in Graph.   
     /// </summary>
-    [ExcludeFromCodeCoverageAttribute()]
+    [ExcludeFromCodeCoverage]
     internal static class GraphUtils
     {
         /// <summary>
@@ -1244,7 +1231,7 @@ namespace Graphs
                 sortedNodes[i] = (NodeIndex)i;
             }
 
-            Array.Sort<NodeIndex>(sortedNodes, delegate (NodeIndex x, NodeIndex y)
+            Array.Sort(sortedNodes, delegate (NodeIndex x, NodeIndex y)
             {
                 // Sort first by address
                 int ret = graph.GetAddress(x).CompareTo(graph.GetAddress(y));
@@ -1355,7 +1342,7 @@ namespace Graphs
 /// 
 /// Thus this is a fairly expensive thing to create.  
 /// </summary>
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 internal class RefGraph
 {
     public RefGraph(Graph graph)
@@ -1517,7 +1504,7 @@ internal class RefGraph
     #endregion
 }
 
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 internal class RefNode
 {
     /// <summary>
@@ -1653,12 +1640,12 @@ internal class RefNode
 /// 
 /// This is just a first cut...
 /// </summary>
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 internal class SpanningTree
 {
     public SpanningTree(Graph graph, TextWriter log)
     {
-        m_graph = graph;
+        Graph = graph;
         m_log = log;
         m_nodeStorage = graph.AllocNodeStorage();
         m_childStorage = graph.AllocNodeStorage();
@@ -1669,7 +1656,7 @@ internal class SpanningTree
         // The +1 is for orphan node support.  
         m_parent = new NodeIndex[(int)graph.NodeIndexLimit + 1];
     }
-    public Graph Graph { get { return m_graph; } }
+    public Graph Graph { get; }
 
     /// <summary>
     /// Every type is given a priority of 0 unless the type name matches one of 
@@ -1733,7 +1720,7 @@ internal class SpanningTree
 
         // Initialize the breadth-first work queue.
         var nodesToVisit = new PriorityQueue(1024);
-        nodesToVisit.Enqueue(m_graph.RootIndex, 0.0F);
+        nodesToVisit.Enqueue(Graph.RootIndex, 0.0F);
 
         // reset the visited information.
         for (int i = 0; i < m_parent.Length; i++)
@@ -1770,7 +1757,7 @@ internal class SpanningTree
             nodeIndex = nodesToVisit.Dequeue(out nodePriority);
 
             // Insert any children that have not already been visited (had a parent assigned) into the work queue). 
-            var node = m_graph.GetNode(nodeIndex, m_nodeStorage);
+            var node = Graph.GetNode(nodeIndex, m_nodeStorage);
             var parentPriority = nodePriorities[(int)node.Index];
             for (var childIndex = node.GetFirstChildIndex(); childIndex != NodeIndex.Invalid; childIndex = node.GetNextChildIndex())
             {
@@ -1779,7 +1766,7 @@ internal class SpanningTree
                     m_parent[(int)childIndex] = nodeIndex;
 
                     // the priority of the child is determined by its type and 1/10 by its parent.  
-                    var child = m_graph.GetNode(childIndex, m_childStorage);
+                    var child = Graph.GetNode(childIndex, m_childStorage);
                     var childPriority = m_typePriorities[(int)child.TypeIndex] + parentPriority / 10;
                     nodePriorities[(int)childIndex] = childPriority;
 
@@ -1805,7 +1792,7 @@ internal class SpanningTree
     private void AddOrphansToQueue(PriorityQueue nodesToVisit)
     {
 
-        for (int i = 0; i < (int)m_graph.NodeIndexLimit; i++)
+        for (int i = 0; i < (int)Graph.NodeIndexLimit; i++)
         {
             if (m_parent[i] == NodeIndex.Invalid)
             {
@@ -1815,7 +1802,7 @@ internal class SpanningTree
 
         // Collect up all the nodes that are not reachable from other nodes as the roots of the
         // orphans.  Also reset orphanVisitedMarker back to NodeIndex.Invalid.
-        for (int i = 0; i < (int)m_graph.NodeIndexLimit; i++)
+        for (int i = 0; i < (int)Graph.NodeIndexLimit; i++)
         {
             var nodeIndex = (NodeIndex)i;
             var parent = m_parent[(int)nodeIndex];
@@ -1824,12 +1811,12 @@ internal class SpanningTree
                 if (parent == NodeIndex.Invalid)
                 {
                     // Thr root index has no parent but is reachable from the root. 
-                    if (nodeIndex != m_graph.RootIndex)
+                    if (nodeIndex != Graph.RootIndex)
                     {
-                        var node = m_graph.GetNode(nodeIndex, m_nodeStorage);
+                        var node = Graph.GetNode(nodeIndex, m_nodeStorage);
                         var priority = m_typePriorities[(int)node.TypeIndex];
                         nodesToVisit.Enqueue(nodeIndex, priority);
-                        m_parent[(int)nodeIndex] = m_graph.NodeIndexLimit;               // This is the 'not reachable' parent. 
+                        m_parent[(int)nodeIndex] = Graph.NodeIndexLimit;               // This is the 'not reachable' parent. 
                     }
                 }
                 else
@@ -1866,7 +1853,7 @@ internal class SpanningTree
         m_parent[(int)nodeIndex] = orphanVisitingMarker;        // We are now visitING
 
         // Mark all nodes as being visited.  
-        var node = m_graph.GetNode(nodeIndex, AllocNodeStorage());
+        var node = Graph.GetNode(nodeIndex, AllocNodeStorage());
         for (var childIndex = node.GetFirstChildIndex(); childIndex != NodeIndex.Invalid; childIndex = node.GetNextChildIndex())
         {
             // Has this child not been seen at all?  If so mark it.  
@@ -1901,7 +1888,7 @@ internal class SpanningTree
         var ret = m_cachedNodeStorage;                // See if we have a free node. 
         if (ret == null)
         {
-            ret = m_graph.AllocNodeStorage();
+            ret = Graph.AllocNodeStorage();
         }
         else
         {
@@ -1936,10 +1923,7 @@ internal class SpanningTree
 
     private void SetTypePriorities(string priorityPats)
     {
-        if (m_typePriorities == null)
-        {
-            m_typePriorities = new float[(int)m_graph.NodeTypeIndexLimit];
-        }
+        m_typePriorities ??= new float[(int)Graph.NodeTypeIndexLimit];
 
         string[] priorityPatArray = priorityPats.Split(';');
         Regex[] priorityRegExArray = new Regex[priorityPatArray.Length];
@@ -1954,7 +1938,7 @@ internal class SpanningTree
                     continue;
                 }
 
-                throw new ApplicationException("Priority pattern " + priorityPatArray[i] + " is not of the form Pat->Num.");
+                throw new ApplicationException($"Priority pattern {priorityPatArray[i]} is not of the form Pat->Num.");
             }
 
             var dotNetRegEx = ToDotNetRegEx(m.Groups[1].Value.Trim());
@@ -1963,10 +1947,10 @@ internal class SpanningTree
         }
 
         // Assign every type index a priority in m_typePriorities based on if they match a pattern.  
-        NodeType typeStorage = m_graph.AllocTypeNodeStorage();
-        for (NodeTypeIndex typeIdx = 0; typeIdx < m_graph.NodeTypeIndexLimit; typeIdx++)
+        NodeType typeStorage = Graph.AllocTypeNodeStorage();
+        for (NodeTypeIndex typeIdx = 0; typeIdx < Graph.NodeTypeIndexLimit; typeIdx++)
         {
-            var type = m_graph.GetType(typeIdx, typeStorage);
+            var type = Graph.GetType(typeIdx, typeStorage);
 
             var fullName = type.FullName;
             for (int regExIdx = 0; regExIdx < priorityRegExArray.Length; regExIdx++)
@@ -1988,7 +1972,6 @@ internal class SpanningTree
         }
     }
 
-    private Graph m_graph;
     private NodeIndex[] m_parent;               // We keep track of the parents of each node in our breadth-first scan. 
 
     // We give each type a priority (using the m_priority Regular expressions) which guide the breadth-first scan. 
@@ -2006,17 +1989,18 @@ internal class SpanningTree
 /// TODO FIX NOW put in its own file.  
 /// A priority queue, specialized to be a bit more efficient than a generic version would be. 
 /// </summary>
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 internal class PriorityQueue
 {
     public PriorityQueue(int initialSize = 32)
     {
         m_heap = new DataItem[initialSize];
     }
-    public int Count { get { return m_count; } }
+    public int Count { get; private set; }
+
     public void Enqueue(NodeIndex item, float priority)
     {
-        var idx = m_count;
+        var idx = Count;
         if (idx >= m_heap.Length)
         {
             var newArray = new DataItem[m_heap.Length * 3 / 2 + 8];
@@ -2025,7 +2009,7 @@ internal class PriorityQueue
         }
         m_heap[idx].value = item;
         m_heap[idx].priority = priority;
-        m_count = idx + 1;
+        Count = idx + 1;
         for (; ; )
         {
             var parent = idx / 2;
@@ -2034,10 +2018,7 @@ internal class PriorityQueue
                 break;
             }
 
-            // swap parent and idx
-            var temp = m_heap[idx];
-            m_heap[idx] = m_heap[parent];
-            m_heap[parent] = temp;
+            (m_heap[idx], m_heap[parent]) = (m_heap[parent], m_heap[idx]);
 
             if (parent == 0)
             {
@@ -2054,8 +2035,8 @@ internal class PriorityQueue
 
         var ret = m_heap[0].value;
         priority = m_heap[0].priority;
-        --m_count;
-        m_heap[0] = m_heap[m_count];
+        --Count;
+        m_heap[0] = m_heap[Count];
         var idx = 0;
         for (; ; )
         {
@@ -2077,10 +2058,7 @@ internal class PriorityQueue
                 break;
             }
 
-            // swap idx and smallestIdx
-            var temp = m_heap[idx];
-            m_heap[idx] = m_heap[largestIdx];
-            m_heap[largestIdx] = temp;
+            (m_heap[idx], m_heap[largestIdx]) = (m_heap[largestIdx], m_heap[idx]);
 
             idx = largestIdx;
         }
@@ -2093,11 +2071,11 @@ internal class PriorityQueue
     public override string ToString()
     {
         var sb = new StringBuilder();
-        sb.AppendLine("<PriorityQueue Count=\"").Append(m_count).Append("\">").AppendLine();
+        sb.AppendLine("<PriorityQueue Count=\"").Append(Count).Append("\">").AppendLine();
 
         // Sort the items in descending order 
-        var items = new List<DataItem>(m_count);
-        for (int i = 0; i < m_count; i++)
+        var items = new List<DataItem>(Count);
+        for (int i = 0; i < Count; i++)
             items.Add(m_heap[i]);
         items.Sort((x, y) => y.priority.CompareTo(x.priority));
         if (items.Count > 0)
@@ -2129,7 +2107,7 @@ internal class PriorityQueue
     // In this array form a tree where each child of i is at 2i and 2i+1.   Each child is 
     // less than or equal to its parent.  
     private DataItem[] m_heap;
-    private int m_count;
+
     #endregion
 }
 
@@ -2143,7 +2121,7 @@ internal class PriorityQueue
 ///     2) We try hard to keep scale each object type by the count by which the whole
 ///        graph was reduced.  
 /// </summary>
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 internal class GraphSampler
 {
     /// <summary>
@@ -2212,7 +2190,7 @@ internal class GraphSampler
             {
                 var node = m_graph.GetNode(nodeIdx, m_nodeStorage);
                 var stats = m_statsByType[(int)node.TypeIndex];
-                int quota = (int)((stats.TotalCount / m_filteringRatio) + .5);
+                int quota = (int)(stats.TotalCount / m_filteringRatio + .5);
                 int needed = quota - stats.SampleCount;
                 if (needed > 0)
                 {
@@ -2307,8 +2285,8 @@ internal class GraphSampler
             var stats = m_statsByType[typeIdx];
 
             m_log.WriteLine("{0,12:n6} {1,11:n6}  {2,9:f2} | {3,10:n0} {4,9:n0}  {5,9:f2} | {6,8:f0} | {7}",
-                stats.TotalMetric / 1000000.0, stats.SampleMetric / 1000000.0, (stats.SampleMetric == 0 ? 0.0 : (double)stats.TotalMetric / stats.SampleMetric),
-                stats.TotalCount, stats.SampleCount, (stats.SampleCount == 0 ? 0.0 : (double)stats.TotalCount / stats.SampleCount),
+                stats.TotalMetric / 1000000.0, stats.SampleMetric / 1000000.0, stats.SampleMetric == 0 ? 0.0 : (double)stats.TotalMetric / stats.SampleMetric,
+                stats.TotalCount, stats.SampleCount, stats.SampleCount == 0 ? 0.0 : (double)stats.TotalCount / stats.SampleCount,
                 (double)stats.TotalMetric / stats.TotalCount, type.Name);
         }
 
@@ -2484,7 +2462,7 @@ internal class GraphSampler
                     // for long chains of objects.  
                     VisitNode(nodeIdx, true, true);
                 }
-                            }
+            }
         }
         else
         {
@@ -2629,7 +2607,7 @@ internal class GraphSampler
         Debug.Assert(sampleTotal == m_newGraph.NodeCount);
     }
 
-    private class SampleStats
+    private sealed class SampleStats
     {
         public int TotalCount;          // The number of objects of this type in the original graph
         public int SampleCount;         // The number of objects of this type we have currently added to the new graph

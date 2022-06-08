@@ -1,16 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Steeltoe.Integration.Transformer
+namespace Steeltoe.Integration.Transformer;
+
+public interface ITransformer
 {
-    public interface ITransformer
-    {
-        IMessage Transform(IMessage message);
-    }
+    IMessage Transform(IMessage message);
 }

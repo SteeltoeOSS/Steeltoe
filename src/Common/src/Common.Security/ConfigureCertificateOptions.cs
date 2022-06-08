@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,44 +8,38 @@ using Steeltoe.Common.Options;
 using System;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Common.Security;
+
+public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
-    public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+    private readonly IConfiguration _config;
+
+    public ConfigureCertificateOptions(IConfiguration config)
     {
-        private readonly IConfiguration _config;
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+    }
 
-        public ConfigureCertificateOptions(IConfiguration config)
+    public void Configure(string name, CertificateOptions options)
+    {
+        if (options == null)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            _config = config;
+            throw new ArgumentNullException(nameof(options));
         }
 
-        public void Configure(string name, CertificateOptions options)
+        options.Name = name;
+
+        var certPath = _config["certificate"];
+
+        if (string.IsNullOrEmpty(certPath))
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            options.Name = name;
-
-            var certPath = _config["certificate"];
-
-            if (string.IsNullOrEmpty(certPath))
-            {
-                return;
-            }
-
-            options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
+            return;
         }
 
-        public void Configure(CertificateOptions options)
-        {
-            Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
-        }
+        options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
+    }
+
+    public void Configure(CertificateOptions options)
+    {
+        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
     }
 }

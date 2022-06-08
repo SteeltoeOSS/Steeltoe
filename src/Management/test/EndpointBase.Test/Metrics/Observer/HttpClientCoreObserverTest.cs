@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -15,191 +15,190 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
+namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
+
+[Obsolete]
+public class HttpClientCoreObserverTest : BaseTest
 {
-    [Obsolete]
-    public class HttpClientCoreObserverTest : BaseTest
+    private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
+
+    [Fact]
+    public void Constructor_RegistersExpectedViews()
     {
-        private readonly PullmetricsExporterOptions _scraperOptions = new PullmetricsExporterOptions() { ScrapeResponseCacheDurationMilliseconds = 100 };
+        var options = new MetricsObserverOptions();
+        var viewRegistry = new ViewRegistry();
+        var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        [Fact]
-        public void Constructor_RegistersExpectedViews()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
-            var observer = new HttpClientCoreObserver(options, null, viewRegistry);
+        Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.time");
+        Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.count");
+    }
 
-            Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.time");
-            Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.count");
-        }
+    [Fact]
+    public void ShouldIgnore_ReturnsExpected()
+    {
+        var options = new MetricsObserverOptions();
+        var viewRegistry = new ViewRegistry();
+        var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        [Fact]
-        public void ShouldIgnore_ReturnsExpected()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
-            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
+        Assert.True(obs.ShouldIgnoreRequest("/api/v2/spans"));
+        Assert.True(obs.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
+        Assert.True(obs.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
+        Assert.False(obs.ShouldIgnoreRequest("/api/test"));
+        Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
+    }
 
-            Assert.True(obs.ShouldIgnoreRequest("/api/v2/spans"));
-            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
-            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
-            Assert.False(obs.ShouldIgnoreRequest("/api/test"));
-            Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
-        }
+    [Fact]
+    public void ProcessEvent_IgnoresNulls()
+    {
+        var options = new MetricsObserverOptions();
+        var viewRegistry = new ViewRegistry();
+        var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        [Fact]
-        public void ProcessEvent_IgnoresNulls()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
-            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
+        obs.ProcessEvent("foobar", null);
+        obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
 
-            obs.ProcessEvent("foobar", null);
-            obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
+        var act = new Activity("Test");
+        act.Start();
+        obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
+        obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, null);
+        act.Stop();
+    }
 
-            var act = new Activity("Test");
-            act.Start();
-            obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
-            obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, null);
-            act.Stop();
-        }
+    [Fact]
+    public void GetStatusCode_ReturnsExpected()
+    {
+        var options = new MetricsObserverOptions();
+        var viewRegistry = new ViewRegistry();
+        var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        [Fact]
-        public void GetStatusCode_ReturnsExpected()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
-            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
+        var message = GetHttpResponseMessage(HttpStatusCode.OK);
+        var status = obs.GetStatusCode(message, default);
+        Assert.Equal("200", status);
 
-            var message = GetHttpResponseMessage(HttpStatusCode.OK);
-            var status = obs.GetStatusCode(message, default);
-            Assert.Equal("200", status);
+        status = obs.GetStatusCode(null, TaskStatus.Canceled);
+        Assert.Equal("CLIENT_CANCELED", status);
 
-            status = obs.GetStatusCode(null, TaskStatus.Canceled);
-            Assert.Equal("CLIENT_CANCELED", status);
+        status = obs.GetStatusCode(null, TaskStatus.Faulted);
+        Assert.Equal("CLIENT_FAULT", status);
 
-            status = obs.GetStatusCode(null, TaskStatus.Faulted);
-            Assert.Equal("CLIENT_FAULT", status);
+        status = obs.GetStatusCode(null, TaskStatus.RanToCompletion);
+        Assert.Equal("CLIENT_ERROR", status);
+    }
 
-            status = obs.GetStatusCode(null, TaskStatus.RanToCompletion);
-            Assert.Equal("CLIENT_ERROR", status);
-        }
+    [Fact]
+    public void GetTagContext_ReturnsExpected()
+    {
+        var options = new MetricsObserverOptions();
+        var viewRegistry = new ViewRegistry();
+        var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        [Fact]
-        public void GetTagContext_ReturnsExpected()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
-            var obs = new HttpClientCoreObserver(options, null, viewRegistry);
+        var req = GetHttpRequestMessage();
+        var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+        var tagContext = obs.GetLabels(req, resp, TaskStatus.RanToCompletion);
+        var tagValues = tagContext.ToList();
 
-            var req = GetHttpRequestMessage();
-            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
-            var tagContext = obs.GetLabels(req, resp, TaskStatus.RanToCompletion);
-            var tagValues = tagContext.ToList();
+        Assert.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"), tagValues);
+        Assert.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"), tagValues);
+        Assert.Contains(KeyValuePair.Create("status", (object)"500"), tagValues);
+        Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagValues);
+    }
 
-            Assert.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"), tagValues);
-            Assert.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"), tagValues);
-            Assert.Contains(KeyValuePair.Create("status", (object)"500"), tagValues);
-            Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagValues);
-        }
+    [Fact]
+    [Trait("Category", "FlakyOnHostedAgents")]
+    public void HandleStopEvent_RecordsStats()
+    {
+        var options = new MetricsObserverOptions();
+        var viewRegistry = new ViewRegistry();
 
-        [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void HandleStopEvent_RecordsStats()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
+        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        var exporter = new SteeltoeExporter(_scraperOptions);
+        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
-            var exporter = new SteeltoeExporter(_scraperOptions);
-            using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
-            var observer = new HttpClientCoreObserver(options, null, viewRegistry);
+        var req = GetHttpRequestMessage();
+        var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
-            var req = GetHttpRequestMessage();
-            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+        var act = new Activity("Test");
+        act.Start();
 
-            var act = new Activity("Test");
-            act.Start();
+        Task.Delay(1000).Wait();
+        act.SetEndTime(DateTime.UtcNow);
 
-            Task.Delay(1000).Wait();
-            act.SetEndTime(DateTime.UtcNow);
+        observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
+        observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
 
-            observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
-            observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-            var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+        var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
+        var timeSummary = timeSample.Value.FirstOrDefault();
+        var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
+        var countSummary = countSample.Value.FirstOrDefault();
 
-            var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
-            var timeSummary = timeSample.Value.FirstOrDefault();
-            var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
-            var countSummary = countSample.Value.FirstOrDefault();
+        Assert.NotNull(timeSample.Value);
 
-            Assert.NotNull(timeSample.Value);
+        var average = timeSummary.Value / countSummary.Value;
+        Assert.InRange(average, 975.0, 1200.0);
 
-            var average = timeSummary.Value / countSummary.Value;
-            Assert.InRange(average, 975.0, 1200.0);
+        // Assert.InRange(max, 975.0, 1200.0);
+        // TODO: Readd when aggregations are available
+        Assert.Equal(2, countSummary.Value);
 
-            // Assert.InRange(max, 975.0, 1200.0);
-            // TODO: Readd when aggregations are available
-            Assert.Equal(2, countSummary.Value);
+        act.Stop();
+    }
 
-            act.Stop();
-        }
+    [Fact]
+    [Trait("Category", "FlakyOnHostedAgents")]
+    public void HandleExceptionEvent_RecordsStats()
+    {
+        var options = new MetricsObserverOptions();
+        var viewRegistry = new ViewRegistry();
 
-        [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void HandleExceptionEvent_RecordsStats()
-        {
-            var options = new MetricsObserverOptions();
-            var viewRegistry = new ViewRegistry();
+        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
-            OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
-            var observer = new HttpClientCoreObserver(options, null, viewRegistry);
+        var exporter = new SteeltoeExporter(_scraperOptions);
+        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
 
-            var exporter = new SteeltoeExporter(_scraperOptions);
-            using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        var req = GetHttpRequestMessage();
+        var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
-            var req = GetHttpRequestMessage();
-            var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+        var act = new Activity("Test");
+        act.Start();
+        Task.Delay(1000).Wait();
+        act.SetEndTime(DateTime.UtcNow);
 
-            var act = new Activity("Test");
-            act.Start();
-            Task.Delay(1000).Wait();
-            act.SetEndTime(DateTime.UtcNow);
+        observer.HandleExceptionEvent(act, req);
+        observer.HandleExceptionEvent(act, req);
 
-            observer.HandleExceptionEvent(act, req);
-            observer.HandleExceptionEvent(act, req);
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-            var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+        var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
+        var timeSummary = timeSample.Value.FirstOrDefault();
+        var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
+        var countSummary = countSample.Value.FirstOrDefault();
 
-            var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
-            var timeSummary = timeSample.Value.FirstOrDefault();
-            var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
-            var countSummary = countSample.Value.FirstOrDefault();
+        Assert.NotNull(timeSample.Value);
 
-            Assert.NotNull(timeSample.Value);
+        var average = timeSummary.Value / countSummary.Value;
+        Assert.InRange(average, 975.0, 1200.0);
 
-            var average = timeSummary.Value / countSummary.Value;
-            Assert.InRange(average, 975.0, 1200.0);
+        // Assert.InRange(max, 975.0, 1200.0);
+        // TODO: Readd when aggregations are available
+        Assert.Equal(2, countSummary.Value);
 
-            // Assert.InRange(max, 975.0, 1200.0);
-            // TODO: Readd when aggregations are available
-            Assert.Equal(2, countSummary.Value);
+        act.Stop();
+    }
 
-            act.Stop();
-        }
+    private HttpResponseMessage GetHttpResponseMessage(HttpStatusCode code)
+    {
+        var m = new HttpResponseMessage(code);
+        return m;
+    }
 
-        private HttpResponseMessage GetHttpResponseMessage(HttpStatusCode code)
-        {
-            var m = new HttpResponseMessage(code);
-            return m;
-        }
-
-        private HttpRequestMessage GetHttpRequestMessage()
-        {
-            var m = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5555/foo/bar");
-            return m;
-        }
+    private HttpRequestMessage GetHttpRequestMessage()
+    {
+        var m = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5555/foo/bar");
+        return m;
     }
 }

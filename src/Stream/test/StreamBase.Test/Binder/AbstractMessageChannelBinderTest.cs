@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,136 +9,134 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Core;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.TestBinder;
 using System;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class AbstractMessageChannelBinderTest : AbstractTest
 {
-    public class AbstractMessageChannelBinderTest : AbstractTest
+    private readonly IServiceProvider serviceProvider;
+
+    public AbstractMessageChannelBinderTest()
     {
-        private readonly IServiceProvider serviceProvider;
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder")
+            .BuildServiceProvider();
+    }
 
-        public AbstractMessageChannelBinderTest()
+    [Fact]
+    public void TestEndpointLifecycle()
+    {
+        var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
+        Assert.NotNull(binder);
+
+        var consumerProperties = new ConsumerOptions("testbinding")
         {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder")
-                .BuildServiceProvider();
-        }
+            MaxAttempts = 1
+        };
+        consumerProperties.PostProcess("testbinding");
 
-        [Fact]
-        public void TestEndpointLifecycle()
+        // IBinding<IMessageChannel> consumerBinding = await binder.BindConsumer("foo", "fooGroup",  new DirectChannel(serviceProvider),  consumerProperties);
+        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), consumerProperties);
+
+        var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
+        Assert.NotNull(defaultBinding);
+
+        // lifecycle
+        var messageProducer = defaultBinding.Endpoint as TestChannelBinder.TestMessageProducerSupportEndpoint;
+        Assert.NotNull(messageProducer);
+        Assert.True(defaultBinding.Endpoint.IsRunning);
+        Assert.NotNull(messageProducer.OutputChannel);
+
+        // lifecycle.errorchannel
+        Assert.NotNull(messageProducer.ErrorChannel);
+        var errorChannel = messageProducer.ErrorChannel as PublishSubscribeChannel;
+        Assert.NotNull(errorChannel.Dispatcher);
+
+        // dispatcher.handlers
+        Assert.Equal(2, errorChannel.Dispatcher.HandlerCount);
+        var dispatcher = errorChannel.Dispatcher as AbstractDispatcher;
+        Assert.NotNull(dispatcher);
+        var handlers = dispatcher.Handlers;
+        Assert.True(handlers[0] is BridgeHandler);
+        Assert.True(handlers[1] is ILastSubscriberMessageHandler);
+
+        var registry = serviceProvider.GetRequiredService<IApplicationContext>();
+        Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+        Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+        Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+        Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
+
+        consumerBinding.Unbind();
+
+        Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+        Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+        Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+        Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
+
+        Assert.False(defaultBinding.Endpoint.IsRunning);
+
+        var producerProps = new ProducerOptions("testbinding")
         {
-            var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
-            Assert.NotNull(binder);
+            ErrorChannelEnabled = true
+        };
+        producerProps.PostProcess("testbinding");
 
-            var consumerProperties = new ConsumerOptions("testbinding")
-            {
-                MaxAttempts = 1
-            };
-            consumerProperties.PostProcess("testbinding");
+        // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
+        var producerBinding = binder.BindProducer("bar", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), producerProps);
+        Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
+        Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
 
-            // IBinding<IMessageChannel> consumerBinding = await binder.BindConsumer("foo", "fooGroup",  new DirectChannel(serviceProvider),  consumerProperties);
-            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), consumerProperties);
+        producerBinding.Unbind();
+        Assert.False(registry.ContainsService<IMessageChannel>("bar.errors"));
+        Assert.False(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
+    }
 
-            var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
-            Assert.NotNull(defaultBinding);
+    [Fact]
+    public void TestEndpointBinderHasRecoverer()
+    {
+        var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
+        Assert.NotNull(binder);
+        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions("testbinding"));
+        var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
+        Assert.NotNull(defaultBinding);
 
-            // lifecycle
-            var messageProducer = defaultBinding.Endpoint as TestChannelBinder.TestMessageProducerSupportEndpoint;
-            Assert.NotNull(messageProducer);
-            Assert.True(defaultBinding.Endpoint.IsRunning);
-            Assert.NotNull(messageProducer.OutputChannel);
+        // lifecycle
+        var messageProducer = defaultBinding.Endpoint as TestChannelBinder.TestMessageProducerSupportEndpoint;
+        Assert.NotNull(messageProducer);
 
-            // lifecycle.errorchannel
-            Assert.NotNull(messageProducer.ErrorChannel);
-            var errorChannel = messageProducer.ErrorChannel as PublishSubscribeChannel;
-            Assert.NotNull(errorChannel.Dispatcher);
+        // lifecycle.errorchannel
+        Assert.Null(messageProducer.ErrorChannel);
 
-            // dispatcher.handlers
-            Assert.Equal(2, errorChannel.Dispatcher.HandlerCount);
-            var dispatcher = errorChannel.Dispatcher as AbstractDispatcher;
-            Assert.NotNull(dispatcher);
-            var handlers = dispatcher.Handlers;
-            Assert.True(handlers[0] is BridgeHandler);
-            Assert.True(handlers[1] is ILastSubscriberMessageHandler);
+        var callback = messageProducer.RecoveryCallback as ErrorMessagePublisher;
+        Assert.NotNull(callback);
+        var errorChannel = callback.Channel as PublishSubscribeChannel;
+        Assert.NotNull(errorChannel);
 
-            var registry = serviceProvider.GetRequiredService<IApplicationContext>();
-            Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
-            Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
-            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
-            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
+        Assert.NotNull(errorChannel.Dispatcher);
 
-            consumerBinding.Unbind();
+        // dispatcher.handlers
+        Assert.Equal(2, errorChannel.Dispatcher.HandlerCount);
+        var dispatcher = errorChannel.Dispatcher as AbstractDispatcher;
+        Assert.NotNull(dispatcher);
+        var handlers = dispatcher.Handlers;
+        Assert.True(handlers[0] is BridgeHandler);
+        Assert.True(handlers[1] is ILastSubscriberMessageHandler);
 
-            Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
-            Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
-            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
-            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
+        var registry = serviceProvider.GetRequiredService<IApplicationContext>();
+        Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+        Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+        Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+        Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
-            Assert.False(defaultBinding.Endpoint.IsRunning);
+        consumerBinding.Unbind();
 
-            var producerProps = new ProducerOptions("testbinding")
-            {
-                ErrorChannelEnabled = true
-            };
-            producerProps.PostProcess("testbinding");
-
-            // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
-            var producerBinding = binder.BindProducer("bar", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), producerProps);
-            Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
-            Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
-
-            producerBinding.Unbind();
-            Assert.False(registry.ContainsService<IMessageChannel>("bar.errors"));
-            Assert.False(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
-        }
-
-        [Fact]
-        public void TestEndpointBinderHasRecoverer()
-        {
-            var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
-            Assert.NotNull(binder);
-            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions("testbinding"));
-            var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
-            Assert.NotNull(defaultBinding);
-
-            // lifecycle
-            var messageProducer = defaultBinding.Endpoint as TestChannelBinder.TestMessageProducerSupportEndpoint;
-            Assert.NotNull(messageProducer);
-
-            // lifecycle.errorchannel
-            Assert.Null(messageProducer.ErrorChannel);
-
-            var callback = messageProducer.RecoveryCallback as ErrorMessagePublisher;
-            Assert.NotNull(callback);
-            var errorChannel = callback.Channel as PublishSubscribeChannel;
-            Assert.NotNull(errorChannel);
-
-            Assert.NotNull(errorChannel.Dispatcher);
-
-            // dispatcher.handlers
-            Assert.Equal(2, errorChannel.Dispatcher.HandlerCount);
-            var dispatcher = errorChannel.Dispatcher as AbstractDispatcher;
-            Assert.NotNull(dispatcher);
-            var handlers = dispatcher.Handlers;
-            Assert.True(handlers[0] is BridgeHandler);
-            Assert.True(handlers[1] is ILastSubscriberMessageHandler);
-
-            var registry = serviceProvider.GetRequiredService<IApplicationContext>();
-            Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
-            Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
-            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
-            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
-
-            consumerBinding.Unbind();
-
-            Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
-            Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
-            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
-            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
-        }
+        Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+        Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+        Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+        Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
     }
 }

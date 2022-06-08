@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -15,71 +15,70 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
+
+public class HystrixUtilizationStreamControllerTest : HystrixTestBase
 {
-    public class HystrixUtilizationStreamControllerTest : HystrixTestBase
+    [Fact]
+    public void Constructor_SetsupStream()
     {
-        [Fact]
-        public void Constructor_SetsupStream()
-        {
-            var stream = HystrixUtilizationStream.GetInstance();
-            var controller = new HystrixUtilizationStreamController(stream);
-            Assert.NotNull(controller.SampleStream);
-        }
+        var stream = HystrixUtilizationStream.GetInstance();
+        var controller = new HystrixUtilizationStreamController(stream);
+        Assert.NotNull(controller.SampleStream);
+    }
 
-        [Fact]
-        public async Task Endpoint_ReturnsHeaders()
-        {
-            var builder = new WebHostBuilder().UseStartup<Startup>();
-            using var server = new TestServer(builder);
-            var client = server.CreateClient();
+    [Fact]
+    public async Task Endpoint_ReturnsHeaders()
+    {
+        var builder = new WebHostBuilder().UseStartup<Startup>();
+        using var server = new TestServer(builder);
+        var client = server.CreateClient();
 
-            client.BaseAddress = new Uri("http://localhost/");
-            var result = await client.SendAsync(
-                new HttpRequestMessage(HttpMethod.Get, "hystrix/utilization.stream"),
-                HttpCompletionOption.ResponseHeadersRead);
+        client.BaseAddress = new Uri("http://localhost/");
+        var result = await client.SendAsync(
+            new HttpRequestMessage(HttpMethod.Get, "hystrix/utilization.stream"),
+            HttpCompletionOption.ResponseHeadersRead);
 
-            Assert.NotNull(result);
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Assert.True(result.Headers.Contains("Connection"));
-            Assert.Contains("keep-alive", result.Headers.Connection);
-            Assert.Equal("text/event-stream", result.Content.Headers.ContentType.MediaType);
-            Assert.Equal("UTF-8", result.Content.Headers.ContentType.CharSet);
-            Assert.True(result.Headers.CacheControl.NoCache);
-            Assert.True(result.Headers.CacheControl.NoStore);
-            Assert.Equal(new TimeSpan(0, 0, 0), result.Headers.CacheControl.MaxAge);
-            Assert.True(result.Headers.CacheControl.MustRevalidate);
-            result.Dispose();
-        }
+        Assert.NotNull(result);
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.True(result.Headers.Contains("Connection"));
+        Assert.Contains("keep-alive", result.Headers.Connection);
+        Assert.Equal("text/event-stream", result.Content.Headers.ContentType.MediaType);
+        Assert.Equal("UTF-8", result.Content.Headers.ContentType.CharSet);
+        Assert.True(result.Headers.CacheControl.NoCache);
+        Assert.True(result.Headers.CacheControl.NoStore);
+        Assert.Equal(new TimeSpan(0, 0, 0), result.Headers.CacheControl.MaxAge);
+        Assert.True(result.Headers.CacheControl.MustRevalidate);
+        result.Dispose();
+    }
 
-        [Fact]
-        public void Endpoint_ReturnsData()
-        {
-            var builder = new WebHostBuilder().UseStartup<Startup>();
-            using var server = new TestServer(builder);
-            var client = server.CreateClient();
+    [Fact]
+    public void Endpoint_ReturnsData()
+    {
+        var builder = new WebHostBuilder().UseStartup<Startup>();
+        using var server = new TestServer(builder);
+        var client = server.CreateClient();
 
-            client.BaseAddress = new Uri("http://localhost/");
-            var result = client.GetStreamAsync("hystrix/utilization.stream").GetAwaiter().GetResult();
+        client.BaseAddress = new Uri("http://localhost/");
+        var result = client.GetStreamAsync("hystrix/utilization.stream").GetAwaiter().GetResult();
 
-            var client2 = server.CreateClient();
-            var cmdResult = client2.GetAsync("test/test.command").GetAwaiter().GetResult();
-            Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
+        var client2 = server.CreateClient();
+        var cmdResult = client2.GetAsync("test/test.command").GetAwaiter().GetResult();
+        Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
 
-            var reader = new StreamReader(result);
-            var data = reader.ReadLine();
-            reader.Dispose();
+        var reader = new StreamReader(result);
+        var data = reader.ReadLine();
+        reader.Dispose();
 
-            Assert.False(string.IsNullOrEmpty(data));
-            Assert.StartsWith("data: ", data);
-            var jsonObject = data.Substring(6);
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonObject);
-            Assert.NotNull(dict);
+        Assert.False(string.IsNullOrEmpty(data));
+        Assert.StartsWith("data: ", data);
+        var jsonObject = data.Substring(6);
+        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonObject);
+        Assert.NotNull(dict);
 
-            Assert.NotNull(dict["type"]);
-            Assert.Equal("HystrixUtilization", dict["type"]);
-            Assert.NotNull(dict["commands"]);
-            Assert.NotNull(dict["threadpools"]);
-        }
+        Assert.NotNull(dict["type"]);
+        Assert.Equal("HystrixUtilization", dict["type"]);
+        Assert.NotNull(dict["commands"]);
+        Assert.NotNull(dict["threadpools"]);
     }
 }

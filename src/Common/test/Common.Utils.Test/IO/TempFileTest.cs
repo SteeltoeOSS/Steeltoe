@@ -7,29 +7,28 @@ using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Common.Utils.Test.IO
+namespace Steeltoe.Common.Utils.Test.IO;
+
+public class TempFileTest
 {
-    public class TempFileTest
+    [Fact]
+    public void TempFileRemovesItself()
     {
-        [Fact]
-        public void TempFileRemovesItself()
-        {
-            var tempFile = new TempFile();
+        var tempFile = new TempFile();
 
-            File.Exists(tempFile.FullPath).Should().BeTrue();
+        File.Exists(tempFile.FullPath).Should().BeTrue();
 
-            tempFile.Dispose();
+        tempFile.Dispose();
 
-            File.Exists(tempFile.FullPath).Should().BeFalse();
-        }
+        File.Exists(tempFile.FullPath).Should().BeFalse();
+    }
 
-        [Fact]
-        public void TempFileCanSetPrefix()
-        {
-            const string prefix = "MyPrefix-";
-            using var tempFile = new TempFile(prefix);
+    [Fact]
+    public void TempFileCanSetPrefix()
+    {
+        const string prefix = "MyPrefix-";
+        using var tempFile = new TempFile(prefix);
 
-            tempFile.Name.Should().StartWith(prefix);
-        }
+        tempFile.Name.Should().StartWith(prefix);
     }
 }

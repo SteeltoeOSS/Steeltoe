@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,77 +12,77 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Eureka.Test;
+
+public class EurekaDiscoveryClientBuilderExtensionsTest
 {
-    public class EurekaDiscoveryClientBuilderExtensionsTest
+    [Fact]
+    public void ApplyServicesNoExceptionWithoutManagementOptions()
     {
-        [Fact]
-        public void ApplyServicesNoExceptionWithoutManagementOptions()
+        var config = new ConfigurationBuilder().Build();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.RegisterDefaultApplicationInstanceInfo();
+        var extension = new EurekaDiscoveryClientExtension();
+
+        extension.ApplyServices(serviceCollection);
+        var provider = serviceCollection.BuildServiceProvider();
+
+        var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
+        Assert.NotNull(options);
+        Assert.Equal("/health", options.Value.HealthCheckUrlPath);
+        Assert.Equal("/info", options.Value.StatusPageUrlPath);
+    }
+
+    [Fact]
+    public void ApplyServicesUsesManagementOptions()
+    {
+        var appSettings = new Dictionary<string, string> { { "management:endpoints:health:path", "/non-default" } };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.RegisterDefaultApplicationInstanceInfo();
+        serviceCollection.AddAllActuators(config);
+        var extension = new EurekaDiscoveryClientExtension();
+
+        extension.ApplyServices(serviceCollection);
+        var provider = serviceCollection.BuildServiceProvider();
+
+        var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
+        Assert.NotNull(options);
+        Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
+        Assert.Equal("/actuator/info", options.Value.StatusPageUrlPath);
+    }
+
+    [Fact]
+    public void ApplyServicesUsesServerTimeout()
+    {
+        var appSettings = new Dictionary<string, string>
         {
-            var config = new ConfigurationBuilder().Build();
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(config);
-            serviceCollection.RegisterDefaultApplicationInstanceInfo();
-            var extension = new EurekaDiscoveryClientExtension();
+            { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
+            { "Eureka:Client:EurekaServer:RetryCount", "1" }
+        };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.RegisterDefaultApplicationInstanceInfo();
+        serviceCollection.AddAllActuators(config);
+        var extension = new EurekaDiscoveryClientExtension();
 
-            extension.ApplyServices(serviceCollection);
-            var provider = serviceCollection.BuildServiceProvider();
+        extension.ApplyServices(serviceCollection);
+        var provider = serviceCollection.BuildServiceProvider();
 
-            var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-            Assert.NotNull(options);
-            Assert.Equal("/health", options.Value.HealthCheckUrlPath);
-            Assert.Equal("/info", options.Value.StatusPageUrlPath);
-        }
+        var timer = new Stopwatch();
+        timer.Start();
+        var discoveryClient = provider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
+        timer.Stop();
+        Assert.InRange(timer.ElapsedMilliseconds, 0, 3500);
+    }
 
-        [Fact]
-        public void ApplyServicesUsesManagementOptions()
-        {
-            var appSettings = new Dictionary<string, string>() { { "management:endpoints:health:path", "/non-default" } };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(config);
-            serviceCollection.RegisterDefaultApplicationInstanceInfo();
-            serviceCollection.AddAllActuators(config);
-            var extension = new EurekaDiscoveryClientExtension();
-
-            extension.ApplyServices(serviceCollection);
-            var provider = serviceCollection.BuildServiceProvider();
-
-            var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-            Assert.NotNull(options);
-            Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
-            Assert.Equal("/actuator/info", options.Value.StatusPageUrlPath);
-        }
-
-        [Fact]
-        public void ApplyServicesUsesServerTimeout()
-        {
-            var appSettings = new Dictionary<string, string>()
-            {
-                { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
-                { "Eureka:Client:EurekaServer:RetryCount", "1" }
-            };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(config);
-            serviceCollection.RegisterDefaultApplicationInstanceInfo();
-            serviceCollection.AddAllActuators(config);
-            var extension = new EurekaDiscoveryClientExtension();
-
-            extension.ApplyServices(serviceCollection);
-            var provider = serviceCollection.BuildServiceProvider();
-
-            var timer = new Stopwatch();
-            timer.Start();
-            var discoveryClient = provider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
-            timer.Stop();
-            Assert.InRange(timer.ElapsedMilliseconds, 0, 3500);
-        }
-
-        [Fact]
-        public void ApplyServicesIgnoresCFManagementOptions()
-        {
-            var vcap_services = @"
+    [Fact]
+    public void ApplyServicesIgnoresCFManagementOptions()
+    {
+        var vcap_services = @"
                 {
                     ""p-service-registry"": [{
                         ""credentials"": {
@@ -104,47 +104,46 @@ namespace Steeltoe.Discovery.Eureka.Test
                         ]
                     }]
                 }";
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
-            var appSettings = new Dictionary<string, string>() { { "management:endpoints:health:path", "/non-default" } };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(config);
-            serviceCollection.RegisterDefaultApplicationInstanceInfo();
-            serviceCollection.AddAllActuators(config);
-            var extension = new EurekaDiscoveryClientExtension();
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        var appSettings = new Dictionary<string, string> { { "management:endpoints:health:path", "/non-default" } };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.RegisterDefaultApplicationInstanceInfo();
+        serviceCollection.AddAllActuators(config);
+        var extension = new EurekaDiscoveryClientExtension();
 
-            extension.ApplyServices(serviceCollection);
-            var provider = serviceCollection.BuildServiceProvider();
+        extension.ApplyServices(serviceCollection);
+        var provider = serviceCollection.BuildServiceProvider();
 
-            var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-            Assert.NotNull(options);
-            Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
-            Assert.Equal("/actuator/info", options.Value.StatusPageUrlPath);
-        }
+        var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
+        Assert.NotNull(options);
+        Assert.Equal("/actuator/non-default", options.Value.HealthCheckUrlPath);
+        Assert.Equal("/actuator/info", options.Value.StatusPageUrlPath);
+    }
 
-        [Fact]
-        public void ApplyServicesDoesntOverrideUserPathSettings()
+    [Fact]
+    public void ApplyServicesDoesntOverrideUserPathSettings()
+    {
+        var appSettings = new Dictionary<string, string>
         {
-            var appSettings = new Dictionary<string, string>()
-            {
-                { "eureka:instance:healthcheckurlpath", "/customHealth" },
-                { "eureka:instance:statuspageurlpath", "/customStatus" }
-            };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(config);
-            serviceCollection.RegisterDefaultApplicationInstanceInfo();
-            serviceCollection.AddAllActuators(config);
-            var extension = new EurekaDiscoveryClientExtension();
+            { "eureka:instance:healthcheckurlpath", "/customHealth" },
+            { "eureka:instance:statuspageurlpath", "/customStatus" }
+        };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.RegisterDefaultApplicationInstanceInfo();
+        serviceCollection.AddAllActuators(config);
+        var extension = new EurekaDiscoveryClientExtension();
 
-            extension.ApplyServices(serviceCollection);
-            var provider = serviceCollection.BuildServiceProvider();
+        extension.ApplyServices(serviceCollection);
+        var provider = serviceCollection.BuildServiceProvider();
 
-            var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
-            Assert.NotNull(options);
-            Assert.Equal("/customHealth", options.Value.HealthCheckUrlPath);
-            Assert.Equal("/customStatus", options.Value.StatusPageUrlPath);
-        }
+        var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
+        Assert.NotNull(options);
+        Assert.Equal("/customHealth", options.Value.HealthCheckUrlPath);
+        Assert.Equal("/customStatus", options.Value.StatusPageUrlPath);
     }
 }

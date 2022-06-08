@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -18,296 +18,295 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandler>, IPollableMessageSource, ILifecycle, IRetryListener
 {
-    public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandler>, IPollableMessageSource, ILifecycle, IRetryListener
+    private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
+
+    private readonly DirectChannel _dummyChannel;
+    private readonly MessagingTemplate _messagingTemplate;
+    private readonly ISmartMessageConverter _messageConverter;
+    private readonly List<IChannelInterceptor> _interceptors = new ();
+    private RetryTemplate _retryTemplate;
+    private IRecoveryCallback _recoveryCallback;
+    private int _running;
+
+    public DefaultPollableMessageSource(IApplicationContext context, ISmartMessageConverter messageConverter)
     {
-        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
+        _messageConverter = messageConverter;
+        _messagingTemplate = new MessagingTemplate(context);
+        _dummyChannel = new DirectChannel(context);
+    }
 
-        private readonly DirectChannel _dummyChannel;
-        private readonly MessagingTemplate _messagingTemplate;
-        private readonly ISmartMessageConverter _messageConverter;
-        private readonly List<IChannelInterceptor> _interceptors = new ();
-        private RetryTemplate _retryTemplate;
-        private IRecoveryCallback _recoveryCallback;
-        private int _running;
-
-        public DefaultPollableMessageSource(IApplicationContext context, ISmartMessageConverter messageConverter)
+    public RetryTemplate RetryTemplate
+    {
+        get
         {
-            _messageConverter = messageConverter;
-            _messagingTemplate = new MessagingTemplate(context);
-            _dummyChannel = new DirectChannel(context);
+            return _retryTemplate;
         }
 
-        public RetryTemplate RetryTemplate
+        set
         {
-            get
-            {
-                return _retryTemplate;
-            }
+            _retryTemplate = value;
+            _retryTemplate.RegisterListener(this);
+        }
+    }
 
-            set
-            {
-                _retryTemplate = value;
-                _retryTemplate.RegisterListener(this);
-            }
+    public IRecoveryCallback RecoveryCallback
+    {
+        get
+        {
+            return _recoveryCallback;
         }
 
-        public IRecoveryCallback RecoveryCallback
+        set
         {
-            get
-            {
-                return _recoveryCallback;
-            }
+            _recoveryCallback = new RecoveryCallbackWrapper(value);
+        }
+    }
 
-            set
-            {
-                _recoveryCallback = new RecoveryCallbackWrapper(value);
-            }
+    public IMessageChannel ErrorChannel { get; set; }
+
+    public IErrorMessageStrategy ErrorMessageStrategy { get; set; } = new DefaultErrorMessageStrategy();
+
+    public Action<IAttributeAccessor, IMessage> AttributeProvider { get; set; }
+
+    public IMessageSource Source { get; set; }
+
+    public bool IsRunning => _running != 0;
+
+    public void AddInterceptor(IChannelInterceptor interceptor)
+    {
+        _interceptors.Add(interceptor);
+    }
+
+    public void AddInterceptor(int index, IChannelInterceptor interceptor)
+    {
+        _interceptors.Insert(index, interceptor);
+    }
+
+    public Task Start()
+    {
+        if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && Source is ILifecycle asLifeCycle)
+        {
+            return asLifeCycle.Start();
         }
 
-        public IMessageChannel ErrorChannel { get; set; }
+        return Task.CompletedTask;
+    }
 
-        public IErrorMessageStrategy ErrorMessageStrategy { get; set; } = new DefaultErrorMessageStrategy();
-
-        public Action<IAttributeAccessor, IMessage> AttributeProvider { get; set; }
-
-        public IMessageSource Source { get; set; }
-
-        public bool IsRunning => _running != 0;
-
-        public void AddInterceptor(IChannelInterceptor interceptor)
+    public Task Stop()
+    {
+        if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && Source is ILifecycle asLifeCycle)
         {
-            _interceptors.Add(interceptor);
+            return asLifeCycle.Stop();
         }
 
-        public void AddInterceptor(int index, IChannelInterceptor interceptor)
+        return Task.CompletedTask;
+    }
+
+    public override bool Poll(IMessageHandler handler)
+    {
+        return Poll(handler, null);
+    }
+
+    public override bool Poll(IMessageHandler handler, Type type)
+    {
+        var message = Receive(type);
+        if (message == null)
         {
-            _interceptors.Insert(index, interceptor);
+            return false;
         }
 
-        public Task Start()
+        var ackCallback = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(message);
+        try
         {
-            if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && Source is ILifecycle asLifeCycle)
+            if (RetryTemplate == null)
             {
-                return asLifeCycle.Start();
+                Handle(message, handler);
             }
-
-            return Task.CompletedTask;
-        }
-
-        public Task Stop()
-        {
-            if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && Source is ILifecycle asLifeCycle)
+            else
             {
-                return asLifeCycle.Stop();
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public override bool Poll(IMessageHandler handler)
-        {
-            return Poll(handler, null);
-        }
-
-        public override bool Poll(IMessageHandler handler, Type type)
-        {
-            var message = Receive(type);
-            if (message == null)
-            {
-                return false;
-            }
-
-            var ackCallback = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(message);
-            try
-            {
-                if (RetryTemplate == null)
-                {
-                    Handle(message, handler);
-                }
-                else
-                {
-                    RetryTemplate.Execute((ctx) => Handle(message, handler), _recoveryCallback);
-                }
-
-                return true;
-            }
-            catch (MessagingException e)
-            {
-                if (RetryTemplate == null && !ShouldRequeue(e))
-                {
-                    _messagingTemplate.Send(ErrorChannel, ErrorMessageStrategy.BuildErrorMessage(e, _attributesHolder.Value));
-                    return true;
-                }
-                else if (!ackCallback.IsAcknowledged && ShouldRequeue(e))
-                {
-                    AckUtils.Requeue(ackCallback);
-                    return true;
-                }
-                else
-                {
-                    AckUtils.AutoNack(ackCallback);
-                }
-
-                if (e.FailedMessage.Equals(message))
-                {
-                    throw;
-                }
-
-                throw new MessageHandlingException(message, e);
-            }
-            catch (Exception e)
-            {
-                AckUtils.AutoNack(ackCallback);
-                switch (e)
-                {
-                    case MessageHandlingException exception when exception.FailedMessage.Equals(message):
-                        throw;
-                    default:
-                        throw new MessageHandlingException(message, e);
-                }
-            }
-            finally
-            {
-                AckUtils.AutoAck(ackCallback);
-            }
-        }
-
-        public bool Open(IRetryContext context)
-        {
-            if (_recoveryCallback != null)
-            {
-                _attributesHolder.Value = context;
+                RetryTemplate.Execute(ctx => Handle(message, handler), _recoveryCallback);
             }
 
             return true;
         }
-
-        public void Close(IRetryContext context, Exception exception)
+        catch (MessagingException e)
         {
-            _attributesHolder.Value = null;
-        }
-
-        public void OnError(IRetryContext context, Exception exception)
-        {
-            // Ignore
-        }
-
-        protected internal static bool ShouldRequeue(Exception e)
-        {
-            var requeue = false;
-            var t = e.InnerException;
-            while (t != null && !requeue)
+            if (RetryTemplate == null && !ShouldRequeue(e))
             {
-                requeue = t is RequeueCurrentMessageException;
-                t = t.InnerException;
+                _messagingTemplate.Send(ErrorChannel, ErrorMessageStrategy.BuildErrorMessage(e, _attributesHolder.Value));
+                return true;
+            }
+            else if (!ackCallback.IsAcknowledged && ShouldRequeue(e))
+            {
+                AckUtils.Requeue(ackCallback);
+                return true;
+            }
+            else
+            {
+                AckUtils.AutoNack(ackCallback);
             }
 
-            return requeue;
-        }
-
-        private IMessage Receive(Type type)
-        {
-            var result = Source.Receive();
-
-            if (result == null)
+            if (e.FailedMessage.Equals(message))
             {
-                return result;
+                throw;
             }
 
-            var message = ApplyInterceptors(result);
-
-            if (message != null && type != null && _messageConverter != null)
+            throw new MessageHandlingException(message, e);
+        }
+        catch (Exception e)
+        {
+            AckUtils.AutoNack(ackCallback);
+            switch (e)
             {
-                var targetType = type;
-                var payload = _messageConverter.FromMessage(message, targetType, type);
-                if (payload == null)
+                case MessageHandlingException exception when exception.FailedMessage.Equals(message):
+                    throw;
+                default:
+                    throw new MessageHandlingException(message, e);
+            }
+        }
+        finally
+        {
+            AckUtils.AutoAck(ackCallback);
+        }
+    }
+
+    public bool Open(IRetryContext context)
+    {
+        if (_recoveryCallback != null)
+        {
+            _attributesHolder.Value = context;
+        }
+
+        return true;
+    }
+
+    public void Close(IRetryContext context, Exception exception)
+    {
+        _attributesHolder.Value = null;
+    }
+
+    public void OnError(IRetryContext context, Exception exception)
+    {
+        // Ignore
+    }
+
+    protected internal static bool ShouldRequeue(Exception e)
+    {
+        var requeue = false;
+        var t = e.InnerException;
+        while (t != null && !requeue)
+        {
+            requeue = t is RequeueCurrentMessageException;
+            t = t.InnerException;
+        }
+
+        return requeue;
+    }
+
+    private IMessage Receive(Type type)
+    {
+        var result = Source.Receive();
+
+        if (result == null)
+        {
+            return null;
+        }
+
+        var message = ApplyInterceptors(result);
+
+        if (message != null && type != null && _messageConverter != null)
+        {
+            var targetType = type;
+            var payload = _messageConverter.FromMessage(message, targetType, type);
+            if (payload == null)
+            {
+                throw new MessageConversionException(message, "No converter could convert Message");
+            }
+
+            // TODO: Rationalize S.M.S.MessageBuilder and S.I.S.MessageBuilder
+            message = MessageBuilder.WithPayload(payload).CopyHeaders(message.Headers).Build();
+        }
+
+        return message;
+    }
+
+    private void DoHandleMessage(IMessageHandler handler, IMessage message)
+    {
+        try
+        {
+            handler.HandleMessage(message);
+        }
+        catch (Exception t)
+        {
+            throw new MessageHandlingException(message, t);
+        }
+    }
+
+    private IMessage ApplyInterceptors(IMessage message)
+    {
+        var received = message;
+        foreach (var interceptor in _interceptors)
+        {
+            received = interceptor.PreSend(received, _dummyChannel);
+            if (received == null)
+            {
+                return null;
+            }
+        }
+
+        return received;
+    }
+
+    private void SetAttributesIfNecessary(IMessage message)
+    {
+        var needHolder = ErrorChannel != null && RetryTemplate == null;
+        var needAttributes = needHolder || RetryTemplate != null;
+        if (needHolder)
+        {
+            _attributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
+        }
+
+        if (needAttributes)
+        {
+            var attributes = _attributesHolder.Value;
+            if (attributes != null)
+            {
+                attributes.SetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY, message);
+                if (AttributeProvider != null)
                 {
-                    throw new MessageConversionException(message, "No converter could convert Message");
-                }
-
-                // TODO: Rationalize S.M.S.MessageBuilder and S.I.S.MessageBuilder
-                message = Steeltoe.Messaging.Support.MessageBuilder.WithPayload(payload).CopyHeaders(message.Headers).Build();
-            }
-
-            return message;
-        }
-
-        private void DoHandleMessage(IMessageHandler handler, IMessage message)
-        {
-            try
-            {
-                handler.HandleMessage(message);
-            }
-            catch (Exception t)
-            {
-                throw new MessageHandlingException(message, t);
-            }
-        }
-
-        private IMessage ApplyInterceptors(IMessage message)
-        {
-            var received = message;
-            foreach (var interceptor in _interceptors)
-            {
-                received = interceptor.PreSend(received, _dummyChannel);
-                if (received == null)
-                {
-                    return null;
-                }
-            }
-
-            return received;
-        }
-
-        private void SetAttributesIfNecessary(IMessage message)
-        {
-            var needHolder = ErrorChannel != null && RetryTemplate == null;
-            var needAttributes = needHolder || RetryTemplate != null;
-            if (needHolder)
-            {
-                _attributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
-            }
-
-            if (needAttributes)
-            {
-                var attributes = _attributesHolder.Value;
-                if (attributes != null)
-                {
-                    attributes.SetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY, message);
-                    if (AttributeProvider != null)
-                    {
-                        AttributeProvider.Invoke(attributes, message);
-                    }
+                    AttributeProvider.Invoke(attributes, message);
                 }
             }
         }
+    }
 
-        private void Handle(IMessage message, IMessageHandler handler)
+    private void Handle(IMessage message, IMessageHandler handler)
+    {
+        SetAttributesIfNecessary(message);
+        DoHandleMessage(handler, message);
+    }
+
+    private sealed class RecoveryCallbackWrapper : IRecoveryCallback
+    {
+        private readonly IRecoveryCallback _recoveryCallback;
+
+        public RecoveryCallbackWrapper(IRecoveryCallback recoveryCallback)
         {
-            SetAttributesIfNecessary(message);
-            DoHandleMessage(handler, message);
+            _recoveryCallback = recoveryCallback;
         }
 
-        private class RecoveryCallbackWrapper : IRecoveryCallback
+        public object Recover(IRetryContext context)
         {
-            private readonly IRecoveryCallback _recoveryCallback;
-
-            public RecoveryCallbackWrapper(IRecoveryCallback recoveryCallback)
+            if (!ShouldRequeue((MessagingException)context.LastException))
             {
-                _recoveryCallback = recoveryCallback;
+                return _recoveryCallback.Recover(context);
             }
 
-            public object Recover(IRetryContext context)
-            {
-                if (!ShouldRequeue((MessagingException)context.LastException))
-                {
-                    return _recoveryCallback.Recover(context);
-                }
-
-                throw (MessagingException)context.LastException;
-            }
+            throw (MessagingException)context.LastException;
         }
     }
 }
