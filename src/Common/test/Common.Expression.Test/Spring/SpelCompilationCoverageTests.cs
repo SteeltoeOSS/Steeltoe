@@ -6365,7 +6365,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         public MyContext(Dictionary<string, string> data)
         {
-            this.Data = data;
+            Data = data;
         }
 
         public Dictionary<string, string> Data { get; }

@@ -26,20 +26,20 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 [Trait("Category", "Integration")]
 public class AsyncListenerTest : IClassFixture<StartupFixture>
 {
-    private readonly ServiceProvider provider;
-    private readonly StartupFixture fixture;
+    private readonly ServiceProvider _provider;
+    private readonly StartupFixture _fixture;
 
     public AsyncListenerTest(StartupFixture fix)
     {
-        fixture = fix;
-        provider = fixture.Provider;
+        _fixture = fix;
+        _provider = _fixture.Provider;
     }
 
     [Fact]
     public async Task TestAsyncListener()
     {
-        var template = provider.GetRabbitTemplate();
-        var context = provider.GetApplicationContext();
+        var template = _provider.GetRabbitTemplate();
+        var context = _provider.GetApplicationContext();
         var queue1 = context.GetService<IQueue>("queue1");
         var reply = template.ConvertSendAndReceive<string>(queue1.QueueName, "foo");
         Assert.Equal("FOO", reply);
@@ -62,17 +62,17 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
 
         var queue4 = context.GetService<IQueue>("queue4");
         template.ConvertAndSend(queue4.QueueName, "foo");
-        var listener = provider.GetService<Listener>();
+        var listener = _provider.GetService<Listener>();
         Assert.True(listener.Latch4.Wait(TimeSpan.FromSeconds(10)));
     }
 
     [Fact]
     public void TestRouteToDLQ()
     {
-        var template = provider.GetRabbitTemplate();
-        var context = provider.GetApplicationContext();
+        var template = _provider.GetRabbitTemplate();
+        var context = _provider.GetApplicationContext();
         var queue5 = context.GetService<IQueue>("queue5");
-        var listener = provider.GetService<Listener>();
+        var listener = _provider.GetService<Listener>();
 
         template.ConvertAndSend(queue5.QueueName, "foo");
         Assert.True(listener.Latch5.Wait(TimeSpan.FromSeconds(10)));
@@ -85,8 +85,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestOverrideDontRequeue()
     {
-        var template = provider.GetRabbitTemplate();
-        var context = provider.GetApplicationContext();
+        var template = _provider.GetRabbitTemplate();
+        var context = _provider.GetApplicationContext();
         var queue7 = context.GetService<IQueue>("queue7");
         Assert.Equal("listen7", template.ConvertSendAndReceive<string>(queue7.QueueName, "foo"));
     }
@@ -94,7 +94,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestAuthByProps()
     {
-        var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+        var registry = _provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         var container = registry.GetListenerContainer("foo") as DirectMessageListenerContainer;
         Assert.False(container.PossibleAuthenticationFailureFatal);
     }
@@ -102,8 +102,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     [Fact]
     public async Task TestAsyncListenerErrorHandler()
     {
-        var template = provider.GetRabbitTemplate();
-        var context = provider.GetApplicationContext();
+        var template = _provider.GetRabbitTemplate();
+        var context = _provider.GetApplicationContext();
         var queueAsyncErrorHandler = context.GetService<IQueue>("queueAsyncErrorHandler");
         var reply = await template.ConvertSendAndReceiveAsync<string>(queueAsyncErrorHandler.QueueName, "foo");
         Assert.Equal($"{nameof(CustomListenerErrorHandler)} handled/processed", reply);
@@ -111,14 +111,14 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
 
     public class StartupFixture : IDisposable
     {
-        private readonly IServiceCollection services;
+        private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 
         public StartupFixture()
         {
-            services = CreateContainer();
-            Provider = services.BuildServiceProvider();
+            _services = CreateContainer();
+            Provider = _services.BuildServiceProvider();
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 

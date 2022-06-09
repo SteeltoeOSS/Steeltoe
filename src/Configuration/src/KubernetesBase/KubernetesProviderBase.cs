@@ -21,7 +21,7 @@ internal class KubernetesProviderBase : ConfigurationProvider
 
     protected CancellationToken CancellationToken { get; set; }
 
-    protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(this.GetType());
+    protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(GetType());
 
     internal KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
     {

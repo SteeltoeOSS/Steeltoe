@@ -10,9 +10,9 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test;
 
 internal class StubArgumentResolver : IHandlerMethodArgumentResolver
 {
-    private readonly Type valueType;
+    private readonly Type _valueType;
 
-    private readonly object value;
+    private readonly object _value;
 
     public StubArgumentResolver(object value)
         : this(value.GetType(), value)
@@ -26,20 +26,20 @@ internal class StubArgumentResolver : IHandlerMethodArgumentResolver
 
     public StubArgumentResolver(Type valueType, object value)
     {
-        this.valueType = valueType;
-        this.value = value;
+        _valueType = valueType;
+        _value = value;
     }
 
     public List<ParameterInfo> ResolvedParameters { get; } = new ();
 
     public bool SupportsParameter(ParameterInfo parameter)
     {
-        return parameter.ParameterType.IsAssignableFrom(valueType);
+        return parameter.ParameterType.IsAssignableFrom(_valueType);
     }
 
     public object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
         ResolvedParameters.Add(parameter);
-        return value;
+        return _value;
     }
 }

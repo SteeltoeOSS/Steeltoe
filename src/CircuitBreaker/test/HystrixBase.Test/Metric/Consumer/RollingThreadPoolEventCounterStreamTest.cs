@@ -18,9 +18,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test;
 
 public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
 {
-    private readonly ITestOutputHelper output;
-    private RollingThreadPoolEventCounterStream stream;
-    private IDisposable latchSubscription;
+    private readonly ITestOutputHelper _output;
+    private RollingThreadPoolEventCounterStream _stream;
+    private IDisposable _latchSubscription;
 
     private sealed class LatchedObserver : TestObserverBase<long[]>
     {
@@ -32,17 +32,17 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
 
     public RollingThreadPoolEventCounterStreamTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
         HystrixThreadPoolCompletionStream.Reset();
         RollingThreadPoolEventCounterStream.Reset();
     }
 
     public override void Dispose()
     {
-        latchSubscription?.Dispose();
-        stream?.Unsubscribe();
-        latchSubscription = null;
-        stream = null;
+        _latchSubscription?.Dispose();
+        _stream?.Unsubscribe();
+        _latchSubscription = null;
+        _stream = null;
         base.Dispose();
     }
 
@@ -52,15 +52,15 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
     {
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-A");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.EXECUTED) + stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED) + _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -71,19 +71,19 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-B");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-B");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
 
         await cmd.Observe();
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(1, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -94,19 +94,19 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-C");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-C");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
         await cmd.Observe();
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(1, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -117,19 +117,19 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-D");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-D");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd = Command.From(groupKey, key, HystrixEventType.TIMEOUT);
 
         await cmd.Observe();
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(1, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -140,19 +140,19 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-E");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-E");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd = Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
 
         await Assert.ThrowsAsync<HystrixBadRequestException>(async () => await cmd.Observe());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(1, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -163,10 +163,10 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-F");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-F");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
@@ -176,12 +176,12 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         await cmd1.Observe();
         await cmd2.Observe();
         await cmd3.Observe();
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
 
         // RESPONSE_FROM_CACHE should not show up at all in thread pool counters - just the success
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(1, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -192,10 +192,10 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-G");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-G");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         // 3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
@@ -211,20 +211,20 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         await failure2.Observe();
         await failure3.Observe();
 
-        Assert.True(WaitForHealthCountToUpdate(key.Name, 500, output), "Health count stream update took to long");
+        Assert.True(WaitForHealthCountToUpdate(key.Name, 500, _output), "Health count stream update took to long");
 
         await shortCircuit1.Observe();
         await shortCircuit2.Observe();
 
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
 
         Assert.True(shortCircuit1.IsResponseShortCircuited);
         Assert.True(shortCircuit2.IsResponseShortCircuited);
 
         // only the FAILUREs should show up in thread pool counters
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(3, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(3, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -235,10 +235,10 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-H");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-H");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         // 10 commands will saturate semaphore when called from different threads.
@@ -266,15 +266,15 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         await Task.Run(() => rejected2.Execute());
 
         Task.WaitAll(tasks.ToArray());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
 
         Assert.True(rejected1.IsResponseSemaphoreRejected, "rejected1 not rejected");
         Assert.True(rejected2.IsResponseSemaphoreRejected, "rejected2 not rejected");
 
         // none of these got executed on a thread-pool, so thread pool metrics should be 0
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -285,10 +285,10 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-I");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-I");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         // 10 commands will saturate threadpools when called concurrently.
@@ -316,15 +316,15 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         await rejected2.Observe();
 
         Task.WaitAll(tasks.ToArray());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
 
         Assert.True(rejected1.IsResponseThreadPoolRejected, "Command1 IsResponseThreadPoolRejected");
         Assert.True(rejected2.IsResponseThreadPoolRejected, "Command2 IsResponseThreadPoolRejected");
 
         // none of these got executed on a thread-pool, so thread pool metrics should be 0
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(10, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(2, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(10, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(2, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -335,20 +335,20 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-J");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-J");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_FAILURE);
 
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await cmd.Observe());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
 
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(1, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -359,20 +359,20 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-K");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-K");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_MISSING);
 
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await cmd.Observe());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
 
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(1, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -383,10 +383,10 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-L");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-L");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
@@ -408,17 +408,17 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
 
         await Task.Delay(50);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await rejection1.Observe());
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await rejection2.Observe());
 
         Task.WaitAll(tasks.ToArray());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, _output), "Latch took to long to update");
 
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(7, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(7, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 
     [Fact]
@@ -429,10 +429,10 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-M");
         var key = HystrixCommandKeyDefault.AsKey("RollingCounter-M");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 250);
-        latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 250);
+        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         var cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
@@ -443,11 +443,11 @@ public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest
 
         Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
         // all commands should have aged out
-        Assert.Equal(2, stream.Latest.Length);
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
-        Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
+        Assert.Equal(2, _stream.Latest.Length);
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
+        Assert.Equal(0, _stream.GetLatestCount(ThreadPoolEventType.REJECTED));
     }
 }

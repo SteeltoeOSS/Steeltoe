@@ -19,19 +19,19 @@ public class RoundRobinDispatcherConcurrentTest
 {
     private const int TOTAL_EXECUTIONS = 40;
 
-    private readonly UnicastingDispatcher dispatcher;
+    private readonly UnicastingDispatcher _dispatcher;
 
-    private readonly Mock<IMessage> messageMock = new ();
+    private readonly Mock<IMessage> _messageMock = new ();
 
-    private readonly Mock<IMessageHandler> handlerMock1 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock1 = new ();
 
-    private readonly Mock<IMessageHandler> handlerMock2 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock2 = new ();
 
-    private readonly Mock<IMessageHandler> handlerMock3 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock3 = new ();
 
-    private readonly Mock<IMessageHandler> handlerMock4 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock4 = new ();
 
-    private readonly IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public RoundRobinDispatcherConcurrentTest()
     {
@@ -40,8 +40,8 @@ public class RoundRobinDispatcherConcurrentTest
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        provider = services.BuildServiceProvider();
-        dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>())
+        _provider = services.BuildServiceProvider();
+        _dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>())
         {
             LoadBalancingStrategy = new RoundRobinLoadBalancingStrategy()
         };
@@ -50,20 +50,20 @@ public class RoundRobinDispatcherConcurrentTest
     [Fact]
     public void NoHandlerExhaustion()
     {
-        dispatcher.AddHandler(handlerMock1.Object);
-        dispatcher.AddHandler(handlerMock2.Object);
-        dispatcher.AddHandler(handlerMock3.Object);
-        dispatcher.AddHandler(handlerMock4.Object);
+        _dispatcher.AddHandler(_handlerMock1.Object);
+        _dispatcher.AddHandler(_handlerMock2.Object);
+        _dispatcher.AddHandler(_handlerMock3.Object);
+        _dispatcher.AddHandler(_handlerMock4.Object);
 
         var start = new CountdownEvent(1);
         var allDone = new CountdownEvent(TOTAL_EXECUTIONS);
-        var message = messageMock.Object;
+        var message = _messageMock.Object;
         var failed = false;
         void MessageSenderTask()
         {
             start.Wait();
 
-            if (!dispatcher.Dispatch(message))
+            if (!_dispatcher.Dispatch(message))
             {
                 failed = true;
             }
@@ -79,10 +79,10 @@ public class RoundRobinDispatcherConcurrentTest
         start.Signal();
         Assert.True(allDone.Wait(10000));
         Assert.False(failed);
-        handlerMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-        handlerMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-        handlerMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-        handlerMock4.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+        _handlerMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+        _handlerMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+        _handlerMock3.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+        _handlerMock4.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
     }
 
     [Fact]
@@ -91,14 +91,14 @@ public class RoundRobinDispatcherConcurrentTest
         // dispatcher has no subscribers (shouldn't lead to deadlock)
         var start = new CountdownEvent(1);
         var allDone = new CountdownEvent(TOTAL_EXECUTIONS);
-        var message = messageMock.Object;
+        var message = _messageMock.Object;
         void MessageSenderTask()
         {
             start.Wait();
 
             try
             {
-                dispatcher.Dispatch(message);
+                _dispatcher.Dispatch(message);
                 throw new Exception("this shouldn't happen");
             }
             catch (MessagingException)
@@ -121,18 +121,18 @@ public class RoundRobinDispatcherConcurrentTest
     [Fact]
     public void NoHandlerSkipUnderConcurrentFailureWithFailover()
     {
-        dispatcher.AddHandler(handlerMock1.Object);
-        dispatcher.AddHandler(handlerMock2.Object);
-        handlerMock1.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessageRejectedException(messageMock.Object, null));
+        _dispatcher.AddHandler(_handlerMock1.Object);
+        _dispatcher.AddHandler(_handlerMock2.Object);
+        _handlerMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessageRejectedException(_messageMock.Object, null));
         var start = new CountdownEvent(1);
         var allDone = new CountdownEvent(TOTAL_EXECUTIONS);
-        var message = messageMock.Object;
+        var message = _messageMock.Object;
         var failed = false;
         void MessageSenderTask()
         {
             start.Wait();
 
-            if (!dispatcher.Dispatch(message))
+            if (!_dispatcher.Dispatch(message))
             {
                 failed = true;
             }
@@ -150,7 +150,7 @@ public class RoundRobinDispatcherConcurrentTest
         start.Signal();
         Assert.True(allDone.Wait(10000));
         Assert.False(failed);
-        handlerMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 2));
-        handlerMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 2));
+        _handlerMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS));
     }
 }

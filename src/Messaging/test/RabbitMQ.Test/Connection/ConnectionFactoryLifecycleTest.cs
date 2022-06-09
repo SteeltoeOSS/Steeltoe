@@ -71,41 +71,41 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
 
     public class TestBlockedListener : IBlockedListener
     {
-        private readonly CountdownEvent blockedConnectionLatch;
-        private readonly CountdownEvent unblockedConnectionLatch;
+        private readonly CountdownEvent _blockedConnectionLatch;
+        private readonly CountdownEvent _unblockedConnectionLatch;
 
         public TestBlockedListener(CountdownEvent blockedConnectionLatch, CountdownEvent unblockedConnectionLatch)
         {
-            this.blockedConnectionLatch = blockedConnectionLatch;
-            this.unblockedConnectionLatch = unblockedConnectionLatch;
+            _blockedConnectionLatch = blockedConnectionLatch;
+            _unblockedConnectionLatch = unblockedConnectionLatch;
         }
 
         public void HandleBlocked(object sender, ConnectionBlockedEventArgs args)
         {
-            blockedConnectionLatch.Signal();
+            _blockedConnectionLatch.Signal();
         }
 
         public void HandleUnblocked(object sender, EventArgs args)
         {
-            unblockedConnectionLatch.Signal();
+            _unblockedConnectionLatch.Signal();
         }
     }
 
     public class MyLifecycle : ISmartLifecycle
     {
-        private readonly RabbitAdmin admin;
-        private readonly IQueue queue = new AnonymousQueue();
-        private volatile bool running;
+        private readonly RabbitAdmin _admin;
+        private readonly IQueue _queue = new AnonymousQueue();
+        private volatile bool _running;
 
         public MyLifecycle(IConnectionFactory cf)
         {
-            admin = new RabbitAdmin(cf);
+            _admin = new RabbitAdmin(cf);
         }
 
         public Task Start()
         {
-            running = true;
-            admin.DeclareQueue(queue);
+            _running = true;
+            _admin.DeclareQueue(_queue);
             return Task.CompletedTask;
         }
 
@@ -113,12 +113,12 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         {
             // Prior to the fix for AMQP-546, this threw an exception and
             // running was not reset.
-            admin.DeleteQueue(queue.QueueName);
-            running = false;
+            _admin.DeleteQueue(_queue.QueueName);
+            _running = false;
             return Task.CompletedTask;
         }
 
-        public bool IsRunning => running;
+        public bool IsRunning => _running;
 
         public int Phase => 0;
 

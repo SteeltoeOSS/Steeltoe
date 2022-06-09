@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> appSettings = new ()
+    private readonly Dictionary<string, string> _appSettings = new ()
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:info:enabled"] = "true",
@@ -56,7 +56,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -75,7 +75,7 @@ public class EndpointMiddlewareTest : BaseTest
         // arrange a server and client
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -90,13 +90,13 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HypermediaEndpointMiddleware_Returns_Expected_When_ManagementPath_Is_Slash()
     {
-        var settings = new Dictionary<string, string>(appSettings);
-        appSettings.Add("Management:Endpoints:Path", "/");
+        var settings = new Dictionary<string, string>(_appSettings);
+        _appSettings.Add("Management:Endpoints:Path", "/");
 
         // arrange a server and client
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();

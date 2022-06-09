@@ -55,33 +55,33 @@ public class ApplicationAvailabilityTest
         availability.ReadinessChanged += Availability_ReadinessChanged;
 
         availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Broken, null);
-        Assert.Equal(LivenessState.Broken, lastLivenessState);
+        Assert.Equal(LivenessState.Broken, _lastLivenessState);
         availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, null);
-        Assert.Equal(ReadinessState.RefusingTraffic, lastReadinessState);
+        Assert.Equal(ReadinessState.RefusingTraffic, _lastReadinessState);
         availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, null);
         availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        Assert.Equal(2, livenessChanges);
-        Assert.Equal(LivenessState.Correct, lastLivenessState);
-        Assert.Equal(2, readinessChanges);
-        Assert.Equal(ReadinessState.AcceptingTraffic, lastReadinessState);
+        Assert.Equal(2, _livenessChanges);
+        Assert.Equal(LivenessState.Correct, _lastLivenessState);
+        Assert.Equal(2, _readinessChanges);
+        Assert.Equal(ReadinessState.AcceptingTraffic, _lastReadinessState);
     }
 
-    private int livenessChanges;
-    private LivenessState lastLivenessState;
+    private int _livenessChanges;
+    private LivenessState _lastLivenessState;
 
-    private int readinessChanges;
-    private ReadinessState lastReadinessState;
+    private int _readinessChanges;
+    private ReadinessState _lastReadinessState;
 
     private void Availability_ReadinessChanged(object sender, EventArgs e)
     {
-        readinessChanges++;
-        lastReadinessState = (ReadinessState)(e as AvailabilityEventArgs).NewState;
+        _readinessChanges++;
+        _lastReadinessState = (ReadinessState)(e as AvailabilityEventArgs).NewState;
     }
 
     private void Availability_LivenessChanged(object sender, EventArgs e)
     {
-        livenessChanges++;
-        lastLivenessState = (LivenessState)(e as AvailabilityEventArgs).NewState;
+        _livenessChanges++;
+        _lastLivenessState = (LivenessState)(e as AvailabilityEventArgs).NewState;
     }
 }

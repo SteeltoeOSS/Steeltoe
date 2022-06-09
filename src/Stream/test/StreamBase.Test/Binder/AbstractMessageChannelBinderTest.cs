@@ -18,19 +18,19 @@ namespace Steeltoe.Stream.Binder;
 
 public class AbstractMessageChannelBinderTest : AbstractTest
 {
-    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public AbstractMessageChannelBinderTest()
     {
         var searchDirectories = GetSearchDirectories("TestBinder");
-        serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder")
+        _serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder")
             .BuildServiceProvider();
     }
 
     [Fact]
     public void TestEndpointLifecycle()
     {
-        var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
+        var binder = _serviceProvider.GetService<IBinder>() as TestChannelBinder;
         Assert.NotNull(binder);
 
         var consumerProperties = new ConsumerOptions("testbinding")
@@ -40,7 +40,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         consumerProperties.PostProcess("testbinding");
 
         // IBinding<IMessageChannel> consumerBinding = await binder.BindConsumer("foo", "fooGroup",  new DirectChannel(serviceProvider),  consumerProperties);
-        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), consumerProperties);
+        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), consumerProperties);
 
         var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
         Assert.NotNull(defaultBinding);
@@ -64,7 +64,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(handlers[0] is BridgeHandler);
         Assert.True(handlers[1] is ILastSubscriberMessageHandler);
 
-        var registry = serviceProvider.GetRequiredService<IApplicationContext>();
+        var registry = _serviceProvider.GetRequiredService<IApplicationContext>();
         Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
         Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
@@ -86,7 +86,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         producerProps.PostProcess("testbinding");
 
         // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
-        var producerBinding = binder.BindProducer("bar", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), producerProps);
+        var producerBinding = binder.BindProducer("bar", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), producerProps);
         Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
         Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
 
@@ -98,9 +98,9 @@ public class AbstractMessageChannelBinderTest : AbstractTest
     [Fact]
     public void TestEndpointBinderHasRecoverer()
     {
-        var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
+        var binder = _serviceProvider.GetService<IBinder>() as TestChannelBinder;
         Assert.NotNull(binder);
-        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions("testbinding"));
+        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions("testbinding"));
         var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
         Assert.NotNull(defaultBinding);
 
@@ -126,7 +126,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(handlers[0] is BridgeHandler);
         Assert.True(handlers[1] is ILastSubscriberMessageHandler);
 
-        var registry = serviceProvider.GetRequiredService<IApplicationContext>();
+        var registry = _serviceProvider.GetRequiredService<IApplicationContext>();
         Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
         Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));

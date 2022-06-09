@@ -21,21 +21,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 [Trait("Category", "Integration")]
 public class DlqExpiryTests : IClassFixture<DlqStartupFixture>
 {
-    private DlqStartupFixture fixture;
-    private ServiceProvider provider;
+    private DlqStartupFixture _fixture;
+    private ServiceProvider _provider;
 
     public DlqExpiryTests(DlqStartupFixture fix)
     {
-        fixture = fix;
-        provider = fixture.Provider;
+        _fixture = fix;
+        _provider = _fixture.Provider;
     }
 
     [Fact]
     public void TestExpiredDies()
     {
-        var template = provider.GetRabbitTemplate();
-        var listener = provider.GetService<Listener>();
-        var context = provider.GetApplicationContext();
+        var template = _provider.GetRabbitTemplate();
+        var listener = _provider.GetService<Listener>();
+        var context = _provider.GetApplicationContext();
         var queue1 = context.GetService<IQueue>("test.expiry.main");
 
         template.ConvertAndSend(queue1.QueueName, "foo");
@@ -62,14 +62,14 @@ public class Listener
 
 public class DlqStartupFixture : IDisposable
 {
-    private readonly IServiceCollection services;
+    private readonly IServiceCollection _services;
 
     public ServiceProvider Provider { get; set; }
 
     public DlqStartupFixture()
     {
-        services = CreateContainer();
-        Provider = services.BuildServiceProvider();
+        _services = CreateContainer();
+        Provider = _services.BuildServiceProvider();
         Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
     }
 

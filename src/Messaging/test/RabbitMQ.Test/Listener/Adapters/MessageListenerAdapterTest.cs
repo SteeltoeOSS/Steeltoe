@@ -21,11 +21,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessageListenerAdapterTest
 {
-    private readonly SimpleService simpleService = new ();
+    private readonly SimpleService _simpleService = new ();
 
-    private readonly MessageHeaders messageProperties;
+    private readonly MessageHeaders _messageProperties;
 
-    private MessageListenerAdapter adapter;
+    private MessageListenerAdapter _adapter;
 
     public MessageListenerAdapterTest()
     {
@@ -33,8 +33,8 @@ public class MessageListenerAdapterTest
         {
             { MessageHeaders.CONTENT_TYPE,  MimeTypeUtils.TEXT_PLAIN_VALUE }
         };
-        messageProperties = new MessageHeaders(headers);
-        adapter = new MessageListenerAdapter(null);
+        _messageProperties = new MessageHeaders(headers);
+        _adapter = new MessageListenerAdapter(null);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class MessageListenerAdapterTest
         extendedAdapter.Instance = delgate;
         extendedAdapter.ContainerAckMode = AcknowledgeMode.MANUAL;
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        extendedAdapter.OnMessage(Message.Create(bytes, messageProperties), channelMock.Object);
+        extendedAdapter.OnMessage(Message.Create(bytes, _messageProperties), channelMock.Object);
         Assert.True(called.Value);
     }
 
@@ -56,9 +56,9 @@ public class MessageListenerAdapterTest
     {
         var called = new AtomicBoolean(false);
         var dele = new TestDelegate1(called);
-        adapter.Instance = dele;
+        _adapter.Instance = dele;
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        adapter.OnMessage(Message.Create(bytes, messageProperties), null);
+        _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
     }
 
@@ -67,20 +67,20 @@ public class MessageListenerAdapterTest
     {
         var called = new AtomicBoolean(false);
         var dele = new TestDelegate2(called);
-        adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod");
+        _adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod");
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        adapter.OnMessage(Message.Create(bytes, messageProperties), null);
+        _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
     }
 
     [Fact]
     public void TestExplicitListenerMethod()
     {
-        adapter.DefaultListenerMethod = "Handle";
-        adapter.Instance = simpleService;
+        _adapter.DefaultListenerMethod = "Handle";
+        _adapter.Instance = _simpleService;
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        adapter.OnMessage(Message.Create(bytes, messageProperties), null);
-        Assert.Equal("Handle", simpleService.Called);
+        _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
+        Assert.Equal("Handle", _simpleService.Called);
     }
 
     [Fact]
@@ -91,40 +91,40 @@ public class MessageListenerAdapterTest
             { "foo", "Handle" },
             { "bar", "NotDefinedOnInterface" }
         };
-        adapter.DefaultListenerMethod = "AnotherHandle";
-        adapter.SetQueueOrTagToMethodName(map);
-        adapter.Instance = simpleService;
+        _adapter.DefaultListenerMethod = "AnotherHandle";
+        _adapter.SetQueueOrTagToMethodName(map);
+        _adapter.Instance = _simpleService;
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var message = Message.Create(bytes, messageProperties);
+        var message = Message.Create(bytes, _messageProperties);
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ConsumerQueue = "foo";
         accessor.ConsumerTag = "bar";
-        adapter.OnMessage(message, null);
-        Assert.Equal("Handle", simpleService.Called);
-        message = Message.Create(bytes, messageProperties);
+        _adapter.OnMessage(message, null);
+        Assert.Equal("Handle", _simpleService.Called);
+        message = Message.Create(bytes, _messageProperties);
         accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ConsumerQueue = "junk";
-        adapter.OnMessage(message, null);
-        Assert.Equal("NotDefinedOnInterface", simpleService.Called);
-        message = Message.Create(bytes, messageProperties);
+        _adapter.OnMessage(message, null);
+        Assert.Equal("NotDefinedOnInterface", _simpleService.Called);
+        message = Message.Create(bytes, _messageProperties);
         accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ConsumerTag = "junk";
-        adapter.OnMessage(message, null);
-        Assert.Equal("AnotherHandle", simpleService.Called);
+        _adapter.OnMessage(message, null);
+        Assert.Equal("AnotherHandle", _simpleService.Called);
     }
 
     [Fact]
     public void TestReplyRetry()
     {
-        adapter.DefaultListenerMethod = "Handle";
-        adapter.Instance = simpleService;
-        adapter.RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 2, true, 1, 1, 1);
+        _adapter.DefaultListenerMethod = "Handle";
+        _adapter.Instance = _simpleService;
+        _adapter.RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 2, true, 1, 1, 1);
         var replyMessage = new AtomicReference<IMessage>();
         var replyAddress = new AtomicReference<Address>();
         var throwable = new AtomicReference<Exception>();
-        adapter.RecoveryCallback = new TestRecoveryCallback(replyMessage, replyAddress, throwable);
+        _adapter.RecoveryCallback = new TestRecoveryCallback(replyMessage, replyAddress, throwable);
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(_messageProperties);
         accessor.ReplyTo = "foo/bar";
         var ex = new Exception();
         var mockChannel = new Mock<RC.IModel>();
@@ -132,9 +132,9 @@ public class MessageListenerAdapterTest
             .Throws(ex);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var message = Message.Create(bytes, messageProperties);
-        adapter.OnMessage(message, mockChannel.Object);
-        Assert.Equal("Handle", simpleService.Called);
+        var message = Message.Create(bytes, _messageProperties);
+        _adapter.OnMessage(message, mockChannel.Object);
+        Assert.Equal("Handle", _simpleService.Called);
         Assert.NotNull(replyMessage.Value);
         var reply = EncodingUtils.GetDefaultEncoding().GetString((byte[])replyMessage.Value.Payload);
         Assert.NotNull(replyAddress.Value);
@@ -149,7 +149,7 @@ public class MessageListenerAdapterTest
     {
         var called = new CountdownEvent(1);
         var dele = new TestAsyncDelegate();
-        adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod")
+        _adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod")
         {
             ContainerAckMode = AcknowledgeMode.MANUAL,
             ResponseExchange = "default"
@@ -159,29 +159,29 @@ public class MessageListenerAdapterTest
         mockChannel.Setup(c => c.BasicAck(It.IsAny<ulong>(), false))
             .Callback(() => called.Signal());
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var message = Message.Create(bytes, messageProperties);
-        adapter.OnMessage(message, mockChannel.Object);
+        var message = Message.Create(bytes, _messageProperties);
+        _adapter.OnMessage(message, mockChannel.Object);
         Assert.True(called.Wait(TimeSpan.FromSeconds(10)));
     }
 
     public class TestRecoveryCallback : IRecoveryCallback
     {
-        private readonly AtomicReference<IMessage> replyMessage;
-        private readonly AtomicReference<Address> replyAddress;
-        private readonly AtomicReference<Exception> throwable;
+        private readonly AtomicReference<IMessage> _replyMessage;
+        private readonly AtomicReference<Address> _replyAddress;
+        private readonly AtomicReference<Exception> _throwable;
 
         public TestRecoveryCallback(AtomicReference<IMessage> replyMessage, AtomicReference<Address> replyAddress, AtomicReference<Exception> throwable)
         {
-            this.replyMessage = replyMessage;
-            this.replyAddress = replyAddress;
-            this.throwable = throwable;
+            _replyMessage = replyMessage;
+            _replyAddress = replyAddress;
+            _throwable = throwable;
         }
 
         public object Recover(IRetryContext context)
         {
-            replyMessage.Value = SendRetryContextAccessor.GetMessage(context);
-            replyAddress.Value = SendRetryContextAccessor.GetAddress(context);
-            throwable.Value = context.LastException;
+            _replyMessage.Value = SendRetryContextAccessor.GetMessage(context);
+            _replyAddress.Value = SendRetryContextAccessor.GetAddress(context);
+            _throwable.Value = context.LastException;
             return null;
         }
     }
@@ -230,43 +230,43 @@ public class MessageListenerAdapterTest
 
     private sealed class TestDelegate2
     {
-        private readonly AtomicBoolean called;
+        private readonly AtomicBoolean _called;
 
         public TestDelegate2(AtomicBoolean called)
         {
-            this.called = called;
+            _called = called;
         }
 
         public string MyPojoMessageMethod(string input)
         {
-            called.Value = true;
+            _called.Value = true;
             return $"processed{input}";
         }
     }
 
     private sealed class TestDelegate1
     {
-        private readonly AtomicBoolean called;
+        private readonly AtomicBoolean _called;
 
         public TestDelegate1(AtomicBoolean called)
         {
-            this.called = called;
+            _called = called;
         }
 
         public string HandleMessage(string input)
         {
-            called.Value = true;
+            _called.Value = true;
             return $"processed{input}";
         }
     }
 
     private sealed class TestDelegate
     {
-        private readonly AtomicBoolean called;
+        private readonly AtomicBoolean _called;
 
         public TestDelegate(AtomicBoolean called)
         {
-            this.called = called;
+            _called = called;
         }
 
         public void HandleMessage(string input, RC.IModel channel, IMessage message)
@@ -281,7 +281,7 @@ public class MessageListenerAdapterTest
             }
 
             channel.BasicAck(deliveryTag, false);
-            called.Value = true;
+            _called.Value = true;
         }
     }
 

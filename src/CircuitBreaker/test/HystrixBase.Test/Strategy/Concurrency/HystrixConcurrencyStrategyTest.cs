@@ -15,11 +15,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test;
 
 public class HystrixConcurrencyStrategyTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixConcurrencyStrategyTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     // If the RequestContext does not get transferred across threads correctly this blows up.
@@ -27,14 +27,14 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
     [Fact]
     public void TestRequestContextPropagatesAcrossObserveOnPool()
     {
-        var s1 = new SimpleCommand(output).Execute();
-        var s2 = new SimpleCommand(output).Observe().Map(s =>
+        var s1 = new SimpleCommand(_output).Execute();
+        var s2 = new SimpleCommand(_output).Observe().Map(s =>
         {
-            output.WriteLine("Map => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
+            _output.WriteLine("Map => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
             return s;
         }).ForEachAsync(s =>
         {
-            output.WriteLine("Result [" + s + "] => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
+            _output.WriteLine("Result [" + s + "] => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         });
     }
 
@@ -44,20 +44,20 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
         var isInitialized = new AtomicBoolean();
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () =>
         {
-            await new TimeoutCommand(output).ToObservable()
+            await new TimeoutCommand(_output).ToObservable()
                 .Do(
                     n =>
                     {
-                        output.WriteLine("OnNext = " + n);
+                        _output.WriteLine("OnNext = " + n);
                     }, e =>
                     {
-                        output.WriteLine("OnError = " + HystrixRequestContext.IsCurrentThreadInitialized);
+                        _output.WriteLine("OnError = " + HystrixRequestContext.IsCurrentThreadInitialized);
                         isInitialized.Value = HystrixRequestContext.IsCurrentThreadInitialized;
                     }).SingleAsync();
         });
 
-        output.WriteLine("initialized = " + HystrixRequestContext.IsCurrentThreadInitialized);
-        output.WriteLine("initialized inside onError = " + isInitialized.Value);
+        _output.WriteLine("initialized = " + HystrixRequestContext.IsCurrentThreadInitialized);
+        _output.WriteLine("initialized inside onError = " + isInitialized.Value);
         Assert.True(isInitialized.Value);
     }
 
@@ -70,29 +70,29 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
             RequestLogEnabled = false,
             GroupKey = HystrixCommandGroupKeyDefault.AsKey("SimpleCommand")
         };
-        new SimpleCommand(output, opts).Execute();
+        new SimpleCommand(_output, opts).Execute();
 
         Assert.True(true, "Nothing blew up");
     }
 
     private sealed class SimpleCommand : HystrixCommand<string>
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public SimpleCommand(ITestOutputHelper output, IHystrixCommandOptions opts)
             : base(opts)
         {
-            this.output = output;
+            _output = output;
         }
 
         public SimpleCommand(ITestOutputHelper output)
-            : base(HystrixCommandGroupKeyDefault.AsKey("SimpleCommand")) => this.output = output;
+            : base(HystrixCommandGroupKeyDefault.AsKey("SimpleCommand")) => _output = output;
 
         protected override string Run()
         {
             if (HystrixRequestContext.IsCurrentThreadInitialized)
             {
-                output.WriteLine("Executing => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
+                _output.WriteLine("Executing => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
             }
 
             return "Hello";
@@ -101,7 +101,7 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
 
     private sealed class TimeoutCommand : HystrixCommand
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         private static IHystrixCommandOptions GetCommandOptions()
         {
@@ -116,14 +116,14 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
         public TimeoutCommand(ITestOutputHelper output)
             : base(GetCommandOptions())
         {
-            this.output = output;
+            _output = output;
         }
 
         protected override void Run()
         {
-            output.WriteLine("TimeoutCommand - run() start");
+            _output.WriteLine("TimeoutCommand - run() start");
             Time.Wait(500);
-            output.WriteLine("TimeoutCommand - run() finish");
+            _output.WriteLine("TimeoutCommand - run() finish");
         }
     }
 }

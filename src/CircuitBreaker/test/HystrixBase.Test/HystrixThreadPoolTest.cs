@@ -12,11 +12,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixThreadPoolTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixThreadPoolTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]

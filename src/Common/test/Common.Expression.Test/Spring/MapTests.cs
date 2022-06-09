@@ -16,25 +16,25 @@ public class MapTests : AbstractExpressionTests
 {
     // if the list is full of literals then it will be of the type unmodifiableClass
     // rather than HashMap (or similar)
-    private Type unmodifiableClass = typeof(ReadOnlyDictionary<object, object>);
+    private Type _unmodifiableClass = typeof(ReadOnlyDictionary<object, object>);
 
     [Fact]
     public void TestInlineMapCreation01()
     {
-        Evaluate("{'a':1, 'b':2, 'c':3, 'd':4, 'e':5}", "{a=1,b=2,c=3,d=4,e=5}", unmodifiableClass);
-        Evaluate("{'a':1}", "{a=1}", unmodifiableClass);
+        Evaluate("{'a':1, 'b':2, 'c':3, 'd':4, 'e':5}", "{a=1,b=2,c=3,d=4,e=5}", _unmodifiableClass);
+        Evaluate("{'a':1}", "{a=1}", _unmodifiableClass);
     }
 
     [Fact]
     public void TestInlineMapCreation02()
     {
-        Evaluate("{'abc':'def', 'uvw':'xyz'}", "{abc=def,uvw=xyz}", unmodifiableClass);
+        Evaluate("{'abc':'def', 'uvw':'xyz'}", "{abc=def,uvw=xyz}", _unmodifiableClass);
     }
 
     [Fact]
     public void TestInlineMapCreation03()
     {
-        Evaluate("{:}", "{}", unmodifiableClass);
+        Evaluate("{:}", "{}", _unmodifiableClass);
     }
 
     [Fact]
@@ -51,9 +51,9 @@ public class MapTests : AbstractExpressionTests
     [Fact]
     public void TestInlineMapAndNesting()
     {
-        Evaluate("{a:{a:1,b:2,c:3},b:{d:4,e:5,f:6}}", "{a={a=1,b=2,c=3},b={d=4,e=5,f=6}}", unmodifiableClass);
-        Evaluate("{a:{x:1,y:'2',z:3},b:{u:4,v:{'a','b'},w:5,x:6}}", "{a={x=1,y=2,z=3},b={u=4,v=[a,b],w=5,x=6}}", unmodifiableClass);
-        Evaluate("{a:{1,2,3},b:{4,5,6}}", "{a=[1,2,3],b=[4,5,6]}", unmodifiableClass);
+        Evaluate("{a:{a:1,b:2,c:3},b:{d:4,e:5,f:6}}", "{a={a=1,b=2,c=3},b={d=4,e=5,f=6}}", _unmodifiableClass);
+        Evaluate("{a:{x:1,y:'2',z:3},b:{u:4,v:{'a','b'},w:5,x:6}}", "{a={x=1,y=2,z=3},b={u=4,v=[a,b],w=5,x=6}}", _unmodifiableClass);
+        Evaluate("{a:{1,2,3},b:{4,5,6}}", "{a=[1,2,3],b=[4,5,6]}", _unmodifiableClass);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class MapTests : AbstractExpressionTests
     public void TestInlineMapWriting()
     {
         // list should be unmodifiable
-        Assert.Throws<NotSupportedException>(() => Evaluate("{a:1, b:2, c:3, d:4, e:5}[a]=6", "[a:1,b: 2,c: 3,d: 4,e: 5]", unmodifiableClass));
+        Assert.Throws<NotSupportedException>(() => Evaluate("{a:1, b:2, c:3, d:4, e:5}[a]=6", "[a:1,b: 2,c: 3,d: 4,e: 5]", _unmodifiableClass));
     }
 
     [Fact]

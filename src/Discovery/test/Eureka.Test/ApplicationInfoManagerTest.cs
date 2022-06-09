@@ -10,11 +10,11 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public class ApplicationInfoManagerTest : AbstractBaseTest
 {
-    private StatusChangedArgs eventArg;
+    private StatusChangedArgs _eventArg;
 
     public ApplicationInfoManagerTest()
     {
-        eventArg = null;
+        _eventArg = null;
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         // Check no events sent
         ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
-        Assert.Null(eventArg);
+        Assert.Null(_eventArg);
         ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
     }
 
@@ -77,10 +77,10 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         // Check event sent
         ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
-        Assert.NotNull(eventArg);
-        Assert.Equal(InstanceStatus.STARTING, eventArg.Previous);
-        Assert.Equal(InstanceStatus.UP, eventArg.Current);
-        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, eventArg.InstanceId);
+        Assert.NotNull(_eventArg);
+        Assert.Equal(InstanceStatus.STARTING, _eventArg.Previous);
+        Assert.Equal(InstanceStatus.UP, _eventArg.Current);
+        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArg.InstanceId);
         ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
     }
 
@@ -94,14 +94,14 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         // Check event sent
         ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
-        Assert.NotNull(eventArg);
-        Assert.Equal(InstanceStatus.STARTING, eventArg.Previous);
-        Assert.Equal(InstanceStatus.UP, eventArg.Current);
-        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, eventArg.InstanceId);
-        eventArg = null;
+        Assert.NotNull(_eventArg);
+        Assert.Equal(InstanceStatus.STARTING, _eventArg.Previous);
+        Assert.Equal(InstanceStatus.UP, _eventArg.Current);
+        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArg.InstanceId);
+        _eventArg = null;
         ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.DOWN;
-        Assert.Null(eventArg);
+        Assert.Null(_eventArg);
     }
 
     [Fact]
@@ -127,6 +127,6 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
 
     private void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
     {
-        eventArg = args;
+        _eventArg = args;
     }
 }

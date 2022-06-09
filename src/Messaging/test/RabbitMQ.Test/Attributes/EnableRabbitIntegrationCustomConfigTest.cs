@@ -31,24 +31,24 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 [Trait("Category", "Integration")]
 public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStartupFixture>
 {
-    private readonly ServiceProvider provider;
-    private readonly CustomStartupFixture fixture;
+    private readonly ServiceProvider _provider;
+    private readonly CustomStartupFixture _fixture;
 
     public EnableRabbitIntegrationCustomConfigTest(CustomStartupFixture fix)
     {
-        fixture = fix;
-        provider = fixture.Provider;
+        _fixture = fix;
+        _provider = _fixture.Provider;
     }
 
     [Fact]
     public void TestConverted()
     {
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         var foo1 = new Foo1
         {
             Bar = "bar"
         };
-        var ctx = provider.GetService<IApplicationContext>();
+        var ctx = _provider.GetService<IApplicationContext>();
         var converter = ctx.GetService<ISmartMessageConverter>(JsonMessageConverter.DEFAULT_SERVICE_NAME) as JsonMessageConverter;
         converter.TypeMapper.DefaultType = typeof(Dictionary<string, object>);
         converter.Precedence = TypePrecedence.TYPE_ID;
@@ -159,24 +159,24 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
     public class CustomStartupFixture : IDisposable
     {
-        private readonly CachingConnectionFactory adminCf;
-        private readonly RabbitAdmin admin;
-        private readonly IServiceCollection services;
+        private readonly CachingConnectionFactory _adminCf;
+        private readonly RabbitAdmin _admin;
+        private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 
         public CustomStartupFixture()
         {
-            adminCf = new CachingConnectionFactory("localhost");
-            admin = new RabbitAdmin(adminCf);
+            _adminCf = new CachingConnectionFactory("localhost");
+            _admin = new RabbitAdmin(_adminCf);
             foreach (var q in Queues)
             {
                 var queue = new Queue(q);
-                admin.DeclareQueue(queue);
+                _admin.DeclareQueue(queue);
             }
 
-            services = CreateContainer();
-            Provider = services.BuildServiceProvider();
+            _services = CreateContainer();
+            Provider = _services.BuildServiceProvider();
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
@@ -184,12 +184,12 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         {
             foreach (var q in Queues)
             {
-                admin.DeleteQueue(q);
+                _admin.DeleteQueue(q);
             }
 
             // admin.DeleteQueue("sendTo.replies");
             // admin.DeleteQueue("sendTo.replies.spel");
-            adminCf.Dispose();
+            _adminCf.Dispose();
 
             Provider.Dispose();
         }

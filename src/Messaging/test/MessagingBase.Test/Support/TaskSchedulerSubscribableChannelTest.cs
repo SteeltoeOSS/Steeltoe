@@ -253,30 +253,30 @@ public class TaskSchedulerSubscribableChannelTest
 
     internal class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
     {
-        private volatile int counter;
+        private volatile int _counter;
 
-        private volatile bool afterHandledInvoked;
+        private volatile bool _afterHandledInvoked;
 
         public int Counter
         {
-            get { return counter; }
+            get { return _counter; }
         }
 
         public bool WasAfterHandledInvoked
         {
-            get { return afterHandledInvoked; }
+            get { return _afterHandledInvoked; }
         }
 
         public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
         {
             Assert.NotNull(message);
-            Interlocked.Increment(ref counter);
+            Interlocked.Increment(ref _counter);
             return message;
         }
 
         public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception ex)
         {
-            afterHandledInvoked = true;
+            _afterHandledInvoked = true;
         }
     }
 

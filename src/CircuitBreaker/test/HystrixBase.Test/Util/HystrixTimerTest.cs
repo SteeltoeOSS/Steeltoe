@@ -13,14 +13,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
 public class HystrixTimerTest : IDisposable
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixTimerTest(ITestOutputHelper output)
     {
         _ = HystrixTimer.GetInstance();
         HystrixTimer.Reset();
         HystrixPlugins.Reset();
-        this.output = output;
+        _output = output;
     }
 
     public void Dispose()
@@ -45,12 +45,12 @@ public class HystrixTimerTest : IDisposable
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
         }
 
         // we should have 7 or more 30ms ticks within 500ms
-        output.WriteLine("l1 ticks: " + l1.TickCount.Value);
-        output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+        _output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+        _output.WriteLine("l2 ticks: " + l2.TickCount.Value);
         Assert.True(l1.TickCount.Value > 7, "l1 failed to execute 7 ticks in a window that could fit 12");
         Assert.True(l2.TickCount.Value > 7, "l2 failed to execute 7 ticks in a window that could fit 12");
     }
@@ -75,19 +75,19 @@ public class HystrixTimerTest : IDisposable
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
         }
 
         // we should have more than 2 ticks @ 100ms within 500ms
-        output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+        _output.WriteLine("l1 ticks: " + l1.TickCount.Value);
         Assert.InRange(l1.TickCount.Value, 2, 8);
 
         // we should have 25 - 55 10ms ticks within 500ms
-        output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+        _output.WriteLine("l2 ticks: " + l2.TickCount.Value);
         Assert.InRange(l2.TickCount.Value, 8, 60);
 
         // we should have 15-20 25ms ticks within 500ms
-        output.WriteLine("l3 ticks: " + l3.TickCount.Value);
+        _output.WriteLine("l3 ticks: " + l3.TickCount.Value);
         Assert.InRange(l3.TickCount.Value, 8, 25);
     }
 
@@ -108,12 +108,12 @@ public class HystrixTimerTest : IDisposable
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
         }
 
         // we should have more than 5 ticks @ 50ms within 500ms
-        output.WriteLine("l1 ticks: " + l1.TickCount.Value);
-        output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+        _output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+        _output.WriteLine("l2 ticks: " + l2.TickCount.Value);
         Assert.True(l1.TickCount.Value > 5, "l1 failed to execute more than 5 ticks in a window that could fit 10");
         Assert.True(l2.TickCount.Value > 5, "l2 failed to execute more than 5 ticks in a window that could fit 10");
 
@@ -131,18 +131,18 @@ public class HystrixTimerTest : IDisposable
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
         }
 
         // we should have more than 5 ticks @ 50ms within 500ms
-        output.WriteLine("l1 ticks: " + l1.TickCount.Value);
-        output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+        _output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+        _output.WriteLine("l2 ticks: " + l2.TickCount.Value);
 
         // l1 should continue ticking
         Assert.True(l1.TickCount.Value > 5, "l1 failed to execute more than 5 ticks in a window that could fit 10");
 
         // we should have no ticks on l2 because we removed it
-        output.WriteLine("tickCount.Value: " + l2.TickCount.Value + " on l2: " + l2);
+        _output.WriteLine("tickCount.Value: " + l2.TickCount.Value + " on l2: " + l2);
         Assert.Equal(0, l2.TickCount.Value);
     }
 

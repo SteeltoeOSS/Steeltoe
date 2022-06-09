@@ -2032,22 +2032,22 @@ public class SpelReproTests : AbstractExpressionTests
     public class TestClass2
     {
         // SPR-9194
-        private readonly string str;
+        private readonly string _str;
 
-        public TestClass2(string str) => this.str = str;
+        public TestClass2(string str) => _str = str;
 
-        public override bool Equals(object other) => this == other || (other is TestClass2 @class && str.Equals(@class.str));
+        public override bool Equals(object other) => this == other || (other is TestClass2 @class && _str.Equals(@class._str));
 
-        public override int GetHashCode() => str.GetHashCode();
+        public override int GetHashCode() => _str.GetHashCode();
     }
 
     public class Spr11445Class : IServiceResolver
     {
-        private readonly AtomicInteger counter = new ();
+        private readonly AtomicInteger _counter = new ();
 
         public int Echo(int invocation) => invocation;
 
-        public int Parameter() => counter.IncrementAndGet();
+        public int Parameter() => _counter.IncrementAndGet();
 
         public object Resolve(IEvaluationContext context, string beanName) => beanName.Equals("bean") ? this : null;
     }

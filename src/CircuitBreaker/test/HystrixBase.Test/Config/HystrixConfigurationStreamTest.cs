@@ -21,13 +21,13 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
     private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Config");
     private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("Command");
 
-    private readonly ITestOutputHelper output;
-    private readonly HystrixConfigurationStream stream;
+    private readonly ITestOutputHelper _output;
+    private readonly HystrixConfigurationStream _stream;
 
     public HystrixConfigurationStreamTest(ITestOutputHelper output)
     {
-        this.output = output;
-        stream = HystrixConfigurationStream.GetNonSingletonInstanceOnlyUsedInUnitTests(10);
+        _output = output;
+        _stream = HystrixConfigurationStream.GetNonSingletonInstanceOnlyUsedInUnitTests(10);
     }
 
     [Fact]
@@ -44,10 +44,10 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             cmd.Observe();
         }
 
-        stream.Observe().Take(num).Subscribe(
+        _stream.Observe().Take(num).Subscribe(
             configuration =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Received data with : " + configuration.CommandConfig.Count + " commands");
+                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Received data with : " + configuration.CommandConfig.Count + " commands");
                 if (configuration.CommandConfig.ContainsKey(CommandKey))
                 {
                     commandShowsUp.Value = true;
@@ -60,12 +60,12 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             },
             e =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
+                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                 latch.SignalEx();
             },
             () =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
+                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
                 latch.SignalEx();
             });
 
@@ -82,7 +82,7 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
         var payloads1 = new AtomicInteger(0);
         var payloads2 = new AtomicInteger(0);
 
-        var s1 = stream
+        var s1 = _stream
             .Observe()
             .Take(100)
             .OnDispose(() =>
@@ -92,21 +92,21 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             .Subscribe(
                 configuration =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads1.IncrementAndGet();
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
                     latch1.SignalEx();
                 });
 
-        var s2 = stream
+        var s2 = _stream
             .Observe()
             .Take(100)
             .OnDispose(() =>
@@ -116,17 +116,17 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             .Subscribe(
                 configuration =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
                     latch2.SignalEx();
                 });
 
@@ -143,7 +143,7 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
 
         Assert.True(latch1.Wait(10000));
         Assert.True(latch2.Wait(10000));
-        output.WriteLine("s1 got : " + payloads1.Value + ", s2 got : " + payloads2.Value);
+        _output.WriteLine("s1 got : " + payloads1.Value + ", s2 got : " + payloads2.Value);
         Assert.True(payloads1.Value > 0); // "s1 got data",
         Assert.True(payloads2.Value > 0); // "s2 got data",
         Assert.True(payloads2.Value > payloads1.Value); // "s1 got less data than s2",
@@ -156,7 +156,7 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
         var latch2 = new CountdownEvent(1);
         var payloads1 = new AtomicInteger(0);
         var payloads2 = new AtomicInteger(0);
-        var s1 = stream
+        var s1 = _stream
             .Observe()
             .Take(100)
             .OnDispose(() =>
@@ -166,21 +166,21 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             .Subscribe(
                 configuration =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads1.IncrementAndGet();
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
                     latch1.SignalEx();
                 });
 
-        var s2 = stream
+        var s2 = _stream
             .Observe()
             .Take(100)
             .OnDispose(() =>
@@ -190,17 +190,17 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             .Subscribe(
                 configuration =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
                     latch2.SignalEx();
                 });
 
@@ -216,11 +216,11 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             }
         }
 
-        Assert.False(stream.IsSourceCurrentlySubscribed);  // both subscriptions have been cancelled - source should be too
+        Assert.False(_stream.IsSourceCurrentlySubscribed);  // both subscriptions have been cancelled - source should be too
 
         Assert.True(latch1.Wait(10000));
         Assert.True(latch2.Wait(10000));
-        output.WriteLine("s1 got : " + payloads1.Value + ", s2 got : " + payloads2.Value);
+        _output.WriteLine("s1 got : " + payloads1.Value + ", s2 got : " + payloads2.Value);
         Assert.True(payloads1.Value > 0); // "s1 got data",
         Assert.True(payloads2.Value > 0); // "s2 got data",
     }
@@ -231,11 +231,11 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var foundError = new AtomicBoolean(false);
 
-        var fast = stream
+        var fast = _stream
             .Observe()
             .ObserveOn(NewThreadScheduler.Default);
 
-        var slow = stream
+        var slow = _stream
             .Observe()
             .ObserveOn(NewThreadScheduler.Default)
             .Map(
@@ -259,17 +259,17 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
             .Subscribe(
                 b =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " :  OnNext : " + b);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " :  OnNext : " + b);
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                     foundError.Value = true;
                     latch.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
                     latch.SignalEx();
                 });
 

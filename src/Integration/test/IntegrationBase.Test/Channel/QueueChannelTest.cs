@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class QueueChannelTest
 {
-    private IServiceProvider provider;
+    private IServiceProvider _provider;
 
     public QueueChannelTest()
     {
@@ -25,7 +25,7 @@ public class QueueChannelTest
         var config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]

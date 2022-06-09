@@ -9,12 +9,12 @@ namespace Steeltoe.Common.Availability.Test;
 
 public class ReadinessHealthContributorTest
 {
-    private readonly ApplicationAvailability availability = new ();
+    private readonly ApplicationAvailability _availability = new ();
 
     [Fact]
     public void HandlesUnknown()
     {
-        var contributor = new ReadinessHealthContributor(availability);
+        var contributor = new ReadinessHealthContributor(_availability);
 
         var result = contributor.Health();
 
@@ -24,8 +24,8 @@ public class ReadinessHealthContributorTest
     [Fact]
     public void HandlesAccepting()
     {
-        availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
-        var contributor = new ReadinessHealthContributor(availability);
+        _availability.SetAvailabilityState(_availability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
+        var contributor = new ReadinessHealthContributor(_availability);
 
         var result = contributor.Health();
 
@@ -35,8 +35,8 @@ public class ReadinessHealthContributorTest
     [Fact]
     public void HandlesRefusing()
     {
-        availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
-        var contributor = new ReadinessHealthContributor(availability);
+        _availability.SetAvailabilityState(_availability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
+        var contributor = new ReadinessHealthContributor(_availability);
 
         var result = contributor.Health();
 

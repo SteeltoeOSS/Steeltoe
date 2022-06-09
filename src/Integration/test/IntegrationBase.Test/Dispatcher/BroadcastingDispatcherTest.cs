@@ -19,15 +19,15 @@ namespace Steeltoe.Integration.Dispatcher.Test;
 
 public class BroadcastingDispatcherTest
 {
-    private readonly Mock<IMessage> messageMock = new ();
+    private readonly Mock<IMessage> _messageMock = new ();
 
-    private readonly Mock<IMessageHandler> targetMock1 = new ();
+    private readonly Mock<IMessageHandler> _targetMock1 = new ();
 
-    private readonly Mock<IMessageHandler> targetMock2 = new ();
+    private readonly Mock<IMessageHandler> _targetMock2 = new ();
 
-    private readonly Mock<IMessageHandler> targetMock3 = new ();
+    private readonly Mock<IMessageHandler> _targetMock3 = new ();
 
-    private readonly IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public BroadcastingDispatcherTest()
     {
@@ -36,172 +36,172 @@ public class BroadcastingDispatcherTest
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
     public void SingleTargetWithoutTaskExecutor()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.Dispatch(_messageMock.Object);
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void SingleTargetWithTaskExecutor()
     {
         var latch = new CountdownEvent(1);
-        targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.Dispatch(messageMock.Object);
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.Dispatch(_messageMock.Object);
         Assert.True(latch.Wait(3000));
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void MultipleTargetsWithoutTaskExecutor()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.Dispatch(_messageMock.Object);
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void MultipleTargetsWithTaskExecutor()
     {
         var latch = new CountdownEvent(3);
-        targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.Dispatch(messageMock.Object);
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock2.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock3.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.Dispatch(_messageMock.Object);
         Assert.True(latch.Wait(3000));
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void MultipleTargetsPartialFailureFirst()
     {
         var latch = new CountdownEvent(2);
-        targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(false, true, true));
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.Dispatch(messageMock.Object);
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock2.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock3.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(false, true, true));
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.Dispatch(_messageMock.Object);
         Assert.True(latch.Wait(3000));
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Never());
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void MultipleTargetsPartialFailureMiddle()
     {
         var latch = new CountdownEvent(2);
-        targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, false, true));
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.Dispatch(messageMock.Object);
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock2.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock3.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, false, true));
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.Dispatch(_messageMock.Object);
         Assert.True(latch.Wait(3000));
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Never());
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void MultipleTargetsPartialFailureLast()
     {
         var latch = new CountdownEvent(2);
-        targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock2.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        targetMock3.Setup(h => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, true, false));
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.Dispatch(messageMock.Object);
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock2.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        _targetMock3.Setup(h => h.HandleMessage(_messageMock.Object)).Callback(() => latch.Signal());
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, true, false));
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.Dispatch(_messageMock.Object);
         Assert.True(latch.Wait(3000));
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object), Times.Never());
     }
 
     [Fact]
     public void MultipleTargetsAllFail()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(false, false, false));
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(false, false, false));
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.Dispatch(_messageMock.Object);
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Never());
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Never());
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object), Times.Never());
     }
 
     [Fact]
     public void NoDuplicateSubscription()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.Dispatch(_messageMock.Object);
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void RemoveConsumerBeforeSend()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.RemoveHandler(targetMock2.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object));
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Never());
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.RemoveHandler(_targetMock2.Object);
+        dispatcher.Dispatch(_messageMock.Object);
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object));
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Never());
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void RemoveConsumerBetweenSends()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        dispatcher.AddHandler(targetMock1.Object);
-        dispatcher.AddHandler(targetMock2.Object);
-        dispatcher.AddHandler(targetMock3.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        dispatcher.RemoveHandler(targetMock2.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        targetMock1.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(2));
-        targetMock2.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(1));
-        targetMock3.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(2));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        dispatcher.AddHandler(_targetMock1.Object);
+        dispatcher.AddHandler(_targetMock2.Object);
+        dispatcher.AddHandler(_targetMock3.Object);
+        dispatcher.Dispatch(_messageMock.Object);
+        dispatcher.RemoveHandler(_targetMock2.Object);
+        dispatcher.Dispatch(_messageMock.Object);
+        _targetMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(2));
+        _targetMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(1));
+        _targetMock3.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(2));
     }
 
     [Fact]
     public void ApplySequenceDisabledByDefault()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
         var messages = new ConcurrentQueue<IMessage>();
         var target1 = new MessageStoringTestEndpoint(messages);
         var target2 = new MessageStoringTestEndpoint(messages);
@@ -226,7 +226,7 @@ public class BroadcastingDispatcherTest
     [Fact]
     public void ApplySequenceEnabled()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>())
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>())
         {
             ApplySequence = true
         };
@@ -270,33 +270,33 @@ public class BroadcastingDispatcherTest
     [Fact]
     public void TestExceptionEnhancement()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        dispatcher.AddHandler(targetMock1.Object);
-        targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException("Mock Exception"));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        dispatcher.AddHandler(_targetMock1.Object);
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException("Mock Exception"));
 
         try
         {
-            dispatcher.Dispatch(messageMock.Object);
+            dispatcher.Dispatch(_messageMock.Object);
             throw new Exception("Expected Exception");
         }
         catch (MessagingException e)
         {
-            Assert.Equal(messageMock.Object, e.FailedMessage);
+            Assert.Equal(_messageMock.Object, e.FailedMessage);
         }
     }
 
     [Fact]
     public void TestNoExceptionEnhancement()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        dispatcher.AddHandler(targetMock1.Object);
-        targetMock1.Object.HandleMessage(messageMock.Object);
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        dispatcher.AddHandler(_targetMock1.Object);
+        _targetMock1.Object.HandleMessage(_messageMock.Object);
         var dontReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
-        targetMock1.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
 
         try
         {
-            dispatcher.Dispatch(messageMock.Object);
+            dispatcher.Dispatch(_messageMock.Object);
             throw new Exception("Expected Exception");
         }
         catch (MessagingException e)
@@ -308,44 +308,44 @@ public class BroadcastingDispatcherTest
     [Fact]
     public void TestNoHandler()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
-        Assert.True(dispatcher.Dispatch(messageMock.Object));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
+        Assert.True(dispatcher.Dispatch(_messageMock.Object));
     }
 
     [Fact]
     public void TestNoHandlerWithExecutor()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
-        Assert.True(dispatcher.Dispatch(messageMock.Object));
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        Assert.True(dispatcher.Dispatch(_messageMock.Object));
     }
 
     [Fact]
     public void TestNoHandlerWithRequiredSubscriber()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), true);
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), true);
         try
         {
-            dispatcher.Dispatch(messageMock.Object);
+            dispatcher.Dispatch(_messageMock.Object);
             throw new Exception("Expected Exception");
         }
         catch (MessageDispatchingException exception)
         {
-            Assert.Equal(messageMock.Object, exception.FailedMessage);
+            Assert.Equal(_messageMock.Object, exception.FailedMessage);
         }
     }
 
     [Fact]
     public void TestNoHandlerWithExecutorWithRequiredSubscriber()
     {
-        var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default, true);
+        var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), TaskScheduler.Default, true);
         try
         {
-            dispatcher.Dispatch(messageMock.Object);
+            dispatcher.Dispatch(_messageMock.Object);
             throw new Exception("Expected Exception");
         }
         catch (MessageDispatchingException exception)
         {
-            Assert.Equal(messageMock.Object, exception.FailedMessage);
+            Assert.Equal(_messageMock.Object, exception.FailedMessage);
         }
     }
 
@@ -368,12 +368,12 @@ public class BroadcastingDispatcherTest
 
     private sealed class PartialFailingTaskScheduler : TaskScheduler
     {
-        private readonly bool[] failures;
-        private int count = -1;
+        private readonly bool[] _failures;
+        private int _count = -1;
 
         public PartialFailingTaskScheduler(params bool[] failures)
         {
-            this.failures = failures;
+            _failures = failures;
         }
 
         protected override IEnumerable<Task> GetScheduledTasks()
@@ -383,10 +383,10 @@ public class BroadcastingDispatcherTest
 
         protected override void QueueTask(Task task)
         {
-            var val = Interlocked.Increment(ref count);
-            if (val < failures.Length)
+            var val = Interlocked.Increment(ref _count);
+            if (val < _failures.Length)
             {
-                if (failures[val])
+                if (_failures[val])
                 {
                     TryExecuteTask(task);
                 }

@@ -19,23 +19,23 @@ namespace Steeltoe.Integration.Endpoint.Test;
 
 public class MessageProducerSupportEndpointTest
 {
-    private readonly ServiceCollection services;
+    private readonly ServiceCollection _services;
 
     public MessageProducerSupportEndpointTest()
     {
-        services = new ServiceCollection();
-        services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
-        services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        _services = new ServiceCollection();
+        _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
+        _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
+        _services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var config = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(config);
-        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        _services.AddSingleton<IConfiguration>(config);
+        _services.AddSingleton<IApplicationContext, GenericApplicationContext>();
     }
 
     [Fact]
     public async Task ValidateExceptionIfNoErrorChannel()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -52,7 +52,7 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateExceptionIfSendToErrorChannelFails()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -72,7 +72,7 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateSuccessfulErrorFlowDoesNotThrowErrors()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -99,8 +99,8 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task TestWithChannelName()
     {
-        services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
-        var provider = services.BuildServiceProvider();
+        _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
+        var provider = _services.BuildServiceProvider();
         var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
         {
             OutputChannelName = "foo"
@@ -113,7 +113,7 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task CustomDoStop()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var endpoint = new CustomEndpoint(provider.GetService<IApplicationContext>());
         Assert.Equal(0, endpoint.Count);
         Assert.False(endpoint.IsRunning);

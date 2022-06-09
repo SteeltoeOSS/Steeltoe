@@ -9,23 +9,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class BindingBuilderTest
 {
-    private readonly IQueue queue;
+    private readonly IQueue _queue;
 
     public BindingBuilderTest()
     {
-        queue = new Queue("q");
+        _queue = new Queue("q");
     }
 
     [Fact]
     public void FanoutBinding()
     {
         var fanoutExchange = new FanoutExchange("f");
-        var binding = BindingBuilder.Bind(queue).To(fanoutExchange);
+        var binding = BindingBuilder.Bind(_queue).To(fanoutExchange);
         Assert.NotNull(binding);
         Assert.Equal(fanoutExchange.ExchangeName, binding.Exchange);
         Assert.Equal(string.Empty, binding.RoutingKey);
         Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
-        Assert.Equal(queue.QueueName, binding.Destination);
+        Assert.Equal(_queue.QueueName, binding.Destination);
     }
 
     [Fact]
@@ -33,11 +33,11 @@ public class BindingBuilderTest
     {
         var directExchange = new DirectExchange("d");
         var routingKey = "r";
-        var binding = BindingBuilder.Bind(queue).To(directExchange).With(routingKey);
+        var binding = BindingBuilder.Bind(_queue).To(directExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(directExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
-        Assert.Equal(queue.QueueName, binding.Destination);
+        Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(routingKey, binding.RoutingKey);
     }
 
@@ -45,12 +45,12 @@ public class BindingBuilderTest
     public void DirectBindingWithQueueName()
     {
         var directExchange = new DirectExchange("d");
-        var binding = BindingBuilder.Bind(queue).To(directExchange).WithQueueName();
+        var binding = BindingBuilder.Bind(_queue).To(directExchange).WithQueueName();
         Assert.NotNull(binding);
         Assert.Equal(directExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
-        Assert.Equal(queue.QueueName, binding.Destination);
-        Assert.Equal(queue.QueueName, binding.RoutingKey);
+        Assert.Equal(_queue.QueueName, binding.Destination);
+        Assert.Equal(_queue.QueueName, binding.RoutingKey);
     }
 
     [Fact]
@@ -58,11 +58,11 @@ public class BindingBuilderTest
     {
         var topicExchange = new TopicExchange("t");
         var routingKey = "r";
-        var binding = BindingBuilder.Bind(queue).To(topicExchange).With(routingKey);
+        var binding = BindingBuilder.Bind(_queue).To(topicExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(topicExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
-        Assert.Equal(queue.QueueName, binding.Destination);
+        Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(routingKey, binding.RoutingKey);
     }
 
@@ -71,11 +71,11 @@ public class BindingBuilderTest
     {
         var headersExchange = new HeadersExchange("h");
         var headerKey = "headerKey";
-        var binding = BindingBuilder.Bind(queue).To(headersExchange).Where(headerKey).Exists();
+        var binding = BindingBuilder.Bind(_queue).To(headersExchange).Where(headerKey).Exists();
         Assert.NotNull(binding);
         Assert.Equal(headersExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
-        Assert.Equal(queue.QueueName, binding.Destination);
+        Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(string.Empty, binding.RoutingKey);
     }
 
@@ -86,7 +86,7 @@ public class BindingBuilderTest
         var customExchange = new CustomExchange("c");
         var routingKey = "r";
         var binding = BindingBuilder.
-            Bind(queue).
+            Bind(_queue).
             To(customExchange).
             With(routingKey).
             And(new Dictionary<string, object> { { "k", argumentobject } });
@@ -94,7 +94,7 @@ public class BindingBuilderTest
         Assert.Equal(argumentobject, binding.Arguments["k"]);
         Assert.Equal(customExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
-        Assert.Equal(queue.QueueName, binding.Destination);
+        Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(routingKey, binding.RoutingKey);
     }
 

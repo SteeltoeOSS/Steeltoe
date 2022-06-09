@@ -34,7 +34,7 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:enabled"] = "true",
     };
 
-    private IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
+    private IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
 
     [Fact]
     public async Task HandleEnvRequestAsync_ReturnsExpected()
@@ -46,7 +46,7 @@ public class EndpointMiddlewareTest : BaseTest
         var config = configurationBuilder.Build();
         var mopts = new ActuatorManagementOptions();
         mopts.EndpointOptions.Add(opts);
-        var ep = new EnvEndpoint(opts, config, host);
+        var ep = new EnvEndpoint(opts, config, _host);
         var middle = new EnvEndpointMiddleware(null, ep, mopts);
 
         var context = CreateRequest("GET", "/env");

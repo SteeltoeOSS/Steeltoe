@@ -31,7 +31,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         ["management:endpoints:path"] = "/testing",
     };
 
-    private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+    private Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
 
     [Fact]
     public void AddCloudFoundryActuators_IWebHostBuilder()
@@ -96,7 +96,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     public async Task AddCloudFoundryActuators_IHostBuilder_IStartupFilterFires()
     {
         var hostBuilder = new HostBuilder()
-            .ConfigureWebHost(testServerWithRouting)
+            .ConfigureWebHost(_testServerWithRouting)
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
         var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
@@ -113,7 +113,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     public async Task AddCloudFoundryActuatorsV1_IHostBuilder_IStartupFilterFires()
     {
         var hostBuilder = new HostBuilder()
-            .ConfigureWebHost(testServerWithRouting)
+            .ConfigureWebHost(_testServerWithRouting)
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
         var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
@@ -132,7 +132,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureLogging(logging => logging.AddDynamicSerilog())
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
-            .ConfigureWebHost(testServerWithRouting)
+            .ConfigureWebHost(_testServerWithRouting)
             .AddCloudFoundryActuators();
 
         var host = hostBuilder.Build();

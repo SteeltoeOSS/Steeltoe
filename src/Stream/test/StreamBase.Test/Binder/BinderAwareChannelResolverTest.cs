@@ -23,41 +23,41 @@ namespace Steeltoe.Stream.Binder;
 
 public class BinderAwareChannelResolverTest : AbstractTest
 {
-    private readonly IServiceProvider serviceProvider;
-    private readonly BinderAwareChannelResolver resolver;
-    private readonly IBinder<IMessageChannel> binder;
-    private readonly SubscribableChannelBindingTargetFactory bindingTargetFactory;
-    private readonly IOptions<BindingServiceOptions> options;
-    private readonly IApplicationContext context;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly BinderAwareChannelResolver _resolver;
+    private readonly IBinder<IMessageChannel> _binder;
+    private readonly SubscribableChannelBindingTargetFactory _bindingTargetFactory;
+    private readonly IOptions<BindingServiceOptions> _options;
+    private readonly IApplicationContext _context;
 
     public BinderAwareChannelResolverTest()
     {
         var searchDirectories = GetSearchDirectories("TestBinder");
         var container = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder");
         container.AddSingleton<IChannelInterceptor, ImmutableMessageChannelInterceptor>();
-        serviceProvider = container.BuildServiceProvider();
+        _serviceProvider = container.BuildServiceProvider();
 
-        binder = serviceProvider.GetServices<IBinder>().OfType<IBinder<IMessageChannel>>().Single();
-        bindingTargetFactory = serviceProvider.GetServices<IBindingTargetFactory>().OfType<SubscribableChannelBindingTargetFactory>().Single();
-        resolver = serviceProvider.GetService<IDestinationResolver<IMessageChannel>>() as BinderAwareChannelResolver;
-        options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
-        context = serviceProvider.GetService<IApplicationContext>();
+        _binder = _serviceProvider.GetServices<IBinder>().OfType<IBinder<IMessageChannel>>().Single();
+        _bindingTargetFactory = _serviceProvider.GetServices<IBindingTargetFactory>().OfType<SubscribableChannelBindingTargetFactory>().Single();
+        _resolver = _serviceProvider.GetService<IDestinationResolver<IMessageChannel>>() as BinderAwareChannelResolver;
+        _options = _serviceProvider.GetService<IOptions<BindingServiceOptions>>();
+        _context = _serviceProvider.GetService<IApplicationContext>();
 
-        Assert.NotNull(binder);
-        Assert.NotNull(bindingTargetFactory);
-        Assert.NotNull(resolver);
-        Assert.NotNull(options);
+        Assert.NotNull(_binder);
+        Assert.NotNull(_bindingTargetFactory);
+        Assert.NotNull(_resolver);
+        Assert.NotNull(_options);
     }
 
     [Fact]
     public void ResolveChannel()
     {
-        var bindables = serviceProvider.GetServices<IBindable>();
+        var bindables = _serviceProvider.GetServices<IBindable>();
         Assert.Single(bindables);
         var bindable = bindables.Single();
         Assert.Empty(bindable.Inputs);
         Assert.Empty(bindable.Outputs);
-        var registered = resolver.ResolveDestination("foo");
+        var registered = _resolver.ResolveDestination("foo");
 
         var interceptors = ((IntChannel.AbstractMessageChannel)registered).ChannelInterceptors;
         Assert.Equal(2, interceptors.Count);
@@ -66,7 +66,7 @@ public class BinderAwareChannelResolverTest : AbstractTest
         Assert.Empty(bindable.Inputs);
         Assert.Single(bindable.Outputs);
 
-        var testChannel = new DirectChannel(context, "INPUT");
+        var testChannel = new DirectChannel(_context, "INPUT");
         var latch = new CountdownEvent(1);
         IList<IMessage> received = new List<IMessage>();
         testChannel.Subscribe(new LatchedMessageHandler
@@ -75,7 +75,7 @@ public class BinderAwareChannelResolverTest : AbstractTest
             Received = received
         });
 
-        binder.BindConsumer("foo", null, testChannel, GetConsumerOptions("testbinding"));
+        _binder.BindConsumer("foo", null, testChannel, GetConsumerOptions("testbinding"));
         Assert.Empty(received);
         registered.Send(MessageBuilder.WithPayload("hello").Build());
         latch.Wait(1000);
@@ -88,8 +88,8 @@ public class BinderAwareChannelResolverTest : AbstractTest
     [Fact]
     public void ResolveNonRegisteredChannel()
     {
-        var other = resolver.ResolveDestination("other");
-        var registry = serviceProvider.GetService<IApplicationContext>();
+        var other = _resolver.ResolveDestination("other");
+        var registry = _serviceProvider.GetService<IApplicationContext>();
         var bean = registry.GetService<IMessageChannel>("other");
         Assert.Same(bean, other);
 

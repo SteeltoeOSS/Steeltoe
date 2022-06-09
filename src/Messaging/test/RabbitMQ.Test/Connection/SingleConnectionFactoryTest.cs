@@ -49,16 +49,16 @@ public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
 
     private sealed class TestListener : IChannelListener
     {
-        private readonly AtomicInteger called;
+        private readonly AtomicInteger _called;
 
         public TestListener(AtomicInteger called)
         {
-            this.called = called;
+            _called = called;
         }
 
         public void OnCreate(RC.IModel channel, bool transactional)
         {
-            called.IncrementAndGet();
+            _called.IncrementAndGet();
         }
 
         public void OnShutDown(RC.ShutdownEventArgs args)

@@ -19,7 +19,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class TaskSchedulerChannelTest
 {
-    private readonly IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public TaskSchedulerChannelTest()
     {
@@ -30,13 +30,13 @@ public class TaskSchedulerChannelTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
     public void VerifyDifferentThread()
     {
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(1);
         var handler = new TestHandler(latch);
         channel.Subscribe(handler);
@@ -50,7 +50,7 @@ public class TaskSchedulerChannelTest
     public void RoundRobinLoadBalancing()
     {
         var numberOfMessages = 12;
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
         var handler2 = new TestHandler(latch);
@@ -80,7 +80,7 @@ public class TaskSchedulerChannelTest
     public void VerifyFailoverWithLoadBalancing()
     {
         var numberOfMessages = 12;
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
         var handler2 = new TestHandler(latch);
@@ -111,7 +111,7 @@ public class TaskSchedulerChannelTest
     public void VerifyFailoverWithoutLoadBalancing()
     {
         var numberOfMessages = 12;
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
         var handler2 = new TestHandler(latch);
@@ -141,7 +141,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void InterceptorWithModifiedMessage()
     {
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
 
         var mockHandler = new Mock<IMessageHandler>();
         var mockExpected = new Mock<IMessage>();
@@ -159,7 +159,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void InterceptorWithException()
     {
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var message = Message.Create("foo");
         var mockHandler = new Mock<IMessageHandler>();
 
@@ -219,7 +219,7 @@ public class TaskSchedulerChannelTest
         public int Counter;
         public volatile bool AfterHandledInvoked;
         public IMessage MessageToReturn;
-        private readonly CountdownEvent latch;
+        private readonly CountdownEvent _latch;
 
         public BeforeHandleInterceptor()
         {
@@ -227,21 +227,21 @@ public class TaskSchedulerChannelTest
 
         public BeforeHandleInterceptor(CountdownEvent latch)
         {
-            this.latch = latch;
+            _latch = latch;
         }
 
         public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
         {
             Assert.NotNull(message);
             Counter++;
-            latch?.Signal();
+            _latch?.Signal();
             return MessageToReturn ?? message;
         }
 
         public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception ex)
         {
             AfterHandledInvoked = true;
-            latch?.Signal();
+            _latch?.Signal();
         }
     }
 }

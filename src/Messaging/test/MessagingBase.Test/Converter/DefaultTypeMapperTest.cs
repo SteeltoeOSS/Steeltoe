@@ -11,99 +11,99 @@ namespace Steeltoe.Messaging.Converter;
 
 public class DefaultTypeMapperTest
 {
-    private readonly DefaultTypeMapper typeMapper = new ();
-    private readonly MessageHeaders headers = new ();
+    private readonly DefaultTypeMapper _typeMapper = new ();
+    private readonly MessageHeaders _headers = new ();
 
     [Fact]
     public void GetAnObjectWhenClassIdNotPresent()
     {
-        var type = typeMapper.ToType(headers);
+        var type = _typeMapper.ToType(_headers);
         Assert.Equal(typeof(object), type);
     }
 
     [Fact]
     public void ShouldLookInTheClassIdFieldNameToFindTheClassName()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader("type", "System.String");
-        typeMapper.ClassIdFieldName = "type";
+        _typeMapper.ClassIdFieldName = "type";
 
-        var type = typeMapper.ToType(accessor.MessageHeaders);
+        var type = _typeMapper.ToType(accessor.MessageHeaders);
         Assert.Equal(typeof(string), type);
     }
 
     [Fact]
     public void ShouldUseTheClassProvidedByTheLookupMapIfPresent()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader("__TypeId__", "trade");
-        typeMapper.SetIdClassMapping(new Dictionary<string, Type> { { "trade", typeof(SimpleTrade) } });
+        _typeMapper.SetIdClassMapping(new Dictionary<string, Type> { { "trade", typeof(SimpleTrade) } });
 
-        var type = typeMapper.ToType(accessor.MessageHeaders);
+        var type = _typeMapper.ToType(accessor.MessageHeaders);
         Assert.Equal(typeof(SimpleTrade), type);
     }
 
     [Fact]
     public void FromTypeShouldPopulateWithTypeNameByDefault()
     {
-        typeMapper.FromType(typeof(SimpleTrade), headers);
-        var className = headers.Get<string>(typeMapper.ClassIdFieldName);
+        _typeMapper.FromType(typeof(SimpleTrade), _headers);
+        var className = _headers.Get<string>(_typeMapper.ClassIdFieldName);
         Assert.Equal(typeof(SimpleTrade).ToString(), className);
     }
 
     [Fact]
     public void ShouldUseSpecialNameForClassIfPresent()
     {
-        typeMapper.SetIdClassMapping(new Dictionary<string, Type> { { "daytrade", typeof(SimpleTrade) } });
-        typeMapper.FromType(typeof(SimpleTrade), headers);
-        var className = headers.Get<string>(typeMapper.ClassIdFieldName);
+        _typeMapper.SetIdClassMapping(new Dictionary<string, Type> { { "daytrade", typeof(SimpleTrade) } });
+        _typeMapper.FromType(typeof(SimpleTrade), _headers);
+        var className = _headers.Get<string>(_typeMapper.ClassIdFieldName);
         Assert.Equal("daytrade", className);
     }
 
     [Fact]
     public void ShouldThrowAnExceptionWhenContentClassIdIsNotPresentWhenClassIdIsContainerType()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
-        accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(List<>).FullName);
-        var excep = Assert.Throws<MessageConversionException>(() => typeMapper.ToType(accessor.MessageHeaders));
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
+        accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(List<>).FullName);
+        var excep = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
         Assert.Contains("Could not resolve ", excep.Message);
     }
 
     [Fact]
     public void ShouldLookInTheContentClassIdFieldNameToFindTheContainerClassIDWhenClassIdIsContainerType()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader("contentType", typeof(string).ToString());
-        accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(List<>).FullName);
-        typeMapper.ContentClassIdFieldName = "contentType";
-        var type = typeMapper.ToType(accessor.MessageHeaders);
+        accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(List<>).FullName);
+        _typeMapper.ContentClassIdFieldName = "contentType";
+        var type = _typeMapper.ToType(accessor.MessageHeaders);
         Assert.Equal(typeof(List<string>), type);
     }
 
     [Fact]
     public void ShouldUseTheContentClassProvidedByTheLookupMapIfPresent()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
-        accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(List<>).FullName);
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
+        accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(List<>).FullName);
         accessor.SetHeader("__ContentTypeId__", "trade");
         var mapping = new Dictionary<string, Type>
         {
             { "trade", typeof(SimpleTrade) },
-            { typeMapper.ClassIdFieldName, typeof(List<>) }
+            { _typeMapper.ClassIdFieldName, typeof(List<>) }
         };
-        typeMapper.SetIdClassMapping(mapping);
+        _typeMapper.SetIdClassMapping(mapping);
 
-        var type = typeMapper.ToType(accessor.MessageHeaders);
+        var type = _typeMapper.ToType(accessor.MessageHeaders);
         Assert.Equal(typeof(List<SimpleTrade>), type);
     }
 
     [Fact]
     public void FromTypeShouldPopulateWithContentTypeTypeNameByDefault()
     {
-        typeMapper.FromType(typeof(List<SimpleTrade>), headers);
+        _typeMapper.FromType(typeof(List<SimpleTrade>), _headers);
 
-        var className = headers.Get<string>(typeMapper.ClassIdFieldName);
-        var contentClassName = headers.Get<string>(typeMapper.ContentClassIdFieldName);
+        var className = _headers.Get<string>(_typeMapper.ClassIdFieldName);
+        var contentClassName = _headers.Get<string>(_typeMapper.ContentClassIdFieldName);
         Assert.Equal(typeof(List<>).FullName, className);
         Assert.Equal(typeof(SimpleTrade).ToString(), contentClassName);
     }
@@ -111,55 +111,55 @@ public class DefaultTypeMapperTest
     [Fact]
     public void ShouldThrowAnExceptionWhenKeyClassIdIsNotPresentWhenClassIdIsAMap()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
-        accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
-        accessor.SetHeader(typeMapper.KeyClassIdFieldName, typeof(string).ToString());
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
+        accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
+        accessor.SetHeader(_typeMapper.KeyClassIdFieldName, typeof(string).ToString());
 
-        var excep = Assert.Throws<MessageConversionException>(() => typeMapper.ToType(accessor.MessageHeaders));
+        var excep = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
         Assert.Contains("Could not resolve ", excep.Message);
     }
 
     [Fact]
     public void ShouldLookInTheValueClassIdFieldNameToFindTheValueClassIDWhenClassIdIsAMap()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader("keyType", typeof(int).ToString());
-        accessor.SetHeader(typeMapper.ContentClassIdFieldName, typeof(string).ToString());
-        accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
-        typeMapper.KeyClassIdFieldName = "keyType";
+        accessor.SetHeader(_typeMapper.ContentClassIdFieldName, typeof(string).ToString());
+        accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
+        _typeMapper.KeyClassIdFieldName = "keyType";
 
-        var type = typeMapper.ToType(accessor.MessageHeaders);
+        var type = _typeMapper.ToType(accessor.MessageHeaders);
         Assert.Equal(typeof(Dictionary<int, string>), type);
     }
 
     [Fact]
     public void ShouldUseTheKeyClassProvidedByTheLookupMapIfPresent()
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader("__KeyTypeId__", "trade");
-        accessor.SetHeader(typeMapper.ContentClassIdFieldName, typeof(string).ToString());
-        accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
+        accessor.SetHeader(_typeMapper.ContentClassIdFieldName, typeof(string).ToString());
+        accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
 
         var mapping = new Dictionary<string, Type>
         {
             { "trade", typeof(SimpleTrade) },
-            { typeMapper.ClassIdFieldName, typeof(Dictionary<,>) },
-            { typeMapper.ContentClassIdFieldName, typeof(string) }
+            { _typeMapper.ClassIdFieldName, typeof(Dictionary<,>) },
+            { _typeMapper.ContentClassIdFieldName, typeof(string) }
         };
-        typeMapper.SetIdClassMapping(mapping);
+        _typeMapper.SetIdClassMapping(mapping);
 
-        var type = typeMapper.ToType(accessor.MessageHeaders);
+        var type = _typeMapper.ToType(accessor.MessageHeaders);
         Assert.Equal(typeof(Dictionary<SimpleTrade, string>), type);
     }
 
     [Fact]
     public void FromTypeShouldPopulateWithKeyTypeAndContentTypeNameByDefault()
     {
-        typeMapper.FromType(typeof(Dictionary<SimpleTrade, string>), headers);
+        _typeMapper.FromType(typeof(Dictionary<SimpleTrade, string>), _headers);
 
-        var className = headers.Get<string>(typeMapper.ClassIdFieldName);
-        var contentClassName = headers.Get<string>(typeMapper.ContentClassIdFieldName);
-        var keyClassName = headers.Get<string>(typeMapper.KeyClassIdFieldName);
+        var className = _headers.Get<string>(_typeMapper.ClassIdFieldName);
+        var contentClassName = _headers.Get<string>(_typeMapper.ContentClassIdFieldName);
+        var keyClassName = _headers.Get<string>(_typeMapper.KeyClassIdFieldName);
         Assert.Equal(typeof(Dictionary<,>).FullName, className);
         Assert.Equal(typeof(SimpleTrade).ToString(), keyClassName);
         Assert.Equal(typeof(string).ToString(), contentClassName);
@@ -168,8 +168,8 @@ public class DefaultTypeMapperTest
     [Fact]
     public void RoundTrip()
     {
-        typeMapper.FromType(typeof(Dictionary<SimpleTrade, string>), headers);
-        var type = typeMapper.ToType(headers);
+        _typeMapper.FromType(typeof(Dictionary<SimpleTrade, string>), _headers);
+        var type = _typeMapper.ToType(_headers);
         Assert.Equal(typeof(Dictionary<SimpleTrade, string>), type);
     }
 }

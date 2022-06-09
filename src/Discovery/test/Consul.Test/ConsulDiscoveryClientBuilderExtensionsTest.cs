@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Consul.Test;
 
 public class ConsulDiscoveryClientBuilderExtensionsTest
 {
-    private Dictionary<string, string> appsettings = new ()
+    private Dictionary<string, string> _appsettings = new ()
     {
         { "spring:application:name", "myName" },
         { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -26,7 +26,7 @@ public class ConsulDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void UseConsulUsesConsul()
     {
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.AddServiceDiscovery(options => options.UseConsul());

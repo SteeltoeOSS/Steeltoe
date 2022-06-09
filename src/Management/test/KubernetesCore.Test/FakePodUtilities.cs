@@ -17,15 +17,15 @@ internal class FakePodUtilities : IPodUtilities
         Spec = new V1PodSpec { ServiceAccountName = "myserviceaccount", NodeName = "mynode" }
     };
 
-    private readonly V1Pod fakePod;
+    private readonly V1Pod _fakePod;
 
     internal FakePodUtilities(V1Pod v1Pod)
     {
-        fakePod = v1Pod;
+        _fakePod = v1Pod;
     }
 
     public Task<V1Pod> GetCurrentPodAsync()
     {
-        return Task.FromResult(fakePod);
+        return Task.FromResult(_fakePod);
     }
 }

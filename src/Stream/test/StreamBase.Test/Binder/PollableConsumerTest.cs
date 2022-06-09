@@ -407,11 +407,11 @@ public class PollableConsumerTest : AbstractTest
 
     private class TestErrorsErrorChannelHandler : IMessageHandler
     {
-        private readonly CountdownEvent latch;
+        private readonly CountdownEvent _latch;
 
         public TestErrorsErrorChannelHandler(CountdownEvent latch)
         {
-            this.latch = latch;
+            _latch = latch;
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
@@ -419,7 +419,7 @@ public class PollableConsumerTest : AbstractTest
 
         public void HandleMessage(IMessage message)
         {
-            latch.Signal();
+            _latch.Signal();
         }
     }
 
@@ -461,16 +461,16 @@ public class PollableConsumerTest : AbstractTest
 
     private sealed class TestMessageSource : IMessageSource
     {
-        private readonly string payload;
+        private readonly string _payload;
 
         public TestMessageSource(string payload)
         {
-            this.payload = payload;
+            _payload = payload;
         }
 
         public IMessage Receive()
         {
-            return Message.Create(Encoding.UTF8.GetBytes(payload));
+            return Message.Create(Encoding.UTF8.GetBytes(_payload));
         }
     }
 

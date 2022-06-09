@@ -20,20 +20,20 @@ public class TestObserverBase<T> : ObserverBase<T>
 
     public volatile bool StreamRunning;
 
-    private readonly CountdownEvent latch;
-    private readonly ITestOutputHelper output;
+    private readonly CountdownEvent _latch;
+    private readonly ITestOutputHelper _output;
 
     public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
     {
-        this.latch = latch;
-        this.output = output;
+        _latch = latch;
+        _output = output;
     }
 
     protected override void OnCompletedCore()
     {
-        output?.WriteLine("OnComplete @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId);
+        _output?.WriteLine("OnComplete @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId);
         StreamRunning = false;
-        latch.SignalEx();
+        _latch.SignalEx();
     }
 
     protected override void OnErrorCore(Exception error)
@@ -49,7 +49,7 @@ public class TestObserverBase<T> : ObserverBase<T>
             StreamRunning = true;
         }
 
-        if (output != null)
+        if (_output != null)
         {
             try
             {
@@ -59,8 +59,8 @@ public class TestObserverBase<T> : ObserverBase<T>
                     tostring = Join(",", array);
                 }
 
-                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
-                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                _output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
+                _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
             catch (Exception)
             {

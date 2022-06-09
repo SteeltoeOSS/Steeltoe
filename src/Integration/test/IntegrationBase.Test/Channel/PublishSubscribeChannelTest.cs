@@ -14,7 +14,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class PublishSubscribeChannelTest
 {
-    private IServiceProvider provider;
+    private IServiceProvider _provider;
 
     public PublishSubscribeChannelTest()
     {
@@ -23,7 +23,7 @@ public class PublishSubscribeChannelTest
         var config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]

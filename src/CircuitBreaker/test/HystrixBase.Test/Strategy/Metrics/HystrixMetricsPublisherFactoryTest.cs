@@ -14,11 +14,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test;
 
 public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixMetricsPublisherFactoryTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -87,31 +87,31 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class MyHystrixMetricsPublisherCommand : IHystrixMetricsPublisherCommand
     {
-        private readonly AtomicInteger commandCounter;
+        private readonly AtomicInteger _commandCounter;
 
         public MyHystrixMetricsPublisherCommand(AtomicInteger commandCounter)
         {
-            this.commandCounter = commandCounter;
+            _commandCounter = commandCounter;
         }
 
         public void Initialize()
         {
-            commandCounter.IncrementAndGet();
+            _commandCounter.IncrementAndGet();
         }
     }
 
     private sealed class MyHystrixMetricsPublisherThreadPool : IHystrixMetricsPublisherThreadPool
     {
-        private readonly AtomicInteger threadCounter;
+        private readonly AtomicInteger _threadCounter;
 
         public MyHystrixMetricsPublisherThreadPool(AtomicInteger threadCounter)
         {
-            this.threadCounter = threadCounter;
+            _threadCounter = threadCounter;
         }
 
         public void Initialize()
         {
-            threadCounter.IncrementAndGet();
+            _threadCounter.IncrementAndGet();
         }
     }
 
@@ -155,16 +155,16 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class CustomPublisher : HystrixMetricsPublisher
     {
-        private readonly IHystrixMetricsPublisherCommand commandToReturn;
+        private readonly IHystrixMetricsPublisherCommand _commandToReturn;
 
         public CustomPublisher(IHystrixMetricsPublisherCommand commandToReturn)
         {
-            this.commandToReturn = commandToReturn;
+            _commandToReturn = commandToReturn;
         }
 
         public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
         {
-            return commandToReturn;
+            return _commandToReturn;
         }
     }
 }

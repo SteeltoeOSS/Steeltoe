@@ -1705,44 +1705,44 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
     private sealed class TestOrderlyShutdownPublisherCallbackChannelFactory : IPublisherCallbackChannelFactory
     {
-        private readonly Mock<IPublisherCallbackChannel> pccMock;
+        private readonly Mock<IPublisherCallbackChannel> _pccMock;
 
         public TestOrderlyShutdownPublisherCallbackChannelFactory(Mock<IPublisherCallbackChannel> pccMock)
         {
-            this.pccMock = pccMock;
+            _pccMock = pccMock;
         }
 
         public IPublisherCallbackChannel CreateChannel(RC.IModel channel)
         {
-            return pccMock.Object;
+            return _pccMock.Object;
         }
     }
 
     private sealed class TestWithConnectionFactoryCachedConnectionListener : IConnectionListener
     {
-        private readonly AtomicReference<RC.IConnection> createNotification;
-        private readonly AtomicReference<RC.IConnection> closedNotification;
+        private readonly AtomicReference<RC.IConnection> _createNotification;
+        private readonly AtomicReference<RC.IConnection> _closedNotification;
 
         public TestWithConnectionFactoryCachedConnectionListener(AtomicReference<RC.IConnection> createNotification, AtomicReference<RC.IConnection> closedNotification)
         {
-            this.createNotification = createNotification;
-            this.closedNotification = closedNotification;
+            _createNotification = createNotification;
+            _closedNotification = closedNotification;
         }
 
         public void OnClose(IConnection connection)
         {
-            Assert.Null(closedNotification.Value);
+            Assert.Null(_closedNotification.Value);
             var asProxy = connection as CachingConnectionFactory.ChannelCachingConnectionProxy;
             var conDelegate = asProxy.TargetConnection.Connection;
-            closedNotification.Value = conDelegate;
+            _closedNotification.Value = conDelegate;
         }
 
         public void OnCreate(IConnection connection)
         {
-            Assert.Null(createNotification.Value);
+            Assert.Null(_createNotification.Value);
             var asProxy = connection as CachingConnectionFactory.ChannelCachingConnectionProxy;
             var conDelegate = asProxy.TargetConnection.Connection;
-            createNotification.Value = conDelegate;
+            _createNotification.Value = conDelegate;
         }
 
         public void OnShutDown(RC.ShutdownEventArgs args)

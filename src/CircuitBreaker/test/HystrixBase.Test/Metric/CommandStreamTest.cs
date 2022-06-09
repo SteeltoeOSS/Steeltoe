@@ -18,10 +18,10 @@ public abstract class CommandStreamTest : HystrixTestBase
 
     public class Command : HystrixCommand<int>
     {
-        private readonly int executionLatency;
-        private readonly HystrixEventType executionResult2;
-        private readonly HystrixEventType fallbackExecutionResult;
-        private readonly int fallbackExecutionLatency;
+        private readonly int _executionLatency;
+        private readonly HystrixEventType _executionResult2;
+        private readonly HystrixEventType _fallbackExecutionResult;
+        private readonly int _fallbackExecutionLatency;
 
         private Command(
             HystrixCommandOptions setter,
@@ -32,11 +32,11 @@ public abstract class CommandStreamTest : HystrixTestBase
             int fallbackExecutionLatency)
             : base(setter)
         {
-            executionResult2 = executionResult;
-            this.executionLatency = executionLatency;
-            this.fallbackExecutionResult = fallbackExecutionResult;
-            this.fallbackExecutionLatency = fallbackExecutionLatency;
-            this.CacheKey = arg;
+            _executionResult2 = executionResult;
+            _executionLatency = executionLatency;
+            _fallbackExecutionResult = fallbackExecutionResult;
+            _fallbackExecutionLatency = fallbackExecutionLatency;
+            CacheKey = arg;
             _isFallbackUserDefined = true;
         }
 
@@ -167,12 +167,12 @@ public abstract class CommandStreamTest : HystrixTestBase
         protected override int Run()
         {
             // sw.Start();
-            Time.WaitUntil(() => _token.IsCancellationRequested, executionLatency);
+            Time.WaitUntil(() => _token.IsCancellationRequested, _executionLatency);
 
             // sw.Stop();
             _token.ThrowIfCancellationRequested();
 
-            return executionResult2 switch
+            return _executionResult2 switch
             {
                 HystrixEventType.SUCCESS => 1,
                 HystrixEventType.FAILURE => throw new Exception("induced failure"),
@@ -183,14 +183,14 @@ public abstract class CommandStreamTest : HystrixTestBase
 
         protected override int RunFallback()
         {
-            Time.Wait(fallbackExecutionLatency);
+            Time.Wait(_fallbackExecutionLatency);
 
-            return fallbackExecutionResult switch
+            return _fallbackExecutionResult switch
             {
                 HystrixEventType.FALLBACK_SUCCESS => -1,
                 HystrixEventType.FALLBACK_FAILURE => throw new Exception("induced failure"),
                 HystrixEventType.FALLBACK_MISSING => throw new InvalidOperationException("fallback not defined"),
-                _ => throw new Exception($"unhandled HystrixEventType : {fallbackExecutionResult}"),
+                _ => throw new Exception($"unhandled HystrixEventType : {_fallbackExecutionResult}"),
             };
         }
 
@@ -201,8 +201,8 @@ public abstract class CommandStreamTest : HystrixTestBase
     {
         public bool CommandCreated;
 
-        private readonly int arg;
-        private readonly ITestOutputHelper output;
+        private readonly int _arg;
+        private readonly ITestOutputHelper _output;
 
         public static Collapser From(ITestOutputHelper output, int arg)
         {
@@ -217,8 +217,8 @@ public abstract class CommandStreamTest : HystrixTestBase
         private Collapser(ITestOutputHelper output, IHystrixCollapserKey key, int arg)
             : base(Options(key, 100))
         {
-            this.arg = arg;
-            this.output = output;
+            _arg = arg;
+            _output = output;
         }
 
         private static HystrixCollapserOptions Options(IHystrixCollapserKey key, int timerDelay)
@@ -232,7 +232,7 @@ public abstract class CommandStreamTest : HystrixTestBase
 
         public override int RequestArgument
         {
-            get { return arg; }
+            get { return _arg; }
         }
 
         protected override HystrixCommand<List<int>> CreateCommand(ICollection<ICollapsedRequest<int, int>> collapsedRequests)
@@ -245,7 +245,7 @@ public abstract class CommandStreamTest : HystrixTestBase
 
             CommandCreated = true;
 
-            return new BatchCommand(output, args);
+            return new BatchCommand(_output, args);
         }
 
         protected override void MapResponseToRequests(List<int> batchResponse, ICollection<ICollapsedRequest<int, int>> collapsedRequests)
@@ -259,26 +259,26 @@ public abstract class CommandStreamTest : HystrixTestBase
 
         protected override string CacheKey
         {
-            get { return arg.ToString(); }
+            get { return _arg.ToString(); }
         }
     }
 
     internal class BatchCommand : HystrixCommand<List<int>>
     {
-        private readonly List<int> args;
-        private readonly ITestOutputHelper output;
+        private readonly List<int> _args;
+        private readonly ITestOutputHelper _output;
 
         public BatchCommand(ITestOutputHelper output, List<int> args)
             : base(HystrixCommandGroupKeyDefault.AsKey("BATCH"))
         {
-            this.args = args;
-            this.output = output;
+            _args = args;
+            _output = output;
         }
 
         protected override List<int> Run()
         {
-            output.WriteLine(Time.CurrentTimeMillis + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + args.Count);
-            return args;
+            _output.WriteLine(Time.CurrentTimeMillis + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + _args.Count);
+            return _args;
         }
     }
 

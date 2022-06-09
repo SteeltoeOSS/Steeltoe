@@ -16,11 +16,11 @@ public class HystrixThreadPoolMetricsTest : HystrixTestBase
 {
     private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
     private static readonly IHystrixThreadPoolKey TpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixThreadPoolMetricsTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
         HystrixThreadPoolMetrics.Reset();
     }
 
@@ -43,33 +43,33 @@ public class HystrixThreadPoolMetricsTest : HystrixTestBase
         var stream = RollingThreadPoolEventCounterStream.GetInstance(TpKey, 10, 100);
         stream.StartCachingStreamValuesIfUnstarted();
 
-        var cmd = new NoOpHystrixCommand(output);
+        var cmd = new NoOpHystrixCommand(_output);
         await cmd.ExecuteAsync();
         Time.Wait(250);
 
         var instances = HystrixThreadPoolMetrics.GetInstances();
 
         // then
-        output.WriteLine($"Instance count: {instances.Count}");
+        _output.WriteLine($"Instance count: {instances.Count}");
         Assert.Equal(1, instances.Count);
         var metrics = instances.First();
-        output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
+        _output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
         Assert.Equal(1, metrics.RollingCountThreadsExecuted);
     }
 
     private sealed class NoOpHystrixCommand : HystrixCommand<bool>
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public NoOpHystrixCommand(ITestOutputHelper output)
             : base(GetCommandOptions())
         {
-            this.output = output;
+            _output = output;
         }
 
         protected override bool Run()
         {
-            output.WriteLine("Run in thread : " + Thread.CurrentThread.ManagedThreadId);
+            _output.WriteLine("Run in thread : " + Thread.CurrentThread.ManagedThreadId);
             return false;
         }
 

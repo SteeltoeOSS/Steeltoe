@@ -917,12 +917,12 @@ public class DefaultConversionServiceTest
             return new Isbn(value);
         }
 
-        private readonly string value;
+        private readonly string _value;
 
         public Isbn(string value)
         {
             ConstructorCount++;
-            this.value = value;
+            _value = value;
         }
 
         public override bool Equals(object o)
@@ -932,15 +932,15 @@ public class DefaultConversionServiceTest
                 return false;
             }
 
-            return value.Equals(isbn.value);
+            return _value.Equals(isbn._value);
         }
 
-        public override int GetHashCode() => value.GetHashCode();
+        public override int GetHashCode() => _value.GetHashCode();
 
         public override string ToString()
         {
             ToStringCount++;
-            return value;
+            return _value;
         }
     }
 
@@ -956,12 +956,12 @@ public class DefaultConversionServiceTest
             ToStringCount = 0;
         }
 
-        private readonly string value;
+        private readonly string _value;
 
         public SocialSecurityNumber(string value)
         {
             ConstructorCount++;
-            this.value = value;
+            _value = value;
         }
 
         public override bool Equals(object o)
@@ -971,15 +971,15 @@ public class DefaultConversionServiceTest
                 return false;
             }
 
-            return value.Equals(ssn.value);
+            return _value.Equals(ssn._value);
         }
 
-        public override int GetHashCode() => value.GetHashCode();
+        public override int GetHashCode() => _value.GetHashCode();
 
         public override string ToString()
         {
             ToStringCount++;
-            return value;
+            return _value;
         }
     }
 }

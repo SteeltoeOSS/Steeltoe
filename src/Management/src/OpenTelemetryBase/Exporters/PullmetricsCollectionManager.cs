@@ -10,29 +10,27 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
-#pragma warning disable SX1309 // Field names should begin with underscore
 
 // Adapted from OpenTelemetry.Net project
 internal sealed partial class PullmetricsCollectionManager
 {
-    private readonly IMetricsExporter exporter;
-    private readonly Func<Batch<Metric>, ExportResult> onCollectRef;
-    private readonly int scrapeResponseCacheDurationInMilliseconds;
+    private readonly IMetricsExporter _exporter;
+    private readonly Func<Batch<Metric>, ExportResult> _onCollectRef;
+    private readonly int _scrapeResponseCacheDurationInMilliseconds;
 
-    private int globalLockState;
-    private DateTime? previousDataViewGeneratedAtUtc;
-    private int readerCount;
-    private bool collectionRunning;
-    private TaskCompletionSource<ICollectionResponse> collectionTcs;
+    private int _globalLockState;
+    private DateTime? _previousDataViewGeneratedAtUtc;
+    private int _readerCount;
+    private bool _collectionRunning;
+    private TaskCompletionSource<ICollectionResponse> _collectionTcs;
 
-    private ICollectionResponse previousView;
+    private ICollectionResponse _previousView;
 
-#pragma warning restore SX1309 // Field names should begin with underscore
     public PullmetricsCollectionManager(IMetricsExporter exporter)
     {
-        this.exporter = exporter;
-        this.scrapeResponseCacheDurationInMilliseconds = exporter.ScrapeResponseCacheDurationMilliseconds;
-        this.onCollectRef = this.OnCollect;
+        this._exporter = exporter;
+        _scrapeResponseCacheDurationInMilliseconds = exporter.ScrapeResponseCacheDurationMilliseconds;
+        _onCollectRef = OnCollect;
     }
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -41,69 +39,69 @@ internal sealed partial class PullmetricsCollectionManager
     public Task<ICollectionResponse> EnterCollect()
 #endif
     {
-        this.EnterGlobalLock();
+        EnterGlobalLock();
 
         // If we are within {ScrapeResponseCacheDurationMilliseconds} of the
         // last successful collect, return the previous view.
-        if (this.previousDataViewGeneratedAtUtc.HasValue
-            && this.scrapeResponseCacheDurationInMilliseconds > 0
-            && this.previousDataViewGeneratedAtUtc.Value.AddMilliseconds(this.scrapeResponseCacheDurationInMilliseconds) >= DateTime.UtcNow)
+        if (_previousDataViewGeneratedAtUtc.HasValue
+            && _scrapeResponseCacheDurationInMilliseconds > 0
+            && _previousDataViewGeneratedAtUtc.Value.AddMilliseconds(_scrapeResponseCacheDurationInMilliseconds) >= DateTime.UtcNow)
         {
-            Interlocked.Increment(ref this.readerCount);
-            this.ExitGlobalLock();
+            Interlocked.Increment(ref _readerCount);
+            ExitGlobalLock();
 #if NETCOREAPP3_1_OR_GREATER
             return new ValueTask<ICollectionResponse>(previousView);
 #else
-            return Task.FromResult(previousView);
+            return Task.FromResult(_previousView);
 #endif
         }
 
         // If a collection is already running, return a task to wait on the result.
-        if (this.collectionRunning)
+        if (_collectionRunning)
         {
-            this.collectionTcs ??=
+            _collectionTcs ??=
                 new TaskCompletionSource<ICollectionResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            Interlocked.Increment(ref this.readerCount);
-            this.ExitGlobalLock();
+            Interlocked.Increment(ref _readerCount);
+            ExitGlobalLock();
 #if NETCOREAPP3_1_OR_GREATER
             return new ValueTask<ICollectionResponse>(this.collectionTcs.Task);
 #else
-            return this.collectionTcs.Task;
+            return _collectionTcs.Task;
 #endif
         }
 
-        this.WaitForReadersToComplete();
+        WaitForReadersToComplete();
 
         // Start a collection on the current thread.
-        this.collectionRunning = true;
-        this.previousDataViewGeneratedAtUtc = null;
-        Interlocked.Increment(ref this.readerCount);
-        this.ExitGlobalLock();
+        _collectionRunning = true;
+        _previousDataViewGeneratedAtUtc = null;
+        Interlocked.Increment(ref _readerCount);
+        ExitGlobalLock();
 
         ICollectionResponse response;
-        bool result = this.ExecuteCollect();
+        bool result = ExecuteCollect();
         if (result)
         {
-            this.previousDataViewGeneratedAtUtc = DateTime.UtcNow;
-            response = exporter.GetCollectionResponse(previousView, previousDataViewGeneratedAtUtc.Value);
+            _previousDataViewGeneratedAtUtc = DateTime.UtcNow;
+            response = _exporter.GetCollectionResponse(_previousView, _previousDataViewGeneratedAtUtc.Value);
         }
         else
         {
             response = default;
         }
 
-        this.EnterGlobalLock();
+        EnterGlobalLock();
 
-        this.collectionRunning = false;
+        _collectionRunning = false;
 
-        if (this.collectionTcs != null)
+        if (_collectionTcs != null)
         {
-            this.collectionTcs.SetResult(response);
-            this.collectionTcs = null;
+            _collectionTcs.SetResult(response);
+            _collectionTcs = null;
         }
 
-        this.ExitGlobalLock();
+        ExitGlobalLock();
 
 #if NETCOREAPP3_1_OR_GREATER
         return new ValueTask<ICollectionResponse>(response);
@@ -115,7 +113,7 @@ internal sealed partial class PullmetricsCollectionManager
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ExitCollect()
     {
-        Interlocked.Decrement(ref this.readerCount);
+        Interlocked.Decrement(ref _readerCount);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,7 +122,7 @@ internal sealed partial class PullmetricsCollectionManager
         SpinWait lockWait = default;
         while (true)
         {
-            if (Interlocked.CompareExchange(ref this.globalLockState, 1, this.globalLockState) != 0)
+            if (Interlocked.CompareExchange(ref _globalLockState, 1, _globalLockState) != 0)
             {
                 lockWait.SpinOnce();
                 continue;
@@ -137,7 +135,7 @@ internal sealed partial class PullmetricsCollectionManager
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ExitGlobalLock()
     {
-        this.globalLockState = 0;
+        _globalLockState = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -146,7 +144,7 @@ internal sealed partial class PullmetricsCollectionManager
         SpinWait readWait = default;
         while (true)
         {
-            if (Interlocked.CompareExchange(ref this.readerCount, 0, this.readerCount) != 0)
+            if (Interlocked.CompareExchange(ref _readerCount, 0, _readerCount) != 0)
             {
                 readWait.SpinOnce();
                 continue;
@@ -159,9 +157,9 @@ internal sealed partial class PullmetricsCollectionManager
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool ExecuteCollect()
     {
-        this.exporter.OnExport = this.onCollectRef;
-        var result = this.exporter.Collect?.Invoke(Timeout.Infinite);
-        this.exporter.OnExport = null;
+        _exporter.OnExport = _onCollectRef;
+        var result = _exporter.Collect?.Invoke(Timeout.Infinite);
+        _exporter.OnExport = null;
         return result ?? false;
     }
 
@@ -169,12 +167,12 @@ internal sealed partial class PullmetricsCollectionManager
     {
         try
         {
-            previousView = exporter.GetCollectionResponse(metrics);
+            _previousView = _exporter.GetCollectionResponse(metrics);
             return ExportResult.Success;
         }
         catch (Exception)
         {
-            previousView = exporter.GetCollectionResponse();
+            _previousView = _exporter.GetCollectionResponse();
             return ExportResult.Failure;
         }
     }

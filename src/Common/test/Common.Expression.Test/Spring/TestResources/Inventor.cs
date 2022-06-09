@@ -26,15 +26,15 @@ public class Inventor
     public ArrayContainer ArrayContainer;
     public bool PublicBoolean;
 
-    private PlaceOfBirth placeOfBirth;
+    private PlaceOfBirth _placeOfBirth;
 
     public Inventor(string name, DateTime birthdate, string nationality)
     {
-        this.Name = name;
+        Name = name;
         _name = name;
         _name_ = name;
-        this.BirthDate = birthdate;
-        this.Nationality = nationality;
+        BirthDate = birthdate;
+        Nationality = nationality;
         ArrayContainer = new ArrayContainer();
         TestDictionary = new Dictionary<string, string>
         {
@@ -76,10 +76,10 @@ public class Inventor
 
     public PlaceOfBirth PlaceOfBirth
     {
-        get => placeOfBirth;
+        get => _placeOfBirth;
         set
         {
-            placeOfBirth = value;
+            _placeOfBirth = value;
             PlacesLived = new[] { value };
             PlacesLivedList.Add(value);
         }

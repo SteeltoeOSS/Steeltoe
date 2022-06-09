@@ -10,7 +10,7 @@ internal class TestMessagePostProcessor : IMessagePostProcessor
 
     public IMessage PostProcessMessage(IMessage message)
     {
-        this.Message = message;
+        Message = message;
         return message;
     }
 }

@@ -16,19 +16,19 @@ namespace Steeltoe.Stream.Tck;
 
 public class ErrorHandlingTest : AbstractTest
 {
-    private readonly IServiceCollection container;
+    private readonly IServiceCollection _container;
 
     public ErrorHandlingTest()
     {
         var searchDirectories = GetSearchDirectories("TestBinder");
-        container = CreateStreamsContainerWithDefaultBindings(searchDirectories);
+        _container = CreateStreamsContainerWithDefaultBindings(searchDirectories);
     }
 
     [Fact]
     public async Task TestGlobalErrorWithMessage()
     {
-        container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfig>();
-        var provider = container.BuildServiceProvider();
+        _container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfig>();
+        var provider = _container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
@@ -44,8 +44,8 @@ public class ErrorHandlingTest : AbstractTest
     [Fact]
     public async Task TestGlobalErrorWithThrowable()
     {
-        container.AddStreamListeners<GlobalErrorHandlerWithExceptionConfig>();
-        var provider = container.BuildServiceProvider();
+        _container.AddStreamListeners<GlobalErrorHandlerWithExceptionConfig>();
+        var provider = _container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 

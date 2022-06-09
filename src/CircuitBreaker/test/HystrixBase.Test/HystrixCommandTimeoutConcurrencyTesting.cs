@@ -16,11 +16,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
 {
     private const int NUM_CONCURRENT_COMMANDS = 30;
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
                 {
                     if (s == null)
                     {
-                        output.WriteLine("Received NULL!");
+                        _output.WriteLine("Received NULL!");
                         Assert.True(false, "Received NULL result");
                     }
                 }
@@ -58,34 +58,34 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
                 {
                     if (!hi.IsResponseTimedOut)
                     {
-                        output.WriteLine("Timeout not found in executed command");
+                        _output.WriteLine("Timeout not found in executed command");
                         Assert.True(false, "Timeout not found in executed command");
                     }
 
                     if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count == 1)
                     {
-                        output.WriteLine("Missing fallback status!");
+                        _output.WriteLine("Missing fallback status!");
                         Assert.True(false, "Missing fallback status on timeout.");
                     }
                 }
             }
             catch (Exception e)
             {
-                output.WriteLine("Error: " + e.Message);
-                output.WriteLine(e.ToString());
+                _output.WriteLine("Error: " + e.Message);
+                _output.WriteLine(e.ToString());
                 throw;
             }
             finally
             {
-                output.WriteLine(HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                _output.WriteLine(HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 if (context != null)
                 {
                     context.Dispose();
                 }
             }
 
-            output.WriteLine("*************** TRIAL " + i + " ******************");
-            output.WriteLine(" ");
+            _output.WriteLine("*************** TRIAL " + i + " ******************");
+            _output.WriteLine(" ");
             Time.Wait(50);
         }
 

@@ -23,29 +23,29 @@ public class DirectMessageListenerContainerIntegrationTest : IDisposable
 
     private static int testNumber = 1;
 
-    private readonly CachingConnectionFactory adminCf;
+    private readonly CachingConnectionFactory _adminCf;
 
-    private readonly RabbitAdmin admin;
+    private readonly RabbitAdmin _admin;
 
-    private readonly string testName;
+    private readonly string _testName;
 
     private readonly ITestOutputHelper _output;
 
     public DirectMessageListenerContainerIntegrationTest(ITestOutputHelper output)
     {
-        adminCf = new CachingConnectionFactory("localhost");
-        admin = new RabbitAdmin(adminCf);
-        admin.DeclareQueue(new Config.Queue(Q1));
-        admin.DeclareQueue(new Config.Queue(Q2));
-        testName = $"DirectMessageListenerContainerIntegrationTest-{testNumber++}";
+        _adminCf = new CachingConnectionFactory("localhost");
+        _admin = new RabbitAdmin(_adminCf);
+        _admin.DeclareQueue(new Config.Queue(Q1));
+        _admin.DeclareQueue(new Config.Queue(Q2));
+        _testName = $"DirectMessageListenerContainerIntegrationTest-{testNumber++}";
         _output = output;
     }
 
     public void Dispose()
     {
-        admin.DeleteQueue(Q1);
-        admin.DeleteQueue(Q2);
-        adminCf.Dispose();
+        _admin.DeleteQueue(Q1);
+        _admin.DeleteQueue(Q2);
+        _adminCf.Dispose();
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class DirectMessageListenerContainerIntegrationTest : IDisposable
         var adapter = new MessageListenerAdapter(null, listener);
         container.MessageListener = adapter;
         container.ServiceName = "simple";
-        container.ConsumerTagStrategy = new TestConsumerTagStrategy(testName);
+        container.ConsumerTagStrategy = new TestConsumerTagStrategy(_testName);
         await container.Start();
         Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
         var template = new RabbitTemplate(cf);
@@ -81,7 +81,7 @@ public class DirectMessageListenerContainerIntegrationTest : IDisposable
         _output.WriteLine(queue + " waiting for " + expected);
         while (n++ < 600)
         {
-            var queueProperties = admin.GetQueueProperties(queue);
+            var queueProperties = _admin.GetQueueProperties(queue);
             if (queueProperties != null)
             {
                 if (queueProperties.TryGetValue(RabbitAdmin.QUEUE_CONSUMER_COUNT, out var count))
@@ -134,19 +134,19 @@ public class DirectMessageListenerContainerIntegrationTest : IDisposable
 
     private sealed class TestConsumerTagStrategy : IConsumerTagStrategy
     {
-        private readonly string testName;
-        private int n;
+        private readonly string _testName;
+        private int _n;
 
         public TestConsumerTagStrategy(string testName)
         {
-            this.testName = testName;
+            _testName = testName;
         }
 
         public string ServiceName { get; set; } = nameof(TestConsumerTagStrategy);
 
         public string CreateConsumerTag(string queue)
         {
-            return $"{queue}/{testName}{n++}";
+            return $"{queue}/{_testName}{_n++}";
         }
     }
 }

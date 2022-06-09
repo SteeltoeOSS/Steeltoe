@@ -12,38 +12,38 @@ public class AttributeAccessorTest
 
     private const string VALUE = "bar";
 
-    private SimpleAttributeAccessor attributeAccessor = new ();
+    private SimpleAttributeAccessor _attributeAccessor = new ();
 
     [Fact]
     public void SetAndGet()
     {
-        attributeAccessor.SetAttribute(NAME, VALUE);
-        Assert.Equal(VALUE, attributeAccessor.GetAttribute(NAME));
+        _attributeAccessor.SetAttribute(NAME, VALUE);
+        Assert.Equal(VALUE, _attributeAccessor.GetAttribute(NAME));
     }
 
     [Fact]
     public void SetAndHas()
     {
-        Assert.False(attributeAccessor.HasAttribute(NAME));
-        attributeAccessor.SetAttribute(NAME, VALUE);
-        Assert.True(attributeAccessor.HasAttribute(NAME));
+        Assert.False(_attributeAccessor.HasAttribute(NAME));
+        _attributeAccessor.SetAttribute(NAME, VALUE);
+        Assert.True(_attributeAccessor.HasAttribute(NAME));
     }
 
     [Fact]
     public void Remove()
     {
-        Assert.False(attributeAccessor.HasAttribute(NAME));
-        attributeAccessor.SetAttribute(NAME, VALUE);
-        Assert.Equal(VALUE, attributeAccessor.RemoveAttribute(NAME));
-        Assert.False(attributeAccessor.HasAttribute(NAME));
+        Assert.False(_attributeAccessor.HasAttribute(NAME));
+        _attributeAccessor.SetAttribute(NAME, VALUE);
+        Assert.Equal(VALUE, _attributeAccessor.RemoveAttribute(NAME));
+        Assert.False(_attributeAccessor.HasAttribute(NAME));
     }
 
     [Fact]
     public void AttributeNames()
     {
-        attributeAccessor.SetAttribute(NAME, VALUE);
-        attributeAccessor.SetAttribute("abc", "123");
-        var attributeNames = attributeAccessor.AttributeNames;
+        _attributeAccessor.SetAttribute(NAME, VALUE);
+        _attributeAccessor.SetAttribute("abc", "123");
+        var attributeNames = _attributeAccessor.AttributeNames;
         Assert.Contains(NAME, attributeNames);
         Assert.Contains("abc", attributeNames);
     }

@@ -11,11 +11,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test;
 
 public class HystrixSyncTaskSchedulerTest
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixSyncTaskSchedulerTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -30,8 +30,8 @@ public class HystrixSyncTaskSchedulerTest
         // Scheduler to test
         var scheduler = new HystrixSyncTaskScheduler(options);
 
-        var tc1 = new TaskActionClass(output, 1);
-        var tc2 = new TaskActionClass(output, 2);
+        var tc1 = new TaskActionClass(_output, 1);
+        var tc2 = new TaskActionClass(_output, 2);
         var t1 = new Task<int>(o => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
         var t2 = new Task<int>(o => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
 

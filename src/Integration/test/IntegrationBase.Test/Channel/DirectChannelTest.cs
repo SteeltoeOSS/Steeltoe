@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DirectChannelTest
 {
-    private IServiceProvider provider;
+    private IServiceProvider _provider;
 
     public DirectChannelTest()
     {
@@ -24,14 +24,14 @@ public class DirectChannelTest
         var config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
     public void TestSend()
     {
         var target = new ThreadNameExtractingTestTarget();
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
         var message = Message.Create("test");
         var currentId = Task.CurrentId;
@@ -45,7 +45,7 @@ public class DirectChannelTest
     public async Task TestSendAsync()
     {
         var target = new ThreadNameExtractingTestTarget();
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
         var message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
@@ -63,7 +63,7 @@ public class DirectChannelTest
          *
          *  29 million per second with increment counter in the handler
          */
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
 
         var handler = new CounterHandler();
         channel.Subscribe(handler);
@@ -80,7 +80,7 @@ public class DirectChannelTest
     [Fact]
     public async Task TestSendAsyncOneHandler_10_000_000()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
 
         var handler = new CounterHandler();
         channel.Subscribe(handler);
@@ -104,7 +104,7 @@ public class DirectChannelTest
          *  3. remove LB rwlock from UnicastingDispatcher 7.2 million/sec
          *  4. Move single handler optimization to dispatcher 7.3 million/sec
          */
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
         channel.Subscribe(count1);
@@ -122,7 +122,7 @@ public class DirectChannelTest
     [Fact]
     public void TestSendFourHandlers_10_000_000()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
         var count3 = new CounterHandler();
@@ -147,7 +147,7 @@ public class DirectChannelTest
     public void TestSendInSeparateThread()
     {
         var latch = new CountdownEvent(1);
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var target = new ThreadNameExtractingTestTarget(latch);
         channel.Subscribe(target);
         var message = Message.Create("test");

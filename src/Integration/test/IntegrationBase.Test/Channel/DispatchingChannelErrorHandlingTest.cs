@@ -17,23 +17,23 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DispatchingChannelErrorHandlingTest
 {
-    private readonly CountdownEvent latch = new (1);
+    private readonly CountdownEvent _latch = new (1);
 
-    private IServiceCollection services;
+    private IServiceCollection _services;
 
     public DispatchingChannelErrorHandlingTest()
     {
-        services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        _services = new ServiceCollection();
+        _services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var config = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(config);
-        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        _services.AddSingleton<IConfiguration>(config);
+        _services.AddSingleton<IApplicationContext, GenericApplicationContext>();
     }
 
     [Fact]
     public void HandlerThrowsExceptionPublishSubscribeWithoutScheduler()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler = new ThrowingHandler();
         channel.Subscribe(handler);
@@ -44,20 +44,20 @@ public class DispatchingChannelErrorHandlingTest
     [Fact]
     public void HandlerThrowsExceptionPublishSubscribeWithExecutor()
     {
-        services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
-        services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        var provider = services.BuildServiceProvider();
+        _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
+        _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
+        _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
+        var provider = _services.BuildServiceProvider();
 
         var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
-        var resultHandler = new ResultHandler(latch);
+        var resultHandler = new ResultHandler(_latch);
         var throwingHandler = new ThrowMessageExceptionHandler();
         channel.Subscribe(throwingHandler);
         defaultErrorChannel.Subscribe(resultHandler);
         var message = IntegrationMessageBuilder.WithPayload("test").Build();
         channel.Send(message);
-        Assert.True(latch.Wait(10000));
+        Assert.True(_latch.Wait(10000));
         var errorMessage = resultHandler.LastMessage;
         Assert.IsType<MessagingException>(errorMessage.Payload);
         var exceptionPayload = (MessagingException)errorMessage.Payload;
@@ -69,20 +69,20 @@ public class DispatchingChannelErrorHandlingTest
     [Fact]
     public void HandlerThrowsExceptionExecutorChannel()
     {
-        services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
-        services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        var provider = services.BuildServiceProvider();
+        _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
+        _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
+        _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
+        var provider = _services.BuildServiceProvider();
 
         var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
         var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
-        var resultHandler = new ResultHandler(latch);
+        var resultHandler = new ResultHandler(_latch);
         var throwingHandler = new ThrowMessageExceptionHandler();
         channel.Subscribe(throwingHandler);
         defaultErrorChannel.Subscribe(resultHandler);
         var message = IntegrationMessageBuilder.WithPayload("test").Build();
         channel.Send(message);
-        Assert.True(latch.Wait(10000));
+        Assert.True(_latch.Wait(10000));
         var errorMessage = resultHandler.LastMessage;
         Assert.IsType<MessagingException>(errorMessage.Payload);
         var exceptionPayload = (MessagingException)errorMessage.Payload;
@@ -117,11 +117,11 @@ public class DispatchingChannelErrorHandlingTest
 
     private sealed class ResultHandler : IMessageHandler
     {
-        private readonly CountdownEvent latch;
+        private readonly CountdownEvent _latch;
 
         public ResultHandler(CountdownEvent latch)
         {
-            this.latch = latch;
+            _latch = latch;
         }
 
         public string ServiceName { get; set; } = nameof(ResultHandler);
@@ -134,7 +134,7 @@ public class DispatchingChannelErrorHandlingTest
         {
             LastMessage = message;
             LastThread = Thread.CurrentThread;
-            latch.Signal();
+            _latch.Signal();
         }
     }
 

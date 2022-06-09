@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Logging.Test;
 
 public class DynamicLoggerProviderTest
 {
-    private readonly Dictionary<string, string> defaultAppSettings = new ()
+    private readonly Dictionary<string, string> _defaultAppSettings = new ()
     {
         ["Logging:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Information",
@@ -25,17 +25,17 @@ public class DynamicLoggerProviderTest
         ["Logging:LogLevel:A"] = "Information",
     };
 
-    private readonly IConfigurationRoot defaultConfiguration;
+    private readonly IConfigurationRoot _defaultConfiguration;
 
     public DynamicLoggerProviderTest()
     {
-        defaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(defaultAppSettings).Build();
+        _defaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(_defaultAppSettings).Build();
     }
 
     [Fact]
     public void Create_CreatesCorrectLogger()
     {
-        var provider = GetLoggerProvider(defaultConfiguration);
+        var provider = GetLoggerProvider(_defaultConfiguration);
 
         var logger = provider.CreateLogger("A.B.C.D.TestClass");
         Assert.NotNull(logger);
@@ -46,7 +46,7 @@ public class DynamicLoggerProviderTest
     [Fact]
     public void SetLogLevel_UpdatesLogger()
     {
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
         var logger = provider.CreateLogger("A.B.C.D.TestClass");
 
@@ -70,7 +70,7 @@ public class DynamicLoggerProviderTest
     public void SetLogLevel_UpdatesNamespaceDescendants()
     {
         // arrange (A* should log at Information)
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
         // act I: with original setup
         var childLogger = provider.CreateLogger("A.B.C");
@@ -109,7 +109,7 @@ public class DynamicLoggerProviderTest
     public void SetLogLevel_Can_Reset_to_Default()
     {
         // arrange (A* should log at Information)
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
         // act I: with original setup
         var firstLogger = provider.CreateLogger("A.B.C");
@@ -147,7 +147,7 @@ public class DynamicLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_ReturnsExpected()
     {
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
         _ = provider.CreateLogger("A.B.C.D.TestClass");
 
         var logConfig = provider.GetLoggerConfigurations();
@@ -163,7 +163,7 @@ public class DynamicLoggerProviderTest
     [Fact]
     public void GetLoggerConfigurations_ReturnsExpected_After_SetLogLevel()
     {
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
         _ = provider.CreateLogger("A.B.C.D.TestClass");
         var logConfig = provider.GetLoggerConfigurations();
@@ -191,7 +191,7 @@ public class DynamicLoggerProviderTest
     [Fact]
     public void SetLogLevel_Works_OnDefault()
     {
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
         var originalLogConfig = provider.GetLoggerConfigurations();
 
         provider.SetLogLevel("Default", LogLevel.Trace);
@@ -204,7 +204,7 @@ public class DynamicLoggerProviderTest
     [Fact]
     public void ResetLogLevel_Works_OnDefault()
     {
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
         var originalLogConfig = provider.GetLoggerConfigurations();
 
         provider.SetLogLevel("Default", LogLevel.Trace);
@@ -220,7 +220,7 @@ public class DynamicLoggerProviderTest
     [Fact(Skip = "This method of console redirection doesn't work in Logging 3.0")]
     public void LoggerLogs_At_Configured_Setting()
     {
-        var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
+        var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
         var logger = provider.CreateLogger("A.B.C.D.TestClass");
 
         // act I - log at all levels, expect Info and above to work

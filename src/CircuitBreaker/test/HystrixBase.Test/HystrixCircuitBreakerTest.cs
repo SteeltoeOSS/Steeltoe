@@ -18,11 +18,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixCircuitBreakerTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixCircuitBreakerTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
         Init();
     }
 
@@ -37,7 +37,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
         var cb = cmd1._circuitBreaker;
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         _ = await cmd1.ExecuteAsync();
         _ = await cmd2.ExecuteAsync();
@@ -47,7 +47,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         // this should still allow requests as everything has been successful
 
         // Time.Wait(125);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
         Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -64,10 +64,10 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // make sure window has passed
         // Time.Wait(125);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
     }
@@ -80,7 +80,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         var cb = cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -105,10 +105,10 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // Let window pass, this should trip the circuit as the error percentage is above the threshold
         // Time.Wait(125);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
     }
@@ -121,7 +121,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         var cb = cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -146,10 +146,10 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // Allow window to pass, this should remain closed as the failure threshold is below the percentage limit
         // Time.Wait(125);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
         Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
     }
@@ -162,7 +162,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
         var cb = cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -179,7 +179,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // Allow window to pass, everything has been a timeout so we should not allow any requests
         // Time.Wait(125);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
@@ -193,7 +193,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         var cb = cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -224,9 +224,9 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // Allow window to pass, this should trip the circuit as the error percentage is above the threshold
         // Time.Wait(200);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
     }
@@ -239,7 +239,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
         var cb = cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (1)");
@@ -255,7 +255,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // Allow window to pass, everything has failed in the test window so we should return false now
         // Time.Wait(200);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
@@ -282,7 +282,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
         var cb = (HystrixCircuitBreakerImpl)cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -298,10 +298,10 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // Allow window to pass, everything has failed in the test window so we should return false now
         // Time.Wait(200);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        output.WriteLine("ReqLog : " + Time.CurrentTimeMillis + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("ReqLog : " + Time.CurrentTimeMillis + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
@@ -313,14 +313,14 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // we should now allow 1 request, and upon success, should cause the circuit to be closed
         HystrixCommand<bool> cmd5 = new SuccessCommand(key, 10, sleepWindow);
-        output.WriteLine("Starting test cmd : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Starting test cmd : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
         _ = await cmd5.Observe();
 
         // Allow window to pass, all requests should be open again
         // Time.Wait(200);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (1)!");
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (2)!");
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (3)!");
@@ -338,7 +338,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
         var cb = cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request NOT allowed when expected!");
@@ -355,17 +355,17 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         // everything has failed in the test window so we should return false now
         // Allow window to pass,
         // Time.Wait(200);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! 1 4 failures, circuit will open on recalc");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! 1 4 failures, circuit will open on recalc");
 
         // Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit is closed when it should be open!");
 
         // wait for sleepWindow to pass
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! 2 Sleep window starting where all commands fail-fast");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! 2 Sleep window starting where all commands fail-fast");
         Time.Wait(sleepWindow + 50);
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! 3 Sleep window over, should allow singleTest()");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! 3 Sleep window over, should allow singleTest()");
 
         // but the circuit should still be open
         Assert.True(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit is closed when it should be open!");
@@ -373,14 +373,14 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
         HystrixCommand<bool> cmd5 = new FailureCommand(key, 50);
         var asyncResult5 = cmd5.Observe();
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! Kicked off the single-test");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! Kicked off the single-test");
 
         // and further requests are still blocked while the singleTest command is in flight
         Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed when NOT expected!");
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! Confirmed that no other requests go out during single-test");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! Confirmed that no other requests go out during single-test");
 
         await asyncResult5.SingleAsync();
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! SingleTest just completed");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! SingleTest just completed");
 
         // all requests should still be blocked, because the singleTest failed
         Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (1) when NOT expected!");
@@ -388,19 +388,19 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (3) when NOT expected!");
 
         // wait for sleepWindow to pass
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window START");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window START");
         Time.Wait(sleepWindow + 50);
-        output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window over");
+        _output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window over");
 
         // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
         HystrixCommand<bool> cmd6 = new FailureCommand(key, 50);
         var asyncResult6 = cmd6.Observe();
-        output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest just kicked off");
+        _output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest just kicked off");
 
         // and further requests are still blocked while the singleTest command is in flight
         Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed when NOT expected!");
         Assert.False(await asyncResult6.SingleAsync());
-        output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest now over");
+        _output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest now over");
 
         // all requests should still be blocked, because the singleTest failed
         Assert.False(cb.AllowRequest, $"{Time.CurrentTimeMillis} Request allowed (1) when NOT expected!");
@@ -445,7 +445,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
         var cb = cmd1._circuitBreaker;
         var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-        Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
+        Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -461,7 +461,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // Allow window to pass, even though it has all failed we won't trip the circuit because the volume is low
         // Time.Wait(200);
-        Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
+        Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
         Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -487,24 +487,24 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
     public class TestCircuitBreaker : ICircuitBreaker
     {
-        private readonly HystrixCommandMetrics metrics;
-        private bool forceShortCircuit;
+        private readonly HystrixCommandMetrics _metrics;
+        private bool _forceShortCircuit;
 
         public TestCircuitBreaker()
         {
-            metrics = GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
-            forceShortCircuit = false;
+            _metrics = GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
+            _forceShortCircuit = false;
         }
 
         public TestCircuitBreaker(IHystrixCommandKey commandKey)
         {
-            metrics = GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
-            forceShortCircuit = false;
+            _metrics = GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
+            _forceShortCircuit = false;
         }
 
         public TestCircuitBreaker SetForceShortCircuit(bool value)
         {
-            forceShortCircuit = value;
+            _forceShortCircuit = value;
             return this;
         }
 
@@ -513,13 +513,13 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
             get
             {
                 // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.Healthcounts);
-                if (forceShortCircuit)
+                if (_forceShortCircuit)
                 {
                     return true;
                 }
                 else
                 {
-                    return metrics.Healthcounts.ErrorCount >= 3;
+                    return _metrics.Healthcounts.ErrorCount >= 3;
                 }
             }
         }

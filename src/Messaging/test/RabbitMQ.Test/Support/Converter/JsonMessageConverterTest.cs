@@ -11,14 +11,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 public class JsonMessageConverterTest
 {
-    private readonly JsonMessageConverter converter;
-    private readonly JsonMessageConverter jsonConverterWithDefaultType;
-    private readonly SimpleTrade trade;
+    private readonly JsonMessageConverter _converter;
+    private readonly JsonMessageConverter _jsonConverterWithDefaultType;
+    private readonly SimpleTrade _trade;
 
     public JsonMessageConverterTest()
     {
-        converter = new JsonMessageConverter();
-        trade = new SimpleTrade
+        _converter = new JsonMessageConverter();
+        _trade = new SimpleTrade
         {
             AccountName = "Acct1",
             BuyRequest = true,
@@ -29,20 +29,20 @@ public class JsonMessageConverterTest
             Ticker = "VMW",
             UserName = "Joe Trader"
         };
-        jsonConverterWithDefaultType = new JsonMessageConverter();
+        _jsonConverterWithDefaultType = new JsonMessageConverter();
         var classMapper = new DefaultTypeMapper
         {
             DefaultType = typeof(Foo)
         };
-        jsonConverterWithDefaultType.TypeMapper = classMapper;
+        _jsonConverterWithDefaultType.TypeMapper = classMapper;
     }
 
     [Fact]
     public void SimpleTrade()
     {
-        var message = converter.ToMessage(trade, new MessageHeaders());
-        var marshalledTrade = converter.FromMessage<SimpleTrade>(message);
-        Assert.Equal(trade, marshalledTrade);
+        var message = _converter.ToMessage(_trade, new MessageHeaders());
+        var marshalledTrade = _converter.FromMessage<SimpleTrade>(message);
+        Assert.Equal(_trade, marshalledTrade);
     }
 
     [Fact]
@@ -50,9 +50,9 @@ public class JsonMessageConverterTest
     {
         var bar = new Bar { Foo = { Name = "spam" } };
 
-        var message = converter.ToMessage(bar, new MessageHeaders());
+        var message = _converter.ToMessage(bar, new MessageHeaders());
 
-        var marshalled = converter.FromMessage<Bar>(message);
+        var marshalled = _converter.FromMessage<Bar>(message);
         Assert.Equal(bar, marshalled);
     }
 
@@ -65,8 +65,8 @@ public class JsonMessageConverterTest
             { "PRICE", "103.2" }
         };
 
-        var message = converter.ToMessage(hashtable, new MessageHeaders());
-        var marhsalledHashtable = converter.FromMessage<Dictionary<string, string>>(message);
+        var message = _converter.ToMessage(hashtable, new MessageHeaders());
+        var marhsalledHashtable = _converter.FromMessage<Dictionary<string, string>>(message);
 
         Assert.Equal("VMW", marhsalledHashtable["TICKER"]);
         Assert.Equal("103.2", marhsalledHashtable["PRICE"]);
@@ -76,8 +76,8 @@ public class JsonMessageConverterTest
     public void TestAmqp330StringArray()
     {
         var testData = new[] { "test" };
-        var message = converter.ToMessage(testData, new MessageHeaders());
-        var result = converter.FromMessage<string[]>(message);
+        var message = _converter.ToMessage(testData, new MessageHeaders());
+        var result = _converter.FromMessage<string[]>(message);
         Assert.Single(result);
         Assert.Equal("test", result[0]);
     }
@@ -85,11 +85,11 @@ public class JsonMessageConverterTest
     [Fact]
     public void TestAmqp330ObjectArray()
     {
-        var testData = new[] { trade };
-        var message = converter.ToMessage(testData, new MessageHeaders());
-        var result = converter.FromMessage<SimpleTrade[]>(message);
+        var testData = new[] { _trade };
+        var message = _converter.ToMessage(testData, new MessageHeaders());
+        var result = _converter.FromMessage<SimpleTrade[]>(message);
         Assert.Single(result);
-        Assert.Equal(trade, result[0]);
+        Assert.Equal(_trade, result[0]);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class JsonMessageConverterTest
             ContentType = "application/json"
         };
         var message = Message.Create(bytes, messageProperties.MessageHeaders);
-        var foo = jsonConverterWithDefaultType.FromMessage(message, null);
+        var foo = _jsonConverterWithDefaultType.FromMessage(message, null);
         Assert.IsType<Foo>(foo);
     }
 
@@ -130,8 +130,8 @@ public class JsonMessageConverterTest
         var bytes = Encoding.UTF8.GetBytes("{\"name\" : \"foo\" }");
         var messageProperties = new MessageHeaders();
         var message = Message.Create(bytes, messageProperties);
-        jsonConverterWithDefaultType.AssumeSupportedContentType = false;
-        var foo = jsonConverterWithDefaultType.FromMessage(message, null);
+        _jsonConverterWithDefaultType.AssumeSupportedContentType = false;
+        var foo = _jsonConverterWithDefaultType.FromMessage(message, null);
         Assert.IsType<byte[]>(foo);
     }
 
@@ -144,7 +144,7 @@ public class JsonMessageConverterTest
             ContentType = "application/json"
         };
         var message = Message.Create(bytes, messageProperties.MessageHeaders);
-        var foo = converter.FromMessage(message, null);
+        var foo = _converter.FromMessage(message, null);
         Assert.IsType<Dictionary<object, object>>(foo);
         var fooDict = foo as Dictionary<object, object>;
         var nameObj = fooDict["name"];
@@ -162,7 +162,7 @@ public class JsonMessageConverterTest
             InferredArgumentType = typeof(Foo)
         };
         var message = Message.Create(bytes, messageProperties.MessageHeaders);
-        var foo = converter.FromMessage(message, null);
+        var foo = _converter.FromMessage(message, null);
         Assert.IsType<Foo>(foo);
     }
 
@@ -176,7 +176,7 @@ public class JsonMessageConverterTest
             InferredArgumentType = typeof(List<Foo>)
         };
         var message = Message.Create(bytes, messageProperties.MessageHeaders);
-        var foo = converter.FromMessage(message, null);
+        var foo = _converter.FromMessage(message, null);
         Assert.IsType<List<Foo>>(foo);
         var asList = foo as List<Foo>;
         Assert.NotNull(asList[0]);
@@ -192,7 +192,7 @@ public class JsonMessageConverterTest
             InferredArgumentType = typeof(Dictionary<string, List<Bar>>)
         };
         var message = Message.Create(bytes, messageProperties.MessageHeaders);
-        var foo = converter.FromMessage(message, null);
+        var foo = _converter.FromMessage(message, null);
         Assert.IsType<Dictionary<string, List<Bar>>>(foo);
         var dict = foo as Dictionary<string, List<Bar>>;
         var list = dict["qux"] as List<Bar>;
@@ -210,7 +210,7 @@ public class JsonMessageConverterTest
             InferredArgumentType = typeof(Dictionary<string, Dictionary<string, Bar>>)
         };
         var message = Message.Create(bytes, messageProperties.MessageHeaders);
-        var foo = converter.FromMessage(message, null);
+        var foo = _converter.FromMessage(message, null);
         Assert.IsType<Dictionary<string, Dictionary<string, Bar>>>(foo);
         var dict = foo as Dictionary<string, Dictionary<string, Bar>>;
         var dict2 = dict["qux"] as Dictionary<string, Bar>;

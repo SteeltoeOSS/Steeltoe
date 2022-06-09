@@ -13,11 +13,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class RabbitReconnectProblemTest
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public RabbitReconnectProblemTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact(Skip = "Requires manual intervention")]
@@ -51,7 +51,7 @@ public class RabbitReconnectProblemTest
             using var values = ccf._checkoutPermits.Values.GetEnumerator();
             values.MoveNext();
             var availablePermits = values.Current.CurrentCount;
-            output.WriteLine("Permits after test: " + availablePermits);
+            _output.WriteLine("Permits after test: " + availablePermits);
             Assert.Equal(2, availablePermits);
         }
     }
@@ -60,13 +60,13 @@ public class RabbitReconnectProblemTest
     {
         try
         {
-            output.WriteLine("#" + counter);
+            _output.WriteLine("#" + counter);
             var message = template.Receive(name);
-            output.WriteLine("Ok");
+            _output.WriteLine("Ok");
         }
         catch (Exception e)
         {
-            output.WriteLine("Failed: " + e.Message);
+            _output.WriteLine("Failed: " + e.Message);
         }
     }
 }

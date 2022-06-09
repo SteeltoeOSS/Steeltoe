@@ -8,15 +8,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
 internal class MockedTime : ITime
 {
-    private readonly AtomicInteger time = new (0);
+    private readonly AtomicInteger _time = new (0);
 
     public long CurrentTimeInMillis
     {
-        get { return time.Value; }
+        get { return _time.Value; }
     }
 
     public void Increment(int millis)
     {
-        time.AddAndGet(millis);
+        _time.AddAndGet(millis);
     }
 }

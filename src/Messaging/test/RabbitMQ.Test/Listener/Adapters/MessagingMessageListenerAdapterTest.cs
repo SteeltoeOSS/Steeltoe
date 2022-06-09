@@ -21,8 +21,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessagingMessageListenerAdapterTest : AbstractTest
 {
-    private readonly DefaultMessageHandlerMethodFactory factory = new ();
-    private readonly SampleBean sample = new ();
+    private readonly DefaultMessageHandlerMethodFactory _factory = new ();
+    private readonly SampleBean _sample = new ();
 
     [Fact]
     public void BuildMessageWithStandardMessage()
@@ -166,7 +166,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<string>(sample.Payload);
+        Assert.IsType<string>(_sample.Payload);
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<Foo>(sample.Payload);
+        Assert.IsType<Foo>(_sample.Payload);
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<string>(sample.Payload);
+        Assert.IsType<string>(_sample.Payload);
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<Dictionary<string, string>>(sample.Payload);
+        Assert.IsType<Dictionary<string, string>>(_sample.Payload);
     }
 
     [Fact]
@@ -222,7 +222,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
-        Assert.IsType<string>(sample.BatchPayloads[0]);
+        Assert.IsType<string>(_sample.BatchPayloads[0]);
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
-        Assert.IsType<Foo>(sample.BatchPayloads[0]);
+        Assert.IsType<Foo>(_sample.BatchPayloads[0]);
     }
 
     [Fact]
@@ -250,7 +250,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
-        Assert.IsType<Foo>(sample.BatchPayloads[0]);
+        Assert.IsType<Foo>(_sample.BatchPayloads[0]);
     }
 
     protected MessagingMessageListenerAdapter GetSimpleInstance(string methodName, params Type[] parameterTypes)
@@ -277,10 +277,10 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var adapter = new MessagingMessageListenerAdapter(null, null, null, returnExceptions, null);
         var methods = new List<IInvocableHandlerMethod>
         {
-            factory.CreateInvocableHandlerMethod(sample, m1),
-            factory.CreateInvocableHandlerMethod(sample, m2)
+            _factory.CreateInvocableHandlerMethod(_sample, m1),
+            _factory.CreateInvocableHandlerMethod(_sample, m2)
         };
-        var handler = new DelegatingInvocableHandler(methods, sample, null, null);
+        var handler = new DelegatingInvocableHandler(methods, _sample, null, null);
         adapter.HandlerAdapter = new HandlerAdapter(handler);
         return adapter;
     }
@@ -289,7 +289,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
     {
         var adapter = new MessagingMessageListenerAdapter(null, null, m, returnExceptions, null)
         {
-            HandlerAdapter = new HandlerAdapter(factory.CreateInvocableHandlerMethod(sample, m))
+            HandlerAdapter = new HandlerAdapter(_factory.CreateInvocableHandlerMethod(_sample, m))
         };
         return adapter;
     }
@@ -304,7 +304,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
     {
         var adapter = new BatchMessagingMessageListenerAdapter(null, null, m, false, null, null)
         {
-            HandlerAdapter = new HandlerAdapter(factory.CreateInvocableHandlerMethod(sample, m))
+            HandlerAdapter = new HandlerAdapter(_factory.CreateInvocableHandlerMethod(_sample, m))
         };
         return adapter;
     }

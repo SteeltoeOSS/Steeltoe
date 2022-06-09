@@ -13,24 +13,24 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class ListTests : AbstractExpressionTests
 {
-    private readonly Type unmodifiableClass = typeof(ReadOnlyCollection<object>);
+    private readonly Type _unmodifiableClass = typeof(ReadOnlyCollection<object>);
 
     [Fact]
     public void TestInlineListCreation01()
     {
-        Evaluate("{1, 2, 3, 4, 5}", "[1,2,3,4,5]", unmodifiableClass);
+        Evaluate("{1, 2, 3, 4, 5}", "[1,2,3,4,5]", _unmodifiableClass);
     }
 
     [Fact]
     public void TestInlineListCreation02()
     {
-        Evaluate("{'abc', 'xyz'}", "[abc,xyz]", unmodifiableClass);
+        Evaluate("{'abc', 'xyz'}", "[abc,xyz]", _unmodifiableClass);
     }
 
     [Fact]
     public void TestInlineListCreation03()
     {
-        Evaluate("{}", "[]", unmodifiableClass);
+        Evaluate("{}", "[]", _unmodifiableClass);
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class ListTests : AbstractExpressionTests
     [Fact]
     public void TestInlineListAndNesting()
     {
-        Evaluate("{{1,2,3},{4,5,6}}", "[[1,2,3],[4,5,6]]", unmodifiableClass);
-        Evaluate("{{1,'2',3},{4,{'a','b'},5,6}}", "[[1,2,3],[4,[a,b],5,6]]", unmodifiableClass);
+        Evaluate("{{1,2,3},{4,5,6}}", "[[1,2,3],[4,5,6]]", _unmodifiableClass);
+        Evaluate("{{1,'2',3},{4,{'a','b'},5,6}}", "[[1,2,3],[4,[a,b],5,6]]", _unmodifiableClass);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class ListTests : AbstractExpressionTests
     public void TestInlineListWriting()
     {
         // list should be unmodifiable
-        Assert.Throws<NotSupportedException>(() => Evaluate("{1, 2, 3, 4, 5}[0]=6", "[1, 2, 3, 4, 5]", unmodifiableClass));
+        Assert.Throws<NotSupportedException>(() => Evaluate("{1, 2, 3, 4, 5}[0]=6", "[1, 2, 3, 4, 5]", _unmodifiableClass));
     }
 
     private void CheckConstantList(string expressionText, bool expectedToBeConstant)

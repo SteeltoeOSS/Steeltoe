@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class ApplicationContextExpressionTests
 {
-    private IServiceProvider serviceProvider;
+    private IServiceProvider _serviceProvider;
 
     public ApplicationContextExpressionTests()
     {
@@ -52,13 +52,13 @@ public class ApplicationContextExpressionTests
             return context;
         });
 
-        serviceProvider = collection.BuildServiceProvider();
+        _serviceProvider = collection.BuildServiceProvider();
     }
 
     [Fact]
     public void GenericApplicationContext()
     {
-        var context = serviceProvider.GetService<IApplicationContext>();
+        var context = _serviceProvider.GetService<IApplicationContext>();
         var services = context.GetServices<TestService>();
         Assert.Equal(2, services.Count());
         Assert.Equal("XXXtb0YYYZZZ", Evaluate("XXX#{tb0.Name}YYYZZZ"));
@@ -71,7 +71,7 @@ public class ApplicationContextExpressionTests
 
     private object Evaluate(string value)
     {
-        var context = serviceProvider.GetService<IApplicationContext>();
+        var context = _serviceProvider.GetService<IApplicationContext>();
         var result = context.ResolveEmbeddedValue(value);
         return context.ServiceExpressionResolver.Evaluate(result, new ServiceExpressionContext(context));
     }

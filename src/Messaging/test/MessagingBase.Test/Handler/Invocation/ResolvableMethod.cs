@@ -19,7 +19,7 @@ internal class ResolvableMethod
             throw new ArgumentNullException(nameof(method));
         }
 
-        this.Method = method;
+        Method = method;
     }
 
     public static Builder<T> On<T>()
@@ -61,13 +61,13 @@ internal class ResolvableMethod
 
     internal class Builder<T>
     {
-        private readonly Type objectClass;
+        private readonly Type _objectClass;
 
-        private readonly List<IPredicate<MethodInfo>> filters = new ();
+        private readonly List<IPredicate<MethodInfo>> _filters = new ();
 
         public Builder()
         {
-            objectClass = typeof(T);
+            _objectClass = typeof(T);
         }
 
         public Builder<T> Named(string methodName)
@@ -102,7 +102,7 @@ internal class ResolvableMethod
 
         public Builder<T> Annot(params IPredicate<MethodInfo>[] filters)
         {
-            this.filters.AddRange(filters);
+            _filters.AddRange(filters);
             return this;
         }
 
@@ -170,7 +170,7 @@ internal class ResolvableMethod
         // }
         public ResolvableMethod Build()
         {
-            var methods = objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).Where(IsMatch).ToList();
+            var methods = _objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).Where(IsMatch).ToList();
             if (methods.Count == 0)
             {
                 throw new InvalidOperationException($"No matching method: {this}");
@@ -247,17 +247,17 @@ internal class ResolvableMethod
         private void AddFilter(string message, IPredicate<MethodInfo> filter)
         {
             Func<MethodInfo, bool> func = filter.Test;
-            filters.Add(new LabeledPredicate<MethodInfo>(message, func));
+            _filters.Add(new LabeledPredicate<MethodInfo>(message, func));
         }
 
         private void AddFilter(string message, Func<MethodInfo, bool> func)
         {
-            filters.Add(new LabeledPredicate<MethodInfo>(message, func));
+            _filters.Add(new LabeledPredicate<MethodInfo>(message, func));
         }
 
         private bool IsMatch(MethodInfo method)
         {
-            foreach (var predicate in filters)
+            foreach (var predicate in _filters)
             {
                 if (!predicate.Test(method))
                 {
@@ -271,25 +271,25 @@ internal class ResolvableMethod
 
     internal class ArgResolver
     {
-        private readonly List<IPredicate<ParameterInfo>> filters = new ();
+        private readonly List<IPredicate<ParameterInfo>> _filters = new ();
 
-        private readonly ResolvableMethod resolvable;
+        private readonly ResolvableMethod _resolvable;
 
         public ArgResolver(ResolvableMethod resolvable, params IPredicate<ParameterInfo>[] filters)
         {
-            this.resolvable = resolvable ?? throw new ArgumentNullException(nameof(resolvable));
-            this.filters.AddRange(filters);
+            _resolvable = resolvable ?? throw new ArgumentNullException(nameof(resolvable));
+            _filters.AddRange(filters);
         }
 
         public ArgResolver Annot(params IPredicate<ParameterInfo>[] filters)
         {
-            this.filters.AddRange(filters);
+            _filters.AddRange(filters);
             return this;
         }
 
         public ArgResolver AnnotPresent(params Type[] annotationTypes)
         {
-            filters.Add(new FuncPredicate(param =>
+            _filters.Add(new FuncPredicate(param =>
             {
                 foreach (var attr in annotationTypes)
                 {
@@ -307,7 +307,7 @@ internal class ResolvableMethod
 
         public ArgResolver AnnotNotPresent(params Type[] annotationTypes)
         {
-            filters.Add(new FuncPredicate(param =>
+            _filters.Add(new FuncPredicate(param =>
             {
                 if (annotationTypes.Length > 0)
                 {
@@ -332,7 +332,7 @@ internal class ResolvableMethod
 
         public ParameterInfo Arg(Type type)
         {
-            filters.Add(new FuncPredicate(param => param.ParameterType == type));
+            _filters.Add(new FuncPredicate(param => param.ParameterType == type));
 
             return Arg();
         }
@@ -352,13 +352,13 @@ internal class ResolvableMethod
             var matches = ApplyFilters();
             if (matches.Count == 0)
             {
-                throw new InvalidOperationException($"No matching arg in method: {resolvable.Method}");
+                throw new InvalidOperationException($"No matching arg in method: {_resolvable.Method}");
             }
 
             if (matches.Count > 1)
             {
                 throw new InvalidOperationException(
-                    $"Multiple matching args in method: {resolvable.Method} {string.Join(",", matches)}");
+                    $"Multiple matching args in method: {_resolvable.Method} {string.Join(",", matches)}");
             }
 
             return matches[0];
@@ -367,14 +367,14 @@ internal class ResolvableMethod
         private List<ParameterInfo> ApplyFilters()
         {
             var matches = new List<ParameterInfo>();
-            for (var i = 0; i < resolvable.Method.GetParameters().Length; i++)
+            for (var i = 0; i < _resolvable.Method.GetParameters().Length; i++)
             {
-                var param = resolvable.Method.GetParameters()[i];
+                var param = _resolvable.Method.GetParameters()[i];
 
                 // param.initParameterNameDiscovery(nameDiscoverer);
                 var allFiltersMatch = true;
 
-                foreach (var p in filters)
+                foreach (var p in _filters)
                 {
                     if (!p.Test(param))
                     {
@@ -393,35 +393,35 @@ internal class ResolvableMethod
 
         internal class FuncPredicate : IPredicate<ParameterInfo>
         {
-            private readonly Func<ParameterInfo, bool> func;
+            private readonly Func<ParameterInfo, bool> _func;
 
             public FuncPredicate(Func<ParameterInfo, bool> func)
             {
-                this.func = func ?? throw new ArgumentNullException(nameof(func));
+                _func = func ?? throw new ArgumentNullException(nameof(func));
             }
 
             public bool Test(ParameterInfo t)
             {
-                return func(t);
+                return _func(t);
             }
         }
     }
 
     internal class LabeledPredicate<T> : IPredicate<T>
     {
-        private readonly string label;
+        private readonly string _label;
 
-        private readonly Func<T, bool> del;
+        private readonly Func<T, bool> _del;
 
         public LabeledPredicate(string label, Func<T, bool> del)
         {
-            this.label = label;
-            this.del = del;
+            _label = label;
+            _del = del;
         }
 
         public bool Test(T t)
         {
-            return del(t);
+            return _del(t);
         }
     }
 }

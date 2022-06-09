@@ -381,20 +381,20 @@ public class DirectMessageListenerContainerMockTest
 
     private sealed class TestListener2 : IMessageListener
     {
-        private readonly AtomicReference<RC.IModel> target;
-        private readonly RC.IModel @object;
+        private readonly AtomicReference<RC.IModel> _target;
+        private readonly RC.IModel _object;
 
         public TestListener2(AtomicReference<RC.IModel> target, RC.IModel @object)
         {
-            this.target = target;
-            this.@object = @object;
+            _target = target;
+            _object = @object;
         }
 
         public AcknowledgeMode ContainerAckMode { get; set; }
 
         public void OnMessage(IMessage message)
         {
-            target.Value = @object;
+            _target.Value = _object;
         }
 
         public void OnMessageBatch(List<IMessage> messages)

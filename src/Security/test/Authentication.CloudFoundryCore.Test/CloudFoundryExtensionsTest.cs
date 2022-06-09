@@ -16,7 +16,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public class CloudFoundryExtensionsTest
 {
-    private readonly string vcap_application = @"
+    private readonly string _vcap_application = @"
             {
                 ""cf_api"": ""https://api.system.testcloud.com"",
                 ""limits"": { ""fds"": 16384, ""mem"": 512, ""disk"": 1024 },
@@ -32,7 +32,7 @@ public class CloudFoundryExtensionsTest
                 ""application_version"": ""d2911a1c-c81a-47aa-be81-d820a6700d2b""
             }";
 
-    private readonly string vcap_services = @"
+    private readonly string _vcap_services = @"
             {
                 ""user-provided"": [{
                     ""credentials"": {
@@ -48,7 +48,7 @@ public class CloudFoundryExtensionsTest
                 }]
             }";
 
-    private readonly string openIdConfigResponse = @"
+    private readonly string _openIdConfigResponse = @"
                 {
                     ""issuer"":""https://default_oauthserviceurl/oauth/token"",
                     ""authorization_endpoint"":""https://default_oauthserviceurl/oauth/authorize"",
@@ -69,7 +69,7 @@ public class CloudFoundryExtensionsTest
                     ""ui_locales_supported"":[""en-US""]
                 }";
 
-    private readonly string jwksResponse = @"
+    private readonly string _jwksResponse = @"
             {
                 ""keys"":[{
                     ""kty"":""RSA"",
@@ -97,8 +97,8 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcap_application);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcap_services);
 
         var builder = GetHostBuilder<TestServerStartup>();
         using (var server = new TestServer(builder))
@@ -127,8 +127,8 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOpenId_AddsIntoPipeline()
     {
-        Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse);
-        Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
+        Environment.SetEnvironmentVariable("openIdConfigResponse", _openIdConfigResponse);
+        Environment.SetEnvironmentVariable("jwksResponse", _jwksResponse);
 
         var builder = GetHostBuilder<TestServerOpenIdStartup>(new Dictionary<string, string> { { "security:oauth2:client:Timeout", "9999" } });
         using var server = new TestServer(builder);
@@ -143,10 +143,10 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
-        Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
-        Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcap_application);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcap_services);
+        Environment.SetEnvironmentVariable("openIdConfigResponse", _openIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
+        Environment.SetEnvironmentVariable("jwksResponse", _jwksResponse);
 
         var builder = GetHostBuilder<TestServerOpenIdStartup>();
         using (var server = new TestServer(builder))

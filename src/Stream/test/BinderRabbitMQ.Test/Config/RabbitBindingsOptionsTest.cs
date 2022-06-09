@@ -13,11 +13,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
 public class RabbitBindingsOptionsTest
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public RabbitBindingsOptionsTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     public static class AssertOptionEquals
@@ -236,7 +236,7 @@ public class RabbitBindingsOptionsTest
         var children = inputBindingSection.GetChildren();
         foreach (var child in children)
         {
-            output.WriteLine(child.Key + ":" + child.Value);
+            _output.WriteLine(child.Key + ":" + child.Value);
             var pi = optionsObject.GetType().GetProperty(child.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
 
             object value = null;

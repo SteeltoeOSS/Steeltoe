@@ -12,31 +12,31 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 
 public class HeadersMethodArgumentResolverTest
 {
-    private readonly HeadersMethodArgumentResolver resolver = new ();
+    private readonly HeadersMethodArgumentResolver _resolver = new ();
 
-    private readonly IMessage message = MessageBuilder.WithPayload(Array.Empty<byte>())
+    private readonly IMessage _message = MessageBuilder.WithPayload(Array.Empty<byte>())
         .CopyHeaders(new Dictionary<string, object> { { "foo", "bar" } })
         .Build();
 
-    private readonly ResolvableMethod resolvable = ResolvableMethod.On<HeadersMethodArgumentResolverTest>().Named("HandleMessage").Build();
+    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<HeadersMethodArgumentResolverTest>().Named("HandleMessage").Build();
 
     [Fact]
     public void SupportsParameter()
     {
-        Assert.True(resolver.SupportsParameter(resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>))));
+        Assert.True(_resolver.SupportsParameter(_resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>))));
 
-        Assert.True(resolver.SupportsParameter(resolvable.Arg(typeof(MessageHeaders))));
-        Assert.True(resolver.SupportsParameter(resolvable.Arg(typeof(MessageHeaderAccessor))));
-        Assert.True(resolver.SupportsParameter(resolvable.Arg(typeof(TestMessageHeaderAccessor))));
+        Assert.True(_resolver.SupportsParameter(_resolvable.Arg(typeof(MessageHeaders))));
+        Assert.True(_resolver.SupportsParameter(_resolvable.Arg(typeof(MessageHeaderAccessor))));
+        Assert.True(_resolver.SupportsParameter(_resolvable.Arg(typeof(TestMessageHeaderAccessor))));
 
-        Assert.False(resolver.SupportsParameter(resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(string))));
+        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(string))));
     }
 
     [Fact]
     public void ResolveArgumentAnnotated()
     {
-        var param = resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>));
-        var resolved = resolver.ResolveArgument(param, message);
+        var param = _resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>));
+        var resolved = _resolver.ResolveArgument(param, _message);
 
         var condition = resolved is IDictionary<string, object>;
         Assert.True(condition);
@@ -48,13 +48,13 @@ public class HeadersMethodArgumentResolverTest
     [Fact]
     public void ResolveArgumentAnnotatedNotMap()
     {
-        Assert.Throws<InvalidOperationException>(() => resolver.ResolveArgument(resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(string)), message));
+        Assert.Throws<InvalidOperationException>(() => _resolver.ResolveArgument(_resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(string)), _message));
     }
 
     [Fact]
     public void ResolveArgumentMessageHeaders()
     {
-        var resolved = resolver.ResolveArgument(resolvable.Arg(typeof(MessageHeaders)), message);
+        var resolved = _resolver.ResolveArgument(_resolvable.Arg(typeof(MessageHeaders)), _message);
 
         var condition = resolved is MessageHeaders;
         Assert.True(condition);
@@ -65,8 +65,8 @@ public class HeadersMethodArgumentResolverTest
     [Fact]
     public void ResolveArgumentMessageHeaderAccessor()
     {
-        var param = resolvable.Arg(typeof(MessageHeaderAccessor));
-        var resolved = resolver.ResolveArgument(param, message);
+        var param = _resolvable.Arg(typeof(MessageHeaderAccessor));
+        var resolved = _resolver.ResolveArgument(param, _message);
 
         var condition = resolved is MessageHeaderAccessor;
         Assert.True(condition);
@@ -77,8 +77,8 @@ public class HeadersMethodArgumentResolverTest
     [Fact]
     public void ResolveArgumentMessageHeaderAccessorSubclass()
     {
-        var param = resolvable.Arg(typeof(TestMessageHeaderAccessor));
-        var resolved = resolver.ResolveArgument(param, message);
+        var param = _resolvable.Arg(typeof(TestMessageHeaderAccessor));
+        var resolved = _resolver.ResolveArgument(param, _message);
 
         var condition = resolved is TestMessageHeaderAccessor;
         Assert.True(condition);

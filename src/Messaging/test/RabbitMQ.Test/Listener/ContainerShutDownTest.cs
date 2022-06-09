@@ -73,13 +73,13 @@ public class ContainerShutDownTest : AbstractTest
 
     private sealed class TestListener : IMessageListener
     {
-        private readonly CountdownEvent latch;
-        private readonly CountdownEvent testEnded;
+        private readonly CountdownEvent _latch;
+        private readonly CountdownEvent _testEnded;
 
         public TestListener(CountdownEvent latch, CountdownEvent testEnded)
         {
-            this.latch = latch;
-            this.testEnded = testEnded;
+            _latch = latch;
+            _testEnded = testEnded;
         }
 
         public AcknowledgeMode ContainerAckMode { get; set; }
@@ -88,8 +88,8 @@ public class ContainerShutDownTest : AbstractTest
         {
             try
             {
-                latch.Signal();
-                testEnded.Wait(TimeSpan.FromSeconds(30));
+                _latch.Signal();
+                _testEnded.Wait(TimeSpan.FromSeconds(30));
             }
             catch (Exception)
             {

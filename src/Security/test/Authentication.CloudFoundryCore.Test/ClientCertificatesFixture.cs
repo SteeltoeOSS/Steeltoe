@@ -26,7 +26,7 @@ public class ClientCertificatesFixture : IDisposable
     }
 
     #region IDisposable Support
-    private bool disposedValue;
+    private bool _disposedValue;
 
     void IDisposable.Dispose()
     {
@@ -35,14 +35,14 @@ public class ClientCertificatesFixture : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
                 // delete certificates ?
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
     #endregion

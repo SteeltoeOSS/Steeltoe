@@ -15,11 +15,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixCommandMetricsTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixCommandMetricsTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -35,14 +35,14 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         cmd1.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
         cmd2.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
@@ -51,7 +51,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         cmd4.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(25, metrics.Healthcounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
@@ -59,7 +59,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         cmd5.Execute();
         cmd6.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
@@ -69,13 +69,13 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         cmd8.Execute();
         cmd9.Execute();
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
         // latent
         HystrixCommand<bool> cmd10 = new SuccessCommand(key, 60);
         cmd10.Execute();
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
         // 6 success + 1 latent success + 1 failure + 2 timeout = 10 total
         // latent success not considered error
@@ -96,14 +96,14 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         cmd1.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
         cmd2.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 0);
@@ -114,7 +114,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         }
         catch (HystrixBadRequestException)
         {
-            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd3");
+            _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd3");
         }
 
         try
@@ -123,12 +123,12 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         }
         catch (HystrixBadRequestException)
         {
-            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd4");
+            _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd4");
         }
 
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
@@ -137,7 +137,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         cmd6.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-        output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(75, metrics.Healthcounts.ErrorPercentage);
     }
 
@@ -167,7 +167,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
             Assert.True(false, ie.Message);
         }
 
-        output.WriteLine("ReqLog: " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog: " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(8, metrics.CurrentConcurrentExecutionCount);
 
         var latch = new CountdownEvent(1);
@@ -177,13 +177,13 @@ public class HystrixCommandMetricsTest : HystrixTestBase
             },
             e =>
             {
-                output.WriteLine("Error duing command execution");
-                output.WriteLine(e.ToString());
+                _output.WriteLine("Error duing command execution");
+                _output.WriteLine(e.ToString());
                 latch.SignalEx();
             },
             () =>
             {
-                output.WriteLine("All commands done");
+                _output.WriteLine("All commands done");
                 latch.SignalEx();
             });
 
@@ -193,29 +193,29 @@ public class HystrixCommandMetricsTest : HystrixTestBase
 
     private class Command : HystrixCommand<bool>
     {
-        private readonly bool shouldFail;
-        private readonly bool shouldFailWithBadRequest;
-        private readonly int latencyToAdd;
+        private readonly bool _shouldFail;
+        private readonly bool _shouldFailWithBadRequest;
+        private readonly int _latencyToAdd;
 
         public Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd)
             : base(GetUnitTestSettings(commandKey))
         {
-            this.shouldFail = shouldFail;
-            this.shouldFailWithBadRequest = shouldFailWithBadRequest;
-            this.latencyToAdd = latencyToAdd;
+            _shouldFail = shouldFail;
+            _shouldFailWithBadRequest = shouldFailWithBadRequest;
+            _latencyToAdd = latencyToAdd;
             IsFallbackUserDefined = true;
         }
 
         protected override bool Run()
         {
-            Time.Wait(latencyToAdd);
+            Time.Wait(_latencyToAdd);
 
-            if (shouldFail)
+            if (_shouldFail)
             {
                 throw new Exception("induced failure");
             }
 
-            if (shouldFailWithBadRequest)
+            if (_shouldFailWithBadRequest)
             {
                 throw new HystrixBadRequestException("bad request");
             }

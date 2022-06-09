@@ -21,46 +21,46 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 public class RabbitBindingIntegrationTest : IDisposable
 {
     private const string QueueName = "test.queue.RabbitBindingIntegrationTests";
-    private readonly Queue queue = new (QueueName);
-    private readonly ServiceCollection services;
-    private ServiceProvider provider;
+    private readonly Queue _queue = new (QueueName);
+    private readonly ServiceCollection _services;
+    private ServiceProvider _provider;
 
     public RabbitBindingIntegrationTest()
     {
-        services = new ServiceCollection();
+        _services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
-        services.AddLogging(b =>
+        _services.AddLogging(b =>
         {
             b.AddDebug();
             b.AddConsole();
         });
 
-        services.AddSingleton<IConfiguration>(config);
-        services.AddRabbitHostingServices();
-        services.AddRabbitDefaultMessageConverter();
-        services.AddRabbitConnectionFactory((p, f) => f.Host = "localhost");
-        services.AddRabbitAdmin((p, a) => a.AutoStartup = true);
-        services.AddRabbitTemplate();
-        services.AddRabbitQueue(queue);
+        _services.AddSingleton<IConfiguration>(config);
+        _services.AddRabbitHostingServices();
+        _services.AddRabbitDefaultMessageConverter();
+        _services.AddRabbitConnectionFactory((p, f) => f.Host = "localhost");
+        _services.AddRabbitAdmin((p, a) => a.AutoStartup = true);
+        _services.AddRabbitTemplate();
+        _services.AddRabbitQueue(_queue);
     }
 
     public void Dispose()
     {
-        var admin = provider.GetRabbitAdmin();
+        var admin = _provider.GetRabbitAdmin();
         admin.DeleteQueue(QueueName);
-        provider.Dispose();
+        _provider.Dispose();
     }
 
     [Fact]
     public void TestSendAndReceiveWithTopicSingleCallback()
     {
-        provider = services.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
+        _provider = _services.BuildServiceProvider();
+        var admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
-        var binding = BindingBuilder.Bind(queue).To(exchange).With("*.end");
+        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
         try
         {
@@ -93,12 +93,12 @@ public class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithNonDefaultExchange()
     {
-        provider = services.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
+        _provider = _services.BuildServiceProvider();
+        var admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var template = provider.GetRabbitTemplate();
-        var binding = BindingBuilder.Bind(queue).To(exchange).With("*.end");
+        var template = _provider.GetRabbitTemplate();
+        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
         try
         {
@@ -131,13 +131,13 @@ public class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithTopicConsumeInBackground()
     {
-        provider = services.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
+        _provider = _services.BuildServiceProvider();
+        var admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
-        var binding = BindingBuilder.Bind(queue).To(exchange).With("*.end");
+        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
 
         var cachingConnectionFactory = new CachingConnectionFactory("localhost");
@@ -171,14 +171,14 @@ public class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithTopicTwoCallbacks()
     {
-        provider = services.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
+        _provider = _services.BuildServiceProvider();
+        var admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var binding = BindingBuilder.Bind(queue).To(exchange).With("*.end");
+        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
 
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
         try
         {
@@ -225,13 +225,13 @@ public class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithFanout()
     {
-        provider = services.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
+        _provider = _services.BuildServiceProvider();
+        var admin = _provider.GetRabbitAdmin();
         var exchange = new FanoutExchange("fanout");
         admin.DeclareExchange(exchange);
-        admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange));
+        admin.DeclareBinding(BindingBuilder.Bind(_queue).To(exchange));
 
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
         try
         {
@@ -280,7 +280,7 @@ public class RabbitBindingIntegrationTest : IDisposable
             true,
             1,
             null,
-            queue.QueueName);
+            _queue.QueueName);
         consumer.Start();
 
         var n = 0;
