@@ -28,7 +28,7 @@ public class FunctionReference : SpelNode
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
         var value = state.LookupVariable(_name);
-        if (value == TypedValue.NULL)
+        if (Equals(value, TypedValue.NULL))
         {
             throw new SpelEvaluationException(StartPosition, SpelMessage.FUNCTION_NOT_DEFINED, _name);
         }

@@ -57,7 +57,7 @@ public class OpInc : Operator
             }
             catch (SpelEvaluationException ex)
             {
-                if (ex.MessageCode == SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES)
+                if (Equals(ex.MessageCode, SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES))
                 {
                     // This means the operand is not incrementable
                     throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OPERAND_NOT_INCREMENTABLE, operand.ToStringAST());
@@ -75,7 +75,7 @@ public class OpInc : Operator
         catch (SpelEvaluationException see)
         {
             // If unable to set the value the operand is not writable (e.g. 1++ )
-            if (see.MessageCode == SpelMessage.SETVALUE_NOT_SUPPORTED)
+            if (Equals(see.MessageCode, SpelMessage.SETVALUE_NOT_SUPPORTED))
             {
                 throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OPERAND_NOT_INCREMENTABLE);
             }

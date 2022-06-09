@@ -118,19 +118,19 @@ public class Message<P> : AbstractMessage, IMessage<P>
 
     object IMessage.Payload => Payload;
 
-    public override bool Equals(object other)
+    public override bool Equals(object obj)
     {
-        if (this == other)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (other is not Message<P> otherMsg)
+        if (obj is not Message<P> other)
         {
             return false;
         }
 
-        return ObjectUtils.NullSafeEquals(payload, otherMsg.payload) && headers.Equals(otherMsg.headers);
+        return ObjectUtils.NullSafeEquals(payload, other.payload) && headers.Equals(other.headers);
     }
 
     public override int GetHashCode()

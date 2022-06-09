@@ -147,36 +147,19 @@ public class ExecutionResult
             };
         }
 
-        public override bool Equals(object o)
+        public override bool Equals(object obj)
         {
-            if (this == o)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
+            if (obj is not EventCounts other)
             {
                 return false;
             }
 
-            var that = (EventCounts)o;
-
-            if (_numEmissions != that._numEmissions)
-            {
-                return false;
-            }
-
-            if (_numFallbackEmissions != that._numFallbackEmissions)
-            {
-                return false;
-            }
-
-            if (_numCollapsed != that._numCollapsed)
-            {
-                return false;
-            }
-
-            return Equals(that._events);
+            return _numEmissions == other._numEmissions && _numFallbackEmissions == other._numFallbackEmissions && _numCollapsed == other._numCollapsed && Equals(other._events);
         }
 
         public override int GetHashCode()

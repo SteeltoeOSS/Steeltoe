@@ -300,7 +300,7 @@ public class MimeType : IComparable<MimeType>
 
     public override bool Equals(object other)
     {
-        if (this == other)
+        if (ReferenceEquals(this, other))
         {
             return true;
         }
@@ -381,7 +381,7 @@ public class MimeType : IComparable<MimeType>
             {
                 var thisCharset = Encoding;
                 var otherCharset = other.Encoding;
-                if (thisCharset != otherCharset)
+                if (!Equals(thisCharset, otherCharset))
                 {
                     if (thisCharset == null)
                     {

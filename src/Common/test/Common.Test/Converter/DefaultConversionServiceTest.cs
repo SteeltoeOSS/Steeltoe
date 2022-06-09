@@ -925,14 +925,19 @@ public class DefaultConversionServiceTest
             _value = value;
         }
 
-        public override bool Equals(object o)
+        public override bool Equals(object obj)
         {
-            if (o is not Isbn isbn)
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is not Isbn other)
             {
                 return false;
             }
 
-            return _value.Equals(isbn._value);
+            return _value.Equals(other._value);
         }
 
         public override int GetHashCode() => _value.GetHashCode();
@@ -964,9 +969,14 @@ public class DefaultConversionServiceTest
             _value = value;
         }
 
-        public override bool Equals(object o)
+        public override bool Equals(object obj)
         {
-            if (o is not SocialSecurityNumber ssn)
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is not SocialSecurityNumber ssn)
             {
                 return false;
             }

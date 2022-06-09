@@ -2060,7 +2060,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         public TestClass2(string str) => _str = str;
 
-        public override bool Equals(object other) => this == other || (other is TestClass2 @class && _str.Equals(@class._str));
+        public override bool Equals(object obj) => ReferenceEquals(this, obj) || (obj is TestClass2 other && _str.Equals(other._str));
 
         public override int GetHashCode() => _str.GetHashCode();
     }

@@ -15,29 +15,29 @@ public abstract class AbstractMessageCondition<T> : IMessageCondition<T>
 
     public abstract T GetMatchingCondition(IMessage message);
 
-    public override bool Equals(object other)
+    public override bool Equals(object obj)
     {
-        if (this == other)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (other == null || GetType() != other.GetType())
+        if (obj is not AbstractMessageCondition<T> other || GetType() != obj.GetType())
         {
             return false;
         }
 
-        var content1 = GetContent();
-        var content2 = GetContent();
+        var thisContent = GetContent();
+        var otherContent = other.GetContent();
 
-        if (content1.Count != content2.Count)
+        if (thisContent.Count != otherContent.Count)
         {
             return false;
         }
 
-        for (var i = 0; i < content1.Count; i++)
+        for (var i = 0; i < thisContent.Count; i++)
         {
-            if (!content1[i].Equals(content2[i]))
+            if (!Equals(thisContent[i], otherContent[i]))
             {
                 return false;
             }

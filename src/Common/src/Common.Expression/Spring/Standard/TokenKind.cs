@@ -88,6 +88,11 @@ public class TokenKind
 
     public override bool Equals(object obj)
     {
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
         if (obj is not TokenKind other)
         {
             return false;

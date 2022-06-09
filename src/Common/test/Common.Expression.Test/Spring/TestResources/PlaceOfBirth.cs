@@ -16,14 +16,19 @@ public class PlaceOfBirth
 
     public int DoubleIt(int i) => i * 2;
 
-    public override bool Equals(object o)
+    public override bool Equals(object obj)
     {
-        if (o is not PlaceOfBirth oPob)
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not PlaceOfBirth other)
         {
             return false;
         }
 
-        return City.Equals(oPob.City);
+        return City.Equals(other.City);
     }
 
     public override int GetHashCode() => City.GetHashCode();

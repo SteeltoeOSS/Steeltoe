@@ -271,7 +271,7 @@ public class InboundEndpointTest
     // }
     public class Foo
     {
-        public string Bar { get; set; }
+        public string Bar { get; }
 
         public Foo(string bar)
         {
@@ -280,24 +280,22 @@ public class InboundEndpointTest
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null || GetType() != obj.GetType())
+            if (obj is not Foo other)
             {
                 return false;
             }
 
-            var foo = (Foo)obj;
-
-            return !(!Bar?.Equals(foo.Bar) ?? foo.Bar != null);
+            return Bar == other.Bar;
         }
 
         public override int GetHashCode()
         {
-            return Bar != null ? Bar.GetHashCode() : 0;
+            return Bar?.GetHashCode() ?? 0;
         }
     }
 }

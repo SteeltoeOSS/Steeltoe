@@ -73,7 +73,7 @@
     <Rule Id="S1694" Action="None" />
     <Rule Id="S1696" Action="None" />
     <Rule Id="S1697" Action="None" />
-    <Rule Id="S1698" Action="None" />
+    <Rule Id="S1698" Action="Warning" />
     <Rule Id="S1699" Action="Warning" />
     <Rule Id="S1751" Action="Warning" />
     <Rule Id="S1764" Action="Warning" />

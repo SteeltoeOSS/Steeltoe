@@ -119,14 +119,18 @@ public class TypeDescriptor
 
     public override bool Equals(object obj)
     {
-        var stackDescriptor = obj as TypeDescriptor;
-        if (stackDescriptor == null)
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not TypeDescriptor other)
         {
             return false;
         }
 
-        return stackDescriptor.Value == Value &&
-               stackDescriptor.IsBoxed == IsBoxed;
+        return other.Value == Value &&
+               other.IsBoxed == IsBoxed;
     }
 
     public override int GetHashCode()

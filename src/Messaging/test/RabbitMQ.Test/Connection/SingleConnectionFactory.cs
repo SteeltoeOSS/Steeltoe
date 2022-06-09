@@ -216,40 +216,22 @@ public class SingleConnectionFactory : AbstractConnectionFactory
 
         public override int GetHashCode()
         {
-            return 31 + (Target == null ? 0 : Target.GetHashCode());
+            return Target?.GetHashCode() ?? 0;
         }
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null)
+            if (obj is not SharedConnectionProxy other || GetType() != obj.GetType())
             {
                 return false;
             }
 
-            if (GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (SharedConnectionProxy)obj;
-            if (Target == null)
-            {
-                if (other.Target != null)
-                {
-                    return false;
-                }
-            }
-            else if (!Target.Equals(other.Target))
-            {
-                return false;
-            }
-
-            return true;
+            return Equals(Target, other.Target);
         }
 
         public override string ToString()

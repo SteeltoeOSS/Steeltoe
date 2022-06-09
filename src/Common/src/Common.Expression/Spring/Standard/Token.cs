@@ -31,15 +31,15 @@ public class Token
 
     public bool IsIdentifier
     {
-        get { return Kind == TokenKind.IDENTIFIER; }
+        get { return Equals(Kind, TokenKind.IDENTIFIER); }
     }
 
     public bool IsNumericRelationalOperator
     {
         get
         {
-            return Kind == TokenKind.GT || Kind == TokenKind.GE || Kind == TokenKind.LT ||
-                   Kind == TokenKind.LE || Kind == TokenKind.EQ || Kind == TokenKind.NE;
+            return Equals(Kind, TokenKind.GT) || Equals(Kind, TokenKind.GE) || Equals(Kind, TokenKind.LT) ||
+                   Equals(Kind, TokenKind.LE) || Equals(Kind, TokenKind.EQ) || Equals(Kind, TokenKind.NE);
         }
     }
 

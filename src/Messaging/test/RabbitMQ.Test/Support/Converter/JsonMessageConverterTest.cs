@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.Converter;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
@@ -257,43 +258,22 @@ public class JsonMessageConverterTest
 
         public override int GetHashCode()
         {
-            var prime = 31;
-            var result = 1;
-            result = (prime * result) + (Name == null ? 0 : Name.GetHashCode());
-            return result;
+            return Name?.GetHashCode() ?? 0;
         }
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null)
+            if (obj is not Foo other || GetType() != obj.GetType())
             {
                 return false;
             }
 
-            if (GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (Foo)obj;
-            if (Name == null)
-            {
-                if (other.Name != null)
-                {
-                    return false;
-                }
-            }
-            else if (!Name.Equals(other.Name))
-            {
-                return false;
-            }
-
-            return true;
+            return Name == other.Name;
         }
     }
 
@@ -305,56 +285,22 @@ public class JsonMessageConverterTest
 
         public override int GetHashCode()
         {
-            var prime = 31;
-            var result = 1;
-            result = (prime * result) + (Foo == null ? 0 : Foo.GetHashCode());
-            result = (prime * result) + (Name == null ? 0 : Name.GetHashCode());
-            return result;
+            return HashCode.Combine(Name, Foo);
         }
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null)
+            if (obj is not Bar other || GetType() != obj.GetType())
             {
                 return false;
             }
 
-            if (GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (Bar)obj;
-            if (Foo == null)
-            {
-                if (other.Foo != null)
-                {
-                    return false;
-                }
-            }
-            else if (!Foo.Equals(other.Foo))
-            {
-                return false;
-            }
-
-            if (Name == null)
-            {
-                if (other.Name != null)
-                {
-                    return false;
-                }
-            }
-            else if (!Name.Equals(other.Name))
-            {
-                return false;
-            }
-
-            return true;
+            return Name == other.Name && Equals(Foo, other.Foo);
         }
     }
 }

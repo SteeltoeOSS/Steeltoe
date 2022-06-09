@@ -43,10 +43,17 @@ public class DynamicLoggerConfiguration : ILoggerConfiguration
 
     public override bool Equals(object obj)
     {
-        return obj is DynamicLoggerConfiguration lc &&
-               Name == lc.Name &&
-               ConfiguredLevel == lc.ConfiguredLevel &&
-               EffectiveLevel == lc.EffectiveLevel;
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not DynamicLoggerConfiguration other)
+        {
+            return false;
+        }
+
+        return Name == other.Name && ConfiguredLevel == other.ConfiguredLevel && EffectiveLevel == other.EffectiveLevel;
     }
 
     public override string ToString()

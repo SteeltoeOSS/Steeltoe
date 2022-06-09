@@ -266,6 +266,11 @@ public class SpelMessage
 
     public override bool Equals(object obj)
     {
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
         if (obj is not SpelMessage asMessage)
         {
             return false;

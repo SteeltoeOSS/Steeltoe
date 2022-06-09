@@ -191,19 +191,19 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             _targetType = targetType;
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            if (this == other)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (other is not ConverterCacheKey otherKey)
+            if (obj is not ConverterCacheKey other)
             {
                 return false;
             }
 
-            return _sourceType.Equals(otherKey._sourceType) && _targetType.Equals(otherKey._targetType);
+            return _sourceType == other._sourceType && _targetType == other._targetType;
         }
 
         public override int GetHashCode() => (_sourceType.GetHashCode() * 29) + _targetType.GetHashCode();
