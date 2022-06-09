@@ -89,7 +89,8 @@ public class EventCounterListener : EventListener
         var counterName = string.Empty;
         var labelSet = new List<KeyValuePair<string, object>>();
         var excludedMetric = false;
-        string counterDisplayUnit = null, counterDisplayName = null;
+        string counterDisplayUnit = null;
+        string counterDisplayName = null;
         foreach (var payload in eventPayload)
         {
             if (excludedMetric)

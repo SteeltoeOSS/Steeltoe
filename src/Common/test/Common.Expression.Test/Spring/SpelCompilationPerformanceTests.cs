@@ -340,7 +340,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         var payload = new Payload();
         var expression = _parser.ParseExpression("DR[0].DRFixedSection.Duration lt 0.1");
         var b = false;
-        long iTotal = 0, cTotal = 0;
+        long iTotal = 0;
+        long cTotal = 0;
 
         // warmup
         for (var i = 0; i < _count; i++)
@@ -404,10 +405,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingMethodReference()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new HW();
         var expression = _parser.ParseExpression("Hello()");
 
@@ -465,10 +468,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceField()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Name");
 
@@ -526,10 +531,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceNestedField()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Foo.Bar.Boo");
 
@@ -587,10 +594,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceNestedMixedFieldGetter()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Foo.Baz.Boo");
 
@@ -648,10 +657,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingNestedMixedFieldPropertyReferenceMethodReference()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Foo.Bay().Boo");
 
@@ -709,10 +720,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceGetter()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Name2");
 

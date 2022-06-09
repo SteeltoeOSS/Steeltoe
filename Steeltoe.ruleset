@@ -69,7 +69,7 @@
     <Rule Id="S1607" Action="Warning" />
     <Rule Id="S1643" Action="Warning" />
     <Rule Id="S1656" Action="Warning" />
-    <Rule Id="S1659" Action="None" />
+    <Rule Id="S1659" Action="Warning" />
     <Rule Id="S1694" Action="None" />
     <Rule Id="S1696" Action="None" />
     <Rule Id="S1697" Action="None" />

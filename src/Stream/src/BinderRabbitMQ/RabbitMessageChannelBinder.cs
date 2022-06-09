@@ -211,7 +211,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         var rabbitProducerOptions = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
         if (ExpressionInterceptorNeeded(rabbitProducerOptions))
         {
-            IExpression rkExpression = null, delayExpression = null;
+            IExpression rkExpression = null;
+            IExpression delayExpression = null;
             if (rabbitProducerOptions.RoutingKeyExpression != null)
             {
                 rkExpression = ExpressionParser.ParseExpression(rabbitProducerOptions.RoutingKeyExpression);
