@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
     <NoWarn>$(NoWarn);SA0001;SA1101;SA1124;SA1200;SA1201;SA1208;SA1309;SA1310;SA1314;SA1401;SA1402;SA1413;SA1600;SA1629;SA1652;1591;CS8002</NoWarn>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
@@ -27,6 +28,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)" PrivateAssets="All" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="$(SonarAnalyzerVersion)" PrivateAssets="All" />
     <PackageReference Include="coverlet.collector" Version="$(CoverletVersion)" PrivateAssets="All" />
   </ItemGroup>
 </Project>
