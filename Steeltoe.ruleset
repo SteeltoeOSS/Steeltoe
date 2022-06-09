@@ -67,7 +67,7 @@
     <Rule Id="S1481" Action="Info" />
     <Rule Id="S1541" Action="None" />
     <Rule Id="S1607" Action="Warning" />
-    <Rule Id="S1643" Action="Info" />
+    <Rule Id="S1643" Action="Warning" />
     <Rule Id="S1656" Action="Warning" />
     <Rule Id="S1659" Action="None" />
     <Rule Id="S1694" Action="None" />
