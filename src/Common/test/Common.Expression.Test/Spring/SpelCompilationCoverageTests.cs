@@ -3732,9 +3732,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var tc = new TestClass10();
 
-        // Should call the non varargs version of concat
+        // Should call the non varargs version of Concat1
         // (which causes the '::' prefix in test output)
-        _expression = _parser.ParseExpression("Concat('test')");
+        _expression = _parser.ParseExpression("Concat1('test')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("::test", tc.S);
@@ -3744,8 +3744,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("::test", tc.S);
         tc.Reset();
 
-        // This will call the varargs concat with an empty array
-        _expression = _parser.ParseExpression("Concat()");
+        // This will call the varargs Concat1 with an empty array
+        _expression = _parser.ParseExpression("Concat1()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(string.Empty, tc.S);
@@ -3755,7 +3755,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(string.Empty, tc.S);
         tc.Reset();
 
-        // Should call the non varargs version of concat
+        // Should call the non varargs version of Concat2
         // (which causes the '::' prefix in test output)
         _expression = _parser.ParseExpression("Concat2('test')");
         AssertCantCompile(_expression);
@@ -3767,7 +3767,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("::test", tc.S);
         tc.Reset();
 
-        // This will call the varargs concat with an empty array
+        // This will call the varargs Concat2 with an empty array
         _expression = _parser.ParseExpression("Concat2()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
@@ -6157,12 +6157,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             S = null;
         }
 
-        public void Concat(string arg)
+        public void Concat1(string arg)
         {
             S = $"::{arg}";
         }
 
-        public void Concat(params string[] vargs)
+        public void Concat1(params string[] vargs)
         {
             if (vargs == null)
             {

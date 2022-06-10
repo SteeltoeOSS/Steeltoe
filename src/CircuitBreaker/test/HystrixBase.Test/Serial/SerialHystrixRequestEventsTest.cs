@@ -13,7 +13,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test;
 public class SerialHystrixRequestEventsTest
 {
     private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP");
-    private static readonly IHystrixThreadPoolKey ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
+    private static readonly IHystrixThreadPoolKey HystrixThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
     private static readonly IHystrixCommandKey FooKey = HystrixCommandKeyDefault.AsKey("Foo");
     private static readonly IHystrixCommandKey BarKey = HystrixCommandKeyDefault.AsKey("Bar");
     private static readonly IHystrixCollapserKey CollapserKey = HystrixCollapserKeyDefault.AsKey("FooCollapser");
@@ -347,7 +347,7 @@ public class SerialHystrixRequestEventsTest
 
         public IHystrixThreadPoolKey ThreadPoolKey
         {
-            get { return SerialHystrixRequestEventsTest.ThreadPoolKey; }
+            get { return SerialHystrixRequestEventsTest.HystrixThreadPoolKey; }
         }
 
         public string PublicCacheKey { get; private set; }
