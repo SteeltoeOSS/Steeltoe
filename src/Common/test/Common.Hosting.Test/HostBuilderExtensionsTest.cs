@@ -123,8 +123,11 @@ public class HostBuilderExtensionsTest
         Assert.Contains("https://*:5001", addresses.Addresses);
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void UseCloudHosting_GenericHost_Default8080()
+#pragma warning restore S2699 // Tests should include assertions
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
@@ -140,8 +143,11 @@ public class HostBuilderExtensionsTest
         host.Start();
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void UseCloudHosting_GenericHost_MakeSureThePortIsSet()
+#pragma warning restore S2699 // Tests should include assertions
     {
         Environment.SetEnvironmentVariable("PORT", "5042");
         var hostBuilder = new HostBuilder()
@@ -156,11 +162,14 @@ public class HostBuilderExtensionsTest
         host.Start();
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
 #if NET6_0_OR_GREATER
     [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
 #endif
+#pragma warning disable S2699 // Tests should include assertions
     public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
+#pragma warning restore S2699 // Tests should include assertions
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);

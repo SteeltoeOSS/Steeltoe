@@ -84,7 +84,9 @@ public class RabbitTemplateTest
     }
 
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void DontHangConsumerThread()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
@@ -265,8 +267,11 @@ public class RabbitTemplateTest
         Assert.Throws<InvalidOperationException>(() => template.GetExpectedQueueNames());
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestRoutingConnectionFactory()
+#pragma warning restore S2699 // Tests should include assertions
     {
         // TODO: Test this when expression language implemented
     }

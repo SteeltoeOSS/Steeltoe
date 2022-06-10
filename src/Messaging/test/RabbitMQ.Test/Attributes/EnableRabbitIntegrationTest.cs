@@ -86,8 +86,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.NotNull(messageListener.RecoveryCallback);
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void Tx()
+#pragma warning restore S2699 // Tests should include assertions
     {
         // TODO:
         //    assertThat(AopUtils.isJdkDynamicProxy(this.txService)).isTrue();
@@ -608,8 +611,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.Equal(AcknowledgeMode.MANUAL, container2.AcknowledgeMode);
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestConsumerBatchEnabled()
+#pragma warning restore S2699 // Tests should include assertions
     {
         // TODO: Direct container does not support this aggregation of messages into a batch
         // var template = provider.GetRabbitTemplate();

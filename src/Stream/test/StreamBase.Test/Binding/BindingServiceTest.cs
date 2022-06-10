@@ -245,8 +245,11 @@ public class BindingServiceTest : AbstractTest
         Assert.Throws<InvalidOperationException>(() => service.BindProducer(outputChannel, "output"));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestUnrecognizedBinderAllowedIfNotUsed()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var searchDirectories = GetSearchDirectories("MockBinder");
         var mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";

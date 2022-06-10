@@ -595,8 +595,12 @@ public class SpelReproTests : AbstractExpressionTests
     //    result = expression.GetValue(evaluationContext, "foo", typeof(String));
     //    Assert.Equal(result).isEqualTo("OK");
     // }
+
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void VarargsAndPrimitives_SPR8174()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var emptyEvalContext = new StandardEvaluationContext();
         var args = new List<Type> { typeof(long) };
@@ -1106,8 +1110,12 @@ public class SpelReproTests : AbstractExpressionTests
     //    var fromClass = parser.ParseExpression("T(" + typeof(StaticFinalImpl2).FullName.Replace("+", "$") + ").VALUE").GetValue<string>(context);
     //    Assert.Equal("interfaceValue", fromClass);
     // }
+
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void SPR10210()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var context = new StandardEvaluationContext();
         context.SetVariable("bridgeExample", new SPR10210.D());

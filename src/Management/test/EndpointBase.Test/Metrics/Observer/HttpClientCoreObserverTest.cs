@@ -47,8 +47,11 @@ public class HttpClientCoreObserverTest : BaseTest
         Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void ProcessEvent_IgnoresNulls()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();

@@ -103,8 +103,11 @@ public class RabbitAdminIntegrationTest : IDisposable
         }
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestDoubleDeclarationOfAutodeleteQueue()
+#pragma warning restore S2699 // Tests should include assertions
     {
         _services.AddRabbitConnectionFactory("connectionFactory1", (p, f) =>
         {
@@ -199,8 +202,11 @@ public class RabbitAdminIntegrationTest : IDisposable
         cf.Destroy();
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestDeclareExchangeWithDefaultExchange()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var exchange = new DirectExchange(string.Empty);
         _provider = _services.BuildServiceProvider();
@@ -210,8 +216,11 @@ public class RabbitAdminIntegrationTest : IDisposable
         // Pass by virtue of RabbitMQ not firing a 403 reply code
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestSpringWithDefaultExchange()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var exchange = new DirectExchange(string.Empty);
         _services.AddRabbitExchange(exchange);
@@ -287,8 +296,11 @@ public class RabbitAdminIntegrationTest : IDisposable
         Assert.True(QueueExists(queue));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestRemoveBindingWithDefaultExchangeImplicitBinding()
+#pragma warning restore S2699 // Tests should include assertions
     {
         _provider = _services.BuildServiceProvider();
         var rabbitAdmin = _provider.GetRabbitAdmin();

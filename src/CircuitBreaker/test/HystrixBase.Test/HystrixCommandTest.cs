@@ -3540,8 +3540,11 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         AssertCommandExecutionEvents(cmd, HystrixEventType.SUCCESS);
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestUnsubscribeBeforeSubscribe()
+#pragma warning restore S2699 // Tests should include assertions
     {
         // this may happen in Observable chain, so Hystrix should make sure that command never executes/allocates in this situation
         var error = Observable.Throw<string>(new Exception("foo"));
@@ -3595,8 +3598,11 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestRxRetry()
+#pragma warning restore S2699 // Tests should include assertions
     {
         // see https://github.com/Netflix/Hystrix/issues/1100
         // Since each command instance is single-use, the expectation is that applying the .retry() operator

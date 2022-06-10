@@ -149,7 +149,7 @@
     <Rule Id="S2688" Action="Warning" />
     <Rule Id="S2692" Action="Warning" />
     <Rule Id="S2696" Action="Warning" />
-    <Rule Id="S2699" Action="Warning" />
+    <Rule Id="S2699" Action="Info" />
     <Rule Id="S2701" Action="None" />
     <Rule Id="S2737" Action="Info" />
     <Rule Id="S2743" Action="Warning" />
