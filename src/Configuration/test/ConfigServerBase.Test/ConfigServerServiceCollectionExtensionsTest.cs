@@ -24,7 +24,7 @@ public class ConfigServerServiceCollectionExtensionsTest
     }
 
     [Fact]
-    [Obsolete]
+    [Obsolete("To be removed in the next major version.")]
     public void ConfigureConfigServerClientOptions_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();

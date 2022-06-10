@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class AspNetCoreHostingObserverTest : BaseTest
 {
     // [Fact] TODO: Do we need these views

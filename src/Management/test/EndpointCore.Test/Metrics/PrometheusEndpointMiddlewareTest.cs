@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class PrometheusEndpointMiddlewareTest : BaseTest
 {
     [Fact]

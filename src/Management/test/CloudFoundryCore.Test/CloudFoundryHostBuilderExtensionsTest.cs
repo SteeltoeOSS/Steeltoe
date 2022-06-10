@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Management.CloudFoundry.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class CloudFoundryHostBuilderExtensionsTest
 {
     private static readonly Dictionary<string, string> ManagementSettings = new ()

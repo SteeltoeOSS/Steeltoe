@@ -214,7 +214,7 @@ public class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    [Obsolete]
+    [Obsolete("To be removed in the next major version.")]
     public void AddPropertySource_ChangesDataDictionary()
     {
         var properties = new Dictionary<string, object>

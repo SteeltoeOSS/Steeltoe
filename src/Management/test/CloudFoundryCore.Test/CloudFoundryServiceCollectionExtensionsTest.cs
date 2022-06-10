@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Management.CloudFoundry.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class CloudFoundryServiceCollectionExtensionsTest
 {
     [Fact]
