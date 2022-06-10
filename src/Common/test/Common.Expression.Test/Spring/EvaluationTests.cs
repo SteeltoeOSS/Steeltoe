@@ -12,6 +12,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Xunit;
 
+#pragma warning disable S3443 // Type should not be examined on "System.Type" instances
+
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class EvaluationTests : AbstractExpressionTests
