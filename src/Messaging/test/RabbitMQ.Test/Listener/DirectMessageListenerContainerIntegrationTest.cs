@@ -82,12 +82,9 @@ public class DirectMessageListenerContainerIntegrationTest : IDisposable
         while (n++ < 600)
         {
             var queueProperties = _admin.GetQueueProperties(queue);
-            if (queueProperties != null)
+            if (queueProperties != null && queueProperties.TryGetValue(RabbitAdmin.QUEUE_CONSUMER_COUNT, out var count))
             {
-                if (queueProperties.TryGetValue(RabbitAdmin.QUEUE_CONSUMER_COUNT, out var count))
-                {
-                    currentQueueCount = (int)(uint)count;
-                }
+                currentQueueCount = (int)(uint)count;
             }
 
             if (currentQueueCount == expected)

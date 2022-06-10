@@ -384,12 +384,9 @@ public class BroadcastingDispatcherTest
         protected override void QueueTask(Task task)
         {
             var val = Interlocked.Increment(ref _count);
-            if (val < _failures.Length)
+            if (val < _failures.Length && _failures[val])
             {
-                if (_failures[val])
-                {
-                    TryExecuteTask(task);
-                }
+                TryExecuteTask(task);
             }
         }
 
