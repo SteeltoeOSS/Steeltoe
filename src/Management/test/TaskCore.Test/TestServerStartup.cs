@@ -28,6 +28,6 @@ public class TestServerStartup
     }
 }
 
-internal class PassException : Exception
+public class PassException : Exception
 {
 }

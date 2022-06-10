@@ -138,7 +138,7 @@ public class DispatchingChannelErrorHandlingTest
         }
     }
 
-    private class TestTimedOutException : Exception
+    public class TestTimedOutException : Exception
     {
         public TestTimedOutException()
             : base("timed out while waiting for latch")

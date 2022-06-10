@@ -1504,7 +1504,7 @@ public class RabbitTemplateIntegrationTest : IDisposable
         }
     }
 
-    private sealed class PlannedException : Exception
+    public sealed class PlannedException : Exception
     {
         public PlannedException()
             : base("Planned")
