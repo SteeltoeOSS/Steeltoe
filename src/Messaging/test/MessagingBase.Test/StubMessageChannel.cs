@@ -16,7 +16,7 @@ internal class StubMessageChannel : ISubscribableChannel
 
     public string ServiceName { get; set; } = "StubMessageChannel";
 
-    public ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken)
+    public ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default)
     {
         _messages.Add((IMessage<byte[]>)message);
         return new ValueTask<bool>(true);

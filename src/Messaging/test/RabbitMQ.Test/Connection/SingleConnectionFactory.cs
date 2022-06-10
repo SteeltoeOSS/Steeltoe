@@ -136,7 +136,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
             Target = target;
         }
 
-        public RC.IModel CreateChannel(bool transactional)
+        public RC.IModel CreateChannel(bool transactional = false)
         {
             if (!IsOpen)
             {

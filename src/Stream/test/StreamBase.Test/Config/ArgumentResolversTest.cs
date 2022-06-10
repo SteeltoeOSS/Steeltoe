@@ -72,7 +72,7 @@ public class ArgumentResolversTest
             return (T)message;
         }
 
-        public IMessage ToMessage(object payload, IMessageHeaders headers = null)
+        public IMessage ToMessage(object payload, IMessageHeaders headers)
         {
             return Message.Create(payload);
         }
