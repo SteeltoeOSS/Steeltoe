@@ -12,6 +12,6 @@ public class DefaultIdGeneratorTest
     [Fact]
     public void TestGenerateId()
     {
-        Assert.NotEqual(default(Guid).ToString(), new DefaultIdGenerator().GenerateId());
+        Assert.NotEqual(Guid.Empty.ToString(), new DefaultIdGenerator().GenerateId());
     }
 }
