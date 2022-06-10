@@ -210,7 +210,7 @@ public class RabbitAdminTest : AbstractTest
             new Binding("b3", "q4", DestinationType.QUEUE, "e4", "k4", null));
         serviceCollection.AddSingleton(ds);
         var provider = serviceCollection.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin() as RabbitAdmin;
+        var admin = provider.GetRabbitAdmin();
         var template = admin.RabbitTemplate;
         template.ConvertAndSend("e1", "k1", "foo");
         template.ConvertAndSend("e2", "k2", "bar");

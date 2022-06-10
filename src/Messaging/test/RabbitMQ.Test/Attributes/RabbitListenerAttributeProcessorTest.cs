@@ -36,7 +36,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint;
         Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
@@ -102,7 +102,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);
@@ -125,7 +125,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);
@@ -147,7 +147,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);
@@ -177,7 +177,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);

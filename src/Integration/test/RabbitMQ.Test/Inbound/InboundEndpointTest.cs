@@ -94,7 +94,7 @@ public class InboundEndpointTest
         var listener = container.MessageListener as IChannelAwareMessageListener;
         listener.OnMessage(amqpMessage, null);
         var receive = qchannel.Receive(1000);
-        var result = new JsonToObjectTransformer(context).Transform(receive) as IMessage;
+        var result = new JsonToObjectTransformer(context).Transform(receive);
         Assert.NotNull(result);
         Assert.Equal(payload, result.Payload);
         var sourceData = result.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SOURCE_DATA);

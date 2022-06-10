@@ -88,7 +88,7 @@ public class ContainerInitializationTest : AbstractTest, IDisposable
         var container = _provider.GetService<DirectMessageListenerContainer>();
         Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
 
-        var admin = _provider.GetRabbitAdmin() as RabbitAdmin;
+        var admin = _provider.GetRabbitAdmin();
         admin.RetryTemplate = null;
         admin.DeleteQueue(TEST_MISMATCH);
         Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
@@ -122,7 +122,7 @@ public class ContainerInitializationTest : AbstractTest, IDisposable
         var container = _provider.GetService<DirectMessageListenerContainer>();
         Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
 
-        var admin = _provider.GetRabbitAdmin() as RabbitAdmin;
+        var admin = _provider.GetRabbitAdmin();
         admin.RetryTemplate = null;
         admin.DeleteQueue(TEST_MISMATCH);
         Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));

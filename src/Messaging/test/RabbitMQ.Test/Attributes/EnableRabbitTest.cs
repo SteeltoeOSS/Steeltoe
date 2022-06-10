@@ -222,7 +222,7 @@ public class EnableRabbitTest
         Assert.Single(defaultFactory.ListenerContainers);
         Assert.Single(customFactory.ListenerContainers);
         var testContainer = defaultFactory.GetListenerContainers()[0];
-        var endpoint = testContainer.Endpoint as IRabbitListenerEndpoint;
+        var endpoint = testContainer.Endpoint;
         Assert.IsType<SimpleRabbitListenerEndpoint>(endpoint);
         var simpEndpoint = endpoint as SimpleRabbitListenerEndpoint;
         Assert.IsType<MessageListenerAdapter>(simpEndpoint.MessageListener);

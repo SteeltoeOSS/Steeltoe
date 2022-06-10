@@ -195,7 +195,7 @@ public class JsonMessageConverterTest
         var foo = _converter.FromMessage(message, null);
         Assert.IsType<Dictionary<string, List<Bar>>>(foo);
         var dict = foo as Dictionary<string, List<Bar>>;
-        var list = dict["qux"] as List<Bar>;
+        var list = dict["qux"];
         Assert.NotNull(list);
         Assert.IsType<Bar>(list[0]);
     }
@@ -213,7 +213,7 @@ public class JsonMessageConverterTest
         var foo = _converter.FromMessage(message, null);
         Assert.IsType<Dictionary<string, Dictionary<string, Bar>>>(foo);
         var dict = foo as Dictionary<string, Dictionary<string, Bar>>;
-        var dict2 = dict["qux"] as Dictionary<string, Bar>;
+        var dict2 = dict["qux"];
         Assert.NotNull(dict2);
         Assert.IsType<Bar>(dict2["baz"]);
     }
