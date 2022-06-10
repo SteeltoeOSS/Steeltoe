@@ -124,8 +124,8 @@ public class SingleConnectionFactory : AbstractConnectionFactory
     public class SharedConnectionProxy : IConnectionProxy
     {
         private readonly ILogger _logger;
-
         private readonly SingleConnectionFactory _factory;
+        private readonly object _lock = new ();
 
         public IConnection Target { get; set; }
 
@@ -140,7 +140,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         {
             if (!IsOpen)
             {
-                lock (this)
+                lock (_lock)
                 {
                     if (!IsOpen)
                     {
