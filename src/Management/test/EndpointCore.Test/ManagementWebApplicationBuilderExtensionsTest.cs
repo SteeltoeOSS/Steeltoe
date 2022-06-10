@@ -398,7 +398,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public async void AddWavefrontExporter()
+    public async Task AddWavefrontExporter()
     {
         var settings = new Dictionary<string, string>
         {

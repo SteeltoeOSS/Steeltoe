@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Utils.Test.Diagnostics;
 public class CommandExecutorTest
 {
     [Fact]
-    public async void SuccessfulCommandShouldReturn0()
+    public async Task SuccessfulCommandShouldReturn0()
     {
         var executor = new CommandExecutor();
 
@@ -25,7 +25,7 @@ public class CommandExecutorTest
     }
 
     [Fact]
-    public async void UnsuccessfulCommandShouldNotReturn0()
+    public async Task UnsuccessfulCommandShouldNotReturn0()
     {
         var executor = new CommandExecutor();
 
@@ -44,7 +44,7 @@ public class CommandExecutorTest
     }
 
     [Fact]
-    public async void UnknownCommandShouldThrowException()
+    public async Task UnknownCommandShouldThrowException()
     {
         var executor = new CommandExecutor();
 
