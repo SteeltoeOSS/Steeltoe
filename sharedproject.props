@@ -19,7 +19,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <NoWarn>$(NoWarn);SA1101;SA1124;SA1201;SA1309;SA1310;SA1314;SA1401;SA1402;SA1413;SA1600;SA1629;SA1652;1591;S1854;S3011</NoWarn>
+    <NoWarn>$(NoWarn);SA1101;SA1124;SA1201;SA1202;SA1309;SA1310;SA1314;SA1401;SA1402;SA1413;SA1600;SA1629;SA1652;1591;S1854;S3011</NoWarn>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
