@@ -34,29 +34,23 @@ public class HystrixCollapserMetrics : HystrixMetrics
 
     private static readonly IList<CollapserEventType> ALL_EVENT_TYPES = CollapserEventTypeHelper.Values;
 
-#pragma warning disable S1199 // Nested code blocks should not be used
     public static Func<long[], HystrixCollapserEvent, long[]> AppendEventToBucket { get; } = (initialCountArray, collapserEvent) =>
     {
-        {
-            var eventType = collapserEvent.EventType;
-            var count = collapserEvent.Count;
-            initialCountArray[(int)eventType] += count;
-            return initialCountArray;
-        }
+        var eventType = collapserEvent.EventType;
+        var count = collapserEvent.Count;
+        initialCountArray[(int)eventType] += count;
+        return initialCountArray;
     };
 
     public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
     {
+        foreach (var eventType in ALL_EVENT_TYPES)
         {
-            foreach (var eventType in ALL_EVENT_TYPES)
-            {
-                cumulativeEvents[(int)eventType] += bucketEventCounts[(int)eventType];
-            }
-
-            return cumulativeEvents;
+            cumulativeEvents[(int)eventType] += bucketEventCounts[(int)eventType];
         }
+
+        return cumulativeEvents;
     };
-#pragma warning restore S1199 // Nested code blocks should not be used
 
     internal static void Reset()
     {

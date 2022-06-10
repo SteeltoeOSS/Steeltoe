@@ -229,16 +229,14 @@ public class ChannelInterceptorTest
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
         {
+            Assert.NotNull(message);
+            Assert.NotNull(channel);
+            if (sent)
             {
-                Assert.NotNull(message);
-                Assert.NotNull(channel);
-                if (sent)
-                {
-                    Interlocked.Increment(ref SentCounter);
-                }
-
-                Interlocked.Increment(ref InvokedCounter);
+                Interlocked.Increment(ref SentCounter);
             }
+
+            Interlocked.Increment(ref InvokedCounter);
         }
     }
 
