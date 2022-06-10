@@ -80,7 +80,7 @@
     <Rule Id="S1821" Action="Warning" />
     <Rule Id="S1848" Action="Warning" />
     <Rule Id="S1854" Action="Info" />
-    <Rule Id="S1858" Action="None" />
+    <Rule Id="S1858" Action="Warning" />
     <Rule Id="S1862" Action="Warning" />
     <Rule Id="S1871" Action="Warning" />
     <Rule Id="S1905" Action="Warning" />

@@ -779,7 +779,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 sep = "&";
             }
 
-            uri += sb.ToString();
+            uri += sb;
         }
 
         return new Uri(uri);
