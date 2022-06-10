@@ -148,7 +148,6 @@ public class HystrixRequestLog
                     executionTime = 0;
                 }
 
-                counter = 0;
                 if (aggregatedCommandExecutionTime.TryGetValue(display, out counter))
                 {
                     // add to the existing executionTime (sum of executionTimes for duplicate command displayNames)

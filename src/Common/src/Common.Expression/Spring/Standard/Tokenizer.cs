@@ -457,7 +457,6 @@ internal class Tokenizer
         }
         else if (IsExponentChar(_charsToProcess[_pos]))
         {
-            isReal = true;  // if it wasn't before, it is now
             _pos++;
             var possibleSign = _charsToProcess[_pos];
             if (IsSign(possibleSign))
@@ -475,11 +474,11 @@ internal class Tokenizer
             if (IsFloatSuffix(_charsToProcess[_pos]))
             {
                 isFloat = true;
-                endOfNumber = ++_pos;
+                ++_pos;
             }
             else if (IsDoubleSuffix(_charsToProcess[_pos]))
             {
-                endOfNumber = ++_pos;
+                ++_pos;
             }
 
             PushRealToken(Subarray(start, _pos), isFloat, start, _pos);
