@@ -5810,7 +5810,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Payload2
     {
-        private string _var2 = "def";
+        private readonly string _var2 = "def";
 
         public string Var1 { get; } = "abc";
 

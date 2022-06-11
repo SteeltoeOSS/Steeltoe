@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class ApplicationContextExpressionTests
 {
-    private IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public ApplicationContextExpressionTests()
     {

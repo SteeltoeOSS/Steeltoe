@@ -12,7 +12,7 @@ public class AttributeAccessorTest
 
     private const string VALUE = "bar";
 
-    private SimpleAttributeAccessor _attributeAccessor = new ();
+    private readonly SimpleAttributeAccessor _attributeAccessor = new ();
 
     [Fact]
     public void SetAndGet()

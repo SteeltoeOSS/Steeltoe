@@ -23,7 +23,7 @@ public abstract class PartitionCapableBinderTests<B, T> : AbstractBinderTests<B,
     where B : AbstractTestBinder<T>
     where T : AbstractBinder<IMessageChannel>
 {
-    private ILogger<PartitionCapableBinderTests<B, T>> _logger;
+    private readonly ILogger<PartitionCapableBinderTests<B, T>> _logger;
 
     protected PartitionCapableBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
         : base(output, loggerFactory)

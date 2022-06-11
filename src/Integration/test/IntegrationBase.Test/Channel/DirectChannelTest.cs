@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DirectChannelTest
 {
-    private IServiceProvider _provider;
+    private readonly IServiceProvider _provider;
 
     public DirectChannelTest()
     {

@@ -16,7 +16,7 @@ public class MapTests : AbstractExpressionTests
 {
     // if the list is full of literals then it will be of the type unmodifiableClass
     // rather than HashMap (or similar)
-    private Type _unmodifiableClass = typeof(ReadOnlyDictionary<object, object>);
+    private readonly Type _unmodifiableClass = typeof(ReadOnlyDictionary<object, object>);
 
     [Fact]
     public void TestInlineMapCreation01()

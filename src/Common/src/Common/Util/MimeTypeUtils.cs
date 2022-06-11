@@ -33,6 +33,7 @@ public static class MimeTypeUtils
     public static readonly MimeType TEXT_XML = new ("text", "xml");
     public static readonly string TEXT_XML_VALUE = "text/xml";
     private static readonly ConcurrentDictionary<string, MimeType> _cachedMimeTypes = new ();
+
     private static readonly char[] BOUNDARY_CHARS =
         new char[]
         {
@@ -42,9 +43,9 @@ public static class MimeTypeUtils
             'V', 'W', 'X', 'Y', 'Z'
         };
 
-    private static volatile Random _random;
+    private static readonly object _lock = new ();
 
-    private static object _lock = new ();
+    private static volatile Random _random;
 
     public static MimeType ParseMimeType(string mimeType)
     {

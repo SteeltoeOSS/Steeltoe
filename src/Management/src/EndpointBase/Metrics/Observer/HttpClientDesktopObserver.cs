@@ -30,8 +30,8 @@ public class HttpClientDesktopObserver : MetricsObserver
     private readonly string _uriTagKey = "uri";
     private readonly string _methodTagKey = "method";
     private readonly string _clientTagKey = "clientName";
-    private Histogram<double> _clientTimeMeasure;
-    private Histogram<double> _clientCountMeasure;
+    private readonly Histogram<double> _clientTimeMeasure;
+    private readonly Histogram<double> _clientCountMeasure;
 
     public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger, IViewRegistry viewRegistry)
         : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)

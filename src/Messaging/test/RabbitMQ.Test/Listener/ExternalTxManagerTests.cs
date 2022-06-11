@@ -102,8 +102,8 @@ public class ExternalTxManagerTests
 
     private sealed class TestListener : IMessageListener
     {
-        private IConnectionFactory _connectionFactory;
-        private CountdownEvent _latch;
+        private readonly IConnectionFactory _connectionFactory;
+        private readonly CountdownEvent _latch;
 
         public TestListener(IConnectionFactory connectionFactory, CountdownEvent latch)
         {
@@ -129,9 +129,9 @@ public class ExternalTxManagerTests
 
     private sealed class DummyTxManager : AbstractPlatformTransactionManager
     {
+        private readonly CountdownEvent _latch = new (1);
         private volatile bool _committed;
         private volatile bool _rolledBack;
-        private volatile CountdownEvent _latch = new (1);
 
         public bool Committed => _committed;
 

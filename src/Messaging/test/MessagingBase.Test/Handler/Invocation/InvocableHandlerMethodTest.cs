@@ -13,9 +13,9 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test;
 
 public class InvocableHandlerMethodTest
 {
+    private readonly ITestOutputHelper _outputHelper;
     private HandlerMethodArgumentResolverComposite _resolvers;
     private IMessage _message;
-    private ITestOutputHelper _outputHelper;
 
     public InvocableHandlerMethodTest(ITestOutputHelper output)
     {

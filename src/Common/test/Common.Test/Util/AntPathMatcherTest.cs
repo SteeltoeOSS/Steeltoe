@@ -568,7 +568,7 @@ public class AntPathMatcherTest
         paths.Clear();
     }
 
-    private static Random rng = new ();
+    private static readonly Random _rng = new ();
 
     private static void Shuffle<T>(List<T> list)
     {
@@ -576,7 +576,7 @@ public class AntPathMatcherTest
         while (n > 1)
         {
             n--;
-            var k = rng.Next(n + 1);
+            var k = _rng.Next(n + 1);
             (list[k], list[n]) = (list[n], list[k]);
         }
     }

@@ -2083,7 +2083,7 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class Item : IList<Item>, IList
     {
-        private List<Item> _children = new ();
+        private readonly List<Item> _children = new ();
 
         public Item this[int index] { get => _children[index]; set => _children[index] = value; }
 

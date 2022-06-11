@@ -31,11 +31,11 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
     private readonly Dictionary<string, object> _workerTags = new () { { "kind", "worker" } };
     private readonly Dictionary<string, object> _comPortTags = new () { { "kind", "completionPort" } };
 
-    private ObservableGauge<double> _memoryUsedMeasure;
-    private ObservableGauge<long> _collectionCountMeasure;
-    private ObservableGauge<long> _activeThreadsMeasure;
-    private ObservableGauge<long> _availThreadsMeasure;
-    private ObservableGauge<double> _processUptimeMeasure;
+    private readonly ObservableGauge<double> _memoryUsedMeasure;
+    private readonly ObservableGauge<long> _collectionCountMeasure;
+    private readonly ObservableGauge<long> _activeThreadsMeasure;
+    private readonly ObservableGauge<long> _availThreadsMeasure;
+    private readonly ObservableGauge<double> _processUptimeMeasure;
 
     private CLRRuntimeSource.HeapMetrics _previous = default;
 

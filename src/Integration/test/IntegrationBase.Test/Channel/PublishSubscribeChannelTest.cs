@@ -14,7 +14,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class PublishSubscribeChannelTest
 {
-    private IServiceProvider _provider;
+    private readonly IServiceProvider _provider;
 
     public PublishSubscribeChannelTest()
     {

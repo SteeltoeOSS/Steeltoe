@@ -16,14 +16,14 @@ public class KubernetesServiceInstance : IServiceInstance
     private const string Dsl = "//";
     private const string Coln = ":";
 
-    private V1EndpointAddress _endpointAddress;
+    private readonly V1EndpointAddress _endpointAddress;
 
 #if NETSTANDARD2_0
     private V1EndpointPort _endpointPort;
 #endif
 
 #if NETSTANDARD2_1
-    private Corev1EndpointPort _endpointPort;
+    private readonly Corev1EndpointPort _endpointPort;
 #endif
 
     public string InstanceId { get; }

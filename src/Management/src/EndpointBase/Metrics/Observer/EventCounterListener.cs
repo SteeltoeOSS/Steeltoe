@@ -21,11 +21,11 @@ public class EventCounterListener : EventListener
     private readonly string _eventName = "EventCounters";
     private readonly IMetricsObserverOptions _options;
 
-    private ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new ();
-    private ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new ();
+    private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new ();
+    private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new ();
 
-    private ConcurrentDictionary<string, double> _lastDoubleValue = new ();
-    private ConcurrentDictionary<string, long> _lastLongValue = new ();
+    private readonly ConcurrentDictionary<string, double> _lastDoubleValue = new ();
+    private readonly ConcurrentDictionary<string, long> _lastLongValue = new ();
 
     public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
     {

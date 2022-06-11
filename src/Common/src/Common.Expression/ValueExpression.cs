@@ -8,8 +8,8 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public class ValueExpression<V> : IExpression
 {
-    private V _value;
-    private Type _asClass;
+    private readonly V _value;
+    private readonly Type _asClass;
 
     public string ExpressionString => _value.ToString();
 

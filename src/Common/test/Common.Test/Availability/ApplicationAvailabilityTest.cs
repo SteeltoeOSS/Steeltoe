@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Availability.Test;
 
 public class ApplicationAvailabilityTest
 {
-    private ILogger<ApplicationAvailability> _logger = TestHelpers.GetLoggerFactory().CreateLogger<ApplicationAvailability>();
+    private readonly ILogger<ApplicationAvailability> _logger = TestHelpers.GetLoggerFactory().CreateLogger<ApplicationAvailability>();
 
     [Fact]
     public void TracksAndReturnsState()

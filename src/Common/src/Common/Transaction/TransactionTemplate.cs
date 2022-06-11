@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Transaction;
 
 public class TransactionTemplate : DefaultTransactionDefinition
 {
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
     public TransactionTemplate(ILogger logger = null)
     {

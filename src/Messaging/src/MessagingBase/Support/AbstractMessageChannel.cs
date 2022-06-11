@@ -16,7 +16,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 {
     public const int INDEFINITE_TIMEOUT = -1;
 
-    private object _lock = new ();
+    private readonly object _lock = new ();
     private List<IChannelInterceptor> _interceptors = new ();
 
     protected AbstractMessageChannel(ILogger logger = null)
@@ -175,8 +175,8 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     protected class ChannelInterceptorChain
     {
-        private AbstractMessageChannel _channel;
-        private List<IChannelInterceptor> _interceptors;
+        private readonly AbstractMessageChannel _channel;
+        private readonly List<IChannelInterceptor> _interceptors;
         private int _sendInterceptorIndex;
 
         private int _receiveInterceptorIndex;

@@ -29,7 +29,7 @@ public class ThreadPoolEventsListener : EventSourceListener
     private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
     private const EventKeywords ThreadPoolEvents = (EventKeywords)0x10000;
 
-    private static string[] _allowedEvents = new string[]
+    private static readonly string[] _allowedEvents = new string[]
     {
         "ThreadPoolWorkerThreadStart",
         "ThreadPoolWorkerThreadWait",
@@ -40,7 +40,7 @@ public class ThreadPoolEventsListener : EventSourceListener
         "IOThreadTerminate"
     };
 
-    private static string[] _ignorePayloadNames = new string[]
+    private static readonly string[] _ignorePayloadNames = new string[]
     {
         "ClrInstanceID"
     };

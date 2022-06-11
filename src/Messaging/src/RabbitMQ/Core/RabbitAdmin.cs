@@ -35,7 +35,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     private const string DELAYED_MESSAGE_EXCHANGE = "x-delayed-message";
 
     private readonly object _lifecycleMonitor = new ();
-    private ILogger _logger;
+    private readonly ILogger _logger;
     private int _initializing;
 
     [ActivatorUtilitiesConstructor]

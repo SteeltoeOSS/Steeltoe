@@ -75,7 +75,7 @@ public class DictionaryAcessorTests
 
     public class MapGetter
     {
-        private Dictionary<string, object> _map = new ();
+        private readonly Dictionary<string, object> _map = new ();
 
         public MapGetter()
         {

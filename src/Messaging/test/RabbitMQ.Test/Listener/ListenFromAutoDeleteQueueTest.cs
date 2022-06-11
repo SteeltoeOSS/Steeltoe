@@ -25,15 +25,15 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
     public const string Q2 = "anon2";
     public const string Q3 = "otherAnon";
 
-    private DirectMessageListenerContainer _listenerContainer1;
-    private DirectMessageListenerContainer _listenerContainer2;
-    private DirectMessageListenerContainer _listenerContainer3;
-    private DirectMessageListenerContainer _listenerContainer4;
+    private readonly DirectMessageListenerContainer _listenerContainer1;
+    private readonly DirectMessageListenerContainer _listenerContainer2;
+    private readonly DirectMessageListenerContainer _listenerContainer3;
+    private readonly DirectMessageListenerContainer _listenerContainer4;
 
-    private Queue _expiringQueue;
-    private IConnectionFactory _connectionFactory;
-    private AppendingListener _listener;
-    private TestAdmin _containerAdmin;
+    private readonly Queue _expiringQueue;
+    private readonly IConnectionFactory _connectionFactory;
+    private readonly AppendingListener _listener;
+    private readonly TestAdmin _containerAdmin;
 
     public ListenFromAutoDeleteQueueTest()
     {

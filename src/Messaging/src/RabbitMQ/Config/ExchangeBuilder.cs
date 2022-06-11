@@ -9,8 +9,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class ExchangeBuilder : AbstractBuilder
 {
-    private string _name;
-    private string _type;
+    private readonly string _name;
+    private readonly string _type;
     private bool _autoDelete;
     private bool _durable = true;
     private bool _internal;

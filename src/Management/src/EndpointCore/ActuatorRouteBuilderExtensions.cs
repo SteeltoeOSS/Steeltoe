@@ -252,7 +252,7 @@ public static class ActuatorRouteBuilderExtensions
 /// </summary>
 public class EndpointCollectionConventionBuilder : IEndpointConventionBuilder
 {
-    private List<IEndpointConventionBuilder> _conventionBuilders = new ();
+    private readonly List<IEndpointConventionBuilder> _conventionBuilders = new ();
 
     public void AddConventionBuilder(IEndpointConventionBuilder builder)
     {

@@ -21,8 +21,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 [Trait("Category", "Integration")]
 public class DlqExpiryTests : IClassFixture<DlqStartupFixture>
 {
-    private DlqStartupFixture _fixture;
-    private ServiceProvider _provider;
+    private readonly DlqStartupFixture _fixture;
+    private readonly ServiceProvider _provider;
 
     public DlqExpiryTests(DlqStartupFixture fix)
     {

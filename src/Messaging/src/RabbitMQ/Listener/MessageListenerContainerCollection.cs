@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class MessageListenerContainerCollection : IMessageListenerContainerCollection
 {
-    private List<IMessageListenerContainer> _containers = new ();
+    private readonly List<IMessageListenerContainer> _containers = new ();
 
     public MessageListenerContainerCollection(string groupName)
     {

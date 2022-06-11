@@ -34,7 +34,7 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:enabled"] = "true",
     };
 
-    private IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
+    private readonly IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
 
     [Fact]
     public async Task HandleEnvRequestAsync_ReturnsExpected()

@@ -31,7 +31,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         ["management:endpoints:path"] = "/testing",
     };
 
-    private Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
 
     [Fact]
     public void AddCloudFoundryActuators_IWebHostBuilder()

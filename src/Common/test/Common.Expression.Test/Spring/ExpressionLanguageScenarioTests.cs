@@ -187,13 +187,13 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
     public class FruitColourAccessor : IPropertyAccessor
     {
-        private static Dictionary<string, Color> propertyMap = new ();
+        private static readonly Dictionary<string, Color> _propertyMap = new ();
 
         static FruitColourAccessor()
         {
-            propertyMap.Add("Banana", Color.Yellow);
-            propertyMap.Add("Apple", Color.Red);
-            propertyMap.Add("Orange", Color.Orange);
+            _propertyMap.Add("Banana", Color.Yellow);
+            _propertyMap.Add("Apple", Color.Red);
+            _propertyMap.Add("Orange", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -203,12 +203,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return propertyMap.ContainsKey(name);
+            return _propertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            propertyMap.TryGetValue(name, out var value);
+            _propertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 
@@ -224,12 +224,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
     public class VegetableColourAccessor : IPropertyAccessor
     {
-        private static Dictionary<string, Color> propertyMap = new ();
+        private static readonly Dictionary<string, Color> _propertyMap = new ();
 
         static VegetableColourAccessor()
         {
-            propertyMap.Add("Pea", Color.Green);
-            propertyMap.Add("Carrot", Color.Orange);
+            _propertyMap.Add("Pea", Color.Green);
+            _propertyMap.Add("Carrot", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -239,12 +239,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return propertyMap.ContainsKey(name);
+            return _propertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            propertyMap.TryGetValue(name, out var value);
+            _propertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 

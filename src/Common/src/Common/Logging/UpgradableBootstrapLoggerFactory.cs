@@ -40,11 +40,11 @@ internal class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
         });
     }
 
-    private Dictionary<string, BoostrapLoggerInst> _loggers = new ();
+    private readonly Dictionary<string, BoostrapLoggerInst> _loggers = new ();
+
+    private readonly object _lock = new ();
 
     private ILoggerFactory _factoryInstance;
-
-    private object _lock = new ();
 
     private ILoggerFactory _innerFactory;
 

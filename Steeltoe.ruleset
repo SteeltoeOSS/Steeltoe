@@ -159,7 +159,7 @@
     <Rule Id="S2761" Action="Warning" />
     <Rule Id="S2930" Action="Warning" />
     <Rule Id="S2931" Action="None" />
-    <Rule Id="S2933" Action="Info" /><!--3.0-->
+    <Rule Id="S2933" Action="Warning" />
     <Rule Id="S2934" Action="Warning" />
     <Rule Id="S2952" Action="None" />
     <Rule Id="S2953" Action="Warning" />

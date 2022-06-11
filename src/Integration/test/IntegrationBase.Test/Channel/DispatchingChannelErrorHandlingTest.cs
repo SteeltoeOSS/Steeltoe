@@ -19,7 +19,7 @@ public class DispatchingChannelErrorHandlingTest
 {
     private readonly CountdownEvent _latch = new (1);
 
-    private IServiceCollection _services;
+    private readonly IServiceCollection _services;
 
     public DispatchingChannelErrorHandlingTest()
     {

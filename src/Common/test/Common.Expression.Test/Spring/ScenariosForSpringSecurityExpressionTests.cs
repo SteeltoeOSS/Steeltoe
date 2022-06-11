@@ -254,7 +254,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
     {
         public class HasRoleExecutor : IMethodExecutor
         {
-            private ITypeConverter _tc;
+            private readonly ITypeConverter _tc;
 
             public HasRoleExecutor(ITypeConverter typeConverter)
             {

@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Consul.Test;
 
 public class ConsulDiscoveryClientBuilderExtensionsTest
 {
-    private Dictionary<string, string> _appsettings = new ()
+    private readonly Dictionary<string, string> _appsettings = new ()
     {
         { "spring:application:name", "myName" },
         { "spring:cloud:inet:defaulthostname", "fromtest" },

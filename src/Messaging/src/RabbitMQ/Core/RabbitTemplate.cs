@@ -55,7 +55,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private static readonly SpelExpressionParser _parser = new ();
 
-    private RabbitOptions _options;
+    private readonly RabbitOptions _options;
     private int _activeTemplateCallbacks;
     private int _messageTagProvider;
     private int _containerInstance;
@@ -2735,9 +2735,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     protected class ConfirmListener
     {
-        private Action<object, BasicAckEventArgs> _acks;
-        private Action<object, BasicNackEventArgs> _nacks;
-        private RC.IModel _channel;
+        private readonly Action<object, BasicAckEventArgs> _acks;
+        private readonly Action<object, BasicNackEventArgs> _nacks;
+        private readonly RC.IModel _channel;
 
         public ConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
         {
@@ -2773,7 +2773,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private class PendingReplyReturn : IReturnCallback
     {
-        private PendingReply _pendingReply;
+        private readonly PendingReply _pendingReply;
 
         public PendingReplyReturn(PendingReply pendingReply)
         {

@@ -671,7 +671,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         private readonly AbstractMessageChannelBinder _binder;
         private readonly IProducerOptions _options;
         private readonly IProducerDestination _producerDestination;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public DefaultProducingMessageChannelBinding(
             AbstractMessageChannelBinder binder,

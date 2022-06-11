@@ -56,7 +56,7 @@ public class SpringBootEnvProviderTest
 
     private class TestOutputHelper : ITestOutputHelper
     {
-        private StringBuilder _stringBuilder = new ();
+        private readonly StringBuilder _stringBuilder = new ();
 
         public string Output => _stringBuilder.ToString();
 

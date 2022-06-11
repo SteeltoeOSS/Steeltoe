@@ -31,8 +31,8 @@ public class HttpClientCoreObserver : MetricsObserver
     private readonly string _uriTagKey = "uri";
     private readonly string _methodTagKey = "method";
     private readonly string _clientTagKey = "clientName";
-    private Histogram<double> _clientTimeMeasure;
-    private Histogram<double> _clientCountMeasure;
+    private readonly Histogram<double> _clientTimeMeasure;
+    private readonly Histogram<double> _clientCountMeasure;
 
     public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger, IViewRegistry viewRegistry)
         : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)

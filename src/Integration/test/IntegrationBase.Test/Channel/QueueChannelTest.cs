@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class QueueChannelTest
 {
-    private IServiceProvider _provider;
+    private readonly IServiceProvider _provider;
 
     public QueueChannelTest()
     {

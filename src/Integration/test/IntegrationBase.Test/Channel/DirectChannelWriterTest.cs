@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DirectChannelWriterTest
 {
-    private ServiceCollection _services;
+    private readonly ServiceCollection _services;
 
     public DirectChannelWriterTest()
     {

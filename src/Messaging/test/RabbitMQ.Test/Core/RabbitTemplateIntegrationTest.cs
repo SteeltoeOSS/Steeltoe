@@ -1368,8 +1368,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private sealed class TestConnectionListener : IConnectionListener
     {
-        private AtomicReference<ShutdownSignalException> _shutdown;
-        private CountdownEvent _connLatch;
+        private readonly AtomicReference<ShutdownSignalException> _shutdown;
+        private readonly CountdownEvent _connLatch;
 
         public TestConnectionListener(AtomicReference<ShutdownSignalException> shutdown, CountdownEvent connLatch)
         {
@@ -1394,8 +1394,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private sealed class TestChannelListener : IChannelListener
     {
-        private AtomicReference<ShutdownSignalException> _shutdown;
-        private CountdownEvent _shutdownLatch;
+        private readonly AtomicReference<ShutdownSignalException> _shutdown;
+        private readonly CountdownEvent _shutdownLatch;
 
         public TestChannelListener(AtomicReference<ShutdownSignalException> shutdown, CountdownEvent shutdownLatch)
         {
@@ -1479,7 +1479,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private sealed class TestMessageHandler
     {
-        private AtomicReference<string> _replyToWas;
+        private readonly AtomicReference<string> _replyToWas;
 
         public TestMessageHandler(AtomicReference<string> replyToWas)
         {

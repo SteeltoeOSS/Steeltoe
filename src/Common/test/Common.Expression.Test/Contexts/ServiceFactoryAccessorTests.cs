@@ -16,7 +16,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class ServiceFactoryAccessorTests
 {
-    private IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public ServiceFactoryAccessorTests()
     {
