@@ -1139,23 +1139,23 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         var spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
 
-        context.SetVariable("enumType", typeof(ABC));
+        context.SetVariable("enumType", typeof(Abc));
         var result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         var asArray = result as Array;
-        Assert.Equal(ABC.A, asArray.GetValue(0));
-        Assert.Equal(ABC.B, asArray.GetValue(1));
-        Assert.Equal(ABC.C, asArray.GetValue(2));
+        Assert.Equal(Abc.A, asArray.GetValue(0));
+        Assert.Equal(Abc.B, asArray.GetValue(1));
+        Assert.Equal(Abc.C, asArray.GetValue(2));
 
-        context.SetVariable("enumType", typeof(XYZ));
+        context.SetVariable("enumType", typeof(Xyz));
         result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         asArray = result as Array;
-        Assert.Equal(XYZ.X, asArray.GetValue(0));
-        Assert.Equal(XYZ.Y, asArray.GetValue(1));
-        Assert.Equal(XYZ.Z, asArray.GetValue(2));
+        Assert.Equal(Xyz.X, asArray.GetValue(0));
+        Assert.Equal(Xyz.Y, asArray.GetValue(1));
+        Assert.Equal(Xyz.Z, asArray.GetValue(2));
     }
 
     [Fact]
@@ -1167,23 +1167,23 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         var spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
 
-        context.SetVariable("enumType", typeof(ABC));
+        context.SetVariable("enumType", typeof(Abc));
         var result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         var asArray = result as Array;
-        Assert.Equal(ABC.A, asArray.GetValue(0));
-        Assert.Equal(ABC.B, asArray.GetValue(1));
-        Assert.Equal(ABC.C, asArray.GetValue(2));
+        Assert.Equal(Abc.A, asArray.GetValue(0));
+        Assert.Equal(Abc.B, asArray.GetValue(1));
+        Assert.Equal(Abc.C, asArray.GetValue(2));
 
         context.AddMethodResolver(new ValuesMethodReslover());
         result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         asArray = result as Array;
-        Assert.Equal(XYZ.X, asArray.GetValue(0));
-        Assert.Equal(XYZ.Y, asArray.GetValue(1));
-        Assert.Equal(XYZ.Z, asArray.GetValue(2));
+        Assert.Equal(Xyz.X, asArray.GetValue(0));
+        Assert.Equal(Xyz.Y, asArray.GetValue(1));
+        Assert.Equal(Xyz.Z, asArray.GetValue(2));
     }
 
     [Fact]
@@ -1551,7 +1551,7 @@ public class SpelReproTests : AbstractExpressionTests
             try
             {
                 var method = typeof(Enum).GetMethod("GetValues", new[] { typeof(Type) });
-                var value = method.Invoke(null, new object[] { typeof(XYZ) });
+                var value = method.Invoke(null, new object[] { typeof(Xyz) });
                 return new TypedValue(value, value == null ? typeof(object) : value.GetType());
             }
             catch (Exception ex)
@@ -1982,14 +1982,14 @@ public class SpelReproTests : AbstractExpressionTests
         public BeanClass(params ListOf[] list) => List = new List<ListOf>(list);
     }
 
-    public enum ABC
+    public enum Abc
     {
         A,
         B,
         C
     }
 
-    public enum XYZ
+    public enum Xyz
     {
         X,
         Y,
