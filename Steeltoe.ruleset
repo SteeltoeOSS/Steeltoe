@@ -95,7 +95,7 @@
     <Rule Id="S2114" Action="Warning" />
     <Rule Id="S2123" Action="Warning" />
     <Rule Id="S2148" Action="Warning" />
-    <Rule Id="S2156" Action="None" />
+    <Rule Id="S2156" Action="Warning" />
     <Rule Id="S2178" Action="Warning" />
     <Rule Id="S2183" Action="Warning" />
     <Rule Id="S2184" Action="Warning" />
