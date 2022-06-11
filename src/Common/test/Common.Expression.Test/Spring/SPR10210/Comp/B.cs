@@ -6,7 +6,9 @@ using Steeltoe.Common.Expression.Internal.Spring.SPR10210.Infra;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Comp;
 
+#pragma warning disable S2326 // Unused type parameters should be removed
 public class B<T>
+#pragma warning restore S2326 // Unused type parameters should be removed
     where T : IC
 {
 }
