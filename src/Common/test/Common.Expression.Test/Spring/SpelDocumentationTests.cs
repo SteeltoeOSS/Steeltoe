@@ -15,26 +15,24 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelDocumentationTests : AbstractExpressionTests
 {
-    private static readonly Inventor Tesla;
-    private static readonly Inventor Pupin;
+    private static readonly Inventor Tesla = new ("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
+    {
+        PlaceOfBirth = new PlaceOfBirth("SmilJan"),
+        Inventions = new[]
+        {
+            "Telephone repeater", "Rotating magnetic field principle",
+            "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",
+            "Tesla coil transformer", "Wireless communication", "Radio", "Fluorescent lights"
+        }
+    };
+
+    private static readonly Inventor Pupin = new ("Pupin", new DateTime(1856, 7, 9), "Idvor")
+    {
+        PlaceOfBirth = new PlaceOfBirth("Idvor")
+    };
 
     static SpelDocumentationTests()
     {
-        Tesla = new Inventor("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
-        {
-            PlaceOfBirth = new PlaceOfBirth("SmilJan"),
-            Inventions = new[]
-            {
-                "Telephone repeater", "Rotating magnetic field principle",
-                "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",
-                "Tesla coil transformer", "Wireless communication", "Radio", "Fluorescent lights"
-            }
-        };
-
-        Pupin = new Inventor("Pupin", new DateTime(1856, 7, 9), "Idvor")
-        {
-            PlaceOfBirth = new PlaceOfBirth("Idvor")
-        };
     }
 
     [Fact]
