@@ -1732,7 +1732,7 @@ public partial class RabbitBinderTests
 
         var consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
         var binding = binder.BindConsumer("pollable", "group", (object)inboundBindTarget, consumerOptions);
-        Assert.True(typeof(DefaultBinding<IPollableSource<IMessageHandler>>).IsAssignableFrom(binding.GetType()));
+        Assert.True(binding is DefaultBinding<IPollableSource<IMessageHandler>>);
         binding.Unbind();
     }
 
