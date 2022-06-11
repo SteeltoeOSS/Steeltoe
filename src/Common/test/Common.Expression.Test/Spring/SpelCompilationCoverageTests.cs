@@ -5476,11 +5476,35 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 #pragma warning disable IDE0051
 #pragma warning disable SA1307
 
-    public class AHolder
+    public static class AHolder
     {
         public static A GetA()
         {
             return new A(20);
+        }
+    }
+
+    public static class DelegatingStringFormat
+    {
+        public static string Format(string s, params object[] args)
+        {
+            return string.Format(s, args);
+        }
+    }
+
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:Access modifier should be declared", Justification = "Used in Test")]
+    private static class SomeCompareMethod
+    {
+        // public
+        public static int Compare2(object o1, object o2)
+        {
+            return -1;
+        }
+
+        // method not public
+        static int Compare(object o1, object o2)
+        {
+            return -1;
         }
     }
 
@@ -6373,7 +6397,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public Dictionary<string, string> Data { get; }
     }
 
+#pragma warning disable S1118 // Utility classes should not have public constructors
     public class TestClass7
+#pragma warning restore S1118 // Utility classes should not have public constructors
     {
         public static string Property = "UK 123".Split(' ')[0];
 
@@ -6457,7 +6483,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
+#pragma warning disable S1118 // Utility classes should not have public constructors
     public class SomeCompareMethod2
+#pragma warning restore S1118 // Utility classes should not have public constructors
     {
         public static int Negate(int i1)
         {
@@ -6554,14 +6582,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class DelegatingStringFormat
-    {
-        public static string Format(string s, params object[] args)
-        {
-            return string.Format(s, args);
-        }
-    }
-
     public class Three
     {
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1307:Accessible fields should begin with upper-case letter", Justification = "Used in Test")]
@@ -6637,21 +6657,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:Access modifier should be declared", Justification = "Used in Test")]
-    private sealed class SomeCompareMethod
-    {
-        // public
-        public static int Compare2(object o1, object o2)
-        {
-            return -1;
-        }
-
-        // method not public
-        static int Compare(object o1, object o2)
-        {
-            return -1;
-        }
-    }
 #pragma warning restore SA1307
 #pragma warning restore IDE1006
 #pragma warning restore IDE0044

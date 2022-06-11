@@ -213,19 +213,7 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.SYSTEM);
     }
 
-    public class TestTarget
-    {
-        [DeclareExchange(Name ="test", Type = ExchangeType.DIRECT)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.TOPIC)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.FANOUT)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.HEADERS)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.SYSTEM)]
-        public void Method()
-        {
-        }
-    }
-
-    public class Config
+    public static class Config
     {
         public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
         {
@@ -269,6 +257,18 @@ public class RabbitListenerAttributeProcessorTest
             var provider = services.BuildServiceProvider();
             await provider.GetRequiredService<IHostedService>().StartAsync(default);
             return provider;
+        }
+    }
+
+    public class TestTarget
+    {
+        [DeclareExchange(Name ="test", Type = ExchangeType.DIRECT)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.TOPIC)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.FANOUT)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.HEADERS)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.SYSTEM)]
+        public void Method()
+        {
         }
     }
 

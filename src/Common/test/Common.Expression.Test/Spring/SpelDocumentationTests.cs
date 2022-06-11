@@ -434,6 +434,20 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Assert.StartsWith("random number", randomPhrase);
     }
 
+    public static class StringUtils
+    {
+        public static string ReverseString(string input)
+        {
+            var backwards = new StringBuilder();
+            for (var i = 0; i < input.Length; i++)
+            {
+                backwards.Append(input[input.Length - 1 - i]);
+            }
+
+            return backwards.ToString();
+        }
+    }
+
     public class InstituteOfElectricalAndElectronicsEngineers
     {
         public Inventor[] Members = new Inventor[1];
@@ -470,19 +484,5 @@ public class SpelDocumentationTests : AbstractExpressionTests
         public string ExpressionSuffix => "}";
 
         public bool IsTemplate => true;
-    }
-
-    public class StringUtils
-    {
-        public static string ReverseString(string input)
-        {
-            var backwards = new StringBuilder();
-            for (var i = 0; i < input.Length; i++)
-            {
-                backwards.Append(input[input.Length - 1 - i]);
-            }
-
-            return backwards.ToString();
-        }
     }
 }

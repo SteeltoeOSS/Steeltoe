@@ -4370,7 +4370,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     }
 }
 
-internal class FlexibleTestHystrixCommand
+internal static class FlexibleTestHystrixCommand
 {
     public static int EXECUTE_VALUE = 1;
     public static int FALLBACK_VALUE = 11;

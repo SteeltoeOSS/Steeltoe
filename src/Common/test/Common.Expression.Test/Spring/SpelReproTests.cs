@@ -1520,6 +1520,22 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Equal(expectedMessage, message);
     }
 
+    public static class FooLists
+    {
+        public static List<T> NewArrayList<T>(IEnumerable<T> iterable) => new (iterable);
+
+        public static List<T> NewArrayList<T>(params object[] elements) => throw new InvalidOperationException();
+    }
+
+    public static class DistanceEnforcer
+    {
+        public static string From(ValueType no) => $"ValueType:{no}";
+
+        public static string From(int no) => $"Integer:{no}";
+
+        public static string From(object no) => $"Object:{no}";
+    }
+
     #region Test Types
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE1006 // Naming Styles
@@ -2127,21 +2143,6 @@ public class SpelReproTests : AbstractExpressionTests
         public string Name => "foo";
     }
 
-    public class FooLists
-    {
-        public static List<T> NewArrayList<T>(IEnumerable<T> iterable) => new (iterable);
-
-        public static List<T> NewArrayList<T>(params object[] elements) => throw new InvalidOperationException();
-    }
-
-    public class DistanceEnforcer
-    {
-        public static string From(ValueType no) => $"ValueType:{no}";
-
-        public static string From(int no) => $"Integer:{no}";
-
-        public static string From(object no) => $"Object:{no}";
-    }
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning restore IDE1006 // Naming Styles
     #endregion Test Types
