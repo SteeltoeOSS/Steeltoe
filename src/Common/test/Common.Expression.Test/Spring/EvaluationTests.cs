@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class EvaluationTests : AbstractExpressionTests
 {
-    private static readonly bool DEBUG = false;
+    private static readonly bool DEBUG = bool.Parse(bool.FalseString);
 
     [Fact]
     public void TestCreateListsOnAttemptToIndexNull01()
@@ -1386,7 +1386,7 @@ public class EvaluationTests : AbstractExpressionTests
         public int Index2 = 2;
 
         public List<string> ListOfStrings;
-        public int Index3 = 0;
+        public int Index3;
 
         public Spr9751()
         {
@@ -1451,9 +1451,9 @@ public class EvaluationTests : AbstractExpressionTests
 
         public IList<string> FooIList { get; set; }
 
-        public IDictionary Map2 { get; } = null;
+        public IDictionary Map2 { get; }
 
-        public Foo Wibble2 { get; } = null;
+        public Foo Wibble2 { get; }
     }
 
 #pragma warning restore IDE0044 // Add readonly modifier

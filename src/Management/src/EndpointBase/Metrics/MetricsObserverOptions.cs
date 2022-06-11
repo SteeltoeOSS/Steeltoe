@@ -56,13 +56,13 @@ public class MetricsObserverOptions : IMetricsObserverOptions
 
     public bool ThreadPoolEvents { get; set; } = true;
 
-    public bool EventCounterEvents { get; set; } = false;
+    public bool EventCounterEvents { get; set; }
 
-    public bool HttpClientCore { get; set; } = false;
+    public bool HttpClientCore { get; set; }
 
-    public bool HttpClientDesktop { get; set; } = false;
+    public bool HttpClientDesktop { get; set; }
 
-    public bool HystrixEvents { get; set; } = false;
+    public bool HystrixEvents { get; set; }
 
     /// <inheritdoc/>
     public List<string> ExcludedMetrics { get; set; } = new ();

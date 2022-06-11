@@ -116,11 +116,11 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual IRecoveryListener RecoveryListener { get; set; }
 
-    public virtual bool IsSimplePublisherConfirms { get; set; } = false;
+    public virtual bool IsSimplePublisherConfirms { get; set; }
 
-    public virtual bool IsPublisherConfirms { get; set; } = false;
+    public virtual bool IsPublisherConfirms { get; set; }
 
-    public virtual bool IsPublisherReturns { get; set; } = false;
+    public virtual bool IsPublisherReturns { get; set; }
 
     public virtual IConnectionListener ConnectionListener => _connectionListener;
 

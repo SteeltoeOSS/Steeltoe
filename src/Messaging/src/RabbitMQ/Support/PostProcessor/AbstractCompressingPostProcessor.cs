@@ -29,7 +29,7 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 
     public bool AutoDecompress { get; }
 
-    public bool CopyHeaders { get; set; } = false;
+    public bool CopyHeaders { get; set; }
 
     public int Order { get; set; }
 

@@ -395,7 +395,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
             return result;
         }
 
-        public bool IsNegated { get; } = false;
+        public bool IsNegated { get; }
     }
 
     protected class CompositeHeaderMatcher : IHeaderMatcher
@@ -430,6 +430,6 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
             return false;
         }
 
-        public bool IsNegated { get; } = false;
+        public bool IsNegated { get; }
     }
 }

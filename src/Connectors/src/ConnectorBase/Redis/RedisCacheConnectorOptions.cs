@@ -47,7 +47,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
     public string Password { get; set; }
 
-    public bool AllowAdmin { get; set; } = false;
+    public bool AllowAdmin { get; set; }
 
     public string ClientName { get; set; }
 
@@ -59,7 +59,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
     public int KeepAlive { get; set; }
 
-    public bool ResolveDns { get; set; } = false;
+    public bool ResolveDns { get; set; }
 
     public string ServiceName { get; set; }
 

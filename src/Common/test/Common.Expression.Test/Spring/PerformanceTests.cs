@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 public class PerformanceTests
 {
     private static readonly int _iterations = 10000;
-    private static readonly bool _debug = false;
+    private static readonly bool _debug = bool.Parse(bool.FalseString);
     private static readonly IExpressionParser _parser = new SpelExpressionParser();
     private static readonly IEvaluationContext _eContext = TestScenarioCreator.GetTestEvaluationContext();
     private readonly ITestOutputHelper _output;

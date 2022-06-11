@@ -75,7 +75,7 @@ public class ConsulDiscoveryOptions
     /// Gets or sets a value indicating whether gets or sets Add the 'passing` parameter to
     /// /v1/health/service/serviceName. This pushes health check passing to the server.
     /// </summary>
-    public bool QueryPassing { get; set; } = false;
+    public bool QueryPassing { get; set; }
 
     /// <summary>
     /// Gets or sets Whether to register an http or https service
@@ -121,7 +121,7 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets a value indicating whether health check verifies TLS
     /// </summary>
-    public bool HealthCheckTlsSkipVerify { get; set; } = false;
+    public bool HealthCheckTlsSkipVerify { get; set; }
 
     /// <summary>
     /// Gets or sets Hostname to use when accessing server
@@ -146,7 +146,7 @@ public class ConsulDiscoveryOptions
     /// Gets or sets a value indicating whether gets or sets Use ip address rather than hostname
     /// during registration
     /// </summary>
-    public bool PreferIpAddress { get; set; } = false;
+    public bool PreferIpAddress { get; set; }
 
     /// <summary>
     /// Gets or sets Service name
@@ -161,7 +161,7 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets a value indicating whether to use agent address or hostname
     /// </summary>
-    public bool PreferAgentAddress { get; set; } = false;
+    public bool PreferAgentAddress { get; set; }
 
     /// <summary>
     /// Gets or sets the instance zone to use during registration

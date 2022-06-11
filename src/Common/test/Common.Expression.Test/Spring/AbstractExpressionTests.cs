@@ -14,10 +14,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 public abstract class AbstractExpressionTests
 {
     protected static readonly bool SHOULD_BE_WRITABLE = true;
-    protected static readonly bool SHOULD_NOT_BE_WRITABLE = false;
+    protected static readonly bool SHOULD_NOT_BE_WRITABLE;
     protected readonly IExpressionParser _parser = new SpelExpressionParser();
     protected readonly StandardEvaluationContext _context = TestScenarioCreator.GetTestEvaluationContext();
-    private static readonly bool DEBUG = false;
+    private static readonly bool DEBUG = bool.Parse(bool.FalseString);
 
     public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
     {

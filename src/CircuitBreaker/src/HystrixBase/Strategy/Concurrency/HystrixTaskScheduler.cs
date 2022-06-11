@@ -13,12 +13,12 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
     protected int corePoolSize;
     protected TimeSpan keepAliveTime;
     protected int maximumPoolSize;
-    protected int runningThreads = 0;
+    protected int runningThreads;
     protected int queueSizeRejectionThreshold;
     protected bool shutdown;
     protected int queueSize;
-    protected int runningTasks = 0;
-    protected int completedTasks = 0;
+    protected int runningTasks;
+    protected int completedTasks;
     protected bool allowMaxToDivergeFromCore;
 
     private const int DEFAULT_MIN_WORKTHREADS = 50;

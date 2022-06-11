@@ -451,7 +451,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
     {
         public int Field = 3;
         public int Field2;
-        public int Field3 = 0;
+        public int Field3;
 
         public string Property { get; set; }
 
@@ -459,7 +459,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
         public string Property3 { get; private set; } = "doodoo";
 
-        public bool Property4 { get; } = false;
+        public bool Property4 { get; }
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
         public string iD { get; } = "iD";
