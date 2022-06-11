@@ -209,8 +209,6 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         return (S)result;
     }
 
-    private bool _disposed;
-
     /// <inheritdoc/>
     public void Dispose()
     {
@@ -220,20 +218,9 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing)
         {
-            if (disposing)
-            {
-                // Cleanup
-                _scheduler?.Dispose();
-            }
-
-            _disposed = true;
+            _scheduler?.Dispose();
         }
-    }
-
-    ~ConsulServiceRegistry()
-    {
-        Dispose(false);
     }
 }

@@ -19,7 +19,7 @@ using static Steeltoe.Messaging.RabbitMQ.Connection.IPublisherCallbackChannel;
 using RC=RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public class PublisherCallbackChannel : IPublisherCallbackChannel
 {
     public const string RETURNED_MESSAGE_CORRELATION_KEY = "spring_returned_message_correlation";
@@ -397,10 +397,17 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     #endregion
 
     #region IDisposable Support
+
     public void Dispose()
     {
-        // Do Nothing
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
+
     #endregion
 
     #region Private
@@ -651,4 +658,3 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
     #endregion
 }
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly

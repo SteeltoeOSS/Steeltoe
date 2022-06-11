@@ -26,7 +26,7 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
 {
     private const string TEST_PREFIX = "bindertest.";
     private static readonly string _bigExceptionMessage = new ('x', 10_000);
-    private bool _disposed;
+    private bool _isDisposed;
 
     private RabbitTestBinder _testBinder;
 
@@ -74,14 +74,10 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
-            {
-                Cleanup();
-            }
-
-            _disposed = true;
+            Cleanup();
+            _isDisposed = true;
         }
     }
 

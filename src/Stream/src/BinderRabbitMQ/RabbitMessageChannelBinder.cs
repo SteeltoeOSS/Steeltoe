@@ -101,11 +101,6 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         // TODO: Add this to IBinder interface -> OnInit() code
     }
 
-    public override void Dispose()
-    {
-        ConnectionFactory?.Destroy();
-    }
-
     public RabbitConsumerOptions GetConsumerOptions(string channelName)
     {
         return BindingsOptions.GetRabbitConsumerOptions(channelName);
@@ -114,6 +109,16 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
     public RabbitProducerOptions GetProducerOptions(string channelName)
     {
         return BindingsOptions.GetRabbitProducerOptions(channelName);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            ConnectionFactory.Destroy();
+        }
+
+        base.Dispose(disposing);
     }
 
     protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)

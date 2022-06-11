@@ -8,18 +8,13 @@ using System.Diagnostics;
 
 namespace Steeltoe.Common.Diagnostics;
 
-public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object>>
+public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object>>, IDisposable
 {
     string ObserverName { get; }
 
     string ListenerName { get; }
 
     void Subscribe(DiagnosticListener listener);
-
-    // TODO: Address this warning in 3.0 ?
-#pragma warning disable S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
-    void Dispose();
-#pragma warning restore S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
 
     void ProcessEvent(string @event, object value);
 }

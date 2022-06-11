@@ -24,14 +24,6 @@ public abstract class TempPath : IDisposable
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="TempPath"/> class.
-    /// </summary>
-    ~TempPath()
-    {
-        Dispose(false);
-    }
-
-    /// <summary>
     /// Gets the absolute path of the TempPath.
     /// </summary>
     public string FullPath { get; }
@@ -53,7 +45,6 @@ public abstract class TempPath : IDisposable
     /// <summary>
     /// Ensures the temporary path is deleted.
     /// </summary>
-    /// <param name="disposing">If disposing.</param>
     protected abstract void Dispose(bool disposing);
 
     /// <summary>

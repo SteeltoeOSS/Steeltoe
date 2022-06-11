@@ -156,7 +156,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         while (true);
     }
 
-    private bool _disposed;
+    private bool _isDisposed;
 
     /// <inheritdoc/>
     public void Dispose()
@@ -167,25 +167,16 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
+            if (Interlocked.CompareExchange(ref _running, NOT_RUNNING, RUNNING) == RUNNING)
             {
-                // Cleanup
-                if (Interlocked.CompareExchange(ref _running, NOT_RUNNING, RUNNING) == RUNNING)
-                {
-                    Deregister();
-                }
-
-                _registry.Dispose();
+                Deregister();
             }
 
-            _disposed = true;
-        }
-    }
+            _registry.Dispose();
 
-    ~ConsulServiceRegistrar()
-    {
-        Dispose(false);
+            _isDisposed = true;
+        }
     }
 }

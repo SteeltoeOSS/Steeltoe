@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
-public class HystrixTimerTest : IDisposable
+public sealed class HystrixTimerTest : IDisposable
 {
     private readonly ITestOutputHelper _output;
 

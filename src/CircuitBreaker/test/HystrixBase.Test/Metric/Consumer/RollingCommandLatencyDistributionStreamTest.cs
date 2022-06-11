@@ -38,13 +38,18 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         HystrixCommandCompletionStream.Reset();
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        _latchSubscription?.Dispose();
-        _stream?.Unsubscribe();
-        _latchSubscription = null;
-        _stream = null;
-        base.Dispose();
+        if (disposing)
+        {
+            _latchSubscription?.Dispose();
+            _latchSubscription = null;
+
+            _stream?.Unsubscribe();
+            _stream = null;
+        }
+
+        base.Dispose(disposing);
     }
 
     [Fact]

@@ -17,7 +17,7 @@ using Xunit;
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 [Trait("Category", "Integration")]
-public class ListenFromAutoDeleteQueueTest : IDisposable
+public sealed class ListenFromAutoDeleteQueueTest : IDisposable
 {
     public const string Exch1 = "testContainerWithAutoDeleteQueues";
     public const string Exch2 = "otherExchange";

@@ -121,7 +121,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         return connection;
     }
 
-    public class SharedConnectionProxy : IConnectionProxy
+    public sealed class SharedConnectionProxy : IConnectionProxy
     {
         private readonly ILogger _logger;
         private readonly SingleConnectionFactory _factory;

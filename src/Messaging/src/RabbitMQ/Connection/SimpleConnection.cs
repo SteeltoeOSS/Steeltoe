@@ -10,9 +10,8 @@ using System;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public class SimpleConnection : IConnection, RC.NetworkConnection
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     private readonly int _closeTimeout;
     private readonly ILogger _logger;
@@ -80,7 +79,16 @@ public class SimpleConnection : IConnection, RC.NetworkConnection
 
     public void Dispose()
     {
-        Connection.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Connection?.Dispose();
+        }
     }
 
     public void AddBlockedListener(IBlockedListener listener)

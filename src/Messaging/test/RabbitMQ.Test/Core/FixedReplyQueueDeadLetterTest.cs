@@ -147,7 +147,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
         return config;
     }
 
-    public class FixedReplyStartupFixture : IDisposable
+    public sealed class FixedReplyStartupFixture : IDisposable
     {
         private readonly IServiceCollection _services;
 
@@ -327,7 +327,6 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
             var admin = Provider.GetRabbitAdmin();
             admin.DeleteQueue("all.args.1");
             admin.DeleteQueue("all.args.2");

@@ -19,8 +19,6 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
 {
     private Watcher<V1Secret> SecretWatcher { get; set; }
 
-    private bool _disposed;
-
     internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
         : base(kubernetes, settings, cancellationToken)
     {
@@ -59,17 +57,13 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing)
         {
-            if (disposing)
-            {
-                SecretWatcher?.Dispose();
-                SecretWatcher = null;
-                K8sClient.Dispose();
-                K8sClient = null;
-            }
+            SecretWatcher?.Dispose();
+            SecretWatcher = null;
 
-            _disposed = true;
+            K8sClient?.Dispose();
+            K8sClient = null;
         }
     }
 

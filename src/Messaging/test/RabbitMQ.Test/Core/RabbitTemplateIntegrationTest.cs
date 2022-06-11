@@ -30,7 +30,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 [Trait("Category", "Integration")]
-public class RabbitTemplateIntegrationTest : IDisposable
+public abstract class RabbitTemplateIntegrationTest : IDisposable
 {
     public const string ROUTE = "test.queue.RabbitTemplateIntegrationTests";
     public const string REPLY_QUEUE_NAME = "test.reply.queue.RabbitTemplateIntegrationTests";
@@ -44,7 +44,7 @@ public class RabbitTemplateIntegrationTest : IDisposable
 
     private readonly CachingConnectionFactory _connectionFactory;
 
-    public RabbitTemplateIntegrationTest()
+    protected RabbitTemplateIntegrationTest()
     {
         _connectionFactory = new CachingConnectionFactory("localhost")
         {
@@ -76,10 +76,19 @@ public class RabbitTemplateIntegrationTest : IDisposable
 
     public void Dispose()
     {
-        admin.DeleteQueue(ROUTE);
-        admin.DeleteQueue(REPLY_QUEUE_NAME);
-        template.Stop().Wait();
-        _connectionFactory.Destroy();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            admin.DeleteQueue(ROUTE);
+            admin.DeleteQueue(REPLY_QUEUE_NAME);
+            template.Stop().Wait();
+            _connectionFactory.Destroy();
+        }
     }
 
     [Fact]

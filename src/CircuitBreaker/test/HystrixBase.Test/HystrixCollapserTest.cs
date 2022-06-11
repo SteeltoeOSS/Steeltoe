@@ -28,10 +28,14 @@ public class HystrixCollapserTest : HystrixTestBase
         _output = output;
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        base.Dispose();
-        HystrixCollapserMetrics.Reset();
+        base.Dispose(disposing);
+
+        if (disposing)
+        {
+            HystrixCollapserMetrics.Reset();
+        }
     }
 
     [Fact]
@@ -2121,12 +2125,15 @@ public class HystrixCollapserTest : HystrixTestBase
 
         protected override void Dispose(bool disposing)
         {
-            // Called when context is disposed
-            foreach (var v in _ctimer.Tasks.Values)
+            if (disposing)
             {
-                if (v.Task == _listener)
+                // Called when context is disposed
+                foreach (var v in _ctimer.Tasks.Values)
                 {
-                    _ = _ctimer.Tasks.TryRemove(v, out var removed);
+                    if (v.Task == _listener)
+                    {
+                        _ = _ctimer.Tasks.TryRemove(v, out var removed);
+                    }
                 }
             }
 

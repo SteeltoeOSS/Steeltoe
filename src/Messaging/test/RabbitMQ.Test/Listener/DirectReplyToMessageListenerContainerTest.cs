@@ -15,7 +15,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 [Trait("Category", "Integration")]
-public class DirectReplyToMessageListenerContainerTest : IDisposable
+public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 {
     public const string TEST_RELEASE_CONSUMER_Q = "test.release.consumer";
 

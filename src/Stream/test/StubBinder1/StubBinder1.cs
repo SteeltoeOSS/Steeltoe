@@ -8,9 +8,8 @@ using Steeltoe.Stream.Config;
 using System;
 
 namespace Steeltoe.Stream.StubBinder1;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly: No unmanaged resources here.
-public class StubBinder1 : IBinder<object>
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+
+public sealed class StubBinder1 : IBinder<object>
 {
     public const string BINDER_NAME = "binder1";
 
@@ -54,6 +53,5 @@ public class StubBinder1 : IBinder<object>
 
     public void Dispose()
     {
-        // Nothing to dispose
     }
 }

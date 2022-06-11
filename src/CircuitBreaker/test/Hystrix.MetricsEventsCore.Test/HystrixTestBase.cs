@@ -11,9 +11,9 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 
-public class HystrixTestBase : IDisposable
+public abstract class HystrixTestBase : IDisposable
 {
-    public HystrixTestBase()
+    protected HystrixTestBase()
     {
         HystrixCommandMetrics.Reset();
         HystrixThreadPoolMetrics.Reset();
@@ -28,8 +28,17 @@ public class HystrixTestBase : IDisposable
         HystrixOptionsFactory.Reset();
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        HystrixThreadPoolFactory.Shutdown();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            HystrixThreadPoolFactory.Shutdown();
+        }
     }
 }

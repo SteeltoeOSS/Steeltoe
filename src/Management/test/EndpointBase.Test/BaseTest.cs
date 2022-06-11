@@ -17,12 +17,20 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class BaseTest : IDisposable
+public abstract class BaseTest : IDisposable
 {
-    public virtual void Dispose()
+    public void Dispose()
     {
-        DiagnosticsManager.Instance.Dispose();
+        Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            DiagnosticsManager.Instance.Dispose();
+        }
     }
 
     public ILogger<T> GetLogger<T>()

@@ -133,7 +133,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         }
     }
 
-    public class StartupFixture : IDisposable
+    public sealed class StartupFixture : IDisposable
     {
         private readonly IServiceCollection _services;
 

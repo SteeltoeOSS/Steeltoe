@@ -246,25 +246,18 @@ internal class EventPipeSessionController : IDisposable
         _session.Stop();
     }
 
-    #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
-            {
-                _session?.Dispose();
-                Source?.Dispose();
-            }
-            disposedValue = true;
-        }
-    }
-
     public void Dispose()
     {
         Dispose(true);
+        GC.SuppressFinalize(this);
     }
-    #endregion
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _session?.Dispose();
+            Source?.Dispose();
+        }
+    }
 }

@@ -65,7 +65,8 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
         {
             ConfigMapWatcher?.Dispose();
             ConfigMapWatcher = null;
-            K8sClient.Dispose();
+
+            K8sClient?.Dispose();
             K8sClient = null;
         }
     }

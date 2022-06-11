@@ -109,7 +109,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         Assert.Equal($"{nameof(CustomListenerErrorHandler)} handled/processed", reply);
     }
 
-    public class StartupFixture : IDisposable
+    public sealed class StartupFixture : IDisposable
     {
         private readonly IServiceCollection _services;
 

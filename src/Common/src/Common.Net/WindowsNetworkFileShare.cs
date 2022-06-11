@@ -104,14 +104,6 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="WindowsNetworkFileShare"/> class.
-    /// </summary>
-    ~WindowsNetworkFileShare()
-    {
-        Dispose(false);
-    }
-
-    /// <summary>
     /// Scope of the file share
     /// </summary>
     public enum ResourceScope
@@ -202,10 +194,14 @@ public class WindowsNetworkFileShare : IDisposable
     /// <summary>
     /// Disposes the object, cancels connection with file share
     /// </summary>
-    /// <param name="disposing">Not used</param>
     protected virtual void Dispose(bool disposing)
     {
-        _mpr.CancelConnection(_networkName, 0, true);
+        // With the current design, it's not possible to disconnect the network share from the finalizer,
+        // because the _mpr instance may have already been garbage-collected.
+        if (disposing)
+        {
+            _mpr.CancelConnection(_networkName, 0, true);
+        }
     }
 
     private struct ErrorClass

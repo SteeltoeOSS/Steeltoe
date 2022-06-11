@@ -18,7 +18,7 @@ using Xunit;
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 [Trait("Category", "Integration")]
-public class RabbitBindingIntegrationTest : IDisposable
+public sealed class RabbitBindingIntegrationTest : IDisposable
 {
     private const string QueueName = "test.queue.RabbitBindingIntegrationTests";
     private readonly Queue _queue = new (QueueName);

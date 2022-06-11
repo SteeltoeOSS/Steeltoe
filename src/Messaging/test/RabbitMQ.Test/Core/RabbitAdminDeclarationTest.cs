@@ -344,7 +344,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     {
     }
 
-    public class RabbitAdminDeclarationTestStartupFixture : IDisposable
+    public sealed class RabbitAdminDeclarationTestStartupFixture : IDisposable
     {
         private readonly IServiceCollection _services;
 

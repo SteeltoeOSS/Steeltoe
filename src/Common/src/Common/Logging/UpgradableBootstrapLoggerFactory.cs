@@ -14,9 +14,7 @@ namespace Steeltoe.Common.Logging;
 /// real log providers as the application utilization progresses.
 /// This class should only be used by components start are invoke before  logging infrastructure is build (prior to service container creation)
 /// </summary>
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
 internal class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     public UpgradableBootstrapLoggerFactory()
         : this(DefaultConfigure)
@@ -96,9 +94,18 @@ internal class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
 
     public void Dispose()
     {
-        lock (_lock)
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            _factoryInstance.Dispose();
+            lock (_lock)
+            {
+                _factoryInstance.Dispose();
+            }
         }
     }
 

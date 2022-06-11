@@ -344,11 +344,15 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        base.Dispose();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", null);
+        if (disposing)
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", null);
+        }
+
+        base.Dispose(disposing);
     }
 
     private HttpContext CreateRequest(string method, string path)

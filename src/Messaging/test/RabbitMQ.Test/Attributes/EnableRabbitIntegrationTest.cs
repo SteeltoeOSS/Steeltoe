@@ -671,7 +671,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         }
     }
 
-    public class StartupFixture : IDisposable
+    public sealed class StartupFixture : IDisposable
     {
         private readonly CachingConnectionFactory _adminCf;
         private readonly RabbitAdmin _admin;

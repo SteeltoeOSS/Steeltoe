@@ -66,6 +66,9 @@ public class HystrixRequestVariableDefault<T> : IHystrixRequestVariable<T>
 
     protected virtual void Dispose(bool disposing)
     {
-        _disposeAction?.Invoke(Value);
+        if (disposing)
+        {
+            _disposeAction?.Invoke(Value);
+        }
     }
 }

@@ -22,7 +22,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 [Trait("Category", "Integration")]
-public class ContainerInitializationTest : AbstractTest, IDisposable
+public sealed class ContainerInitializationTest : AbstractTest, IDisposable
 {
     public const string TEST_MISMATCH = "test.mismatch";
     public const string TEST_MISMATCH2 = "test.mismatch2";

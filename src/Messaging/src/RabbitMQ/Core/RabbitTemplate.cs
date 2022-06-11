@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IDisposable
 {
     public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
@@ -1340,9 +1340,18 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return MandatoryExpression.GetValue<bool>(EvaluationContext, message);
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        Stop().Wait();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Stop().Wait();
+        }
     }
 
     public virtual async Task Start()
@@ -2783,4 +2792,3 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     }
     #endregion
 }
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly

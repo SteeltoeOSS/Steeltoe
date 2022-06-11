@@ -33,7 +33,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
 
-public class DiscoveryServiceCollectionExtensionsTest : IDisposable
+public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
 {
     private static readonly Dictionary<string, string> FastEureka = new () { { "eureka:client:ShouldRegisterWithEureka", "false" }, { "eureka:client:ShouldFetchRegistry", "false" } };
 

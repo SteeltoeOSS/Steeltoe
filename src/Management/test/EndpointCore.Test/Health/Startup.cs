@@ -70,7 +70,7 @@ public class TestHealthCheck : IHealthCheck
     }
 }
 
-public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
+public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 #pragma warning restore SA1402 // File may only contain a single type
 {
     public TestServiceOptions()

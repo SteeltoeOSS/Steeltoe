@@ -24,7 +24,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 [Trait("Category", "Integration")]
-public class RabbitAdminIntegrationTest : IDisposable
+public sealed class RabbitAdminIntegrationTest : IDisposable
 {
     private readonly ServiceCollection _services;
     private ServiceProvider _provider;
@@ -48,10 +48,7 @@ public class RabbitAdminIntegrationTest : IDisposable
     public void Dispose()
     {
         var admin = _provider.GetRabbitAdmin();
-        if (admin != null)
-        {
-            admin.DeleteQueue("test.queue");
-        }
+        admin?.DeleteQueue("test.queue");
 
         _provider.Dispose();
     }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host;
 
-public class MockRabbitHostedService : IHostedService, IDisposable
+public sealed class MockRabbitHostedService : IHostedService, IDisposable
 {
     public int StartCount { get; internal set; }
 

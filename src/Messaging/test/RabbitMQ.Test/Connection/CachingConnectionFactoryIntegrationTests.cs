@@ -15,7 +15,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 [Trait("Category", "Integration")]
-public class CachingConnectionFactoryIntegrationTests : IDisposable
+public sealed class CachingConnectionFactoryIntegrationTests : IDisposable
 {
     public const string CF_INTEGRATION_TEST_QUEUE = "cfIntegrationTest";
     private const string CF_INTEGRATION_CONNECTION_NAME = "cfIntegrationTestConnectionName";

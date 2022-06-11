@@ -4649,7 +4649,7 @@ internal class TestCommandRejection : TestHystrixCommand<bool>
     }
 }
 
-internal class SingleThreadedPoolWithNoQueue : IHystrixThreadPool
+internal sealed class SingleThreadedPoolWithNoQueue : IHystrixThreadPool
 {
     private readonly HystrixThreadPoolOptions _options;
     private readonly IHystrixTaskScheduler _scheduler;
@@ -4716,7 +4716,7 @@ internal class SingleThreadedPoolWithNoQueue : IHystrixThreadPool
     }
 }
 
-internal class SingleThreadedPoolWithQueue : IHystrixThreadPool
+internal sealed class SingleThreadedPoolWithQueue : IHystrixThreadPool
 {
     private readonly HystrixThreadPoolOptions _options;
     private readonly IHystrixTaskScheduler _scheduler;
@@ -5331,7 +5331,7 @@ internal class RequestCacheThreadRejectionWithoutFallbackTaskScheduler : Hystrix
     }
 }
 
-internal class RequestCacheThreadRejectionWithoutFallbackThreadPool : IHystrixThreadPool
+internal sealed class RequestCacheThreadRejectionWithoutFallbackThreadPool : IHystrixThreadPool
 {
     private readonly IHystrixTaskScheduler _scheduler = new RequestCacheThreadRejectionWithoutFallbackTaskScheduler(new HystrixThreadPoolOptions());
 

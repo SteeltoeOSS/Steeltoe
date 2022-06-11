@@ -51,7 +51,16 @@ internal class MockKubeApiServer : IDisposable
 
     public void Dispose()
     {
-        _webHost.StopAsync();
-        _webHost.WaitForShutdown();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _webHost.StopAsync();
+            _webHost.WaitForShutdown();
+        }
     }
 }

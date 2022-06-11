@@ -26,7 +26,7 @@ using Xunit.Abstractions;
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 [Trait("Category", "Integration")]
-public class BatchingRabbitTemplateTest : IDisposable
+public sealed class BatchingRabbitTemplateTest : IDisposable
 {
     public const string ROUTE = "test.queue.BatchingRabbitTemplateTests";
     private readonly CachingConnectionFactory _connectionFactory;

@@ -62,7 +62,10 @@ public class HystrixThreadPoolDefault : IHystrixThreadPool
 
     protected virtual void Dispose(bool disposing)
     {
-        _taskScheduler.Dispose();
+        if (disposing)
+        {
+            _taskScheduler?.Dispose();
+        }
     }
 
     public bool IsQueueSpaceAvailable

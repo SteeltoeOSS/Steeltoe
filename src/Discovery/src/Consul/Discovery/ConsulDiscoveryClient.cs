@@ -186,8 +186,6 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         }
     }
 
-    private bool _disposed;
-
     /// <summary>
     /// Dispose of the client and also the Consul service registrar if provided
     /// </summary>
@@ -199,19 +197,9 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing)
         {
-            if (disposing && _registrar != null)
-            {
-                _registrar.Dispose();
-            }
-
-            _disposed = true;
+            _registrar?.Dispose();
         }
-    }
-
-    ~ConsulDiscoveryClient()
-    {
-        Dispose(false);
     }
 }

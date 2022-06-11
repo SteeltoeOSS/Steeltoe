@@ -12,9 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistry);
 
@@ -116,26 +115,30 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public void Dispose()
     {
-        if (_isDisposed)
-        {
-            return;
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        _isDisposed = true;
-
-        foreach (var listenerContainer in _listenerContainers.Values)
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing && !_isDisposed)
         {
-            if (listenerContainer is IDisposable disposable)
+            foreach (var listenerContainer in _listenerContainers.Values)
             {
-                try
+                if (listenerContainer is IDisposable disposable)
                 {
-                    disposable.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning("Failed to destroy listener container [" + listenerContainer + "]", ex);
+                    try
+                    {
+                        disposable.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogWarning("Failed to destroy listener container [" + listenerContainer + "]", ex);
+                    }
                 }
             }
+
+            _isDisposed = true;
         }
     }
 

@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
-public class HystrixTestBase : IDisposable
+public abstract class HystrixTestBase : IDisposable
 {
     protected HystrixRequestContext context;
 
@@ -61,15 +61,21 @@ public class HystrixTestBase : IDisposable
         Before();
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        if (context != null)
-        {
-            context.Dispose();
-            context = null;
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        HystrixThreadPoolFactory.Shutdown();
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            context?.Dispose();
+            context = null;
+
+            HystrixThreadPoolFactory.Shutdown();
+        }
     }
 
     public virtual bool WaitForHealthCountToUpdate(string commandKey, int maxTimeToWait, ITestOutputHelper output = null)

@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 [Trait("Category", "Integration")]
-public class DirectMessageListenerContainerIntegrationTest : IDisposable
+public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
 {
     public const string Q1 = "testQ1.DirectMessageListenerContainerIntegrationTests";
     public const string Q2 = "testQ2.DirectMessageListenerContainerIntegrationTests";

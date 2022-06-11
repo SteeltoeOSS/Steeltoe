@@ -60,7 +60,7 @@ public class Listener
     }
 }
 
-public class DlqStartupFixture : IDisposable
+public sealed class DlqStartupFixture : IDisposable
 {
     private readonly IServiceCollection _services;
 

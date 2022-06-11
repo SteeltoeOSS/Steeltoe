@@ -13,9 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Common.Contexts;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public abstract class AbstractApplicationContext : IApplicationContext
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     private readonly ConcurrentDictionary<string, object> _instances = new ();
 
@@ -244,10 +243,19 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     public void Dispose()
     {
-        _instances.Clear();
-        Configuration = null;
-        ServiceProvider = null;
-        ServiceExpressionResolver = null;
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _instances.Clear();
+            Configuration = null;
+            ServiceProvider = null;
+            ServiceExpressionResolver = null;
+        }
     }
 
     private object ResolveNamedService(string name, Type serviceType)

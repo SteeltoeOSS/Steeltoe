@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class ClientCertificatesFixture : IDisposable
+public sealed class ClientCertificatesFixture : IDisposable
 {
     // Suppress S4581 to workaround bug at https://github.com/SonarSource/sonar-dotnet/issues/5703.
 #pragma warning disable S4581 // "new Guid()" should not be used
@@ -28,25 +28,8 @@ public class ClientCertificatesFixture : IDisposable
         CertificateWriter.Write(ServerOrgId, Guid.NewGuid());
     }
 
-    #region IDisposable Support
-    private bool _disposedValue;
-
-    void IDisposable.Dispose()
+    public void Dispose()
     {
-        Dispose(true);
+        // TODO: Delete certificates?
     }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                // delete certificates ?
-            }
-
-            _disposedValue = true;
-        }
-    }
-    #endregion
 }

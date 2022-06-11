@@ -23,8 +23,6 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new ();
     private ILoggerProvider _delegate;
 
-    private bool _disposed;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicLoggerProviderBase"/> class.
     /// Contains base functionality for DynamicLoggerProvider.
@@ -154,17 +152,12 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing)
         {
-            if (disposing)
-            {
-                // Cleanup
-                _delegate?.Dispose();
-                _delegate = null;
-                _loggers = null;
-            }
+            _delegate?.Dispose();
+            _delegate = null;
 
-            _disposed = true;
+            _loggers = null;
         }
     }
 

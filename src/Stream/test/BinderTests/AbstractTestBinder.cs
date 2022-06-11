@@ -66,7 +66,12 @@ public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
 
     public void Dispose()
     {
-        // Nothing to do
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 
     private void CheckChannelIsConfigured(IMessageChannel messageChannel, IConsumerOptions options)

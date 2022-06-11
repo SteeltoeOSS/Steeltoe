@@ -35,13 +35,10 @@ public class MessageChannelStreamListenerResultAdapter : IStreamListenerResultAd
             ? Adapt(channel, channel1)
             : throw new ArgumentException("Invalid arguments, IMessageChannel required");
 
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class NoOpDisposable : IDisposable
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+    public sealed class NoOpDisposable : IDisposable
     {
         public void Dispose()
         {
-            // Nothing to do here
         }
     }
 }

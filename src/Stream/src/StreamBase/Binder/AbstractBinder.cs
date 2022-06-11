@@ -13,9 +13,8 @@ using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Binder;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly: No unmanaged resources here.
+
 public abstract class AbstractBinder<T> : IBinder<T>
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     private const string GROUP_INDEX_DELIMITER = ".";
 
@@ -75,7 +74,15 @@ public abstract class AbstractBinder<T> : IBinder<T>
         return DoBindProducer(name, (T)outboundTarget, producerOptions);
     }
 
-    public abstract void Dispose();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 
     protected abstract IBinding DoBindProducer(string name, T outboundTarget, IProducerOptions producerOptions);
 
