@@ -123,7 +123,7 @@ public class MethodInvokingMessageProcessorTest
         var method = testService.GetType().GetMethod("AcceptPayloadAndReturnObject");
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var result = processor.ProcessMessage(Message.Create(123456789));
+        var result = processor.ProcessMessage(Message.Create(123_456_789));
         Assert.Equal("123456789-1", result);
     }
 

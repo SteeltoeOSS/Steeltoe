@@ -3515,9 +3515,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         // Static const field access on a T() referenced type
         _expression = _parser.ParseExpression("T(Int32).MaxValue");
-        Assert.Equal(2147483647, _expression.GetValue<int>());
+        Assert.Equal(2_147_483_647, _expression.GetValue<int>());
         AssertCanCompile(_expression);
-        Assert.Equal(2147483647, _expression.GetValue<int>());
+        Assert.Equal(2_147_483_647, _expression.GetValue<int>());
 
         // Static field access on a T() referenced type
         _expression = _parser.ParseExpression("T(String).Empty");
@@ -4074,10 +4074,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         _expression = _parser.ParseExpression("Four()");
         AssertCantCompile(_expression);
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         AssertCanCompile(_expression);
         tc.Reset();
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         tc.Reset();
 
         // static method, reference type return
@@ -4092,10 +4092,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // static method, primitive type return
         _expression = _parser.ParseExpression("Six()");
         AssertCantCompile(_expression);
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         AssertCanCompile(_expression);
         tc.Reset();
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         tc.Reset();
 
         // non-static method, one parameter of reference type
@@ -5917,7 +5917,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public static long Six()
         {
-            return 3277700L;
+            return 3_277_700L;
         }
 
         public static void Ten(int toset)
@@ -5951,7 +5951,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public long Four()
         {
-            return 3277700L;
+            return 3_277_700L;
         }
 
         public void Seven(string toset)

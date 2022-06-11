@@ -320,7 +320,7 @@ public class HystrixRollingPercentileTest
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
         var num_threads = 1000;  // .NET Core StackOverflow
-        var num_iterations = 1000000;
+        var num_iterations = 1_000_000;
 
         var latch = new CountdownEvent(num_threads);
 

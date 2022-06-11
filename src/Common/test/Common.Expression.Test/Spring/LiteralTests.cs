@@ -75,15 +75,15 @@ public class LiteralTests : AbstractExpressionTests
     public void TestHexIntLiteral01()
     {
         Evaluate("0x7FFFF", "524287", typeof(int));
-        Evaluate("0x7FFFFL", 524287L, typeof(long));
+        Evaluate("0x7FFFFL", 524_287L, typeof(long));
         Evaluate("0X7FFFF", "524287", typeof(int));
-        Evaluate("0X7FFFFl", 524287L, typeof(long));
+        Evaluate("0X7FFFFl", 524_287L, typeof(long));
     }
 
     [Fact]
     public void TestLongIntLiteral01()
     {
-        Evaluate("0xCAFEBABEL", 3405691582L, typeof(long));
+        Evaluate("0xCAFEBABEL", 3_405_691_582L, typeof(long));
     }
 
     [Fact]

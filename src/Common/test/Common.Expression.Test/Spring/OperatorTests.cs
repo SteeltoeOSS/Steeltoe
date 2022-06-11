@@ -545,7 +545,7 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("3^2", 9, typeof(int));
         Evaluate("3.0d^2.0d", 9.0d, typeof(double));
         Evaluate("3L^2L", 9L, typeof(long));
-        Evaluate("(2^32)^2", -9223372036854775808L, typeof(long));
+        Evaluate("(2^32)^2", -9_223_372_036_854_775_808L, typeof(long));
         Evaluate("new Decimal('5') ^ 3", 125M, typeof(decimal));
     }
 

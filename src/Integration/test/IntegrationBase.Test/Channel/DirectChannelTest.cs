@@ -69,12 +69,12 @@ public class DirectChannelTest
         channel.Subscribe(handler);
         var message = Message.Create("test");
         Assert.True(channel.Send(message));
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
 
-        Assert.Equal(10000001, handler.Count);
+        Assert.Equal(10_000_001, handler.Count);
     }
 
     [Fact]
@@ -86,12 +86,12 @@ public class DirectChannelTest
         channel.Subscribe(handler);
         var message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             await channel.SendAsync(message);
         }
 
-        Assert.Equal(10000001, handler.Count);
+        Assert.Equal(10_000_001, handler.Count);
     }
 
     [Fact]
@@ -110,13 +110,13 @@ public class DirectChannelTest
         channel.Subscribe(count1);
         channel.Subscribe(count2);
         var message = Message.Create("test");
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
 
-        Assert.Equal(5000000, count1.Count);
-        Assert.Equal(5000000, count2.Count);
+        Assert.Equal(5_000_000, count1.Count);
+        Assert.Equal(5_000_000, count2.Count);
     }
 
     [Fact]
@@ -132,15 +132,15 @@ public class DirectChannelTest
         channel.Subscribe(count3);
         channel.Subscribe(count4);
         var message = Message.Create("test");
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
 
-        Assert.Equal(10000000 / 4, count1.Count);
-        Assert.Equal(10000000 / 4, count2.Count);
-        Assert.Equal(10000000 / 4, count3.Count);
-        Assert.Equal(10000000 / 4, count4.Count);
+        Assert.Equal(10_000_000 / 4, count1.Count);
+        Assert.Equal(10_000_000 / 4, count2.Count);
+        Assert.Equal(10_000_000 / 4, count3.Count);
+        Assert.Equal(10_000_000 / 4, count4.Count);
     }
 
     [Fact]

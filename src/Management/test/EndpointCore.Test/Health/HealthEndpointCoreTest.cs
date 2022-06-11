@@ -197,8 +197,8 @@ public class HealthEndpointCoreTest : BaseTest
     {
         var services = new ServiceCollection();
         services.AddHealthChecks()
-            .AddPrivateMemoryHealthCheck(133824512)
-            .AddWorkingSetHealthCheck(133824512);
+            .AddPrivateMemoryHealthCheck(133_824_512)
+            .AddWorkingSetHealthCheck(133_824_512);
 
         return services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<MSFTHealth.HealthCheckServiceOptions>>();
     }

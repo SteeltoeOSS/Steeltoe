@@ -27,21 +27,21 @@ public class LeaseInfoTest : AbstractBaseTest
         {
             RenewalIntervalInSecs = 100,
             DurationInSecs = 200,
-            RegistrationTimestamp = 1457973741708,
-            LastRenewalTimestamp = 1457973741708,
-            LastRenewalTimestampLegacy = 1457973741708,
-            EvictionTimestamp = 1457973741708,
-            ServiceUpTimestamp = 1457973741708
+            RegistrationTimestamp = 1_457_973_741_708,
+            LastRenewalTimestamp = 1_457_973_741_708,
+            LastRenewalTimestampLegacy = 1_457_973_741_708,
+            EvictionTimestamp = 1_457_973_741_708,
+            ServiceUpTimestamp = 1_457_973_741_708
         };
 
         var result = LeaseInfo.FromJson(jinfo);
         Assert.Equal(100, result.RenewalIntervalInSecs);
         Assert.Equal(200, result.DurationInSecs);
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestampLegacy, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.EvictionTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.ServiceUpTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestampLegacy, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.EvictionTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.ServiceUpTimestamp, DateTimeKind.Utc)));
     }
 
     [Fact]
@@ -51,11 +51,11 @@ public class LeaseInfoTest : AbstractBaseTest
         {
             RenewalIntervalInSecs = 100,
             DurationInSecs = 200,
-            RegistrationTimestamp = 1457973741708,
-            LastRenewalTimestamp = 1457973741708,
-            LastRenewalTimestampLegacy = 1457973741708,
-            EvictionTimestamp = 1457973741708,
-            ServiceUpTimestamp = 1457973741708
+            RegistrationTimestamp = 1_457_973_741_708,
+            LastRenewalTimestamp = 1_457_973_741_708,
+            LastRenewalTimestampLegacy = 1_457_973_741_708,
+            EvictionTimestamp = 1_457_973_741_708,
+            ServiceUpTimestamp = 1_457_973_741_708
         };
 
         var result = LeaseInfo.FromJson(jinfo);
@@ -64,11 +64,11 @@ public class LeaseInfoTest : AbstractBaseTest
 
         Assert.Equal(100, result.RenewalIntervalInSecs);
         Assert.Equal(200, result.DurationInSecs);
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestampLegacy, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.EvictionTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.ServiceUpTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestampLegacy, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.EvictionTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.ServiceUpTimestamp, DateTimeKind.Utc)));
     }
 
     [Fact]

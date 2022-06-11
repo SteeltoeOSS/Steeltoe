@@ -640,16 +640,16 @@ public class ApplicationsTest : AbstractBaseTest
             {
                 RenewalIntervalInSecs = 1,
                 DurationInSecs = 2,
-                RegistrationTimestamp = 1457973741708,
-                LastRenewalTimestamp = 1457973741708,
-                LastRenewalTimestampLegacy = 1457973741708,
-                EvictionTimestamp = 1457973741708,
-                ServiceUpTimestamp = 1457973741708
+                RegistrationTimestamp = 1_457_973_741_708,
+                LastRenewalTimestamp = 1_457_973_741_708,
+                LastRenewalTimestampLegacy = 1_457_973_741_708,
+                EvictionTimestamp = 1_457_973_741_708,
+                ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
-            LastUpdatedTimestamp = 1457973741708,
-            LastDirtyTimestamp = 1457973741708,
+            LastUpdatedTimestamp = 1_457_973_741_708,
+            LastDirtyTimestamp = 1_457_973_741_708,
             Actiontype = ActionType.ADDED,
             AsgName = "AsgName"
         };
@@ -707,16 +707,16 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(info.LeaseInfo);
         Assert.Equal(1, info.LeaseInfo.RenewalIntervalInSecs);
         Assert.Equal(2, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(635935705417080000L, info.LeaseInfo.RegistrationTimestamp);
-        Assert.Equal(635935705417080000L, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(635935705417080000L, info.LeaseInfo.LastRenewalTimestampLegacy);
-        Assert.Equal(635935705417080000L, info.LeaseInfo.EvictionTimestamp);
-        Assert.Equal(635935705417080000L, info.LeaseInfo.ServiceUpTimestamp);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.RegistrationTimestamp);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimestamp);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimestampLegacy);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.EvictionTimestamp);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.ServiceUpTimestamp);
         Assert.False(info.IsCoordinatingDiscoveryServer);
         Assert.NotNull(info.Metadata);
         Assert.Empty(info.Metadata);
-        Assert.Equal(635935705417080000L, info.LastUpdatedTimestamp);
-        Assert.Equal(635935705417080000L, info.LastDirtyTimestamp);
+        Assert.Equal(635_935_705_417_080_000L, info.LastUpdatedTimestamp);
+        Assert.Equal(635_935_705_417_080_000L, info.LastDirtyTimestamp);
         Assert.Equal(ActionType.ADDED, info.Actiontype);
         Assert.Equal("AsgName", info.AsgName);
     }
@@ -748,16 +748,16 @@ public class ApplicationsTest : AbstractBaseTest
             {
                 RenewalIntervalInSecs = 1,
                 DurationInSecs = 2,
-                RegistrationTimestamp = 1457973741708,
-                LastRenewalTimestamp = 1457973741708,
-                LastRenewalTimestampLegacy = 1457973741708,
-                EvictionTimestamp = 1457973741708,
-                ServiceUpTimestamp = 1457973741708
+                RegistrationTimestamp = 1_457_973_741_708,
+                LastRenewalTimestamp = 1_457_973_741_708,
+                LastRenewalTimestampLegacy = 1_457_973_741_708,
+                EvictionTimestamp = 1_457_973_741_708,
+                ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
-            LastUpdatedTimestamp = 1457973741708,
-            LastDirtyTimestamp = 1457973741708,
+            LastUpdatedTimestamp = 1_457_973_741_708,
+            LastDirtyTimestamp = 1_457_973_741_708,
             Actiontype = ActionType.ADDED,
             AsgName = "AsgName"
         };
