@@ -99,7 +99,7 @@
     <Rule Id="S2178" Action="Warning" />
     <Rule Id="S2183" Action="Warning" />
     <Rule Id="S2184" Action="Warning" />
-    <Rule Id="S2187" Action="Warning" />
+    <Rule Id="S2187" Action="None" />
     <Rule Id="S2190" Action="Warning" />
     <Rule Id="S2197" Action="None" />
     <Rule Id="S2201" Action="Warning" />
