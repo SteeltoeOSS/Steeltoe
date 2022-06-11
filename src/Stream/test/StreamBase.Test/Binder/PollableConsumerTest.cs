@@ -560,6 +560,8 @@ public class PollableConsumerTest : AbstractTest
 
     private sealed class FooType
     {
+#pragma warning disable S3459 // Unassigned members should be removed
         public string Foo { get; set; }
+#pragma warning restore S3459 // Unassigned members should be removed
     }
 }
