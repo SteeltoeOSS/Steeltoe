@@ -144,7 +144,7 @@
     <Rule Id="S2551" Action="Warning" />
     <Rule Id="S2583" Action="Warning" />
     <Rule Id="S2589" Action="Warning" />
-    <Rule Id="S2674" Action="None" />
+    <Rule Id="S2674" Action="Warning" />
     <Rule Id="S2681" Action="Warning" />
     <Rule Id="S2688" Action="Warning" />
     <Rule Id="S2692" Action="Warning" />
