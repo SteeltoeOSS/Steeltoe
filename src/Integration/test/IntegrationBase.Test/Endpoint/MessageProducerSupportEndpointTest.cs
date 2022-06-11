@@ -166,12 +166,6 @@ public class MessageProducerSupportEndpointTest
         {
         }
 
-        protected override Task DoStop(Action callback)
-        {
-            Count++;
-            return base.DoStop(callback);
-        }
-
         protected override Task DoStart()
         {
             Stopped = false;
@@ -182,6 +176,12 @@ public class MessageProducerSupportEndpointTest
         {
             Stopped = true;
             return Task.CompletedTask;
+        }
+
+        protected override Task DoStop(Action callback)
+        {
+            Count++;
+            return base.DoStop(callback);
         }
     }
 }

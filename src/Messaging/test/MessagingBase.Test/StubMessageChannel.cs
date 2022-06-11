@@ -22,6 +22,11 @@ internal class StubMessageChannel : ISubscribableChannel
         return new ValueTask<bool>(true);
     }
 
+    public bool Send(IMessage message)
+    {
+        return Send(message, -1);
+    }
+
     public bool Send(IMessage message, int timeout)
     {
         _messages.Add((IMessage<byte[]>)message);
@@ -38,10 +43,5 @@ internal class StubMessageChannel : ISubscribableChannel
     {
         _handlers.Remove(handler);
         return true;
-    }
-
-    public bool Send(IMessage message)
-    {
-        return Send(message, -1);
     }
 }

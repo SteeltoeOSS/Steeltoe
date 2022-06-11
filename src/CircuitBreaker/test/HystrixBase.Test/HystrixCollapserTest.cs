@@ -1795,18 +1795,18 @@ public class HystrixCollapserTest : HystrixTestBase
         {
         }
 
-        private static HystrixCollapserMetrics CreateMetrics()
-        {
-            var key = HystrixCollapserKeyDefault.AsKey("COLLAPSER_ONE");
-            return HystrixCollapserMetrics.GetInstance(key, new HystrixCollapserOptions(key));
-        }
-
         public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds, ConcurrentQueue<HystrixCommand<List<string>>> executionLog)
             : base(CollapserKeyFromString(timer), scope, timer, GetOptions(CollapserKeyFromString(timer), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds), CreateMetrics())
         {
             this.value = value;
             commandsExecuted = executionLog;
             this.output = output;
+        }
+
+        private static HystrixCollapserMetrics CreateMetrics()
+        {
+            var key = HystrixCollapserKeyDefault.AsKey("COLLAPSER_ONE");
+            return HystrixCollapserMetrics.GetInstance(key, new HystrixCollapserOptions(key));
         }
 
         public static IHystrixCollapserOptions GetOptions(IHystrixCollapserKey key, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds)

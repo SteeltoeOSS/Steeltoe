@@ -538,6 +538,11 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         protected readonly bool shouldFailWithBadRequest;
         protected readonly int latencyToAdd;
 
+        public Command(string commandKey, bool shouldFail, int latencyToAdd)
+            : this(commandKey, shouldFail, false, latencyToAdd, 400, 1)
+        {
+        }
+
         public Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd, int sleepWindow, int requestVolumeThreshold)
             : base(Options("Command", commandKey, requestVolumeThreshold, sleepWindow))
         {
@@ -555,11 +560,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
             opts.CircuitBreakerRequestVolumeThreshold = requestVolumeThreshold;
             opts.CircuitBreakerSleepWindowInMilliseconds = sleepWindow;
             return opts;
-        }
-
-        public Command(string commandKey, bool shouldFail, int latencyToAdd)
-            : this(commandKey, shouldFail, false, latencyToAdd, 400, 1)
-        {
         }
 
         protected override bool Run()

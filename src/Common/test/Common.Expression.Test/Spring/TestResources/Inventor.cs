@@ -28,6 +28,10 @@ public class Inventor
 
     private PlaceOfBirth _placeOfBirth;
 
+    public Inventor(params string[] strings)
+    {
+    }
+
     public Inventor(string name, DateTime birthdate, string nationality)
     {
         Name = name;
@@ -172,10 +176,6 @@ public class Inventor
         }
 
         return strings.Length + i;
-    }
-
-    public Inventor(params string[] strings)
-    {
     }
 
     public bool SomeProperty { get; set; }

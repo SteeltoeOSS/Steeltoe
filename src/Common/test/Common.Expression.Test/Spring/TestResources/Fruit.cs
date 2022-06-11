@@ -16,8 +16,6 @@ public class Fruit
         ColorName = colorName;
     }
 
-    public Color Color { get; }
-
     public Fruit(params string[] strings)
     {
         StringsCount = strings.Length;
@@ -27,6 +25,8 @@ public class Fruit
     {
         StringsCount = i + strings.Length;
     }
+
+    public Color Color { get; }
 
     public int StringsCount { get; } = -1;
 
