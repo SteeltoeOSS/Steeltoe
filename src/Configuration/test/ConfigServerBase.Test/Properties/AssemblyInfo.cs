@@ -3,5 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery;
+using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
 [assembly: DiscoveryClientAssembly(typeof(TestDiscoveryClientExtension))]
