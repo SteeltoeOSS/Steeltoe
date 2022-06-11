@@ -22,7 +22,7 @@ public abstract class SpelNode : ISpelNode
     {
         StartPosition = startPos;
         EndPosition = endPos;
-        if (!ObjectUtils.IsEmpty(operands))
+        if (!ObjectUtils.IsNullOrEmpty(operands))
         {
             _children = operands;
             foreach (var operand in operands)

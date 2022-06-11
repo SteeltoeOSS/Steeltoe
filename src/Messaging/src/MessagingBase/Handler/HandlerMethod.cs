@@ -117,7 +117,7 @@ public class HandlerMethod
 
     protected static object FindProvidedArgument(ParameterInfo parameter, params object[] providedArgs)
     {
-        if (!ObjectUtils.IsEmpty(providedArgs))
+        if (!ObjectUtils.IsNullOrEmpty(providedArgs))
         {
             foreach (var providedArg in providedArgs)
             {

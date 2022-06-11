@@ -397,7 +397,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToObject()
     {
-        var array = new object[] { 3L };
+        var array = new[] { 3L };
         var result = ConversionService.Convert<long>(array);
         Assert.Equal(3L, result);
     }
@@ -405,7 +405,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToObjectWithElementConversion()
     {
-        object[] array = new[] { "3" };
+        var array = new[] { "3" };
         var result = ConversionService.Convert<int>(array);
         Assert.Equal(3, result);
     }

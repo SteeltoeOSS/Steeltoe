@@ -2,6 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Steeltoe.Common.Util;
 
 public static class ObjectUtils
@@ -9,9 +13,15 @@ public static class ObjectUtils
     private const int INITIAL_HASH = 7;
     private const int MULTIPLIER = 31;
 
+    [Obsolete("Use IsNullOrEmpty instead.")]
     public static bool IsEmpty(object[] array)
     {
-        return array == null || array.Length == 0;
+        return IsNullOrEmpty(array);
+    }
+
+    public static bool IsNullOrEmpty<T>(IEnumerable<T> source)
+    {
+        return source == null || !source.Any();
     }
 
     public static bool NullSafeEquals(object o1, object o2)
