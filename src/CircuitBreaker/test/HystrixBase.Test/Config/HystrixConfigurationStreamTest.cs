@@ -14,6 +14,8 @@ using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
+#pragma warning disable S3966 // Objects should not be disposed more than once
+
 namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test;
 
 public class HystrixConfigurationStreamTest : CommandStreamTest
