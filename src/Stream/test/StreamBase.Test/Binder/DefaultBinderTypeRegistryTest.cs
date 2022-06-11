@@ -75,11 +75,7 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
     [Fact]
     public void AddBinderTypes_WithBinderAllreadyLoaded_ReturnsBinder()
     {
-        var paths = BuildPaths(null);
-
         var result = new Dictionary<string, IBinderType>();
-        var binderPath = $"{GetSearchDirectories("TestBinder")[0]}{Path.DirectorySeparatorChar}Steeltoe.Stream.TestBinder.dll";
-        Assembly.LoadFrom(binderPath);
 
         DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);
 
