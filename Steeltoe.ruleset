@@ -190,7 +190,7 @@
     <Rule Id="S3242" Action="None" />
     <Rule Id="S3244" Action="Warning" />
     <Rule Id="S3246" Action="Warning" />
-    <Rule Id="S3247" Action="Info" />
+    <Rule Id="S3247" Action="Warning" />
     <Rule Id="S3249" Action="Warning" />
     <Rule Id="S3251" Action="Warning" />
     <Rule Id="S3253" Action="None" />
