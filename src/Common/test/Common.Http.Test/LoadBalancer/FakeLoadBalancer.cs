@@ -16,14 +16,6 @@ internal class FakeLoadBalancer : ILoadBalancer
 {
     internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new ();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FakeLoadBalancer"/> class.
-    /// Only capable of resolving requests for "replaceme" as "someresolvedhost"
-    /// </summary>
-    public FakeLoadBalancer()
-    {
-    }
-
     public Task<Uri> ResolveServiceInstanceAsync(Uri request)
     {
         return Task.FromResult(new Uri(request.AbsoluteUri.Replace("replaceme", "someresolvedhost")));

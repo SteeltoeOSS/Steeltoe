@@ -20,10 +20,6 @@ public static class HystrixPlugins
     private static readonly AtomicReference<HystrixCommandExecutionHook> _commandExecutionHook = new ();
     private static readonly AtomicReference<HystrixOptionsStrategy> _options = new ();
 
-    static HystrixPlugins()
-    {
-    }
-
     #region EventNotifier
     public static HystrixEventNotifier EventNotifier
     {

@@ -31,10 +31,6 @@ public class SpelDocumentationTests : AbstractExpressionTests
         PlaceOfBirth = new PlaceOfBirth("Idvor")
     };
 
-    static SpelDocumentationTests()
-    {
-    }
-
     [Fact]
     public void TestMethodInvocation()
     {
