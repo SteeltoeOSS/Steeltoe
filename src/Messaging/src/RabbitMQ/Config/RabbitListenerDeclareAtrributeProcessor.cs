@@ -239,7 +239,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
         return queues;
     }
 
-    private static void UpdateQueue(Queue queue, DeclareQueueBase q, IConfiguration config)
+    private static void UpdateQueue(Queue queue, DeclareQueueBaseAttribute q, IConfiguration config)
     {
         if (!string.IsNullOrEmpty(q.Durable))
         {

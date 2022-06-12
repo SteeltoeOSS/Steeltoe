@@ -10,12 +10,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public class ApplicationInfoManagerTest : AbstractBaseTest
 {
-    private StatusChangedArgs _eventArg;
-
-    public ApplicationInfoManagerTest()
-    {
-        _eventArg = null;
-    }
+    private StatusChangedEventArgs _eventArgs;
 
     [Fact]
     public void ApplicationInfoManager_IsSingleton()
@@ -33,10 +28,10 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.UNKNOWN, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check no events sent
-        ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
+        ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
-        Assert.Null(_eventArg);
-        ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
+        Assert.Null(_eventArgs);
+        ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
     }
 
     [Fact]
@@ -75,13 +70,13 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
-        ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
+        ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
-        Assert.NotNull(_eventArg);
-        Assert.Equal(InstanceStatus.STARTING, _eventArg.Previous);
-        Assert.Equal(InstanceStatus.UP, _eventArg.Current);
-        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArg.InstanceId);
-        ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
+        Assert.NotNull(_eventArgs);
+        Assert.Equal(InstanceStatus.STARTING, _eventArgs.Previous);
+        Assert.Equal(InstanceStatus.UP, _eventArgs.Current);
+        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
+        ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
     }
 
     [Fact]
@@ -92,16 +87,16 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
-        ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
+        ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
-        Assert.NotNull(_eventArg);
-        Assert.Equal(InstanceStatus.STARTING, _eventArg.Previous);
-        Assert.Equal(InstanceStatus.UP, _eventArg.Current);
-        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArg.InstanceId);
-        _eventArg = null;
-        ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
+        Assert.NotNull(_eventArgs);
+        Assert.Equal(InstanceStatus.STARTING, _eventArgs.Previous);
+        Assert.Equal(InstanceStatus.UP, _eventArgs.Current);
+        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
+        _eventArgs = null;
+        ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.DOWN;
-        Assert.Null(_eventArg);
+        Assert.Null(_eventArgs);
     }
 
     [Fact]
@@ -125,8 +120,8 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
     }
 
-    private void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
+    private void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
     {
-        _eventArg = args;
+        _eventArgs = args;
     }
 }
