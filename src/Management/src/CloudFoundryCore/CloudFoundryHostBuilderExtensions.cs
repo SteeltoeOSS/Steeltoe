@@ -42,7 +42,7 @@ public static class CloudFoundryHostBuilderExtensions
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         => webHostBuilder
-            .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
+            .ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole())
             .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
 
     /// <summary>
@@ -54,7 +54,7 @@ public static class CloudFoundryHostBuilderExtensions
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         => hostBuilder
-            .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
+            .ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole())
             .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
 
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]

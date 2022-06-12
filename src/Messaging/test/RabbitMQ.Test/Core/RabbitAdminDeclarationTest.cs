@@ -395,7 +395,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             // services.AddRabbitListenerAttributeProcessor();
 
             // ConnectionFactory cf1
-            services.AddSingleton(p =>
+            services.AddSingleton(_ =>
             {
                 var mockConnectionFactory = new Mock<IConnectionFactory>();
                 Conn1 = new Mock<IConnection>();
@@ -407,7 +407,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 Channel1.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 Channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
-                    .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
+                    .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, _, _, _, _) => queueName.Value = a1)
                     .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
                 mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
                     .Callback<IConnectionListener>(l => Listener1.Value = l);
@@ -415,7 +415,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             });
 
             // ConnectionFactory cf2
-            services.AddSingleton(p =>
+            services.AddSingleton(_ =>
             {
                 var mockConnectionFactory = new Mock<IConnectionFactory>();
                 Conn2 = new Mock<IConnection>();
@@ -427,7 +427,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 Channel2.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 Channel2.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
-                    .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
+                    .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, _, _, _, _) => queueName.Value = a1)
                     .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
                 mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
                     .Callback<IConnectionListener>(l => Listener2.Value = l);
@@ -435,7 +435,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             });
 
             // ConnectionFactory cf3
-            services.AddSingleton(p =>
+            services.AddSingleton(_ =>
             {
                 var mockConnectionFactory = new Mock<IConnectionFactory>();
                 Conn3 = new Mock<IConnection>();
@@ -447,7 +447,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 Channel3.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
                 Channel3.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
-                    .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
+                    .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, _, _, _, _) => queueName.Value = a1)
                     .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
                 mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
                     .Callback<IConnectionListener>(l => Listener3.Value = l);

@@ -67,7 +67,7 @@ public class ContentNegotiationTests
         // arrange a server and client
         var builder = new WebHostBuilder()
             .StartupByEpName(epName)
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);

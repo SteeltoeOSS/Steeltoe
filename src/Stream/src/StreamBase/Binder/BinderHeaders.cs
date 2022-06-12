@@ -17,7 +17,7 @@ public static class BinderHeaders
 
     public const string NATIVE_HEADERS_PRESENT = $"{PREFIX}nativeHeadersPresent";
 
-    public static readonly string[] STANDARD_HEADERS = new string[]
+    public static readonly string[] STANDARD_HEADERS =
     {
         IntegrationMessageHeaderAccessor.CORRELATION_ID,
         IntegrationMessageHeaderAccessor.SEQUENCE_SIZE,

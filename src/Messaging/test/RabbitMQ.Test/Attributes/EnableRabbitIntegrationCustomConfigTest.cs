@@ -231,7 +231,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             services.AddRabbitConnectionFactory();
 
             services.AddSingleton<IRabbitListenerConfigurer, MyRabbitListenerConfigurer>();
-            services.AddRabbitMessageHandlerMethodFactory((p, f) =>
+            services.AddRabbitMessageHandlerMethodFactory((_, f) =>
             {
                 f.ServiceName = "myHandlerMethodFactory";
                 var service = DefaultConversionService.Singleton as DefaultConversionService;
@@ -241,13 +241,13 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             });
 
             // Add default container factory
-            services.AddRabbitListenerContainerFactory((p, f) =>
+            services.AddRabbitListenerContainerFactory((_, f) =>
             {
                 f.SetBeforeSendReplyPostProcessors(new AddSomeHeadersPostProcessor());
             });
 
             services.AddRabbitAdmin();
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.ReplyTimeout = 60000;
             });
@@ -258,7 +258,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             return services;
         }
 
-        public static string[] Queues = new string[]
+        public static string[] Queues =
         {
             "test.converted", "test.converted.list", "test.converted.array", "test.converted.args1",
             "test.converted.args2", "test.converted.message", "test.notconverted.message",

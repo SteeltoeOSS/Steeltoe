@@ -770,7 +770,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             });
 
             // Add named container factory rabbitAutoStartFalseListenerContainerFactory
-            services.AddRabbitListenerContainerFactory((p, f) =>
+            services.AddRabbitListenerContainerFactory((_, f) =>
             {
                 f.ServiceName = "rabbitAutoStartFalseListenerContainerFactory";
                 f.AutoStartup = false;
@@ -837,14 +837,14 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitTemplate();
 
             // Add named RabbitTemplate txRabbitTemplate
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.ServiceName = "txRabbitTemplate";
                 t.IsChannelTransacted = true;
             });
 
             // Add named RabbitTemplate jsonRabbitTemplate
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.ServiceName = "jsonRabbitTemplate";
                 t.MessageConverter = new JsonMessageConverter();
@@ -888,7 +888,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitExchange(new TopicExchange("amqp656.topic", true, true));
             services.AddRabbitBindings(new QueueBinding("amqp656.binding", "amqp656", "amqp656.topic", "foo", null));
 
-            services.AddSingleton<IErrorHandler>(p =>
+            services.AddSingleton<IErrorHandler>(_ =>
             {
                 var result = new ConditionalRejectingErrorHandler1(ErrorHandlerLatch, ErrorHandlerError)
                 {
@@ -897,7 +897,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
                 return result;
             });
 
-            services.AddSingleton<IConsumerTagStrategy>(p =>
+            services.AddSingleton<IConsumerTagStrategy>(_ =>
             {
                 var result = new ConsumerTagStrategy
                 {
@@ -908,11 +908,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
             services.AddRabbitListenerErrorHandler<UpcaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
             services.AddRabbitListenerErrorHandler<AlwaysBarListenerErrorHandler>("alwaysBARHandler");
-            services.AddRabbitListenerErrorHandler("throwANewException", p => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
+            services.AddRabbitListenerErrorHandler("throwANewException", _ => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
             return services;
         }
 
-        public static string[] Queues = new[]
+        public static string[] Queues =
         {
             "test.manual.container", "test.no.listener.yet",
             "test.simple", "test.header", "test.message", "test.reply", "test.sendTo", "test.sendTo.reply",

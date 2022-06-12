@@ -172,7 +172,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
 
         var latch = new CountdownEvent(1);
         cmdResults.Merge().Subscribe(
-            n =>
+            _ =>
             {
             },
             e =>

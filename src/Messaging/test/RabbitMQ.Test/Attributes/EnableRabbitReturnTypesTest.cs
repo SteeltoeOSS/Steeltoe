@@ -229,9 +229,9 @@ public class EnableRabbitReturnTypesTest
         services.AddRabbitListenerEndpointRegistry();
         services.AddRabbitListenerEndpointRegistrar();
         services.AddRabbitListenerAttributeProcessor();
-        services.AddSingleton<IConnectionFactory>(p => new CachingConnectionFactory("localhost"));
+        services.AddSingleton<IConnectionFactory>(_ => new CachingConnectionFactory("localhost"));
 
-        services.AddRabbitListenerContainerFactory((p, f) =>
+        services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.DefaultRequeueRejected = false;
         });

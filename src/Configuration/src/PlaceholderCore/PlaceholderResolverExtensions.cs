@@ -48,7 +48,7 @@ public static class PlaceholderResolverExtensions
     /// <param name="loggerFactory">the log factory to use</param>
     /// <returns>provided host builder</returns>
     public static IWebHostBuilder AddPlaceholderResolver(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory = null) =>
-        hostBuilder.ConfigureAppConfiguration((context, builder) => builder.AddPlaceholderResolver(loggerFactory));
+        hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddPlaceholderResolver(loggerFactory));
 
     /// <summary>
     /// Add a placeholder resolver configuration source to the <see cref="ConfigurationBuilder"/>. The placeholder resolver source will capture and wrap all
@@ -60,7 +60,7 @@ public static class PlaceholderResolverExtensions
     /// <param name="loggerFactory">the log factory to use</param>
     /// <returns>provided host builder</returns>
     public static IHostBuilder AddPlaceholderResolver(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory = null) =>
-        hostBuilder.ConfigureAppConfiguration((context, builder) => builder.AddPlaceholderResolver(loggerFactory));
+        hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddPlaceholderResolver(loggerFactory));
 
 #if NET6_0_OR_GREATER
     /// <summary>

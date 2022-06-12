@@ -16,7 +16,7 @@ public class Inventor
     public Dictionary<int, string> MapOfNumbersUpToTen = new ();
     public List<int> ListOfNumbersUpToTen = new ();
     public List<int> ListOneFive = new ();
-    public string[] StringArrayOfThreeItems = new[] { "1", "2", "3" };
+    public string[] StringArrayOfThreeItems = { "1", "2", "3" };
     public int Counter;
     public string _name;
     public string _name_;

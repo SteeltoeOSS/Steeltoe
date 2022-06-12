@@ -10,7 +10,7 @@ public class RabbitMQServiceInfoFactory : ServiceInfoFactory
 {
     public static readonly Tags RABBIT_SERVICE_TAGS = new ("rabbit");
 
-    private static readonly string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
+    private static readonly string[] _scheme = { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
 
     public RabbitMQServiceInfoFactory()
         : base(RABBIT_SERVICE_TAGS, _scheme)

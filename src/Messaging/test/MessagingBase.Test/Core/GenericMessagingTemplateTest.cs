@@ -37,7 +37,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
-            .Callback<IMessage, int>((m, t) => sent = m)
+            .Callback<IMessage, int>((m, _) => sent = m)
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")
@@ -62,7 +62,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
-            .Callback<IMessage, CancellationToken>((m, t) => sent = m)
+            .Callback<IMessage, CancellationToken>((m, _) => sent = m)
             .Returns(new ValueTask<bool>(true));
 
         var message = MessageBuilder.WithPayload("request")
@@ -87,7 +87,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
-            .Callback<IMessage, CancellationToken>((m, t) => sent = m)
+            .Callback<IMessage, CancellationToken>((m, _) => sent = m)
             .Returns(new ValueTask<bool>(true));
 
         var accessor = new MessageHeaderAccessor
@@ -112,7 +112,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
-            .Callback<IMessage, int>((m, t) => sent = m)
+            .Callback<IMessage, int>((m, _) => sent = m)
             .Returns(true);
 
         var accessor = new MessageHeaderAccessor
@@ -162,7 +162,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
-            .Callback<IMessage, int>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+            .Callback<IMessage, int>((m, _) => { Task.Run(() => handler.HandleMessage(m)); })
             .Returns(true);
         var result = _template.ConvertSendAndReceive<string>(channel, "request");
         Assert.Null(result);
@@ -209,7 +209,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.IsAny<int>()))
-            .Callback<IMessage, int>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+            .Callback<IMessage, int>((m, _) => { Task.Run(() => handler.HandleMessage(m)); })
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")
@@ -269,7 +269,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.IsAny<int>()))
-            .Callback<IMessage, int>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+            .Callback<IMessage, int>((m, _) => { Task.Run(() => handler.HandleMessage(m)); })
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")

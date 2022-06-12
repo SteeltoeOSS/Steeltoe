@@ -119,8 +119,8 @@ public class ConfigServerClientSettings
     /// </summary>
     public const long DEFAULT_HEALTH_TIMETOLIVE = 60 * 5 * 1000;
 
-    private static readonly char[] COLON_DELIMIT = new char[] { ':' };
-    private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
+    private static readonly char[] COLON_DELIMIT = { ':' };
+    private static readonly char[] COMMA_DELIMIT = { ',' };
 
     private string _username;
     private string _password;

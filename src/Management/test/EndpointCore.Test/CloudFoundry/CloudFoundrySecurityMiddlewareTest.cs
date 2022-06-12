@@ -44,7 +44,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
 
         // Application Id Missing
         using (var server = new TestServer(builder))
@@ -71,7 +71,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         var builder2 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings2));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings2));
 
         // CloudFoundry Api missing
         using (var server = new TestServer(builder2))
@@ -99,7 +99,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         var builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings3));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings3));
 
         // Endpoint not configured
         using (var server = new TestServer(builder3))
@@ -127,7 +127,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         var builder4 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings4));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings4));
 
         using (var server = new TestServer(builder4))
         {
@@ -158,7 +158,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
 
         using (var server = new TestServer(builder))
         {
@@ -186,7 +186,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         var builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings3));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings3));
 
         using (var server = new TestServer(builder3))
         {
@@ -220,7 +220,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -270,7 +270,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -301,7 +301,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((builderContext, config) =>
+            .ConfigureAppConfiguration((_, config) =>
             {
                 config.AddInMemoryCollection(appSettings);
                 config.AddEnvironmentVariables();

@@ -563,7 +563,7 @@ public class ManagementHostBuilderExtensionsTest
             {
                 s.AddRouting();
                 s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
                 s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
             })
             .Configure(a => a.UseRouting().UseAuthentication().UseAuthorization());

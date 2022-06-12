@@ -58,8 +58,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     private const char ESCAPE_CHAR = '\\';
     private const string ESCAPE_STRING = "\\";
 
-    private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
-    private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
+    private static readonly char[] COMMA_DELIMIT = { ',' };
+    private static readonly string[] EMPTY_LABELS = { string.Empty };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default

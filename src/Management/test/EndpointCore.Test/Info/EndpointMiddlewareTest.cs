@@ -64,7 +64,7 @@ public class EndpointMiddlewareTest : BaseTest
         // in the Startup class
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -107,7 +107,7 @@ public class EndpointMiddlewareTest : BaseTest
         Dictionary<string, string> settings = new () { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();

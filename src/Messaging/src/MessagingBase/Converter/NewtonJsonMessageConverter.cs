@@ -65,7 +65,7 @@ public class NewtonJsonMessageConverter : AbstractMessageConverter
 
     protected internal static Type GetIMessageGenericType(Type type)
     {
-        var typeFilter = new TypeFilter((t, c) =>
+        var typeFilter = new TypeFilter((t, _) =>
         {
             var candidate = t;
             if (candidate.IsConstructedGenericType)

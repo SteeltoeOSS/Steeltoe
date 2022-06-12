@@ -23,7 +23,7 @@ public class ConfigServerClientSettingsOptionsTest
         var environment = HostingHelpers.GetHostingEnvironment("Production");
 
         var builder = new ConfigurationBuilder().AddConfigServer(environment);
-        services.AddSingleton<IConfiguration>(services => builder.Build());
+        services.AddSingleton<IConfiguration>(_ => builder.Build());
 
         services.ConfigureConfigServerClientOptions();
         var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();

@@ -54,12 +54,12 @@ public class SerilogDynamicProvider : DynamicLoggerProviderBase
         {
             var logLevel = (LogLevel)overrideLevel.Value;
             originalLevels[overrideLevel.Key] = logLevel;
-            runningLevelFilters[overrideLevel.Key] = (category, level) => level >= logLevel;
+            runningLevelFilters[overrideLevel.Key] = (_, level) => level >= logLevel;
         }
 
         return new InitialLevels
         {
-            DefaultLevelFilter = (category, level) => level >= defaultLevel,
+            DefaultLevelFilter = (_, level) => level >= defaultLevel,
             RunningLevelFilters = runningLevelFilters,
             OriginalLevels = originalLevels
         };

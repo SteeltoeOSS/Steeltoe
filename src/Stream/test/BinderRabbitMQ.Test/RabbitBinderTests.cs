@@ -83,7 +83,7 @@ public partial class RabbitBinderTests
         var latch = new CountdownEvent(3);
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 latch.Signal();
                 throw new Exception();
@@ -137,7 +137,7 @@ public partial class RabbitBinderTests
 
         globalEc.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 latch.Signal();
             }
@@ -811,7 +811,7 @@ public partial class RabbitBinderTests
 
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message => throw new Exception("foo")
+            OnHandleMessage = _ => throw new Exception("foo")
         });
 
         var consumerBinding = binder.BindConsumer("durabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -859,7 +859,7 @@ public partial class RabbitBinderTests
         moduleInputChannel.ComponentName = "nondurabletest";
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message => throw new Exception("foo")
+            OnHandleMessage = _ => throw new Exception("foo")
         });
 
         var consumerBinding = binder.BindConsumer("nondurabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -885,7 +885,7 @@ public partial class RabbitBinderTests
         moduleInputChannel.ComponentName = "dlqTest";
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message => throw new Exception("foo")
+            OnHandleMessage = _ => throw new Exception("foo")
         });
         consumerProperties.Multiplex = true;
         var consumerBinding = binder.BindConsumer("dlqtest,dlqtest2", "default", moduleInputChannel, consumerProperties);
@@ -962,7 +962,7 @@ public partial class RabbitBinderTests
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
             // Wait until unacked state is reflected in the admin
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 var info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
                 var n = 0;
@@ -1076,7 +1076,7 @@ public partial class RabbitBinderTests
 
         input0.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch0.CurrentCount <= 0)
                 {
@@ -1091,7 +1091,7 @@ public partial class RabbitBinderTests
 
         input1.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch1.CurrentCount <= 0)
                 {
@@ -1185,7 +1185,7 @@ public partial class RabbitBinderTests
         var latch0 = new CountdownEvent(1);
         input0.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch0.CurrentCount <= 0)
                 {
@@ -1199,7 +1199,7 @@ public partial class RabbitBinderTests
         var latch1 = new CountdownEvent(1);
         input1.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch1.CurrentCount <= 0)
                 {
@@ -1268,7 +1268,7 @@ public partial class RabbitBinderTests
         var dontRepublish = new AtomicBoolean();
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = m =>
+            OnHandleMessage = _ =>
             {
                 if (dontRepublish.Value)
                 {
@@ -1621,7 +1621,7 @@ public partial class RabbitBinderTests
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, channel) =>
+            PresendHandler = (message, _) =>
             {
                 Assert.Equal("rkeTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
                 return message;
@@ -1666,7 +1666,7 @@ public partial class RabbitBinderTests
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, channel) =>
+            PresendHandler = (message, _) =>
             {
                 Assert.Equal("rkepTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
 
@@ -1804,7 +1804,7 @@ public partial class RabbitBinderTests
             {
                 inboundBindTarget.Poll(new TestMessageHandler
                 {
-                    OnHandleMessage = m => throw new Exception("test DLQ")
+                    OnHandleMessage = _ => throw new Exception("test DLQ")
                 });
                 Thread.Sleep(100);
             }
@@ -1841,7 +1841,7 @@ public partial class RabbitBinderTests
             {
                 inboundBindTarget.Poll(new TestMessageHandler
                 {
-                    OnHandleMessage = m => throw new Exception("test DLQ")
+                    OnHandleMessage = _ => throw new Exception("test DLQ")
                 });
 
                 Thread.Sleep(100);
@@ -1880,7 +1880,7 @@ public partial class RabbitBinderTests
             Thread.Sleep(100);
             polled = inboundBindTarget.Poll(new TestMessageHandler
             {
-                OnHandleMessage = m => throw new Exception("test DLQ")
+                OnHandleMessage = _ => throw new Exception("test DLQ")
             });
         }
 
@@ -1959,7 +1959,7 @@ public partial class RabbitBinderTests
         var latch0 = new CountdownEvent(1);
         input0.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch0.CurrentCount <= 0)
                 {
@@ -1973,7 +1973,7 @@ public partial class RabbitBinderTests
         var latch1 = new CountdownEvent(1);
         input1.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch1.CurrentCount <= 0)
                 {

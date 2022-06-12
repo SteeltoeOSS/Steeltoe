@@ -17,7 +17,7 @@ public class EventCounterListenerTest : BaseTest
 {
     private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
 
-    private readonly string[] _metrics = new string[]
+    private readonly string[] _metrics =
     {
         "System.Runtime.alloc-rate",
         "System.Runtime.gen-2-gc-count",

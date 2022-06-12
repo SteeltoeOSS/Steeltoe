@@ -11,7 +11,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 /// </summary>
 internal static partial class PrometheusSerializer
 {
-    private static readonly string[] MetricTypes = new string[]
+    private static readonly string[] MetricTypes =
     {
         "untyped", "counter", "gauge", "summary", "histogram", "histogram", "histogram", "histogram", "untyped",
     };

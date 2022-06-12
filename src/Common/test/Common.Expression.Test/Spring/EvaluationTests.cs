@@ -1379,7 +1379,7 @@ public class EvaluationTests : AbstractExpressionTests
         public short Sss = 15;
         public Spr9751_2 Foo = new ();
 
-        public int[] IntArray = new[] { 1, 2, 3, 4, 5 };
+        public int[] IntArray = { 1, 2, 3, 4, 5 };
         public int Index1 = 2;
 
         public int[] IntegerArray;

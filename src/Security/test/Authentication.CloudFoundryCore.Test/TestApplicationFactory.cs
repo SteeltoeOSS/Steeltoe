@@ -37,7 +37,7 @@ public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
             {
                 webHostBuilder.UseStartup<TStartup>().UseTestServer();
             })
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            .ConfigureAppConfiguration((_, config) =>
             {
                 config.AddInMemoryCollection(_configuration);
             });

@@ -352,7 +352,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
         const IServiceCollection serviceCollection = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(builder => { }));
+        var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(_ => { }));
         Assert.Contains(nameof(serviceCollection), ex.Message);
     }
 

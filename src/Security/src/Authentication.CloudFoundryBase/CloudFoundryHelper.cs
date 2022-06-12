@@ -39,7 +39,7 @@ public static class CloudFoundryHelper
             var handler = new HttpClientHandler
             {
 #pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
-                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                ServerCertificateCustomValidationCallback = (_, _, _, _) => true
 #pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
             };
             return handler;

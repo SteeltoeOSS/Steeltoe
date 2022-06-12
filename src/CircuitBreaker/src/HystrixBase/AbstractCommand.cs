@@ -270,7 +270,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         {
             if (_executionSemaphoreOverride == null)
             {
-                return _executionSemaphorePerCircuit.GetOrAddEx(commandKey.Name, k => new SemaphoreSlim(options.ExecutionIsolationSemaphoreMaxConcurrentRequests));
+                return _executionSemaphorePerCircuit.GetOrAddEx(commandKey.Name, _ => new SemaphoreSlim(options.ExecutionIsolationSemaphoreMaxConcurrentRequests));
             }
             else
             {
@@ -288,7 +288,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         if (_fallbackSemaphoreOverride == null)
         {
-            return _fallbackSemaphorePerCircuit.GetOrAddEx(commandKey.Name, k => new SemaphoreSlim(options.FallbackIsolationSemaphoreMaxConcurrentRequests));
+            return _fallbackSemaphorePerCircuit.GetOrAddEx(commandKey.Name, _ => new SemaphoreSlim(options.FallbackIsolationSemaphoreMaxConcurrentRequests));
         }
         else
         {

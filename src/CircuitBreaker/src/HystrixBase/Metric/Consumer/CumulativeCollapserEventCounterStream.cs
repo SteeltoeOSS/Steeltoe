@@ -25,7 +25,7 @@ public class CumulativeCollapserEventCounterStream : BucketedCumulativeCounterSt
 
     public static CumulativeCollapserEventCounterStream GetInstance(IHystrixCollapserKey collapserKey, int numBuckets, int bucketSizeInMs)
     {
-        return Streams.GetOrAddEx(collapserKey.Name, k =>
+        return Streams.GetOrAddEx(collapserKey.Name, _ =>
         {
             var stream = new CumulativeCollapserEventCounterStream(collapserKey, numBuckets, bucketSizeInMs, HystrixCollapserMetrics.AppendEventToBucket, HystrixCollapserMetrics.BucketAggregator);
             stream.StartCachingStreamValuesIfUnstarted();

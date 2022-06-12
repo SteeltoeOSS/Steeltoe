@@ -55,7 +55,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -78,7 +78,7 @@ public class EndpointMiddlewareTest : BaseTest
         };
         var builder = new WebHostBuilder()
             .UseStartup<AuthStartup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -104,7 +104,7 @@ public class EndpointMiddlewareTest : BaseTest
         };
         var builder = new WebHostBuilder()
             .UseStartup<AuthStartup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -131,7 +131,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -155,7 +155,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -178,7 +178,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
         builder.ConfigureServices(services =>
         {
             var foo = services.BuildServiceProvider().GetServices<HealthEndpoint>();
@@ -197,7 +197,7 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_ReturnsExpected()
     {
-        var builder = new WebHostBuilder().ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(_appSettings)).UseStartup<Startup>();
+        var builder = new WebHostBuilder().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings)).UseStartup<Startup>();
 
         using (var server = new TestServer(builder))
         {
@@ -209,7 +209,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UP\"", json);
         }
 
-        builder = new WebHostBuilder().ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "down" })).UseStartup<Startup>();
+        builder = new WebHostBuilder().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "down" })).UseStartup<Startup>();
 
         using (var server = new TestServer(builder))
         {
@@ -221,7 +221,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"DOWN\"", downJson);
         }
 
-        builder = new WebHostBuilder().ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "out" })).UseStartup<Startup>();
+        builder = new WebHostBuilder().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "out" })).UseStartup<Startup>();
 
         using (var server = new TestServer(builder))
         {
@@ -235,7 +235,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "unknown" }));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "unknown" }));
 
         using (var server = new TestServer(builder))
         {
@@ -249,7 +249,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "defaultAggregator" }));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "defaultAggregator" }));
 
         using (var server = new TestServer(builder))
         {
@@ -263,7 +263,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "down", ["management:endpoints:UseStatusCodeFromResponse"] = "false" }));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "down", ["management:endpoints:UseStatusCodeFromResponse"] = "false" }));
 
         using (var server = new TestServer(builder))
         {
@@ -281,7 +281,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "microsoftHealthAggregator" }));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings) { ["HealthCheckType"] = "microsoftHealthAggregator" }));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();

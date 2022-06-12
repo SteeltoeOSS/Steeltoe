@@ -408,7 +408,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         template.ConvertAndSend(ROUTE, "message");
         template.IsChannelTransacted = true;
         var result = new TransactionTemplate(new TestTransactionManager())
-            .Execute(status => template.ReceiveAndConvert<string>(ROUTE));
+            .Execute(_ => template.ReceiveAndConvert<string>(ROUTE));
         Assert.Equal("message", result);
         result = template.ReceiveAndConvert<string>(ROUTE);
         Assert.Null(result);
@@ -422,7 +422,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         // Should just result in auto-ack (not synched with external tx)
         template.IsChannelTransacted = true;
         var result = new TransactionTemplate(new TestTransactionManager())
-            .Execute(status => template.ReceiveAndConvert<string>(ROUTE));
+            .Execute(_ => template.ReceiveAndConvert<string>(ROUTE));
         Assert.Equal("message", result);
         result = template.ReceiveAndConvert<string>(ROUTE);
         Assert.Null(result);
@@ -437,7 +437,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Throws<PlannedException>(() =>
         {
             new TransactionTemplate(new TestTransactionManager()).Execute(
-                status =>
+                _ =>
                 {
                     var result = template.ReceiveAndConvert<string>(ROUTE);
                     Assert.NotNull(result);
@@ -460,7 +460,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Throws<PlannedException>(() =>
         {
             new TransactionTemplate(new TestTransactionManager()).Execute(
-                status =>
+                _ =>
                 {
                     template.ReceiveAndConvert<string>(ROUTE);
                     throw new PlannedException();
@@ -476,7 +476,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     public void TestSendInExternalTransaction()
     {
         template.IsChannelTransacted = true;
-        new TransactionTemplate(new TestTransactionManager()).Execute(status =>
+        new TransactionTemplate(new TestTransactionManager()).Execute(_ =>
         {
             template.ConvertAndSend(ROUTE, "message");
         });
@@ -494,7 +494,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Throws<PlannedException>(() =>
         {
             new TransactionTemplate(new TestTransactionManager()).Execute(
-                status =>
+                _ =>
                 {
                     template.ConvertAndSend(ROUTE, "message");
                     throw new PlannedException();
@@ -868,7 +868,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), headers);
         template.Send(ROUTE, message);
         template.CorrelationKey = "baz";
-        var received = template.ReceiveAndReply<IMessage, IMessage>(message1 => Message.Create(Encoding.UTF8.GetBytes("fuz"), new MessageHeaders()));
+        var received = template.ReceiveAndReply<IMessage, IMessage>(_ => Message.Create(Encoding.UTF8.GetBytes("fuz"), new MessageHeaders()));
         Assert.True(received);
         var message2 = template.Receive();
         Assert.NotNull(message2);
@@ -1162,7 +1162,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         template.IsChannelTransacted = true;
         var tt = new TransactionTemplate(new TestTransactionManager());
-        tt.Execute(status =>
+        tt.Execute(_ =>
         {
             template.ConvertAndSend(ROUTE, "message");
             if (rollback)
@@ -1275,7 +1275,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         template.ConvertAndSend(ROUTE, "test");
         template.ReceiveTimeout = timeout;
-        received = template.ReceiveAndReply<IMessage, IMessage>(message => null);
+        received = template.ReceiveAndReply<IMessage, IMessage>(_ => null);
         Assert.True(received);
 
         template.ReceiveTimeout = 0;
@@ -1291,7 +1291,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
                 messageProperties.SetHeader("testReplyTo", new Address(string.Empty, ROUTE));
                 return Message.Create(message.Payload, messageProperties.MessageHeaders, message.Payload.GetType());
             },
-            (request, reply) => reply.Headers.Get<Address>("testReplyTo"));
+            (_, reply) => reply.Headers.Get<Address>("testReplyTo"));
 
         Assert.True(received);
         var result3 = template.ReceiveAndConvert<string>(ROUTE);
@@ -1306,7 +1306,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         template.ReceiveTimeout = timeout;
         var payloadReference = new AtomicReference<string>();
         var ttemplate = new TransactionTemplate(new TestTransactionManager());
-        var result4 = ttemplate.Execute(status =>
+        var result4 = ttemplate.Execute(_ =>
         {
             var received1 = template.ReceiveAndReply<string, object>(
                 payload =>
@@ -1328,11 +1328,11 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         try
         {
             ttemplate = new TransactionTemplate(new TestTransactionManager());
-            ttemplate.Execute(status =>
+            ttemplate.Execute(_ =>
             {
                 template.ReceiveAndReply<IMessage, IMessage>(
                     message => message,
-                    (request, reply) => throw new PlannedException());
+                    (_, _) => throw new PlannedException());
             });
         }
         catch (Exception e)
@@ -1348,7 +1348,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         template.ReceiveTimeout = timeout;
         try
         {
-            template.ReceiveAndReply<double, object>(input => null);
+            template.ReceiveAndReply<double, object>(_ => null);
             throw new Exception("Should have throw Exception");
         }
         catch (Exception e)

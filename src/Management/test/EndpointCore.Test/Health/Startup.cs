@@ -76,7 +76,7 @@ public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptio
     public TestServiceOptions()
     {
         CurrentValue = new HealthCheckServiceOptions();
-        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", provider => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
+        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", _ => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
     }
 
     public HealthCheckServiceOptions CurrentValue { get; }

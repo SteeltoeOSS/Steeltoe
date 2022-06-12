@@ -240,7 +240,7 @@ public class RabbitListenerAttributeProcessorTest
             services.AddRabbitListenerEndpointRegistry();
             services.AddRabbitListenerEndpointRegistrar();
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("testFactory");
-            services.AddRabbitListenerAttributeProcessor((p, r) =>
+            services.AddRabbitListenerAttributeProcessor((_, r) =>
             {
                 r.ContainerFactoryServiceName = "testFactory";
             });

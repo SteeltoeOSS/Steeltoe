@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Converter;
 
 public class StringToArrayConverter : AbstractGenericConditionalConverter
 {
-    private readonly char[] _delimit = new char[] { ',' };
+    private readonly char[] _delimit = { ',' };
 
     private readonly IConversionService _conversionService;
 

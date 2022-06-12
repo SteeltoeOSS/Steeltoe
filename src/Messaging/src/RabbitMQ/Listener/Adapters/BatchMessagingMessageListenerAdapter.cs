@@ -106,7 +106,7 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
         if (BatchingStrategy.CanDebatch(amqpMessage.Headers))
         {
             var list = new List<object>();
-            BatchingStrategy.DeBatch(amqpMessage, fragment =>
+            BatchingStrategy.DeBatch(amqpMessage, _ =>
             {
                 var convertedObject = MessageConverter.FromMessage(amqpMessage, null);
                 if (convertedObject == null)

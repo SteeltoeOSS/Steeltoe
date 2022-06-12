@@ -835,7 +835,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     public class Payload
     {
-        public Two[] DR { get; } = new Two[] { new () };
+        public Two[] DR { get; } = { new () };
     }
 
     public class Two

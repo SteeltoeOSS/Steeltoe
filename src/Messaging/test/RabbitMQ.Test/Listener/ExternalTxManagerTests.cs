@@ -46,7 +46,7 @@ public class ExternalTxManagerTests
         RC.IBasicConsumer consumer;
         var consumerLatch = new CountdownEvent(1);
         onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), null, It.IsAny<RC.IBasicConsumer>()))
-            .Returns((string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, RC.IBasicConsumer iConsumer) =>
+            .Returns((string _, bool _, string _, bool _, bool _, IDictionary<string, object> _, RC.IBasicConsumer iConsumer) =>
             {
                 consumer = iConsumer;
                 consumerLatch.Signal();

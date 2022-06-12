@@ -74,7 +74,7 @@ public class HystrixCommandMetrics : HystrixMetrics
         // attempt to retrieve from cache first
         var nonNullThreadPoolKey = threadPoolKey ?? HystrixThreadPoolKeyDefault.AsKey(commandGroup.Name);
 
-        return Metrics.GetOrAddEx(key.Name, k => new HystrixCommandMetrics(key, commandGroup, nonNullThreadPoolKey, properties, HystrixPlugins.EventNotifier));
+        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCommandMetrics(key, commandGroup, nonNullThreadPoolKey, properties, HystrixPlugins.EventNotifier));
     }
 
     public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key)

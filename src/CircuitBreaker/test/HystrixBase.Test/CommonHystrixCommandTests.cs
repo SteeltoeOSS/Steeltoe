@@ -55,10 +55,10 @@ public abstract class CommonHystrixCommandTests<C> : HystrixTestBase
 
         var o = command.Observe();
         o.Subscribe(
-            n =>
+            _ =>
             {
             },
-            e =>
+            _ =>
             {
                 latch.SignalEx();
             },

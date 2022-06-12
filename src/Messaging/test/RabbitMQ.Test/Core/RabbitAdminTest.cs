@@ -44,7 +44,7 @@ public class RabbitAdminTest : AbstractTest
     {
         var serviceCollection = CreateContainer();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "foo";
             f.Port = 434343;
@@ -65,7 +65,7 @@ public class RabbitAdminTest : AbstractTest
     {
         var serviceCollection = CreateContainer();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
             f.Port = 434343;
@@ -86,7 +86,7 @@ public class RabbitAdminTest : AbstractTest
     public async Task TestGetQueueProperties()
     {
         var serviceCollection = CreateContainer();
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
         });
@@ -141,7 +141,7 @@ public class RabbitAdminTest : AbstractTest
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.nonDur", false, false));
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.ad", true, true));
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.all", false, true));
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
         });
@@ -324,7 +324,7 @@ public class RabbitAdminTest : AbstractTest
         var template = new RabbitTemplate(connectionFactory.Object);
         var admin = new RabbitAdmin(template);
 
-        template.Invoke<object>(o =>
+        template.Invoke<object>(_ =>
         {
             admin.DeclareQueue();
             admin.DeclareQueue();
@@ -355,7 +355,7 @@ public class RabbitAdminTest : AbstractTest
         var rtt = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1);
         var serviceCollection = CreateContainer();
         serviceCollection.AddSingleton<IConnectionFactory>(ccf);
-        serviceCollection.AddRabbitAdmin((p, a) =>
+        serviceCollection.AddRabbitAdmin((_, a) =>
         {
             a.RetryTemplate = rtt;
         });

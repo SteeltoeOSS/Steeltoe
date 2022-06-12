@@ -246,5 +246,5 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
         => hostBuilder
-            .ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
+            .ConfigureServices((_, collection) => collection.AddWavefrontMetrics());
 }

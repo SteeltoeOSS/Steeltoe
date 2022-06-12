@@ -113,14 +113,14 @@ public sealed class DlqStartupFixture : IDisposable
         services.AddRabbitQueues(mainQueue, dlq);
 
         // Add default container factory
-        services.AddRabbitListenerContainerFactory((p, f) =>
+        services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.MismatchedQueuesFatal = true;
             f.AcknowledgeMode = Core.AcknowledgeMode.MANUAL;
         });
 
         // Add dontRequeueFactory container factory
-        services.AddRabbitListenerContainerFactory((p, f) =>
+        services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.ServiceName = "dontRequeueFactory";
             f.MismatchedQueuesFatal = true;

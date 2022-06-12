@@ -84,7 +84,7 @@ public class HystrixUtilizationStream
     }
 
     private static Func<long, Dictionary<IHystrixCommandKey, HystrixCommandUtilization>> AllCommandUtilization { get; } =
-        timestamp =>
+        _ =>
         {
             var commandUtilizationPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandUtilization>();
             foreach (var commandMetrics in HystrixCommandMetrics.GetInstances())
@@ -97,7 +97,7 @@ public class HystrixUtilizationStream
         };
 
     private static Func<long, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>> AllThreadPoolUtilization { get; } =
-        timestamp =>
+        _ =>
         {
             var threadPoolUtilizationPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>();
             foreach (var threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())

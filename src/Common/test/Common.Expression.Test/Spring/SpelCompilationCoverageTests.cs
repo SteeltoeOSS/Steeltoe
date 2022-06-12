@@ -5864,7 +5864,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Payload
     {
-        public Two[] DR { get; } = new[] { new Two() };
+        public Two[] DR { get; } = { new Two() };
 
         public Two Holder = new ();
     }
@@ -5895,8 +5895,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public static byte B2 = 66;
         public static byte B3 = 67;
 
-        public static string[] StringArray = new[] { "aaa", "bbb", "ccc" };
-        public static int[] IntArray = new[] { 11, 22, 33 };
+        public static string[] StringArray = { "aaa", "bbb", "ccc" };
+        public static int[] IntArray = { 11, 22, 33 };
 
         public int I;
         public string S;

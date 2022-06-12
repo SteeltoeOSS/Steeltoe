@@ -38,8 +38,8 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         _services.AddSingleton<IConfiguration>(config);
         _services.AddRabbitHostingServices();
         _services.AddRabbitDefaultMessageConverter();
-        _services.AddRabbitConnectionFactory((p, f) => f.Host = "localhost");
-        _services.AddRabbitAdmin((p, a) => a.AutoStartup = true);
+        _services.AddRabbitConnectionFactory((_, f) => f.Host = "localhost");
+        _services.AddRabbitAdmin((_, a) => a.AutoStartup = true);
         _services.AddRabbitTemplate();
         _services.AddRabbitQueue(_queue);
     }
@@ -64,7 +64,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         admin.DeclareBinding(binding);
         try
         {
-            template.Execute(c =>
+            template.Execute(_ =>
             {
                 var consumer = CreateConsumer(template.ConnectionFactory);
                 var tag = consumer.GetConsumerTags()[0];
@@ -102,7 +102,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         admin.DeclareBinding(binding);
         try
         {
-            template.Execute(c =>
+            template.Execute(_ =>
             {
                 var consumer = CreateConsumer(template.ConnectionFactory);
                 var tag = consumer.GetConsumerTags()[0];
@@ -146,7 +146,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty)
         };
 
-        var consumer = template1.Execute(channel =>
+        var consumer = template1.Execute(_ =>
         {
             var consumer1 = CreateConsumer(template1.ConnectionFactory);
             var tag = consumer1.GetConsumerTags()[0];
@@ -182,7 +182,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
         try
         {
-            template.Execute(c =>
+            template.Execute(_ =>
             {
                 var consumer = CreateConsumer(template.ConnectionFactory);
                 var tag = consumer.GetConsumerTags()[0];
@@ -199,7 +199,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
                 }
             });
 
-            template.Execute(c =>
+            template.Execute(_ =>
             {
                 var consumer = CreateConsumer(template.ConnectionFactory);
                 var tag = consumer.GetConsumerTags()[0];
@@ -235,7 +235,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
         try
         {
-            template.Execute(channel =>
+            template.Execute(_ =>
             {
                 var consumer = CreateConsumer(template.ConnectionFactory);
                 var tag = consumer.GetConsumerTags()[0];

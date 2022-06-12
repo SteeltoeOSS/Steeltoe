@@ -89,7 +89,7 @@ public class ActuatorRouteBuilderExtensionsTest
                 s.AddAllActuators(context.Configuration); // Add all of them, but map one at a time
                 s.AddRouting();
                 s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
                 s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
                 s.AddServerSideBlazor();
             })

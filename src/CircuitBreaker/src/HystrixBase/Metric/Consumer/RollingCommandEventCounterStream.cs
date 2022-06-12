@@ -25,7 +25,7 @@ public class RollingCommandEventCounterStream : BucketedRollingCounterStream<Hys
 
     public static RollingCommandEventCounterStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
     {
-        var result = Streams.GetOrAddEx(commandKey.Name, k =>
+        var result = Streams.GetOrAddEx(commandKey.Name, _ =>
         {
             var stream = new RollingCommandEventCounterStream(commandKey, numBuckets, bucketSizeInMs, HystrixCommandMetrics.AppendEventToBucket, HystrixCommandMetrics.BucketAggregator);
             stream.StartCachingStreamValuesIfUnstarted();

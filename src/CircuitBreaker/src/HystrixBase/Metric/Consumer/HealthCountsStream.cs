@@ -31,7 +31,7 @@ public class HealthCountsStream : BucketedRollingCounterStream<HystrixCommandCom
 
     public static HealthCountsStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
     {
-        var result = Streams.GetOrAddEx(commandKey.Name, k =>
+        var result = Streams.GetOrAddEx(commandKey.Name, _ =>
         {
             var newStream = new HealthCountsStream(commandKey, numBuckets, bucketSizeInMs, HystrixCommandMetrics.AppendEventToBucket);
             newStream.StartCachingStreamValuesIfUnstarted();

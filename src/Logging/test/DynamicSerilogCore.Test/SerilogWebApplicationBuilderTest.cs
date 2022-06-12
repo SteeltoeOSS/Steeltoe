@@ -61,7 +61,7 @@ public class SerilogWebApplicationBuilderTest
         var testSink = new TestSink();
 
         var host = TestHelpers.GetTestWebApplicationBuilder()
-            .AddDynamicSerilog((context, loggerConfiguration) =>
+            .AddDynamicSerilog((_, loggerConfiguration) =>
             {
                 loggerConfiguration
                     .MinimumLevel.Error()

@@ -297,7 +297,7 @@ public class BindingServiceTest : AbstractTest
         var fail = new CountdownEvent(2);
         var mockBinding = new Mock<IBinding>();
 
-        Func<string, string, object, IConsumerOptions, IBinding> func = (name, group, target, options) =>
+        Func<string, string, object, IConsumerOptions, IBinding> func = (_, _, _, _) =>
         {
             fail.Signal();
             if (fail.CurrentCount == 1)
@@ -337,7 +337,7 @@ public class BindingServiceTest : AbstractTest
         var mockBinding = new Mock<IBinding>();
         var prop = binder.GetType().GetProperty("BindProducerFunc");
 
-        Func<string, object, IProducerOptions, IBinding> func = (name, target, options) =>
+        Func<string, object, IProducerOptions, IBinding> func = (_, _, _) =>
         {
             fail.Signal();
             if (fail.CurrentCount == 1)

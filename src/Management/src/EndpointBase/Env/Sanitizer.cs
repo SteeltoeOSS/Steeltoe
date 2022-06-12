@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class Sanitizer
 {
-    private readonly string[] _regex_parts = new string[] { "*", "$", "^", "+" };
+    private readonly string[] _regex_parts = { "*", "$", "^", "+" };
     private readonly string[] _keysToSanitize;
     private readonly List<Regex> _matchers = new ();
 

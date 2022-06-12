@@ -25,7 +25,7 @@ public class ApplicationContextExpressionTests
             .Build();
         var collection = new ServiceCollection();
         collection.AddSingleton<IConfiguration>(config);
-        collection.AddSingleton(p =>
+        collection.AddSingleton(_ =>
         {
             var tb = new TestService
             {
@@ -34,7 +34,7 @@ public class ApplicationContextExpressionTests
             return tb;
         });
 
-        collection.AddSingleton(p =>
+        collection.AddSingleton(_ =>
         {
             var tb = new TestService
             {

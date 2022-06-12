@@ -54,7 +54,7 @@ public class HystrixRequestVariableDefault<T> : IHystrixRequestVariable<T>
                 throw new InvalidOperationException("HystrixRequestContext.InitializeContext() must be called at the beginning of each request before RequestVariable functionality can be used.");
             }
 
-            return (T)HystrixRequestContext.ContextForCurrentThread.State.GetOrAddEx(this, k => _valueFactory());
+            return (T)HystrixRequestContext.ContextForCurrentThread.State.GetOrAddEx(this, _ => _valueFactory());
         }
     }
 

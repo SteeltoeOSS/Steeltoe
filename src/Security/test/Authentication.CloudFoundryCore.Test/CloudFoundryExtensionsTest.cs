@@ -167,7 +167,7 @@ public class CloudFoundryExtensionsTest
     {
         return new WebHostBuilder()
             .UseStartup<T>()
-            .ConfigureAppConfiguration((context, builder) =>
+            .ConfigureAppConfiguration((_, builder) =>
             {
                 if (appsettings is not null)
                 {

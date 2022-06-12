@@ -89,15 +89,15 @@ public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, 
         }
     }
 
-    public static string[] InboundRequestHeaders { get; } = new string[] { "*" };
+    public static string[] InboundRequestHeaders { get; } = { "*" };
 
     public static string[] InboundReplyHeaders { get; } = SafeOutboundHeaders;
 
-    public static string[] SafeOutboundHeaders { get; } = new string[] { "!x-*", "*" };
+    public static string[] SafeOutboundHeaders { get; } = { "!x-*", "*" };
 
     public static string[] OutboundRequestHeaders { get; } = SafeOutboundHeaders;
 
-    public static string[] OutboundReplyHeaders { get; } = new string[] { "*" };
+    public static string[] OutboundReplyHeaders { get; } = { "*" };
 
     public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger) => new (InboundRequestHeaders, InboundReplyHeaders, logger);
 

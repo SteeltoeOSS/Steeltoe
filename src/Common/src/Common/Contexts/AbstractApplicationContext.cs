@@ -209,7 +209,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
     {
         if (!string.IsNullOrEmpty(name))
         {
-            _ = _instances.AddOrUpdate(name, instance, (k, v) => instance);
+            _ = _instances.AddOrUpdate(name, instance, (_, _) => instance);
         }
     }
 

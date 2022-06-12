@@ -56,7 +56,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -75,7 +75,7 @@ public class EndpointMiddlewareTest : BaseTest
         // arrange a server and client
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -96,7 +96,7 @@ public class EndpointMiddlewareTest : BaseTest
         // arrange a server and client
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();

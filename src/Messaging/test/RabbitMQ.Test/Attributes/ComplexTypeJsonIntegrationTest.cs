@@ -169,7 +169,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
             services.AddRabbitAdmin();
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.DefaultReceiveDestination = TEST_QUEUE2;
                 t.DefaultSendDestination = TEST_QUEUE;

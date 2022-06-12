@@ -43,7 +43,7 @@ public class DirectMessageListenerContainerMockTest
         var latch1 = new CountdownEvent(1);
         var qos = new AtomicInteger();
         channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>()))
-            .Callback<uint, ushort, bool>((size, count, global) =>
+            .Callback<uint, ushort, bool>((_, count, _) =>
             {
                 qos.Value = count;
                 latch1.Signal();
@@ -90,7 +90,7 @@ public class DirectMessageListenerContainerMockTest
         channel.Setup(c =>
                 c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
             .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
-                (queue, autoAck, consumerTag, noLocal, exclusive, args, cons) =>
+                (_, _, _, _, _, _, cons) =>
                 {
                     consumer.Value = cons;
                     cons.HandleBasicConsumeOk("consumerTag");
@@ -99,14 +99,14 @@ public class DirectMessageListenerContainerMockTest
             .Returns("consumerTag");
         var qos = new AtomicInteger();
         channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>()))
-            .Callback<uint, ushort, bool>((size, count, global) =>
+            .Callback<uint, ushort, bool>((_, count, _) =>
             {
                 qos.Value = count;
             });
         var latch2 = new CountdownEvent(2);
         var latch3 = new CountdownEvent(1);
         channel.Setup(c => c.BasicAck(It.IsAny<ulong>(), It.IsAny<bool>()))
-            .Callback<ulong, bool>((tag, multi) =>
+            .Callback<ulong, bool>((tag, _) =>
             {
                 if (tag == 10ul || tag == 16ul)
                 {
@@ -119,7 +119,7 @@ public class DirectMessageListenerContainerMockTest
             });
         var latch4 = new CountdownEvent(1);
         channel.Setup(c => c.BasicNack(It.IsAny<ulong>(), It.IsAny<bool>(), It.IsAny<bool>()))
-            .Callback<ulong, bool, bool>((tag, multi, re) =>
+            .Callback<ulong, bool, bool>((_, _, _) =>
             {
                 latch4.Signal();
             });
@@ -220,7 +220,7 @@ public class DirectMessageListenerContainerMockTest
             .Returns("consumerTag");
         var qos = new AtomicInteger();
         channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>()))
-            .Callback<uint, ushort, bool>((size, count, global) =>
+            .Callback<uint, ushort, bool>((_, count, _) =>
             {
                 qos.Value = count;
                 if (!latch1.IsSet)
@@ -294,7 +294,7 @@ public class DirectMessageListenerContainerMockTest
         channel.Setup(c =>
                 c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
             .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
-                (queue, autoAck, consumerTag, noLocal, exclusive, args, cons) =>
+                (_, _, _, _, _, _, cons) =>
                 {
                     consumer.Value = cons;
                     latch1.Signal();
@@ -349,7 +349,7 @@ public class DirectMessageListenerContainerMockTest
         channel.Setup(c =>
                 c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
             .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
-                (queue, autoAck, consumerTag, noLocal, exclusive, args, cons) =>
+                (_, _, _, _, _, _, cons) =>
                 {
                     consumer.Value = cons;
                     latch1.Signal();

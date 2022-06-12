@@ -638,7 +638,7 @@ public class ClientCertificateAuthenticationTests
 
     private readonly CertificateAuthenticationEvents _unprocessedValidationEvents = new ()
     {
-        OnCertificateValidated = context => Task.CompletedTask
+        OnCertificateValidated = _ => Task.CompletedTask
     };
 
     private static class Certificates

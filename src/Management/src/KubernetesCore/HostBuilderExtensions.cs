@@ -37,7 +37,7 @@ public static class HostBuilderExtensions
     /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
     public static IHostBuilder AddKubernetesActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         => hostBuilder
-            .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
+            .ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole())
             .ConfigureServices((context, collection) =>
             {
                 collection.AddKubernetesActuators(context.Configuration, version: mediaTypeVersion);
@@ -52,7 +52,7 @@ public static class HostBuilderExtensions
     /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
     public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         => webHostBuilder
-            .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
+            .ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole())
             .ConfigureServices((context, collection) =>
             {
                 collection.AddKubernetesActuators(context.Configuration, version: mediaTypeVersion);

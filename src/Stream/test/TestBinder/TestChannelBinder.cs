@@ -190,7 +190,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
                     }
                     else
                     {
-                        _adapter.RetryTemplate.Execute(ctx => ProcessMessage(message), _adapter.RecoveryCallback);
+                        _adapter.RetryTemplate.Execute(_ => ProcessMessage(message), _adapter.RecoveryCallback);
                     }
                 }
                 catch (Exception e)

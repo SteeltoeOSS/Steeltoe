@@ -272,8 +272,8 @@ public class BlockingQueueConsumer
         RabbitUtils.SetPhysicalCloseRequired(Channel, true);
         ConnectionFactoryUtils.ReleaseResources(ResourceHolder);
         DeliveryTags.Clear();
-        _ = Consumers.TakeWhile(kvp => Consumers.Count > 0);
-        _ = Queue.TakeWhile(d => Queue.Count > 0);
+        _ = Consumers.TakeWhile(_ => Consumers.Count > 0);
+        _ = Queue.TakeWhile(_ => Queue.Count > 0);
     }
 
     public void RollbackOnExceptionIfNecessary(Exception ex)
@@ -737,7 +737,7 @@ public class BlockingQueueConsumer
                     if (!Consumer.Queue.TryAdd(delivery, Consumer.ShutdownTimeout))
                     {
                         RabbitUtils.SetPhysicalCloseRequired(Model, true);
-                        _ = Consumer.Queue.TakeWhile(d => Consumer.Queue.Count > 0);
+                        _ = Consumer.Queue.TakeWhile(_ => Consumer.Queue.Count > 0);
                         if (!Canceled)
                         {
                             RabbitUtils.Cancel(Model, consumerTag);

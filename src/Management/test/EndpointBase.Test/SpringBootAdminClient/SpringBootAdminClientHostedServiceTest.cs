@@ -39,7 +39,7 @@ public class SpringBootAdminClientHostedServiceTest
             .Respond("application/json", "{\"Id\":\"1234567\"}");
         httpMessageHandler
             .Expect(HttpMethod.Delete, "http://springbootadmin:9090/instances/1234567")
-            .Respond(req => new HttpResponseMessage(HttpStatusCode.NoContent));
+            .Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
         Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
         var service = new SpringBootAdminClientHostedService(sbaOptions, mgmtOptions, healthOptions, httpMessageHandler.ToHttpClient());

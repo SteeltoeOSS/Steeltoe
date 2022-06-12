@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Converter;
 
 public class StringToCollectionConverter : AbstractToCollectionConverter
 {
-    private readonly char[] _delimit = new char[] { ',' };
+    private readonly char[] _delimit = { ',' };
 
     public StringToCollectionConverter(IConversionService conversionService)
         : base(GetConvertiblePairs(), conversionService)

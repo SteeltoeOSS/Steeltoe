@@ -42,7 +42,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     protected HttpClient _httpClient;
     protected ILogger _logger;
     private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
-    private static readonly char[] COLON_DELIMIT = new[] { ':' };
+    private static readonly char[] COLON_DELIMIT = { ':' };
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
     private JsonSerializerOptions JsonSerializerOptions { get; set; } = new () { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };

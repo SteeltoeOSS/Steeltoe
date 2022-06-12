@@ -100,7 +100,7 @@ public class RabbitServiceExtensionsTest
         services.AddRabbitHostingServices();
         services.AddRabbitConnectionFactory();
         services.AddRabbitDefaultMessageConverter();
-        services.AddRabbitTemplate((p, t) =>
+        services.AddRabbitTemplate((_, t) =>
         {
             t.CorrelationKey = "foobar";
         });
@@ -188,7 +188,7 @@ public class RabbitServiceExtensionsTest
         services.AddRabbitHostingServices();
         services.AddRabbitConnectionFactory();
         services.AddRabbitDefaultMessageConverter();
-        services.AddRabbitAdmin((p, a) =>
+        services.AddRabbitAdmin((_, a) =>
         {
             a.RetryDisabled = true;
         });
@@ -219,7 +219,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitQueue("myQueue", (p, q) =>
+        services.AddRabbitQueue("myQueue", (_, q) =>
         {
             q.IsDurable = false;
             q.ShouldDeclare = false;
@@ -254,7 +254,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitBinding("myBinding", Binding.DestinationType.QUEUE, (p, b) =>
+        services.AddRabbitBinding("myBinding", Binding.DestinationType.QUEUE, (_, b) =>
         {
             b.ShouldDeclare = false;
             b.IgnoreDeclarationExceptions = false;
@@ -289,7 +289,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitExchange("myExchange", ExchangeType.DIRECT, (p, e) =>
+        services.AddRabbitExchange("myExchange", ExchangeType.DIRECT, (_, e) =>
         {
             e.IsDurable = false;
             e.ShouldDeclare = false;
@@ -312,7 +312,7 @@ public class RabbitServiceExtensionsTest
         services.AddRabbitMessageHandlerMethodFactory();
         services.AddRabbitListenerEndpointRegistry();
         services.AddRabbitListenerEndpointRegistrar();
-        services.AddRabbitListenerAttributeProcessor((p, a) =>
+        services.AddRabbitListenerAttributeProcessor((_, a) =>
         {
             a.Charset = Encoding.UTF32;
         });
@@ -329,7 +329,7 @@ public class RabbitServiceExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
         services.AddRabbitListenerEndpointRegistry();
-        services.AddRabbitListenerEndpointRegistrar((p, r) =>
+        services.AddRabbitListenerEndpointRegistrar((_, r) =>
         {
             r.ContainerFactoryServiceName = "foobar";
         });
@@ -346,7 +346,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitListenerEndpointRegistry((p, r) =>
+        services.AddRabbitListenerEndpointRegistry((_, r) =>
         {
             r.Phase = 100;
         });
@@ -364,7 +364,7 @@ public class RabbitServiceExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
         services.AddRabbitConnectionFactory();
-        services.AddRabbitListenerContainerFactory((p, f) =>
+        services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.ServiceName = "foobar";
             f.AckTimeout = 111111;
@@ -405,12 +405,12 @@ public class RabbitServiceExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
         services.AddRabbitConnectionFactory();
-        services.AddRabbitListenerContainerFactory((p, f) =>
+        services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.ServiceName = "foobar";
             f.AckTimeout = 111111;
         });
-        services.AddRabbitListenerContainerFactory((p, f) =>
+        services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.ServiceName = "barfoo";
             f.AckTimeout = 222222;
@@ -433,7 +433,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitConnectionFactory((p, f) =>
+        services.AddRabbitConnectionFactory((_, f) =>
         {
             f.Port = 9999;
         });
@@ -450,7 +450,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitDefaultMessageConverter((p, c) =>
+        services.AddRabbitDefaultMessageConverter((_, c) =>
         {
             c.CreateMessageIds = true;
         });
@@ -467,7 +467,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>((p, c) =>
+        services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>((_, c) =>
         {
             c.AssumeSupportedContentType = false;
         });

@@ -33,5 +33,5 @@ public static class DiscoveryHostBuilderExtensions
     /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
     /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
     public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction) =>
-        hostBuilder.ConfigureServices((context, collection) => collection.AddServiceDiscovery(optionsAction));
+        hostBuilder.ConfigureServices((_, collection) => collection.AddServiceDiscovery(optionsAction));
 }

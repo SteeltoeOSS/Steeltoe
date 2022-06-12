@@ -25,7 +25,7 @@ public class RollingThreadPoolEventCounterStream : BucketedRollingCounterStream<
 
     public static RollingThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
     {
-        return Streams.GetOrAddEx(threadPoolKey.Name, k =>
+        return Streams.GetOrAddEx(threadPoolKey.Name, _ =>
         {
             var stream = new RollingThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket, HystrixThreadPoolMetrics.CounterAggregator);
             stream.StartCachingStreamValuesIfUnstarted();

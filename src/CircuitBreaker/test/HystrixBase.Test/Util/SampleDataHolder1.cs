@@ -9,7 +9,7 @@ internal static class SampleDataHolder1
     /*
      * Array of [milliseconds, latency]
      */
-    public static int[][] Data = new[]
+    public static int[][] Data =
     {
         new[] { 0, 3 }, new[] { 43, 33 }, new[] { 45, 11 }, new[] { 45, 1 }, new[] { 68, 13 }, new[] { 88, 10 }, new[] { 158, 2 }, new[] { 158, 4 }, new[] { 169, 12 }, new[] { 267, 2 }, new[] { 342, 2 }, new[] { 438, 2 }, new[] { 464, 7 }, new[] { 504, 2 }, new[] { 541, 6 }, new[] { 541, 2 }, new[] { 562, 2 }, new[] { 581, 3 }, new[] { 636, 2 }, new[] { 778, 2 }, new[] { 825, 1 }, new[] { 859, 2 }, new[] { 948, 1 }, new[] { 1043, 2 }, new[] { 1145, 2 }, new[] { 1152, 1 }, new[] { 1218, 5 },
         new[] { 1229, 2 }, new[] { 1259, 2 }, new[] { 1333, 2 }, new[] { 1349, 2 }, new[] { 1392, 2 }, new[] { 1468, 1 }, new[] { 1551, 2 }, new[] { 1586, 2 }, new[] { 1685, 2 }, new[] { 1696, 1 }, new[] { 1807, 2 }, new[] { 1817, 3 }, new[] { 1817, 6 }, new[] { 1847, 2 }, new[] { 1870, 2 }, new[] { 1939, 2 }, new[] { 2050, 2 }, new[] { 2129, 3 }, new[] { 2141, 2 }, new[] { 2265, 2 }, new[] { 2414, 1 }, new[] { 2693, 2 }, new[] { 2703, 2 }, new[] { 2791, 2 }, new[] { 2838, 2 },

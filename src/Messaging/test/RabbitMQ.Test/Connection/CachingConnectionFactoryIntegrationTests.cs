@@ -281,7 +281,7 @@ public sealed class CachingConnectionFactoryIntegrationTests : IDisposable
         {
             template.Execute(channel =>
             {
-                channel.ModelShutdown += (sender, args) =>
+                channel.ModelShutdown += (_, args) =>
                 {
                     latch.Signal();
                     throw new ShutdownSignalException(args);

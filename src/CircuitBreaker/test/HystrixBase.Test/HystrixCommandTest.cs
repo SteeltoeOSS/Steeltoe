@@ -363,7 +363,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         TestHystrixCommand<bool> command = new TestCallbackThreadForThreadIsolation_TestHystrixCommand(commandThread, TestHystrixCommand<bool>.TestPropsBuilder());
         var latch = new CountdownEvent(1);
         command.ToObservable().Subscribe(
-            args =>
+            _ =>
             {
                 subscribeThread.Value = Thread.CurrentThread;
             },
@@ -427,7 +427,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         var latch = new CountdownEvent(1);
         command.ToObservable().Subscribe(
-            args =>
+            _ =>
             {
                 subscribeThread.Value = Thread.CurrentThread;
             },
@@ -1023,12 +1023,12 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // Schedule 2 items, one will be taken off and start running, the second will get queued
         // the thread pool won't pick it up because we're bypassing the pool and adding to the queue directly so this will keep the queue full
-        var t = new Task(o => Time.Wait(500), d1);
+        var t = new Task(_ => Time.Wait(500), d1);
         t.Start(pool.GetTaskScheduler());
 
         Time.Wait(10);
 
-        var t2 = new Task(o => Time.Wait(500), d2);
+        var t2 = new Task(_ => Time.Wait(500), d2);
         t2.Start(pool.GetTaskScheduler());
 
         var command = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
@@ -2284,7 +2284,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         try
         {
             command.Observe().Subscribe(
-                n => { },
+                _ => { },
                 e =>
                 {
                     t.Value = e;
@@ -2539,7 +2539,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
         Exception onErrorEvent = null;
         command.ToObservable().Subscribe(
-            n =>
+            _ =>
             {
             },
             ex =>

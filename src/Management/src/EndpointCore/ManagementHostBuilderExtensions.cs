@@ -253,7 +253,7 @@ public static class ManagementHostBuilderExtensions
     /// <returns>The updated HostBuilder</returns>
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
         => hostBuilder
-            .ConfigureServices((context, collection) =>
+            .ConfigureServices((_, collection) =>
             {
                 collection.AddWavefrontMetrics();
             });
@@ -278,7 +278,7 @@ public static class ManagementHostBuilderExtensions
             }
 
             // add a registration that includes this endpoint configuration
-            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
+            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(configureEndpoints));
         }
         else
         {

@@ -49,7 +49,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddDbMigrationsActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddDbMigrationsActuator().Build();
         var managementEndpoint = host.Services.GetServices<DbMigrationsEndpoint>();
@@ -74,7 +74,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddEnvActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddEnvActuator().Build();
         var managementEndpoint = host.Services.GetServices<EnvEndpoint>();
@@ -99,7 +99,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddHealthActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddHealthActuator().Build();
         var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
@@ -113,7 +113,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddHealthActuator_IWebHostBuilder_WithTypes()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddHealthActuator(new[] { typeof(DownContributor) }).Build();
         var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
@@ -127,7 +127,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddHealthActuator_IWebHostBuilder_WithAggregator()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[] { typeof(DownContributor) }).Build();
         var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
@@ -178,7 +178,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            var hostBuilder = new WebHostBuilder().Configure(b => { });
+            var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
             var host = hostBuilder.AddHeapDumpActuator().Build();
             var managementEndpoint = host.Services.GetServices<HeapDumpEndpoint>();
@@ -207,7 +207,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddHypermediaActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddHypermediaActuator().Build();
         var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
@@ -232,7 +232,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddInfoActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddInfoActuator().Build();
         var managementEndpoint = host.Services.GetServices<InfoEndpoint>();
@@ -246,7 +246,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddInfoActuator_IWebHostBuilder_WithTypes()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddInfoActuator(new IInfoContributor[] { new AppSettingsInfoContributor(new ConfigurationBuilder().Build()) }).Build();
         var managementEndpoint = host.Services.GetServices<InfoEndpoint>();
@@ -271,7 +271,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddLoggersActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddLoggersActuator().Build();
         var managementEndpoint = host.Services.GetServices<LoggersEndpoint>();
@@ -319,7 +319,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddMappingsActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddMappingsActuator().Build();
         var managementEndpoint = host.Services.GetServices<IRouteMappings>();
@@ -344,7 +344,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddMetricsActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddMetricsActuator().Build();
         var managementEndpoint = host.Services.GetServices<MetricsEndpoint>();
@@ -369,7 +369,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddRefreshActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddRefreshActuator().Build();
         var managementEndpoint = host.Services.GetServices<RefreshEndpoint>();
@@ -396,7 +396,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            var hostBuilder = new WebHostBuilder().Configure(b => { });
+            var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
             var host = hostBuilder.AddThreadDumpActuator().Build();
             var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint_v2>();
@@ -425,7 +425,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddTraceActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddTraceActuator().Build();
         var managementEndpoint = host.Services.GetServices<HttpTraceEndpoint>();
@@ -450,7 +450,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddCloudFoundryActuator_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddCloudFoundryActuator().Build();
         var managementEndpoint = host.Services.GetServices<CloudFoundryEndpoint>();
@@ -496,7 +496,7 @@ public class ManagementWebHostBuilderExtensionsTest
     [Fact]
     public void AddAllActuators_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().Configure(b => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddAllActuators().Build();
         var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
@@ -573,7 +573,7 @@ public class ManagementWebHostBuilderExtensionsTest
             { "management:metrics:export:wavefront:apiToken", "testToken" }
         };
 
-        var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
         var host = hostBuilder.AddWavefrontMetrics().Build();
 
         var diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
@@ -597,7 +597,7 @@ public class ManagementWebHostBuilderExtensionsTest
             { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
         };
 
-        var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
         var host = hostBuilder.AddWavefrontMetrics().Build();
 
         var exporters = host.Services.GetServices<WavefrontMetricsExporter>();
@@ -617,7 +617,7 @@ public class ManagementWebHostBuilderExtensionsTest
                 .ConfigureServices(services => services.AddOpenTelemetryMetrics(
                     builder => builder
                         .AddMeter("TestMeter")
-                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                        .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
                 .AddAllActuators()
                 .Start();
             var client = host.GetTestServer().CreateClient();
@@ -654,7 +654,7 @@ public class ManagementWebHostBuilderExtensionsTest
                     builder => builder
                         .ConfigureSteeltoeMetrics()
                         .AddMeter("TestMeter")
-                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                        .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
                 .AddAllActuators()
                 .Start();
             var client = host.GetTestServer().CreateClient();
@@ -694,7 +694,7 @@ public class ManagementWebHostBuilderExtensionsTest
                 .ConfigureServices(services => services.AddOpenTelemetryMetrics(
                     builder => builder
                         .AddMeter("TestMeter")
-                        .AddConsoleExporter((opts, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+                        .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
                 .Start();
             var client = host.GetTestServer().CreateClient();
 
@@ -723,7 +723,7 @@ public class ManagementWebHostBuilderExtensionsTest
             {
                 s.AddRouting();
                 s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
                 s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
             })
             .Configure(a => a.UseRouting().UseAuthentication().UseAuthorization());

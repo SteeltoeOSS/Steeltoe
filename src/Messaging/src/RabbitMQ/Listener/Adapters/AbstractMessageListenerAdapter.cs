@@ -314,7 +314,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
             {
                 var messageToSend = message;
                 RetryTemplate.Execute<object>(
-                    ctx =>
+                    _ =>
                     {
                         DoPublish(channel, replyTo, messageToSend);
                         return null;

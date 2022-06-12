@@ -311,7 +311,7 @@ public class PollableConsumerTest : AbstractTest
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
-        var h1 = new TestFuncMessageHandler(m => throw new Exception("test recoverer"));
+        var h1 = new TestFuncMessageHandler(_ => throw new Exception("test recoverer"));
 
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(2, h1.Count);
@@ -324,7 +324,7 @@ public class PollableConsumerTest : AbstractTest
         var lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
         Assert.Equal("test recoverer", lastErrorMessage);
 
-        var h2 = new TestFuncMessageHandler(m => throw new InvalidOperationException("no retries"));
+        var h2 = new TestFuncMessageHandler(_ => throw new InvalidOperationException("no retries"));
 
         Assert.True(pollableSource.Poll(h2));
         Assert.Equal(1, h2.Count);
@@ -364,7 +364,7 @@ public class PollableConsumerTest : AbstractTest
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
-        var h1 = new TestFuncMessageHandler(m => throw new Exception("test recoverer"));
+        var h1 = new TestFuncMessageHandler(_ => throw new Exception("test recoverer"));
 
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(1, h1.Count);
@@ -398,7 +398,7 @@ public class PollableConsumerTest : AbstractTest
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
-        var h1 = new TestFuncMessageHandler(m => throw new RequeueCurrentMessageException("test retry"));
+        var h1 = new TestFuncMessageHandler(_ => throw new RequeueCurrentMessageException("test retry"));
 
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(2, h1.Count);

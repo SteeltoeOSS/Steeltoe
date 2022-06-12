@@ -166,7 +166,7 @@ public static class EnableBindingsExtensions
             return BindingProxyGenerator.CreateProxy((BindableProxyFactory)bindable);
         });
 
-        var derivedInterfaces = binding.FindInterfaces((t, c) => true, null).ToList();
+        var derivedInterfaces = binding.FindInterfaces((_, _) => true, null).ToList();
         foreach (var derived in derivedInterfaces)
         {
             services.AddSingleton(derived, p => p.GetService(binding));

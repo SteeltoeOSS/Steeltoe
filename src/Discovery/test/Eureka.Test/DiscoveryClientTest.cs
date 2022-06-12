@@ -744,7 +744,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(config, server.CreateClient());
         var client = new DiscoveryClient(config, httpClient) { Applications = new Applications() };
-        client.OnApplicationsChange += (sender, applications) =>
+        client.OnApplicationsChange += (_, _) =>
         {
             eventCount++;
         };

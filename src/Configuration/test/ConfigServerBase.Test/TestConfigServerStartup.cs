@@ -24,7 +24,7 @@ public class TestConfigServerStartup
 
     public static string Response { get; set; }
 
-    public static int[] ReturnStatus { get; set; } = new[] { 200 };
+    public static int[] ReturnStatus { get; set; } = { 200 };
 
     public static HttpRequestInfo LastRequest { get; set; }
 

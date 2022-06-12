@@ -438,7 +438,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         builder.Services.AddRouting();
         builder.Services
             .AddAuthentication(TestAuthHandler.AuthenticationScheme)
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
         builder.Services.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
 
         var app = builder.Build();

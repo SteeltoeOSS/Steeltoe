@@ -62,7 +62,7 @@ public class AbstractReplyProducingMessageHandlerTest
         _handler.NotPropagatedHeaders = new List<string> { "f*", "*r" };
         _handler.OutputChannel = _mockChannel.Object;
         IMessage captor = null;
-        _mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
+        _mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, _) => captor = m);
         _mockChannel.Setup(c => c.ToString()).Returns("testChannel");
 
         _handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
@@ -85,7 +85,7 @@ public class AbstractReplyProducingMessageHandlerTest
         _handler.AddNotPropagatedHeaders("boom");
         _handler.OutputChannel = _mockChannel.Object;
         IMessage captor = null;
-        _mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
+        _mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, _) => captor = m);
         _mockChannel.Setup(c => c.ToString()).Returns("testChannel");
 
         _handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")
@@ -109,7 +109,7 @@ public class AbstractReplyProducingMessageHandlerTest
         _handler.AddNotPropagatedHeaders("b*r");
         _handler.OutputChannel = _mockChannel.Object;
         IMessage captor = null;
-        _mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
+        _mockChannel.Setup(c => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, _) => captor = m);
         _mockChannel.Setup(c => c.ToString()).Returns("testChannel");
 
         _handler.HandleMessage(IntegrationMessageBuilder.WithPayload("hello")

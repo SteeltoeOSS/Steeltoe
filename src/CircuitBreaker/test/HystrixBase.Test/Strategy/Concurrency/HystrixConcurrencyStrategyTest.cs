@@ -52,7 +52,7 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
                     n =>
                     {
                         _output.WriteLine("OnNext = " + n);
-                    }, e =>
+                    }, _ =>
                     {
                         _output.WriteLine("OnError = " + HystrixRequestContext.IsCurrentThreadInitialized);
                         isInitialized.Value = HystrixRequestContext.IsCurrentThreadInitialized;

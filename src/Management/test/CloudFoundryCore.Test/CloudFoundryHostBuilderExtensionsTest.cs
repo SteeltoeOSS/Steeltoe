@@ -36,7 +36,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void AddCloudFoundryActuators_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(configureApp => { });
+        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(_ => { });
 
         var host = hostBuilder.AddCloudFoundryActuators().Build();
         var managementOptions = host.Services.GetServices<IManagementOptions>();
@@ -56,7 +56,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     {
         var hostBuilder = WebHost.CreateDefaultBuilder()
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
-            .Configure(configureApp => { })
+            .Configure(_ => { })
             .ConfigureLogging(logging => logging.AddDynamicSerilog());
 
         var host = hostBuilder.AddCloudFoundryActuators().Build();

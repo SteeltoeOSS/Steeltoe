@@ -149,7 +149,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
             services.AddRabbitAdmin();
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.SetAfterReceivePostProcessors(new TemplateAfterRecvPostProcessor());
             });
@@ -171,14 +171,14 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             services.AddRabbitQueues(queue1, queue2, queue3, queue4, queue5, queue6, queue5DLQ, queue6DLQ, queue7, queueAsyncErrorHandler);
 
             // Add default container factory
-            services.AddRabbitListenerContainerFactory((p, f) =>
+            services.AddRabbitListenerContainerFactory((_, f) =>
             {
                 f.MismatchedQueuesFatal = true;
                 f.AcknowledgeMode = AcknowledgeMode.MANUAL;
             });
 
             // Add dontRequeueFactory container factory
-            services.AddRabbitListenerContainerFactory((p, f) =>
+            services.AddRabbitListenerContainerFactory((_, f) =>
             {
                 f.ServiceName = "dontRequeueFactory";
                 f.MismatchedQueuesFatal = true;

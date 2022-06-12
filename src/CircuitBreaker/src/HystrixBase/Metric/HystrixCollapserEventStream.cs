@@ -21,7 +21,7 @@ public class HystrixCollapserEventStream : IHystrixEventStream<HystrixCollapserE
 
     public static HystrixCollapserEventStream GetInstance(IHystrixCollapserKey collapserKey)
     {
-        return Streams.GetOrAddEx(collapserKey.Name, k => new HystrixCollapserEventStream(collapserKey));
+        return Streams.GetOrAddEx(collapserKey.Name, _ => new HystrixCollapserEventStream(collapserKey));
     }
 
     internal HystrixCollapserEventStream(IHystrixCollapserKey collapserKey)

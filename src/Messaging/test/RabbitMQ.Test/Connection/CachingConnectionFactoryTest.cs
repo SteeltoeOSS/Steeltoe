@@ -1299,7 +1299,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mock = new Mock<RC.ConnectionFactory>();
         IList<RC.AmqpTcpEndpoint> captured = null;
         mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
+            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
         var ccf = new CachingConnectionFactory(mock.Object);
         ccf.SetAddresses("mq1");
         ccf.CreateConnection();
@@ -1315,7 +1315,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mock = new Mock<RC.ConnectionFactory>();
         IList<RC.AmqpTcpEndpoint> captured = null;
         mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
+            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
         mock.Setup(f => f.AutomaticRecoveryEnabled).Returns(true);
         var ccf = new CachingConnectionFactory(mock.Object);
         ccf.SetAddresses("mq1,mq2");

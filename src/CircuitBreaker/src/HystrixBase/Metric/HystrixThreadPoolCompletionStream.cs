@@ -20,7 +20,7 @@ public class HystrixThreadPoolCompletionStream : IHystrixEventStream<HystrixComm
 
     public static HystrixThreadPoolCompletionStream GetInstance(IHystrixThreadPoolKey threadPoolKey)
     {
-        return Streams.GetOrAddEx(threadPoolKey.Name, k => new HystrixThreadPoolCompletionStream(threadPoolKey));
+        return Streams.GetOrAddEx(threadPoolKey.Name, _ => new HystrixThreadPoolCompletionStream(threadPoolKey));
     }
 
     internal HystrixThreadPoolCompletionStream(IHystrixThreadPoolKey threadPoolKey)

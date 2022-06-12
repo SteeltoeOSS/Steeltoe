@@ -383,7 +383,7 @@ public class MethodInvokingMessageProcessorTest
         var config = new ConfigurationBuilder().Build();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.AddLogging();
-        serviceCollection.AddGenericApplicationContext((p, context) =>
+        serviceCollection.AddGenericApplicationContext((_, context) =>
         {
             context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         });

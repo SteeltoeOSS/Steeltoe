@@ -143,7 +143,7 @@ public static class WebHostBuilderExtensions
     private static void WireConfigServer(this IWebHostBuilder hostBuilder) =>
         hostBuilder
             .ConfigureAppConfiguration((context, cfg) => cfg.AddConfigServer(context.HostingEnvironment, _loggerFactory))
-            .ConfigureServices((context, services) => services.AddConfigServerServices())
+            .ConfigureServices((_, services) => services.AddConfigServerServices())
             .Log(LogMessages.WireConfigServer);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -167,7 +167,7 @@ public static class WebHostBuilderExtensions
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireConnectorConfiguration(this IWebHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureAppConfiguration((host, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
+        hostBuilder.ConfigureAppConfiguration((_, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
     #endregion
 
     #region Connectors
@@ -206,15 +206,15 @@ public static class WebHostBuilderExtensions
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDiscoveryClient(this IWebHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient()).Log(LogMessages.WireDiscoveryClient);
+        hostBuilder.ConfigureServices((_, svc) => svc.AddDiscoveryClient()).Log(LogMessages.WireDiscoveryClient);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDistributedTracingBase(this IWebHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracing()).Log(LogMessages.WireDistributedTracing);
+        hostBuilder.ConfigureServices((_, svc) => svc.AddDistributedTracing()).Log(LogMessages.WireDistributedTracing);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDistributedTracingCore(this IWebHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracingAspNetCore()).Log(LogMessages.WireDistributedTracing);
+        hostBuilder.ConfigureServices((_, svc) => svc.AddDistributedTracingAspNetCore()).Log(LogMessages.WireDistributedTracing);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -249,7 +249,7 @@ public static class WebHostBuilderExtensions
     private static void WireCloudFoundryContainerIdentity(this IWebHostBuilder hostBuilder) =>
         hostBuilder
             .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity())
-            .ConfigureServices((host, svc) => svc.AddCloudFoundryCertificateAuth())
+            .ConfigureServices((_, svc) => svc.AddCloudFoundryCertificateAuth())
             .Log(LogMessages.WireCloudFoundryContainerIdentity);
 }
 

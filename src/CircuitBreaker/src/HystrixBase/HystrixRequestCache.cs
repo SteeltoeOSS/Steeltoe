@@ -35,7 +35,7 @@ public class HystrixRequestCache
 
     private static HystrixRequestCache GetInstance(RequestCacheKey rcKey)
     {
-        return Caches.GetOrAddEx(rcKey, k => new HystrixRequestCache(rcKey));
+        return Caches.GetOrAddEx(rcKey, _ => new HystrixRequestCache(rcKey));
     }
 
     private readonly RequestCacheKey _rcKey;

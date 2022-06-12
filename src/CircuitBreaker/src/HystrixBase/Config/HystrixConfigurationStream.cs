@@ -101,7 +101,7 @@ public class HystrixConfigurationStream
     }
 
     private static Func<long, Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>> AllCommandConfig { get; } =
-        timestamp =>
+        _ =>
         {
             var commandConfigPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>();
             foreach (var commandMetrics in HystrixCommandMetrics.GetInstances())
@@ -116,7 +116,7 @@ public class HystrixConfigurationStream
         };
 
     private static Func<long, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>> AllThreadPoolConfig { get; } =
-        timestamp =>
+        _ =>
         {
             var threadPoolConfigPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>();
             foreach (var threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())
@@ -129,7 +129,7 @@ public class HystrixConfigurationStream
         };
 
     private static Func<long, Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>> AllCollapserConfig { get; } =
-        timestamp =>
+        _ =>
         {
             var collapserConfigPerKey = new Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>();
             foreach (var collapserMetrics in HystrixCollapserMetrics.GetInstances())

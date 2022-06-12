@@ -41,7 +41,7 @@ public class WindowsNetworkFileShare : IDisposable
 
     // Created with excel formula:
     // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
-    private static readonly ErrorClass[] Error_list = new ErrorClass[]
+    private static readonly ErrorClass[] Error_list =
     {
         new (ERROR_ACCESS_DENIED, "Error: Access Denied"),
         new (ERROR_ALREADY_ASSIGNED, "Error: Already Assigned"),

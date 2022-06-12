@@ -17,5 +17,5 @@ public static class TracingBaseHostBuilderExtensions
     /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
     /// <returns>The configured hostBuilder</returns>
     public static IHostBuilder AddDistributedTracing(this IHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
-        => hostBuilder.ConfigureServices((context, services) => services.AddDistributedTracing(action));
+        => hostBuilder.ConfigureServices((_, services) => services.AddDistributedTracing(action));
 }

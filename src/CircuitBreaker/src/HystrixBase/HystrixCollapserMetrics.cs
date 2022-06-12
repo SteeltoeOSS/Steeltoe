@@ -18,7 +18,7 @@ public class HystrixCollapserMetrics : HystrixMetrics
 
     public static HystrixCollapserMetrics GetInstance(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
     {
-        return Metrics.GetOrAddEx(key.Name, k => new HystrixCollapserMetrics(key, properties));
+        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCollapserMetrics(key, properties));
     }
 
     public static ICollection<HystrixCollapserMetrics> GetInstances()

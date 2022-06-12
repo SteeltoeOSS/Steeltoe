@@ -803,7 +803,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
     {
-        return ReceiveAndReply(queueName, callback, (request, replyto) => GetReplyToAddress(request));
+        return ReceiveAndReply(queueName, callback, (request, _) => GetReplyToAddress(request));
     }
 
     public virtual bool ReceiveAndReply<R, S>(Func<R, S> callback, string exchange, string routingKey)
@@ -813,7 +813,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
     {
-        return ReceiveAndReply(queueName, callback, (request, reply) => new Address(replyExchange, replyRoutingKey));
+        return ReceiveAndReply(queueName, callback, (_, _) => new Address(replyExchange, replyRoutingKey));
     }
 
     public virtual bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
@@ -1425,7 +1425,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
                 var consumer = new DoSendAndReceiveTemplateConsumer(this, channel, pendingReply);
 
-                channel.ModelShutdown += (sender, args) =>
+                channel.ModelShutdown += (_, args) =>
                 {
                     if (!RabbitUtils.IsNormalChannelClose(args))
                     {
@@ -2377,7 +2377,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             try
             {
                 return RetryTemplate.Execute(
-                    context => DoExecute(action, connectionFactory),
+                    _ => DoExecute(action, connectionFactory),
                     (IRecoveryCallback<T>)RecoveryCallback);
             }
             catch (Exception e)

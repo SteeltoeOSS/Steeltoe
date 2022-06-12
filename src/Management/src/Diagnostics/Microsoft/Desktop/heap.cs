@@ -1325,7 +1325,7 @@ internal abstract class DesktopGCHeap : HeapBase
             
         if (type.ContainsPointers)
         {
-            EnumerateObjectReferences(obj, type, true, (addr, offs) =>
+            EnumerateObjectReferences(obj, type, true, (addr, _) =>
             {
                 gcrefs.Add(addr);
             });

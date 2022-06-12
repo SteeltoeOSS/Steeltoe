@@ -41,8 +41,8 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
 
         _services.AddSingleton<IConfiguration>(config);
         _services.AddRabbitHostingServices();
-        _services.AddRabbitConnectionFactory((p, f) => f.Host = "localhost");
-        _services.AddRabbitAdmin((p, a) => a.AutoStartup = true);
+        _services.AddRabbitConnectionFactory((_, f) => f.Host = "localhost");
+        _services.AddRabbitAdmin((_, a) => a.AutoStartup = true);
     }
 
     public void Dispose()
@@ -69,11 +69,11 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public void TestDoubleDeclarationOfExclusiveQueue()
     {
-        _services.AddRabbitConnectionFactory("connectionFactory1", (p, f) =>
+        _services.AddRabbitConnectionFactory("connectionFactory1", (_, f) =>
         {
             f.Host = "localhost";
         });
-        _services.AddRabbitConnectionFactory("connectionFactory2", (p, f) =>
+        _services.AddRabbitConnectionFactory("connectionFactory2", (_, f) =>
         {
             f.Host = "localhost";
         });
@@ -106,11 +106,11 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public void TestDoubleDeclarationOfAutodeleteQueue()
 #pragma warning restore S2699 // Tests should include assertions
     {
-        _services.AddRabbitConnectionFactory("connectionFactory1", (p, f) =>
+        _services.AddRabbitConnectionFactory("connectionFactory1", (_, f) =>
         {
             f.Host = "localhost";
         });
-        _services.AddRabbitConnectionFactory("connectionFactory2", (p, f) =>
+        _services.AddRabbitConnectionFactory("connectionFactory2", (_, f) =>
         {
             f.Host = "localhost";
         });

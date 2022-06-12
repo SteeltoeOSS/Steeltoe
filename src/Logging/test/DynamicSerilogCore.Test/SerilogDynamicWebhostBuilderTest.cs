@@ -59,7 +59,7 @@ public class SerilogDynamicWebhostBuilderTest
 
         var host = new WebHostBuilder()
             .UseStartup<Startup>()
-            .AddDynamicSerilog((context, loggerConfiguration) =>
+            .AddDynamicSerilog((_, loggerConfiguration) =>
             {
                 loggerConfiguration
                     .MinimumLevel.Error()

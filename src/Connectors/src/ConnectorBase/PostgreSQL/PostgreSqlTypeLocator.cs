@@ -15,12 +15,12 @@ public static class PostgreSqlTypeLocator
     /// <summary>
     /// Gets a list of supported PostgreSQL assemblies
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = new string[] { "Npgsql" };
+    public static string[] Assemblies { get; internal set; } = { "Npgsql" };
 
     /// <summary>
     /// Gets a list of PostgreSQL types that implement IDbConnection
     /// </summary>
-    public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Npgsql.NpgsqlConnection" };
+    public static string[] ConnectionTypeNames { get; internal set; } = { "Npgsql.NpgsqlConnection" };
 
     /// <summary>
     /// Gets NpgsqlConnection from a PostgreSQL Library

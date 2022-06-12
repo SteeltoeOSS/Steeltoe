@@ -25,7 +25,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
     public async Task TestConnectionFactoryAvailableDuringStop()
     {
         var services = CreateContainer();
-        services.AddRabbitConnectionFactory((p, f) => f.Host = "localhost");
+        services.AddRabbitConnectionFactory((_, f) => f.Host = "localhost");
         services.AddRabbitAdmin();
         services.AddSingleton<MyLifecycle>();
         services.AddSingleton<ILifecycle>(p => p.GetService<MyLifecycle>());
@@ -46,7 +46,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
     public async Task TestBlockedConnection()
     {
         var services = CreateContainer();
-        services.AddRabbitConnectionFactory((p, f) =>
+        services.AddRabbitConnectionFactory((_, f) =>
         {
             f.Host = "localhost";
         });

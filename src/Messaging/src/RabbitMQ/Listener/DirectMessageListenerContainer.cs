@@ -1065,7 +1065,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
             TransactionTemplate ??= new TransactionTemplate(TransactionManager, TransactionAttribute, _logger);
 
-            TransactionTemplate.Execute<object>(s =>
+            TransactionTemplate.Execute<object>(_ =>
             {
                 var resourceHolder = ConnectionFactoryUtils.BindResourceToTransaction(
                     new RabbitResourceHolder(Model, false, _container._loggerFactory?.CreateLogger<RabbitResourceHolder>()), ConnectionFactory, true);

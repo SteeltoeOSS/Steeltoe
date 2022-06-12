@@ -62,15 +62,15 @@ public class HystrixThreadEventStream
 
         _writeOnlyCommandStartSubject
             .Do(n => WriteCommandStartsToShardedStreams(n))
-            .Subscribe(Observer.Create<HystrixCommandExecutionStarted>(v => { }));
+            .Subscribe(Observer.Create<HystrixCommandExecutionStarted>(_ => { }));
 
         _writeOnlyCommandCompletionSubject
             .Do(n => WriteCommandCompletionsToShardedStreams(n))
-            .Subscribe(Observer.Create<HystrixCommandCompletion>(v => { }));
+            .Subscribe(Observer.Create<HystrixCommandCompletion>(_ => { }));
 
         _writeOnlyCollapserSubject
             .Do(n => WriteCollapserExecutionsToShardedStreams(n))
-            .Subscribe(Observer.Create<HystrixCollapserEvent>(v => { }));
+            .Subscribe(Observer.Create<HystrixCollapserEvent>(_ => { }));
     }
 
     public static HystrixThreadEventStream GetInstance()

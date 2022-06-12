@@ -445,7 +445,7 @@ internal class LegacyRuntime : DesktopRuntimeBase
     {
         List<MethodTableTokenPair> mts = new List<MethodTableTokenPair>();
 
-        ModuleMapTraverse traverse = delegate (uint index, ulong mt, IntPtr token) { mts.Add(new MethodTableTokenPair(mt, index)); };
+        ModuleMapTraverse traverse = delegate (uint index, ulong mt, IntPtr _) { mts.Add(new MethodTableTokenPair(mt, index)); };
         LegacyModuleMapTraverseArgs args = new LegacyModuleMapTraverseArgs
         {
             pCallback = Marshal.GetFunctionPointerForDelegate(traverse),
