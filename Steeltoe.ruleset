@@ -234,8 +234,8 @@
     <Rule Id="S3464" Action="Warning" />
     <Rule Id="S3466" Action="Warning" />
     <Rule Id="S3532" Action="None" />
-    <Rule Id="S3597" Action="Warning" />
-    <Rule Id="S3598" Action="Warning" />
+    <Rule Id="S3597" Action="None" />
+    <Rule Id="S3598" Action="None" />
     <Rule Id="S3600" Action="Warning" />
     <Rule Id="S3603" Action="Warning" />
     <Rule Id="S3604" Action="Warning" />
