@@ -213,7 +213,7 @@
     <Rule Id="S3397" Action="Warning" />
     <Rule Id="S3400" Action="Warning" />
     <Rule Id="S3415" Action="Warning" />
-    <Rule Id="S3427" Action="Error" />
+    <Rule Id="S3427" Action="Warning" />
     <Rule Id="S3431" Action="None" />
     <Rule Id="S3433" Action="Warning" />
     <Rule Id="S3440" Action="Warning" />
