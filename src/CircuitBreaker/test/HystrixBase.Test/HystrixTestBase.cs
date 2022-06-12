@@ -20,7 +20,7 @@ public abstract class HystrixTestBase : IDisposable
 {
     protected HystrixRequestContext context;
 
-    public HystrixTestBase()
+    protected HystrixTestBase()
     {
         Before();
     }

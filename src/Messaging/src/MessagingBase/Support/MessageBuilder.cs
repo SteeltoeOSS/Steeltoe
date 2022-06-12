@@ -113,11 +113,11 @@ public abstract class AbstractMessageBuilder
 
     protected MessageHeaderAccessor headerAccessor;
 
-    protected internal AbstractMessageBuilder()
+    protected AbstractMessageBuilder()
     {
     }
 
-    protected internal AbstractMessageBuilder(IMessage message)
+    protected AbstractMessageBuilder(IMessage message)
     {
         if (message == null)
         {
@@ -129,14 +129,14 @@ public abstract class AbstractMessageBuilder
         headerAccessor = new MessageHeaderAccessor(message);
     }
 
-    protected internal AbstractMessageBuilder(MessageHeaderAccessor accessor)
+    protected AbstractMessageBuilder(MessageHeaderAccessor accessor)
     {
         payload = null;
         originalMessage = null;
         headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
     }
 
-    protected internal AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
+    protected AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
     {
         this.payload = payload ?? throw new ArgumentNullException(nameof(payload));
         originalMessage = null;
