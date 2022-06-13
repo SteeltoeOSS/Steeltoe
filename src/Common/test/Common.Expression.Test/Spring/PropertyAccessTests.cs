@@ -253,22 +253,12 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            if (target is not string)
-            {
-                throw new SystemException("Assertion Failed! target should be string");
-            }
-
-            return name.Equals("flibbles");
+            return CanReadOrWrite(target, name);
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)
         {
-            if (target is not string)
-            {
-                throw new SystemException("Assertion Failed! target should be string");
-            }
-
-            return name.Equals("flibbles");
+            return CanReadOrWrite(target, name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
@@ -296,6 +286,16 @@ public class PropertyAccessTests : AbstractExpressionTests
             {
                 throw new AccessException($"Cannot set flibbles to an object of type '{newValue?.GetType()}'");
             }
+        }
+
+        private static bool CanReadOrWrite(object target, string name)
+        {
+            if (target is not string)
+            {
+                throw new SystemException("Assertion Failed! target should be string");
+            }
+
+            return name.Equals("flibbles");
         }
     }
 

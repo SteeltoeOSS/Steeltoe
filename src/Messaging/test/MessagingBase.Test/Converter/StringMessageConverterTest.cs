@@ -68,15 +68,6 @@ public class StringMessageConverterTest
     }
 
     [Fact]
-    public void FromMessageByteArray()
-    {
-        var message = MessageBuilder.WithPayload(
-            Encoding.UTF8.GetBytes("ABC")).SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
-        var converter = new StringMessageConverter();
-        Assert.Equal("ABC", converter.FromMessage<string>(message));
-    }
-
-    [Fact]
     public void ToMessage()
     {
         var map = new Dictionary<string, object>

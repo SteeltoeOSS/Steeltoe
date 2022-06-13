@@ -207,28 +207,6 @@ public class QueueChannelTest
     }
 
     [Fact]
-    public void TestBlockingReceiveWithTimeoutEmptyThenSend()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
-        var messageNull = false;
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        var latch = new CountdownEvent(1);
-        var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(10000);
-        Task.Run(async () =>
-        {
-            var message = await channel.ReceiveAsync(cancellationTokenSource.Token);
-            messageNull = message == null;
-            latch.Signal();
-        });
-        cancellationTokenSource.Cancel();
-        Assert.True(latch.Wait(10000));
-        Assert.True(messageNull);
-    }
-
-    [Fact]
     public void TestImmediateSend()
     {
         var services = new ServiceCollection();

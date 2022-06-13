@@ -148,46 +148,6 @@ public class SelectionAndProjectionTests
     }
 
     [Fact]
-    public void SelectionWithPrimitiveArray()
-    {
-        var expression = new SpelExpressionParser().ParseRaw("Ints.?[#this<5]");
-        var context = new StandardEvaluationContext(new ArrayTestBean());
-        var value = expression.GetValue(context);
-        Assert.True(value.GetType().IsArray);
-        var typedValue = new TypedValue(value);
-        Assert.Equal(typeof(int), typedValue.TypeDescriptor.GetElementType());
-        var array = (int[])value;
-        Assert.Equal(5, array.Length);
-        Assert.Equal(0, array[0]);
-        Assert.Equal(1, array[1]);
-        Assert.Equal(2, array[2]);
-        Assert.Equal(3, array[3]);
-        Assert.Equal(4, array[4]);
-    }
-
-    [Fact]
-    public void SelectFirstItemInPrimitiveArray()
-    {
-        var expression = new SpelExpressionParser().ParseRaw("Ints.^[#this<5]");
-        var context = new StandardEvaluationContext(new ArrayTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
-        Assert.True(condition);
-        Assert.Equal(0, value);
-    }
-
-    [Fact]
-    public void SelectLastItemInPrimitiveArray()
-    {
-        var expression = new SpelExpressionParser().ParseRaw("Ints.$[#this<5]");
-        var context = new StandardEvaluationContext(new ArrayTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
-        Assert.True(condition);
-        Assert.Equal(4, value);
-    }
-
-    [Fact]
     public void SelectionWithMap()
     {
         var context = new StandardEvaluationContext(new MapTestBean());

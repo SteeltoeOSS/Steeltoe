@@ -29,21 +29,6 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
     }
 
     [Fact]
-    public void LoadAndCheckAssembly_WithDefaultPath_ReturnsBinderType()
-    {
-        var binderDir = GetSearchDirectories("TestBinder")[0];
-        var paths = BuildPaths(binderDir);
-
-        var context = new MetadataLoadContext(new PathAssemblyResolver(paths));
-        var binderAssembly = $"{binderDir}{Path.DirectorySeparatorChar}Steeltoe.Stream.TestBinder.dll";
-        var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, binderAssembly);
-        Assert.Equal(binderAssembly, result.AssemblyPath);
-        Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result.ConfigureClass);
-        Assert.Equal("testbinder", result.Name);
-        context.Dispose();
-    }
-
-    [Fact]
     public void LoadAndCheckAssembly_WithInValidPath_DoesNotReturnsBinderType()
     {
         var paths = BuildPaths(null);

@@ -314,28 +314,6 @@ public class CredHubClientTests
     }
 
     [Fact]
-    public async Task GenerateAsync_Creates_PasswordWithPermissions()
-    {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
-            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"length\":40},\"name\":\"generated-password\",\"type\":\"Password\"}")
-            .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters { Length = 40 });
-
-        var response = await client.GenerateAsync<PasswordCredential>(request);
-
-        mockHttpMessageHandler.VerifyNoOutstandingExpectation();
-        Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Password, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.Version_Created_At);
-        Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
-        Assert.Equal("/generated-password", response.Name);
-        Assert.Equal("W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO", response.Value.ToString());
-    }
-
-    [Fact]
     public async Task GenerateAsync_Creates_User()
     {
         var mockHttpMessageHandler = InitializedHandlerWithLogin();

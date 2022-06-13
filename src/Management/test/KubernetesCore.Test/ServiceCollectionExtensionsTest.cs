@@ -51,13 +51,6 @@ public class ServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddKubernetesActuatorsThrowsOnNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesInfoContributor(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
-    [Fact]
     public void AddKubernetesActuators()
     {
         var services = new ServiceCollection();

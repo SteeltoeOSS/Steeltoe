@@ -81,19 +81,5 @@ public class DynamicLoggerHostBuilderExtensionsTest
         Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
         Assert.Single(loggerProviders.Where(provider => provider is DynamicConsoleLoggerProvider));
     }
-
-    [Fact]
-    public void AddDynamicLogging_WebApplicationBuilder_RemovesConsoleLoggingDefaultBuilder()
-    {
-        var hostBuilder = Host.CreateDefaultBuilder()
-            .ConfigureLogging(ilb => ilb.AddConsole())
-            .AddDynamicLogging();
-
-        var host = hostBuilder.Build();
-        var loggerProviders = host.Services.GetServices<ILoggerProvider>();
-
-        Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
-        Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
-    }
 #endif
 }

@@ -45,16 +45,6 @@ public class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void SettingsConstructor__ThrowsIfEnvironmentNull()
-    {
-        var settings = new ConfigServerClientSettings();
-        const HttpClient httpClient = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
-        Assert.Contains(nameof(httpClient), ex.Message);
-    }
-
-    [Fact]
     public void SettingsConstructor__WithLoggerFactorySucceeds()
     {
         var logFactory = new LoggerFactory();

@@ -1075,12 +1075,16 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("differentTypes", Id = "different", ContainerFactory = "jsonListenerContainerFactory")]
         public void HandleDifferent(Foo2 foo)
         {
-            Foos.Add(foo);
-            Latch.Signal();
+            InnerHandleDifferent(foo);
         }
 
         [RabbitListener("differentTypes2", Id = "differentWithConcurrency", ContainerFactory = "jsonListenerContainerFactory", Concurrency = "3")]
         public void HandleDifferentWithConcurrency(Foo2 foo)
+        {
+            InnerHandleDifferent(foo);
+        }
+
+        private void InnerHandleDifferent(Foo2 foo)
         {
             Foos.Add(foo);
             Latch.Signal();
@@ -1130,12 +1134,16 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "MANUAL")]
         public string Manual1(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
         {
-            channel.BasicAck(tag, false);
-            return input.ToUpper();
+            return InnerManual(input, channel, tag);
         }
 
         [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{T(Steeltoe.Messaging.RabbitMQ.Core.AcknowledgeMode).MANUAL}")]
         public string Manual2(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
+        {
+            return InnerManual(input, channel, tag);
+        }
+
+        private static string InnerManual(string input, RC.IModel channel, ulong tag)
         {
             channel.BasicAck(tag, false);
             return input.ToUpper();

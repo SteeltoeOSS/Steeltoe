@@ -165,19 +165,6 @@ public class InvocableHandlerMethodTest
     }
 
     [Fact]
-    public void HandleSinglePrimitiveReturnVoidPerf()
-    {
-        var handler = new Handler2();
-        var messageMock = new Mock<IMessage>();
-        _message = messageMock.Object;
-        _resolvers = new HandlerMethodArgumentResolverComposite();
-        var method = typeof(Handler2).GetMethod("HandleSinglePrimitiveReturnVoid");
-
-        Invoke(handler, method, 1.0d);
-        Assert.Equal(1.0d, handler.DoubleValue);
-    }
-
-    [Fact]
     public void HandleMultiPrimitiveReturnVoid()
     {
         var handler = new Handler2();

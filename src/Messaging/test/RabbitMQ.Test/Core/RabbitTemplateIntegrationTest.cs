@@ -415,20 +415,6 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     }
 
     [Fact]
-    public void TestReceiveInExternalTransactionAutoAck()
-    {
-        template.ConvertAndSend(ROUTE, "message");
-
-        // Should just result in auto-ack (not synched with external tx)
-        template.IsChannelTransacted = true;
-        var result = new TransactionTemplate(new TestTransactionManager())
-            .Execute(_ => template.ReceiveAndConvert<string>(ROUTE));
-        Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
-        Assert.Null(result);
-    }
-
-    [Fact]
     public void TestReceiveInExternalTransactionWithRollback()
     {
         // Makes receive (and send in principle) transactional
