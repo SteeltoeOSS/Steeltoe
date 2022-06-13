@@ -52,14 +52,14 @@ public class ApplicationAvailability
 
         _logger?.LogTrace("{stateKey} availability has been set to {newState} by {caller}", stateKey, newState, caller ?? "unspecified");
         _availabilityStates[stateKey] = newState;
-        if (stateKey == LivenessKey && LivenessChanged != null)
+        if (stateKey == LivenessKey)
         {
-            LivenessChanged(this, new AvailabilityEventArgs(newState));
+            LivenessChanged?.Invoke(this, new AvailabilityEventArgs(newState));
         }
 
-        if (stateKey == ReadinessKey && ReadinessChanged != null)
+        if (stateKey == ReadinessKey)
         {
-            ReadinessChanged(this, new AvailabilityEventArgs(newState));
+            ReadinessChanged?.Invoke(this, new AvailabilityEventArgs(newState));
         }
     }
 }
