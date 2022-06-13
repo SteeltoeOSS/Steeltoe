@@ -270,7 +270,7 @@
     <Rule Id="S3923" Action="Warning" />
     <Rule Id="S3925" Action="None" />
     <Rule Id="S3926" Action="None" />
-    <Rule Id="S3927" Action="Warning" />
+    <Rule Id="S3927" Action="None" />
     <Rule Id="S3928" Action="Info" /><!--3.0-->
     <Rule Id="S3937" Action="None" />
     <Rule Id="S3956" Action="None" />
