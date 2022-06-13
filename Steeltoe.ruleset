@@ -329,7 +329,7 @@
     <Rule Id="S4159" Action="None" />
     <Rule Id="S4200" Action="Warning" />
     <Rule Id="S4210" Action="None" />
-    <Rule Id="S4211" Action="Warning" />
+    <Rule Id="S4211" Action="None" />
     <Rule Id="S4212" Action="None" />
     <Rule Id="S4214" Action="Warning" />
     <Rule Id="S4220" Action="Warning" />
