@@ -290,7 +290,7 @@
     <Rule Id="S3995" Action="None" />
     <Rule Id="S3996" Action="None" />
     <Rule Id="S3997" Action="None" />
-    <Rule Id="S3998" Action="Warning" />
+    <Rule Id="S3998" Action="None" />
     <Rule Id="S4000" Action="None" />
     <Rule Id="S4002" Action="None" />
     <Rule Id="S4004" Action="None" />
