@@ -300,7 +300,7 @@
     <Rule Id="S4017" Action="None" />
     <Rule Id="S4018" Action="None" />
     <Rule Id="S4019" Action="Warning" />
-    <Rule Id="S4022" Action="None" />
+    <Rule Id="S4022" Action="Warning" />
     <Rule Id="S4023" Action="None" />
     <Rule Id="S4025" Action="None" />
     <Rule Id="S4026" Action="None" />
