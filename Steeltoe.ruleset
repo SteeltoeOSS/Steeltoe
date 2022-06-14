@@ -363,7 +363,7 @@
     <Rule Id="S5042" Action="Warning" />
     <Rule Id="S5773" Action="None" />
     <Rule Id="S818" Action="Warning" />
-    <Rule Id="S881" Action="None" />
+    <Rule Id="S881" Action="Warning" />
     <Rule Id="S907" Action="Warning" />
     <Rule Id="S927" Action="Info" /><!--3.0-->
   </Rules>

@@ -16,7 +16,7 @@ public static class EmbeddedHeaderUtils
     public static byte[] EmbedHeaders(MessageValues original, params string[] headers)
     {
         var headerValues = new byte[headers.Length][];
-        var n = 0;
+        var offset = 0;
         var headerCount = 0;
         var headersLength = 0;
         foreach (var header in headers)
@@ -25,14 +25,16 @@ public static class EmbeddedHeaderUtils
             if (value != null)
             {
                 var json = JsonConvert.SerializeObject(value);
-                headerValues[n] = Encoding.UTF8.GetBytes(json);
+                headerValues[offset] = Encoding.UTF8.GetBytes(json);
                 headerCount++;
-                headersLength += header.Length + headerValues[n++].Length;
+                headersLength += header.Length + headerValues[offset].Length;
             }
             else
             {
-                headerValues[n++] = null;
+                headerValues[offset] = null;
             }
+
+            offset++;
         }
 
         // 0xff, n(1), [ [lenHdr(1), hdr, lenValue(4), value] ... ]
