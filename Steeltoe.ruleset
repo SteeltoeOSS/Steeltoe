@@ -230,7 +230,7 @@
     <Rule Id="S3456" Action="Warning" />
     <Rule Id="S3457" Action="Warning" />
     <Rule Id="S3458" Action="Warning" />
-    <Rule Id="S3459" Action="Warning" />
+    <Rule Id="S3459" Action="Info" />
     <Rule Id="S3464" Action="Warning" />
     <Rule Id="S3466" Action="Warning" />
     <Rule Id="S3532" Action="None" />
