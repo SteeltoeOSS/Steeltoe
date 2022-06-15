@@ -307,9 +307,7 @@ public static class HttpClientHelper
         return null;
     }
 
-#pragma warning disable SA1202 // Elements must be ordered by access
     internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
-#pragma warning restore SA1202 // Elements must be ordered by access
     {
         if (Platform.IsFullFramework)
         {

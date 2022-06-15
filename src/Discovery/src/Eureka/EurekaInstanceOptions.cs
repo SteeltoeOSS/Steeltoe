@@ -91,11 +91,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
 
     public override string HostName
     {
-        // _hostName is accessed by GetHostName()
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         get => GetHostName(false);
-#pragma warning restore S4275 // Getters and setters should access the expected fields
-
         set
         {
             if (!value.Equals(_thisHostName))

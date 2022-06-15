@@ -1353,7 +1353,6 @@ public class EvaluationTests : AbstractExpressionTests
 
     #region Test Classes
 #pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable IDE0044 // Add readonly modifier
 
     public class MyServiceResolver : IServiceResolver
     {
@@ -1456,7 +1455,6 @@ public class EvaluationTests : AbstractExpressionTests
         public Foo Wibble2 { get; }
     }
 
-#pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore IDE1006 // Naming Styles
     #endregion Test Classes
 }

@@ -17,13 +17,11 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 /// </summary>
 internal static partial class PrometheusSerializer
 {
-#pragma warning disable SA1310 // Field name should not contain an underscore
     private const byte ASCII_QUOTATION_MARK = 0x22; // '"'
     private const byte ASCII_FULL_STOP = 0x2E; // '.'
     private const byte ASCII_HYPHEN_MINUS = 0x2D; // '-'
     private const byte ASCII_REVERSE_SOLIDUS = 0x5C; // '\\'
     private const byte ASCII_LINEFEED = 0x0A; // `\n`
-#pragma warning restore SA1310 // Field name should not contain an underscore
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int WriteDouble(byte[] buffer, int cursor, double value)

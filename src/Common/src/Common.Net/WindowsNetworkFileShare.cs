@@ -123,9 +123,7 @@ public class WindowsNetworkFileShare : IDisposable
         Any = 0,
         Disk = 1,
         Print = 2,
-#pragma warning disable S4016 // Enumeration members should not be named "Reserved"
         Reserved = 8,
-#pragma warning restore S4016 // Enumeration members should not be named "Reserved"
     }
 
     /// <summary>

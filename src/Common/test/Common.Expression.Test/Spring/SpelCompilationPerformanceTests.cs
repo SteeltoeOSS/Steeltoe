@@ -823,7 +823,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     #region Test Classes
 #pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable IDE0044 // Naming Styles
 
     public class HW
     {
@@ -883,7 +882,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     {
         public string Boo = "oranges";
     }
-#pragma warning restore IDE1006
-#pragma warning restore IDE0044
+#pragma warning restore IDE1006 // Naming Styles
     #endregion
 }

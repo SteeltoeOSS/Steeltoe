@@ -240,8 +240,6 @@ public class PropertyAccessTests : AbstractExpressionTests
         Assert.Equal(SpelMessage.ARRAY_INDEX_OUT_OF_BOUNDS, ex.MessageCode);
     }
 
-#pragma warning disable IDE1006 // Naming Styles
-
     private sealed class StringyPropertyAccessor : IPropertyAccessor
     {
         private int _flibbles = 7;
@@ -332,5 +330,4 @@ public class PropertyAccessTests : AbstractExpressionTests
         {
         }
     }
-#pragma warning restore IDE1006 // Naming Styles
 }

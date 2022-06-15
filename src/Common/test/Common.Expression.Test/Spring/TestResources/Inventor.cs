@@ -6,8 +6,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
-#pragma warning disable IDE0044
-#pragma warning disable IDE1006
+#pragma warning disable IDE1006 // Naming Styles
 public class Inventor
 {
     public List<int> ListOfInteger = new ();
@@ -190,5 +189,4 @@ public class Inventor
     {
     }
 }
-#pragma warning restore IDE0044 // Add readonly modifier
-#pragma warning restore IDE1006 // Add readonly modifier
+#pragma warning restore IDE1006 // Naming Styles

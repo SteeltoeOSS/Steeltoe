@@ -914,7 +914,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
                 var formatter = new BinaryFormatter();
                 var stream = new MemoryStream(512);
 
-                // TODO: don't disable this warning! https://aka.ms/binaryformatter
+                // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
                 formatter.Serialize(stream, request);
                 var bytes = stream.ToArray();

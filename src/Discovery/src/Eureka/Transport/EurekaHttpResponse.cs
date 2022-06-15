@@ -22,9 +22,7 @@ public class EurekaHttpResponse
     }
 }
 
-#pragma warning disable SA1402 // File may only contain a single class
 public class EurekaHttpResponse<T> : EurekaHttpResponse
-#pragma warning restore SA1402 // File may only contain a single class
 {
     public T Response { get; private set; }
 

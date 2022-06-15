@@ -61,7 +61,6 @@ public class Startup
     }
 }
 
-#pragma warning disable SA1402 // File may only contain a single type
 public class TestHealthCheck : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
@@ -71,7 +70,6 @@ public class TestHealthCheck : IHealthCheck
 }
 
 public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
-#pragma warning restore SA1402 // File may only contain a single type
 {
     public TestServiceOptions()
     {

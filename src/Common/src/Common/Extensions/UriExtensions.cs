@@ -35,9 +35,7 @@ public static class UriExtensions
         var builder = new UriBuilder(source)
         {
             UserName = "****",
-#pragma warning disable S2068 // Credentials should not be hard-coded
             Password = "****"
-#pragma warning restore S2068 // Credentials should not be hard-coded
         };
 
         return builder.Uri;

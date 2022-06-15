@@ -74,7 +74,6 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
     }
 
-#pragma warning disable SA1202 // Elements must be ordered by access
     public virtual Task<EurekaHttpResponse> RegisterAsync(InstanceInfo info)
     {
         if (info == null)
@@ -630,7 +629,6 @@ public class EurekaHttpClient : IEurekaHttpClient
     public virtual void Shutdown()
     {
     }
-#pragma warning restore SA1202 // Elements must be ordered by access
 
     internal string FetchAccessToken()
         => Config is not EurekaClientOptions config || string.IsNullOrEmpty(config.AccessTokenUri)

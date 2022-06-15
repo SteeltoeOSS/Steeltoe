@@ -108,7 +108,6 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-#pragma warning disable SA1202 // Elements must be ordered by access
     public async Task<CredHubCredential<T>> WriteAsync<T>(CredentialSetRequest credentialRequest)
     {
         HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
@@ -486,4 +485,3 @@ public class CredHubClient : ICredHubClient
         }
     }
 }
-#pragma warning restore SA1202 // Elements must be ordered by access

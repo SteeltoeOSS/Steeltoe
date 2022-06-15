@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#pragma warning disable 0436
+#pragma warning disable 0436 // Type conflicts with imported type
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
@@ -253,4 +253,4 @@ public static class WebHostBuilderExtensions
             .Log(LogMessages.WireCloudFoundryContainerIdentity);
 }
 
-#pragma warning restore 0436
+#pragma warning restore 0436 // Type conflicts with imported type

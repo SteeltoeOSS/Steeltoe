@@ -27,10 +27,8 @@ internal sealed class Application
     public Dictionary<string, object> Metadata { get; set; }
 }
 
-#pragma warning disable SA1402 // File may only contain a single type
 [Obsolete("This class is moving to EndpointBase")]
 internal sealed class RegistrationResult
-#pragma warning restore SA1402 // File may only contain a single type
 {
     public string Id { get; set; }
 }

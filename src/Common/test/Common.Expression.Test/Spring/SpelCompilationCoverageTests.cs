@@ -5471,10 +5471,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     }
 
     #region Test Classes
-#pragma warning disable IDE1006
-#pragma warning disable IDE0044
-#pragma warning disable IDE0051
-#pragma warning disable SA1307
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable IDE0051 // Remove unused private members
+#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 
     public static class AHolder
     {
@@ -6657,9 +6656,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-#pragma warning restore SA1307
-#pragma warning restore IDE1006
-#pragma warning restore IDE0044
-#pragma warning restore IDE0051
+#pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore IDE0051 // Remove unused private members
     #endregion Test Classes
 }

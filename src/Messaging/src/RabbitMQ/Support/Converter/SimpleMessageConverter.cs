@@ -60,12 +60,8 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     var formatter = new BinaryFormatter();
                     var stream = new MemoryStream(message.Payload);
 
-                    // TODO: don't disable this warning! https://aka.ms/binaryformatter
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-#pragma warning disable S5773 // Types allowed to be deserialized should be restricted
+                    // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
                     content = formatter.Deserialize(stream);
-#pragma warning restore S5773 // Types allowed to be deserialized should be restricted
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
                 }
                 catch (Exception e)
                 {
@@ -142,10 +138,8 @@ public class SimpleMessageConverter : AbstractMessageConverter
             var formatter = new BinaryFormatter();
             var stream = new MemoryStream(512);
 
-            // TODO: don't disable this warning! https://aka.ms/binaryformatter
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
+            // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
             formatter.Serialize(stream, payload);
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
             return stream.ToArray();
         }
         catch (Exception e)

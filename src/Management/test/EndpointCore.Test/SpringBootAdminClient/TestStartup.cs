@@ -32,9 +32,7 @@ public class TestStartup
     }
 }
 
-#pragma warning disable SA1402 // File may only contain a single type
 public class MyMiddleware : IMiddleware
-#pragma warning restore SA1402 // File may only contain a single type
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {

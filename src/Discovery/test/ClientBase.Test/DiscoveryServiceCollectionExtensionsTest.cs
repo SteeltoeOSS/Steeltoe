@@ -121,7 +121,6 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
     }
 
-#pragma warning disable SA1202 // Elements should be ordered by access
     private object GetInnerHttpHandler(object handler)
     {
         while (handler is not null)
@@ -138,7 +137,6 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
 
     [Fact]
     public void AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
-#pragma warning restore SA1202 // Elements should be ordered by access
     {
         var appsettings = new Dictionary<string, string> { { "spring:application:name", "myName" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();

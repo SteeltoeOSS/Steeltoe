@@ -22,9 +22,7 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
             return (Exception)GetAttribute(LAST_EXCEPTION);
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             if (value == null && HasAttribute(LAST_EXCEPTION))
             {
@@ -50,9 +48,7 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
             return result.Value;
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             SetAttribute(RETRY_COUNT, value);
         }
@@ -65,9 +61,7 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
             return (IRetryContext)GetAttribute(RETRY_PARENT);
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             if (value == null && HasAttribute(RETRY_PARENT))
             {

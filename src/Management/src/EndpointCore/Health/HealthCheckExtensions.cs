@@ -46,13 +46,11 @@ public static class HealthCheckExtensions
                 healthCheckResult.Details.Add("error", res.Exception.Message);
             }
         }
-#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception e)
         {
             // Catch all exceptions so that a status can always be returned
             healthCheckResult.Details.Add("exception", e.Message);
         }
-#pragma warning restore CA1031 // Do not catch general exception types
 
         return healthCheckResult;
     }
