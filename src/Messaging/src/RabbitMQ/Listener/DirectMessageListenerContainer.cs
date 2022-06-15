@@ -741,7 +741,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                         DoShutdown();
                         try
                         {
-                            Thread.Sleep(nextBackOff); // NOSONAR
+                            Thread.Sleep(nextBackOff);
                         }
                         catch (Exception e1)
                         {
@@ -994,7 +994,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                 }
                 catch (Exception)
                 {
-                    // NOSONAR
+                    // Intentionally left empty.
                 }
             }
         }
@@ -1087,7 +1087,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
                 // catch (Throwable e2)
                 // {
-                //    //NOSONAR ok to catch Throwable here because we re-throw it below
                 //    throw new WrappedTransactionException(e2);
                 // }
                 return null;

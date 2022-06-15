@@ -68,7 +68,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                         var correlationData = pendingConfirm.CorrelationInfo;
                         if (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))
                         {
-                            _pendingReturns.Remove(correlationData.Id, out var _); // NOSONAR never null
+                            _pendingReturns.Remove(correlationData.Id, out var _);
                         }
                     }
                     else

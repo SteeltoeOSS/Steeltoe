@@ -124,7 +124,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
         {
             var declareOk = RabbitTemplate.Execute(
                 channel => RC.IModelExensions.QueueDeclare(channel));
-            return new Queue(declareOk.QueueName, false, true, true); // NOSONAR never null
+            return new Queue(declareOk.QueueName, false, true, true);
         }
         catch (RabbitException e)
         {

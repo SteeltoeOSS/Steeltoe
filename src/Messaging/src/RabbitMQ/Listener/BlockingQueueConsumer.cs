@@ -305,7 +305,7 @@ public class BlockingQueueConsumer
         catch (Exception e)
         {
             Logger?.LogError(ex, "Application exception overridden by rollback exception");
-            throw RabbitExceptionTranslator.ConvertRabbitAccessException(e); // NOSONAR stack trace loss
+            throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
         }
         finally
         {

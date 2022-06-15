@@ -2394,7 +2394,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private T DoExecute<T>(Func<RC.IModel, T> channelCallback, IConnectionFactory connectionFactory)
     {
-        // NOSONAR complexity
         if (channelCallback == null)
         {
             throw new ArgumentNullException(nameof(channelCallback));

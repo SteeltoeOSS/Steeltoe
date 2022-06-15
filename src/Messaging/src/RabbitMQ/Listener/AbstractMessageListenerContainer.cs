@@ -380,7 +380,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         var connectionFactory = ConnectionFactory;
         if (connectionFactory is IRoutingConnectionFactory routingFactory)
         {
-            var targetConnectionFactory = routingFactory.GetTargetConnectionFactory(GetRoutingLookupKey()); // NOSONAR never null
+            var targetConnectionFactory = routingFactory.GetTargetConnectionFactory(GetRoutingLookupKey());
             if (targetConnectionFactory != null)
             {
                 return targetConnectionFactory;
@@ -1114,7 +1114,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             resourceHolder.SynchronizedWithTransaction = false;
         }
 
-        ConnectionFactoryUtils.ReleaseResources(resourceHolder); // NOSONAR - null check in method
+        ConnectionFactoryUtils.ReleaseResources(resourceHolder);
         if (boundHere)
         {
             // unbind if we bound
