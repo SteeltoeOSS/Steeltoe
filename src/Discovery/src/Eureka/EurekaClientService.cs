@@ -61,7 +61,7 @@ public static class EurekaClientService
         return clientOptions;
     }
 
-    internal class LookupClient : DiscoveryClient
+    internal sealed class LookupClient : DiscoveryClient
     {
         public LookupClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
             : base(clientConfig, httpClient, logFactory)

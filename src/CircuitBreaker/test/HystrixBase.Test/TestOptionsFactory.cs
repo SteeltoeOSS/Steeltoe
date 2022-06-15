@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
-internal class TestOptionsFactory : HystrixOptionsStrategy
+internal sealed class TestOptionsFactory : HystrixOptionsStrategy
 {
     public override IHystrixCommandOptions GetCommandOptions(IHystrixCommandKey commandKey, IHystrixCommandOptions builder)
     {

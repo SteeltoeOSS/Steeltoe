@@ -171,7 +171,7 @@ public class MessageConverterConfigurer : IMessageChannelAndSourceConfigurer
     }
 }
 
-internal class DefaultPartitionSelector : IPartitionSelectorStrategy
+internal sealed class DefaultPartitionSelector : IPartitionSelectorStrategy
 {
     public string ServiceName { get; set; } = "DefaultPartitionSelector";
 
@@ -204,7 +204,7 @@ internal abstract class AbstractContentTypeInterceptor : AbstractChannelIntercep
     public abstract IMessage DoPreSend(IMessage message, IMessageChannel channel);
 }
 
-internal class OutboundContentTypeConvertingInterceptor : AbstractContentTypeInterceptor
+internal sealed class OutboundContentTypeConvertingInterceptor : AbstractContentTypeInterceptor
 {
     private readonly IMessageConverter _messageConverter;
 
@@ -268,7 +268,7 @@ internal class OutboundContentTypeConvertingInterceptor : AbstractContentTypeInt
     }
 }
 
-internal class InboundContentTypeEnhancingInterceptor : AbstractContentTypeInterceptor
+internal sealed class InboundContentTypeEnhancingInterceptor : AbstractContentTypeInterceptor
 {
     public InboundContentTypeEnhancingInterceptor(string contentType)
         : base(contentType)
@@ -319,7 +319,7 @@ internal class InboundContentTypeEnhancingInterceptor : AbstractContentTypeInter
     }
 }
 
-internal class PartitioningInterceptor : AbstractChannelInterceptor
+internal sealed class PartitioningInterceptor : AbstractChannelInterceptor
 {
     internal readonly IBindingOptions _bindingOptions;
 

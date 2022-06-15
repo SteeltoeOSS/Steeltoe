@@ -6,7 +6,7 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
-internal class MockedTime : ITime
+internal sealed class MockedTime : ITime
 {
     private readonly AtomicInteger _time = new (0);
 

@@ -290,7 +290,7 @@ public class InvocableHandlerMethodTest
         return (StubArgumentResolver)_resolvers.Resolvers[index];
     }
 
-    internal class Handler
+    internal sealed class Handler
     {
         public string Handle(int? intArg, string stringArg) =>
             $"{(intArg.HasValue ? intArg.Value.ToString() : "null")}-{stringArg ?? "null"}";
@@ -305,7 +305,7 @@ public class InvocableHandlerMethodTest
         }
     }
 
-    internal class Handler2
+    internal sealed class Handler2
     {
         public long InvocationCount;
         public double DoubleValue;
@@ -360,7 +360,7 @@ public class InvocableHandlerMethodTest
         }
     }
 
-    internal class ExceptionRaisingArgumentResolver : IHandlerMethodArgumentResolver
+    internal sealed class ExceptionRaisingArgumentResolver : IHandlerMethodArgumentResolver
     {
         public bool SupportsParameter(ParameterInfo parameter)
         {

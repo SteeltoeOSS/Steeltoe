@@ -78,11 +78,11 @@ public class AttributeExceptionHandlerMethodResolverTest
         Assert.Throws<InvalidOperationException>(() => new AttributeExceptionHandlerMethodResolver(typeof(NoExceptionController)));
     }
 
-    internal class BindException : SocketException
+    internal sealed class BindException : SocketException
     {
     }
 
-    internal class ExceptionController
+    internal abstract class ExceptionController
     {
         public virtual void Handle()
         {
@@ -109,14 +109,14 @@ public class AttributeExceptionHandlerMethodResolverTest
         }
     }
 
-    internal class InheritedController : ExceptionController
+    internal sealed class InheritedController : ExceptionController
     {
         public override void HandleIOException()
         {
         }
     }
 
-    internal class AmbiguousController
+    internal sealed class AmbiguousController
     {
         public void Handle()
         {
@@ -135,7 +135,7 @@ public class AttributeExceptionHandlerMethodResolverTest
         }
     }
 
-    internal class NoExceptionController
+    internal sealed class NoExceptionController
     {
         [MessageExceptionHandler]
         public void Handle()

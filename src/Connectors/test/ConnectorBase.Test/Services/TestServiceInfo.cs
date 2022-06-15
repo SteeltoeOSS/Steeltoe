@@ -6,7 +6,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Connector.Services.Test;
 
-internal class TestServiceInfo : ServiceInfo
+internal sealed class TestServiceInfo : ServiceInfo
 {
     public TestServiceInfo(string id, IApplicationInstanceInfo info)
         : base(id, info)

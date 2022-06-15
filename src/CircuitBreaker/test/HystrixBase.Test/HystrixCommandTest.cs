@@ -4392,41 +4392,41 @@ internal static class FlexibleTestHystrixCommand
     }
 }
 
-internal class FlexibleTestHystrixCommandWithFallback : AbstractFlexibleTestHystrixCommand
+internal sealed class FlexibleTestHystrixCommandWithFallback : AbstractFlexibleTestHystrixCommand
 {
-    protected readonly FallbackResultTest fallbackResult;
-    protected readonly int fallbackLatency;
+    private readonly FallbackResultTest _fallbackResult;
+    private readonly int _fallbackLatency;
 
     public FlexibleTestHystrixCommandWithFallback(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         : base(commandKey, isolationStrategy, executionResult, executionLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled)
     {
-        this.fallbackResult = fallbackResult;
-        this.fallbackLatency = fallbackLatency;
+        this._fallbackResult = fallbackResult;
+        this._fallbackLatency = fallbackLatency;
     }
 
     protected override int RunFallback()
     {
-        AddLatency(fallbackLatency);
-        if (fallbackResult == FallbackResultTest.SUCCESS)
+        AddLatency(_fallbackLatency);
+        if (_fallbackResult == FallbackResultTest.SUCCESS)
         {
             return FlexibleTestHystrixCommand.FALLBACK_VALUE;
         }
-        else if (fallbackResult == FallbackResultTest.FAILURE)
+        else if (_fallbackResult == FallbackResultTest.FAILURE)
         {
             throw new Exception("Fallback Failure for TestHystrixCommand");
         }
-        else if (fallbackResult == FallbackResultTest.UNIMPLEMENTED)
+        else if (_fallbackResult == FallbackResultTest.UNIMPLEMENTED)
         {
             return base.RunFallback();
         }
         else
         {
-            throw new Exception($"You passed in a fallbackResult enum that can't be represented in HystrixCommand: {fallbackResult}");
+            throw new Exception($"You passed in a fallbackResult enum that can't be represented in HystrixCommand: {_fallbackResult}");
         }
     }
 }
 
-internal class FlexibleTestHystrixCommandNoFallback : AbstractFlexibleTestHystrixCommand
+internal sealed class FlexibleTestHystrixCommandNoFallback : AbstractFlexibleTestHystrixCommand
 {
     public FlexibleTestHystrixCommandNoFallback(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         : base(commandKey, isolationStrategy, executionResult, executionLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled)
@@ -4434,7 +4434,7 @@ internal class FlexibleTestHystrixCommandNoFallback : AbstractFlexibleTestHystri
     }
 }
 
-internal class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<int>
+internal abstract class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<int>
 {
     protected readonly ExecutionResultTest result;
     protected readonly int executionLatency;
@@ -4546,7 +4546,7 @@ internal class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<int>
     }
 }
 
-internal class KnownFailureTestCommandWithFallback : TestHystrixCommand<bool>
+internal sealed class KnownFailureTestCommandWithFallback : TestHystrixCommand<bool>
 {
     public KnownFailureTestCommandWithFallback(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
@@ -4577,7 +4577,7 @@ internal class KnownFailureTestCommandWithFallback : TestHystrixCommand<bool>
     }
 }
 
-internal class TestCommandRejection : TestHystrixCommand<bool>
+internal sealed class TestCommandRejection : TestHystrixCommand<bool>
 {
     public const int FALLBACK_NOT_IMPLEMENTED = 1;
     public const int FALLBACK_SUCCESS = 2;
@@ -4785,7 +4785,7 @@ internal sealed class SingleThreadedPoolWithQueue : IHystrixThreadPool
     }
 }
 
-internal class CommandWithDisabledTimeout : TestHystrixCommand<bool>
+internal sealed class CommandWithDisabledTimeout : TestHystrixCommand<bool>
 {
     private readonly int _latency;
 
@@ -4821,7 +4821,7 @@ internal class CommandWithDisabledTimeout : TestHystrixCommand<bool>
     }
 }
 
-internal class TestSemaphoreCommandWithSlowFallback : TestHystrixCommand<bool>
+internal sealed class TestSemaphoreCommandWithSlowFallback : TestHystrixCommand<bool>
 {
     private readonly int _fallbackSleep;
 
@@ -4859,7 +4859,7 @@ internal class TestSemaphoreCommandWithSlowFallback : TestHystrixCommand<bool>
     }
 }
 
-internal class TestSemaphoreCommand : TestHystrixCommand<bool>
+internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
 {
     public const int RESULT_SUCCESS = 1;
     public const int RESULT_FAILURE = 2;
@@ -4950,7 +4950,7 @@ internal class TestSemaphoreCommand : TestHystrixCommand<bool>
     }
 }
 
-internal class TestSemaphoreCommandWithFallback : TestHystrixCommand<bool>
+internal sealed class TestSemaphoreCommandWithFallback : TestHystrixCommand<bool>
 {
     private readonly int _executionSleep;
     private readonly bool _runFallback;
@@ -4989,7 +4989,7 @@ internal class TestSemaphoreCommandWithFallback : TestHystrixCommand<bool>
     }
 }
 
-internal class LatchedSemaphoreCommand : TestHystrixCommand<bool>
+internal sealed class LatchedSemaphoreCommand : TestHystrixCommand<bool>
 {
     private readonly CountdownEvent _startLatch;
     private readonly CountdownEvent _waitLatch;
@@ -5043,7 +5043,7 @@ internal class LatchedSemaphoreCommand : TestHystrixCommand<bool>
     }
 }
 
-internal class DynamicOwnerTestCommand : TestHystrixCommand<bool>
+internal sealed class DynamicOwnerTestCommand : TestHystrixCommand<bool>
 {
     public DynamicOwnerTestCommand(IHystrixCommandGroupKey owner)
         : base(TestPropsBuilder().SetOwner(owner))
@@ -5057,7 +5057,7 @@ internal class DynamicOwnerTestCommand : TestHystrixCommand<bool>
     }
 }
 
-internal class DynamicOwnerAndKeyTestCommand : TestHystrixCommand<bool>
+internal sealed class DynamicOwnerAndKeyTestCommand : TestHystrixCommand<bool>
 {
     public DynamicOwnerAndKeyTestCommand(IHystrixCommandGroupKey owner, IHystrixCommandKey key)
         : base(TestPropsBuilder().SetOwner(owner).SetCommandKey(key).SetCircuitBreaker(null).SetMetrics(null))
@@ -5072,7 +5072,7 @@ internal class DynamicOwnerAndKeyTestCommand : TestHystrixCommand<bool>
     }
 }
 
-internal class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
+internal sealed class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
 {
     public volatile bool Executed;
     private readonly bool _cacheEnabled;
@@ -5114,7 +5114,7 @@ internal class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
     }
 }
 
-internal class SlowCacheableCommand : TestHystrixCommand<string>
+internal sealed class SlowCacheableCommand : TestHystrixCommand<string>
 {
     public volatile bool Executed;
     private readonly string _value;
@@ -5148,7 +5148,7 @@ internal class SlowCacheableCommand : TestHystrixCommand<string>
     }
 }
 
-internal class SuccessfulCacheableCommandViaSemaphore : TestHystrixCommand<string>
+internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixCommand<string>
 {
     public volatile bool Executed;
     private readonly bool _cacheEnabled;
@@ -5198,7 +5198,7 @@ internal class SuccessfulCacheableCommandViaSemaphore : TestHystrixCommand<strin
     }
 }
 
-internal class NoRequestCacheTimeoutWithoutFallback : TestHystrixCommand<bool>
+internal sealed class NoRequestCacheTimeoutWithoutFallback : TestHystrixCommand<bool>
 {
     public NoRequestCacheTimeoutWithoutFallback(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
@@ -5236,7 +5236,7 @@ internal class NoRequestCacheTimeoutWithoutFallback : TestHystrixCommand<bool>
     }
 }
 
-internal class RequestCacheNullPointerExceptionCase : TestHystrixCommand<bool>
+internal sealed class RequestCacheNullPointerExceptionCase : TestHystrixCommand<bool>
 {
     public RequestCacheNullPointerExceptionCase(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
@@ -5270,7 +5270,7 @@ internal class RequestCacheNullPointerExceptionCase : TestHystrixCommand<bool>
     }
 }
 
-internal class RequestCacheTimeoutWithoutFallback : TestHystrixCommand<bool>
+internal sealed class RequestCacheTimeoutWithoutFallback : TestHystrixCommand<bool>
 {
     public RequestCacheTimeoutWithoutFallback(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
@@ -5308,7 +5308,7 @@ internal class RequestCacheTimeoutWithoutFallback : TestHystrixCommand<bool>
     }
 }
 
-internal class RequestCacheThreadRejectionWithoutFallbackTaskScheduler : HystrixTaskScheduler
+internal sealed class RequestCacheThreadRejectionWithoutFallbackTaskScheduler : HystrixTaskScheduler
 {
     public RequestCacheThreadRejectionWithoutFallbackTaskScheduler(HystrixThreadPoolOptions options)
         : base(options)
@@ -5375,7 +5375,7 @@ internal sealed class RequestCacheThreadRejectionWithoutFallbackThreadPool : IHy
     }
 }
 
-internal class RequestCacheThreadRejectionWithoutFallback : TestHystrixCommand<bool>
+internal sealed class RequestCacheThreadRejectionWithoutFallback : TestHystrixCommand<bool>
 {
     private readonly CountdownEvent _completionLatch;
 
@@ -5404,7 +5404,7 @@ internal class RequestCacheThreadRejectionWithoutFallback : TestHystrixCommand<b
     }
 }
 
-internal class SuccessfulTestCommand : TestHystrixCommand<bool>
+internal sealed class SuccessfulTestCommand : TestHystrixCommand<bool>
 {
     public SuccessfulTestCommand()
         : this(HystrixCommandOptionsTest.GetUnitTestOptions())
@@ -5422,7 +5422,7 @@ internal class SuccessfulTestCommand : TestHystrixCommand<bool>
     }
 }
 
-internal class BadRequestCommand : TestHystrixCommand<bool>
+internal sealed class BadRequestCommand : TestHystrixCommand<bool>
 {
     public BadRequestCommand(TestCircuitBreaker circuitBreaker, ExecutionIsolationStrategy isolationType)
         : base(TestPropsBuilder()
@@ -5454,7 +5454,7 @@ internal class BadRequestCommand : TestHystrixCommand<bool>
     }
 }
 
-internal class CommandWithCheckedException : TestHystrixCommand<bool>
+internal sealed class CommandWithCheckedException : TestHystrixCommand<bool>
 {
     public CommandWithCheckedException(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder()
@@ -5468,7 +5468,7 @@ internal class CommandWithCheckedException : TestHystrixCommand<bool>
     }
 }
 
-internal class InterruptibleCommand : TestHystrixCommand<bool>
+internal sealed class InterruptibleCommand : TestHystrixCommand<bool>
 {
     public InterruptibleCommand(TestCircuitBreaker circuitBreaker, bool shouldInterrupt, bool shouldInterruptOnCancel, int timeoutInMillis)
         : base(TestPropsBuilder()
@@ -5513,7 +5513,7 @@ internal class InterruptibleCommand : TestHystrixCommand<bool>
     }
 }
 
-internal class EventCommand : HystrixCommand<string>
+internal sealed class EventCommand : HystrixCommand<string>
 {
     public EventCommand()
         : base(GetTestOptions())
@@ -5554,7 +5554,7 @@ internal class EventCommand : HystrixCommand<string>
     }
 }
 
-internal class ExceptionToBadRequestByExecutionHookCommandExecutionHook : TestableExecutionHook
+internal sealed class ExceptionToBadRequestByExecutionHookCommandExecutionHook : TestableExecutionHook
 {
     public override Exception OnExecutionError(IHystrixInvokable commandInstance, Exception e)
     {
@@ -5571,7 +5571,7 @@ public class BusinessException : Exception
     }
 }
 
-internal class ExceptionToBadRequestByExecutionHookCommand : TestHystrixCommand<bool>
+internal sealed class ExceptionToBadRequestByExecutionHookCommand : TestHystrixCommand<bool>
 {
     public ExceptionToBadRequestByExecutionHookCommand(TestCircuitBreaker circuitBreaker, ExecutionIsolationStrategy isolationType)
         : base(TestPropsBuilder()
@@ -5599,7 +5599,7 @@ internal class ExceptionToBadRequestByExecutionHookCommand : TestHystrixCommand<
     }
 }
 
-internal class TestChainedCommandSubCommand : TestHystrixCommand<int>
+internal sealed class TestChainedCommandSubCommand : TestHystrixCommand<int>
 {
     public TestChainedCommandSubCommand(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
@@ -5612,7 +5612,7 @@ internal class TestChainedCommandSubCommand : TestHystrixCommand<int>
     }
 }
 
-internal class TestChainedCommandPrimaryCommand : TestHystrixCommand<int>
+internal sealed class TestChainedCommandPrimaryCommand : TestHystrixCommand<int>
 {
     public TestChainedCommandPrimaryCommand(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
@@ -5631,7 +5631,7 @@ internal class TestChainedCommandPrimaryCommand : TestHystrixCommand<int>
     }
 }
 
-internal class TestSlowFallbackPrimaryCommand : TestHystrixCommand<int>
+internal sealed class TestSlowFallbackPrimaryCommand : TestHystrixCommand<int>
 {
     public TestSlowFallbackPrimaryCommand(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
@@ -5661,7 +5661,7 @@ internal class TestSlowFallbackPrimaryCommand : TestHystrixCommand<int>
     }
 }
 
-internal class TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionHook : HystrixCommandExecutionHook
+internal sealed class TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionHook : HystrixCommandExecutionHook
 {
     private readonly AtomicBoolean _onThreadStartInvoked;
     private readonly AtomicBoolean _onThreadCompleteInvoked;
@@ -5690,7 +5690,7 @@ internal class TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionHook : H
     }
 }
 
-internal class TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectedCommand : TestHystrixCommand<int>
+internal sealed class TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectedCommand : TestHystrixCommand<int>
 {
     private readonly AtomicBoolean _executionAttempted;
 
@@ -5713,7 +5713,7 @@ internal class TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectedCommand :
     }
 }
 
-internal class TestOnRunStartHookThrowsThreadIsolatedFailureInjectionHook : HystrixCommandExecutionHook
+internal sealed class TestOnRunStartHookThrowsThreadIsolatedFailureInjectionHook : HystrixCommandExecutionHook
 {
     private readonly AtomicBoolean _onThreadStartInvoked;
     private readonly AtomicBoolean _onThreadCompleteInvoked;
@@ -5742,7 +5742,7 @@ internal class TestOnRunStartHookThrowsThreadIsolatedFailureInjectionHook : Hyst
     }
 }
 
-internal class TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand : TestHystrixCommand<int>
+internal sealed class TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand : TestHystrixCommand<int>
 {
     private readonly AtomicBoolean _executionAttempted;
 
@@ -5765,7 +5765,7 @@ internal class TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand : Te
     }
 }
 
-internal class TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand : HystrixCommand<bool>
+internal sealed class TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand : HystrixCommand<bool>
 {
     public TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand()
         : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
@@ -5780,7 +5780,7 @@ internal class TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand : 
     }
 }
 
-internal class TestEarlyUnsubscribeDuringExecutionViaObserveAsyncCommand : HystrixCommand<bool>
+internal sealed class TestEarlyUnsubscribeDuringExecutionViaObserveAsyncCommand : HystrixCommand<bool>
 {
     public TestEarlyUnsubscribeDuringExecutionViaObserveAsyncCommand()
 
@@ -5796,7 +5796,7 @@ internal class TestEarlyUnsubscribeDuringExecutionViaObserveAsyncCommand : Hystr
     }
 }
 
-internal class TestEarlyUnsubscribeDuringFallbackAsyncCommand : HystrixCommand<bool>
+internal sealed class TestEarlyUnsubscribeDuringFallbackAsyncCommand : HystrixCommand<bool>
 {
     public TestEarlyUnsubscribeDuringFallbackAsyncCommand()
         : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
@@ -5816,7 +5816,7 @@ internal class TestEarlyUnsubscribeDuringFallbackAsyncCommand : HystrixCommand<b
     }
 }
 
-internal class AsyncCacheableCommand : HystrixCommand<object>
+internal sealed class AsyncCacheableCommand : HystrixCommand<object>
 {
     private readonly AtomicBoolean _cancelled = new (false);
 
@@ -5849,7 +5849,7 @@ internal class AsyncCacheableCommand : HystrixCommand<object>
     protected override string CacheKey { get; }
 }
 
-internal class BasicDelayCommand : HystrixCommand<int>
+internal sealed class BasicDelayCommand : HystrixCommand<int>
 {
     public int Delay { get; }
 

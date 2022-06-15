@@ -95,7 +95,7 @@ public class HeadersMethodArgumentResolverTest
     {
     }
 
-    internal class TestMessageHeaderAccessor : NativeMessageHeaderAccessor
+    internal sealed class TestMessageHeaderAccessor : NativeMessageHeaderAccessor
     {
         public TestMessageHeaderAccessor(IMessage message)
             : base(message)

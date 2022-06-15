@@ -208,7 +208,7 @@ public class MessageMethodArgumentResolverTest
     {
     }
 
-    internal class Foo
+    internal sealed class Foo
     {
         public string Prop { get; set; }
     }

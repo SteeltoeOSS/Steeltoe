@@ -532,18 +532,18 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         public bool AllowRequest => !IsOpen;
     }
 
-    private class Command : HystrixCommand<bool>
+    private abstract class Command : HystrixCommand<bool>
     {
         protected readonly bool shouldFail;
         protected readonly bool shouldFailWithBadRequest;
         protected readonly int latencyToAdd;
 
-        public Command(string commandKey, bool shouldFail, int latencyToAdd)
+        protected Command(string commandKey, bool shouldFail, int latencyToAdd)
             : this(commandKey, shouldFail, false, latencyToAdd, 400, 1)
         {
         }
 
-        public Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd, int sleepWindow, int requestVolumeThreshold)
+        protected Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd, int sleepWindow, int requestVolumeThreshold)
             : base(Options("Command", commandKey, requestVolumeThreshold, sleepWindow))
         {
             this.shouldFail = shouldFail;
@@ -630,7 +630,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         }
     }
 
-    private class BadRequestCommand : Command
+    private sealed class BadRequestCommand : Command
     {
         public BadRequestCommand(string commandKey, int latencyToAdd)
             : base(commandKey, false, true, latencyToAdd, 400, 1)
@@ -643,7 +643,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         }
     }
 
-    private class MyHystrixCommandExecutionHook : HystrixCommandExecutionHook
+    private sealed class MyHystrixCommandExecutionHook : HystrixCommandExecutionHook
     {
         public override T OnEmit<T>(IHystrixInvokable command, T response)
         {

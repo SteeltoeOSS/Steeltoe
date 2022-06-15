@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
-internal class TestContrib : IHealthContributor
+internal sealed class TestContrib : IHealthContributor
 {
     public bool Called;
     public bool Throws;

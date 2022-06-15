@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
-internal class TestContributor : IHealthContributor
+internal sealed class TestContributor : IHealthContributor
 {
 #pragma warning disable SA1401 // Fields must be private
     public bool Called;

@@ -6,7 +6,7 @@ using System.Security.Principal;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test;
 
-internal class MyIdentity : IIdentity
+internal sealed class MyIdentity : IIdentity
 {
     public string Name { get; } = "MyTestName";
 

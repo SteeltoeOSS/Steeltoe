@@ -239,7 +239,7 @@ public class MessageRequestReplyTemplateTest
         Assert.Same(_postProcessor.Message, _template.RequestMessage);
     }
 
-    internal class TestMessagingTemplate : AbstractMessagingTemplate<string>
+    internal sealed class TestMessagingTemplate : AbstractMessagingTemplate<string>
     {
         public string Destination { get; set; }
 

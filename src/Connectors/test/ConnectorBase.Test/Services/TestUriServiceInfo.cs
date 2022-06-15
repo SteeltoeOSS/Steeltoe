@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Connector.Services.Test;
 
-internal class TestUriServiceInfo : UriServiceInfo
+internal sealed class TestUriServiceInfo : UriServiceInfo
 {
     public TestUriServiceInfo(string id, string uri)
         : base(id, uri)

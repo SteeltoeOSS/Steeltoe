@@ -177,7 +177,7 @@ public class MessageReceivingTemplateTest
         }
     }
 
-    internal class TestMessagingTemplate : AbstractMessagingTemplate<string>
+    internal sealed class TestMessagingTemplate : AbstractMessagingTemplate<string>
     {
         public string Destination { get; set; }
 

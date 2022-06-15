@@ -38,11 +38,11 @@ public class OutputDestination : AbstractDestination
         Channel.Subscribe(new MessageHandler(this));
     }
 
-    private class MessageHandler : IMessageHandler
+    private sealed class MessageHandler : IMessageHandler
     {
         private readonly OutputDestination _outputDestination;
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public MessageHandler(OutputDestination thiz)
         {

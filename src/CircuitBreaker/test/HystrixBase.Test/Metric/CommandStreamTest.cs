@@ -263,7 +263,7 @@ public abstract class CommandStreamTest : HystrixTestBase
         }
     }
 
-    internal class BatchCommand : HystrixCommand<List<int>>
+    internal sealed class BatchCommand : HystrixCommand<List<int>>
     {
         private readonly List<int> _args;
         private readonly ITestOutputHelper _output;

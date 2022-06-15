@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Common.Transaction;
 
-internal class WithoutTransactionOperations : ITransactionOperations
+internal sealed class WithoutTransactionOperations : ITransactionOperations
 {
     public static readonly WithoutTransactionOperations INSTANCE = new ();
 

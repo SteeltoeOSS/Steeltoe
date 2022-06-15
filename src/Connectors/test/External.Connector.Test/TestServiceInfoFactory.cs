@@ -7,7 +7,7 @@ using Steeltoe.Extensions.Configuration;
 
 namespace External.Connector.Test;
 
-internal class TestServiceInfoFactory : ServiceInfoFactory
+internal sealed class TestServiceInfoFactory : ServiceInfoFactory
 {
     public TestServiceInfoFactory()
         : base(new Tags("test"), "test")

@@ -222,7 +222,7 @@ internal static class EventPipeDotNetHeapDumper
 }
 
 [ExcludeFromCodeCoverage]
-internal class EventPipeSessionController : IDisposable
+internal sealed class EventPipeSessionController : IDisposable
 {
     private List<EventPipeProvider> _providers;
     private DiagnosticsClient _client;
@@ -248,16 +248,7 @@ internal class EventPipeSessionController : IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _session?.Dispose();
-            Source?.Dispose();
-        }
+        _session?.Dispose();
+        Source?.Dispose();
     }
 }

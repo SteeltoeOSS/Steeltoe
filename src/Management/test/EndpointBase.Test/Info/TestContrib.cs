@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;
 
-internal class TestContrib : IInfoContributor
+internal sealed class TestContrib : IInfoContributor
 {
     public bool Called;
     public bool Throws;

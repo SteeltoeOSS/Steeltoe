@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
-internal class TestHealthEndpoint : HealthEndpoint
+internal sealed class TestHealthEndpoint : HealthEndpoint
 {
     public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
         : base(options, aggregator, contributors, logger)

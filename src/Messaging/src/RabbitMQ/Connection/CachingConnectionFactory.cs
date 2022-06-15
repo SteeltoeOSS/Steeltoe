@@ -1055,7 +1055,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
     #region Nested Types
 
-    internal class CachedPublisherCallbackChannelProxy : CachedChannelProxy, IPublisherCallbackChannel
+    internal sealed class CachedPublisherCallbackChannelProxy : CachedChannelProxy, IPublisherCallbackChannel
     {
         public CachedPublisherCallbackChannelProxy(
             CachingConnectionFactory factory,

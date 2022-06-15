@@ -155,7 +155,7 @@ public class UnicastingDispatcher : AbstractDispatcher
 
         public IMessageHandler MessageHandler { get; }
 
-        private class MessageHandlerDelegate : IMessageHandler
+        private sealed class MessageHandlerDelegate : IMessageHandler
         {
             private readonly MessageHandlingRunnable _runnable;
 
@@ -165,7 +165,7 @@ public class UnicastingDispatcher : AbstractDispatcher
                 ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
 
-            public virtual string ServiceName { get; set; }
+            public string ServiceName { get; set; }
 
             public void HandleMessage(IMessage message)
             {

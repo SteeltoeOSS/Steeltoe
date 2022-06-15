@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
 
-internal class TestCloudFoundryEndpoint : CloudFoundryEndpoint
+internal sealed class TestCloudFoundryEndpoint : CloudFoundryEndpoint
 {
     public TestCloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions mgmtOpts, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options, mgmtOpts, logger)

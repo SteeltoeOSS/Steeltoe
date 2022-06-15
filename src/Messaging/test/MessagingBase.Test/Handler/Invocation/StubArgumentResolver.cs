@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Invocation.Test;
 
-internal class StubArgumentResolver : IHandlerMethodArgumentResolver
+internal sealed class StubArgumentResolver : IHandlerMethodArgumentResolver
 {
     private readonly Type _valueType;
 

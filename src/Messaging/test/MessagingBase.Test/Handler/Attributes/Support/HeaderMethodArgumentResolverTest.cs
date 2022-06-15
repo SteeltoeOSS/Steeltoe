@@ -98,7 +98,7 @@ public class HeaderMethodArgumentResolverTest
     {
     }
 
-    internal class TestMessageHeaderAccessor : NativeMessageHeaderAccessor
+    internal sealed class TestMessageHeaderAccessor : NativeMessageHeaderAccessor
     {
         public TestMessageHeaderAccessor()
             : base((IDictionary<string, List<string>>)null)

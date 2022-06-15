@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
-internal class HealthData
+internal sealed class HealthData
 {
     public string StringProperty { get; set; } = "Testdata";
 

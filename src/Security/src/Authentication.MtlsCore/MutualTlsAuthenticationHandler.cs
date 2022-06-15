@@ -21,7 +21,7 @@ namespace Steeltoe.Security.Authentication.Mtls;
 /// <summary>
 /// This class is based on <see cref="CertificateAuthenticationHandler" />, but allows side-loading a root CA
 /// </summary>
-internal class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsAuthenticationOptions>
+internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsAuthenticationOptions>
 {
     private static readonly Oid ClientCertificateOid = new ("1.3.6.1.5.5.7.3.2");
 
@@ -38,7 +38,7 @@ internal class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsA
     /// Gets or sets the handler calls methods on the events which give the application control at certain points where processing is occurring.
     /// If it is not provided a default instance is supplied which does nothing when the methods are called.
     /// </summary>
-    protected new CertificateAuthenticationEvents Events
+    private new CertificateAuthenticationEvents Events
     {
         get { return (CertificateAuthenticationEvents)base.Events; }
         set { base.Events = value; }

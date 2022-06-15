@@ -15,7 +15,7 @@ using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
+internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
 {
     private Watcher<V1Secret> SecretWatcher { get; set; }
 
@@ -51,20 +51,11 @@ internal class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+        SecretWatcher?.Dispose();
+        SecretWatcher = null;
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            SecretWatcher?.Dispose();
-            SecretWatcher = null;
-
-            K8sClient?.Dispose();
-            K8sClient = null;
-        }
+        K8sClient?.Dispose();
+        K8sClient = null;
     }
 
     private static string NormalizeKey(string key) => key.Replace("__", ":");

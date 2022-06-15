@@ -10,7 +10,7 @@ using static Steeltoe.Messaging.Handler.Attributes.Test.MessagingPredicates;
 
 namespace Steeltoe.Messaging.Handler.Invocation.Test;
 
-internal class ResolvableMethod
+internal sealed class ResolvableMethod
 {
     public ResolvableMethod(MethodInfo method)
     {
@@ -59,7 +59,7 @@ internal class ResolvableMethod
         return $"ResolvableMethod={Method}";
     }
 
-    internal class Builder<T>
+    internal sealed class Builder<T>
     {
         private readonly Type _objectClass;
 
@@ -269,7 +269,7 @@ internal class ResolvableMethod
         }
     }
 
-    internal class ArgResolver
+    internal sealed class ArgResolver
     {
         private readonly List<IPredicate<ParameterInfo>> _filters = new ();
 
@@ -391,7 +391,7 @@ internal class ResolvableMethod
             return matches;
         }
 
-        internal class FuncPredicate : IPredicate<ParameterInfo>
+        internal sealed class FuncPredicate : IPredicate<ParameterInfo>
         {
             private readonly Func<ParameterInfo, bool> _func;
 
@@ -407,7 +407,7 @@ internal class ResolvableMethod
         }
     }
 
-    internal class LabeledPredicate<T> : IPredicate<T>
+    internal sealed class LabeledPredicate<T> : IPredicate<T>
     {
         private readonly string _label;
 

@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
-internal class StreamListenerHandlerMethodMapping
+internal sealed class StreamListenerHandlerMethodMapping
 {
     public StreamListenerHandlerMethodMapping(Type implementation, MethodInfo method, string condition, string defaultOutputChannel, bool copyHeaders)
     {

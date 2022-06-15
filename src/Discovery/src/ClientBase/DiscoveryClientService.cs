@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Client;
 
-internal class DiscoveryClientService : IHostedService
+internal sealed class DiscoveryClientService : IHostedService
 {
     private readonly IDiscoveryLifecycle _applicationLifetime;
     private readonly IDiscoveryClient _discoveryClient;

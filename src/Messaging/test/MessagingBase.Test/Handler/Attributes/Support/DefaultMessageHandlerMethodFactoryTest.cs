@@ -132,7 +132,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         Assert.True(bean.Invocations[methodName]);
     }
 
-    internal class SampleBeanConverter : AbstractConverter<SampleBean, string>
+    internal sealed class SampleBeanConverter : AbstractConverter<SampleBean, string>
     {
         public override string Convert(SampleBean soruce)
         {
@@ -140,7 +140,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         }
     }
 
-    internal class SampleBean
+    internal sealed class SampleBean
     {
         public readonly Dictionary<string, bool> Invocations = new ();
 
@@ -161,7 +161,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         }
     }
 
-    internal class CustomHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
+    internal sealed class CustomHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
     {
         public bool SupportsParameter(ParameterInfo parameter)
         {

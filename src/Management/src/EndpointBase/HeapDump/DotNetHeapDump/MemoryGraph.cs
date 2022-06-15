@@ -17,7 +17,7 @@ using Address = System.UInt64;
 namespace Graphs
 {
     [ExcludeFromCodeCoverage]
-    internal class MemoryGraph : Graph, IFastSerializable
+    internal sealed class MemoryGraph : Graph, IFastSerializable
     {
         public MemoryGraph(int expectedSize)
             : base(expectedSize)
@@ -167,7 +167,7 @@ namespace Graphs
     /// Support class for code:MemoryGraph
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class MemoryNode : Node
+    internal sealed class MemoryNode : Node
     {
         public Address Address { get { return m_memoryGraph.GetAddress(Index); } }
         #region private
@@ -195,7 +195,7 @@ namespace Graphs
     /// and when you are done you call Build() which finalizes it (and all its children)
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class MemoryNodeBuilder
+    internal sealed class MemoryNodeBuilder
     {
         public MemoryNodeBuilder(MemoryGraph graph, string typeName, string moduleName = null, NodeIndex nodeIndex = NodeIndex.Invalid)
         {

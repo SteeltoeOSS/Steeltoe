@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstanceInfo>>
+internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstanceInfo>>
 {
     public override IList<JsonInstanceInfo> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

@@ -8,7 +8,7 @@ using System;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
-internal class TestChannelInterceptor : AbstractChannelInterceptor
+internal sealed class TestChannelInterceptor : AbstractChannelInterceptor
 {
     public Func<IMessage, IMessageChannel, IMessage> PresendHandler { get; set; }
 

@@ -24,7 +24,7 @@ public class HystrixMetricsStreamPublisherTest : HystrixTestBase
         publisher.SampleSubscription.Dispose();
     }
 
-    internal class OptionsWrapper<T> : IOptions<T>
+    internal sealed class OptionsWrapper<T> : IOptions<T>
         where T : class, new()
     {
         public T Value { get; set; }

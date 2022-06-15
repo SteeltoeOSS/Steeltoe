@@ -191,13 +191,13 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         Assert.Equal(0, metrics.CurrentConcurrentExecutionCount);
     }
 
-    private class Command : HystrixCommand<bool>
+    private abstract class Command : HystrixCommand<bool>
     {
         private readonly bool _shouldFail;
         private readonly bool _shouldFailWithBadRequest;
         private readonly int _latencyToAdd;
 
-        public Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd)
+        protected Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd)
             : base(GetUnitTestSettings(commandKey))
         {
             _shouldFail = shouldFail;

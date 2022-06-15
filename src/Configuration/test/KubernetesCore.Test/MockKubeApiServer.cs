@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
-internal class MockKubeApiServer : IDisposable
+internal sealed class MockKubeApiServer : IDisposable
 {
     private readonly IWebHost _webHost;
 
@@ -51,16 +51,7 @@ internal class MockKubeApiServer : IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _webHost.StopAsync();
-            _webHost.WaitForShutdown();
-        }
+        _webHost.StopAsync();
+        _webHost.WaitForShutdown();
     }
 }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-internal class TestOptions : IEndpointOptions
+internal sealed class TestOptions : IEndpointOptions
 {
     public string Id { get; set; }
 

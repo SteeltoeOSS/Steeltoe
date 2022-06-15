@@ -405,7 +405,7 @@ public class PollableConsumerTest : AbstractTest
         mockCallback.Verify(call => call.Acknowledge(Status.REQUEUE));
     }
 
-    private class TestErrorsErrorChannelHandler : IMessageHandler
+    private sealed class TestErrorsErrorChannelHandler : IMessageHandler
     {
         private readonly CountdownEvent _latch;
 
@@ -415,7 +415,7 @@ public class PollableConsumerTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -423,7 +423,7 @@ public class PollableConsumerTest : AbstractTest
         }
     }
 
-    private class TestFuncMessageHandler : IMessageHandler
+    private sealed class TestFuncMessageHandler : IMessageHandler
     {
         public int Count { get; set; }
 
@@ -433,7 +433,7 @@ public class PollableConsumerTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public Action<IMessage> Act { get; }
 
@@ -474,7 +474,7 @@ public class PollableConsumerTest : AbstractTest
         }
     }
 
-    private class TestConvertSimpleHandler : IMessageHandler
+    private sealed class TestConvertSimpleHandler : IMessageHandler
     {
         public object Payload { get; set; }
 
@@ -485,7 +485,7 @@ public class PollableConsumerTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -494,7 +494,7 @@ public class PollableConsumerTest : AbstractTest
         }
     }
 
-    private class TestSimpleHandler : IMessageHandler
+    private sealed class TestSimpleHandler : IMessageHandler
     {
         public int Count { get; set; }
 
@@ -503,7 +503,7 @@ public class PollableConsumerTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {

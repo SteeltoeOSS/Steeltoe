@@ -2560,15 +2560,15 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     #endregion
 
     #region Nested Types
-    protected internal class PendingReply
+    protected internal sealed class PendingReply
     {
         private readonly TaskCompletionSource<IMessage> _future = new ();
 
-        public virtual string SavedReplyTo { get; set; }
+        public string SavedReplyTo { get; set; }
 
-        public virtual string SavedCorrelation { get; set; }
+        public string SavedCorrelation { get; set; }
 
-        public virtual IMessage Get()
+        public IMessage Get()
         {
             try
             {
@@ -2580,7 +2580,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        public virtual IMessage Get(int timeout)
+        public IMessage Get(int timeout)
         {
             try
             {
@@ -2599,17 +2599,17 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        public virtual void Reply(IMessage reply)
+        public void Reply(IMessage reply)
         {
             _future.TrySetResult(reply);
         }
 
-        public virtual void Returned(RabbitMessageReturnedException e)
+        public void Returned(RabbitMessageReturnedException e)
         {
             CompleteExceptionally(e);
         }
 
-        public virtual void CompleteExceptionally(Exception exception)
+        public void CompleteExceptionally(Exception exception)
         {
             _future.TrySetException(exception);
         }
@@ -2771,7 +2771,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         void Confirm(CorrelationData correlationData, bool ack, string cause);
     }
 
-    private class PendingReplyReturn : IReturnCallback
+    private sealed class PendingReplyReturn : IReturnCallback
     {
         private readonly PendingReply _pendingReply;
 
@@ -2780,7 +2780,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             _pendingReply = pendingReply;
         }
 
-        public virtual void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
+        public void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
         {
             _pendingReply.Returned(new RabbitMessageReturnedException("Message returned", message, replyCode, replyText, exchange, routingKey));
         }

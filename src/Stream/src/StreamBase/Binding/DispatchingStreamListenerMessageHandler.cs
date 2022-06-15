@@ -105,7 +105,7 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
         return matchingMethods;
     }
 
-    internal class ConditionalStreamListenerMessageHandlerWrapper
+    internal sealed class ConditionalStreamListenerMessageHandlerWrapper
     {
         internal ConditionalStreamListenerMessageHandlerWrapper(IExpression condition, StreamListenerMessageHandler streamListenerMessageHandler)
         {

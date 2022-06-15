@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Steeltoe.Discovery.Eureka.Task;
 
-internal class TimedTask
+internal sealed class TimedTask
 {
     public string Name { get; private set; }
 

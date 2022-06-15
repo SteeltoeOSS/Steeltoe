@@ -10,7 +10,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 /// <summary>
 /// Internal use: for request/response with permissions endpoints
 /// </summary>
-internal class CredentialPermissions
+internal sealed class CredentialPermissions
 {
     /// <summary>
     /// Gets or sets name of the credential with permissions

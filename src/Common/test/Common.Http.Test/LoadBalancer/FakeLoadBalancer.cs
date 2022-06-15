@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test;
 /// <summary>
 /// A bad fake load balancer that only resolves requests for "replaceme" as "someresolvedhost"
 /// </summary>
-internal class FakeLoadBalancer : ILoadBalancer
+internal sealed class FakeLoadBalancer : ILoadBalancer
 {
     internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new ();
 

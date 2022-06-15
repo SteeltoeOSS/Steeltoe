@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Common.Http.Test;
 
-internal class TestServiceInstance : IServiceInstance
+internal sealed class TestServiceInstance : IServiceInstance
 {
     public TestServiceInstance(Uri uri)
     {

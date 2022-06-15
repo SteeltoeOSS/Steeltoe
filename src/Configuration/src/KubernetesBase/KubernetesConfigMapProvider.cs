@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
+internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 {
     private const string ConfigFileKeyPrefix = "appsettings";
     private const string ConfigFileKeySuffix = "json";
@@ -55,20 +55,11 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+        ConfigMapWatcher?.Dispose();
+        ConfigMapWatcher = null;
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            ConfigMapWatcher?.Dispose();
-            ConfigMapWatcher = null;
-
-            K8sClient?.Dispose();
-            K8sClient = null;
-        }
+        K8sClient?.Dispose();
+        K8sClient = null;
     }
 
     private static IDictionary<string, string> ParseConfigMapFile(Stream jsonFileContents)

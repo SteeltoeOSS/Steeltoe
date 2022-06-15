@@ -54,7 +54,7 @@ public class SpringBootEnvProviderTest
         Assert.ThrowsAny<JsonException>(() => prov.Load());
     }
 
-    private class TestOutputHelper : ITestOutputHelper
+    private sealed class TestOutputHelper : ITestOutputHelper
     {
         private readonly StringBuilder _stringBuilder = new ();
 

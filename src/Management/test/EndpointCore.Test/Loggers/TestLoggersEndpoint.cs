@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test;
 
-internal class TestLoggersEndpoint : LoggersEndpoint
+internal sealed class TestLoggersEndpoint : LoggersEndpoint
 {
     public TestLoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider loggerProvider = null, ILogger<LoggersEndpoint> logger = null)
         : base(options, loggerProvider, logger)

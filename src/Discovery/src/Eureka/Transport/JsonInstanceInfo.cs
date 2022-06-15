@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonInstanceInfo
+internal sealed class JsonInstanceInfo
 {
     [JsonPropertyName("instanceId")]
     public string InstanceId { get; set; }
@@ -92,7 +92,7 @@ internal class JsonInstanceInfo
     [JsonPropertyName("asgName")]
     public string AsgName { get; set; }
 
-    internal class JsonPortWrapper
+    internal sealed class JsonPortWrapper
     {
         public JsonPortWrapper()
         {
@@ -112,7 +112,7 @@ internal class JsonInstanceInfo
         public int Port { get; set; }
     }
 
-    internal class JsonDataCenterInfo
+    internal sealed class JsonDataCenterInfo
     {
         public JsonDataCenterInfo()
         {

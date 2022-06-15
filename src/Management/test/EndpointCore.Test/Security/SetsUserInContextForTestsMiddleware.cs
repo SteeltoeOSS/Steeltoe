@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test;
 /// <summary>
 /// Adds a fake claim for Testing Authenticate test cases.
 /// </summary>
-internal class SetsUserInContextForTestsMiddleware
+internal sealed class SetsUserInContextForTestsMiddleware
 {
     public const string TestFakeAuthentication = "TestFakeAuthentication";
     public const string TestingHeader = "X-Test-Header";

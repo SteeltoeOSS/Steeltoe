@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
 
-internal class TestHypermediaEndpoint : ActuatorEndpoint
+internal sealed class TestHypermediaEndpoint : ActuatorEndpoint
 {
     public TestHypermediaEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options, mgmtOptions, logger)

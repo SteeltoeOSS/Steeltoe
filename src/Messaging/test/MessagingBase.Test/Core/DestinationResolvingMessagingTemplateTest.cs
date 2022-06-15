@@ -340,7 +340,7 @@ public class DestinationResolvingMessagingTemplateTest
         Assert.Same(_myChannel, _template.MessageChannel);
     }
 
-    internal class TestDestinationResolvingMessagingTemplate : AbstractDestinationResolvingMessagingTemplate<IMessageChannel>
+    internal sealed class TestDestinationResolvingMessagingTemplate : AbstractDestinationResolvingMessagingTemplate<IMessageChannel>
     {
         public TestDestinationResolvingMessagingTemplate()
             : base(null)
@@ -393,7 +393,7 @@ public class DestinationResolvingMessagingTemplateTest
         }
     }
 
-    internal class TestMessageChannelDestinationResolver : IDestinationResolver<IMessageChannel>
+    internal sealed class TestMessageChannelDestinationResolver : IDestinationResolver<IMessageChannel>
     {
         private readonly IDictionary<string, IMessageChannel> _channels = new Dictionary<string, IMessageChannel>();
 

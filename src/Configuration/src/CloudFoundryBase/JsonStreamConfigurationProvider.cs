@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-internal class JsonStreamConfigurationProvider : JsonConfigurationProvider
+internal sealed class JsonStreamConfigurationProvider : JsonConfigurationProvider
 {
     private readonly JsonStreamConfigurationSource _source;
 

@@ -53,7 +53,7 @@ public static class DynamicLoggingBuilder
         return builder;
     }
 
-    internal class ConsoleLoggerOptionsSetup : ConfigureFromConfigurationOptions<ConsoleLoggerOptions>
+    internal sealed class ConsoleLoggerOptionsSetup : ConfigureFromConfigurationOptions<ConsoleLoggerOptions>
     {
         public ConsoleLoggerOptionsSetup(ILoggerProviderConfiguration<ConsoleLoggerProvider> providerConfiguration)
             : base(providerConfiguration.Configuration)

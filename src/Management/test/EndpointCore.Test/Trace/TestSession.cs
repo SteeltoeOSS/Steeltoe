@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test;
 
-internal class TestSession : ISession
+internal sealed class TestSession : ISession
 {
     private readonly Dictionary<string, byte[]> _store
         = new (StringComparer.OrdinalIgnoreCase);

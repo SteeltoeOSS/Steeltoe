@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-internal class CustomCloudFoundrySettingsReader : ICloudFoundrySettingsReader
+internal sealed class CustomCloudFoundrySettingsReader : ICloudFoundrySettingsReader
 {
     public string ApplicationJson => throw new NotImplementedException();
 

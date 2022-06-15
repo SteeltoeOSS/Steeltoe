@@ -6650,7 +6650,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public bool B { get; set; }
     }
 
-    private class TestClass9
+    private sealed class TestClass9
     {
         public TestClass9(int i)
         {

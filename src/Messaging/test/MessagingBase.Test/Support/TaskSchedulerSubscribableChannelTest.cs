@@ -204,7 +204,7 @@ public class TaskSchedulerSubscribableChannelTest
         Assert.True(interceptor.WasAfterHandledInvoked);
     }
 
-    internal class UnsubscribeHandler : IMessageHandler
+    internal sealed class UnsubscribeHandler : IMessageHandler
     {
         private readonly TaskSchedulerSubscribableChannelTest _test;
         private readonly TaskSchedulerSubscribableChannelWriterTest _test2;
@@ -228,7 +228,7 @@ public class TaskSchedulerSubscribableChannelTest
         }
     }
 
-    internal class TestScheduler : TaskScheduler
+    internal sealed class TestScheduler : TaskScheduler
     {
         public bool WasTaskScheduled;
 
@@ -251,7 +251,7 @@ public class TaskSchedulerSubscribableChannelTest
         }
     }
 
-    internal class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
+    internal abstract class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
     {
         private volatile int _counter;
 
@@ -280,7 +280,7 @@ public class TaskSchedulerSubscribableChannelTest
         }
     }
 
-    internal class BeforeHandleInterceptor : AbstractTestInterceptor
+    internal sealed class BeforeHandleInterceptor : AbstractTestInterceptor
     {
         public IMessage MessageToReturn { get; set; }
 
@@ -298,7 +298,7 @@ public class TaskSchedulerSubscribableChannelTest
         }
     }
 
-    internal class NullReturningBeforeHandleInterceptor : AbstractTestInterceptor
+    internal sealed class NullReturningBeforeHandleInterceptor : AbstractTestInterceptor
     {
         public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
         {

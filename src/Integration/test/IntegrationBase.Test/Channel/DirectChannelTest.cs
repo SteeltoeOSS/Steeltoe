@@ -157,7 +157,7 @@ public class DirectChannelTest
         Assert.Equal("test-thread", target.ThreadName);
     }
 
-    internal class CounterHandler : IMessageHandler
+    internal sealed class CounterHandler : IMessageHandler
     {
         public int Count;
 
@@ -169,7 +169,7 @@ public class DirectChannelTest
         }
     }
 
-    internal class ThreadNameExtractingTestTarget : IMessageHandler
+    internal sealed class ThreadNameExtractingTestTarget : IMessageHandler
     {
         public readonly CountdownEvent Latch;
         public int? TaskId;

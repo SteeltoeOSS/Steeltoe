@@ -885,7 +885,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
     }
 
-    protected internal class SimpleConsumer : RC.DefaultBasicConsumer
+    protected internal sealed class SimpleConsumer : RC.DefaultBasicConsumer
     {
         private readonly DirectMessageListenerContainer _container;
         private readonly IConnection _connection;

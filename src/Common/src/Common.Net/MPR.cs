@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Net;
 
 // TODO: [BREAKING] Rename type to MultipleProviderRouter and remove suppression
 #pragma warning disable S101 // Types should be named in PascalCase
-internal class MPR : IMPR
+internal sealed class MPR : IMPR
 #pragma warning restore S101 // Types should be named in PascalCase
 {
     public MPR()

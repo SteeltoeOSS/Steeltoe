@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump.Test;
 
-internal class TestThreadDumper : IThreadDumper
+internal sealed class TestThreadDumper : IThreadDumper
 {
     public bool DumpThreadsCalled { get; set; }
 

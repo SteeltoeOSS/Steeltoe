@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-internal class Application
+internal sealed class Application
 {
     [JsonPropertyName("name")]
     public string Name { get; set; }
@@ -26,7 +26,7 @@ internal class Application
     public Dictionary<string, object> Metadata { get; set; }
 }
 
-internal class RegistrationResult
+internal sealed class RegistrationResult
 {
     public string Id { get; set; }
 }

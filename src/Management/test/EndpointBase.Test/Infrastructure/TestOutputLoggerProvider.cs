@@ -33,7 +33,7 @@ internal sealed class TestOutputLoggerProvider : ILoggerProvider
     }
 }
 
-internal class TestOutputLogger : ILogger
+internal sealed class TestOutputLogger : ILogger
 {
     private readonly ITestOutputHelper _output;
     private readonly string _category;

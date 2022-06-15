@@ -11,7 +11,7 @@ using Steeltoe.Discovery.Client;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-internal class TestDiscoveryClientExtension : IDiscoveryClientExtension
+internal sealed class TestDiscoveryClientExtension : IDiscoveryClientExtension
 {
     public void ApplyServices(IServiceCollection services)
     {

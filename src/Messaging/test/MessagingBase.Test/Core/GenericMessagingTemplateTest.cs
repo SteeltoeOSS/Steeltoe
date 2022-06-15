@@ -316,7 +316,7 @@ public class GenericMessagingTemplateTest
         chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
     }
 
-    internal class LateReplierMessageHandler : IMessageHandler
+    internal sealed class LateReplierMessageHandler : IMessageHandler
     {
         public CountdownEvent _latch;
         public Exception _failure;
@@ -357,7 +357,7 @@ public class GenericMessagingTemplateTest
         }
     }
 
-    internal class SendAndReceiveTestHandler : IMessageHandler
+    internal sealed class SendAndReceiveTestHandler : IMessageHandler
     {
         public string ServiceName { get; set; } = nameof(SendAndReceiveTestHandler);
 
@@ -368,7 +368,7 @@ public class GenericMessagingTemplateTest
         }
     }
 
-    internal class TestDestinationResolver : IDestinationResolver<IMessageChannel>
+    internal sealed class TestDestinationResolver : IDestinationResolver<IMessageChannel>
     {
         private readonly GenericMessagingTemplateTest _test;
 

@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint;
 
-internal class CoreSecurityContext : ISecurityContext
+internal sealed class CoreSecurityContext : ISecurityContext
 {
     private readonly HttpContext _context;
 

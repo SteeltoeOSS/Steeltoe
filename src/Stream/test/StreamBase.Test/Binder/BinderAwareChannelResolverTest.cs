@@ -96,7 +96,7 @@ public class BinderAwareChannelResolverTest : AbstractTest
         // this.context.close();
     }
 
-    private class LatchedMessageHandler : IMessageHandler
+    private sealed class LatchedMessageHandler : IMessageHandler
     {
         public CountdownEvent Latch { get; set; }
 
@@ -107,7 +107,7 @@ public class BinderAwareChannelResolverTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {

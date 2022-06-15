@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 #pragma warning disable S125 // Sections of code should not be commented out
 
-internal class Tokenizer
+internal sealed class Tokenizer
 {
     // If this gets changed, it must remain sorted...
     private static readonly string[] ALTERNATIVE_OPERATOR_NAMES = { "DIV", "EQ", "GE", "GT", "LE", "LT", "MOD", "NE", "NOT" };

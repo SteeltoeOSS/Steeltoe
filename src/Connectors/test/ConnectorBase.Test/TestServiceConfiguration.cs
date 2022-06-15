@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Connector.Test;
 
-internal class TestServiceConfiguration : AbstractServiceConnectorOptions
+internal sealed class TestServiceConfiguration : AbstractServiceConnectorOptions
 {
     public TestServiceConfiguration(IConfiguration config)
         : base(config)

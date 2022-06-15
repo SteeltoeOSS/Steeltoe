@@ -6,7 +6,7 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 
-internal class HystrixCircuitBreakerImpl : ICircuitBreaker
+internal sealed class HystrixCircuitBreakerImpl : ICircuitBreaker
 {
     private readonly IHystrixCommandOptions _options;
     private readonly HystrixCommandMetrics _metrics;
@@ -17,13 +17,13 @@ internal class HystrixCircuitBreakerImpl : ICircuitBreaker
     /* when the circuit was marked open or was last allowed to try a 'singleTest' */
     private readonly AtomicLong _circuitOpenedOrLastTestedTime = new ();
 
-    protected internal HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
+    public HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
     {
         _options = options;
         _metrics = metrics;
     }
 
-    public virtual void MarkSuccess()
+    public void MarkSuccess()
     {
         if (_circuitOpen.Value && _circuitOpen.CompareAndSet(true, false))
         {
@@ -57,7 +57,7 @@ internal class HystrixCircuitBreakerImpl : ICircuitBreaker
         }
     }
 
-    public virtual bool AllowSingleTest()
+    public bool AllowSingleTest()
     {
         var timeCircuitOpenedOrWasLastTested = _circuitOpenedOrLastTestedTime.Value;
 

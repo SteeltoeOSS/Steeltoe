@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Diagnostics;
 
-internal class MiniDumper
+internal sealed class MiniDumper
 {
     public struct Result
     {

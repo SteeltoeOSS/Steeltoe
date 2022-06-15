@@ -18,13 +18,13 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
-internal class ConfigServerDiscoveryService
+internal sealed class ConfigServerDiscoveryService
 {
-    protected internal IConfiguration _configuration;
-    protected internal ConfigServerClientSettings _settings;
-    protected internal ILoggerFactory _logFactory;
-    protected internal ILogger _logger;
-    protected internal IDiscoveryClient _discoveryClient;
+    internal IConfiguration _configuration;
+    internal ConfigServerClientSettings _settings;
+    internal ILoggerFactory _logFactory;
+    internal ILogger _logger;
+    internal IDiscoveryClient _discoveryClient;
     private bool _usingInitialDiscoveryClient = true;
 
     internal ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory logFactory = null)

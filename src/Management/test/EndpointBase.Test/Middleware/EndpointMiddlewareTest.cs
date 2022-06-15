@@ -19,7 +19,7 @@ public class EndpointMiddlewareTest : BaseTest
     }
 }
 
-internal class TestMiddleware1 : EndpointMiddleware<string>
+internal sealed class TestMiddleware1 : EndpointMiddleware<string>
 {
     public TestMiddleware1(IEndpoint<string> endpoint, IManagementOptions mgmtOptions, ILogger logger)
         : base(endpoint, mgmtOptions, logger: logger)
@@ -27,7 +27,7 @@ internal class TestMiddleware1 : EndpointMiddleware<string>
     }
 }
 
-internal class TestMiddleware2 : EndpointMiddleware<string, string>
+internal sealed class TestMiddleware2 : EndpointMiddleware<string, string>
 {
     public TestMiddleware2(IEndpoint<string, string> endpoint, IManagementOptions mgmtOptions, ILogger logger)
         : base(endpoint, mgmtOptions, logger: logger)

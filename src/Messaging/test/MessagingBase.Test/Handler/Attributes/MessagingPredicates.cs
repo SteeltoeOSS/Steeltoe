@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Test;
 
-internal class MessagingPredicates
+internal sealed class MessagingPredicates
 {
     public static DestinationVariablePredicate DestinationVar()
     {
@@ -43,7 +43,7 @@ internal class MessagingPredicates
         bool Test(T t);
     }
 
-    internal class DestinationVariablePredicate : IPredicate<ParameterInfo>
+    internal sealed class DestinationVariablePredicate : IPredicate<ParameterInfo>
     {
         private string _value;
 
@@ -66,7 +66,7 @@ internal class MessagingPredicates
         }
     }
 
-    internal class HeaderPredicate : IPredicate<ParameterInfo>
+    internal sealed class HeaderPredicate : IPredicate<ParameterInfo>
     {
         private string _name = string.Empty;
         private bool _required = true;

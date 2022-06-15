@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonApplicationsRoot
+internal sealed class JsonApplicationsRoot
 {
     [JsonPropertyName("applications")]
     public JsonApplications Applications { get; set; }

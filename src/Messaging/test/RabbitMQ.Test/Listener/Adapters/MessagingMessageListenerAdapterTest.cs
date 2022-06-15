@@ -389,7 +389,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         }
     }
 
-    private class Foo
+    private sealed class Foo
     {
         public string FooString { get; set; }
     }

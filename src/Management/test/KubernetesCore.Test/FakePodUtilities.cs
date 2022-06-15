@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Kubernetes.Test;
 
-internal class FakePodUtilities : IPodUtilities
+internal sealed class FakePodUtilities : IPodUtilities
 {
     internal static V1Pod SamplePod { get; } = new ()
     {

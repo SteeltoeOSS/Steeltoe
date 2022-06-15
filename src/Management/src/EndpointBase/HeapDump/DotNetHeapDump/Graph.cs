@@ -75,7 +75,7 @@ namespace Graphs
     /// 
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class Graph : IFastSerializable, IFastSerializableVersion
+    internal abstract class Graph : IFastSerializable, IFastSerializableVersion
     {
         /// <summary>
         /// Given an arbitrary code:NodeIndex that identifies the node, Get a code:Node object.  
@@ -925,7 +925,7 @@ namespace Graphs
     /// Represents the nodeId of a particular node in the graph.  
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class NodeType
+    internal sealed class NodeType
     {
         /// <summary>
         /// Every nodeId has a name, this is it.  
@@ -1343,7 +1343,7 @@ namespace Graphs
 /// Thus this is a fairly expensive thing to create.  
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class RefGraph
+internal sealed class RefGraph
 {
     public RefGraph(Graph graph)
     {
@@ -1505,7 +1505,7 @@ internal class RefGraph
 }
 
 [ExcludeFromCodeCoverage]
-internal class RefNode
+internal sealed class RefNode
 {
     /// <summary>
     /// Gets the first child for the node.  Will return null if there are no children.  
@@ -1641,7 +1641,7 @@ internal class RefNode
 /// This is just a first cut...
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class SpanningTree
+internal sealed class SpanningTree
 {
     public SpanningTree(Graph graph, TextWriter log)
     {
@@ -1990,7 +1990,7 @@ internal class SpanningTree
 /// A priority queue, specialized to be a bit more efficient than a generic version would be. 
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class PriorityQueue
+internal sealed class PriorityQueue
 {
     public PriorityQueue(int initialSize = 32)
     {
@@ -2122,7 +2122,7 @@ internal class PriorityQueue
 ///        graph was reduced.  
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class GraphSampler
+internal sealed class GraphSampler
 {
     /// <summary>
     /// 

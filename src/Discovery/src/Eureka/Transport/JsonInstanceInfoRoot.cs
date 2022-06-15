@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonInstanceInfoRoot
+internal sealed class JsonInstanceInfoRoot
 {
     [JsonPropertyName("instance")]
     public JsonInstanceInfo Instance { get; set; }

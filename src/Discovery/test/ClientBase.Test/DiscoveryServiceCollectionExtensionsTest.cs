@@ -797,7 +797,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
     }
 
-    internal class TestClientHandlerProvider : IHttpClientHandlerProvider
+    internal sealed class TestClientHandlerProvider : IHttpClientHandlerProvider
     {
         public bool Called { get; set; }
 

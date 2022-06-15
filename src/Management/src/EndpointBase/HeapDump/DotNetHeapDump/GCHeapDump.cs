@@ -22,7 +22,7 @@ using Address = System.UInt64;
 /// and you can write one with WriteMemoryGraph 
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
+internal sealed class GCHeapDump : IFastSerializable, IFastSerializableVersion
 {
     public GCHeapDump(string inputFileName) :
         this(new Deserializer(inputFileName))
@@ -720,7 +720,7 @@ public class InteropInfo : IFastSerializable
 /// 
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class XmlGcHeapDump
+internal sealed class XmlGcHeapDump
 {
     public static GCHeapDump ReadGCHeapDumpFromXml(string fileName)
     {

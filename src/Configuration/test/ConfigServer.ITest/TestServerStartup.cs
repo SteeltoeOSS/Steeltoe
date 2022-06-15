@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest;
 
-internal class TestServerStartup
+internal sealed class TestServerStartup
 {
     public TestServerStartup(IConfiguration configuration)
     {

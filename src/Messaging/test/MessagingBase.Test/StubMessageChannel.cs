@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Test;
 
-internal class StubMessageChannel : ISubscribableChannel
+internal sealed class StubMessageChannel : ISubscribableChannel
 {
     private readonly List<IMessage<byte[]>> _messages = new ();
 

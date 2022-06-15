@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Net.Test;
 
-internal class FakeMultipleProviderRouter : IMPR
+internal sealed class FakeMultipleProviderRouter : IMPR
 {
     internal string _username;
     internal string _password;

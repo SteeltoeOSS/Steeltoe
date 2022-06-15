@@ -4,7 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 
-internal class HystrixOptionsStrategyDefault : HystrixOptionsStrategy
+internal sealed class HystrixOptionsStrategyDefault : HystrixOptionsStrategy
 {
     private static readonly HystrixOptionsStrategyDefault Instance = new ();
 

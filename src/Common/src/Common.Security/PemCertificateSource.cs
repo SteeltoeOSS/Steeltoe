@@ -55,7 +55,7 @@ public class PemCertificateSource : ICertificateSource
     }
 }
 
-internal class FileSource : FileConfigurationSource
+internal sealed class FileSource : FileConfigurationSource
 {
     internal string BasePath { get; set; }
 
@@ -73,7 +73,7 @@ internal class FileSource : FileConfigurationSource
     }
 }
 
-internal class FileProvider : FileConfigurationProvider
+internal sealed class FileProvider : FileConfigurationProvider
 {
     public FileProvider(FileConfigurationSource source)
         : base(source)

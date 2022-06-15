@@ -297,7 +297,7 @@ public class MessageSendingTemplateTest
         Assert.Throws<MessageConversionException>(() => _template.ConvertAndSend("home", "payload", new MessageHeaders(_headers)));
     }
 
-    internal class TestMessageSendingTemplate : AbstractMessageSendingTemplate<string>
+    internal sealed class TestMessageSendingTemplate : AbstractMessageSendingTemplate<string>
     {
         public string Destination { get; set; }
 

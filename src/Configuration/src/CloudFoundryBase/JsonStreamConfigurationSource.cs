@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-internal class JsonStreamConfigurationSource : JsonConfigurationSource
+internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 {
     internal JsonStreamConfigurationSource(MemoryStream stream)
     {

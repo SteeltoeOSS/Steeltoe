@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Messaging.Core.Test;
 
-internal class TestMessagePostProcessor : IMessagePostProcessor
+internal sealed class TestMessagePostProcessor : IMessagePostProcessor
 {
     public IMessage Message { get; private set; }
 

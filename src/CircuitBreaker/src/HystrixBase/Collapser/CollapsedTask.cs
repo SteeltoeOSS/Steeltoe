@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
-internal class CollapsedTask<BatchReturnType, ResponseType, RequestArgumentType> : ITimerListener
+internal sealed class CollapsedTask<BatchReturnType, ResponseType, RequestArgumentType> : ITimerListener
 {
     private readonly RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> _rq;
 

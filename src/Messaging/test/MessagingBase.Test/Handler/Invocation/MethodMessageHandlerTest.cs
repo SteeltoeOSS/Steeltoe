@@ -99,7 +99,7 @@ public class MethodMessageHandlerTest
         return MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(_destinationHeader, destination).Build();
     }
 
-    internal class TestController
+    internal sealed class TestController
     {
         public Dictionary<string, object> Arguments { get; } = new ();
 
@@ -138,7 +138,7 @@ public class MethodMessageHandlerTest
         }
     }
 
-    internal class DuplicateMappingsController
+    internal sealed class DuplicateMappingsController
     {
         public void HandlerFoo()
         {
@@ -149,7 +149,7 @@ public class MethodMessageHandlerTest
         }
     }
 
-    internal class TestMethodMessageHandler : AbstractMethodMessageHandler<string>
+    internal sealed class TestMethodMessageHandler : AbstractMethodMessageHandler<string>
     {
         private readonly IPathMatcher _pathMatcher = new AntPathMatcher();
 
@@ -178,11 +178,6 @@ public class MethodMessageHandlerTest
             var handlers = new List<IHandlerMethodReturnValueHandler>();
             handlers.AddRange(CustomReturnValueHandlers);
             return handlers;
-        }
-
-        protected bool IsHandler(Type beanType)
-        {
-            return beanType.Name.Contains("Controller");
         }
 
         protected override string GetMappingForMethod(MethodInfo method, Type handlerType)
@@ -229,7 +224,7 @@ public class MethodMessageHandlerTest
             return new TestExceptionResolver(beanType);
         }
 
-        internal class MappingComparer : IComparer<string>
+        internal sealed class MappingComparer : IComparer<string>
         {
             private readonly IMessage _message;
 
