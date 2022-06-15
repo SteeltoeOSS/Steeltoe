@@ -55,7 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{DC1B
 		..\nuget.config = ..\nuget.config
 		..\sharedproject.props = ..\sharedproject.props
 		..\sharedtest.props = ..\sharedtest.props
-		..\Steeltoe.ruleset = ..\Steeltoe.ruleset
+		..\Steeltoe.Debug.ruleset = ..\Steeltoe.Debug.ruleset
+		..\Steeltoe.Release.ruleset = ..\Steeltoe.Release.ruleset
 		..\stylecop.json = ..\stylecop.json
 		..\versions.props = ..\versions.props
 	EndProjectSection
