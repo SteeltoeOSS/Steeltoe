@@ -12,7 +12,7 @@
     <Rule Id="S1066" Action="Warning" />
     <Rule Id="S1067" Action="None" />
     <Rule Id="S107" Action="Info" /><!--3.0-->
-    <Rule Id="S1075" Action="Info" />
+    <Rule Id="S1075" Action="None" />
     <Rule Id="S108" Action="Info" />
     <Rule Id="S109" Action="None" />
     <Rule Id="S110" Action="Warning" />
