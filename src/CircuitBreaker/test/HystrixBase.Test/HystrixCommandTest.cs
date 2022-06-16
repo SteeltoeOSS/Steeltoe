@@ -4839,13 +4839,7 @@ internal sealed class TestSemaphoreCommandWithSlowFallback : TestHystrixCommand<
 
     protected override bool RunFallback()
     {
-        try
-        {
-            Time.Wait(_fallbackSleep);
-        }
-        catch (Exception)
-        {
-        }
+        Time.Wait(_fallbackSleep);
 
         return true;
     }
@@ -4893,13 +4887,7 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
 
     protected override bool Run()
     {
-        try
-        {
-            Time.Wait(_executionSleep);
-        }
-        catch (Exception)
-        {
-        }
+        Time.Wait(_executionSleep);
 
         if (ResultBehavior == RESULT_SUCCESS)
         {
@@ -4965,13 +4953,7 @@ internal sealed class TestSemaphoreCommandWithFallback : TestHystrixCommand<bool
 
     protected override bool Run()
     {
-        try
-        {
-            Time.Wait(_executionSleep);
-        }
-        catch (Exception)
-        {
-        }
+        Time.Wait(_executionSleep);
 
         return true;
     }
@@ -5130,13 +5112,7 @@ internal sealed class SlowCacheableCommand : TestHystrixCommand<string>
     protected override string Run()
     {
         Executed = true;
-        try
-        {
-            Time.Wait(_duration);
-        }
-        catch (Exception)
-        {
-        }
+        Time.Wait(_duration);
 
         _output?.WriteLine("successfully executed");
         return _value;

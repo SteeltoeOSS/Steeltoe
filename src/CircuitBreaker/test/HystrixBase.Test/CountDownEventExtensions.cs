@@ -15,8 +15,9 @@ public static class CountDownEventExtensions
         {
             target.Signal();
         }
-        catch (Exception)
+        catch (InvalidOperationException)
         {
+            // Intentionally left empty.
         }
     }
 }

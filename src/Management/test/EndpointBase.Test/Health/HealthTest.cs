@@ -53,21 +53,13 @@ public class HealthTest : BaseTest
 
     private string Serialize(HealthEndpointResponse result)
     {
-        try
+        var options = new JsonSerializerOptions
         {
-            var options = new JsonSerializerOptions
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            };
-            options.Converters.Add(new HealthConverter());
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+        options.Converters.Add(new HealthConverter());
 
-            return JsonSerializer.Serialize(result, options);
-        }
-        catch (Exception)
-        {
-        }
-
-        return string.Empty;
+        return JsonSerializer.Serialize(result, options);
     }
 }

@@ -202,8 +202,9 @@ public class FailOverDispatcherTest
         {
             Assert.False(dispatcher.Dispatch(Message.Create("test")));
         }
-        catch (Exception)
+        catch (AggregateMessageDeliveryException)
         {
+            // Intentionally left empty.
         }
 
         Assert.Equal(3, target1.Counter + target2.Counter + target3.Counter);

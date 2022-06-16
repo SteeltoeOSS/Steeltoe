@@ -1917,16 +1917,8 @@ public class SpelReproTests : AbstractExpressionTests
 
         public Dictionary<string, string> GetMap(object target)
         {
-            try
-            {
-                var f = target.GetType().GetField(_mapName);
-                return (Dictionary<string, string>)f.GetValue(target);
-            }
-            catch (Exception)
-            {
-            }
-
-            return null;
+            var f = target.GetType().GetField(_mapName);
+            return (Dictionary<string, string>)f.GetValue(target);
         }
 
         public bool CanRead(IEvaluationContext context, object target, string name) => GetMap(target).ContainsKey(name);

@@ -220,6 +220,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitTimeoutException)
         {
+            // Intentionally left empty.
         }
 
         // should be ignored, and added last into channel cache.
@@ -274,6 +275,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitTimeoutException)
         {
+            // Intentionally left empty.
         }
 
         channel1.Close();
@@ -292,6 +294,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitConnectException)
         {
+            // Intentionally left empty.
         }
 
         brokerDown.Value = true;
@@ -327,6 +330,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitTimeoutException)
         {
+            // Intentionally left empty.
         }
 
         // should be ignored, and added to cache

@@ -86,14 +86,8 @@ public class ContainerShutDownTest : AbstractTest
 
         public void OnMessage(IMessage message)
         {
-            try
-            {
-                _latch.Signal();
-                _testEnded.Wait(TimeSpan.FromSeconds(30));
-            }
-            catch (Exception)
-            {
-            }
+            _latch.Signal();
+            _testEnded.Wait(TimeSpan.FromSeconds(30));
         }
 
         public void OnMessageBatch(List<IMessage> messages)

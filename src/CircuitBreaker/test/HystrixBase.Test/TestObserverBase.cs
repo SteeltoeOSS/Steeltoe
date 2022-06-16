@@ -51,20 +51,14 @@ public class TestObserverBase<T> : ObserverBase<T>
 
         if (_output != null)
         {
-            try
+            var toString = value.ToString();
+            if (value is Array array)
             {
-                var tostring = value.ToString();
-                if (value is Array array)
-                {
-                    tostring = Join(",", array);
-                }
+                toString = Join(",", array);
+            }
 
-                _output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
-                _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            }
-            catch (Exception)
-            {
-            }
+            _output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + toString);
+            _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         }
     }
 

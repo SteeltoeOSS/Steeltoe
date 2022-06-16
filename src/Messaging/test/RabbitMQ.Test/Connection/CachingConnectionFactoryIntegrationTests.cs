@@ -294,6 +294,7 @@ public sealed class CachingConnectionFactoryIntegrationTests : IDisposable
         }
         catch (RabbitIOException)
         {
+            // Intentionally left empty.
         }
 
         template.ConvertAndSend(route, "message");

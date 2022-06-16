@@ -84,9 +84,6 @@ public class EnableRabbitReturnTypesTest
             var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.2", "4");
             Assert.NotNull(reply2);
         }
-        catch (Exception)
-        {
-        }
         finally
         {
             var admin = provider.GetRabbitAdmin();

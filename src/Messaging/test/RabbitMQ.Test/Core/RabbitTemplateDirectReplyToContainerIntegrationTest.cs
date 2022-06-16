@@ -55,6 +55,7 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
 
         while (rabbitTemplate.Receive(ROUTE, 100) != null)
         {
+            // Intentionally left empty.
         }
 
         reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
