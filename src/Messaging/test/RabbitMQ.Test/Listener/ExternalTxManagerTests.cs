@@ -4,7 +4,6 @@
 
 using Moq;
 using Steeltoe.Common.Transaction;
-using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
@@ -34,12 +33,9 @@ public class ExternalTxManagerTests
 
         onlyChannel.Setup(m => m.IsOpen).Returns(true);
 
-        var tooManyModels = new Exception();
-
         var cachingConnectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
         mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
         mockConnection.Setup(m => m.IsOpen).Returns(true);
-        var ensureOneModel = EnsureOneModel(onlyChannel.Object, tooManyModels);
 
         mockConnection.Setup(m => m.CreateModel()).Returns(onlyChannel.Object);
 
@@ -80,24 +76,6 @@ public class ExternalTxManagerTests
         container.Start();
 
         // Assert.True(consumerLatch.Wait(TimeSpan.FromSeconds(10)));
-    }
-
-    private Func<RC.IModel> EnsureOneModel(RC.IModel onlyModel, Exception tooManyChannels)
-    {
-        var done = new AtomicBoolean();
-        return () =>
-        {
-            if (!done.Value)
-            {
-                done.Value = true;
-                return onlyModel;
-            }
-
-            tooManyChannels = new Exception("More than one Model requested");
-            var modelMock = new Mock<RC.IModel>();
-            modelMock.Setup(m => m.IsOpen).Returns(true);
-            return modelMock.Object;
-        };
     }
 
     private sealed class TestListener : IMessageListener

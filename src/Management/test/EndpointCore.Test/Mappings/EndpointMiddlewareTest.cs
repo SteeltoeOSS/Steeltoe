@@ -52,8 +52,6 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var config = configurationBuilder.Build();
-        var host = HostingHelpers.GetHostingEnvironment();
         var ep = new MappingsEndpoint(opts);
         var middle = new MappingsEndpointMiddleware(null, opts, mopts, ep);
 

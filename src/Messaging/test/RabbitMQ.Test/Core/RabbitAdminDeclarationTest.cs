@@ -63,7 +63,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         services.AddRabbitBinding(binding);
         var provider = services.BuildServiceProvider();
         var context = provider.GetApplicationContext();
-        var admin = new RabbitAdmin(context, cf.Object);
+        _ = new RabbitAdmin(context, cf.Object);
         Assert.NotNull(listener.Value);
         listener.Value.OnCreate(conn.Object);
         channel.Verify(c => c.QueueDeclare("foo", true, false, false, It.IsAny<IDictionary<string, object>>()));
@@ -118,7 +118,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         services.AddRabbitQueue(queue);
         var provider = services.BuildServiceProvider();
         var context = provider.GetApplicationContext();
-        var admin = new RabbitAdmin(context, ccf);
+        _ = new RabbitAdmin(context, ccf);
         ccf.CreateConnection().Close();
         ccf.Destroy();
         Assert.Empty(mockChannels);
@@ -209,7 +209,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         var provider = services.BuildServiceProvider();
         var context = provider.GetApplicationContext();
 
-        var admin = new RabbitAdmin(context, cf.Object);
+        _ = new RabbitAdmin(context, cf.Object);
         var other = new RabbitAdmin(cf.Object);
 
         queue.SetAdminsThatShouldDeclare(other);
@@ -269,7 +269,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         var provider = services.BuildServiceProvider();
         var context = provider.GetApplicationContext();
 
-        var admin = new RabbitAdmin(context, cf.Object);
+        _ = new RabbitAdmin(context, cf.Object);
 
         Assert.NotNull(listener.Value);
         listener.Value.OnCreate(conn.Object);

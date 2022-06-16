@@ -230,8 +230,6 @@ public class WebHostBuilderExtensionsTest
         var hostBuilder = _testServerWithRouting;
 
         var host = hostBuilder.AddSteeltoe(exclusions).Start();
-        var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
-        var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
         var testClient = host.GetTestServer().CreateClient();
 
         var response = await testClient.GetAsync("/actuator");
@@ -257,8 +255,6 @@ public class WebHostBuilderExtensionsTest
 
         var host = hostBuilder.AddSteeltoe(exclusions).Start();
         var managementOptions = host.Services.GetServices<IManagementOptions>();
-        var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
-        var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
         var testClient = host.GetTestServer().CreateClient();
 
         Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));

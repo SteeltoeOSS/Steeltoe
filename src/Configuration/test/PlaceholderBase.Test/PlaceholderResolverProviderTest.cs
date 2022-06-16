@@ -21,7 +21,7 @@ public class PlaceholderResolverProviderTest
     {
         const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class PlaceholderResolverProviderTest
     {
         const IList<IConfigurationProvider> providers = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers));
     }
 
     [Fact]

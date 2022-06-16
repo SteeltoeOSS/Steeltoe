@@ -29,7 +29,7 @@ public class NoOpDiscoveryClientTest
         var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         var logger = new Mock<ILogger<NoOpDiscoveryClient>>();
 
-        var client = new NoOpDiscoveryClient(config, logger.Object);
+        _ = new NoOpDiscoveryClient(config, logger.Object);
 
         VerifyLogEntered(logger, LogLevel.Warning, "Found configuration values for TestClient, try adding a NuGet reference that enables TestClient to work with Steeltoe Discovery");
         foreach (var c in new List<string> { "Consul", "Eureka", "Kubernetes" })

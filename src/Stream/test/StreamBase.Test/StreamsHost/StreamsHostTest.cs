@@ -42,8 +42,6 @@ public class StreamsHostTest
     [Trait("Category", "SkipOnLinux")]
     public void HostConfiguresRabbitOptions()
     {
-        IServiceCollection services = new ServiceCollection();
-
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
         using var host = StreamHost

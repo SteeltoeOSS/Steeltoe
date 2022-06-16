@@ -132,7 +132,6 @@ public class LoggersEndpointTest : BaseTest
             services.AddLoggersActuatorServices(configuration);
         };
         var ep = tc.GetService<ILoggersEndpoint>();
-        var provider = new TestLogProvider();
 
         var result = ep.Invoke(null);
         Assert.NotNull(result);

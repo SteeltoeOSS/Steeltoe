@@ -136,7 +136,6 @@ public class MessageListenerAdapterTest
         _adapter.OnMessage(message, mockChannel.Object);
         Assert.Equal("Handle", _simpleService.Called);
         Assert.NotNull(replyMessage.Value);
-        var reply = EncodingUtils.GetDefaultEncoding().GetString((byte[])replyMessage.Value.Payload);
         Assert.NotNull(replyAddress.Value);
         var addr = replyAddress.Value;
         Assert.Equal("foo", addr.ExchangeName);

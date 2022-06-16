@@ -235,7 +235,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
         try
         {
-            var result = await command.ExecuteAsync();
+            await command.ExecuteAsync();
             Assert.True(false, "we shouldn't get here");
         }
         catch (HystrixRuntimeException e)
@@ -259,7 +259,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
         try
         {
-            var result = await command.ExecuteAsync();
+            await command.ExecuteAsync();
             Assert.True(false, "we shouldn't get here");
         }
         catch (HystrixRuntimeException e)
@@ -306,7 +306,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
         try
         {
-            var result = await command.ExecuteAsync();
+            await command.ExecuteAsync();
             Assert.True(true, "we shouldn't get here");
         }
         catch (HystrixRuntimeException e)
@@ -698,7 +698,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
         try
         {
-            var result = await command.ExecuteAsync();
+            await command.ExecuteAsync();
             Assert.True(false, "we shouldn't get here");
         }
         catch (HystrixRuntimeException e)
@@ -1515,7 +1515,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestDynamicOwnerFails()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => new DynamicOwnerTestCommand(null));
+        Assert.Throws<ArgumentNullException>(() => new DynamicOwnerTestCommand(null));
     }
 
     [Fact]
@@ -1865,7 +1865,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var f3 = r3.ExecuteAsync();
         try
         {
-            var res = f3.Result;
+            _ = f3.Result;
 
             // we should have thrown an exception
             Assert.True(false, "expected a timeout");
@@ -1983,7 +1983,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var f3 = r3.ExecuteAsync();
         try
         {
-            var res = f3.Result;
+            _ = f3.Result;
 
             // we should have thrown an exception
             Assert.True(false, "expected a timeout");
@@ -2129,7 +2129,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "one");
         Assert.Throws<HystrixRuntimeException>(() => command.Execute());
 
-        var command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "two");
         await Assert.ThrowsAsync<HystrixRuntimeException>(() => command.ExecuteAsync());
     }
 
@@ -2163,7 +2162,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         try
         {
             command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
-            var res = await command1.ExecuteAsync();
+            await command1.ExecuteAsync();
             Assert.True(false, $"we expect to receive a {nameof(HystrixBadRequestException)}");
         }
         catch (Exception e)
@@ -2206,7 +2205,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         try
         {
             command2 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
-            var res = await command2.ExecuteAsync();
+            await command2.ExecuteAsync();
             Assert.True(false, $"we expect to receive a {nameof(HystrixBadRequestException)}");
         }
         catch (Exception e)
@@ -2433,7 +2432,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         cmd.IsFallbackUserDefined = true;
 
         // await cmd.ExecuteAsync();
-        Task t = cmd.ExecuteAsync();
+        cmd.ExecuteAsync();
 
         // t.Start();
         Time.Wait(200);
@@ -2667,7 +2666,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         // then
         try
         {
-            var result = f.Result;
+            _ = f.Result;
 
             Assert.True(false, "Should have thrown a CancellationException");
         }
@@ -2773,7 +2772,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // Assert.Equal(0, pool.CurrentQueueSize);
         // make sure we wait for the command to finish so the state is clean for next test
-        var result = poolFiller.Result;
+        _ = poolFiller.Result;
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
         Time.Wait(100);
@@ -3009,7 +3008,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var originalObservable = original.ToObservable();
         var fromCacheObservable = fromCache.ToObservable();
 
-        var originalSubscription = originalObservable.Finally(() =>
+        originalObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
@@ -3126,7 +3125,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
                 originalLatch.SignalEx();
             });
 
-        var fromCacheSubscription = fromCacheObservable.Finally(() =>
+        fromCacheObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
             fromCacheLatch.SignalEx();
@@ -3226,7 +3225,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
                 originalLatch.SignalEx();
             });
 
-        var fromCache1Subscription = fromCache1Observable.Finally(() =>
+        fromCache1Observable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
             fromCache1Latch.SignalEx();
@@ -4260,7 +4259,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         {
             try
             {
-                object o = command.Execute();
+                command.Execute();
                 Assert.True(false, "Expected a command failure!");
             }
             catch (Exception ex)
@@ -4277,13 +4276,13 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         _output.WriteLine("Running command.queue(), immediately blocking and then running assertions...");
         if (isSuccess)
         {
-            var rest = command.ExecuteAsync().GetAwaiter().GetResult();
+            command.ExecuteAsync().GetAwaiter().GetResult();
         }
         else
         {
             try
             {
-                var rest = command.ExecuteAsync().GetAwaiter().GetResult();
+                command.ExecuteAsync().GetAwaiter().GetResult();
                 Assert.False(true, "Expected a command failure!");
             }
             catch (OperationCanceledException)
@@ -4330,13 +4329,13 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         if (isSuccess)
         {
-            var res = f.Result;
+            _ = f.Result;
         }
         else
         {
             try
             {
-                var res = f.Result;
+                _ = f.Result;
                 Assert.False(true, "Expected a command failure!");
             }
             catch (OperationCanceledException)

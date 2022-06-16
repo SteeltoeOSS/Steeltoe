@@ -90,7 +90,6 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HypermediaEndpointMiddleware_Returns_Expected_When_ManagementPath_Is_Slash()
     {
-        var settings = new Dictionary<string, string>(_appSettings);
         _appSettings.Add("Management:Endpoints:Path", "/");
 
         // arrange a server and client

@@ -125,7 +125,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         while (handler is not null)
         {
             handler = handler.GetType().GetProperty("InnerHandler").GetValue(handler);
-            if (handler is HttpClientHandler h)
+            if (handler is HttpClientHandler)
             {
                 break;
             }

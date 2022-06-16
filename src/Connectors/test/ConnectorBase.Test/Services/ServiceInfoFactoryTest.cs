@@ -301,6 +301,6 @@ public class ServiceInfoFactoryTest
         var scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var ex = Assert.Throws<FormatException>(() => sif.GetIntFromCredentials(credentials, "key"));
+        Assert.Throws<FormatException>(() => sif.GetIntFromCredentials(credentials, "key"));
     }
 }

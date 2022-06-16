@@ -61,7 +61,7 @@ public class RabbitReconnectProblemTest
         try
         {
             _output.WriteLine("#" + counter);
-            var message = template.Receive(name);
+            template.Receive(name);
             _output.WriteLine("Ok");
         }
         catch (Exception e)

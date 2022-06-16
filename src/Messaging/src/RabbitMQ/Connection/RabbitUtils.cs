@@ -176,7 +176,7 @@ public static class RabbitUtils
 
     public static void SetPhysicalCloseRequired(RC.IModel channel, bool b)
     {
-        if (channel is IChannelProxy asProxy)
+        if (channel is IChannelProxy)
         {
             _physicalCloseRequired.Value = b;
         }

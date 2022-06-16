@@ -223,7 +223,6 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
     {
         var cf = services.GetRequiredService<IConnectionFactory>();
         var ctx = services.GetRequiredService<IApplicationContext>();
-        var queue2 = services.GetRequiredService<IQueue>();
         var listener = new TestMessageListener();
         var container = new DirectMessageListenerContainer(ctx, cf);
         container.SetQueueNames(queueNames);

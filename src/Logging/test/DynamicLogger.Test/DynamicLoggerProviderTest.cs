@@ -343,7 +343,6 @@ public class DynamicLoggerProviderTest
                 .AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace))
             .BuildServiceProvider();
 
-        var loggerProviderConfiguration = serviceProvider.GetService<ILoggerProviderConfiguration<ConsoleLoggerProvider>>();
         return serviceProvider.GetRequiredService<ILoggerProvider>();
     }
 }

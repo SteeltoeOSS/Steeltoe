@@ -43,7 +43,6 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public void EventCounterListenerGetsMetricsTest()
     {
-        var options = new MetricsEndpointOptions();
         using var listener = new EventCounterListener(new MetricsObserverOptions());
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
@@ -64,7 +63,6 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public void EventCounterListenerGetsMetricsWithExclusionsTest()
     {
-        var options = new MetricsEndpointOptions();
         var exclusions = new List<string> { "alloc-rate", "threadpool-completed-items-count", "gen-1-gc-count", "gen-1-size" };
         using var listener = new EventCounterListener(new MetricsObserverOptions { ExcludedMetrics = exclusions });
         var exporter = new SteeltoeExporter(_scraperOptions);

@@ -271,7 +271,6 @@ public class MethodInvokingMessageProcessorAnnotationTest
         var method = typeof(TestService).GetMethod(nameof(TestService.HeaderNameWithHyphen));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var employee = new Employee("John", "Doe");
         var message = MessageBuilder.WithPayload("payload").SetHeader("foo-bar", "abc").Build();
         var result = processor.ProcessMessage(message);
         Assert.Equal("ABC", result);

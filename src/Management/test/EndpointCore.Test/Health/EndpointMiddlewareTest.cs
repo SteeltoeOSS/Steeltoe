@@ -181,9 +181,9 @@ public class EndpointMiddlewareTest : BaseTest
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
         builder.ConfigureServices(services =>
         {
-            var foo = services.BuildServiceProvider().GetServices<HealthEndpoint>();
-            var foo2 = services.BuildServiceProvider().GetServices<HealthEndpointCore>();
-            var foo3 = services.BuildServiceProvider().GetServices<IEndpoint<HealthCheckResult, ISecurityContext>>();
+            services.BuildServiceProvider().GetServices<HealthEndpoint>();
+            services.BuildServiceProvider().GetServices<HealthEndpointCore>();
+            services.BuildServiceProvider().GetServices<IEndpoint<HealthCheckResult, ISecurityContext>>();
         });
 
         using var server = new TestServer(builder);

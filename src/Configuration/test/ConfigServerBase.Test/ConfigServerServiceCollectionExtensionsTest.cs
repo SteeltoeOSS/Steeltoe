@@ -56,10 +56,7 @@ public class ConfigServerServiceCollectionExtensionsTest
     public void ConfigureConfigServerClientOptions_ConfiguresCloudFoundryOptions()
     {
         var services = new ServiceCollection();
-        var environment = HostingHelpers.GetHostingEnvironment();
 
-        var builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } }).AddConfigServer(environment.EnvironmentName);
-        var config = builder.Build();
         services.ConfigureConfigServerClientOptions();
 
         var serviceProvider = services.BuildServiceProvider();

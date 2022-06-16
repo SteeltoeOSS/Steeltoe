@@ -712,7 +712,6 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         var methodResolvers = new List<IMethodResolver> { new ParseReflectiveMethodResolver() };
         context.MethodResolvers = methodResolvers;
-        var type = typeof(NumberStyles);
         context.SetVariable("parseFormat", NumberStyles.HexNumber);
         var expression = parser.ParseExpression("-Parse('FF', #parseFormat)");
 

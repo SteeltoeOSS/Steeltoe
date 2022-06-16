@@ -51,7 +51,6 @@ public partial class RabbitBinderTests
     [Fact]
     public void TestSendAndReceiveBad()
     {
-        var ccf = GetResource();
         var bindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(bindingsOptions);
 
@@ -1020,7 +1019,6 @@ public partial class RabbitBinderTests
     public void TestOptions()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
-        var producer = GetProducerOptions("test", rabbitBindingsOptions);
 
         var rabbitprod = rabbitBindingsOptions.GetRabbitProducerOptions("test");
         rabbitprod.Prefix = "rets";
@@ -1102,7 +1100,6 @@ public partial class RabbitBinderTests
             }
         });
         var message = MessageBuilder.WithPayload(1).Build();
-        var h = message.Headers;
         output.Send(message);
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
 
@@ -1349,7 +1346,6 @@ public partial class RabbitBinderTests
         // assertThat(captor.getValue().toString()).contains(("Compressed 14 to "));
         var input = new QueueChannel { ComponentName = "batchingConsumer" };
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
         var consumerBinding = binder.BindConsumer("batching.0", "test", input, consumerProperties);
 
         output.Send(fooMessage);
@@ -1391,7 +1387,6 @@ public partial class RabbitBinderTests
         var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
         var admin = new RabbitAdmin(GetResource(), logger);
 
-        var queue = new Queue("propagate");
         admin.DeclareQueue(new Queue("propagate"));
         admin.DeclareBinding(new RabbitBinding("propagate_binding", "propagate", RabbitBinding.DestinationType.QUEUE, "propagate.1", "#", null));
         var template = new RabbitTemplate(GetResource());
@@ -1912,8 +1907,6 @@ public partial class RabbitBinderTests
 
     private void TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(bool withRetry)
     {
-        var logger = new XunitLogger(Output);
-
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);

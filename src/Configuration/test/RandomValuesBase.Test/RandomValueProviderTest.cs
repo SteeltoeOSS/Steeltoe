@@ -12,7 +12,7 @@ public class RandomValueProviderTest
     [Fact]
     public void Constructor__ThrowsIfPrefixNull()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => new RandomValueProvider(null));
+        Assert.Throws<ArgumentNullException>(() => new RandomValueProvider(null));
     }
 
     [Fact]

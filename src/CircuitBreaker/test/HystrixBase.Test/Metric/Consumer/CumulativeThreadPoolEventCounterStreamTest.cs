@@ -53,9 +53,7 @@ public class CumulativeThreadPoolEventCounterStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestEmptyStreamProducesZeros()
     {
-        var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-A");
         var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-A");
-        var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-A");
 
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);

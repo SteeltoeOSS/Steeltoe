@@ -551,7 +551,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                         correlationData.FutureSource.SetResult(new Confirm(ack, pendingConfirm.Cause));
                         if (!string.IsNullOrEmpty(correlationData.Id))
                         {
-                            _pendingReturns.Remove(correlationData.Id, out var removedConfirm);
+                            _pendingReturns.Remove(correlationData.Id, out _);
                         }
                     }
 
@@ -596,7 +596,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                         correlationData.FutureSource.SetResult(new Confirm(ack, value.Cause));
                         if (!string.IsNullOrEmpty(correlationData.Id))
                         {
-                            _pendingReturns.Remove(correlationData.Id, out var removedConfirm);
+                            _pendingReturns.Remove(correlationData.Id, out _);
                         }
                     }
 

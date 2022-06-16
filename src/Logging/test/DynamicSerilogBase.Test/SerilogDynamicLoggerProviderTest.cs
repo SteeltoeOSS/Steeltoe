@@ -146,7 +146,7 @@ public class SerilogDynamicLoggerProviderTest
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
 
-        var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
         var logConfig = provider.GetLoggerConfigurations();
         Assert.Equal(6, logConfig.Count);
@@ -165,7 +165,7 @@ public class SerilogDynamicLoggerProviderTest
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
 
-        var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        fac.CreateLogger(typeof(A.B.C.D.TestClass));
         var logConfig = provider.GetLoggerConfigurations();
 
         Assert.Equal(6, logConfig.Count);

@@ -83,7 +83,6 @@ public class ContentNegotiationTests
 
         // send the request
         var result = await client.GetAsync(epPath);
-        var json = await result.Content.ReadAsStringAsync();
 
         var contentHeaders = result.Content.Headers.GetValues("Content-Type");
         Assert.Contains(contentHeaders, header => header.StartsWith(contentType));

@@ -124,7 +124,7 @@ public class ActuatorRouteBuilderExtensionsTest
     private async Task ActAndAssert(Type type, IHostBuilder hostBuilder, bool expectedSuccess)
     {
         var host = await hostBuilder.StartAsync();
-        var (middleware, optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
+        var (_, optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
         var options = host.Services.GetService(optionsType) as IEndpointOptions;
         var path = options.GetContextPath(GetManagementContext(type, host.Services));
 

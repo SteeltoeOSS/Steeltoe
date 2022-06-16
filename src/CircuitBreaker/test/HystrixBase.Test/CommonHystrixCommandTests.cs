@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
-using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using System;
 using System.Collections.Generic;

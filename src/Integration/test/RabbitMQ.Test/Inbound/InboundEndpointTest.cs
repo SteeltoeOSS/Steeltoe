@@ -154,7 +154,6 @@ public class InboundEndpointTest
         var services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
-        var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
         var container = new DirectMessageListenerContainer();
         var adapter = new RabbitInboundChannelAdapter(context, container)
         {
@@ -187,7 +186,6 @@ public class InboundEndpointTest
         var services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
-        var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
         var container = new DirectMessageListenerContainer();
         var adapter = new RabbitInboundChannelAdapter(context, container);
         var outchan = new QueueChannel(context);

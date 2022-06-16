@@ -57,7 +57,7 @@ public class SerilogDynamicWebhostBuilderTest
     {
         var testSink = new TestSink();
 
-        var host = new WebHostBuilder()
+        _ = new WebHostBuilder()
             .UseStartup<Startup>()
             .AddDynamicSerilog((_, loggerConfiguration) =>
             {

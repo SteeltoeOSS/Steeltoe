@@ -53,7 +53,7 @@ public class RabbitAdminTest : AbstractTest
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
-        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory)
+        _ = new RabbitAdmin(applicationContext, connectionFactory)
         {
             AutoStartup = true
         };
@@ -264,7 +264,7 @@ public class RabbitAdminTest : AbstractTest
         }
 
         var goodName = "foobar";
-        var name = admin.DeclareQueue(new Queue(goodName));
+        admin.DeclareQueue(new Queue(goodName));
         Assert.Null(admin.GetQueueProperties(longName));
         Assert.NotNull(admin.GetQueueProperties(goodName));
         admin.DeleteQueue(goodName);
@@ -362,7 +362,7 @@ public class RabbitAdminTest : AbstractTest
         var foo = new AnonymousQueue("foo");
         serviceCollection.AddRabbitQueue(foo);
         var provider = serviceCollection.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
+        _ = provider.GetRabbitAdmin();
         Assert.Throws<RabbitUncategorizedException>(() => ccf.CreateConnection());
         channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(3));
     }

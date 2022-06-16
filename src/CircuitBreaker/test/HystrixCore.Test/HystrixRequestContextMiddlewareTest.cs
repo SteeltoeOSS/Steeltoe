@@ -38,7 +38,7 @@ public class HystrixRequestContextMiddlewareTest
             return Task.FromResult(1);
         };
         var life = new TestLifecyecle();
-        var reqContext = new HystrixRequestContextMiddleware(del, life);
+        _ = new HystrixRequestContextMiddleware(del, life);
         Assert.True(life.Registered);
         life.StopApplication();
     }

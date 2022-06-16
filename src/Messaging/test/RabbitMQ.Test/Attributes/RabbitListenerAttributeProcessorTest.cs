@@ -196,7 +196,7 @@ public class RabbitListenerAttributeProcessorTest
         queue2.ServiceName = "queue2";
 
         var queues = new List<IQueue> { queue1, queue2 };
-        var excep = await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
+        await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
     }
 
     [Fact]

@@ -610,7 +610,7 @@ public class ManagementWebHostBuilderExtensionsTest
         var hostBuilder = _testServerWithRouting;
 
         var appSettings = new Dictionary<string, string>() { ["management:endpoints:actuator:exposure:include:0"] = "*" };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         using (var unConsole = new ConsoleOutputBorrower())
         {
             var host = hostBuilder
@@ -646,7 +646,7 @@ public class ManagementWebHostBuilderExtensionsTest
         var hostBuilder = _testServerWithRouting;
 
         var appSettings = new Dictionary<string, string>() { ["management:endpoints:actuator:exposure:include:0"] = "*" };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         using (var unConsole = new ConsoleOutputBorrower())
         {
             var host = hostBuilder
@@ -686,7 +686,7 @@ public class ManagementWebHostBuilderExtensionsTest
         var hostBuilder = _testServerWithRouting;
 
         var appSettings = new Dictionary<string, string>() { ["management:endpoints:actuator:exposure:include:0"] = "*" };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         using (var unConsole = new ConsoleOutputBorrower())
         {
             var host = hostBuilder

@@ -124,7 +124,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
                     }
                     else
                     {
-                        _runningFilters.TryRemove(runningFilter.Key, out var oldVal);
+                        _runningFilters.TryRemove(runningFilter.Key, out _);
                     }
                 }
             }

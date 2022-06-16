@@ -140,7 +140,6 @@ public class TraceDiagnosticObserverTest : BaseTest
         var option = new TraceEndpointOptions();
 
         var obs = new TraceDiagnosticObserver(option);
-        var context = CreateRequest();
         var time = TimeSpan.FromTicks(10_000_000);
         var result = obs.GetTimeTaken(time);
         var expected = time.TotalMilliseconds.ToString();

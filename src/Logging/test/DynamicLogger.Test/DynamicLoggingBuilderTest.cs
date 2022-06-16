@@ -220,7 +220,6 @@ public class DynamicLoggingBuilderTest
             }).BuildServiceProvider();
 
         var dlogProvider = services.GetService<IDynamicLoggerProvider>();
-        var logProviders = services.GetServices<ILoggerProvider>();
 
         services.Dispose();
         dlogProvider.Dispose();

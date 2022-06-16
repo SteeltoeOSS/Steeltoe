@@ -49,7 +49,6 @@ public class ConsulHealthContributorTest
         };
 
         var catResult = Task.FromResult(queryResult);
-        var statusResult = Task.FromResult("thestatus");
         var clientMoq = new Mock<IConsulClient>();
         var catMoq = new Mock<ICatalogEndpoint>();
         clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);

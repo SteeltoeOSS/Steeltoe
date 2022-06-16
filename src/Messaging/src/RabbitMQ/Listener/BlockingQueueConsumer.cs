@@ -709,7 +709,7 @@ public class BlockingQueueConsumer
         public override void HandleBasicCancel(string consumerTag)
         {
             Logger?.LogWarning("Cancel received for {consumerTag} : {queueName} : {consumer}", consumerTag, QueueName, ToString());
-            Consumer.Consumers.Remove(QueueName, out var me);
+            Consumer.Consumers.Remove(QueueName, out _);
             if (Consumer.Consumers.Count != 0)
             {
                 Consumer.BasicCancel(false);

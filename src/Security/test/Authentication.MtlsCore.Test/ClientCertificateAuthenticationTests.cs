@@ -550,7 +550,6 @@ public class ClientCertificateAuthenticationTests
 
                 app.Run(async context =>
                 {
-                    var request = context.Request;
                     var response = context.Response;
 
                     var authenticationResult = await context.AuthenticateAsync();

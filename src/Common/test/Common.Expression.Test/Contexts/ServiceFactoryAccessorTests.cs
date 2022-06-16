@@ -38,9 +38,6 @@ public class ServiceFactoryAccessorTests
             ServiceResolver = new ServiceFactoryResolver(appContext)
         };
 
-        var car = appContext.GetService<Car>();
-        var boat = appContext.GetService<Boat>();
-
         var expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Colour");
         Assert.Equal("red", expr.GetValue<string>(context));
         expr = new SpelExpressionParser().ParseRaw("@car.Colour");

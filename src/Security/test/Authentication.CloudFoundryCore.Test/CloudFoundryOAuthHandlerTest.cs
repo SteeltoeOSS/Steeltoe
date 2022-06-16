@@ -164,7 +164,7 @@ public class CloudFoundryOAuthHandlerTest
 
         var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
         var tokens = OAuthTokenResponse.Success(payload);
-        var resp = await testHandler.TestCreateTicketAsync(identity, new AuthenticationProperties(), tokens);
+        await testHandler.TestCreateTicketAsync(identity, new AuthenticationProperties(), tokens);
 
         Assert.NotNull(handler.LastRequest);
         Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);

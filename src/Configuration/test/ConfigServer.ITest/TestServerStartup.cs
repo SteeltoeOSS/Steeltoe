@@ -27,7 +27,6 @@ internal sealed class TestServerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        var config = app.ApplicationServices.GetServices<IConfiguration>();
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {

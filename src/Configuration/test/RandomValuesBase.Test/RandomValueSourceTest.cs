@@ -29,8 +29,6 @@ public class RandomValueSourceTest
     [Fact]
     public void Build__ReturnsProvider()
     {
-        ILoggerFactory factory = new LoggerFactory();
-
         var source = new RandomValueSource();
         var provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<RandomValueProvider>(provider);

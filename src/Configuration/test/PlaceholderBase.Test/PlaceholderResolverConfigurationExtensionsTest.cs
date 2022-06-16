@@ -20,7 +20,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     {
         const IConfigurationBuilder configurationBuilder = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddPlaceholderResolver());
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddPlaceholderResolver());
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     {
         const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => configuration.AddPlaceholderResolver());
+        Assert.Throws<ArgumentNullException>(() => configuration.AddPlaceholderResolver());
     }
 
     [Fact]

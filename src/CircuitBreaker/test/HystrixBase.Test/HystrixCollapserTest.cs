@@ -1121,7 +1121,7 @@ public class HystrixCollapserTest : HystrixTestBase
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
                 _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
@@ -1201,7 +1201,7 @@ public class HystrixCollapserTest : HystrixTestBase
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
                 _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
@@ -1333,7 +1333,7 @@ public class HystrixCollapserTest : HystrixTestBase
         var value1 = new AtomicReference<string>(null);
         var value2 = new AtomicReference<string>(null);
 
-        var s1 = response1
+        response1
             .OnDispose(() =>
             {
                 _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
@@ -1435,7 +1435,7 @@ public class HystrixCollapserTest : HystrixTestBase
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
                 _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
@@ -1517,7 +1517,7 @@ public class HystrixCollapserTest : HystrixTestBase
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
                 _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
@@ -2132,7 +2132,7 @@ public class HystrixCollapserTest : HystrixTestBase
                 {
                     if (v.Task == _listener)
                     {
-                        _ = _ctimer.Tasks.TryRemove(v, out var removed);
+                        _ = _ctimer.Tasks.TryRemove(v, out _);
                     }
                 }
             }

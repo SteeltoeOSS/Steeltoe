@@ -134,7 +134,6 @@ public class CloudFoundryExtensionsTest
         using var server = new TestServer(builder);
         var client = server.CreateClient();
         var result = await client.GetAsync("http://localhost/");
-        var body = await result.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         var location = result.Headers.Location.ToString();
         Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location);

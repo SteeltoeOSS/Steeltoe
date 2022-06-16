@@ -97,7 +97,7 @@ public class ThreadPoolEventsListener : EventSourceListener
 
     private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
     {
-        ThreadPool.GetMaxThreads(out var maxWorker, out var maxComPort);
+        ThreadPool.GetMaxThreads(out var maxWorker, out _);
         using var nameEnumerator = eventData.PayloadNames.GetEnumerator();
         using var payloadEnumerator = eventData.Payload.GetEnumerator();
 

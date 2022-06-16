@@ -994,7 +994,7 @@ internal sealed unsafe class ResourceNode
 
             _dataLen = dataDescr->Size;
             _dataFileOffset = file.Header.RvaToFileOffset(dataDescr->RvaToData);
-            var data = FetchData(0, _dataLen, buff);
+            FetchData(0, _dataLen, buff);
             _file.FreeBuff(buff);
         }
     }

@@ -328,7 +328,7 @@ public class HystrixRollingPercentileTest
 
         var r = new Random();
         var cts = new CancellationTokenSource();
-        var metricsPoller = Task.Run(() =>
+        Task.Run(() =>
         {
             while (!cts.Token.IsCancellationRequested)
             {

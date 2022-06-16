@@ -483,7 +483,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         template.ConvertAndSend("amqp656", "foo");
         var reply = template.ReceiveAndConvert<string>("amqp656dlq", 10000);
         Assert.Equal("foo", reply);
-        var admin = _context.GetRabbitAdmin();
+        _ = _context.GetRabbitAdmin();
 
         var client = new HttpClient();
         var authToken = Encoding.ASCII.GetBytes("guest:guest");

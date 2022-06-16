@@ -24,7 +24,7 @@ public class CredHubClientTests
         const MockedRequest authRequest = null;
         var mockHttpMessageHandler = InitializedHandlerWithLogin(authRequest);
 
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        await InitializeClientAsync(mockHttpMessageHandler);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
     }
@@ -239,11 +239,6 @@ public class CredHubClientTests
             .Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name=/example-rsa")
             .Respond("application/json", "{\"data\":[{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}]}");
         var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var rsa = new RsaCredential
-        {
-            PrivateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n",
-            PublicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n"
-        };
 
         var response = await client.GetByNameAsync<RsaCredential>("/example-rsa");
 
@@ -489,7 +484,7 @@ public class CredHubClientTests
     public async Task DeleteByNameAsync_ReturnsTrue_WhenCredDeleted()
     {
         var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
+        mockHttpMessageHandler
             .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/data?name=/example-rsa")
             .Respond(HttpStatusCode.NoContent);
         var client = await InitializeClientAsync(mockHttpMessageHandler);
@@ -503,7 +498,7 @@ public class CredHubClientTests
     public async Task DeleteByNameAsync_ReturnsTrue_WhenCredNotFound()
     {
         var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
+        mockHttpMessageHandler
             .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/data?name=/example-rsa")
             .Respond(HttpStatusCode.NotFound);
         var client = await InitializeClientAsync(mockHttpMessageHandler);
@@ -688,7 +683,7 @@ public class CredHubClientTests
             new ("credential_name", "/example-password"),
             new ("actor", "uaa-user:credhub_client")
         };
-        var mockRequest = mockHttpMessageHandler
+        mockHttpMessageHandler
             .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/permissions")
             .WithQueryString(queryString)
             .Respond(HttpStatusCode.NoContent);
@@ -708,7 +703,7 @@ public class CredHubClientTests
             new ("credential_name", "/example-password"),
             new ("actor", "uaa-user:credhub_client")
         };
-        var mockRequest = mockHttpMessageHandler
+        mockHttpMessageHandler
             .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/permissions")
             .WithQueryString(queryString)
             .Respond(HttpStatusCode.NotFound);
@@ -753,8 +748,8 @@ public class CredHubClientTests
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
         var infoUrl = _credHubBase.Replace("/api", "/info");
-        var infoRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, infoUrl).Respond("application/json", "{\"auth-server\": {\"url\": \"http://uaa-server\"},\"app\":{\"name\":\"CredHub\" }}");
-        authRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, "http://uaa-server/oauth/token").Respond("application/json", "{\"access_token\" : \"fake token\"}");
+        mockHttpMessageHandler.Expect(HttpMethod.Get, infoUrl).Respond("application/json", "{\"auth-server\": {\"url\": \"http://uaa-server\"},\"app\":{\"name\":\"CredHub\" }}");
+        mockHttpMessageHandler.Expect(HttpMethod.Post, "http://uaa-server/oauth/token").Respond("application/json", "{\"access_token\" : \"fake token\"}");
         return mockHttpMessageHandler;
     }
 }

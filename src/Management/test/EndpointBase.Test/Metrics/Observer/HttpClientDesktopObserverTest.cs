@@ -25,7 +25,7 @@ public class HttpClientDesktopObserverTest : BaseTest
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();
-        var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
+        _ = new HttpClientDesktopObserver(options, null, viewRegistry);
 
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.time");
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.count");

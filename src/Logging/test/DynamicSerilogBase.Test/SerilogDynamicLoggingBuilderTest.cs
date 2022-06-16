@@ -85,7 +85,7 @@ public class SerilogDynamicLoggingBuilderTest
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
         var services = new ServiceCollection();
-        var provider = services
+        services
             .AddSingleton<IConfiguration>(configuration)
             .AddSingleton<ConsoleLoggerProvider>()
             .AddLogging(builder =>
@@ -132,7 +132,6 @@ public class SerilogDynamicLoggingBuilderTest
             }).BuildServiceProvider();
 
         var dlogProvider = services.GetService<IDynamicLoggerProvider>();
-        var logProviders = services.GetServices<ILoggerProvider>();
 
         services.Dispose();
         dlogProvider.Dispose();

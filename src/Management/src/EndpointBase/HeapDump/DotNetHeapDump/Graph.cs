@@ -1410,8 +1410,8 @@ internal sealed class RefGraph
                 var refsForChild = GetNode(childIndex, refStorage);
                 if (!refsForChild.Contains(nodeIdx))
                 {
-                    var nodeStr = node.ToString();
-                    var refStr = refsForChild.ToString();
+                    _ = node.ToString();
+                    _ = refsForChild.ToString();
                     Debug.Assert(false);
                 }
             }
@@ -1423,8 +1423,8 @@ internal sealed class RefGraph
                 var nodeForChild = graph.GetNode(childIndex, nodeStorage);
                 if (!nodeForChild.Contains(nodeIdx))
                 {
-                    var nodeStr = nodeForChild.ToString();
-                    var refStr = refNode.ToString();
+                    _ = nodeForChild.ToString();
+                    _ = refNode.ToString();
                     Debug.Assert(false);
                 }
             }
@@ -2182,7 +2182,6 @@ internal sealed class GraphSampler
         ValidateStats(true);
 
         // See if we need to flesh out the potential node to become truly sampled node to hit our quota.  
-        int[] numSkipped = new int[m_statsByType.Length];       // The number of times we have skipped a potential node.  
         for (NodeIndex nodeIdx = 0; nodeIdx < (NodeIndex)m_newIndex.Length; nodeIdx++)
         {
             var newIndex = m_newIndex[(int)nodeIdx];
@@ -2555,8 +2554,7 @@ internal sealed class GraphSampler
 
         for (NodeTypeIndex typeIdx = 0; typeIdx < m_graph.NodeTypeIndexLimit; typeIdx++)
         {
-            var type = m_graph.GetType(typeIdx, typeStorage);
-            var typeName = type.Name;
+            _ = m_graph.GetType(typeIdx, typeStorage);
             var statsCheck = statsCheckByType[(int)typeIdx];
             var stats = m_statsByType[(int)typeIdx];
 

@@ -30,8 +30,8 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
     public void TestRequestContextPropagatesAcrossObserveOnPool()
 #pragma warning restore S2699 // Tests should include assertions
     {
-        var s1 = new SimpleCommand(_output).Execute();
-        var s2 = new SimpleCommand(_output).Observe().Map(s =>
+        new SimpleCommand(_output).Execute();
+        new SimpleCommand(_output).Observe().Map(s =>
         {
             _output.WriteLine("Map => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
             return s;

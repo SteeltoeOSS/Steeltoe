@@ -100,7 +100,6 @@ public class DbMigrationsEndpointTests : BaseTest
     public void Invoke_NonContainerRegistered_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
-        var container = Substitute.For<IServiceProvider>();
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
         helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 

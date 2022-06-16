@@ -27,7 +27,7 @@ public class HttpClientCoreObserverTest : BaseTest
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();
-        var observer = new HttpClientCoreObserver(options, null, viewRegistry);
+        _ = new HttpClientCoreObserver(options, null, viewRegistry);
 
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.time");
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.count");
@@ -164,7 +164,6 @@ public class HttpClientCoreObserverTest : BaseTest
         using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
 
         var req = GetHttpRequestMessage();
-        var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
         var act = new Activity("Test");
         act.Start();

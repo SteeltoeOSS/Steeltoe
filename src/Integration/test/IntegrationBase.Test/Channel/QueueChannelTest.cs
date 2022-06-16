@@ -153,7 +153,7 @@ public class QueueChannelTest
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         var latch = new CountdownEvent(1);
         var cancellationTokenSource = new CancellationTokenSource();
-        var task = Task.Run(async () =>
+        Task.Run(async () =>
         {
             var message = await channel.ReceiveAsync(cancellationTokenSource.Token);
             messageNull = message == null;

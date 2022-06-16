@@ -152,11 +152,7 @@ public class BindingServiceTest : AbstractTest
                 "spring.cloud.stream.bindings.output.producer.partitionCount=0")
             .BuildServiceProvider();
 
-        var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
-
         IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var mockBinder = Mock.Get(binder);
 
         var service = provider.GetService<BindingService>();
         Assert.Throws<InvalidOperationException>(() => service.BindProducer(outputChannel, "output"));
@@ -215,9 +211,6 @@ public class BindingServiceTest : AbstractTest
                 "spring.cloud.stream.bindings.input.consumer.concurrency=0")
             .BuildServiceProvider();
 
-        var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
-
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
         var service = provider.GetService<BindingService>();
@@ -240,7 +233,7 @@ public class BindingServiceTest : AbstractTest
         IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
         var service = provider.GetService<BindingService>();
-        var binding1 = service.BindConsumer(inputChannel, "input");
+        service.BindConsumer(inputChannel, "input");
 
         Assert.Throws<InvalidOperationException>(() => service.BindProducer(outputChannel, "output"));
     }

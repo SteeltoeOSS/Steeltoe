@@ -59,7 +59,7 @@ public class HealthEndpointCoreTest : BaseTest
         var contributors = new List<IHealthContributor> { new TestContributor("h1"), new TestContributor("h2"), new TestContributor("h3") };
         var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
 
-        var info = ep.Invoke(null);
+        ep.Invoke(null);
 
         foreach (var contrib in contributors)
         {

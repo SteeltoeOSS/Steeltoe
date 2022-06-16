@@ -410,7 +410,6 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         rabbitAdmin.DeclareQueue(queue);
         rabbitAdmin.DeclareBinding(binding);
         var cf = _provider.GetRabbitConnectionFactory();
-        var context = _provider.GetApplicationContext();
         var pp = new TestPostProcessor();
         var template = new RabbitTemplate(cf)
         {

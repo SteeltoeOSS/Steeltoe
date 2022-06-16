@@ -978,7 +978,7 @@ public class EvaluationTests : AbstractExpressionTests
         var ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<int>(ctx));
         Assert.Equal(SpelMessage.NOT_ASSIGNABLE, ex.MessageCode);
 
-        var e2 = parser.ParseExpression("1--");
+        e1 = parser.ParseExpression("1--");
         ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<int>(ctx));
         Assert.Equal(SpelMessage.NOT_ASSIGNABLE, ex.MessageCode);
     }

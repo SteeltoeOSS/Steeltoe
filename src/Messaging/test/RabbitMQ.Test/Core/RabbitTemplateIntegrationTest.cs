@@ -518,7 +518,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             return message;
         });
         var message = Message.Create(EncodingUtils.Utf8.GetBytes("test-message"), new MessageHeaders());
-        var reply = rabbitTemplate.SendAndReceive(message);
+        rabbitTemplate.SendAndReceive(message);
         task.Wait(TimeSpan.FromSeconds(10));
         var received = task.Result;
         Assert.NotNull(received);

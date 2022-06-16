@@ -146,7 +146,7 @@ public class StandardEvaluationContext : IEvaluationContext
             }
             else
             {
-                _variables.TryRemove(name, out var priorValue);
+                _variables.TryRemove(name, out _);
             }
         }
     }

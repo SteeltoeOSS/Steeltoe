@@ -37,7 +37,6 @@ public class ConfigServerClientSettingsOptionsTest
     public void ConfigureConfigServerClientSettingsOptions_WithValues()
     {
         var services = new ServiceCollection().AddOptions();
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
         var appsettings = @"
                 {
                     ""spring"": {

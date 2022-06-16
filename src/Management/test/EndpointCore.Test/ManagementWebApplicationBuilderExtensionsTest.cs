@@ -114,7 +114,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
         var client = host.GetTestClient();
-        var response = await client.GetAsync("/actuator/health");
+        await client.GetAsync("/actuator/health");
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
         var livenessResult = await client.GetAsync("actuator/health/liveness");

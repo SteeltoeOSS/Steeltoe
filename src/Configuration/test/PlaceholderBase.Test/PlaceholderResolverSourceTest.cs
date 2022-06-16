@@ -18,7 +18,7 @@ public class PlaceholderResolverSourceTest
     {
         const IList<IConfigurationSource> sources = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources));
     }
 
     [Fact]

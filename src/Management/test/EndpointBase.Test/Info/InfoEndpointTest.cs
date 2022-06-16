@@ -54,7 +54,7 @@ public class InfoEndpointTest : BaseTest
 
         var ep = tc.GetService<IInfoEndpoint>();
 
-        var info = ep.Invoke();
+        ep.Invoke();
 
         foreach (var contrib in contributors)
         {
@@ -77,7 +77,7 @@ public class InfoEndpointTest : BaseTest
 
         var ep = tc.GetService<IInfoEndpoint>();
 
-        var info = ep.Invoke();
+        ep.Invoke();
 
         foreach (var contrib in contributors)
         {

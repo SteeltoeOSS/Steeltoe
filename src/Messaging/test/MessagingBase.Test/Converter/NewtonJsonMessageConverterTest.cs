@@ -176,7 +176,6 @@ public class NewtonJsonMessageConverterTest
     [Fact]
     public void ToMessageUtf16()
     {
-        var e = Encoding.Default;
         var converter = new NewtonJsonMessageConverter();
         var encoding = new UnicodeEncoding(true, false);
         var contentType = new MimeType("application", "json", encoding);

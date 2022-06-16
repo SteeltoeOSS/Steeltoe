@@ -108,7 +108,7 @@ public class HystrixConfigurationStreamTest : CommandStreamTest
                     latch1.SignalEx();
                 });
 
-        var s2 = _stream
+        _stream
             .Observe()
             .Take(100)
             .OnDispose(() =>

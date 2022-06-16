@@ -237,8 +237,6 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         var container = new DirectMessageListenerContainer(context, _connectionFactory);
         container.SetQueueNames(ROUTE);
-        var lastInBatch = new List<bool>();
-        var batchSize = new AtomicInteger();
         container.MessageListener = new TestDebatchListener(received, null, null, latch);
         container.PrefetchCount = 1000;
         container.BatchingStrategy = new SimpleBatchingStrategy(1000, int.MaxValue, 30000);

@@ -87,17 +87,14 @@ public abstract class AbstractBinderTests<B, T>
     [Fact]
     public void TestSendAndReceive()
     {
-        var ccf = GetResource();
         var bindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(bindingsOptions);
         var delimiter = GetDestinationNameDelimiter();
 
         var producerOptions = GetProducerOptions("input", bindingsOptions);
         var consumerProperties = GetConsumerOptions("output", bindingsOptions);
-        var outputBindingProperties = CreateProducerBindingOptions(producerOptions);
         var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
 
-        var inputBindingProperties = CreateConsumerBindingOptions(consumerProperties);
         var moduleInputChannel = CreateBindableChannel("input", GetDefaultBindingOptions());
 
         var producerBinding = binder.BindProducer($"foo{delimiter}0", moduleOutputChannel, producerOptions);
@@ -390,10 +387,7 @@ public abstract class AbstractBinderTests<B, T>
 
     protected IMessage Receive(IPollableChannel channel, int additionalMultiplier)
     {
-        var startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var receive = channel.Receive((int)(1000 * TimeoutMultiplier * additionalMultiplier));
-        var elapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
-        return receive;
+        return channel.Receive((int)(1000 * TimeoutMultiplier * additionalMultiplier));
     }
 
     protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties)

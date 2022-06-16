@@ -78,7 +78,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         var cb = cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -119,7 +118,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         var cb = cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -160,7 +158,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
         var cb = cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+        HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -191,7 +189,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         var cb = cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -237,7 +234,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
         var cb = cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -280,7 +276,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var sleepWindow = 400;
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
         var cb = (HystrixCircuitBreakerImpl)cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -336,7 +331,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var sleepWindow = 400;
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
         var cb = cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -443,7 +437,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
         var cb = cmd1._circuitBreaker;
-        var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests

@@ -311,7 +311,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
-        var mockChannel1 = new Mock<RC.IModel>();
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
 
@@ -1388,7 +1387,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var asyncClosingLatch = new CountdownEvent(1);
         pccMock.Setup(p => p.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
             .Callback(() => asyncClosingLatch.Signal());
-        var rejected = new AtomicBoolean(true);
         var closeLatch = new CountdownEvent(1);
         ccf.PublisherCallbackChannelFactory = new TestOrderlyShutdownPublisherCallbackChannelFactory(pccMock);
         pccMock.Setup(p => p.Close())

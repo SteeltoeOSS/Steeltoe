@@ -94,7 +94,7 @@ public class TtlSchedulerTests
         Assert.True(sch._serviceHeartbeats.TryGetValue("foobar", out var timer));
         Assert.NotNull(timer);
         sch.Remove("foobar");
-        Assert.False(sch._serviceHeartbeats.TryGetValue("foobar", out var timer2));
+        Assert.False(sch._serviceHeartbeats.TryGetValue("foobar", out _));
     }
 
     [Fact]

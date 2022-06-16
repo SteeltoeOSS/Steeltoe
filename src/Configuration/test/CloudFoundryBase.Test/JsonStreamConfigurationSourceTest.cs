@@ -46,7 +46,6 @@ public class JsonStreamConfigurationSourceTest
                   }";
         var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
         var source = new JsonStreamConfigurationSource(memStream);
-        var provider = new JsonStreamConfigurationProvider(source);
         var builder = new ConfigurationBuilder();
         builder.Add(source);
         var root = builder.Build();

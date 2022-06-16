@@ -67,7 +67,7 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
-        var info = ep.Invoke(null);
+        ep.Invoke(null);
 
         foreach (var contrib in contributors)
         {
@@ -188,7 +188,6 @@ public class HealthEndpointTest : BaseTest
     public void InvokeWithInvalidGroupReturnsAllContributors()
     {
         using var tc = new TestContext(_output);
-        var appAvailability = new ApplicationAvailability();
         var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
 
         tc.AdditionalServices = (services, configuration) =>

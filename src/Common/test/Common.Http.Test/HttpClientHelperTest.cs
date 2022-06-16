@@ -26,7 +26,7 @@ public class HttpClientHelperTest
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
         ServicePointManager.ServerCertificateValidationCallback = null;
 
-        HttpClientHelper.ConfigureCertificateValidation(false, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(false, out _, out _);
 
         if (Platform.IsNetCore)
         {
@@ -47,7 +47,7 @@ public class HttpClientHelperTest
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
         ServicePointManager.ServerCertificateValidationCallback = null;
 
-        HttpClientHelper.ConfigureCertificateValidation(true, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(true, out _, out _);
 
         if (Platform.IsNetCore)
         {

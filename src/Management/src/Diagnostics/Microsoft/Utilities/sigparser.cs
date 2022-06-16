@@ -72,7 +72,7 @@ internal struct SigParser
 
     private bool SkipInt()
     {
-        return GetData(out int tmp);
+        return GetData(out _);
     }
 
     public bool GetData(out int data)
