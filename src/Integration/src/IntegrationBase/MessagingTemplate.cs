@@ -39,8 +39,10 @@ public class MessagingTemplate : MessageChannelTemplate
 
     public override IMessageChannel DefaultReceiveDestination
     {
+#pragma warning disable S4275 // Getters and setters should access the expected fields
         get => base.DefaultReceiveDestination;
         set => base.DefaultReceiveDestination = base.DefaultSendDestination = value;
+#pragma warning restore S4275 // Getters and setters should access the expected fields
     }
 
     public override IMessageChannel DefaultSendDestination
