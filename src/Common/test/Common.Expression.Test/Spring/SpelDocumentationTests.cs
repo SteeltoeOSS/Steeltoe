@@ -383,7 +383,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        context.RegisterFunction("reversestring", typeof(StringUtils).GetMethod("ReverseString", BindingFlags.Public | BindingFlags.Static));
+        context.RegisterFunction("reversestring", typeof(StringUtils).GetMethod(nameof(StringUtils.ReverseString), BindingFlags.Public | BindingFlags.Static));
 
         var helloWorldReversed = parser.ParseExpression("#reversestring('hello world')").GetValue<string>(context);
         Assert.Equal("dlrow olleh", helloWorldReversed);

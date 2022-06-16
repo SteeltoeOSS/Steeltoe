@@ -54,7 +54,7 @@ public class MethodMessageHandlerTest
     [Fact]
     public void PatternMatch()
     {
-        var method = _testController.GetType().GetMethod("HandlerPathMatchWildcard");
+        var method = typeof(TestController).GetMethod(nameof(TestController.HandlerPathMatchWildcard));
         _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/handlerPathMatch*");
 
         _messageHandler.HandleMessage(ToDestination("/test/handlerPathMatchFoo"));
@@ -65,10 +65,10 @@ public class MethodMessageHandlerTest
     [Fact]
     public void BestMatch()
     {
-        var method = _testController.GetType().GetMethod("BestMatch");
+        var method = typeof(TestController).GetMethod(nameof(TestController.BestMatch));
         _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/bestmatch/{foo}/path");
 
-        method = _testController.GetType().GetMethod("SecondBestMatch");
+        method = typeof(TestController).GetMethod(nameof(TestController.SecondBestMatch));
         _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/bestmatch/*/*");
 
         _messageHandler.HandleMessage(ToDestination("/test/bestmatch/bar/path"));

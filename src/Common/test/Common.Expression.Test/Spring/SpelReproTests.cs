@@ -1550,7 +1550,7 @@ public class SpelReproTests : AbstractExpressionTests
         {
             try
             {
-                var method = typeof(Enum).GetMethod("GetValues", new[] { typeof(Type) });
+                var method = typeof(Enum).GetMethod(nameof(Enum.GetValues), new[] { typeof(Type) });
                 var value = method.Invoke(null, new object[] { typeof(Xyz) });
                 return new TypedValue(value, value == null ? typeof(object) : value.GetType());
             }
@@ -1567,7 +1567,7 @@ public class SpelReproTests : AbstractExpressionTests
         {
             try
             {
-                return new[] { typeof(int).GetMethod("Parse", new[] { typeof(string), typeof(NumberStyles) }) };
+                return new[] { typeof(int).GetMethod(nameof(int.Parse), new[] { typeof(string), typeof(NumberStyles) }) };
             }
             catch (Exception)
             {

@@ -124,7 +124,7 @@ public class NewtonJsonMessageConverterTest
         var bytes = Encoding.UTF8.GetBytes(payload);
         var message = MessageBuilder.WithPayload(bytes).Build();
 
-        var info = GetType().GetMethod("HandleList", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
+        var info = GetType().GetMethod(nameof(HandleList), BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
         var actual = converter.FromMessage(message, typeof(List<long>), info);
 
         Assert.NotNull(actual);
@@ -139,7 +139,7 @@ public class NewtonJsonMessageConverterTest
         var bytes = Encoding.UTF8.GetBytes(payload);
         var message = MessageBuilder.WithPayload(bytes).Build();
 
-        var info = GetType().GetMethod("HandleMessage", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
+        var info = GetType().GetMethod(nameof(HandleMessage), BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
         var actual = converter.FromMessage(message, typeof(MyBean), info);
 
         Assert.IsType<MyBean>(actual);

@@ -80,11 +80,11 @@ public static class TestScenarioCreator
     {
         try
         {
-            testContext.RegisterFunction("IsEven", typeof(TestScenarioCreator).GetMethod("IsEven", new[] { typeof(int) }));
-            testContext.RegisterFunction("ReverseInt", typeof(TestScenarioCreator).GetMethod("ReverseInt", new[] { typeof(int), typeof(int), typeof(int) }));
-            testContext.RegisterFunction("ReverseString", typeof(TestScenarioCreator).GetMethod("ReverseString", new[] { typeof(string) }));
-            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge", typeof(TestScenarioCreator).GetMethod("VarargsFunctionReverseStringsAndMerge", new[] { typeof(string[]) }));
-            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge2", typeof(TestScenarioCreator).GetMethod("VarargsFunctionReverseStringsAndMerge2", new[] { typeof(int), typeof(string[]) }));
+            testContext.RegisterFunction("IsEven", typeof(TestScenarioCreator).GetMethod(nameof(IsEven), new[] { typeof(int) }));
+            testContext.RegisterFunction("ReverseInt", typeof(TestScenarioCreator).GetMethod(nameof(ReverseInt), new[] { typeof(int), typeof(int), typeof(int) }));
+            testContext.RegisterFunction("ReverseString", typeof(TestScenarioCreator).GetMethod(nameof(ReverseString), new[] { typeof(string) }));
+            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge", typeof(TestScenarioCreator).GetMethod(nameof(VarargsFunctionReverseStringsAndMerge), new[] { typeof(string[]) }));
+            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge2", typeof(TestScenarioCreator).GetMethod(nameof(VarargsFunctionReverseStringsAndMerge2), new[] { typeof(int), typeof(string[]) }));
         }
         catch (Exception ex)
         {

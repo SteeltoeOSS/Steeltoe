@@ -856,7 +856,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Here the target method takes Object... and we are passing a string
         _expression = _parser.ParseExpression("#DoFormat('hey {0}', 'there')");
         context = new StandardEvaluationContext();
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
@@ -866,7 +866,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         _expression = _parser.ParseExpression("#DoFormat([0], 'there')");
         context = new StandardEvaluationContext(new object[] { "hey {0}" });
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
@@ -876,7 +876,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         _expression = _parser.ParseExpression("#DoFormat([0], #arg)");
         context = new StandardEvaluationContext(new object[] { "hey {0}" });
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         context.SetVariable("arg", "there");
         ((SpelExpression)_expression).EvaluationContext = context;
 
@@ -890,7 +890,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReference()
     {
         var ctx = new StandardEvaluationContext();
-        var m = GetType().GetMethod("Concat", new[] { typeof(string), typeof(string) });
+        var m = GetType().GetMethod(nameof(Concat), new[] { typeof(string), typeof(string) });
         ctx.SetVariable("Concat", m);
 
         _expression = _parser.ParseExpression("#Concat('a','b')");
@@ -912,7 +912,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         ctx.SetVariable("b", "boo");
         Assert.Equal("fooboo", _expression.GetValue(ctx));
 
-        m = typeof(Math).GetMethod("Pow", new[] { typeof(double), typeof(double) });
+        m = typeof(Math).GetMethod(nameof(Math.Pow), new[] { typeof(double), typeof(double) });
         ctx.SetVariable("kapow", m);
         _expression = _parser.ParseExpression("#kapow(2.0d,2.0d)");
         Assert.Equal(4.0d, _expression.GetValue(ctx));
@@ -948,7 +948,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceNonCompilableArguments_SPR12359()
     {
         var context = new StandardEvaluationContext(new object[] { "1" });
-        var m = typeof(SomeCompareMethod2).GetMethod("Negate", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(int) }, null);
+        var m = typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Negate), BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(int) }, null);
         context.RegisterFunction("negate", m);
         context.SetVariable("arg", "2");
 
@@ -966,14 +966,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceVarargs_SPR12359()
     {
         var context = new StandardEvaluationContext();
-        context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod("Append", new[] { typeof(string[]) }));
-        context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod("Append2", new[] { typeof(object[]) }));
-        context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod("Append3", new[] { typeof(string[]) }));
-        context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod("Append4", new[] { typeof(string), typeof(string[]) }));
-        context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod("AppendChar", new[] { typeof(char[]) }));
-        context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod("Sum", new[] { typeof(int[]) }));
-        context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod("SumDouble", new[] { typeof(double[]) }));
-        context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod("SumFloat", new[] { typeof(float[]) }));
+        context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append), new[] { typeof(string[]) }));
+        context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append2), new[] { typeof(object[]) }));
+        context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append3), new[] { typeof(string[]) }));
+        context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append4), new[] { typeof(string), typeof(string[]) }));
+        context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.AppendChar), new[] { typeof(char[]) }));
+        context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Sum), new[] { typeof(int[]) }));
+        context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumDouble), new[] { typeof(double[]) }));
+        context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumFloat), new[] { typeof(float[]) }));
 
         context.SetVariable("stringArray", new[] { "x", "y", "z" });
         context.SetVariable("intArray", new[] { 5, 6, 9 });
@@ -1154,7 +1154,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceVarargs()
     {
         var ctx = new StandardEvaluationContext();
-        var m = GetType().GetMethod("Join", new[] { typeof(string[]) });
+        var m = GetType().GetMethod(nameof(Join), new[] { typeof(string[]) });
         ctx.SetVariable("join", m);
         _expression = _parser.ParseExpression("#join('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(ctx));
@@ -5549,7 +5549,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class MyAccessor : ICompilablePropertyAccessor
     {
-        private static readonly MethodInfo _method = typeof(Payload2).GetMethod("GetField", new[] { typeof(string) });
+        private static readonly MethodInfo _method = typeof(Payload2).GetMethod(nameof(Payload2.GetField), new[] { typeof(string) });
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {

@@ -270,7 +270,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             {
                 try
                 {
-                    var m = typeof(HasRoleExecutor).GetMethod("HasRole", new[] { typeof(string[]) });
+                    var m = typeof(HasRoleExecutor).GetMethod(nameof(HasRoleExecutor.HasRole), new[] { typeof(string[]) });
                     var args = arguments;
                     if (args != null)
                     {

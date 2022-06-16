@@ -27,7 +27,7 @@ public class MessageHandlerTest
         bpp.Initialize();
         var factory = bpp.MessageHandlerMethodFactory;
         var foo = new Foo();
-        var invMethod = factory.CreateInvocableHandlerMethod(foo, typeof(Foo).GetMethod("Listen1"));
+        var invMethod = factory.CreateInvocableHandlerMethod(foo, typeof(Foo).GetMethod(nameof(Foo.Listen1)));
         var message = Message.Create("foo");
         var list = new List<IMessage> { message };
         var mockChannel = new Mock<RC.IModel>();

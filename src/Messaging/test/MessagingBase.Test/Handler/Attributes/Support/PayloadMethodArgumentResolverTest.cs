@@ -30,7 +30,7 @@ public class PayloadMethodArgumentResolverTest
     {
         _resolver = new PayloadMethodArgumentResolver(new StringMessageConverter());
 
-        var payloadMethod = typeof(PayloadMethodArgumentResolverTest).GetMethod("HandleMessage", BindingFlags.NonPublic | BindingFlags.Instance);
+        var payloadMethod = typeof(PayloadMethodArgumentResolverTest).GetMethod(nameof(HandleMessage), BindingFlags.NonPublic | BindingFlags.Instance);
 
         _paramAnnotated = payloadMethod.GetParameters()[0];
         _paramAnnotatedNotRequired = payloadMethod.GetParameters()[1];

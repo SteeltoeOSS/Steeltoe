@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class TypeReference : SpelNode
 {
-    private static readonly MethodInfo _getTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle", BindingFlags.Static | BindingFlags.Public);
+    private static readonly MethodInfo _getTypeFromHandle = typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), BindingFlags.Static | BindingFlags.Public);
     private readonly int _dimensions;
     private Type _type;
 

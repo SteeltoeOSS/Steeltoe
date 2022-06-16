@@ -59,7 +59,7 @@ public class VariableAndFunctionTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var ctx = new StandardEvaluationContext();
-        ctx.SetVariable("notStatic", GetType().GetMethod("NonStatic"));
+        ctx.SetVariable("notStatic", GetType().GetMethod(nameof(NonStatic)));
         var ex = Assert.Throws<SpelEvaluationException>(() => parser.ParseRaw("#notStatic()").GetValue(ctx));
         Assert.Equal(SpelMessage.FUNCTION_MUST_BE_STATIC, ex.MessageCode);
     }

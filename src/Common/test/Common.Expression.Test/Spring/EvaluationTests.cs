@@ -1226,7 +1226,7 @@ public class EvaluationTests : AbstractExpressionTests
         ExpectFailSetValueNotSupported(parser, ctx, "('abc' matches '^a..')=('abc' matches '^a..')");
 
         // Selection
-        ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod("IsEven", new[] { typeof(int) }));
+        ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod(nameof(Spr9751.IsEven), new[] { typeof(int) }));
 
         ExpectFailNotIncrementable(parser, ctx, "({1,2,3}.?[#IsEven(#this)])++");
         ExpectFailNotDecrementable(parser, ctx, "--({1,2,3}.?[#IsEven(#this)])");

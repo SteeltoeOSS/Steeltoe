@@ -135,7 +135,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
             // Use the standard evaluation context
             var ctx = new StandardEvaluationContext();
-            ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod("Repeat", new[] { typeof(string) }));
+            ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod(nameof(ExpressionLanguageScenarioTests.Repeat), new[] { typeof(string) }));
 
             var expr = parser.ParseRaw("#Repeat('hello')");
             var value = expr.GetValue(ctx);

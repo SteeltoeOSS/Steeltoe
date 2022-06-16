@@ -181,7 +181,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         }
 
         // this return is effectively "StackExchange.Redis.ConfigurationOptions.Parse(this.ToString())"
-        var config = optionsType.GetMethod("Parse", new[] { typeof(string) })
+        var config = optionsType.GetMethod(nameof(int.Parse), new[] { typeof(string) })
             .Invoke(stackObject, new object[] { ToString() });
 
         if (resetPassword)

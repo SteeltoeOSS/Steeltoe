@@ -19,21 +19,21 @@ public class ArgumentResolversTest
         var resolver = new SmartPayloadArgumentResolver(new TestMessageConverter());
         var payload = Encoding.UTF8.GetBytes("hello");
         var message = Message.Create(payload);
-        var parameter = GetType().GetMethod("ByteArray").GetParameters()[0];
+        var parameter = GetType().GetMethod(nameof(ByteArray)).GetParameters()[0];
         var resolvedArgument = resolver.ResolveArgument(parameter, message);
         Assert.Same(payload, resolvedArgument);
 
-        parameter = GetType().GetMethod("Object").GetParameters()[0];
+        parameter = GetType().GetMethod(nameof(Object)).GetParameters()[0];
         resolvedArgument = resolver.ResolveArgument(parameter, message);
         Assert.True(resolvedArgument is IMessage);
 
         var payload2 = new Dictionary<object, object>();
         var message2 = Message.Create(payload2);
-        parameter = GetType().GetMethod("Dict").GetParameters()[0];
+        parameter = GetType().GetMethod(nameof(Dict)).GetParameters()[0];
         resolvedArgument = resolver.ResolveArgument(parameter, message2);
         Assert.Same(payload2, resolvedArgument);
 
-        parameter = GetType().GetMethod("Object").GetParameters()[0];
+        parameter = GetType().GetMethod(nameof(Object)).GetParameters()[0];
         resolvedArgument = resolver.ResolveArgument(parameter, message2);
         Assert.True(resolvedArgument is IMessage);
     }

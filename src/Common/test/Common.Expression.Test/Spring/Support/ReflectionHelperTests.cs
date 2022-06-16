@@ -175,8 +175,8 @@ public class ReflectionHelperTests : AbstractExpressionTests
     public void TestConvertArguments()
     {
         var tc = new StandardTypeConverter();
-        var oneArg = typeof(ITestInterface).GetMethod("OneArg", new[] { typeof(string) });
-        var twoArg = typeof(ITestInterface).GetMethod("TwoArg", new[] { typeof(string), typeof(string[]) });
+        var oneArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.OneArg), new[] { typeof(string) });
+        var twoArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.TwoArg), new[] { typeof(string), typeof(string[]) });
 
         // basic conversion int>String
         var args = new object[] { 3 };
@@ -203,8 +203,8 @@ public class ReflectionHelperTests : AbstractExpressionTests
     public void TestConvertArguments2()
     {
         var tc = new StandardTypeConverter();
-        var oneArg = typeof(ITestInterface).GetMethod("OneArg", new[] { typeof(string) });
-        var twoArg = typeof(ITestInterface).GetMethod("TwoArg", new[] { typeof(string), typeof(string[]) });
+        var oneArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.OneArg), new[] { typeof(string) });
+        var twoArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.TwoArg), new[] { typeof(string), typeof(string[]) });
 
         // Simple conversion: int to string
         var args = new object[] { 3 };

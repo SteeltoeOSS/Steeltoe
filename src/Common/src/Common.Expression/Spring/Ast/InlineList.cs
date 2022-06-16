@@ -14,7 +14,7 @@ public class InlineList : SpelNode
 {
     private static readonly FieldInfo _fieldInfo = typeof(CompiledExpression).GetField("_dynamicFields", BindingFlags.NonPublic | BindingFlags.Instance);
     private static readonly MethodInfo _getItemMethod = typeof(Dictionary<string, object>).GetMethod("get_Item", BindingFlags.Public | BindingFlags.Instance);
-    private static readonly MethodInfo _addMethod = typeof(IList).GetMethod("Add", new[] { typeof(object) });
+    private static readonly MethodInfo _addMethod = typeof(IList).GetMethod(nameof(IList.Add), new[] { typeof(object) });
     private static readonly ConstructorInfo _listConstr = typeof(List<object>).GetConstructor(Type.EmptyTypes);
 
     // If the list is purely literals, it is a constant value and can be computed and cached
