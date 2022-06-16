@@ -2,10 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text;
 using System.Text.Json;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
@@ -52,16 +50,5 @@ public class SpringBootEnvProviderTest
         var prov = new SpringBootEnvProvider("{\"a\":}");
 
         Assert.ThrowsAny<JsonException>(() => prov.Load());
-    }
-
-    private sealed class TestOutputHelper : ITestOutputHelper
-    {
-        private readonly StringBuilder _stringBuilder = new ();
-
-        public string Output => _stringBuilder.ToString();
-
-        public void WriteLine(string message) => _stringBuilder.Append(message);
-
-        public void WriteLine(string format, params object[] args) => _stringBuilder.AppendFormat(format, args);
     }
 }

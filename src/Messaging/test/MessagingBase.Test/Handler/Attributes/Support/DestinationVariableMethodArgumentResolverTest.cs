@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 public class DestinationVariableMethodArgumentResolverTest
 {
     private readonly DestinationVariableMethodArgumentResolver _resolver = new (new DefaultConversionService());
-    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<DestinationVariableMethodArgumentResolverTest>().Named("HandleMessage").Build();
+    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<DestinationVariableMethodArgumentResolverTest>().Named(nameof(HandleMessage)).Build();
 
     [Fact]
     public void SupportsParameter()

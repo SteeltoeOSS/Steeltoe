@@ -18,7 +18,7 @@ public class HeadersMethodArgumentResolverTest
         .CopyHeaders(new Dictionary<string, object> { { "foo", "bar" } })
         .Build();
 
-    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<HeadersMethodArgumentResolverTest>().Named("HandleMessage").Build();
+    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<HeadersMethodArgumentResolverTest>().Named(nameof(HandleMessage)).Build();
 
     [Fact]
     public void SupportsParameter()

@@ -8,7 +8,6 @@ using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test;
 
-public class RollingCollapserEventCounterStreamTest : CommandStreamTest
+public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
 {
     private readonly ITestOutputHelper _output;
     private RollingCollapserEventCounterStream _stream;
@@ -28,11 +27,6 @@ public class RollingCollapserEventCounterStreamTest : CommandStreamTest
             : base(output, latch)
         {
         }
-    }
-
-    private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
-    {
-        return new LatchedObserver(output, latch);
     }
 
     public RollingCollapserEventCounterStreamTest(ITestOutputHelper output)
@@ -164,21 +158,5 @@ public class RollingCollapserEventCounterStreamTest : CommandStreamTest
         expected[(int)CollapserEventType.ADDED_TO_BATCH] = 0;
         expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 0;
         Assert.Equal(expected, _stream.Latest);
-    }
-
-    protected static string CollapserEventsToStr(long[] eventCounts)
-    {
-        var sb = new StringBuilder();
-        sb.Append('[');
-        foreach (var eventType in CollapserEventTypeHelper.Values)
-        {
-            if (eventCounts[(int)eventType] > 0)
-            {
-                sb.Append(eventType.ToString()).Append("->").Append(eventCounts[(int)eventType]).Append(", ");
-            }
-        }
-
-        sb.Append(']');
-        return sb.ToString();
     }
 }

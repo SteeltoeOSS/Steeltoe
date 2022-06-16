@@ -1138,6 +1138,9 @@ public class ConfigServerConfigurationProviderTest
             options = configuration.Get<TestOptions>();
         }
 
+        _ = nameof(TestOptions.Name);
+        _ = nameof(TestOptions.Version);
+
         Assert.Equal("my-app", options.Name);
         Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
     }
@@ -1154,10 +1157,8 @@ public class ConfigServerConfigurationProviderTest
 
     private sealed class TestOptions
     {
-#pragma warning disable S3459 // Unassigned members should be removed
         public string Name { get; set; }
 
         public string Version { get; set; }
-#pragma warning restore S3459 // Unassigned members should be removed
     }
 }

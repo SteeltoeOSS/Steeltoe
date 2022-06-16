@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Options;
@@ -793,16 +792,5 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
-    internal sealed class TestClientHandlerProvider : IHttpClientHandlerProvider
-    {
-        public bool Called { get; set; }
-
-        public HttpClientHandler GetHttpClientHandler()
-        {
-            Called = true;
-            return new HttpClientHandler();
-        }
     }
 }

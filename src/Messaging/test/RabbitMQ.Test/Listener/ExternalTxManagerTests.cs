@@ -130,12 +130,6 @@ public class ExternalTxManagerTests
     private sealed class DummyTxManager : AbstractPlatformTransactionManager
     {
         private readonly CountdownEvent _latch = new (1);
-        private volatile bool _committed;
-        private volatile bool _rolledBack;
-
-        public bool Committed => _committed;
-
-        public bool RolledBack => _rolledBack;
 
         protected override void DoBegin(object transaction, ITransactionDefinition definition)
         {
@@ -143,7 +137,6 @@ public class ExternalTxManagerTests
 
         protected override void DoCommit(DefaultTransactionStatus status)
         {
-            _committed = true;
             _latch.Signal();
         }
 
@@ -154,7 +147,6 @@ public class ExternalTxManagerTests
 
         protected override void DoRollback(DefaultTransactionStatus status)
         {
-            _rolledBack = true;
             _latch.Signal();
         }
     }

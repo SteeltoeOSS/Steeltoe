@@ -5,7 +5,6 @@
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
@@ -627,39 +626,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         public TimeoutCommand(string commandKey, int sleepWindow)
             : base(commandKey, false, false, 2000, sleepWindow, 1)
         {
-        }
-    }
-
-    private sealed class BadRequestCommand : Command
-    {
-        public BadRequestCommand(string commandKey, int latencyToAdd)
-            : base(commandKey, false, true, latencyToAdd, 400, 1)
-        {
-        }
-
-        public BadRequestCommand(string commandKey, int latencyToAdd, int sleepWindow)
-            : base(commandKey, false, true, latencyToAdd, sleepWindow, 1)
-        {
-        }
-    }
-
-    private sealed class MyHystrixCommandExecutionHook : HystrixCommandExecutionHook
-    {
-        public override T OnEmit<T>(IHystrixInvokable command, T response)
-        {
-            LogHC(command, response);
-            return base.OnEmit(command, response);
-        }
-
-        private void LogHC<T>(IHystrixInvokable command, T response)
-        {
-            if (command is IHystrixInvokableInfo commandInfo)
-            {
-                var metrics = commandInfo.Metrics;
-
-                Console.WriteLine(
-                    $"cb/error-count/%/total: {commandInfo.IsCircuitBreakerOpen} {metrics.Healthcounts.ErrorCount} {metrics.Healthcounts.ErrorPercentage} {metrics.Healthcounts.TotalRequests}  => {response}  {commandInfo.ExecutionEvents}");
-            }
         }
     }
 }

@@ -67,7 +67,7 @@ public class MessageListenerAdapterTest
     {
         var called = new AtomicBoolean(false);
         var dele = new TestDelegate2(called);
-        _adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod");
+        _adapter = new MessageListenerAdapter(null, dele, nameof(TestDelegate2.MyPojoMessageMethod));
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
@@ -149,7 +149,7 @@ public class MessageListenerAdapterTest
     {
         var called = new CountdownEvent(1);
         var dele = new TestAsyncDelegate();
-        _adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod")
+        _adapter = new MessageListenerAdapter(null, dele, nameof(TestAsyncDelegate.MyPojoMessageMethod))
         {
             ContainerAckMode = AcknowledgeMode.MANUAL,
             ResponseExchange = "default"
@@ -253,11 +253,13 @@ public class MessageListenerAdapterTest
             _called = called;
         }
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         public string HandleMessage(string input)
         {
             _called.Value = true;
             return $"processed{input}";
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     private sealed class TestDelegate
@@ -269,6 +271,7 @@ public class MessageListenerAdapterTest
             _called = called;
         }
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         public void HandleMessage(string input, RC.IModel channel, IMessage message)
         {
             Assert.NotNull(input);
@@ -283,6 +286,7 @@ public class MessageListenerAdapterTest
             channel.BasicAck(deliveryTag, false);
             _called.Value = true;
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     private sealed class ExtendedListenerAdapter : MessageListenerAdapter

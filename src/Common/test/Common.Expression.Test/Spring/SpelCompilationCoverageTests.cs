@@ -925,7 +925,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         // Confirms visibility of what is being called.
         var context = new StandardEvaluationContext(new object[] { "1" });
-        var m = typeof(SomeCompareMethod).GetMethod("Compare", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(object), typeof(object) }, null);
+        var m = typeof(SomeCompareMethod).GetMethod("PrivateCompare", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(object), typeof(object) }, null);
         context.RegisterFunction("doCompare", m);
         context.SetVariable("arg", "2");
 
@@ -936,7 +936,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // type not public but method is
         context = new StandardEvaluationContext(new object[] { "1" });
-        m = typeof(SomeCompareMethod).GetMethod("Compare2", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(object), typeof(object) }, null);
+        m = typeof(SomeCompareMethod).GetMethod(nameof(SomeCompareMethod.PublicCompare), BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(object), typeof(object) }, null);
         context.RegisterFunction("doCompare", m);
         context.SetVariable("arg", "2");
         _expression = _parser.ParseExpression("#doCompare([0],#arg)");
@@ -5491,20 +5491,19 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:Access modifier should be declared", Justification = "Used in Test")]
     private static class SomeCompareMethod
     {
-        // public
-        public static int Compare2(object o1, object o2)
+        public static int PublicCompare(object o1, object o2)
         {
             return -1;
         }
 
-        // method not public
-        static int Compare(object o1, object o2)
+#pragma warning disable S1144 // Unused private types or members should be removed
+        private static int PrivateCompare(object o1, object o2)
         {
             return -1;
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     public struct A
@@ -6252,10 +6251,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             I = (int)i;
         }
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         private TestClass8(string a, string b)
         {
             S = a + b;
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     public class Obj

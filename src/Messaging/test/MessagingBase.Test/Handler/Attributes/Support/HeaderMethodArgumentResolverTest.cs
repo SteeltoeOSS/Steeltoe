@@ -16,7 +16,7 @@ public class HeaderMethodArgumentResolverTest
 {
     private readonly HeaderMethodArgumentResolver _resolver = new (new DefaultConversionService());
 
-    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<HeaderMethodArgumentResolverTest>().Named("HandleMessage").Build();
+    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<HeaderMethodArgumentResolverTest>().Named(nameof(HandleMessage)).Build();
 
     [Fact]
     public void SupportsParameter()

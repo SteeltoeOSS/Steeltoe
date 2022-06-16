@@ -25,7 +25,7 @@ public class MessageMethodArgumentResolverTest
     {
         _method = typeof(MessageMethodArgumentResolverTest)
             .GetMethod(
-                "Handle",
+                nameof(Handle),
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
         _mock = new Mock<IMessageConverter>();

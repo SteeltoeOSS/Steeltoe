@@ -244,12 +244,6 @@ internal sealed class ResolvableMethod
         //            return this.filters.stream().map(Object::toString)
         //                    .collect(joining(",\n\t\t", "[\n\t\t", "\n\t]"));
         //        }
-        private void AddFilter(string message, IPredicate<MethodInfo> filter)
-        {
-            Func<MethodInfo, bool> func = filter.Test;
-            _filters.Add(new LabeledPredicate<MethodInfo>(message, func));
-        }
-
         private void AddFilter(string message, Func<MethodInfo, bool> func)
         {
             _filters.Add(new LabeledPredicate<MethodInfo>(message, func));

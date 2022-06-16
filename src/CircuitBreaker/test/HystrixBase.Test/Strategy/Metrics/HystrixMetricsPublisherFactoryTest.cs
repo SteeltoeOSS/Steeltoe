@@ -145,7 +145,6 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
     private sealed class TestThreadPoolKey : HystrixThreadPoolKeyDefault
     {
         public static TestThreadPoolKey TEST_A = new ("TEST_A");
-        public static TestThreadPoolKey TEST_B = new ("TEST_B");
 
         public TestThreadPoolKey(string name)
             : base(name)

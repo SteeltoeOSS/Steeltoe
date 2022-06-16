@@ -7,7 +7,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Test;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -146,21 +145,5 @@ public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
         expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
         expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 6;
         Assert.Equal(expected, _stream.Latest);
-    }
-
-    private static string CollapserEventsToStr(long[] eventCounts)
-    {
-        var sb = new StringBuilder();
-        sb.Append('[');
-        foreach (var eventType in CollapserEventTypeHelper.Values)
-        {
-            if (eventCounts[(int)eventType] > 0)
-            {
-                sb.Append(eventType).Append("->").Append(eventCounts[(int)eventType]).Append(", ");
-            }
-        }
-
-        sb.Append(']');
-        return sb.ToString();
     }
 }

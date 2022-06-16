@@ -911,11 +911,13 @@ public class DefaultConversionServiceTest
             ValueOfCount = 0;
         }
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         public static Isbn ValueOf(string value)
         {
             ValueOfCount++;
             return new Isbn(value);
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
 
         private readonly string _value;
 

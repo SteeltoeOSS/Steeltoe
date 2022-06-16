@@ -1457,10 +1457,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private sealed class TestMessageHandlerString
     {
+#pragma warning disable S1144 // Unused private types or members should be removed
         public string HandleMessage(string message)
         {
             return message.ToUpper();
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     private sealed class TestMessageHandler
@@ -1472,11 +1474,13 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             _replyToWas = replyToWas;
         }
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         public IMessage HandleMessage(IMessage message)
         {
             _replyToWas.Value = message.Headers.ReplyTo();
             return Message.Create(Encoding.UTF8.GetBytes(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper()), message.Headers);
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     private sealed class TestTransactionManager : AbstractPlatformTransactionManager

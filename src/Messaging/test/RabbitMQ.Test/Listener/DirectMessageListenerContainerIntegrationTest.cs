@@ -114,8 +114,6 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
 
     private sealed class ReplyingMessageListener : IReplyingMessageListener<string, string>
     {
-        public AcknowledgeMode ContainerAckMode { get; set; }
-
         public string HandleMessage(string input)
         {
             if ("foo".Equals(input) || "bar".Equals(input))

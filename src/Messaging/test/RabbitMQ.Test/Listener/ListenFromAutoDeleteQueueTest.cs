@@ -174,10 +174,8 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
 
     private sealed class AppendingListener : IReplyingMessageListener<string, string>
     {
-        public AcknowledgeMode ContainerAckMode { get; set; }
-
-        public ConcurrentQueue<string> Queue = new ();
-        public CountdownEvent Latch = new (1);
+        public readonly ConcurrentQueue<string> Queue = new ();
+        public readonly CountdownEvent Latch = new (1);
 
         public string HandleMessage(string input)
         {
@@ -185,26 +183,13 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
             Latch.Signal();
             return input;
         }
-
-        public void Reset()
-        {
-            Queue.Clear();
-        }
     }
 
     private sealed class TestAdmin : RabbitAdmin
     {
-        public int InstanceCounter;
-
         public TestAdmin(IConnectionFactory connectionFactory, ILogger logger = null)
             : base(connectionFactory, logger)
         {
-        }
-
-        public new void Initialize()
-        {
-            Interlocked.Increment(ref InstanceCounter);
-            base.Initialize();
         }
     }
 }
