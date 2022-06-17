@@ -234,6 +234,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         // Evaluates to true
         var expression = "IsMember('Nikola Tesla') and IsMember('Mihajlo Pupin')";
         var trueValue = _parser.ParseExpression(expression).GetValue<bool>(societyContext);
+        Assert.True(trueValue);
 
         // -- OR --
 

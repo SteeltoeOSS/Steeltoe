@@ -45,33 +45,6 @@ public class LeaseInfoTest : AbstractBaseTest
     }
 
     [Fact]
-    public void ToJson_Correct()
-    {
-        var jinfo = new JsonLeaseInfo
-        {
-            RenewalIntervalInSecs = 100,
-            DurationInSecs = 200,
-            RegistrationTimestamp = 1_457_973_741_708,
-            LastRenewalTimestamp = 1_457_973_741_708,
-            LastRenewalTimestampLegacy = 1_457_973_741_708,
-            EvictionTimestamp = 1_457_973_741_708,
-            ServiceUpTimestamp = 1_457_973_741_708
-        };
-
-        var result = LeaseInfo.FromJson(jinfo);
-
-        jinfo = result.ToJson();
-
-        Assert.Equal(100, result.RenewalIntervalInSecs);
-        Assert.Equal(200, result.DurationInSecs);
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestampLegacy, DateTimeKind.Utc)));
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.EvictionTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.ServiceUpTimestamp, DateTimeKind.Utc)));
-    }
-
-    [Fact]
     public void FromConfig_Correct()
     {
         var config = new EurekaInstanceConfig();

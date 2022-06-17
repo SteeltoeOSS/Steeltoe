@@ -72,8 +72,6 @@ public class SerilogDynamicLoggerProviderTest
         // assert I: base namespace is in the response, correctly
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
 
-        configurations = provider.GetLoggerConfigurations();
-
         // act II: set A.B* to log at Trace
         provider.SetLogLevel("A.B", LogLevel.Trace);
         configurations = provider.GetLoggerConfigurations();

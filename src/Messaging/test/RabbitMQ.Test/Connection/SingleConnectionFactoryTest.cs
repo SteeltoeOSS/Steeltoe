@@ -39,7 +39,7 @@ public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Verify(c => c.Close(), Times.Never);
 
         con = connectionFactory.CreateConnection();
-        channel = con.CreateChannel();
+        con.CreateChannel();
         Assert.Equal(2, called.Value);
 
         connectionFactory.Destroy();

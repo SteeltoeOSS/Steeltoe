@@ -666,10 +666,10 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             rabbitTemplate.Send(message.Headers.ReplyTo(), message);
             return rabbitTemplate.MessageConverter.FromMessage<string>(message);
         });
-        var result = rabbitTemplate.ConvertSendAndReceive<string>("message");
+        rabbitTemplate.ConvertSendAndReceive<string>("message");
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("message", received.Result);
-        result = rabbitTemplate.ReceiveAndConvert<string>();
+        var result = rabbitTemplate.ReceiveAndConvert<string>();
         Assert.Null(result);
         rabbitTemplate.Stop().Wait();
         cachingConnectionFactory.Destroy();

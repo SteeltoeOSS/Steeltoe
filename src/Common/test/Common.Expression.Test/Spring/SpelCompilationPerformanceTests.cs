@@ -38,7 +38,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         var stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -46,7 +46,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -54,7 +54,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -67,7 +67,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -75,7 +75,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -83,7 +83,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -96,7 +96,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -104,7 +104,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -112,7 +112,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -125,7 +125,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -133,7 +133,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -141,7 +141,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -158,7 +158,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         var stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -166,7 +166,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -174,7 +174,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -187,7 +187,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -195,7 +195,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -203,7 +203,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -220,7 +220,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         var stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -228,7 +228,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -236,7 +236,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -249,7 +249,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -257,7 +257,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -265,7 +265,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -283,7 +283,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         var stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -291,7 +291,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -299,7 +299,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -312,7 +312,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -320,7 +320,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -328,7 +328,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         stime = DateTime.Now.Ticks;
         for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");

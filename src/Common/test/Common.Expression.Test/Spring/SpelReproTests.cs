@@ -606,6 +606,7 @@ public class SpelReproTests : AbstractExpressionTests
         var args = new List<Type> { typeof(long) };
         var ru = new ReflectionUtil<int>();
         var me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "MethodToCall", args);
+        me.Execute(emptyEvalContext, ru, 1);
 
         args[0] = typeof(int);
         me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);

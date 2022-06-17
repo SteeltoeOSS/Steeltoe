@@ -31,13 +31,14 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
             var expr = parser.ParseRaw("new String('hello world')");
 
             // Evaluate it using a 'standard' context
-            var value = expr.GetValue();
+            var value1 = expr.GetValue();
 
             // They are reusable
-            value = expr.GetValue();
+            var value2 = expr.GetValue();
 
-            Assert.Equal("hello world", value);
-            Assert.IsType<string>(value);
+            Assert.Equal(value1, value2);
+            Assert.Equal("hello world", value2);
+            Assert.IsType<string>(value1);
         }
         catch (SpelEvaluationException ex)
         {
@@ -108,6 +109,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // or using assignment within the expression
         expr = parser.ParseRaw("Str='wabble'");
         value = expr.GetValue(ctx);
+        Assert.Equal("wabble", value);
         expr = parser.ParseRaw("Str");
         value = expr.GetValue(ctx);
         Assert.Equal("wabble", value);
@@ -120,6 +122,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // ... and set through setter
         expr = parser.ParseRaw("Property=4");
         value = expr.GetValue(ctx);
+        Assert.Equal(4, value);
         expr = parser.ParseRaw("Property");
         value = expr.GetValue(ctx);
         Assert.Equal(4, value);

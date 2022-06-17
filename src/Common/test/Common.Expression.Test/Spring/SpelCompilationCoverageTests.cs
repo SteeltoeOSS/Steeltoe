@@ -478,12 +478,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Can't compile this as we aren't going down the getfalse() branch in our evaluation
         expression = _parser.ParseExpression("GetTrue() or GetFalse()");
         resultI = expression.GetValue<bool>(tc);
+        Assert.True(resultI);
         AssertCantCompile(expression);
 
         expression = _parser.ParseExpression("A or B");
         tc.A = true;
         tc.B = true;
         resultI = expression.GetValue<bool>(tc);
+        Assert.True(resultI);
         AssertCantCompile(expression); // Haven't yet been into second branch
         tc.A = false;
         tc.B = true;
@@ -542,6 +544,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.A = false;
         tc.B = false;
         resultI = expression.GetValue<bool>(tc);
+        Assert.False(resultI);
         AssertCantCompile(expression); // Haven't yet been into second branch
         tc.A = true;
         tc.B = false;
@@ -4679,10 +4682,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var payload = new Payload();
         _expression = _parser.ParseExpression("DR[0].Threeee");
-        var v = _expression.GetValue(payload);
+        _expression.GetValue(payload);
 
         var expression = _parser.ParseExpression("DR[0].Threeee.Four lt 0.1d?#root:null");
-        v = expression.GetValue(payload);
+        var v = expression.GetValue(payload);
 
         AssertCanCompile(expression);
         var vc = expression.GetValue(payload);
