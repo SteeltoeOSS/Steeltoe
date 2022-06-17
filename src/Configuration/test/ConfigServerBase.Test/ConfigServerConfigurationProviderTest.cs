@@ -1157,8 +1157,10 @@ public class ConfigServerConfigurationProviderTest
 
     private sealed class TestOptions
     {
+#pragma warning disable S3459 // Unassigned members should be removed
         public string Name { get; set; }
 
         public string Version { get; set; }
+#pragma warning restore S3459 // Unassigned members should be removed
     }
 }
