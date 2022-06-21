@@ -1,0 +1,538 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Management.EndpointCore</name>
+    </assembly>
+    <members>
+        <member name="M:Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.Map``1(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.Action{Microsoft.AspNetCore.Builder.IEndpointConventionBuilder})">
+            <summary>
+            Generic routebuilder extension for Actuators.
+            </summary>
+            <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
+            <param name="convention">A convention builder action that applies a convention to the whole collection. </param>
+            <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
+            <exception cref="T:System.InvalidOperationException">When T is not found in service container</exception>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.Action{Microsoft.AspNetCore.Builder.IEndpointConventionBuilder})">
+            <summary>
+            Maps all actuators that have been registered in <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+            </summary>
+            <param name="endpoints">The endpoint builder</param>
+            <param name="convention">The convention action to apply</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Maps all actuators that have been registered in <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+            </summary>
+            <param name="endpoints">The endpoint builder</param>
+            <param name="version">Media Version</param>
+        </member>
+        <member name="T:Steeltoe.Management.Endpoint.EndpointCollectionConventionBuilder">
+            <summary>
+            Represents a collection of ConventionBuilders which need the same convention applied to all of them.
+            </summary>
+        </member>
+        <member name="T:Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointMiddleware">
+            <summary>
+            CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
+            When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="T:Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware"/> is added.
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Add CloudFoundry Security Middleware
+            </summary>
+            <param name="builder">Your application builder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.DbMigrations.EndpointServiceCollectionExtensions.AddDbMigrationsActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Entity Framework actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add actuator to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided. (this actuator looks for settings starting with management:endpoints:dbmigrations)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Env.EndpointServiceCollectionExtensions.AddEnvActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Env actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add actuator to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for settings starting with management:endpoints:env)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Health actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add health to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.Type[])">
+            <summary>
+            Adds components of the Health actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add health to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health)</param>
+            <param name="contributors">Contributors to application health</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,Steeltoe.Common.HealthChecks.IHealthAggregator,System.Type[])">
+            <summary>
+            Adds components of the Health actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add health to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health)</param>
+            <param name="aggregator">Custom health aggregator</param>
+            <param name="contributors">Contributors to application health</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions.AddHeapDumpActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Heap Dump actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add actuator to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:heapdump)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Info.EndpointServiceCollectionExtensions.AddInfoActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Info actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add info to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:info)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Info.EndpointServiceCollectionExtensions.AddInfoActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,Steeltoe.Management.Info.IInfoContributor[])">
+            <summary>
+            Adds components of the info actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add info to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:info)</param>
+            <param name="contributors">Contributors to application information</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Loggers.EndpointServiceCollectionExtensions.AddLoggersActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Loggers actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add logging to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:loggers)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddDbMigrationsActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Database Migrations actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddEnvActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Environment actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(Microsoft.Extensions.Hosting.IHostBuilder,System.Type[])">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="contributors">Types that contribute to the overall health of the app</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(Microsoft.Extensions.Hosting.IHostBuilder,Steeltoe.Common.HealthChecks.IHealthAggregator,System.Type[])">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="aggregator">Custom health aggregator</param>
+            <param name="contributors">Types that contribute to the overall health of the app</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHeapDumpActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the HeapDump actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHypermediaActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Hypermedia actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Info actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(Microsoft.Extensions.Hosting.IHostBuilder,Steeltoe.Management.Info.IInfoContributor[])">
+            <summary>
+            Adds the Info actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="contributors">Contributors to application information</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddLoggersActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Loggers actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddMappingsActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Mappings actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddMetricsActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Metrics actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddRefreshActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Refresh actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddThreadDumpActuator(Microsoft.Extensions.Hosting.IHostBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the ThreadDump actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddTraceActuator(Microsoft.Extensions.Hosting.IHostBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the Trace actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddCloudFoundryActuator(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds the Cloud Foundry actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddAllActuators(Microsoft.Extensions.Hosting.IHostBuilder,System.Action{Microsoft.AspNetCore.Builder.IEndpointConventionBuilder},Steeltoe.Management.Endpoint.MediaTypeVersion,System.Action{Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder})">
+            <summary>
+            Adds all standard actuators to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="configureEndpoints">Customize endpoint behavior. Useful for tailoring auth requirements</param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+            <param name="buildCorsPolicy">Customize the CORS policy. </param>
+            <remarks>Does not add platform specific features (like for Cloud Foundry or Kubernetes)</remarks>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddWavefrontMetrics(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Add wavefront metrics to the application
+            </summary>
+            <param name="hostBuilder">Your Hostbuilder</param>
+            <returns>The updated HostBuilder</returns>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.ActivateActuatorEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.Builder.IEndpointConventionBuilder})">
+            <summary>
+            Registers an <see cref="T:Microsoft.AspNetCore.Hosting.IStartupFilter" /> that will map all configured actuators, initialize health
+            </summary>
+            <param name="collection"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> that has actuators to activate</param>
+            <param name="configureEndpoints">IEndpointConventionBuilder customizations (such as auth policy customization)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddDbMigrationsActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Database Migrations actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddEnvActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Environment actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder,System.Type[])">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+            <param name="contributors">Types that contribute to the overall health of the app</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Steeltoe.Common.HealthChecks.IHealthAggregator,System.Type[])">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+            <param name="aggregator">Custom health aggregator</param>
+            <param name="contributors">Types that contribute to the overall health of the app</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHeapDumpActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the HeapDump actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHypermediaActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Hypermedia actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddInfoActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Info actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddInfoActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Steeltoe.Management.Info.IInfoContributor[])">
+            <summary>
+            Adds the Info actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+            <param name="contributors">Contributors to application information</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddLoggersActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Loggers actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddMappingsActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Mappings actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddMetricsActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Metrics actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddRefreshActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Refresh actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddThreadDumpActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the ThreadDump actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddTraceActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the Trace actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddCloudFoundryActuator(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the Cloud Foundry actuator to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddAllActuators(Microsoft.AspNetCore.Builder.WebApplicationBuilder,System.Action{Microsoft.AspNetCore.Builder.IEndpointConventionBuilder},Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds all Steeltoe Actuators to the application
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+            <param name="configureEndpoints"><see cref="T:Microsoft.AspNetCore.Builder.IEndpointConventionBuilder" /></param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddWavefrontMetrics(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Add Wavefront Metrics Exporter
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder" /></param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddDbMigrationsActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Database Migrations actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddEnvActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Environment actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Type[])">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="contributors">Types that contribute to the overall health of the app</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder,Steeltoe.Common.HealthChecks.IHealthAggregator,System.Type[])">
+            <summary>
+            Adds the Health actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="aggregator">Custom health aggregator</param>
+            <param name="contributors">Types that contribute to the overall health of the app</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHeapDumpActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the HeapDump actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHypermediaActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Hypermedia actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Info actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder,Steeltoe.Management.Info.IInfoContributor[])">
+            <summary>
+            Adds the Info actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="contributors">Contributors to application information</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddLoggersActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Loggers actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddMappingsActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Mappings actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddMetricsActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Metrics actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddRefreshActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Refresh actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddThreadDumpActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the ThreadDump actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddTraceActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the Trace actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddCloudFoundryActuator(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds the Cloud Foundry actuator to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddAllActuators(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Action{Microsoft.AspNetCore.Builder.IEndpointConventionBuilder},Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds all Steeltoe Actuators to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="configureEndpoints"><see cref="T:Microsoft.AspNetCore.Builder.IEndpointConventionBuilder" /></param>
+            <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddWavefrontMetrics(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Adds Wavefront to the application
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Mappings.EndpointServiceCollectionExtensions.AddMappingsActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Mappings actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add actuator to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:mappings)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Mappings.RouteBuilderExtensions.AddRoutesToMappingsActuator(Microsoft.AspNetCore.Routing.IRouteBuilder)">
+            <summary>
+            Add routes from RouteBuilder to mappings actuator
+            </summary>
+            <param name="builder">Your RouteBuilder builder</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Metrics.EndpointServiceCollectionExtensions.AddWavefrontMetrics(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the services used by the Wavefront exporter
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Refresh.EndpointServiceCollectionExtensions.AddRefreshActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Refresh actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add actuator to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:refresh)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminApplicationBuilderExtensions.RegisterWithSpringBootAdmin(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Configuration.IConfiguration,System.Net.Http.HttpClient)">
+            <summary>
+            Register the application with a Spring-Boot-Admin server
+            </summary>
+            <param name="builder"><see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/></param>
+            <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided</param>
+            <param name="httpClient">A customized HttpClient. [Bring your own auth]</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Thread Dump actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add actuator to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:dump)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Trace.EndpointServiceCollectionExtensions.AddTraceActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds components of the Trace actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add trace to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:trace)</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Trace.EndpointServiceCollectionExtensions.AddTraceActuator(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds components of the Trace actuator to Microsoft-DI
+            </summary>
+            <param name="services">Service collection to add trace to</param>
+            <param name="config">Application configuration. Retrieved from the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:trace)</param>
+            <param name="version"><see cref="T:Steeltoe.Management.Endpoint.MediaTypeVersion"/> to use in responses</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddActuatorEndpointMapping``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers mapping for an endpoint. This gets used when calling <see cref="M:Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,Steeltoe.Management.Endpoint.MediaTypeVersion)"/>
+            </summary>
+            <typeparam name="TEndpoint">The type of endpoint</typeparam>
+            <param name="services">The service collection</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Management.OpenTelemetryBase</name>
+    </assembly>
+    <members>
+        <member name="T:Steeltoe.Management.OpenTelemetry.Exporters.Prometheus.PrometheusSerializer">
+            <summary>
+            Basic PrometheusSerializer which has no OpenTelemetry dependency.
+            Copied from OpenTelemetry.Net project
+            </summary>
+            <summary>
+            OpenTelemetry additions to the PrometheusSerializer.
+            </summary>
+        </member>
+        <member name="T:Steeltoe.Management.OpenTelemetry.Exporters.SteeltoeExporter">
+            <summary>
+            Exporter of OpenTelemetry metrics to Steeltoe Format.
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Management.OpenTelemetry.Exporters.SteeltoeExporter.#ctor(Steeltoe.Management.OpenTelemetry.Exporters.IPullmetricsExporterOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Management.OpenTelemetry.Exporters.SteeltoeExporter"/> class.
+            </summary>
+            <param name="options">Options for the exporter.</param>
+        </member>
+        <member name="T:Steeltoe.Management.OpenTelemetry.Exporters.WavefrontTraceExporter">
+            <summary>
+            Exporter to send spans and traces to Wavefront from OpenTelemetry
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.Name">
+            <summary>
+            Gets the name of the application
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.IngressIgnorePattern">
+            <summary>
+            Gets a regex pattern for requests coming into this application that should not be traced
+            </summary>
+            <remarks>Default value: "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif"</remarks>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.EgressIgnorePattern">
+            <summary>
+            Gets a regex pattern for requests leaving this application that should not be traced
+            </summary>
+            <remarks>Default value: "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*"</remarks>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.MaxPayloadSizeInBytes">
+            <summary>
+            Gets the maximum payload size in bytes. Default value: 4096.
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.AlwaysSample">
+            <summary>
+            Gets a value indicating whether traces should ALWAYS be captured
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.NeverSample">
+            <summary>
+            Gets a value indicating whether traces should NEVER be captured
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.UseShortTraceIds">
+            <summary>
+            Gets a value indicating whether trace ids should be truncated from 16 to 8 bytes in logs
+            </summary>
+            <remarks>This setting will NOT affect exported traces</remarks>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.PropagationType">
+            <summary>
+            Gets a value indicating the propagation format that should be used
+            </summary>
+            <remarks>Default value is currently B3. W3C trace context is also supported</remarks>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.SingleB3Header">
+            <summary>
+            Gets a value indicating whether one or multiple B3 headers should be used
+            </summary>
+            <remarks>No effect on other propagation types</remarks>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.EnableGrpcAspNetCoreSupport">
+            <summary>
+            Gets a value indicating whether GRPC requests should participate in tracing
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.OpenTelemetry.Trace.ITracingOptions.ExporterEndpoint">
+            <summary>
+            Gets a value representing the endpoint used for exporting traces
+            </summary>
+        </member>
+    </members>
+</doc>

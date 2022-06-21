@@ -13,7 +13,7 @@
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>5.0.1</SystemDiagnosticsVersion>
-    <SystemJsonVersion>5.0.2</SystemJsonVersion>
+    <SystemJsonVersion>6.0.4</SystemJsonVersion>
     <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>

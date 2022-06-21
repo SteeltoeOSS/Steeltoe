@@ -1,0 +1,14 @@
+apiVersion: indicatorprotocol.io/v1
+kind: IndicatorDocument
+spec:
+  product:
+    name: hananiel,playground,dotnet
+    version: 0.0.1
+
+  indicators:
+    - name: "Appdex_Score"
+      promql: "sum(rate(http_server_requests_count_total_bucket{le=\"5\", source_id=\"$sourceId\"}[5m])) by (uri) / sum(rate(http_server_requests_count_total_sum{source_id=\"$sourceId\"}[5m])) by (uri)"
+      documentation:
+        title: "Appdex Score"
+      presentation:
+        units: "counts"

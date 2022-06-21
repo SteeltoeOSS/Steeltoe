@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Extensions.Configuration.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="P:Steeltoe.Extensions.Configuration.AbstractServiceOptions.Name">
+            <summary>
+            Gets or sets the name of the service instance
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Extensions.Configuration.AbstractServiceOptions.Label">
+            <summary>
+            Gets or sets a label describing the type of service
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Extensions.Configuration.AbstractServiceOptions.Tags">
+            <summary>
+            Gets or sets the plan level at which the service is provisoned
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Extensions.Configuration.AbstractServiceOptions.Plan">
+            <summary>
+            Gets or sets a list of tags describing the service
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.IServiceCollectionExtensions.GetServicesInfo(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            If an instance of <see cref="T:Steeltoe.Extensions.Configuration.IServicesInfo"/> is found, it is returned.
+            Otherwise a default instance is added to the collection and then returned.
+            </summary>
+            <param name="serviceCollection">Collection of configured services</param>
+            <returns>Relevant <see cref="T:Steeltoe.Extensions.Configuration.IServicesInfo" /></returns>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.IServicesInfo.GetServicesList">
+            <summary>
+            Retrieves a list of all service instances for all service types
+            </summary>
+            <returns>A complete list of service instances known to the application</returns>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.IServicesInfo.GetInstancesOfType(System.String)">
+            <summary>
+            Retrieves a list of all service instances of a given service type
+            </summary>
+            <param name="serviceType">String value that identifies the service type. May be platform/broker/version dependent</param>
+            <remarks>Sample values include: p-mysql, azure-mysql-5-7, p-configserver, p.configserver</remarks>
+            <returns>A list of service instances configured under the given type</returns>
+        </member>
+        <member name="T:Steeltoe.Extensions.Configuration.Service">
+            <summary>
+            Represents a service instance bound to an application
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Extensions.Configuration.Service.Credentials">
+            <summary>
+            Gets or sets the connection information and credentials for using the service
+            </summary>
+        </member>
+    </members>
+</doc>

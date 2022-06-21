@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>cf3c2471-bd54-4e7e-8c75-fd133e14807f</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.3.0-beta.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bootstrap\src\Autoconfig\Steeltoe.Bootstrap.Autoconfig.csproj" />
+    <ProjectReference Include="..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" />
+    <ProjectReference Include="..\Management\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
+    <ProjectReference Include="..\Management\src\TracingCore\Steeltoe.Management.TracingCore.csproj" />
+  </ItemGroup>
+
+</Project>

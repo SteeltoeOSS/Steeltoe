@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Extensions.Configuration.CloudFoundryBase</name>
+    </assembly>
+    <members>
+        <member name="T:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions">
+            <summary>
+            Extension methods for adding services related to CloudFoundry
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Bind configuration data into <see cref="T:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions"/> and <see cref="T:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions"/>
+            and add both to the provided service container as configured TOptions.  You can then inject both options using the normal
+            Options pattern.
+            </summary>
+            <param name="services">the service container</param>
+            <param name="config">the applications configuration</param>
+            <returns>service container</returns>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+            <summary>
+            Find the Cloud Foundry service with the <paramref name="serviceName"/> in VCAP_SERVICES and bind the configuration data from
+            the provided <paramref name="config"/> into the options type and add it to the provided service container as a configured named TOption.
+            The name of the TOption will be the <paramref name="serviceName"/>. You can then inject the option using the normal Options pattern.
+            </summary>
+            <typeparam name="TOption">the options type</typeparam>
+            <param name="services">the service container</param>
+            <param name="config">the applications configuration</param>
+            <param name="serviceName">the Cloud Foundry service name to bind to the options type</param>
+            <returns>service container</returns>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryServices``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+            <summary>
+            Find all of the Cloud Foundry services with the <paramref name="serviceLabel"/> in VCAP_SERVICES and bind the configuration data from
+            the provided <paramref name="config"/> into the options type and add them all to the provided service container as a configured named TOptions.
+            The name of each TOption will be the the name of the Cloud Foundry service binding. You can then inject all the options using the normal Options pattern.
+            </summary>
+            <typeparam name="TOption">the options type</typeparam>
+            <param name="services">the service container</param>
+            <param name="config">the applications configuration</param>
+            <param name="serviceLabel">the Cloud Foundry service label to use to bind to the options type</param>
+            <returns>serice container</returns>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.IServiceCollectionExtensions.RegisterCloudFoundryApplicationInstanceInfo(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Removes any existing <see cref="T:Steeltoe.Common.IApplicationInstanceInfo"/> if found. Registers a <see cref="T:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions" />
+            </summary>
+            <param name="serviceCollection">Collection of configured services</param>
+        </member>
+    </members>
+</doc>

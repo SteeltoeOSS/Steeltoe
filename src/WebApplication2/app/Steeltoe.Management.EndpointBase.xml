@@ -1,0 +1,1272 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Management.EndpointBase</name>
+    </assembly>
+    <members>
+        <member name="T:Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsEndpoint.DbMigrationsEndpointHelper">
+            <summary>
+            Hacky class to allow mocking migration methods in unit tests
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Health.HealthEndpoint.GetRequestedHealthGroup(Steeltoe.Management.Endpoint.Security.ISecurityContext)">
+            <summary>
+            Returns the last value returned by <see cref="M:Steeltoe.Management.Endpoint.Security.ISecurityContext.GetRequestComponents"/>, expected to be the name of a configured health group
+            </summary>
+            <param name="securityContext">Last value of <see cref="M:Steeltoe.Management.Endpoint.Security.ISecurityContext.GetRequestComponents"/> is used as group name</param>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Health.HealthEndpoint.GetFilteredContributorList(System.String,System.Collections.Generic.IList{Steeltoe.Common.HealthChecks.IHealthContributor})">
+            <summary>
+            Filter out health contributors that do not belong to the requested group
+            </summary>
+            <param name="requestedGroup">Name of group from request</param>
+            <param name="contributors">Full list of <see cref="T:Steeltoe.Common.HealthChecks.IHealthContributor"/>s</param>
+            <returns>
+                If the group is configured, returns health contributors that belong to the group. <para />
+                If group can't be parsed or is not configured, returns all health contributors.
+            </returns>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Groups">
+            <summary>
+            Gets or sets the list of available health groups
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Health.HealthGroupOptions.Include">
+            <summary>
+            Gets or sets a comma-separated list of contributors or tags to include in this group
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Health.IServiceProviderExtensions.InitializeAvailability(System.IServiceProvider)">
+            <summary>
+            Register events to trigger initial and shutting down values for Readiness and Liveness states of <see cref="T:Steeltoe.Common.Availability.ApplicationAvailability"/>
+            </summary>
+            <param name="serviceProvider"><see cref="T:System.IServiceProvider" /> for your application</param>
+        </member>
+        <member name="T:Steeltoe.Management.Endpoint.Hypermedia.ActuatorEndpoint">
+            <summary>
+            Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators
+            </summary>
+        </member>
+        <member name="T:Steeltoe.Management.Endpoint.Hypermedia.Links">
+            <summary>
+            A typed collection of links
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Hypermedia.Links.Type">
+            <summary>
+            Gets or sets the type of links contained in this collection
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Hypermedia.Links._links">
+            <summary>
+            Gets or sets the list of links contained in this collection
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Loggers.LoggersChangeRequest.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Management.Endpoint.Loggers.LoggersChangeRequest"/> class.
+            </summary>
+            <param name="name">Name of the logger to update</param>
+            <param name="level">Minimum level to log - pass null to reset</param>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Loggers.LoggersChangeRequest.Name">
+            <summary>
+            Gets name(space) of logger level to change
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Loggers.LoggersChangeRequest.Level">
+            <summary>
+            Gets minimum level to log, null to reset back to original
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.ManagementEndpointOptions.CustomJsonConverters">
+            <summary>
+            Gets or sets a list of <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">assembly-qualified</see> custom JsonCoverters
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.IngressIgnorePattern">
+            <summary>
+            Gets a regex pattern for requests coming into this application where metrics should not be captured
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.EgressIgnorePattern">
+            <summary>
+            Gets a regex pattern for requests leaving this application where metrics should not be captured
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.ExcludedMetrics">
+            <summary>
+            Gets a list of metrics that should not be captured
+            </summary>
+            <remarks>
+                Currently only applies to System.Runtime metrics captured by <see cref="T:Steeltoe.Management.Endpoint.Metrics.Observer.EventCounterListener"/><para />
+                See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />
+            </remarks>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Metrics.MetricsObserverOptions.IngressIgnorePattern">
+            <inheritdoc/>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Metrics.MetricsObserverOptions.EgressIgnorePattern">
+            <inheritdoc/>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.Metrics.MetricsObserverOptions.ExcludedMetrics">
+            <inheritdoc/>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Metrics.Observer.EventCounterListener.OnEventWritten(System.Diagnostics.Tracing.EventWrittenEventArgs)">
+            <summary>
+            Processes a new EventSource event.
+            </summary>
+            <param name="eventData">Event to process.</param>
+        </member>
+        <member name="T:Steeltoe.Management.Endpoint.Metrics.Observer.GCEventsListener">
+            <summary>
+            Events are fired when garbage collection occurs
+            </summary>
+        </member>
+        <member name="T:Steeltoe.Management.Endpoint.Metrics.Observer.ThreadPoolEventsListener">
+            <summary>
+            This EventSourceListener listens on the following events:
+            ThreadPoolWorkerThreadStart, ThreadPoolWorkerThreadWait, ThreadPoolWorkerThreadStop,
+            IOThreadCreate_V1, IOThreadRetire_V1, IOThreadUnretire_V1, IOThreadTerminate
+            And Records the following values:
+            ActiveWorkerThreadCount - UInt32 - Number of worker threads available to process work, including those that are already processing work.
+            RetiredWorkerThreadCount - UInt32 - Number of worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ApplicationName">
+            <summary>
+            Gets or sets the name to use for this application when registering with SBA
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePath">
+            <summary>
+            Gets or sets the base path SBA should use for interacting with your application
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates">
+            <summary>
+            Gets or sets a value indicating whether SBA certificates should be validated
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMS">
+            <summary>
+            Gets or sets the connection timeout (in milliseconds) for interactions with SBA
+            </summary>
+        </member>
+        <member name="P:Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata">
+            <summary>
+            Gets or sets metadata to use when registering with SBA
+            </summary>
+        </member>
+        <member name="T:Steeltoe.Management.Endpoint.ThreadDump.ThreadDumperEP">
+            <summary>
+            Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.ThreadDump.ThreadDumperEP.DumpThreads">
+            <summary>
+            Connect using the EventPipe and obtain a dump of all the Threads and for each thread a stacktrace
+            </summary>
+            <returns>the list of threads with stack trace information</returns>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Utils.CompressFile(System.String,System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Applies GZip compression to a file on disk, returns it as a stream and deletes the original file
+            </summary>
+            <param name="filename">Path of file to load</param>
+            <param name="gzFilename">Name to use for compressed output</param>
+            <param name="logger"><see cref="T:Microsoft.Extensions.Logging.ILogger"/> for recording exceptions</param>
+            <returns>A filestream with the file's compressed contents</returns>
+        </member>
+        <member name="M:Steeltoe.Management.Endpoint.Utils.CompressFileAsync(System.String,System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Applies GZip compression to a file on disk, returns it as a stream and deletes the original file
+            </summary>
+            <param name="filename">Path of file to load</param>
+            <param name="gzFilename">Name to use for compressed output</param>
+            <param name="logger"><see cref="T:Microsoft.Extensions.Logging.ILogger"/> for recording exceptions</param>
+            <returns>A filestream with the file's compressed contents</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions">
+            <summary>
+            Add services used by the CloudFoundry actuator
+            </summary>
+            <summary>
+            Add services used by the DB Migrations actuator
+            </summary>
+            <summary>
+            Add services used by the Env actuator
+            </summary>
+            <summary>
+            Add services used by the Health actuator
+            </summary>
+            <summary>
+            Add services used by the HeapDump actuator
+            </summary>
+            <summary>
+            Add services used by the Hypermedia actuator
+            </summary>
+            <summary>
+            Add services used by the Info actuator
+            </summary>
+            <summary>
+            Add services used by the Loggers actuator
+            </summary>
+            <summary>
+            Add services used by the Mappings actuator
+            </summary>
+            <summary>
+            Add services used by the Metrics actuator
+            </summary>
+            <summary>
+            Add services used by the Refresh actuator
+            </summary>
+            <summary>
+            Add services used by the ThreadDump actuator
+            </summary>
+            <summary>
+            Add services used by the Trace actuator
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddCloudFoundryActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Cloud Foundry actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddDbMigrationsActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the DB Migrations actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddEnvActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Env actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddHealthActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Health actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddHeapDumpActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Heap Dump actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddHypermediaActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Hypermedia actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddInfoActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Info actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddLoggersActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Loggers actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddMappingsActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Mappings actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddMetricsActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Metrics actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddPrometheusActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Prometheus actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddOpenTelemetryMetricsForSteeltoe(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{System.IServiceProvider,OpenTelemetry.Metrics.MeterProviderBuilder},System.String,System.String)">
+            <summary>
+            Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by OpenTelemetry.
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configure">The Action to configure OpenTelemetry</param>
+            <param name="name">Instrumentation Name </param>
+            <param name="version">Instrumentation Version</param>
+            <returns>A reference to the service collection </returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.ConfigureSteeltoeMetrics(OpenTelemetry.Metrics.MeterProviderBuilder,System.Action{System.IServiceProvider,OpenTelemetry.Metrics.MeterProviderBuilder},System.String,System.String)">
+            <summary>
+            Configures the <see cref="T:OpenTelemetry.Metrics.MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />
+            </summary>
+            <param name="builder">MeterProviderBuilder </param>
+            <param name="configure"> Configuration callback</param>
+            <param name="name">Instrumentation Name</param>
+            <param name="version">Instrumentation Version</param>
+            <returns>Configured MeterProviderBuilder</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddRefreshActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the services used by the Refresh actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddSpringBootAdminClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Register startup/shutdown interactions with Spring Boot Admin server
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddThreadDumpActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the services used by the Thread Dump actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <param name="version">The media version to use</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions.AddTraceActuatorServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,Steeltoe.Management.Endpoint.MediaTypeVersion)">
+            <summary>
+            Adds the services used by the Trace actuator
+            </summary>
+            <param name="services">Reference to the service collection</param>
+            <param name="configuration">Reference to the configuration system</param>
+            <param name="version">The media version to use</param>
+            <returns>A reference to the service collection</returns>
+        </member>
+        <member name="M:Microsoft.Diagnostics.Tools.GCDump.EventPipeDotNetHeapDumper.DumpFromEventPipe(System.Threading.CancellationToken,System.Int32,Graphs.MemoryGraph,System.IO.TextWriter,System.Int32,DotNetHeapInfo)">
+            <summary>
+            Given a factory for creating an EventPipe session with the appropriate provider and keywords turned on,
+            generate a GCHeapDump using the resulting events.  The correct keywords and provider name
+            are given as input to the Func eventPipeEventSourceFactory.
+            </summary>
+            <param name="processID"></param>
+            <param name="eventPipeEventSourceFactory">A delegate for creating and stopping EventPipe sessions</param>
+            <param name="memoryGraph"></param>
+            <param name="log"></param>
+            <param name="dotNetInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DotNetHeapDumpGraphReader">
+            <summary>
+            Reads a .NET Heap dump generated from ETW
+            </summary>
+        </member>
+        <member name="M:DotNetHeapDumpGraphReader.#ctor(System.IO.TextWriter)">
+            <summary>
+            A class for reading ETW events from the .NET runtime and creating a MemoryGraph from it.   This only works on V4.5.1 of the runtime or later.  
+            </summary>
+            <param name="log">A place to put diagnostic messages.</param>
+        </member>
+        <member name="M:DotNetHeapDumpGraphReader.Read(System.String,System.String,System.Double)">
+            <summary>
+            Read in the memory dump from javaScriptEtlName.   Since there can be more than one, choose the first one
+            after double startTimeRelativeMSec.  If processId is non-zero only that process is considered, otherwise it considered
+            the first heap dump regardless of process.  
+            </summary>
+        </member>
+        <member name="P:DotNetHeapDumpGraphReader.DotNetHeapInfo">
+            <summary>
+            If set before Read or Append is called, keep track of the additional information about GC generations associated with .NET Heaps.  
+            </summary>
+        </member>
+        <member name="M:DotNetHeapDumpGraphReader.SetupCallbacks(Graphs.MemoryGraph,Microsoft.Diagnostics.Tracing.TraceEventDispatcher,System.String,System.Double)">
+            <summary>
+            Sets up the callbacks needed to do a heap dump (work need before processing the events()
+            </summary>
+        </member>
+        <member name="M:DotNetHeapDumpGraphReader.ConvertHeapDataToGraph">
+            <summary>
+            After reading the events the graph is not actually created, you need to post process the information we gathered 
+            from the events.  This is where that happens.   Thus 'SetupCallbacks, Process(), ConvertHeapDataToGraph()' is how
+            you dump a heap.  
+            </summary>
+        </member>
+        <member name="M:DotNetHeapDumpGraphReader.GetModuleForImageBase(System.UInt64)">
+            <summary>
+            Given a module image base, return a Module instance that has all the information we have on it.  
+            </summary>
+        </member>
+        <member name="M:DotNetHeapDumpGraphReader.GetModuleForAddress(System.UInt64)">
+            <summary>
+            if 'addressInModule' points inside any loaded module return that module.  Otherwise return null
+            </summary>
+        </member>
+        <member name="F:DotNetHeapDumpGraphReader.m_typeID2TypeIndex">
+            <summary>
+            Converts a raw TypeID (From the ETW data), to the graph type index)
+            </summary>
+        </member>
+        <member name="T:DotNetHeapDumpGraphReader.RCWInfo">
+            <summary>
+            Remembers addition information about RCWs.  
+            </summary>
+        </member>
+        <member name="F:DotNetHeapDumpGraphReader.m_typeBlocks">
+            <summary>
+            We gather all the BulkTypeTraceData into a list m_typeBlocks which we then process as a second pass (because we need module info which may be after the type info).  
+            </summary>
+        </member>
+        <member name="F:DotNetHeapDumpGraphReader.m_staticVarBlocks">
+            <summary>
+            We gather all the BulkTypeTraceData into a list m_typeBlocks which we then process as a second pass (because we need module info which may be after the type info).  
+            </summary>
+        </member>
+        <member name="F:DotNetHeapDumpGraphReader.m_ccwBlocks">
+            <summary>
+            We gather all the GCBulkRootCCWTraceData into a list m_ccwBlocks which we then process as a second pass (because we need type info which may be after the ccw info).  
+            </summary>
+        </member>
+        <member name="F:DotNetHeapDumpGraphReader.m_nodeBlocks">
+            <summary>
+            We gather all the GCBulkNodeTraceData events into a list m_nodeBlocks.  m_curNodeBlock is the current block we are processing and 'm_curNodeIdx' is the node within the event 
+            </summary>
+        </member>
+        <member name="F:DotNetHeapDumpGraphReader.m_edgeBlocks">
+            <summary>
+            We gather all the GCBulkEdgeTraceData events into a list m_edgeBlocks.  m_curEdgeBlock is the current block we are processing and 'm_curEdgeIdx' is the edge within the event 
+            </summary>
+        </member>
+        <member name="F:DotNetHeapDumpGraphReader.m_typeIntern">
+            <summary>
+            We want type indexes to be shared as much as possible, so this table remembers the ones we have already created.  
+            </summary>
+        </member>
+        <member name="P:DotNetHeapInfo.CorruptedObject">
+            <summary>
+            If we could not properly walk an object, this is incremented. 
+            Hopefully this is zero.  
+            </summary>
+        </member>
+        <member name="P:DotNetHeapInfo.UndumpedSegementRegion">
+            <summary>
+            This is the number of bytes we had to skip because of errors walking the segments.
+            </summary>
+        </member>
+        <member name="P:DotNetHeapInfo.SizeOfAllSegments">
+            <summary>
+            This is the sum of all space in the GC segments.    
+            </summary>
+        </member>
+        <member name="P:DotNetHeapInfo.Segments">
+            <summary>
+            The memory regions that user objects can be allocated from
+            </summary>
+        </member>
+        <member name="M:DotNetHeapInfo.GenerationFor(System.UInt64)">
+            <summary>
+            Given an object, determine what GC generation it is in.  Gen 3 is the large object heap
+            returns -1 if the object is not in any GC segment. 
+            </summary>
+        </member>
+        <member name="T:GCHeapDump">
+            <summary>
+            Represents a .GCDump file.  You can open it for reading with the construtor
+            and you can write one with WriteMemoryGraph 
+            </summary>
+        </member>
+        <member name="M:GCHeapDump.WriteMemoryGraph(Graphs.MemoryGraph,System.String,System.String)">
+            <summary>
+            Writes the memory graph 'graph' as a .gcump file to 'outputFileName'
+            'toolName' is the name of the tool generating the data.  It is persisted in the GCDump file
+            and can be used by the viewer to customize the view.  
+            
+            TODO can't set the rest of the meta-data associated with the graph this way.  
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.MemoryGraph">
+            <summary>
+            The 
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.InteropInfo">
+            <summary>
+            Information about COM objects that is not contained in the MemoryGraph.  
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.Is64Bit">
+            <summary>
+            TODO FIX NOW REMOVE DO NOT USE  Use MemoryGraph.Is64Bit instead.    
+            Was this dump taken from a 64 bit process
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.AverageCountMultiplier">
+            <summary>
+            If we have sampled, sampleCount * ThisMultiplier = originalCount.   If sampling not done then == 1
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.AverageSizeMultiplier">
+            <summary>
+            If we have sampled sampledSize * thisMultiplier = originalSize.  If sampling not done then == 1
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.CountMultipliersByType">
+            <summary>
+            This can be null.  If non-null it indicates that only a sample of the GC graph was persisted in 
+            the MemoryGraph filed.  To get an approximation of the original heap, each type's count should be 
+            scaled CountMultipliersByType[T] to get the unsampled count of the original heap.
+            
+            We can't use a uniform number for all types because we want to see all large objects, and we 
+            want to include paths to root for all objects, which means we can only approximate a uniform scaling.  
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.CollectionLog">
+            <summary>
+            This is the log file that was generated at the time of collection 
+            </summary>
+        </member>
+        <member name="P:GCHeapDump.CreationTool">
+            <summary>
+            Returns a string that represents the tool that created this GCDump file.  May be null if not known/supported.  
+            </summary>
+        </member>
+        <member name="M:GCHeapDump.GetProcessesWithGCHeaps">
+            <summary>
+            returns a list of ProcessInfos that indicate which processes
+            have use a runtime .NET or JavaScript that we can potentially dump
+            
+            Note that for 64 bit systems this will ONLY return processes that
+            have the same bitness as the current process (for PerfView it is 32 bit)
+            </summary>
+        </member>
+        <member name="M:GCHeapDump.Write(System.String)">
+            <summary>
+            Writes the data to 'outputFileName'   
+            </summary>
+        </member>
+        <member name="M:GCHeapDump.PreVersion8FromStream(FastSerialization.Deserializer)">
+            <summary>
+            Deals with legacy formats.  We should be able to get rid of eventually.  
+            </summary>
+        </member>
+        <member name="T:XmlGcHeapDump">
+            <summary>
+            Reads the format as an XML file.   It it is a very simple format  Here is an example. 
+            <graph>
+              <rootIndex>3</rootIndex>
+              <nodeTypes>
+                <nodeType Index="1" Size="10" Name="Type1" Module="MyModule" />
+                <nodeType Index="2" Size="1" Name="Type2" />
+                <nodeType Index="3" Size="20" Name="Type3" />
+                <nodeType Index="4" Size="10" Name="Type4" Module="MyModule" />
+              </nodeTypes>
+              <nodes>
+                <node Index="1" Size="100" TypeIndex="1" >2</node>
+                <node Index="2" TypeIndex="1" >3</node>
+                <node Index="3" TypeIndex="1" >1 4</node>
+                <node Index="4" TypeIndex="4" >2</node>
+              </nodes>
+            </graph>
+            
+            </summary>
+        </member>
+        <member name="M:XmlGcHeapDump.ReadNodeTypesFromXml(System.Xml.XmlReader,Graphs.MemoryGraph)">
+            <summary>
+            Reads the NodeTypes element
+            </summary>
+        </member>
+        <member name="M:XmlGcHeapDump.ReadNodesFromXml(System.Xml.XmlReader,Graphs.MemoryGraph)">
+            <summary>
+            Reads the Nodes Element
+            </summary>
+        </member>
+        <member name="M:XmlGcHeapDump.FetchInt(System.Xml.XmlReader,System.String,System.Int32)">
+            <summary>
+            Reads an given attribute as a integer
+            </summary>
+        </member>
+        <member name="T:Graphs.Graph">
+             <summary>
+             A graph is representation of a node-arc graph.    It tries to be very space efficient.   It is a little
+             more complex than the  most basic node-arc graph in that each node can have a code:NodeType associated with it 
+             that contains information that is shared among many nodes.   
+             
+             While the 'obvious' way of representing a graph is to have a 'Node' object that has arcs, we don't do this. 
+             Instead each node is give an unique code:NodeIndex which represents the node and each node has a list of
+             NodeIndexes for each of the children.   Using indexes instead of object pointers is valuable because
+             
+                 * You can save 8 bytes (on 32 bit) of .NET object overhead and corresponding cost at GC time by using
+                   indexes.   This is significant because there can be 10Meg of objects, so any expense adds up
+                 * Making the nodes be identified by index is more serialization friendly.   It is easier to serialize
+                   the graph if it has this representation.  
+                 * It easily allows 3rd parties to 'attach' their own information to each node.  All they need is to
+                   create an array of the extra information indexed by NodeIndex.   The 'NodeIndexLimit' is designed
+                   specifically for this purpose.  
+                   
+             Because we anticipate VERY large graphs (e.g. dumps of the GC heap) the representation for the nodes is 
+             very space efficient and we don't have code:Node class object for most of the nodes in the graph.  However
+             it IS useful to have code:Node objects for the nodes that are being manipulated locally.  
+            
+             To avoid creating lots of code:Node objects that die quickly the API adopts the convention that the
+             CALLer provides a code:Node class as 'storage' when the API needs to return a code:Node.   That way
+             APIs that return code:Node never allocate.    This allows most graph algorithms to work without having
+             to allocate more than a handful of code:Node classes, reducing overhead.   You allocate these storage
+             nodes with the code:Graph.AllocNodeStorage call
+             
+             Thus the basic flow is you call code:Graph.AllocNodeStorage to allocate storage, then call code:Graph.GetRoot
+             to get your first node.  If you need to provide additional information about the nodes, you can allocate an auxiliary
+             array of Size code:Graph.NodeIndexLimit to hold it (for example a 'visited' bit).   Then repeatedly call 
+             code:Node.GetFirstChild, code:Node.GetNextChild to get the children of a node to traverse the graph.
+             
+             OVERHEAD
+            
+                 1) 4 bytes per Node for the pointer to the stream for the rest of the data (thus we can have at most 4Gig nodes)
+                 2) For each node, the number of children, the nodeId, and children are stored as compressed (relative) indexes 
+                    (figure 1 byte for # of children, 2 bytes per type id, 2-3 bytes per child)
+                 3) Variable length nodes also need a compressed int for the Size of the node (1-3 bytes)
+                 4) Types store the name (2 bytes per character), and Size (4 bytes), but typically don't dominate 
+                    Size of graph.  
+            
+             Thus roughly 7 bytes per node + 3 bytes per reference.   Typically nodes on average have 2-3 references, so
+             figure 13-16 bytes per node.  That gives you 125 Million nodes in a 2 Gig of Memory. 
+             
+             The important point here is that representation of a node is always smaller than the Memory it represents, and
+             and often significantly smaller (since it does not hold non-GC data, null pointers and even non-null pointers 
+             are typically half the Size).   For 64 bit heaps, the Size reduction is even more dramatic.  
+             
+             see code:Graph.SizeOfGraphDescription to determine the overhead for any particular graph.
+             
+             </summary>
+        </member>
+        <member name="M:Graphs.Graph.GetNode(Graphs.NodeIndex,Graphs.Node)">
+            <summary>
+            Given an arbitrary code:NodeIndex that identifies the node, Get a code:Node object.  
+            
+            This routine does not allocated but uses the space passed in by 'storage.  
+            'storage' should be allocated with coode:AllocNodeStorage, and should be agressively reused.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.IsDefined(Graphs.NodeIndex)">
+            <summary>
+            returns true if SetNode has been called on this node (it is not an undefined object).  
+            TODO FIX NOW used this instead of the weird if node index grows technique. 
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.GetType(Graphs.NodeTypeIndex,Graphs.NodeType)">
+            <summary>
+            Given an arbitrary code:NodeTypeIndex that identifies the nodeId of the node, Get a code:NodeType object.  
+            
+            This routine does not allocated but overwrites the space passed in by 'storage'.  
+            'storage' should be allocated with coode:AllocNodeTypeStorage, and should be agressively reused.  
+            
+            Note that this routine does not get used much, instead Node.GetType is normal way of getting the nodeId.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.AllocNodeStorage">
+            <summary>
+            Allocates nodes to be used as storage for methods like code:GetRoot, code:Node.GetFirstChild and code:Node.GetNextChild
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Graphs.Graph.AllocTypeNodeStorage">
+            <summary>
+            Allocates nodes to be used as storage for methods like code:GetType
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.NodeIndexLimit">
+            <summary>
+            It is expected that users will want additional information associated with nodes of the graph.  They can
+            do this by allocating an array of code:NodeIndexLimit and then indexing this by code:NodeIndex
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.NodeCount">
+            <summary>
+            Same as NodeIndexLimit, just cast to an integer.  
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.NodeTypeIndexLimit">
+            <summary>
+            It is expected that users will want additional information associated with TYPES of the nodes of the graph.  They can
+            do this by allocating an array of code:NodeTypeIndexLimit and then indexing this by code:NodeTypeIndex
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.NodeTypeCount">
+            <summary>
+            Same as NodeTypeIndex cast as an integer.  
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.TotalSize">
+            <summary>
+            When a Node is created, you specify how big it is.  This the sum of all those sizes.  
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.TotalNumberOfReferences">
+            <summary>
+            The number of references (arcs) in the graph
+            </summary>
+        </member>
+        <member name="F:Graphs.Graph.SegmentSize">
+            <summary>
+            Specifies the size of each segment in the segmented list.
+            However, this value must be a power of two or the list will throw an exception.
+            Considering this requirement and the size of each element as 8 bytes,
+            the current value will keep its size at approximately 64K.
+            Having a lesser size than 85K will keep the segments out of the Large Object Heap,
+            permitting the GC to free up memory by compacting the segments within the heap.
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.#ctor(System.Int32)">
+            <summary>
+            Create a new graph from 'nothing'.  Note you are not allowed to read from the graph
+            until you execute 'AllowReading'.  
+            
+            You can actually continue to write after executing 'AllowReading' however you should
+            any additional nodes you write should not be accessed until you execute 'AllowReading'
+            again.  
+            
+            TODO I can eliminate the need for AllowReading.  
+            </summary>
+        </member>
+        <member name="F:Graphs.Graph.RootIndex">
+            <summary>
+            The NodeIndex of the root node of the graph.   It must be set sometime before calling AllowReading
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.CreateType(System.String,System.String,System.Int32)">
+            <summary>
+            Create a new nodeId with the given name and return its node nodeId index.   No interning is done (thus you can
+            have two distinct NodeTypeIndexes that have exactly the same name.  
+            
+            By default the size = -1 which indicates we will set the type size to the first 'SetNode' for this type.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.CreateNode">
+            <summary>
+            Create a new node and return its index.   It is undefined until code:SetNode is called.   We allow undefined nodes
+            because graphs have loops in them, and thus you need to refer to a node, before you know all the data in the node.
+            
+            It is really expected that every node you did code:CreateNode on you also ultimately do a code:SetNode on.  
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Graphs.Graph.SetNode(Graphs.NodeIndex,Graphs.NodeTypeIndex,System.Int32,System.Collections.Generic.GrowableArray{Graphs.NodeIndex})">
+            <summary>
+            Sets the information associated with the node at 'nodeIndex' (which was created via code:CreateNode).  Nodes
+            have a nodeId, Size and children.  (TODO: should Size be here?)
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.AllowReading">
+            <summary>
+            When a graph is constructed with the default constructor, it is in 'write Mode'  You can't read from it until 
+            you call 'AllowReading' which puts it in 'read mode'.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.ToString">
+            <summary>
+            Used for debugging, returns the node Count and typeNode Count. 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Graphs.Graph.SizeOfGraphDescription">
+            <summary>
+            A pretty good estimate of the how many bytes of Memory it takes just to represent the graph itself. 
+            
+            TODO: Currently this is only correct for the 32 bit version.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.CreateType(System.Int32,Graphs.Module,System.Int32,System.String)">
+            <summary>
+            Graph supports the ability to look up the names of a type at a later time.   You use this by 
+            calling this overload in which you give a type ID (e.g. an RVA) and a module index (from 
+            CreateModule) to this API.   If later you override the 'ResolveTypeName' delegate below
+            then when type names are requested you will get back the typeID and module which you an
+            then use to look up the name (when you do have the PDB). 
+            
+            The Module passed should be reused as much as possible to avoid bloated files.  
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.ResolveTypeName">
+            <summary>
+            In advanced scenarios you may not be able to provide a type name when you create the type.  YOu can pass null
+            for the type name to 'CreateType'   If you provide this callback, later you can provide the mapping from 
+            type index to name (e.g. when PDBs are available).    Note that this field is NOT serialized.   
+            </summary>
+        </member>
+        <member name="P:Graphs.Graph.HasDeferedTypeNames">
+            <summary>
+            Where any types in the graph creates with the CreateType(int typeID, Module module, int size) overload?
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.Clear">
+            <summary>
+            Clear handles puts it back into the state that existed after the constructor returned
+            </summary>
+        </member>
+        <member name="M:Graphs.Graph.ClearWorker">
+            <summary>
+            ClearWorker does only that part of clear needed for this level of the hierarchy (and needs
+            to be done by the constructor too). 
+            </summary>
+        </member>
+        <member name="T:Graphs.Node">
+            <summary>
+            Node represents a single node in the code:Graph.  These are created lazily and follow a pattern were the 
+            CALLER provides the storage for any code:Node or code:NodeType value that are returned.   Thus the caller
+            is responsible for determine when nodes can be reused to minimize GC cost.  
+            
+            A node implicitly knows where the 'next' child is (that is it is an iterator).  
+            </summary>
+        </member>
+        <member name="M:Graphs.Node.ResetChildrenEnumeration">
+            <summary>
+            Reset the internal state so that 'GetNextChildIndex; will return the first child.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Node.GetFirstChildIndex">
+            <summary>
+            Gets the index of the first child of node.  Will return NodeIndex.Invalid if there are no children. 
+            </summary>
+            <returns>The index of the child </returns>
+        </member>
+        <member name="P:Graphs.Node.ChildCount">
+            <summary>
+            Returns the number of children this node has.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Node.Contains(Graphs.NodeIndex)">
+            <summary>
+            Returns true if 'node' is a child of 'this'.  childStorage is simply used as temp space 
+            as was allocated by Graph.AllocateNodeStorage
+            </summary>
+        </member>
+        <member name="T:Graphs.NodeType">
+            <summary>
+            Represents the nodeId of a particular node in the graph.  
+            </summary>
+        </member>
+        <member name="P:Graphs.NodeType.Name">
+            <summary>
+            Every nodeId has a name, this is it.  
+            </summary>
+        </member>
+        <member name="P:Graphs.NodeType.FullName">
+            <summary>
+            This is the ModuleName ! Name (or just Name if ModuleName does not exist)  
+            </summary>
+        </member>
+        <member name="P:Graphs.NodeType.Size">
+            <summary>
+            Size is defined as the Size of the first node in the graph of a given nodeId.   
+            For types that always have the same Size this is useful, but for types (like arrays or strings)
+            that have variable Size, it is not useful.  
+            
+            TODO keep track if the nodeId is of variable Size
+            </summary>
+        </member>
+        <member name="P:Graphs.NodeType.ModuleName">
+            <summary>
+            The module associated with the type.  Can be null.  Typically this is the full path name.  
+            </summary>
+        </member>
+        <member name="T:Graphs.Module">
+            <summary>
+            Holds all interesting data about a module (in particular enough to look up PDB information)
+            </summary>
+        </member>
+        <member name="M:Graphs.Module.#ctor(System.UInt64)">
+            <summary>
+            Create new module.  You must have at least a image base.   Everything else is optional.
+            </summary>
+        </member>
+        <member name="F:Graphs.Module.Path">
+            <summary>
+            The path to the Module (can be null if not known)
+            </summary>
+        </member>
+        <member name="F:Graphs.Module.ImageBase">
+            <summary>
+            The location where the image was loaded into memory
+            </summary>
+        </member>
+        <member name="F:Graphs.Module.Size">
+            <summary>
+            The size of the image when loaded in memory
+            </summary>
+        </member>
+        <member name="F:Graphs.Module.BuildTime">
+            <summary>
+            The time when this image was built (There is a field in the PE header).   May be MinimumValue if unknonwn. 
+            </summary>
+        </member>
+        <member name="F:Graphs.Module.PdbName">
+            <summary>
+            The name of hte PDB file assoicated with this module.   Ma bye null if unknown
+            </summary>
+        </member>
+        <member name="F:Graphs.Module.PdbGuid">
+            <summary>
+            The GUID that uniquely identfies this PDB for symbol server lookup.  May be Guid.Empty it not known.  
+            </summary>
+        </member>
+        <member name="F:Graphs.Module.PdbAge">
+            <summary>
+            The age (version number) that is used for symbol server lookup.  
+            </summary>T
+        </member>
+        <member name="M:Graphs.Module.ToStream(FastSerialization.Serializer)">
+            <summary>
+            Implementing IFastSerializable interface.  
+            </summary>
+        </member>
+        <member name="M:Graphs.Module.FromStream(FastSerialization.Deserializer)">
+            <summary>
+            Implementing IFastSerializable interface.  
+            </summary>
+        </member>
+        <member name="T:Graphs.NodeIndex">
+            <summary>
+            Each node is given a unique index (which is dense: an array is a good lookup structure).   
+            To avoid passing the wrong indexes to methods, we make an enum for each index.   This does
+            mean you need to cast away this strong typing occasionally (e.g. when you index arrays)
+            However on the whole it is a good tradeoff.  
+            </summary>
+        </member>
+        <member name="T:Graphs.NodeTypeIndex">
+            <summary>
+            Each node nodeId is given a unique index (which is dense: an array is a good lookup structure).   
+            To avoid passing the wrong indexes to methods, we make an enum for each index.   This does
+            mean you need to cast away this strong typing occasionally (e.g. when you index arrays)
+            However on the whole it is a good tradeoff.  
+            </summary>    
+        </member>
+        <member name="T:Graphs.GraphUtils">
+            <summary>
+            Stuff that is useful but does not need to be in Graph.   
+            </summary>
+        </member>
+        <member name="M:Graphs.GraphUtils.PrintGraph(Graphs.Graph)">
+            <summary>
+            Write the graph as XML to a string and return it (useful for debugging small graphs).  
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Graphs.GraphUtils.WriteXml(Graphs.Graph,System.IO.TextWriter)">
+            <summary>
+            Writes the graph as XML to 'writer'.  Don't use on big graphs.  
+            </summary>
+        </member>
+        <member name="P:Graphs.MemoryGraph.Is64Bit">
+            <summary>
+            Indicates whether the memory addresses are 64 bit or not.   Note that this is not set
+            as part of normal graph processing, it needs to be set by the caller.   MemoryGraph is only 
+            acting as storage.  
+            </summary>
+        </member>
+        <member name="P:Graphs.MemoryGraph.DistinctRefCount">
+            <summary>
+            Returns the number of distinct references in the graph so far (the size of the interning table).  
+            </summary>
+        </member>
+        <member name="M:Graphs.MemoryGraph.Clear">
+            <summary>
+            Clear puts it back into the state that existed after the constructor returned
+            </summary>
+        </member>
+        <member name="M:Graphs.MemoryGraph.GetNodeIndex(System.UInt64)">
+            <summary>
+            GetNodeIndex maps an Memory address of an object (used by CLRProfiler), to the NodeIndex we have assigned to it
+            It is essentially an interning table (we assign it new index if we have  not seen it before)
+            </summary>
+        </member>
+        <member name="F:Graphs.MemoryGraph.m_addressToNodeIndex">
+            <summary>
+            ClrProfiler identifes nodes  using the physical address in Memory.  'Graph' needs it to be an NodeIndex.   
+            THis table maps the ID that CLRProfiler uses (an address), to the NodeIndex we have assigned to it.  
+            It is only needed while the file is being read in.  
+            </summary>
+        </member>
+        <member name="T:Graphs.MemoryNode">
+            <summary>
+            Support class for code:MemoryGraph
+            </summary>
+        </member>
+        <member name="T:Graphs.MemoryNodeBuilder">
+            <summary>
+            MemoryNodeBuilder is helper class for building a MemoryNode graph.   Unlike
+            MemoryNode you don't have to know the complete set of children at the time
+            you create the node.  Instead you can keep adding children to it incrementally
+            and when you are done you call Build() which finalizes it (and all its children)
+            </summary>
+        </member>
+        <member name="M:Graphs.MemoryNodeBuilder.FindOrCreateChild(System.String,System.String)">
+            <summary>
+            Looks for a child with the type 'childTypeName' and returns it.  If it is not
+            present, it will be created.  Note it will ONLY find MutableNode children
+            (not children added with AddChild(NodeIndex).  
+            </summary>
+        </member>
+        <member name="M:Graphs.MemoryNodeBuilder.AllocateTypeIndexes">
+            <summary>
+            This is optional phase, if you don't do it explicitly, it gets done at Build time. 
+            </summary>
+        </member>
+        <member name="T:RefGraph">
+            <summary>
+            A RefGraph is derived graph where each node's children are the set of nodes in the original graph 
+            which refer that node (that is A -> B then in refGraph B -> A).   
+            
+            The NodeIndexes in the refGraph match the NodeIndexes in the original graph.  Thus after creating
+            a refGraph it is easy to answer the question 'who points at me' of the original graph.  
+            
+            When create the RefGraph the whole reference graph is generated on the spot (thus it must traverse
+            the whole of the orignal graph) and the size of the resulting RefGraph is  about the same size as the  
+            original graph. 
+            
+            Thus this is a fairly expensive thing to create.  
+            </summary>
+        </member>
+        <member name="M:RefGraph.AllocNodeStorage">
+            <summary>
+            Allocates nodes to be used as storage for methods like code:GetNode, code:RefNode.GetFirstChild and code:RefNode.GetNextChild
+            </summary>
+        </member>
+        <member name="M:RefGraph.GetNode(Graphs.NodeIndex,RefNode)">
+            <summary>
+            Given an arbitrary code:NodeIndex that identifies the node, Get a code:Node object.  
+            
+            This routine does not allocated but uses the space passed in by 'storage.  
+            'storage' should be allocated with coode:AllocNodeStorage, and should be agressively reused.  
+            </summary>
+        </member>
+        <member name="M:RefGraph.GetNode(Graphs.NodeIndex)">
+            <summary>
+            This is for debugging 
+            </summary>
+            <param name="nodeIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RefGraph.AddRefsTo(Graphs.NodeIndex,Graphs.NodeIndex)">
+            <summary>
+            Add the fact that 'refSource' refers to refTarget.
+            </summary>
+        </member>
+        <member name="M:RefGraph.AddLink(Graphs.NodeIndex,System.Int32)">
+            <summary>
+            A helper function for AddRefsTo.  Allocates a new cell from m_links and initializes its two fields 
+            (the child index field and 'rest' field), and returns the index (pointer) to the new cell.  
+            </summary>
+        </member>
+        <member name="T:RefGraph.NodeListIndex">
+            <summary>
+             Logically a NodeListIndex represents a list of node indexes.   However it is heavily optimized
+             to avoid overhead.   0 means empty, a positive number is the NodeIndex+1 and a negative number 
+             is index in m_links - 1;.  
+            </summary>
+        </member>
+        <member name="T:RefGraph.RefElem">
+            <summary>
+            RefElem is a linked list cell that is used to store lists of childrens that are larger than 1.
+            </summary>
+        </member>
+        <member name="F:RefGraph.m_refsForNodes">
+            <summary>
+            m_refsForNodes maps the NodeIndexs of the reference graph to the children information.   However unlike
+            a normal Graph RefGraph needs to support incremental addition of children.  Thus we can't use the normal
+            compression (which assumed you know all the children when you define the node).  
+            
+            m_refsForNodes points at a NodeListIndex which is a compressed list that is tuned for the case where
+            a node has exactly one child (a very common case).   If that is not true we 'overflow' into a 'linked list'
+            of RefElems that is stored in m_links.   See NodeListIndex for more on the exact encoding.   
+            
+            </summary>
+        </member>
+        <member name="F:RefGraph.m_links">
+            <summary>
+            If the number of children for a node is > 1 then we need to store the data somewhere.  m_links is array
+            of linked list cells that hold the overflow case.  
+            </summary>
+        </member>
+        <member name="M:RefNode.GetFirstChildIndex">
+            <summary>
+            Gets the first child for the node.  Will return null if there are no children.  
+            </summary>
+        </member>
+        <member name="M:RefNode.GetNextChildIndex">
+            <summary>
+            Returns the next child for the node.   Will return NodeIndex.Invalid if there are no more children 
+            </summary>
+        </member>
+        <member name="P:RefNode.ChildCount">
+            <summary>
+            Returns the count of children (nodes that reference this node). 
+            </summary>
+        </member>
+        <member name="M:RefNode.Contains(Graphs.NodeIndex)">
+            <summary>
+            Returns true if 'node' is a child of 'this'.  childStorage is simply used as temp space 
+            as was allocated by RefGraph.AllocateNodeStorage
+            </summary>
+        </member>
+        <member name="T:SpanningTree">
+            <summary>
+            code:MemorySampleSource hooks up a Memory graph to become a Sample source.  Currently we do
+            a breadth-first traversal to form a spanning tree, and then create samples for each node
+            where the 'stack' is the path to the root of this spanning tree.
+            
+            This is just a first cut...
+            </summary>
+        </member>
+        <member name="P:SpanningTree.PriorityRegExs">
+             <summary>
+             Every type is given a priority of 0 unless the type name matches one of 
+             the patterns in PriorityRegExs.  If it does that type is assigned that priority.
+             
+             A node's priority is defined to be the priority of the type of the node
+             (as given by PriorityRegExs), plus 1/10 the priority of its parent.  
+             
+             Thus priorities 'decay' by 1/10 through pointers IF the prioirty of the node's
+             type is 0 (the default).   
+            
+             By default the framework has a priority of -1 which means that you explore all
+             high priority and user defined types before any framework type.
+             
+             Types with the same priority are enumerate breath-first.  
+             </summary>
+        </member>
+        <member name="M:SpanningTree.AddOrphansToQueue(PriorityQueue)">
+            <summary>
+            Add any unreachable nodes to the 'nodesToVisit'.   Note that we do this in a 'smart' way
+            where we only add orphans that are not reachable from other orphans.   That way we get a 
+            minimal set of orphan 'roots'.  
+            </summary>
+            <param name="nodesToVisit"></param>
+        </member>
+        <member name="M:SpanningTree.MarkDecendentsIgnoringCycles(Graphs.NodeIndex,System.Int32)">
+            <summary>
+            A helper for AddOrphansToQueue, so we only add orphans that are not reachable from other orphans.  
+            
+            Mark all decendents (but not nodeIndex itself) as being visited.    Any arcs that form
+            cycles are ignored, so nodeIndex is guarenteed to NOT be marked.     
+            </summary>
+        </member>
+        <member name="M:SpanningTree.FreeNodeStorage(Graphs.Node)">
+            <summary>
+            Gives back nodes that are no longer in use.  This is a memory optimization. 
+            </summary>
+        </member>
+        <member name="M:SpanningTree.AllocNodeStorage">
+            <summary>
+            Gets a node that can be written on.  It is a simple cache
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpanningTree.ToDotNetRegEx(System.String)">
+            <summary>
+            Convert a string from my regular expression format (where you only have * and {  } as grouping operators
+            and convert them to .NET regular expressions string
+            TODO FIX NOW cloned code (also in FilterStackSource)
+            </summary>
+        </member>
+        <member name="T:PriorityQueue">
+            <summary>
+            TODO FIX NOW put in its own file.  
+            A priority queue, specialized to be a bit more efficient than a generic version would be. 
+            </summary>
+        </member>
+        <member name="T:GraphSampler">
+            <summary>
+            This class is responsible for taking a graph and generating a smaller graph that
+            is a reasonable proxy.   In particular
+                
+                1) A spanning tree is formed, and if a node is selected so are all its 
+                   parents in that spanning tree.
+                   
+                2) We try hard to keep scale each object type by the count by which the whole
+                   graph was reduced.  
+            </summary>
+        </member>
+        <member name="M:GraphSampler.#ctor(Graphs.MemoryGraph,System.Int32,System.IO.TextWriter)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:GraphSampler.GetSampledGraph">
+            <summary>
+            Creates a new graph from 'graph' which has the same type statistics as the original
+            graph but keeps the node count roughly at 'targetNodeCount'
+            </summary>
+        </member>
+        <member name="P:GraphSampler.CountScalingByType">
+            <summary>
+            returns an array of scaling factors.  This array is indexed by the type index of
+            the returned graph returned by GetSampledGraph.   If the sampled count for that type multiplied
+            by this scaling factor, you end up with the count for that type of the original unsampled graph.  
+            </summary>
+        </member>
+        <member name="M:GraphSampler.MapTypeIndex(Graphs.NodeTypeIndex)">
+            <summary>
+            Maps 'oldTypeIndex' to its type index in the output graph
+            </summary>
+            <returns>New type index, will be Invalid if the type is not in the output graph</returns>
+        </member>
+        <member name="M:GraphSampler.MapNodeIndex(Graphs.NodeIndex)">
+            <summary>
+            Maps 'oldNodeIndex' to its new node index in the output graph
+            </summary>
+            <returns>New node index, will be less than 0 if the node is not in the output graph</returns>
+        </member>
+        <member name="M:GraphSampler.VisitNode(Graphs.NodeIndex,System.Boolean,System.Boolean)">
+            <summary>
+            Visits 'nodeIdx', if already visited, do nothing.  If unvisited determine if 
+            you should add this node to the graph being built.   If 'mustAdd' is true or
+            if we need samples it keep the right sample/total ratio, then add the sample.  
+            </summary>
+        </member>
+        <member name="M:GraphSampler.GetNewTypeIndex(Graphs.NodeTypeIndex)">
+            <summary>
+            Maps 'oldTypeIndex' to its type index in the output graph
+            </summary>
+            <param name="oldTypeIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="F:GraphSampler.RejectedNode">
+            <summary>
+            This value goes in the m_newIndex[].   If we accept the node into the sampled graph, we put the node
+            index in the NET graph in m_newIndex.   If we reject the node we use the special RegjectedNode value
+            below
+            </summary>
+        </member>
+        <member name="F:GraphSampler.PotentialNode">
+            <summary>
+            This value also goes in m_newIndex[].   If we can add this node without needing to add any other nodes
+            to the new graph (that is it is one hop from an existing accepted node, then we mark it specially as
+            a PotentialNode).   We add these in a second pass over the data.  
+            </summary>
+        </member>
+    </members>
+</doc>

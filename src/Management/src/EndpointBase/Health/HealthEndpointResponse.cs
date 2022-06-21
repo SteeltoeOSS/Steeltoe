@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.HealthChecks;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -20,6 +21,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <summary>
         /// Gets or sets the list of available health groups
         /// </summary>
+        [JsonPropertyOrder(4)]
         public IEnumerable<string> Groups { get; set; }
     }
 }

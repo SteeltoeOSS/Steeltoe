@@ -11,5 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="System.Text.Json" Version="6.0.4" />
   </ItemGroup>
 </Project>

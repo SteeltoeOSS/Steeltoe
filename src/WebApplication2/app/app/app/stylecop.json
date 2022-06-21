@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "copyrightText": "Licensed to the .NET Foundation under one or more agreements.\nThe .NET Foundation licenses this file to you under the Apache 2.0 License.\nSee the LICENSE file in the project root for more information.",
+      "xmlHeader": false,
+      "documentExposedElements": false,
+      "documentInternalElements": false,
+      "documentPrivateElements": false
+    },
+    "indentation": {
+      "useTabs": false,
+      "indentationSize": 4
+    },
+    "namingRules": {
+    },
+    "orderingRules": {
+      "usingDirectivesPlacement": "outsideNamespace",
+      "systemUsingDirectivesFirst": false
+    },
+    "readabilityRules": {
+    }
+  }
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Extensions.Configuration.CloudFoundryCore</name>
+    </assembly>
+    <members>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundry(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Add Cloud Foundry Configuration Provider
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundry(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Add Cloud Foundry Configuration Provider
+            </summary>
+            <param name="hostBuilder">Your WebHostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            Add Cloud Foundry Configuration Provider
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Add Cloud Foundry Configuration Provider
+            </summary>
+            <param name="hostBuilder">Your WebHostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Add Cloud Foundry Configuration Provider
+            </summary>
+            <param name="applicationBuilder">Your <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder"/></param>
+        </member>
+    </members>
+</doc>

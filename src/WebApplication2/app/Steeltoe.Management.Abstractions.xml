@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Management.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:Steeltoe.Management.AbstractEndpoint`1">
+            <summary>
+            Base class for management endpoints
+            </summary>
+            <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
+        </member>
+        <member name="T:Steeltoe.Management.AbstractEndpoint`2">
+            <summary>
+            Base class for endpoints that allow POST requests
+            </summary>
+            <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
+            <typeparam name="TRequest">Type of request that can be passed to this endpoint</typeparam>
+        </member>
+        <member name="M:Steeltoe.Management.AbstractEndpoint`2.#ctor(Steeltoe.Management.IEndpointOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Management.AbstractEndpoint`2"/> class.
+            </summary>
+            <param name="options">Endpoint configuration options</param>
+        </member>
+    </members>
+</doc>

@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             serializerOptions.IgnoreNullValues = true;
             if (serializerOptions.Converters?.Any(c => c is HealthConverter) != true)
             {
-                serializerOptions.Converters.Add(new HealthConverter());
+              //  serializerOptions.Converters.Add(new HealthConverter());
             }
 
             if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)

@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Common.Http</name>
+    </assembly>
+    <members>
+        <member name="T:Steeltoe.Common.Http.Discovery.DiscoveryHttpClientBuilderExtensions">
+            <summary>
+            Extension method for configuring <see cref="T:Steeltoe.Common.Http.Discovery.DiscoveryHttpMessageHandler"/> in <see cref="T:System.Net.Http.HttpClient"/> message handler pipelines
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Common.Http.Discovery.DiscoveryHttpClientBuilderExtensions.AddServiceDiscovery(Microsoft.Extensions.DependencyInjection.IHttpClientBuilder)">
+            <summary>
+            Adds a <see cref="T:Steeltoe.Common.Http.Discovery.DiscoveryHttpMessageHandler"/> for performing service discovery
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/>.</param>
+            <returns>An <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/> that can be used to configure the client.</returns>
+        </member>
+        <member name="T:Steeltoe.Common.Http.Discovery.DiscoveryHttpMessageHandler">
+            <summary>
+            A <see cref="T:System.Net.Http.DelegatingHandler"/> implementation that performs Service Discovery
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Common.Http.Discovery.DiscoveryHttpMessageHandler.#ctor(Steeltoe.Discovery.IDiscoveryClient,Microsoft.Extensions.Logging.ILogger{Steeltoe.Common.Discovery.DiscoveryHttpClientHandler},Steeltoe.Common.LoadBalancer.ILoadBalancer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Common.Http.Discovery.DiscoveryHttpMessageHandler"/> class.
+            </summary>
+            <param name="discoveryClient">Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration)</param>
+            <param name="logger">ILogger for capturing logs from Discovery operations</param>
+            <param name="loadBalancer">The load balancer to use</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.Discovery.DiscoveryHttpMessageHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Steeltoe.Common.Http.HttpClientHelper.GetHttpClient(System.Boolean,System.Int32)">
+            <summary>
+            Gets an HttpClient with user agent <see cref="P:Steeltoe.Common.Http.HttpClientHelper.SteeltoeUserAgent"/>
+            </summary>
+            <param name="validateCertificates">Whether or not remote certificates should be validated</param>
+            <param name="timeoutMillis">Timeout in milliseconds</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.HttpClientHelper.GetHttpClient(System.Boolean,System.Net.Http.HttpClientHandler,System.Int32)">
+            <summary>
+            Gets an HttpClient with user agent <see cref="P:Steeltoe.Common.Http.HttpClientHelper.SteeltoeUserAgent"/>
+            </summary>
+            <param name="validateCertificates">Whether or not remote certificates should be validated</param>
+            <param name="handler">A pre-defined <see cref="T:System.Net.Http.HttpClientHandler"/></param>
+            <param name="timeoutMillis">Timeout in milliseconds</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.HttpClientHelper.GetHttpClient(System.Net.Http.HttpMessageHandler,System.Int32)">
+            <summary>
+            Gets an HttpClient with user agent <see cref="P:Steeltoe.Common.Http.HttpClientHelper.SteeltoeUserAgent"/>
+            </summary>
+            <param name="handler">A pre-defined <see cref="T:System.Net.Http.HttpMessageHandler"/></param>
+            <param name="timeoutMillis">Timeout in milliseconds</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.HttpClientHelper.ConfigureCertificateValidation(System.Boolean,System.Net.SecurityProtocolType@,System.Net.Security.RemoteCertificateValidationCallback@)">
+            <summary>
+            Disable certificate validation on demand. Has no effect unless <see cref="P:Steeltoe.Common.Platform.IsFullFramework"/>
+            </summary>
+            <param name="validateCertificates">Whether or not certificates should be validated</param>
+            <param name="protocolType"><see cref="T:System.Net.SecurityProtocolType"/></param>
+            <param name="prevValidator">Pre-existing certificate validation callback</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.HttpClientHelper.RestoreCertificateValidation(System.Boolean,System.Net.SecurityProtocolType,System.Net.Security.RemoteCertificateValidationCallback)">
+            <summary>
+            Returns certificate validation to its original state. Has no effect unless <see cref="P:Steeltoe.Common.Platform.IsFullFramework"/>
+            </summary>
+            <param name="validateCertificates">Whether or not certificates should be validated</param>
+            <param name="protocolType"><see cref="T:System.Net.SecurityProtocolType"/></param>
+            <param name="prevValidator">Pre-existing certificate validation callback</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.HttpClientHelper.GetRequestMessage(System.Net.Http.HttpMethod,System.String,System.Func{System.String})">
+            <summary>
+            Creates an <see cref="T:System.Net.Http.HttpRequestMessage" /> from the provided information
+            </summary>
+            <param name="method"><see cref="T:System.Net.Http.HttpMethod"/></param>
+            <param name="requestUri">The remote Uri</param>
+            <param name="getAccessToken">A means of including a bearer token</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.HttpClientHelper.GetRequestMessage(System.Net.Http.HttpMethod,System.String,System.String,System.String)">
+            <summary>
+            Creates an <see cref="T:System.Net.Http.HttpRequestMessage" /> from the provided information
+            </summary>
+            <param name="method"><see cref="T:System.Net.Http.HttpMethod"/></param>
+            <param name="requestUri">The remote Uri</param>
+            <param name="userName">Optional Basic Auth Username. Not used unless password is not null or empty</param>
+            <param name="password">Optional Basic Auth Password</param>
+        </member>
+        <member name="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerDelegatingHandler">
+            <summary>
+            Same as <see cref="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerHttpClientHandler"/> except is a <see cref="T:System.Net.Http.DelegatingHandler"/>, for use with HttpClientFactory
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Common.Http.LoadBalancer.LoadBalancerDelegatingHandler.#ctor(Steeltoe.Common.LoadBalancer.ILoadBalancer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerDelegatingHandler"/> class. <para />
+            For use with <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/>
+            </summary>
+            <param name="loadBalancer">Load balancer to use</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.LoadBalancer.LoadBalancerDelegatingHandler.#ctor(Steeltoe.Common.LoadBalancer.ILoadBalancer,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerDelegatingHandler"/> class. <para />
+            For use with <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/>
+            </summary>
+            <param name="loadBalancer">Load balancer to use</param>
+            <param name="logger">For logging</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.LoadBalancer.LoadBalancerDelegatingHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerHttpClientHandler">
+            <summary>
+            Same as <see cref="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerDelegatingHandler"/> except is an <see cref="T:System.Net.Http.HttpClientHandler"/>, for non-HttpClientFactory use
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Common.Http.LoadBalancer.LoadBalancerHttpClientHandler.#ctor(Steeltoe.Common.LoadBalancer.ILoadBalancer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerHttpClientHandler"/> class. <para />
+            For use with <see cref="T:System.Net.Http.HttpClient"/> without <see cref="T:System.Net.Http.IHttpClientFactory"/>
+            </summary>
+            <param name="loadBalancer">Load balancer to use</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.LoadBalancer.LoadBalancerHttpClientHandler.#ctor(Steeltoe.Common.LoadBalancer.ILoadBalancer,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Common.Http.LoadBalancer.LoadBalancerHttpClientHandler"/> class. <para />
+            For use with <see cref="T:System.Net.Http.HttpClient"/> without <see cref="T:System.Net.Http.IHttpClientFactory"/>
+            </summary>
+            <param name="loadBalancer">Load balancer to use</param>
+            <param name="logger">For logging</param>
+        </member>
+        <member name="M:Steeltoe.Common.Http.LoadBalancer.LoadBalancerHttpClientHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Steeltoe.Common.Discovery.DiscoveryHttpClientHandler">
+            <summary>
+            An <see cref="T:System.Net.Http.HttpClientHandler"/> implementation that performs Service Discovery
+            </summary>
+        </member>
+        <member name="M:Steeltoe.Common.Discovery.DiscoveryHttpClientHandler.#ctor(Steeltoe.Discovery.IDiscoveryClient,Microsoft.Extensions.Logging.ILogger,Steeltoe.Common.LoadBalancer.ILoadBalancer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Common.Discovery.DiscoveryHttpClientHandler"/> class.
+            </summary>
+            <param name="discoveryClient">Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration)</param>
+            <param name="logger">ILogger for capturing logs from Discovery operations</param>
+            <param name="loadBalancer">The load balancer to use</param>
+        </member>
+        <member name="M:Steeltoe.Common.Discovery.DiscoveryHttpClientHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.LoadBalancerHttpClientBuilderExtensions.AddRandomLoadBalancer(Microsoft.Extensions.DependencyInjection.IHttpClientBuilder)">
+            <summary>
+            Adds a <see cref="T:System.Net.Http.DelegatingHandler"/> that performs random load balancing
+            </summary>
+            <param name="httpClientBuilder">The <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/>.</param>
+            <remarks>Requires an <see cref="T:Steeltoe.Common.Discovery.IServiceInstanceProvider" /> or <see cref="T:Steeltoe.Discovery.IDiscoveryClient"/> in the DI container so the load balancer can sent traffic to more than one address</remarks>
+            <returns>An <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/> that can be used to configure the client.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.LoadBalancerHttpClientBuilderExtensions.AddRoundRobinLoadBalancer(Microsoft.Extensions.DependencyInjection.IHttpClientBuilder)">
+            <summary>
+            Adds a <see cref="T:System.Net.Http.DelegatingHandler"/> that performs round robin load balancing, optionally backed by an <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/>
+            </summary>
+            <param name="httpClientBuilder">The <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/>.</param>
+            <remarks>
+                Requires an <see cref="T:Steeltoe.Common.Discovery.IServiceInstanceProvider" /> or <see cref="T:Steeltoe.Discovery.IDiscoveryClient"/> in the DI container so the load balancer can sent traffic to more than one address<para />
+                Also requires an <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> in the DI Container for consistent round robin balancing across multiple client instances
+            </remarks>
+            <returns>An <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/> that can be used to configure the client.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.LoadBalancerHttpClientBuilderExtensions.AddLoadBalancer``1(Microsoft.Extensions.DependencyInjection.IHttpClientBuilder)">
+            <summary>
+            Adds an <see cref="T:System.Net.Http.HttpMessageHandler"/> with specified load balancer <para/>
+            Does NOT add the specified load balancer to the container. Please add your load balancer separately.
+            </summary>
+            <param name="httpClientBuilder">The <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/>.</param>
+            <typeparam name="T">The type of <see cref="T:Steeltoe.Common.LoadBalancer.ILoadBalancer"/> to use</typeparam>
+            <returns>An <see cref="T:Microsoft.Extensions.DependencyInjection.IHttpClientBuilder"/> that can be used to configure the client.</returns>
+        </member>
+    </members>
+</doc>

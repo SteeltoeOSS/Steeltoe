@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Extensions.Logging.DynamicLogger</name>
+    </assembly>
+    <members>
+        <member name="M:Steeltoe.Extensions.Logging.DynamicConsoleLoggerProvider.#ctor(Microsoft.Extensions.Options.IOptionsMonitor{Microsoft.Extensions.Logging.Console.ConsoleLoggerOptions},Microsoft.Extensions.Options.IOptionsMonitor{Microsoft.Extensions.Logging.LoggerFilterOptions},System.Collections.Generic.IEnumerable{Steeltoe.Extensions.Logging.IDynamicMessageProcessor})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Steeltoe.Extensions.Logging.DynamicConsoleLoggerProvider"/> class.
+            </summary>
+            <param name="options">Pass-through to ConsoleLoggerProvider constructor</param>
+            <param name="filterOptions">Logger filters</param>
+            <param name="messageProcessors">message processors to apply to message</param>
+        </member>
+        <member name="M:Steeltoe.Extensions.Logging.DynamicLoggerHostBuilderExtensions.AddDynamicLogging(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Adds Dynamic Console Logging to your application. Removes ConsoleLoggerProvider if found (to prevent duplicate console log entries)<para />
+            Also calls ILoggingBuilder.AddConfiguration() if not previously called.
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Extensions.Logging.DynamicLoggerHostBuilderExtensions.AddDynamicLogging(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds Dynamic Console Logging to your application. Removes ConsoleLoggerProvider if found (to prevent duplicate console log entries)<para />
+            Also calls ILoggingBuilder.AddConfiguration() if not previously called.
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+        </member>
+        <member name="M:Steeltoe.Extensions.Logging.DynamicLoggingBuilder.AddDynamicConsole(Microsoft.Extensions.Logging.ILoggingBuilder)">
+            <summary>
+            Adds Dynamic Console Logger Provider
+            </summary>
+            <param name="builder">Your ILoggingBuilder</param>
+        </member>
+    </members>
+</doc>

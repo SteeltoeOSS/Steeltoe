@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -37,6 +38,16 @@ namespace Steeltoe.Management.Endpoint.Health
                     }
 
                     writer.WriteEndObject();
+                }
+
+                if (health.Groups != null && health.Groups.Any())
+                {
+                    writer.WritePropertyName("groups");
+                    writer.WriteStartObject();
+                    foreach (var group in health.Groups)
+                    {
+                        writer.WritePropertyName(group);
+                    }
                 }
             }
 

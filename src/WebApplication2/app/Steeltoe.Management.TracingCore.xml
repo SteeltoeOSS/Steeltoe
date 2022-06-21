@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Steeltoe.Management.TracingCore</name>
+    </assembly>
+    <members>
+        <member name="M:Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin exporting
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /></param>
+            <returns><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> configured for distributed tracing.</returns>
+        </member>
+        <member name="M:Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{OpenTelemetry.Trace.TracerProviderBuilder})">
+            <summary>
+            Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin exporting
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /></param>
+            <param name="action">Customize the <see cref="T:OpenTelemetry.Trace.TracerProviderBuilder" />.</param>
+            <returns><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> configured for distributed tracing.</returns>
+        </member>
+        <member name="M:Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(Microsoft.Extensions.Hosting.IHostBuilder,System.Action{OpenTelemetry.Trace.TracerProviderBuilder})">
+            <summary>
+            Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront exporting
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="action">Customize the <see cref="T:OpenTelemetry.Trace.TracerProviderBuilder" />.</param>
+        </member>
+        <member name="M:Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Action{OpenTelemetry.Trace.TracerProviderBuilder})">
+            <summary>
+            Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront exporting
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="action">Customize the <see cref="T:OpenTelemetry.Trace.TracerProviderBuilder" />.</param>
+        </member>
+        <member name="M:Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracincAspNetCore(Microsoft.AspNetCore.Builder.WebApplicationBuilder,System.Action{OpenTelemetry.Trace.TracerProviderBuilder})">
+            <summary>
+            Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront exporting
+            </summary>
+            <param name="hostBuilder">Your HostBuilder</param>
+            <param name="action">Customize the <see cref="T:OpenTelemetry.Trace.TracerProviderBuilder" />.</param>
+        </member>
+    </members>
+</doc>
