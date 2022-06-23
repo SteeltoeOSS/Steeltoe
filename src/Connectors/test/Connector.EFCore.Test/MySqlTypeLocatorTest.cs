@@ -23,7 +23,7 @@ public class MySqlTypeLocatorTest
         Assert.NotNull(type);
     }
 
-#if !NETCOREAPP3_1
+#if NET6_0_OR_GREATER
     [Fact]
     public void Driver_Found_In_MySqlConnector_Assembly()
     {

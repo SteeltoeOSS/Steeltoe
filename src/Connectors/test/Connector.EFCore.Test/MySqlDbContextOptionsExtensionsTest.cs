@@ -5,10 +5,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NETCOREAPP3_1
-using MySql.Data.MySqlClient;
-#else
+#if NET6_0_OR_GREATER
 using MySqlConnector;
+#else
+using MySql.Data.MySqlClient;
 #endif
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
@@ -87,10 +87,10 @@ public class MySqlDbContextOptionsExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
 
-#if NETCOREAPP3_1
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
-#else
+#if NET6_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+#else
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #endif
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
@@ -100,7 +100,7 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.True(con is MySqlConnection);
     }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
     // Run a MySQL server with Docker to match creds below with this command
     // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
     [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
@@ -161,10 +161,10 @@ public class MySqlDbContextOptionsExtensionsTest
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NETCOREAPP3_1
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
-#else
+#if NET6_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+#else
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
 #endif
 
         var built = services.BuildServiceProvider();
@@ -195,10 +195,10 @@ public class MySqlDbContextOptionsExtensionsTest
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NETCOREAPP3_1
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
-#else
+#if NET6_0_OR_GREATER
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+#else
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #endif
 
         var built = services.BuildServiceProvider();
