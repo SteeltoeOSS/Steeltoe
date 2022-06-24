@@ -13,20 +13,29 @@
     <MySqlConnectorVersion>2.1.*</MySqlConnectorVersion>
     <MySqlV8>8.0.*</MySqlV8>
     <NpgsqlVersion>6.0.*</NpgsqlVersion>
+    <OracleVersion>3.21.*</OracleVersion>
     <SqlClientVersion>4.8.*</SqlClientVersion>
+    <MicrosoftAzureCosmosVersion>3.28.*</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <CoverletVersion>3.1.*</CoverletVersion>
     <FluentAssertionsVersion>6.7.*</FluentAssertionsVersion>
+    <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
     <MoqVersion>4.18.*</MoqVersion>
     <TestSdkVersion>17.2.*</TestSdkVersion>
     <XunitVersion>2.4.*</XunitVersion>
+    <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
     <XunitStudioVersion>2.4.*</XunitStudioVersion>
+    <NSubstituteVersion>4.3.*</NSubstituteVersion>
     <HealthChecksVersion>6.0.*</HealthChecksVersion>
     <HealthChecksRabbitVersion>3.1.*</HealthChecksRabbitVersion>
+    <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
+    <SerilogExceptionsVersion>8.2.*</SerilogExceptionsVersion>
+    <SerilogSinksDebugVersion>2.0.*</SerilogSinksDebugVersion>
     <SonarAnalyzerVersion>8.40.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.*</StyleCopVersion>
+    <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <EFCoreTestVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.0.*</EFCoreTestVersion>
     <EFCoreTestVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</EFCoreTestVersion>
     <EFCoreOracleTestVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.21.*</EFCoreOracleTestVersion>
@@ -53,12 +62,18 @@
     <OpenTelemetryVersion>1.3.*</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
+    <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>3.3.*</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>4.0.*</SerilogSinksConsoleVersion>
     <RabbitClientVersion>5.1.*</RabbitClientVersion>
+    <EasyNetQVersion>1.4.*</EasyNetQVersion>
     <ReactiveVersion>5.0.*</ReactiveVersion>
     <PollyVersion>7.2.*</PollyVersion>
     <PollyContribVersion>1.1.*</PollyContribVersion>
     <CastleCoreVersion>4.4.*</CastleCoreVersion>
     <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
+    <DiagnosticsTracingVersion>3.0.*</DiagnosticsTracingVersion>
+    <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <EFCoreVersion>5.0.*</EFCoreVersion>
     <EFCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</EFCoreVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>

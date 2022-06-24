@@ -43,7 +43,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.System" Version="$(HealthChecksVersion)" />
-    <PackageReference Include="FluentAssertions.Json" Version="5.5.0" />
+    <PackageReference Include="FluentAssertions.Json" Version="$(FluentAssertionsJsonVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="$(OpenTelemetryVersion)" />
   </ItemGroup>

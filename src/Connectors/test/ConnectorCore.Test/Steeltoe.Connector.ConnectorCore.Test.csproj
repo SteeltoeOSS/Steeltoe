@@ -25,7 +25,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="$(HealthChecksRabbitVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="$(HealthChecksVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(HealthChecksVersion)" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
 
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />

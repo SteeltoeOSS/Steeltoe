@@ -36,7 +36,7 @@
 
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />

@@ -15,14 +15,14 @@ public static class CosmosDbTypeLocator
     /// <summary>
     /// Gets a list of supported CosmosDbDB assemblies
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = { "Azure.Cosmos", "Microsoft.Azure.Cosmos.Client" };
+    public static string[] Assemblies { get; internal set; } = { "Microsoft.Azure.Cosmos.Client" };
 
     /// <summary>
     /// Gets a list of supported CosmosDbDB client types
     /// </summary>
-    public static string[] ConnectionTypeNames { get; internal set; } = { "Azure.Cosmos.CosmosClient", "Microsoft.Azure.Cosmos.CosmosClient" };
+    public static string[] ConnectionTypeNames { get; internal set; } = { "Microsoft.Azure.Cosmos.CosmosClient" };
 
-    public static string[] ClientOptionsTypeNames { get; internal set; } = { "Azure.Cosmos.CosmosClientOptions", "Microsoft.Azure.Cosmos.CosmosClientOptions" };
+    public static string[] ClientOptionsTypeNames { get; internal set; } = { "Microsoft.Azure.Cosmos.CosmosClientOptions" };
 
     /// <summary>
     /// Gets CosmosDbClient from CosmosDbDB Library

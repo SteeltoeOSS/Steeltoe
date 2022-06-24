@@ -19,9 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BinderTests\Steeltoe.Stream.BinderTests.csproj" />
-    <PackageReference Include="EasyNetQ.Management.Client" Version="1.3.0" />
+    <PackageReference Include="EasyNetQ.Management.Client" Version="$(EasyNetQVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BinderTests\Steeltoe.Stream.BinderTests.csproj" />
   </ItemGroup>
 
 </Project>
