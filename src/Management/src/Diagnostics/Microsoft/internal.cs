@@ -730,10 +730,12 @@ internal class NativeMethods
         byte[] vsFixedInfo = new byte[len];
         Marshal.Copy(ptr, vsFixedInfo, 0, len);
 
+#pragma warning disable CS0618 // Type or member is obsolete
         minor = (ushort)Marshal.ReadInt16(vsFixedInfo, 8);
         major = (ushort)Marshal.ReadInt16(vsFixedInfo, 10);
         patch = (ushort)Marshal.ReadInt16(vsFixedInfo, 12);
         revision = (ushort)Marshal.ReadInt16(vsFixedInfo, 14);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         return true;
     }
