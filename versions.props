@@ -22,12 +22,8 @@
     <TestSdkVersion>17.2.*</TestSdkVersion>
     <XunitVersion>2.4.*</XunitVersion>
     <XunitStudioVersion>2.4.*</XunitStudioVersion>
-    <HealthChecksMySqlVersion>6.0.*</HealthChecksMySqlVersion>
-    <HealthChecksMongoDbVersion>6.0.*</HealthChecksMongoDbVersion>
-    <HealthChecksNpgSqlVersion>6.0.*</HealthChecksNpgSqlVersion>
+    <HealthChecksVersion>6.0.*</HealthChecksVersion>
     <HealthChecksRabbitVersion>3.1.*</HealthChecksRabbitVersion>
-    <HealthChecksRedisVersion>6.0.*</HealthChecksRedisVersion>
-    <HealthChecksSqlServerVersion>6.0.*</HealthChecksSqlServerVersion>
     <SonarAnalyzerVersion>8.40.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.*</StyleCopVersion>

@@ -19,12 +19,12 @@
     
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
 
-    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(HealthChecksMySqlVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="$(HealthChecksMongoDbVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="$(HealthChecksNpgSqlVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="$(HealthChecksVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="$(HealthChecksRabbitVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="$(HealthChecksRedisVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(HealthChecksSqlServerVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(HealthChecksVersion)" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
 
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
