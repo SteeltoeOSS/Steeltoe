@@ -46,14 +46,11 @@
     -->
 
     <DriveInfoVersion>4.3.*</DriveInfoVersion>
-    <WinHttpHandlerVersion>6.0.*</WinHttpHandlerVersion>
+    <SystemVersion>6.0.*</SystemVersion>
+    <ExtensionsVersion>6.0.*</ExtensionsVersion>
     <JwtTokensVersion>6.20.*</JwtTokensVersion>
     <SymReaderVersion>1.4.*</SymReaderVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <SystemDiagnosticsVersion>6.0.*</SystemDiagnosticsVersion>
-    <SystemJsonVersion>6.0.*</SystemJsonVersion>
-    <SystemNetHttpJsonVersion>6.0.*</SystemNetHttpJsonVersion>
-    <SystemReflectionVersion>6.0.*</SystemReflectionVersion>
     <KubernetesClientVersion>6.0.*</KubernetesClientVersion>
     <BouncyCastleVersion>1.9.*</BouncyCastleVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
@@ -68,7 +65,6 @@
     <PollyContribVersion>1.1.*</PollyContribVersion>
     <CastleCoreVersion>4.4.*</CastleCoreVersion>
     <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
-    <ExtensionsVersion>6.0.*</ExtensionsVersion>
     <EFCoreVersion>5.0.*</EFCoreVersion>
     <EFCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</EFCoreVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>

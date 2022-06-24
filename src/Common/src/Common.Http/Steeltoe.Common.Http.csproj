@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="System.Text.Json" Version="$(SystemJsonVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemVersion)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />
-    <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
+    <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
