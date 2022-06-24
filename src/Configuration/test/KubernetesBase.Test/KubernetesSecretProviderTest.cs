@@ -4,7 +4,6 @@
 
 using k8s;
 using Microsoft.Rest;
-using Moq;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Kubernetes;
 using System;
@@ -21,11 +20,11 @@ public class KubernetesSecretProviderTest
     [Fact]
     public void KubernetesSecretProvider_ThrowsOnNulls()
     {
-        var client = new Mock<k8s.Kubernetes>();
+        var client = new k8s.Kubernetes(KubernetesClientConfiguration.BuildDefaultConfig());
         var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
 
         var ex1 = Assert.Throws<ArgumentNullException>(() => new KubernetesSecretProvider(null, settings));
-        var ex2 = Assert.Throws<ArgumentNullException>(() => new KubernetesSecretProvider(client.Object, null));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => new KubernetesSecretProvider(client, null));
 
         Assert.Equal("kubernetes", ex1.ParamName);
         Assert.Equal("settings", ex2.ParamName);

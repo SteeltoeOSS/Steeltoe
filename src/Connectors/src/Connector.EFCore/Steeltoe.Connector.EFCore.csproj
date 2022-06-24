@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <Description>Package for using Steeltoe Connectors with Entity Framework Core</Description>
     <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity Framework Core;entity-framework-core;services</PackageTags>
   </PropertyGroup>

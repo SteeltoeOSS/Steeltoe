@@ -45,7 +45,9 @@ public static class TestHelpers
 #if NET6_0_OR_GREATER
         serviceCollection.AddLogging(builder => builder.AddConsole());
 #else
+#pragma warning disable CS0618 // Type or member is obsolete
         serviceCollection.AddLogging(builder => builder.AddConsole(opts => opts.DisableColors = true));
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
         serviceCollection.AddLogging(builder => builder.AddDebug());

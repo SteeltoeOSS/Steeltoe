@@ -23,8 +23,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
-    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV6)" /> -->
-    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV8)" />-->
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
   </ItemGroup>

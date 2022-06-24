@@ -21,19 +21,25 @@ internal static class AssemblyExtensions
     {
         // Load whatever version available - strip out version and culture info
         static string GetSimpleName(string assemblyName) => new Regex(",.*").Replace(assemblyName, string.Empty);
+
         var name = GetSimpleName(args.Name);
         if (_missingAssemblies.Contains(name))
         {
             return null;
         }
 
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToDictionary(x => x.GetName().Name, x => x);
+        // AssemblyName.Equals() returns false when path and full name are identical, so the code below
+        // avoids a crash caused by inserting duplicate keys in dictionary.
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+            .GroupBy(asm => asm.GetName().Name)
+            .ToDictionary(grouping => grouping.Key, grouping => grouping.First());
+
         if (assemblies.TryGetValue(name, out var assembly))
         {
             return assembly;
         }
 
-        if (args.Name?.Contains(".resources") ?? false)
+        if (args.Name.Contains(".resources"))
         {
             return args.RequestingAssembly;
         }
