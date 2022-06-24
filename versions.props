@@ -2,13 +2,10 @@
   <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
     <VersionPrefix>4.0.0</VersionPrefix>
   </PropertyGroup>
+
   <PropertyGroup>
-    <CoreFxVersion>4.4.0</CoreFxVersion>
-    <CSharpVersion>4.5.0</CSharpVersion>
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
-    <HttpVersion>4.3.4</HttpVersion>
     <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
-    <HttpClientVersion>4.3.4</HttpClientVersion>
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
@@ -16,19 +13,13 @@
     <SystemJsonVersion>5.0.2</SystemJsonVersion>
     <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
-    <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
-    <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
     <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
     <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
-
-    <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
     <SqlClientVersion>4.8.1</SqlClientVersion>
     <StackExchangeVersion>2.0.593</StackExchangeVersion>
-
-    <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>1.6.10.3</ConsulVersion>
     <CoverletVersion>3.1.0</CoverletVersion>
@@ -39,66 +30,54 @@
     <JsonNetVersion>11.0.2</JsonNetVersion>
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
-    
     <OpenTelemetryVersion>1.2.0</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
-    
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
     <TestSdkVersion>17.0.0</TestSdkVersion>
-    <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.3</XunitStudioVersion>
-
     <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
     <HealthChecksMongoDbVersion>2.2.2</HealthChecksMongoDbVersion>
     <HealthChecksNpgSqlVersion>2.2.0</HealthChecksNpgSqlVersion>
     <HealthChecksRabbitmqVersion>2.2.1</HealthChecksRabbitmqVersion>
     <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
     <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
-
     <SonarAnalyzerVersion>8.40.0.48530</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
-
-    <EF6Version>6.3.0</EF6Version>
-
     <PollyVersion>7.1.1</PollyVersion>
     <PollyContribVersion>1.0.0</PollyContribVersion>
     <CastleCoreVersion>4.4.0</CastleCoreVersion>
     <RuntimeLoaderVersion>4.3.0</RuntimeLoaderVersion>
-
     <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <EFCoreVersion>3.1.0</EFCoreVersion>
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
     <LoggingVersion>3.1.0</LoggingVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
-    <UnsafeCompilerServicesVersion>5.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
     <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
-    <EF6Version>6.3.0</EF6Version>
-    <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <MySqlEFCoreVersion>3.1.10</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
     <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
     <MicrosoftExtensionsRedisVersion>3.1.19</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
     <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
     <MySqlEFCoreVersion>6.0.0</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
-    <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
     <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
-    <EF6Version>6.4.0</EF6Version>
+    <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
     <ExtensionsVersion>6.0.0</ExtensionsVersion>
     <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
     <SystemJsonVersion>6.0.0</SystemJsonVersion>
     <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>
-    <UnsafeCompilerServicesVersion>6.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
 </Project>
