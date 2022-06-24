@@ -24,8 +24,6 @@
     <ConsulVersion>1.6.10.3</ConsulVersion>
     <CoverletVersion>3.1.0</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
-    <HttpExtensionsVersion>3.1.0</HttpExtensionsVersion>
-    <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
     <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
     <JsonNetVersion>11.0.2</JsonNetVersion>
     <MockHttpVersion>6.0.0</MockHttpVersion>
@@ -53,8 +51,6 @@
     <RuntimeLoaderVersion>4.3.0</RuntimeLoaderVersion>
     <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <EFCoreVersion>3.1.0</EFCoreVersion>
-    <HealthChecksVersion>3.1.0</HealthChecksVersion>
-    <LoggingVersion>3.1.0</LoggingVersion>
     <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
   </PropertyGroup>
 
@@ -65,7 +61,6 @@
     <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
     <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
-    <MicrosoftExtensionsRedisVersion>3.1.19</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
@@ -76,7 +71,6 @@
     <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
     <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
     <ExtensionsVersion>6.0.0</ExtensionsVersion>
-    <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
     <SystemJsonVersion>6.0.0</SystemJsonVersion>
     <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>
   </PropertyGroup>
