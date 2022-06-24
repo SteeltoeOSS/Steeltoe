@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <Description>Extensions for running tasks embedded in your ASP.NET Core application. Ideal for cf run-task in Cloud Foundry.</Description>
