@@ -29,14 +29,8 @@
     <StyleCopVersion>1.1.*</StyleCopVersion>
     <EFCoreTestVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.0.*</EFCoreTestVersion>
     <EFCoreTestVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</EFCoreTestVersion>
-    <MySqlEFCoreVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.0.*</MySqlEFCoreVersion>
-    <MySqlEFCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.0.*</NpgsqlEFCoreVersion>
-    <NpgsqlEFCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</NpgsqlEFCoreVersion>
-    <PomeloEFCoreVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.0.*</PomeloEFCoreVersion>
-    <PomeloEFCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</PomeloEFCoreVersion>
-    <OracleEFCoreVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.21.*</OracleEFCoreVersion>
-    <OracleEFCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.21.*</OracleEFCoreVersion>
+    <EFCoreOracleTestVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.21.*</EFCoreOracleTestVersion>
+    <EFCoreOracleTestVersion Condition="'$(TargetFramework)' == 'net6.0'">6.21.*</EFCoreOracleTestVersion>
 
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
