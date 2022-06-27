@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Steeltoe Management OpenTelemetry</Description>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.OpenTelemetryBase</AssemblyName>
     <PackageId>Steeltoe.Management.OpenTelemetryBase</PackageId>
     <PackageTags>Tracing;OpenTelemetry;Management;Monitoring</PackageTags>

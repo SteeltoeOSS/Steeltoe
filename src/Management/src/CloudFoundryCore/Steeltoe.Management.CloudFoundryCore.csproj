@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.CloudFoundry</RootNamespace>
     <Description>Package for using Steeltoe management endpoints with ASP.NET Core on Cloud Foundry.</Description>
     <PackageTags>actuator;management;monitoring;aspnetcore;CloudFoundry;Spring Cloud;</PackageTags>

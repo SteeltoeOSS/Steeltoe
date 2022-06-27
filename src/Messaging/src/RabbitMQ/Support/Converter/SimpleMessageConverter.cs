@@ -61,7 +61,9 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     var stream = new MemoryStream(message.Payload);
 
                     // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                     content = formatter.Deserialize(stream);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
                 }
                 catch (Exception e)
                 {
@@ -139,7 +141,9 @@ public class SimpleMessageConverter : AbstractMessageConverter
             var stream = new MemoryStream(512);
 
             // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
             formatter.Serialize(stream, payload);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
             return stream.ToArray();
         }
         catch (Exception e)

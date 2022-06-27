@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Connector Extensions for Entity Framework</Description>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <PackageTags>connectors;EntityFramework;aspnetcore;services</PackageTags>
   </PropertyGroup>
 

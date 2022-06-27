@@ -753,7 +753,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             }
             catch (Exception e)
             {
-                _logger.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType(), e);
+                _logger.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
             }
         }
     }

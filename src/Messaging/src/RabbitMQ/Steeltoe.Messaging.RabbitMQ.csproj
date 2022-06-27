@@ -2,7 +2,7 @@
   
   <PropertyGroup>
     <Description>Steeltoe Messaging RabbitMQ</Description>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Messaging.RabbitMQ</RootNamespace>
     <AssemblyName>Steeltoe.Messaging.RabbitMQ</AssemblyName>
     <PackageId>Steeltoe.Messaging.RabbitMQ</PackageId>
