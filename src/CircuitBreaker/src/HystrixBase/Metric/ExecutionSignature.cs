@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
+
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class ExecutionSignature
@@ -45,10 +47,7 @@ public class ExecutionSignature
 
     public override int GetHashCode()
     {
-        var result = CommandName.GetHashCode();
-        result = (31 * result) + Eventcounts.GetHashCode();
-        result = (31 * result) + (_cacheKey != null ? _cacheKey.GetHashCode() : 0);
-        return result;
+        return HashCode.Combine(CommandName, Eventcounts, _cacheKey);
     }
 
     public string CommandName { get; }

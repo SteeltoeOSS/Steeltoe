@@ -4,6 +4,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common;
+using System;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
@@ -116,11 +117,7 @@ public class HystrixRequestCache
 
         public override int GetHashCode()
         {
-            var prime = 31;
-            var result = 1;
-            result = (prime * result) + (_rvKey == null ? 0 : _rvKey.GetHashCode());
-            result = (prime * result) + (_valueCacheKey == null ? 0 : _valueCacheKey.GetHashCode());
-            return result;
+            return HashCode.Combine(_rvKey, _valueCacheKey);
         }
 
         public override bool Equals(object obj)
@@ -182,11 +179,7 @@ public class HystrixRequestCache
 
         public override int GetHashCode()
         {
-            var prime = 31;
-            var result = 1;
-            result = (prime * result) + (_key == null ? 0 : _key.GetHashCode());
-            result = (prime * result) + _type;
-            return result;
+            return HashCode.Combine(_key, _type);
         }
 
         public override bool Equals(object obj)

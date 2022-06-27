@@ -556,7 +556,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         public override int GetHashCode()
         {
-            return (_clazz.GetHashCode() * 29) + _property.GetHashCode();
+            return HashCode.Combine(_clazz, _property);
         }
 
         public override string ToString()
