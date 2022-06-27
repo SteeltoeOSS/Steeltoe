@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Expression.Internal;
 /// An expression capable of evaluating itself against context objects.
 /// Encapsulates the details of a previously parsed expression string.
 /// Provides a common abstraction for expression evaluation.
-/// TODO:  This interface is not complete
+/// TODO:  This interface is not complete.
 /// </summary>
 public interface IExpression
 {

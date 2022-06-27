@@ -15,14 +15,14 @@ public class MessageExceptionHandlerAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageExceptionHandlerAttribute"/> class.
     /// </summary>
-    /// <param name="exceptions">the exceptions handled by this method</param>
+    /// <param name="exceptions">the exceptions handled by this method.</param>
     public MessageExceptionHandlerAttribute(params Type[] exceptions)
     {
         Exceptions = exceptions;
     }
 
     /// <summary>
-    /// Gets the exceptions handled by this method
+    /// Gets the exceptions handled by this method.
     /// </summary>
     public virtual Type[] Exceptions { get; }
 }

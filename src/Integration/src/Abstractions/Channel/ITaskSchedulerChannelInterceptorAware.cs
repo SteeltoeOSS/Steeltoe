@@ -5,12 +5,12 @@
 namespace Steeltoe.Integration.Channel;
 
 /// <summary>
-/// Interface implemented by task scheduler based channels
+/// Interface implemented by task scheduler based channels.
 /// </summary>
 public interface ITaskSchedulerChannelInterceptorAware : IChannelInterceptorAware
 {
     /// <summary>
-    /// Gets a value indicating whether there are any task scheduler interceptors on the channel
+    /// Gets a value indicating whether there are any task scheduler interceptors on the channel.
     /// </summary>
     bool HasTaskSchedulerInterceptors { get; }
 }

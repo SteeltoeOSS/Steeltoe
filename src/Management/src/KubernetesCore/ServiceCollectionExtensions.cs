@@ -16,10 +16,10 @@ namespace Steeltoe.Management.Kubernetes;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Add an IInfoContributor that reports basic Kubernetes pod and host information
+    /// Add an IInfoContributor that reports basic Kubernetes pod and host information.
     /// </summary>
-    /// <param name="services"><see cref="IServiceCollection"/></param>
-    /// <param name="podUtilities">Bring your own <see cref="IPodUtilities"/>. Defaults to <see cref="StandardPodUtilities"/></param>
+    /// <param name="services"><see cref="IServiceCollection"/>.</param>
+    /// <param name="podUtilities">Bring your own <see cref="IPodUtilities"/>. Defaults to <see cref="StandardPodUtilities"/>.</param>
     public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities = null)
     {
         if (services is null)
@@ -45,12 +45,12 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add actuators that are useful when running in Kubernetes
+    /// Add actuators that are useful when running in Kubernetes.
     /// </summary>
-    /// <param name="services"><see cref="IServiceCollection"/></param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided</param>
-    /// <param name="podUtilities">Bring your own <see cref="IPodUtilities"/>. Defaults to <see cref="StandardPodUtilities"/></param>
-    /// <param name="version">Set response type version</param>
+    /// <param name="services"><see cref="IServiceCollection"/>.</param>
+    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided.</param>
+    /// <param name="podUtilities">Bring your own <see cref="IPodUtilities"/>. Defaults to <see cref="StandardPodUtilities"/>.</param>
+    /// <param name="version">Set response type version.</param>
     public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IConfiguration config = null, IPodUtilities podUtilities = null, MediaTypeVersion version = MediaTypeVersion.V2)
     {
         if (services is null)

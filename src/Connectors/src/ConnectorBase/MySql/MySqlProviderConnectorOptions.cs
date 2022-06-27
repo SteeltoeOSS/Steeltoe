@@ -11,7 +11,7 @@ namespace Steeltoe.Connector.MySql;
 /// <summary>
 /// Currently enabling properties supported by BOTH of these connectors:
 /// https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html
-/// https://mysql-net.github.io/MySqlConnector/tutorials/migrating-from-connector-net/
+/// https://mysql-net.github.io/MySqlConnector/tutorials/migrating-from-connector-net/.
 /// </summary>
 public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 {

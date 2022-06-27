@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Connector;
 
 /// <summary>
-/// Useful for getting connection information from <see cref="IConfiguration"/>
+/// Useful for getting connection information from <see cref="IConfiguration"/>.
 /// </summary>
 public class ConnectionStringManager
 {
@@ -24,11 +24,11 @@ public class ConnectionStringManager
     }
 
     /// <summary>
-    /// Get connection information of the specified type, optionally from a named service binding
+    /// Get connection information of the specified type, optionally from a named service binding.
     /// </summary>
-    /// <typeparam name="T">The type of <see cref="IConnectionInfo"/> to get</typeparam>
-    /// <param name="serviceName">The name of a service binding</param>
-    /// <returns><see cref="Connection"/></returns>
+    /// <typeparam name="T">The type of <see cref="IConnectionInfo"/> to get.</typeparam>
+    /// <param name="serviceName">The name of a service binding.</param>
+    /// <returns><see cref="Connection"/>.</returns>
     public Connection Get<T>(string serviceName = null)
         where T : IConnectionInfo, new()
     {

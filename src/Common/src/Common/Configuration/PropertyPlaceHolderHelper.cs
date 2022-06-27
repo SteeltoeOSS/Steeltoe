@@ -13,8 +13,8 @@ namespace Steeltoe.Common.Configuration;
 
 /// <summary>
 /// Utility class for working with configuration values that have placeholders in them.
-/// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
-/// Note: This was "inspired" by the Spring class: PropertyPlaceholderHelper
+/// A placeholder takes the form of: <code> ${some:config:reference?default_if_not_present}></code>
+/// Note: This was "inspired" by the Spring class: PropertyPlaceholderHelper.
 /// </summary>
 public static class PropertyPlaceholderHelper
 {
@@ -24,26 +24,26 @@ public static class PropertyPlaceholderHelper
     private const string SEPARATOR = "?";
 
     /// <summary>
-    /// Replaces all placeholders of the form <code> ${some:config:reference?default_if_not_present}</code>
+    /// Replaces all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code>
     /// with the corresponding value from the supplied <see cref="IConfiguration"/>.
     /// </summary>
-    /// <param name="property">the string containing one or more placeholders</param>
+    /// <param name="property">the string containing one or more placeholders.</param>
     /// <param name="config">the configuration used for finding replace values.</param>
-    /// <param name="logger">optional logger</param>
-    /// <returns>the supplied value with the placeholders replaced inline</returns>
+    /// <param name="logger">optional logger.</param>
+    /// <returns>the supplied value with the placeholders replaced inline.</returns>
     public static string ResolvePlaceholders(string property, IConfiguration config, ILogger logger = null)
     {
         return ParseStringValue(property, config, new HashSet<string>(), logger);
     }
 
     /// <summary>
-    /// Finds all placeholders of the form <code> ${some:config:reference?default_if_not_present}</code>,
+    /// Finds all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code>,
     /// resolves them from other values in the configuration, returns a new list to add to your configuration.
     /// </summary>
     /// <param name="config">The configuration to use as both source and target for placeholder resolution.</param>
-    /// <param name="logger">Optional logger</param>
-    /// <param name="useEmptyStringIfNotFound">Replace the placeholder with an empty string, so the application does not see it</param>
-    /// <returns>A list of keys with resolved values. Add to your <see cref="ConfigurationBuilder"/> with method 'AddInMemoryCollection'</returns>
+    /// <param name="logger">Optional logger.</param>
+    /// <param name="useEmptyStringIfNotFound">Replace the placeholder with an empty string, so the application does not see it.</param>
+    /// <returns>A list of keys with resolved values. Add to your <see cref="ConfigurationBuilder"/> with method 'AddInMemoryCollection'.</returns>
     public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration config, ILogger logger = null, bool useEmptyStringIfNotFound = true)
     {
         // setup a holding tank for resolved values

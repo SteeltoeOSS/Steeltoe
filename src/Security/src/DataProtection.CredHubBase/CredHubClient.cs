@@ -42,12 +42,12 @@ public class CredHubClient : ICredHubClient
     }
 
     /// <summary>
-    /// Initialize a CredHub Client with user credentials for the appropriate UAA server
+    /// Initialize a CredHub Client with user credentials for the appropriate UAA server.
     /// </summary>
-    /// <param name="credHubOptions">CredHub client configuration values</param>
-    /// <param name="logger">Pass in a logger if you want logs</param>
-    /// <param name="httpClient">Primarily for tests, optionally provide your own http client</param>
-    /// <returns>An initialized CredHub client (using UAA OAuth)</returns>
+    /// <param name="credHubOptions">CredHub client configuration values.</param>
+    /// <param name="logger">Pass in a logger if you want logs.</param>
+    /// <param name="httpClient">Primarily for tests, optionally provide your own http client.</param>
+    /// <returns>An initialized CredHub client (using UAA OAuth).</returns>
     public static Task<CredHubClient> CreateUAAClientAsync(CredHubOptions credHubOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _logger = logger;

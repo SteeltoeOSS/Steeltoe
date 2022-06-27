@@ -53,7 +53,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     public string InstanceName { get; set; }
 
     /// <summary>
-    /// Gets or sets the port SQL Server is listening on. To exclude from connection string, use a value less than 0
+    /// Gets or sets the port SQL Server is listening on. To exclude from connection string, use a value less than 0.
     /// </summary>
     public int Port { get; set; } = Default_Port;
 
@@ -76,7 +76,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     /// <summary>
     /// Gets or sets the length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
     /// </summary>
-    /// <remarks>Default value is 15</remarks>
+    /// <remarks>Default value is 15.</remarks>
     public int? Timeout { get; set; }
 
     internal Dictionary<string, string> Options { get; set; } = new ();

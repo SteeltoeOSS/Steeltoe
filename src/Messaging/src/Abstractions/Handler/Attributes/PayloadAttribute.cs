@@ -25,8 +25,8 @@ public class PayloadAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="PayloadAttribute"/> class.
     /// </summary>
-    /// <param name="expression">expression to be evaluated against the payload</param>
-    /// <param name="required">whether payload content is required</param>
+    /// <param name="expression">expression to be evaluated against the payload.</param>
+    /// <param name="required">whether payload content is required.</param>
     public PayloadAttribute(string expression, bool required = true)
     {
         Expression = expression;
@@ -34,12 +34,12 @@ public class PayloadAttribute : Attribute
     }
 
     /// <summary>
-    /// Gets or sets the expression to be evaluated against the payload
+    /// Gets or sets the expression to be evaluated against the payload.
     /// </summary>
     public virtual string Expression { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the payload content is required
+    /// Gets or sets a value indicating whether the payload content is required.
     /// </summary>
     public virtual bool Required { get; set; }
 }

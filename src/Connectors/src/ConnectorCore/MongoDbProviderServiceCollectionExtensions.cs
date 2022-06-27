@@ -17,13 +17,13 @@ namespace Steeltoe.Connector.MongoDb;
 public static class MongoDbProviderServiceCollectionExtensions
 {
     /// <summary>
-    /// Add MongoDb to a ServiceCollection
+    /// Add MongoDb to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -43,14 +43,14 @@ public static class MongoDbProviderServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add MongoDb to a ServiceCollection
+    /// Add MongoDb to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="serviceName">cloud foundry service name binding</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="serviceName">cloud foundry service name binding.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)

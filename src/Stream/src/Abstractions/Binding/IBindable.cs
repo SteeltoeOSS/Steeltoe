@@ -10,7 +10,7 @@ namespace Steeltoe.Stream.Binding;
 
 /// <summary>
 /// Marker interface for instances that can bind/unbind groups of inputs and outputs.
-/// TODO: Try to make this internal
+/// TODO: Try to make this internal.
 /// </summary>
 public interface IBindable
 {

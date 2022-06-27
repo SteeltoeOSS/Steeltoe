@@ -8,26 +8,26 @@ using System;
 namespace Steeltoe.Connector.CosmosDb;
 
 /// <summary>
-/// Assemblies and types used for interacting with CosmosDbDB
+/// Assemblies and types used for interacting with CosmosDbDB.
 /// </summary>
 public static class CosmosDbTypeLocator
 {
     /// <summary>
-    /// Gets a list of supported CosmosDbDB assemblies
+    /// Gets a list of supported CosmosDbDB assemblies.
     /// </summary>
     public static string[] Assemblies { get; internal set; } = { "Microsoft.Azure.Cosmos.Client" };
 
     /// <summary>
-    /// Gets a list of supported CosmosDbDB client types
+    /// Gets a list of supported CosmosDbDB client types.
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } = { "Microsoft.Azure.Cosmos.CosmosClient" };
 
     public static string[] ClientOptionsTypeNames { get; internal set; } = { "Microsoft.Azure.Cosmos.CosmosClientOptions" };
 
     /// <summary>
-    /// Gets CosmosDbClient from CosmosDbDB Library
+    /// Gets CosmosDbClient from CosmosDbDB Library.
     /// </summary>
-    /// <exception cref="ConnectorException">When type is not found</exception>
+    /// <exception cref="ConnectorException">When type is not found.</exception>
     public static Type CosmosClient => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "CosmosClient", "a CosmosDB client");
 
     public static Type CosmosClientOptions => ReflectionHelpers.FindTypeOrThrow(Assemblies, ClientOptionsTypeNames, "CosmosClientOptions", "a CosmosDB client");

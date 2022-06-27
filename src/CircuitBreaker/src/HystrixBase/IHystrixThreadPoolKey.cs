@@ -15,7 +15,7 @@ public interface IHystrixThreadPoolKey : IHystrixKey
 }
 
 /// <summary>
-/// Default implementation of the interface
+/// Default implementation of the interface.
 /// </summary>
 public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPoolKey
 {
@@ -29,7 +29,7 @@ public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPool
     /// <summary>
     /// Retrieve (or create) an interned IHystrixThreadPoolKey instance for a given name.
     /// </summary>
-    /// <param name="name"> thread pool name </param>
+    /// <param name="name"> thread pool name. </param>
     /// <returns> IHystrixThreadPoolKey instance that is interned (cached) so a given name will always retrieve the same instance. </returns>
     public static IHystrixThreadPoolKey AsKey(string name)
     {

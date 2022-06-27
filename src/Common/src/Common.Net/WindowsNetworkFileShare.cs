@@ -11,7 +11,7 @@ using System.Text;
 namespace Steeltoe.Common.Net;
 
 /// <summary>
-/// For interacting with SMB network file shares on Windows
+/// For interacting with SMB network file shares on Windows.
 /// </summary>
 public class WindowsNetworkFileShare : IDisposable
 {
@@ -74,9 +74,9 @@ public class WindowsNetworkFileShare : IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowsNetworkFileShare"/> class.
     /// </summary>
-    /// <param name="networkName">Address of the file share</param>
-    /// <param name="credentials">Username and password for accessing the file share</param>
-    /// <param name="mpr">A class that handles calls to mpr.dll or performs same operations</param>
+    /// <param name="networkName">Address of the file share.</param>
+    /// <param name="credentials">Username and password for accessing the file share.</param>
+    /// <param name="mpr">A class that handles calls to mpr.dll or performs same operations.</param>
     public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMPR mpr = null)
     {
         _mpr = mpr ?? new MPR();
@@ -104,7 +104,7 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// Scope of the file share
+    /// Scope of the file share.
     /// </summary>
     public enum ResourceScope
     {
@@ -116,7 +116,7 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// Type of network resource
+    /// Type of network resource.
     /// </summary>
     public enum ResourceType
     {
@@ -127,7 +127,7 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// The display options for the network object in a network browsing user interface
+    /// The display options for the network object in a network browsing user interface.
     /// </summary>
     public enum ResourceDisplaytype
     {
@@ -146,14 +146,14 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// Retrieves the most recent extended error code set by a WNet function
-    /// <para/>Wraps an underlying P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
+    /// Retrieves the most recent extended error code set by a WNet function.
+    /// <para/>Wraps an underlying P/Invoke call to mpr.dll. <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
     /// </summary>
     /// <param name="error">The error code reported by the network provider.</param>
-    /// <param name="errorBuf">String variable to receive the description of the error</param>
-    /// <param name="errorBufSize">Size of error buffer</param>
-    /// <param name="nameBuf">String variable to receive the network provider raising the error</param>
-    /// <param name="nameBufSize">Size of name buffer</param>
+    /// <param name="errorBuf">String variable to receive the description of the error.</param>
+    /// <param name="errorBufSize">Size of error buffer.</param>
+    /// <param name="nameBuf">String variable to receive the network provider raising the error.</param>
+    /// <param name="nameBufSize">Size of name buffer.</param>
     /// <returns>If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.<para/>If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.</returns>
     public int GetLastError(
         out int error,
@@ -173,10 +173,10 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// Get a description for an error returned by a P/Invoke call
+    /// Get a description for an error returned by a P/Invoke call.
     /// </summary>
-    /// <param name="errNum">Error code</param>
-    /// <returns>An error message</returns>
+    /// <param name="errNum">Error code.</param>
+    /// <returns>An error message.</returns>
     internal static string GetErrorForNumber(int errNum)
     {
         if (!Error_list.Any(e => e.Num == errNum))
@@ -190,7 +190,7 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// Disposes the object, cancels connection with file share
+    /// Disposes the object, cancels connection with file share.
     /// </summary>
     protected virtual void Dispose(bool disposing)
     {
@@ -216,7 +216,7 @@ public class WindowsNetworkFileShare : IDisposable
 
     /// <summary>
     /// The NETRESOURCE structure contains information about a network resource.
-    /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>
+    /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public class NetResource

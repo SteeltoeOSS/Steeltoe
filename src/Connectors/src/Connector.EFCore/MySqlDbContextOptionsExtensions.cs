@@ -15,27 +15,27 @@ namespace Steeltoe.Connector.MySql.EFCore;
 public static class MySqlDbContextOptionsExtensions
 {
     /// <summary>
-    /// Configure Entity Framework Core to use a MySQL database
+    /// Configure Entity Framework Core to use a MySQL database.
     /// </summary>
-    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/></param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder</param>
-    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL</returns>
+    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder.</param>
+    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL.</returns>
     /// <remarks>
     ///   When used with EF Core 5.0, this method may result in the use of ServerVersion.AutoDetect(), which opens an extra connection to the server.<para />
-    ///   Pass in a ServerVersion to avoid the extra DB Connection - see https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533
+    ///   Pass in a ServerVersion to avoid the extra DB Connection - see https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533.
     /// </remarks>
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object mySqlOptionsAction = null)
         => UseMySql(optionsBuilder, config, serverVersion: null, mySqlOptionsAction);
 
     /// <summary>
-    /// Configure Entity Framework Core to use a MySQL database
+    /// Configure Entity Framework Core to use a MySQL database.
     /// </summary>
-    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/></param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0)</param>
-    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder</param>
-    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL</returns>
+    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0).</param>
+    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder.</param>
+    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL.</returns>
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object serverVersion, object mySqlOptionsAction = null)
     {
         if (optionsBuilder == null)
@@ -54,29 +54,29 @@ public static class MySqlDbContextOptionsExtensions
     }
 
     /// <summary>
-    /// Configure Entity Framework Core to use a MySQL database identified by a named service binding
+    /// Configure Entity Framework Core to use a MySQL database identified by a named service binding.
     /// </summary>
-    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/></param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="serviceName">The name of the service binding to use</param>
-    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder</param>
-    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL</returns>
+    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="serviceName">The name of the service binding to use.</param>
+    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder.</param>
+    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL.</returns>
     /// <remarks>
     ///   When used with EF Core 5.0, this method may result in the use of ServerVersion.AutoDetect(), which opens an extra connection to the server.<para />
-    ///   Pass in a ServerVersion to avoid the extra DB Connection - see https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533
+    ///   Pass in a ServerVersion to avoid the extra DB Connection - see https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533.
     /// </remarks>
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null)
         => UseMySql(optionsBuilder, config, serviceName, null, mySqlOptionsAction);
 
     /// <summary>
-    /// Configure Entity Framework Core to use a MySQL database identified by a named service binding
+    /// Configure Entity Framework Core to use a MySQL database identified by a named service binding.
     /// </summary>
-    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/></param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="serviceName">The name of the service binding to use</param>
-    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0)</param>
-    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder</param>
-    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL</returns>
+    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="serviceName">The name of the service binding to use.</param>
+    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0).</param>
+    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder.</param>
+    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL.</returns>
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object serverVersion, object mySqlOptionsAction = null)
     {
         if (optionsBuilder == null)
@@ -100,14 +100,14 @@ public static class MySqlDbContextOptionsExtensions
     }
 
     /// <summary>
-    /// Configure Entity Framework Core to use a MySQL database
+    /// Configure Entity Framework Core to use a MySQL database.
     /// </summary>
-    /// <typeparam name="TContext">Type of <see cref="DbContext"/></typeparam>
-    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/></param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder</param>
-    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0)</param>
-    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL</returns>
+    /// <typeparam name="TContext">Type of <see cref="DbContext"/>.</typeparam>
+    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder.</param>
+    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0).</param>
+    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL.</returns>
     public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {
@@ -127,15 +127,15 @@ public static class MySqlDbContextOptionsExtensions
     }
 
     /// <summary>
-    /// Configure Entity Framework Core to use a MySQL database identified by a named service binding
+    /// Configure Entity Framework Core to use a MySQL database identified by a named service binding.
     /// </summary>
-    /// <typeparam name="TContext">Type of <see cref="DbContext"/></typeparam>
-    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/></param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="serviceName">The name of the service binding to use</param>
-    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder</param>
-    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0)</param>
-    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL</returns>
+    /// <typeparam name="TContext">Type of <see cref="DbContext"/>.</typeparam>
+    /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="serviceName">The name of the service binding to use.</param>
+    /// <param name="mySqlOptionsAction">An action for customizing the MySqlDbContextOptionsBuilder.</param>
+    /// <param name="serverVersion">The version of MySQL/MariaDB to connect to (introduced in EF Core 5.0).</param>
+    /// <returns><see cref="DbContextOptionsBuilder"/>, configured to use MySQL.</returns>
     public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {

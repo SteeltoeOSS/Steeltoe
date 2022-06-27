@@ -9,7 +9,7 @@ using System;
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
 /// <summary>
-///  Configuration source used in creating a <see cref="SpringBootCmdProvider"/> that translates spring style CommandLine arguments to .NET
+///  Configuration source used in creating a <see cref="SpringBootCmdProvider"/> that translates spring style CommandLine arguments to .NET.
 /// </summary>
 public class SpringBootCmdSource : IConfigurationSource
 {
@@ -18,7 +18,7 @@ public class SpringBootCmdSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="SpringBootCmdSource"/> class.
     /// </summary>
-    /// <param name="configuration">The <see cref="CommandLineConfigurationProvider"/> provider by the framework </param>
+    /// <param name="configuration">The <see cref="CommandLineConfigurationProvider"/> provider by the framework. </param>
     public SpringBootCmdSource(IConfiguration configuration)
     {
         _config = configuration ?? throw new ArgumentNullException(nameof(configuration));

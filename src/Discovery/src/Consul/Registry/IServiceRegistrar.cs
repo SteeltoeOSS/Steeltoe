@@ -9,17 +9,17 @@ namespace Steeltoe.Discovery.Consul.Registry;
 public interface IServiceRegistrar : IDisposable
 {
     /// <summary>
-    /// Start the service registrar
+    /// Start the service registrar.
     /// </summary>
     void Start();
 
     /// <summary>
-    /// Register any registrations configured
+    /// Register any registrations configured.
     /// </summary>
     void Register();
 
     /// <summary>
-    /// Deregister any registrations configured
+    /// Deregister any registrations configured.
     /// </summary>
     void Deregister();
 }

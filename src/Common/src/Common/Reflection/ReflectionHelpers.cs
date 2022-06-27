@@ -15,10 +15,10 @@ namespace Steeltoe.Common.Reflection;
 public static class ReflectionHelpers
 {
     /// <summary>
-    /// Try to load an assembly
+    /// Try to load an assembly.
     /// </summary>
-    /// <param name="assembly">Name of the assembly</param>
-    /// <returns>Boolean indicating success/failure of finding the assembly</returns>
+    /// <param name="assembly">Name of the assembly.</param>
+    /// <returns>Boolean indicating success/failure of finding the assembly.</returns>
     public static bool IsAssemblyLoaded(string assembly)
     {
         try
@@ -33,10 +33,10 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Find an assembly
+    /// Find an assembly.
     /// </summary>
-    /// <param name="name">Name of the assembly to find</param>
-    /// <returns>A representation of the assembly</returns>
+    /// <param name="name">Name of the assembly to find.</param>
+    /// <returns>A representation of the assembly.</returns>
     public static Assembly FindAssembly(string name)
     {
         try
@@ -54,36 +54,36 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Find assemblies matching a query
+    /// Find assemblies matching a query.
     /// </summary>
-    /// <param name="assemblyQuery">Your assembly search query</param>
-    /// <returns>Assemblies in <see cref="AppDomain.CurrentDomain" /> matching the query</returns>
+    /// <param name="assemblyQuery">Your assembly search query.</param>
+    /// <returns>Assemblies in <see cref="AppDomain.CurrentDomain" /> matching the query.</returns>
     public static IEnumerable<Assembly> FindAssemblies(Func<Assembly, bool> assemblyQuery)
         => AppDomain.CurrentDomain.GetAssemblies().AsParallel().Where(assemblyQuery);
 
     /// <summary>
-    /// Find types from assemblies matching the query that are based on a common type
+    /// Find types from assemblies matching the query that are based on a common type.
     /// </summary>
-    /// <param name="assemblyQuery">Your assembly search query</param>
-    /// <param name="baseType">Base type to search for</param>
-    /// <returns>A list of types that have the given type as a base type</returns>
+    /// <param name="assemblyQuery">Your assembly search query.</param>
+    /// <param name="baseType">Base type to search for.</param>
+    /// <returns>A list of types that have the given type as a base type.</returns>
     public static IEnumerable<Type> FindDescendantTypes(Func<Assembly, bool> assemblyQuery, Type baseType)
         => FindAssemblies(assemblyQuery).SelectMany(a => a.GetTypes().Where(t => t.BaseType == baseType));
 
     /// <summary>
-    /// Find a type specified in an assembly attribute
+    /// Find a type specified in an assembly attribute.
     /// </summary>
-    /// <typeparam name="T">The attribute that defines the type to get</typeparam>
-    /// <returns>A list of matching types. Won't return more than one type per assembly</returns>
+    /// <typeparam name="T">The attribute that defines the type to get.</typeparam>
+    /// <returns>A list of matching types. Won't return more than one type per assembly.</returns>
     public static IEnumerable<Type> FindTypeFromAssemblyAttribute<T>()
         where T : AssemblyContainsTypeAttribute
         => FindAssembliesWithAttribute<T>().Select(assembly => assembly.GetCustomAttribute<T>().ContainedType);
 
     /// <summary>
-    /// Find a list of types specified in an assembly attribute
+    /// Find a list of types specified in an assembly attribute.
     /// </summary>
-    /// <typeparam name="T">The attribute that defines the types to get</typeparam>
-    /// <returns>A list of matching types</returns>
+    /// <typeparam name="T">The attribute that defines the types to get.</typeparam>
+    /// <returns>A list of matching types.</returns>
     public static IEnumerable<Assembly> FindAssembliesWithAttribute<T>()
         where T : AssemblyContainsTypeAttribute
     {
@@ -92,21 +92,21 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Finds a list of types with <typeparamref name="T"/>
+    /// Finds a list of types with <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="T">Type of <see cref="Attribute"/> to search for</typeparam>
-    /// <param name="assembly">The assembly to search for the type(s)</param>
-    /// <returns>A list of types with the specified attribute</returns>
+    /// <typeparam name="T">Type of <see cref="Attribute"/> to search for.</typeparam>
+    /// <param name="assembly">The assembly to search for the type(s).</param>
+    /// <returns>A list of types with the specified attribute.</returns>
     public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly)
         where T : Attribute
         => assembly.GetTypes().Where(type => type.IsDefined(typeof(T)));
 
     /// <summary>
-    /// Finds a list of assemblies with <typeparamref name="TTypeAttribute"/> contained within assemblies with <typeparamref name="TAssemblyAttribute"/>
+    /// Finds a list of assemblies with <typeparamref name="TTypeAttribute"/> contained within assemblies with <typeparamref name="TAssemblyAttribute"/>.
     /// </summary>
-    /// <typeparam name="TTypeAttribute">The Type attribute to locate</typeparam>
-    /// <typeparam name="TAssemblyAttribute">The Assembly-level attribute to use to filter the assembly list</typeparam>
-    /// <returns>Matching types from within matching assemblies</returns>
+    /// <typeparam name="TTypeAttribute">The Type attribute to locate.</typeparam>
+    /// <typeparam name="TAssemblyAttribute">The Assembly-level attribute to use to filter the assembly list.</typeparam>
+    /// <returns>Matching types from within matching assemblies.</returns>
     public static IEnumerable<Type> FindTypesWithAttributeFromAssemblyAttribute<TTypeAttribute, TAssemblyAttribute>()
         where TTypeAttribute : Attribute
         where TAssemblyAttribute : AssemblyContainsTypeAttribute
@@ -114,10 +114,10 @@ public static class ReflectionHelpers
             .SelectMany(FindTypesWithAttribute<TTypeAttribute>);
 
     /// <summary>
-    /// Finds a list of types with the attributed identified by <typeparamref name="T"/><para></para>
+    /// Finds a list of types with the attributed identified by <typeparamref name="T"/>.<para></para>
     /// </summary>
-    /// <typeparam name="T">The assembly attribute that defines the desired type</typeparam>
-    /// <returns>Matching types from within matching assemblies</returns>
+    /// <typeparam name="T">The assembly attribute that defines the desired type.</typeparam>
+    /// <returns>Matching types from within matching assemblies.</returns>
     public static IEnumerable<Type> FindAttributedTypesFromAssemblyAttribute<T>()
         where T : AssemblyContainsTypeAttribute
         => FindAssembliesWithAttribute<T>()
@@ -126,10 +126,10 @@ public static class ReflectionHelpers
                     .Where(t => t.IsDefined(assemblies.GetCustomAttribute<T>()?.ContainedType)));
 
     /// <summary>
-    /// Finds a list of types implementing the interface identified by <typeparamref name="TAttribute"/><para></para>
+    /// Finds a list of types implementing the interface identified by <typeparamref name="TAttribute"/>.<para></para>
     /// </summary>
-    /// <typeparam name="TAttribute">The assembly attribute that defines the desired interface type</typeparam>
-    /// <returns>Matching types from within matching assemblies</returns>
+    /// <typeparam name="TAttribute">The assembly attribute that defines the desired interface type.</typeparam>
+    /// <returns>Matching types from within matching assemblies.</returns>
     public static IEnumerable<Type> FindInterfacedTypesFromAssemblyAttribute<TAttribute>()
         where TAttribute : AssemblyContainsTypeAttribute
         => FindAssembliesWithAttribute<TAttribute>()
@@ -138,12 +138,12 @@ public static class ReflectionHelpers
                     .Where(types => assemblies.GetCustomAttribute<TAttribute>().ContainedType.IsAssignableFrom(types)));
 
     /// <summary>
-    /// Search a list of assemblies for the first matching type
+    /// Search a list of assemblies for the first matching type.
     /// </summary>
-    /// <param name="assemblyNames">List of assembly names to search</param>
-    /// <param name="typeNames">List of suitable types</param>
-    /// <returns>An appropriate type</returns>
-    /// <remarks>Great for finding an implementation type that could have one or more names in one or more assemblies</remarks>
+    /// <param name="assemblyNames">List of assembly names to search.</param>
+    /// <param name="typeNames">List of suitable types.</param>
+    /// <returns>An appropriate type.</returns>
+    /// <remarks>Great for finding an implementation type that could have one or more names in one or more assemblies.</remarks>
     public static Type FindType(string[] assemblyNames, string[] typeNames)
     {
         foreach (var assemblyName in assemblyNames)
@@ -166,11 +166,11 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Find a type from within an assembly
+    /// Find a type from within an assembly.
     /// </summary>
-    /// <param name="assembly">The assembly to search</param>
-    /// <param name="typeName">The name of the type to retrieve</param>
-    /// <returns>The type</returns>
+    /// <param name="assembly">The assembly to search.</param>
+    /// <param name="typeName">The name of the type to retrieve.</param>
+    /// <returns>The type.</returns>
     public static Type FindType(Assembly assembly, string typeName)
     {
         try
@@ -186,15 +186,15 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Search a list of assemblies for the first matching type
+    /// Search a list of assemblies for the first matching type.
     /// </summary>
-    /// <param name="assemblyNames">List of assembly names to search</param>
-    /// <param name="typeNames">List of suitable types</param>
-    /// <param name="typeName">To use in exception</param>
-    /// <param name="assemblyShortDescription">Describe what might be missing</param>
-    /// <returns>An appropriate type</returns>
-    /// <remarks>Great for finding an implementation type that could have one or more names in one or more assemblies</remarks>
-    /// <exception cref="Exception">When type isn't found</exception>
+    /// <param name="assemblyNames">List of assembly names to search.</param>
+    /// <param name="typeNames">List of suitable types.</param>
+    /// <param name="typeName">To use in exception.</param>
+    /// <param name="assemblyShortDescription">Describe what might be missing.</param>
+    /// <returns>An appropriate type.</returns>
+    /// <remarks>Great for finding an implementation type that could have one or more names in one or more assemblies.</remarks>
+    /// <exception cref="Exception">When type isn't found.</exception>
     public static Type FindTypeOrThrow(string[] assemblyNames, string[] typeNames, string typeName, string assemblyShortDescription)
     {
         var type = FindType(assemblyNames, typeNames);
@@ -207,12 +207,12 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Find a method within a type
+    /// Find a method within a type.
     /// </summary>
-    /// <param name="type">The type to search</param>
-    /// <param name="methodName">The name of the method</param>
-    /// <param name="parameters">(Optional) The parameters in the signature</param>
-    /// <returns>The method you're searching for</returns>
+    /// <param name="type">The type to search.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <param name="parameters">(Optional) The parameters in the signature.</param>
+    /// <returns>The method you're searching for.</returns>
     public static MethodInfo FindMethod(Type type, string methodName, Type[] parameters = null)
     {
         try
@@ -233,12 +233,12 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Invoke a function
+    /// Invoke a function.
     /// </summary>
-    /// <param name="member">The method to execute</param>
-    /// <param name="instance">Instance of an object, if required by the method</param>
-    /// <param name="args">Arguments to pass to the method</param>
-    /// <returns>Results of method call</returns>
+    /// <param name="member">The method to execute.</param>
+    /// <param name="instance">Instance of an object, if required by the method.</param>
+    /// <param name="args">Arguments to pass to the method.</param>
+    /// <returns>Results of method call.</returns>
     public static object Invoke(MethodBase member, object instance, object[] args)
     {
         try
@@ -254,11 +254,11 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Create an instance of a type
+    /// Create an instance of a type.
     /// </summary>
-    /// <param name="t">Type to instantiate</param>
-    /// <param name="args">Constructor parameters</param>
-    /// <returns>New instance of desired type</returns>
+    /// <param name="t">Type to instantiate.</param>
+    /// <param name="args">Constructor parameters.</param>
+    /// <returns>New instance of desired type.</returns>
     public static object CreateInstance(Type t, object[] args = null)
     {
         try
@@ -281,11 +281,11 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Try to set a property on an object
+    /// Try to set a property on an object.
     /// </summary>
-    /// <param name="obj">Object to set a value on</param>
-    /// <param name="property">Property to set</param>
-    /// <param name="value">Value to use</param>
+    /// <param name="obj">Object to set a value on.</param>
+    /// <param name="property">Property to set.</param>
+    /// <param name="value">Value to use.</param>
     public static void TrySetProperty(object obj, string property, object value)
     {
         var prop = obj.GetType().GetProperty(property, BindingFlags.Public | BindingFlags.Instance);
@@ -296,10 +296,10 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Try to make sure all assemblies with the given attribute have been loaded into the current AppDomain
+    /// Try to make sure all assemblies with the given attribute have been loaded into the current AppDomain.
     /// </summary>
-    /// <typeparam name="T">Assembly Attribute Type</typeparam>
-    /// <remarks>This method depends on assemblies existing as separate files on disk and will not work for applications published with /p:PublishSingleFile=true</remarks>
+    /// <typeparam name="T">Assembly Attribute Type.</typeparam>
+    /// <remarks>This method depends on assemblies existing as separate files on disk and will not work for applications published with /p:PublishSingleFile=true.</remarks>
     private static void TryLoadAssembliesWithAttribute<T>()
         where T : AssemblyContainsTypeAttribute
     {
@@ -331,11 +331,11 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
-    /// Build a list of file paths that are relevant to this task
+    /// Build a list of file paths that are relevant to this task.
     /// </summary>
-    /// <param name="runtimeAssemblies">Paths to dotnet runtime files</param>
-    /// <param name="attributeType">The assembly attribute being searched for</param>
-    /// <returns>A list of paths to the runtime, assembly and requested assembly type</returns>
+    /// <param name="runtimeAssemblies">Paths to dotnet runtime files.</param>
+    /// <param name="attributeType">The assembly attribute being searched for.</param>
+    /// <returns>A list of paths to the runtime, assembly and requested assembly type.</returns>
     private static List<string> AllRelevantPaths(string[] runtimeAssemblies, Type attributeType)
     {
         var toReturn = new List<string>(runtimeAssemblies);

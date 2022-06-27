@@ -13,7 +13,7 @@ using System.Diagnostics.Tracing;
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 /// <summary>
-/// Events are fired when garbage collection occurs
+/// Events are fired when garbage collection occurs.
 /// </summary>
 [Obsolete("Use CLRRuntimeSource Instead")]
 public class GCEventsListener : EventSourceListener

@@ -5,12 +5,12 @@
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 /// <summary>
-/// Path to a credential in CredHub
+/// Path to a credential in CredHub.
 /// </summary>
 public class CredentialPath
 {
     /// <summary>
-    /// Gets or sets path containing one or more credentials
+    /// Gets or sets path containing one or more credentials.
     /// </summary>
     public string Path { get; set; }
 }

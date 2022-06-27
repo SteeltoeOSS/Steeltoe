@@ -7,15 +7,15 @@ using System;
 namespace Steeltoe.Stream.Binder;
 
 /// <summary>
-/// An abstraction which defines a mechanism to poll a consumer
+/// An abstraction which defines a mechanism to poll a consumer.
 /// </summary>
 public interface IPollableSource
 {
     /// <summary>
-    /// Poll the consumer
+    /// Poll the consumer.
     /// </summary>
-    /// <param name="handler">the handler to process message</param>
-    /// <returns>true if a message was handled</returns>
+    /// <param name="handler">the handler to process message.</param>
+    /// <returns>true if a message was handled.</returns>
     bool Poll(object handler);
 
     /// <summary>
@@ -23,23 +23,23 @@ public interface IPollableSource
     /// RequeueCurrentMessageException to force the current message to be requeued
     /// in the broker(after retries are exhausted, if configured).
     /// </summary>
-    /// <param name="handler">the handler</param>
-    /// <param name="type">the type of the payload</param>
-    /// <returns>true if a message was handled</returns>
+    /// <param name="handler">the handler.</param>
+    /// <param name="type">the type of the payload.</param>
+    /// <returns>true if a message was handled.</returns>
     bool Poll(object handler, Type type);
 }
 
 /// <summary>
-/// An abstraction which defines a mechanism to poll a consumer
+/// An abstraction which defines a mechanism to poll a consumer.
 /// </summary>
-/// <typeparam name="H">the handler type</typeparam>
+/// <typeparam name="H">the handler type.</typeparam>
 public interface IPollableSource<in H> : IPollableSource
 {
     /// <summary>
-    /// Poll the consumer
+    /// Poll the consumer.
     /// </summary>
-    /// <param name="handler">the handler to process message</param>
-    /// <returns>true if a message was handled</returns>
+    /// <param name="handler">the handler to process message.</param>
+    /// <returns>true if a message was handled.</returns>
     bool Poll(H handler);
 
     /// <summary>
@@ -47,8 +47,8 @@ public interface IPollableSource<in H> : IPollableSource
     /// RequeueCurrentMessageException to force the current message to be requeued
     /// in the broker(after retries are exhausted, if configured).
     /// </summary>
-    /// <param name="handler">the handler</param>
-    /// <param name="type">the type of the payload</param>
-    /// <returns>true if a message was handled</returns>
+    /// <param name="handler">the handler.</param>
+    /// <param name="type">the type of the payload.</param>
+    /// <returns>true if a message was handled.</returns>
     bool Poll(H handler, Type type);
 }

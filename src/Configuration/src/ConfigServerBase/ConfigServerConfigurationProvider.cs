@@ -63,9 +63,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
-    /// configuration settings. <see cref="ConfigServerClientSettings"/>
+    /// configuration settings. <see cref="ConfigServerClientSettings"/>.
     /// </summary>
-    /// <param name="logFactory">optional logging factory</param>
+    /// <param name="logFactory">optional logging factory.</param>
     public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null)
         : this(new ConfigServerClientSettings(), logFactory)
     {
@@ -75,7 +75,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class.
     /// </summary>
     /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
-    /// <param name="logFactory">optional logging factory</param>
+    /// <param name="logFactory">optional logging factory.</param>
     public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
     {
         _ = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -88,7 +88,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </summary>
     /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
     /// <param name="httpClient">a HttpClient the provider uses to make requests of the server.</param>
-    /// <param name="logFactory">optional logging factory</param>
+    /// <param name="logFactory">optional logging factory.</param>
     public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
     {
         _ = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -98,7 +98,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>
+    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>.
     /// </summary>
     /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
@@ -108,10 +108,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>
+    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>.
     /// </summary>
     /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
-    /// <param name="httpClient">the httpClient to use</param>
+    /// <param name="httpClient">the httpClient to use.</param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, HttpClient httpClient)
     {
         _ = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -191,7 +191,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     /// <summary>
     /// Loads configuration data from the Spring Cloud Configuration Server as specified by
-    /// the <see cref="Settings"/>
+    /// the <see cref="Settings"/>.
     /// </summary>
     public override void Load()
     {
@@ -452,12 +452,12 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
+    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server.
     /// </summary>
-    /// <param name="requestUri">the Uri used when accessing the server</param>
-    /// <param name="username">username to use if required</param>
-    /// <param name="password">password to use if required</param>
-    /// <returns>The HttpRequestMessage built from the path</returns>
+    /// <param name="requestUri">the Uri used when accessing the server.</param>
+    /// <param name="username">username to use if required.</param>
+    /// <param name="password">password to use if required.</param>
+    /// <returns>The HttpRequestMessage built from the path.</returns>
     protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri, string username, string password)
     {
         var request = string.IsNullOrEmpty(_settings.AccessTokenUri)
@@ -478,10 +478,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
+    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server.
     /// </summary>
-    /// <param name="requestUri">the Uri used when accessing the server</param>
-    /// <returns>The HttpRequestMessage built from the path</returns>
+    /// <param name="requestUri">the Uri used when accessing the server.</param>
+    /// <returns>The HttpRequestMessage built from the path.</returns>
     [Obsolete("Will be removed in next release. See GetRequestMessage(string, string, string)")]
     protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
     {
@@ -489,7 +489,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Adds the client settings for the Configuration Server to the Data dictionary
+    /// Adds the client settings for the Configuration Server to the Data dictionary.
     /// </summary>
     protected internal virtual void AddConfigServerClientSettings()
     {
@@ -501,7 +501,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Adds the client settings for the Configuration Server to the data dictionary
+    /// Adds the client settings for the Configuration Server to the data dictionary.
     /// </summary>
     protected internal virtual void AddConfigServerClientSettings(IDictionary<string, string> data)
     {
@@ -619,10 +619,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     /// <summary>
     /// Asynchronously calls the Spring Cloud Configuration Server using the provided Uri and returning a
-    /// a task that can be used to obtain the results
+    /// a task that can be used to obtain the results.
     /// </summary>
-    /// <param name="requestUri">the Uri used in accessing the Spring Cloud Configuration Server</param>
-    /// <returns>The task object representing the asynchronous operation</returns>
+    /// <param name="requestUri">the Uri used in accessing the Spring Cloud Configuration Server.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
     [Obsolete("Will be removed in next release. See RemoteLoadAsync(string[], string)")]
     protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
     {
@@ -677,11 +677,11 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Create the Uri that will be used in accessing the Configuration Server
+    /// Create the Uri that will be used in accessing the Configuration Server.
     /// </summary>
-    /// <param name="baseRawUri">base server uri to use</param>
-    /// <param name="label">a label to add</param>
-    /// <returns>The request URI for the Configuration Server</returns>
+    /// <param name="baseRawUri">base server uri to use.</param>
+    /// <param name="label">a label to add.</param>
+    /// <returns>The request URI for the Configuration Server.</returns>
     protected internal virtual string GetConfigServerUri(string baseRawUri, string label)
     {
         if (string.IsNullOrEmpty(baseRawUri))
@@ -710,10 +710,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Create the Uri that will be used in accessing the Configuration Server
+    /// Create the Uri that will be used in accessing the Configuration Server.
     /// </summary>
-    /// <param name="label">a label to add</param>
-    /// <returns>The request URI for the Configuration Server</returns>
+    /// <param name="label">a label to add.</param>
+    /// <returns>The request URI for the Configuration Server.</returns>
     [Obsolete("Will be removed in next release. See GetConfigServerUri(string, string)")]
     protected internal virtual string GetConfigServerUri(string label)
     {
@@ -722,9 +722,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     /// <summary>
     /// Adds values from a PropertySource to the Configurtation Data dictionary managed
-    /// by this provider
+    /// by this provider.
     /// </summary>
-    /// <param name="source">a property source to add</param>
+    /// <param name="source">a property source to add.</param>
     [Obsolete("Will be removed in next release.")]
     protected internal virtual void AddPropertySource(PropertySource source)
     {
@@ -734,8 +734,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// <summary>
     /// Adds values from a PropertySource to the provided dictionary.
     /// </summary>
-    /// <param name="source">a property source to add</param>
-    /// <param name="data">the dictionary to add the property source to</param>
+    /// <param name="source">a property source to add.</param>
+    /// <param name="data">the dictionary to add the property source to.</param>
     protected internal void AddPropertySource(PropertySource source, IDictionary<string, string> data)
     {
         if (source == null || source.Source == null)
@@ -828,11 +828,11 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Encode the username password for a http request
+    /// Encode the username password for a http request.
     /// </summary>
-    /// <param name="user">the username</param>
-    /// <param name="password">the password</param>
-    /// <returns>Encoded user + password</returns>
+    /// <param name="user">the username.</param>
+    /// <param name="password">the password.</param>
+    /// <returns>Encoded user + password.</returns>
     protected internal string GetEncoded(string user, string password)
     {
         return HttpClientHelper.GetEncodedUserPassword(user, password);
@@ -849,9 +849,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     /// <summary>
     /// Conduct the OAuth2 client_credentials grant flow returning a task that can be used to obtain the
-    /// results
+    /// results.
     /// </summary>
-    /// <returns>The task object representing asynchronous operation</returns>
+    /// <returns>The task object representing asynchronous operation.</returns>
     protected internal string FetchAccessToken()
     {
         if (string.IsNullOrEmpty(_settings.AccessTokenUri))
@@ -954,10 +954,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     /// <summary>
     /// Creates an appropriatly configured HttpClient that will be used in communicating with the
-    /// Spring Cloud Configuration Server
+    /// Spring Cloud Configuration Server.
     /// </summary>
-    /// <param name="settings">the settings used in configuring the HttpClient</param>
-    /// <returns>The HttpClient used by the provider</returns>
+    /// <param name="settings">the settings used in configuring the HttpClient.</param>
+    /// <returns>The HttpClient used by the provider.</returns>
     protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
     {
         var clientHandler = new HttpClientHandler();

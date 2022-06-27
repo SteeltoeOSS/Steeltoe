@@ -25,31 +25,31 @@ public static class DiscoveryServiceCollectionExtensions
 {
     /// <summary>
     /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
-    /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured
+    /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured.
     /// </summary>
-    /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
-    /// <param name="config">Application configuration</param>
+    /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
+    /// <param name="config">Application configuration.</param>
     public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config = null) =>
         services.AddDiscoveryClient(config, null);
 
     /// <summary>
     /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
-    /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured
+    /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured.
     /// </summary>
-    /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="lifecycle">Add custom code for app shutdown events</param>
+    /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="lifecycle">Add custom code for app shutdown events.</param>
     public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null) =>
         services.AddDiscoveryClient(config, null, lifecycle);
 
     /// <summary>
     /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
-    /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured
+    /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured.
     /// </summary>
-    /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
-    /// <param name="config">Application configuration</param>
-    /// <param name="serviceName">Specify the name of a service binding to use</param>
-    /// <param name="lifecycle">Add custom code for app shutdown events</param>
+    /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
+    /// <param name="config">Application configuration.</param>
+    /// <param name="serviceName">Specify the name of a service binding to use.</param>
+    /// <param name="lifecycle">Add custom code for app shutdown events.</param>
     public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName = null, IDiscoveryLifecycle lifecycle = null)
     {
         Action<DiscoveryClientBuilder> builderAction = null;
@@ -95,13 +95,13 @@ public static class DiscoveryServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds service discovery to your application. If <paramref name="builderAction"/> is not provided, a <see cref="NoOpDiscoveryClient"/> will be configured
+    /// Adds service discovery to your application. If <paramref name="builderAction"/> is not provided, a <see cref="NoOpDiscoveryClient"/> will be configured.
     /// </summary>
-    /// <param name="serviceCollection"><see cref="IServiceCollection"/> to configure</param>
-    /// <param name="builderAction">Provided by the desired <see cref="IDiscoveryClient"/> implementation</param>
-    /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
-    /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
-    /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
+    /// <param name="serviceCollection"><see cref="IServiceCollection"/> to configure.</param>
+    /// <param name="builderAction">Provided by the desired <see cref="IDiscoveryClient"/> implementation.</param>
+    /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection.</remarks>
+    /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured.</exception>
+    /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected.</exception>
     public static IServiceCollection AddServiceDiscovery(this IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction = null)
     {
         if (serviceCollection is null)
@@ -123,11 +123,11 @@ public static class DiscoveryServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Retrieve a single, named <see cref="IServiceInfo"/> that is expected to work with Service Discovery
+    /// Retrieve a single, named <see cref="IServiceInfo"/> that is expected to work with Service Discovery.
     /// </summary>
-    /// <param name="config">The <see cref="IConfiguration"/> to search</param>
-    /// <param name="serviceName">Name of service binding to find</param>
-    /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found</exception>
+    /// <param name="config">The <see cref="IConfiguration"/> to search.</param>
+    /// <param name="serviceName">Name of service binding to find.</param>
+    /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found.</exception>
     public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
     {
         var info = config.GetServiceInfo(serviceName);
@@ -145,10 +145,10 @@ public static class DiscoveryServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Retrieve a single <see cref="IServiceInfo"/> that is expected to work with Service Discovery
+    /// Retrieve a single <see cref="IServiceInfo"/> that is expected to work with Service Discovery.
     /// </summary>
-    /// <param name="config">The <see cref="IConfiguration"/> to search</param>
-    /// <exception cref="ConnectorException">Thrown if multiple service infos are found</exception>
+    /// <param name="config">The <see cref="IConfiguration"/> to search.</param>
+    /// <exception cref="ConnectorException">Thrown if multiple service infos are found.</exception>
     public static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration config)
     {
         // Note: Could be other discovery type services in future

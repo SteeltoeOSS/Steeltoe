@@ -7,12 +7,12 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public abstract class CredHubGenerateRequest : CredHubBaseObject
 {
     /// <summary>
-    /// Gets or sets a value indicating the overwrite interaction mode
+    /// Gets or sets a value indicating the overwrite interaction mode.
     /// </summary>
     public OverwiteMode Mode { get; set; } = OverwiteMode.converge;
 
     /// <summary>
-    /// Gets or sets parameters for generating credential
+    /// Gets or sets parameters for generating credential.
     /// </summary>
     public object Parameters { get; set; }
 }

@@ -15,8 +15,8 @@ public static class IServiceCollectionExtensions
     /// If an instance of <see cref="IServicesInfo"/> is found, it is returned.
     /// Otherwise a default instance is added to the collection and then returned.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services</param>
-    /// <returns>Relevant <see cref="IServicesInfo" /></returns>
+    /// <param name="serviceCollection">Collection of configured services.</param>
+    /// <returns>Relevant <see cref="IServicesInfo" />.</returns>
     [Obsolete("This method builds a temporary service provider and should not be used")]
     public static IServicesInfo GetServicesInfo(this IServiceCollection serviceCollection)
     {

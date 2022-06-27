@@ -14,8 +14,8 @@ public static class IServiceProviderExtensions
     /// If an instance of <see cref="IApplicationInstanceInfo"/> is found, it is returned.
     /// Otherwise a default instance is returned.
     /// </summary>
-    /// <param name="sp">Provider of services</param>
-    /// <returns>An instance of <see cref="IApplicationInstanceInfo" /></returns>
+    /// <param name="sp">Provider of services.</param>
+    /// <returns>An instance of <see cref="IApplicationInstanceInfo" />.</returns>
     public static IApplicationInstanceInfo GetApplicationInstanceInfo(this IServiceProvider sp)
     {
         var appInfo = sp.GetService<IApplicationInstanceInfo>();

@@ -24,17 +24,17 @@ public class ServiceInfoCreator
     protected ServiceInfoCreator(IConfiguration configuration) => Configuration = configuration;
 
     /// <summary>
-    /// Gets a value indicating whether this ServiceInfoCreator should be used
+    /// Gets a value indicating whether this ServiceInfoCreator should be used.
     /// </summary>
     public static bool IsRelevant { get; } = true;
 
     /// <summary>
-    /// Gets a list of <see cref="IServiceInfo"/> that are configured in the applicaiton configuration
+    /// Gets a list of <see cref="IServiceInfo"/> that are configured in the applicaiton configuration.
     /// </summary>
     public IList<IServiceInfo> ServiceInfos { get; } = new List<IServiceInfo>();
 
     /// <summary>
-    /// Gets a list of <see cref="IServiceInfoFactory"/> available for finding <see cref="IServiceInfo"/>s
+    /// Gets a list of <see cref="IServiceInfoFactory"/> available for finding <see cref="IServiceInfo"/>s.
     /// </summary>
     protected internal IList<IServiceInfoFactory> Factories { get; } = new List<IServiceInfoFactory>();
 
@@ -62,28 +62,28 @@ public class ServiceInfoCreator
     }
 
     /// <summary>
-    /// Get all Service Infos of type
+    /// Get all Service Infos of type.
     /// </summary>
-    /// <typeparam name="TServiceInfo">Service Info Type to retrieve</typeparam>
-    /// <returns>List of matching Service Infos</returns>
+    /// <typeparam name="TServiceInfo">Service Info Type to retrieve.</typeparam>
+    /// <returns>List of matching Service Infos.</returns>
     public IEnumerable<TServiceInfo> GetServiceInfos<TServiceInfo>()
         where TServiceInfo : class
         => ServiceInfos.Where(si => si is TServiceInfo).Cast<TServiceInfo>();
 
     /// <summary>
-    /// Get all Service Infos of type
+    /// Get all Service Infos of type.
     /// </summary>
-    /// <param name="type">Service Info Type to retrieve</param>
-    /// <returns>List of matching Service Infos</returns>
+    /// <param name="type">Service Info Type to retrieve.</param>
+    /// <returns>List of matching Service Infos.</returns>
     public IEnumerable<IServiceInfo> GetServiceInfos(Type type)
         => ServiceInfos.Where(info => info.GetType() == type);
 
     /// <summary>
-    /// Get a named service
+    /// Get a named service.
     /// </summary>
-    /// <typeparam name="TServiceInfo">Service Info type</typeparam>
-    /// <param name="name">Service name</param>
-    /// <returns>Service info or null</returns>
+    /// <typeparam name="TServiceInfo">Service Info type.</typeparam>
+    /// <param name="name">Service name.</param>
+    /// <returns>Service info or null.</returns>
     public TServiceInfo GetServiceInfo<TServiceInfo>(string name)
         where TServiceInfo : class
     {
@@ -101,10 +101,10 @@ public class ServiceInfoCreator
     }
 
     /// <summary>
-    /// Get a named Service Info
+    /// Get a named Service Info.
     /// </summary>
-    /// <param name="name">Name of service info</param>
-    /// <returns>Service info</returns>
+    /// <param name="name">Name of service info.</param>
+    /// <returns>Service info.</returns>
     public IServiceInfo GetServiceInfo(string name) => ServiceInfos.FirstOrDefault(info => info.Id.Equals(name));
 
     internal IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)

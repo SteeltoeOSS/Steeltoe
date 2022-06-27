@@ -428,12 +428,12 @@ public class ExecutionResult
     public long StartTimestamp { get; }
 
     /// <summary>
-    /// Gets amound of time spent in run() method
+    /// Gets amound of time spent in run() method.
     /// </summary>
     public int ExecutionLatency { get; }
 
     /// <summary>
-    /// Gets time elapsed between caller thread submitting request and response being visible to it
+    /// Gets time elapsed between caller thread submitting request and response being visible to it.
     /// </summary>
     public int UserThreadLatency { get; }
 

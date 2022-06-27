@@ -13,14 +13,14 @@ public interface ISubscribableChannel : IMessageChannel
     /// <summary>
     /// Register a message handler.
     /// </summary>
-    /// <param name="handler">the handler to register</param>
-    /// <returns>false if already registered; otherwise true</returns>
+    /// <param name="handler">the handler to register.</param>
+    /// <returns>false if already registered; otherwise true.</returns>
     bool Subscribe(IMessageHandler handler);
 
     /// <summary>
     /// Un-register a message handler.
     /// </summary>
-    /// <param name="handler">the handler to remvoe</param>
-    /// <returns>false if not registered; otherwise true</returns>
+    /// <param name="handler">the handler to remvoe.</param>
+    /// <returns>false if not registered; otherwise true.</returns>
     bool Unsubscribe(IMessageHandler handler);
 }

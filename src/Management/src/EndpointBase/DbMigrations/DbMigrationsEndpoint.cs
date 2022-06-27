@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrationsDescriptor>>, IDbMigrationsEndpoint
 {
     /// <summary>
-    /// Hacky class to allow mocking migration methods in unit tests
+    /// Hacky class to allow mocking migration methods in unit tests.
     /// </summary>
     public class DbMigrationsEndpointHelper
     {

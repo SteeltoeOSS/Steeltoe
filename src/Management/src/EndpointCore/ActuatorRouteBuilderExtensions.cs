@@ -58,7 +58,7 @@ public static class ActuatorRouteBuilderExtensions
     /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
     /// <param name="convention">A convention builder action that applies a convention to the whole collection. </param>
     /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
-    /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
+    /// <exception cref="InvalidOperationException">When T is not found in service container.</exception>
     public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
         where TEndpoint : IEndpoint
     {
@@ -72,7 +72,7 @@ public static class ActuatorRouteBuilderExtensions
     /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
     /// <param name="conventionBuilder">A convention builder that applies a convention to the whole collection. </param>
     /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
-    /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
+    /// <exception cref="InvalidOperationException">When T is not found in service container.</exception>
     public static IEndpointConventionBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder)
         where TEndpoint : IEndpoint
     {
@@ -83,10 +83,10 @@ public static class ActuatorRouteBuilderExtensions
 #endif
 
     /// <summary>
-    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
+    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>.
     /// </summary>
-    /// <param name="endpoints">The endpoint builder</param>
-    /// <param name="convention">The convention action to apply</param>
+    /// <param name="endpoints">The endpoint builder.</param>
+    /// <param name="convention">The convention action to apply.</param>
     public static void MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention)
     {
         foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
@@ -105,10 +105,10 @@ public static class ActuatorRouteBuilderExtensions
 
 #if !NET6_0_OR_GREATER
     /// <summary>
-    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
+    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>.
     /// </summary>
-    /// <param name="endpoints">The endpoint builder</param>
-    /// <returns>Endpoint convention builder</returns>
+    /// <param name="endpoints">The endpoint builder.</param>
+    /// <returns>Endpoint convention builder.</returns>
     [Obsolete("Use MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention) instead")]
     public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints)
     {
@@ -131,10 +131,10 @@ public static class ActuatorRouteBuilderExtensions
 #endif
 
     /// <summary>
-    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
+    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>.
     /// </summary>
-    /// <param name="endpoints">The endpoint builder</param>
-    /// <param name="version">Media Version</param>
+    /// <param name="endpoints">The endpoint builder.</param>
+    /// <param name="version">Media Version.</param>
     [Obsolete("MediaTypeVersion parameter is not used")]
     public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version)
         => endpoints.MapAllActuators(null);

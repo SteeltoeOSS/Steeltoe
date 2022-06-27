@@ -15,7 +15,7 @@ using Wavefront.SDK.CSharp.DirectIngestion;
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
 /// <summary>
-/// Exporter to send spans and traces to Wavefront from OpenTelemetry
+/// Exporter to send spans and traces to Wavefront from OpenTelemetry.
 /// </summary>
 public class WavefrontTraceExporter : BaseExporter<Activity>
 {

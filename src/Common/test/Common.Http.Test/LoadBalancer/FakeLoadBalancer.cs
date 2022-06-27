@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Common.Http.LoadBalancer.Test;
 
 /// <summary>
-/// A bad fake load balancer that only resolves requests for "replaceme" as "someresolvedhost"
+/// A bad fake load balancer that only resolves requests for "replaceme" as "someresolvedhost".
 /// </summary>
 internal sealed class FakeLoadBalancer : ILoadBalancer
 {

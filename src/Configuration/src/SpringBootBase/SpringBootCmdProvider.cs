@@ -8,7 +8,7 @@ using System;
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
 /// <summary>
-/// Configuration provider that expands Cmd Line '.' delimited configuration key/value pairs that start with "spring." to .NET compatible form
+/// Configuration provider that expands Cmd Line '.' delimited configuration key/value pairs that start with "spring." to .NET compatible form.
 /// </summary>
 public class SpringBootCmdProvider : ConfigurationProvider
 {
@@ -19,7 +19,7 @@ public class SpringBootCmdProvider : ConfigurationProvider
     /// Initializes a new instance of the <see cref="SpringBootCmdProvider"/> class.
     /// The <see cref="Configuration"/> will be created from the CommandLineConfigurationProvider.
     /// </summary>
-    /// <param name="config">The Default CommandLineConfigurationProvider </param>
+    /// <param name="config">The Default CommandLineConfigurationProvider. </param>
     public SpringBootCmdProvider(IConfiguration config)
     {
         _config = config ?? throw new ArgumentNullException(nameof(config));

@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
 
 /// <summary>
-/// Enables us to write logging messages to XUnit output
+/// Enables us to write logging messages to XUnit output.
 /// </summary>
 internal sealed class TestOutputLoggerProvider : ILoggerProvider
 {

@@ -7,7 +7,7 @@ namespace Steeltoe.Common.Expression.Internal;
 /// <summary>
 /// Parses expression strings into compiled expressions that can be evaluated.
 /// Supports parsing templates as well as standard expression strings.
-/// TODO:  This interface is not complete
+/// TODO:  This interface is not complete.
 /// </summary>
 public interface IExpressionParser
 {

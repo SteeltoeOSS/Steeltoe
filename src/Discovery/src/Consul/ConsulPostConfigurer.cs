@@ -14,9 +14,9 @@ namespace Steeltoe.Discovery.Consul;
 public static class ConsulPostConfigurer
 {
     /// <summary>
-    /// At PostConfigure, confirm that settings are valid for the current environment
+    /// At PostConfigure, confirm that settings are valid for the current environment.
     /// </summary>
-    /// <param name="options">ConsulOptions to evaluate</param>
+    /// <param name="options">ConsulOptions to evaluate.</param>
     public static void ValidateConsulOptions(ConsulOptions options)
     {
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && options.Host.Equals("localhost"))
@@ -26,11 +26,11 @@ public static class ConsulPostConfigurer
     }
 
     /// <summary>
-    /// Perform post-configuration on ConsulDiscoveryOptions
+    /// Perform post-configuration on ConsulDiscoveryOptions.
     /// </summary>
-    /// <param name="config">Application Configuration</param>
-    /// <param name="options">ConsulDiscoveryOptions to configure</param>
-    /// <param name="netOptions">Optional InetOptions</param>
+    /// <param name="config">Application Configuration.</param>
+    /// <param name="options">ConsulDiscoveryOptions to configure.</param>
+    /// <param name="netOptions">Optional InetOptions.</param>
     public static void UpdateDiscoveryOptions(IConfiguration config, ConsulDiscoveryOptions options, InetOptions netOptions)
     {
         options.NetUtils = new InetUtils(netOptions);

@@ -12,16 +12,16 @@ using System.Linq;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Add services used by the CloudFoundry actuator
+/// Add services used by the CloudFoundry actuator.
 /// </summary>
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the Cloud Foundry actuator
+    /// Adds the services used by the Cloud Foundry actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <param name="configuration">Reference to the configuration system</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <param name="configuration">Reference to the configuration system.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddCloudFoundryActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)

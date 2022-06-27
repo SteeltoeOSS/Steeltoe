@@ -25,22 +25,22 @@ public static class Platform
     public static bool IsOSX => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
     /// <summary>
-    /// Gets a value indicating whether or not the application appears to be running in a container
+    /// Gets a value indicating whether or not the application appears to be running in a container.
     /// </summary>
     public static bool IsContainerized => Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
     /// <summary>
-    /// Gets a value indicating whether or not the platform is Cloud Foundry by checking if VCAP_APPLICATION has been set
+    /// Gets a value indicating whether or not the platform is Cloud Foundry by checking if VCAP_APPLICATION has been set.
     /// </summary>
     public static bool IsCloudFoundry => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VCAP_APPLICATION));
 
     /// <summary>
-    /// Gets a value indicating whether or not the platform is Kubernetes by checking if KUBERNETES_HOST has been set
+    /// Gets a value indicating whether or not the platform is Kubernetes by checking if KUBERNETES_HOST has been set.
     /// </summary>
     public static bool IsKubernetes => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(KUBERNETES_HOST));
 
     /// <summary>
-    /// Gets a value indicating whether an app is running on a cloud provider. Currently supports Cloud Foundry and Kubernetes
+    /// Gets a value indicating whether an app is running on a cloud provider. Currently supports Cloud Foundry and Kubernetes.
     /// </summary>
     public static bool IsCloudHosted => IsCloudFoundry || IsKubernetes;
 }

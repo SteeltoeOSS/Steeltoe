@@ -12,10 +12,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Thread Dump actuator to Microsoft-DI
+    /// Adds components of the Thread Dump actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add actuator to</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:dump)</param>
+    /// <param name="services">Service collection to add actuator to.</param>
+    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:dump).</param>
     public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config = null)
     {
         services.AddThreadDumpActuator(config, MediaTypeVersion.V2);

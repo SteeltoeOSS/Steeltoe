@@ -11,7 +11,7 @@ using System.Linq;
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 
 /// <summary>
-/// Specialized implementation of ConfigurationRoot that does not call load on providers
+/// Specialized implementation of ConfigurationRoot that does not call load on providers.
 /// </summary>
 internal sealed class ConfigurationView : IConfigurationRoot
 {

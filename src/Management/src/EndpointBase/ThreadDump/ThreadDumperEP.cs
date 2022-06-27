@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 /// <summary>
-/// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads
+/// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads.
 /// </summary>
 public class ThreadDumperEP : IThreadDumper
 {
@@ -45,9 +45,9 @@ public class ThreadDumperEP : IThreadDumper
     }
 
     /// <summary>
-    /// Connect using the EventPipe and obtain a dump of all the Threads and for each thread a stacktrace
+    /// Connect using the EventPipe and obtain a dump of all the Threads and for each thread a stacktrace.
     /// </summary>
-    /// <returns>the list of threads with stack trace information</returns>
+    /// <returns>the list of threads with stack trace information.</returns>
     public List<ThreadInfo> DumpThreads()
     {
         var results = new List<ThreadInfo>();

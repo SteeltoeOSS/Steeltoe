@@ -30,42 +30,42 @@ public static class RedisTypeLocator
     public static string[] StackExchangeCommandFlagsNamesValue { get; internal set; } = { "StackExchange.Redis.CommandFlags" };
 
     /// <summary>
-    /// Gets IDistributedCache from a Microsoft Cache library
+    /// Gets IDistributedCache from a Microsoft Cache library.
     /// </summary>
     public static Type MicrosoftInterface => ReflectionHelpers.FindTypeOrThrow(MicrosoftAssemblies, MicrosoftInterfaceTypeNames, MicrosoftInterfaceTypeNames[0], "a Microsoft Caching NuGet Reference");
 
     /// <summary>
-    /// Gets RedisCache from a Microsoft Cache library
+    /// Gets RedisCache from a Microsoft Cache library.
     /// </summary>
     public static Type MicrosoftImplementation => ReflectionHelpers.FindTypeOrThrow(MicrosoftAssemblies, MicrosoftImplementationTypeNames, "RedisCache", "a Microsoft Caching NuGet Reference");
 
     /// <summary>
-    /// Gets RedisCacheOptions from a Microsoft Cache library
+    /// Gets RedisCacheOptions from a Microsoft Cache library.
     /// </summary>
     public static Type MicrosoftOptions => ReflectionHelpers.FindTypeOrThrow(MicrosoftAssemblies, MicrosoftOptionNames, MicrosoftOptionNames[0], "a Microsoft Caching NuGet Reference");
 
     /// <summary>
-    /// Gets IConnectionMultiplexer from a StackExchange Redis library
+    /// Gets IConnectionMultiplexer from a StackExchange Redis library.
     /// </summary>
     public static Type StackExchangeInterface => ReflectionHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeInterfaceTypeNames, StackExchangeInterfaceTypeNames[0], "a Stack Exchange Redis NuGet Reference");
 
     /// <summary>
-    /// Gets ConnectionMultiplexer from a StackExchange Redis library
+    /// Gets ConnectionMultiplexer from a StackExchange Redis library.
     /// </summary>
     public static Type StackExchangeImplementation => ReflectionHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeImplementationTypeNames, StackExchangeImplementationTypeNames[0], "a Stack Exchange Redis NuGet Reference");
 
     /// <summary>
-    /// Gets CommandFlags from StackExchange Redis library
+    /// Gets CommandFlags from StackExchange Redis library.
     /// </summary>
     public static Type StackExchangeCommandFlagsNames => ReflectionHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeCommandFlagsNamesValue, StackExchangeCommandFlagsNamesValue[0], "a Stack Exchange Redis NuGet Reference");
 
     /// <summary>
-    /// Gets ConfigurationOptions from a StackExchange Redis library
+    /// Gets ConfigurationOptions from a StackExchange Redis library.
     /// </summary>
     public static Type StackExchangeOptions => ReflectionHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeOptionNames, StackExchangeOptionNames[0], "a Stack Exchange Redis NuGet Reference");
 
     /// <summary>
-    /// Gets the Connect method from a StackExchange Redis library
+    /// Gets the Connect method from a StackExchange Redis library.
     /// </summary>
     public static MethodInfo StackExchangeInitializer => FindMethodOrThrow(StackExchangeImplementation, "Connect", new[] { StackExchangeOptions, typeof(TextWriter) });
 

@@ -14,10 +14,10 @@ internal static class ServiceInfoCreatorFactory
     private static ServiceInfoCreator serviceInfoCreator;
 
     /// <summary>
-    /// Build or return the relevant <see cref="ServiceInfoCreator"/>
+    /// Build or return the relevant <see cref="ServiceInfoCreator"/>.
     /// </summary>
-    /// <param name="configuration">Application <see cref="IConfiguration"/></param>
-    /// <returns>Singleton <see cref="ServiceInfoCreator"/></returns>
+    /// <param name="configuration">Application <see cref="IConfiguration"/>.</param>
+    /// <returns>Singleton <see cref="ServiceInfoCreator"/>.</returns>
     internal static ServiceInfoCreator GetServiceInfoCreator(IConfiguration configuration)
     {
         if (configuration is null)

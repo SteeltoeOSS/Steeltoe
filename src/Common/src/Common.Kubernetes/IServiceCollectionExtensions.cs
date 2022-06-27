@@ -15,9 +15,9 @@ namespace Steeltoe.Common.Kubernetes;
 public static class IServiceCollectionExtensions
 {
     /// <summary>
-    /// Removes any existing <see cref="IApplicationInstanceInfo"/> if found. Registers a <see cref="KubernetesApplicationOptions" />
+    /// Removes any existing <see cref="IApplicationInstanceInfo"/> if found. Registers a <see cref="KubernetesApplicationOptions" />.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services</param>
+    /// <param name="serviceCollection">Collection of configured services.</param>
     public static IServiceCollection AddKubernetesApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {
         if (serviceCollection is null)
@@ -42,10 +42,10 @@ public static class IServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Retrieves <see cref="KubernetesApplicationOptions"/> from the service collection
+    /// Retrieves <see cref="KubernetesApplicationOptions"/> from the service collection.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services</param>
-    /// <returns>Relevant <see cref="KubernetesApplicationOptions" /></returns>
+    /// <param name="serviceCollection">Collection of configured services.</param>
+    /// <returns>Relevant <see cref="KubernetesApplicationOptions" />.</returns>
     [Obsolete("This method builds a temporary service provider and should not be used")]
     public static IApplicationInstanceInfo GetKubernetesApplicationOptions(this IServiceCollection serviceCollection)
     {
@@ -61,11 +61,11 @@ public static class IServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add a <see cref="IKubernetes"/> client to the service collection
+    /// Add a <see cref="IKubernetes"/> client to the service collection.
     /// </summary>
-    /// <param name="serviceCollection"><see cref="IServiceCollection"/></param>
-    /// <param name="kubernetesClientConfiguration">Customization of the Kubernetes Client</param>
-    /// <returns>Collection of configured services</returns>
+    /// <param name="serviceCollection"><see cref="IServiceCollection"/>.</param>
+    /// <param name="kubernetesClientConfiguration">Customization of the Kubernetes Client.</param>
+    /// <returns>Collection of configured services.</returns>
     public static IServiceCollection AddKubernetesClient(this IServiceCollection serviceCollection, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null)
     {
         if (serviceCollection is null)

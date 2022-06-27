@@ -10,12 +10,12 @@ namespace Steeltoe.Discovery.Consul.Registry;
 public interface IConsulRegistration : IServiceInstance
 {
     /// <summary>
-    /// Gets the Consul service registration
+    /// Gets the Consul service registration.
     /// </summary>
     AgentServiceRegistration Service { get; }
 
     /// <summary>
-    /// Gets the instance id to use for registration
+    /// Gets the instance id to use for registration.
     /// </summary>
     string InstanceId { get; }
 }

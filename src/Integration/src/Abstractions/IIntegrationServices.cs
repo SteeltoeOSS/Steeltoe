@@ -12,32 +12,32 @@ using Steeltoe.Messaging.Core;
 namespace Steeltoe.Integration;
 
 /// <summary>
-/// A group of commonly used services used by the integration components
+/// A group of commonly used services used by the integration components.
 /// </summary>
 public interface IIntegrationServices
 {
     /// <summary>
-    /// Gets or sets the current message builder factory
+    /// Gets or sets the current message builder factory.
     /// </summary>
     IMessageBuilderFactory MessageBuilderFactory { get; set; }
 
     /// <summary>
-    /// Gets or sets the current channel resolver
+    /// Gets or sets the current channel resolver.
     /// </summary>
     IDestinationResolver<IMessageChannel> ChannelResolver { get; set; }
 
     /// <summary>
-    /// Gets or sets the current conversion service
+    /// Gets or sets the current conversion service.
     /// </summary>
     IConversionService ConversionService { get; set; }
 
     /// <summary>
-    /// Gets or sets the current id generator
+    /// Gets or sets the current id generator.
     /// </summary>
     IIDGenerator IdGenerator { get; set; }
 
     /// <summary>
-    /// Gets or sets the current id expression parser
+    /// Gets or sets the current id expression parser.
     /// </summary>
     IExpressionParser ExpressionParser { get; set; }
 }

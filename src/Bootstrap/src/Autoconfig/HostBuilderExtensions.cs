@@ -49,11 +49,11 @@ public static class HostBuilderExtensions
 
     /// <summary>
     /// Automatically configure Steeltoe packages that have been added as NuGet references.<para />
-    /// PLEASE NOTE: No extensions to IApplicationBuilder will be configured!
+    /// PLEASE NOTE: No extensions to IApplicationBuilder will be configured.
     /// </summary>
-    /// <param name="hostBuilder">Your <see cref="IHostBuilder" /></param>
-    /// <param name="exclusions">A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" /></param>
-    /// <param name="loggerFactory">For logging within auto-configuration</param>
+    /// <param name="hostBuilder">Your <see cref="IHostBuilder" />.</param>
+    /// <param name="exclusions">A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" />.</param>
+    /// <param name="loggerFactory">For logging within auto-configuration.</param>
     public static IHostBuilder AddSteeltoe(this IHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();

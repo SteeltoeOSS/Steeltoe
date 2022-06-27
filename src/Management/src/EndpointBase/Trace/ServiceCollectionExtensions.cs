@@ -12,17 +12,17 @@ using System;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Add services used by the Trace actuator
+/// Add services used by the Trace actuator.
 /// </summary>
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the Trace actuator
+    /// Adds the services used by the Trace actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <param name="configuration">Reference to the configuration system</param>
-    /// <param name="version">The media version to use</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <param name="configuration">Reference to the configuration system.</param>
+    /// <param name="version">The media version to use.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
     {
         if (services == null)

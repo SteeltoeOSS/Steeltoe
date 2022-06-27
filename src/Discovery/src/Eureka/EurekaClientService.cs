@@ -16,10 +16,10 @@ public static class EurekaClientService
     /// Using the Eureka configuration values provided in <paramref name="configuration"/> contact the Eureka server and
     /// return all the service instances for the provided <paramref name="serviceId"/>. The Eureka client is shutdown after contacting the server.
     /// </summary>
-    /// <param name="configuration">configuration values used for configuring the Eureka client</param>
-    /// <param name="serviceId">the Eureka service id to look up all instances of</param>
-    /// <param name="logFactory">optional log factory to use for logging</param>
-    /// <returns>service instances</returns>
+    /// <param name="configuration">configuration values used for configuring the Eureka client.</param>
+    /// <param name="serviceId">the Eureka service id to look up all instances of.</param>
+    /// <param name="logFactory">optional log factory to use for logging.</param>
+    /// <returns>service instances.</returns>
     public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
     {
         var config = ConfigureClientOptions(configuration);
@@ -33,9 +33,9 @@ public static class EurekaClientService
     /// Using the Eureka configuration values provided in <paramref name="configuration"/> contact the Eureka server and
     /// return all the registered services. The Eureka client is shutdown after contacting the server.
     /// </summary>
-    /// <param name="configuration">configuration values used for configuring the Eureka client</param>
-    /// <param name="logFactory">optional log factory to use for logging</param>
-    /// <returns>all registered services</returns>
+    /// <param name="configuration">configuration values used for configuring the Eureka client.</param>
+    /// <param name="logFactory">optional log factory to use for logging.</param>
+    /// <returns>all registered services.</returns>
     public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
     {
         var config = ConfigureClientOptions(configuration);

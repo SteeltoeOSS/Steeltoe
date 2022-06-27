@@ -7,37 +7,37 @@ using Steeltoe.Messaging;
 namespace Steeltoe.Integration.Support;
 
 /// <summary>
-/// A factory for creating message builders
+/// A factory for creating message builders.
 /// </summary>
 public interface IMessageBuilderFactory
 {
     /// <summary>
-    /// Create a message builder from the given message
+    /// Create a message builder from the given message.
     /// </summary>
-    /// <typeparam name="T">the type of payload</typeparam>
-    /// <param name="message">the message to use</param>
-    /// <returns>the message builder</returns>
+    /// <typeparam name="T">the type of payload.</typeparam>
+    /// <param name="message">the message to use.</param>
+    /// <returns>the message builder.</returns>
     IMessageBuilder<T> FromMessage<T>(IMessage<T> message);
 
     /// <summary>
-    /// Create a message builder from the given message
+    /// Create a message builder from the given message.
     /// </summary>
-    /// <param name="message">the message to use</param>
-    /// <returns>the message builder</returns>
+    /// <param name="message">the message to use.</param>
+    /// <returns>the message builder.</returns>
     IMessageBuilder FromMessage(IMessage message);
 
     /// <summary>
-    /// Create a message builder from the given message payload
+    /// Create a message builder from the given message payload.
     /// </summary>
-    /// <typeparam name="T">the type of the payload</typeparam>
-    /// <param name="payload">the payload of the message</param>
-    /// <returns>the message builder</returns>
+    /// <typeparam name="T">the type of the payload.</typeparam>
+    /// <param name="payload">the payload of the message.</param>
+    /// <returns>the message builder.</returns>
     IMessageBuilder<T> WithPayload<T>(T payload);
 
     /// <summary>
-    /// Create a message builder from the given message payload
+    /// Create a message builder from the given message payload.
     /// </summary>
-    /// <param name="payload">the payload of the message</param>
-    /// <returns>the message builder</returns>
+    /// <param name="payload">the payload of the message.</param>
+    /// <returns>the message builder.</returns>
     IMessageBuilder WithPayload(object payload);
 }

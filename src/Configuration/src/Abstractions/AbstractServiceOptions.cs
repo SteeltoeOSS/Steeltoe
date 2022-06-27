@@ -29,22 +29,22 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
     }
 
     /// <summary>
-    /// Gets or sets the name of the service instance
+    /// Gets or sets the name of the service instance.
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets a label describing the type of service
+    /// Gets or sets a label describing the type of service.
     /// </summary>
     public string Label { get; set; }
 
     /// <summary>
-    /// Gets or sets the plan level at which the service is provisoned
+    /// Gets or sets the plan level at which the service is provisoned.
     /// </summary>
     public IEnumerable<string> Tags { get; set; }
 
     /// <summary>
-    /// Gets or sets a list of tags describing the service
+    /// Gets or sets a list of tags describing the service.
     /// </summary>
     public string Plan { get; set; }
 

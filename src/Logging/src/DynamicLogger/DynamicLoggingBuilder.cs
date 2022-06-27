@@ -17,9 +17,9 @@ namespace Steeltoe.Extensions.Logging;
 public static class DynamicLoggingBuilder
 {
     /// <summary>
-    /// Adds Dynamic Console Logger Provider
+    /// Adds Dynamic Console Logger Provider.
     /// </summary>
-    /// <param name="builder">Your ILoggingBuilder</param>
+    /// <param name="builder">Your ILoggingBuilder.</param>
     public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
     {
         if (builder == null)

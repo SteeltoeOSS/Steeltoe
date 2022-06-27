@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 
 /// <summary>
-/// Implements a subset of the Serilog Options needed for SerilogDynamicProvider
+/// Implements a subset of the Serilog Options needed for SerilogDynamicProvider.
 /// </summary>
 public class SerilogOptions : ISerilogOptions
 {
@@ -21,7 +21,7 @@ public class SerilogOptions : ISerilogOptions
 
     /// <summary>
     /// Gets or sets the minimum level for the root logger (and the "Default").
-    /// Limits the verbosity of all other overrides to this setting
+    /// Limits the verbosity of all other overrides to this setting.
     /// </summary>
     public MinimumLevel MinimumLevel { get; set; }
 

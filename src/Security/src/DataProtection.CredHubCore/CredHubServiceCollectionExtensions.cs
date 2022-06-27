@@ -12,13 +12,13 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public static class CredHubServiceCollectionExtensions
 {
     /// <summary>
-    /// Make a CredHubClient available to DI
+    /// Make a CredHubClient available to DI.
     /// </summary>
-    /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS</remarks>
-    /// <param name="services">Service collection</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="loggerFactory">Logger factory</param>
-    /// <returns>Service collection with CredHubClient added in</returns>
+    /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS.</remarks>
+    /// <param name="services">Service collection.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="loggerFactory">Logger factory.</param>
+    /// <returns>Service collection with CredHubClient added in.</returns>
     public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;

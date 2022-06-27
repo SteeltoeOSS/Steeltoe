@@ -14,7 +14,7 @@ using System.Text;
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// The registration to be used when registering with the Consul server
+/// The registration to be used when registering with the Consul server.
 /// </summary>
 public class ConsulRegistration : IConsulRegistration
 {
@@ -38,8 +38,8 @@ public class ConsulRegistration : IConsulRegistration
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulRegistration"/> class.
     /// </summary>
-    /// <param name="agentServiceRegistration">a Consul service registration to use</param>
-    /// <param name="options">configuration options</param>
+    /// <param name="agentServiceRegistration">a Consul service registration to use.</param>
+    /// <param name="options">configuration options.</param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, ConsulDiscoveryOptions options)
     {
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
@@ -51,8 +51,8 @@ public class ConsulRegistration : IConsulRegistration
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulRegistration"/> class.
     /// </summary>
-    /// <param name="agentServiceRegistration">a Consul service registration to use</param>
-    /// <param name="optionsMonitor">configuration options</param>
+    /// <param name="agentServiceRegistration">a Consul service registration to use.</param>
+    /// <param name="optionsMonitor">configuration options.</param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
@@ -112,11 +112,11 @@ public class ConsulRegistration : IConsulRegistration
     public IDictionary<string, string> Metadata { get; private set; }
 
     /// <summary>
-    /// Create a Consul registration
+    /// Create a Consul registration.
     /// </summary>
-    /// <param name="options">configuration options to use</param>
-    /// <param name="applicationInfo">Info about this app instance</param>
-    /// <returns>a registration</returns>
+    /// <param name="options">configuration options to use.</param>
+    /// <param name="applicationInfo">Info about this app instance.</param>
+    /// <returns>a registration.</returns>
     public static ConsulRegistration CreateRegistration(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
     {
         if (options == null)

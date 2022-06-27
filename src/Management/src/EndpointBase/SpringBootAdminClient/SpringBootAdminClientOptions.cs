@@ -18,27 +18,27 @@ public class SpringBootAdminClientOptions
     public string Url { get; set; }
 
     /// <summary>
-    /// Gets or sets the name to use for this application when registering with SBA
+    /// Gets or sets the name to use for this application when registering with SBA.
     /// </summary>
     public string ApplicationName { get; set; }
 
     /// <summary>
-    /// Gets or sets the base path SBA should use for interacting with your application
+    /// Gets or sets the base path SBA should use for interacting with your application.
     /// </summary>
     public string BasePath { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether SBA certificates should be validated
+    /// Gets or sets a value indicating whether SBA certificates should be validated.
     /// </summary>
     public bool ValidateCertificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the connection timeout (in milliseconds) for interactions with SBA
+    /// Gets or sets the connection timeout (in milliseconds) for interactions with SBA.
     /// </summary>
     public int ConnectionTimeoutMS { get; set; } = 100000;
 
     /// <summary>
-    /// Gets or sets metadata to use when registering with SBA
+    /// Gets or sets metadata to use when registering with SBA.
     /// </summary>
     public Dictionary<string, object> Metadata { get; set; }
 

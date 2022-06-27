@@ -13,12 +13,12 @@ namespace Steeltoe.Stream.Messaging;
 public interface ISource
 {
     /// <summary>
-    /// Default name of the output channel
+    /// Default name of the output channel.
     /// </summary>
     const string OUTPUT = "output";
 
     /// <summary>
-    /// Gets the output channel
+    /// Gets the output channel.
     /// </summary>
     [Output(OUTPUT)]
     IMessageChannel Output { get; }

@@ -15,12 +15,12 @@ namespace Steeltoe.Connector.MySql;
 public static class MySqlServiceCollectionExtensions
 {
     /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for MySQL
+    /// Add an IHealthContributor to a ServiceCollection for MySQL.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         if (services == null)
@@ -40,13 +40,13 @@ public static class MySqlServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for MySQL
+    /// Add an IHealthContributor to a ServiceCollection for MySQL.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="serviceName">cloud foundry service name binding</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="serviceName">cloud foundry service name binding.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         if (services == null)

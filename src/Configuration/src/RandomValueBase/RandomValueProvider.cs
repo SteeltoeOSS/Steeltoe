@@ -22,10 +22,10 @@ public class RandomValueProvider : ConfigurationProvider
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueProvider"/> class.
-    /// The new placeholder resolver wraps the provided configuration
+    /// The new placeholder resolver wraps the provided configuration.
     /// </summary>
-    /// <param name="prefix">key prefix to use to match random number keys</param>
-    /// <param name="logFactory">the logger factory to use</param>
+    /// <param name="prefix">key prefix to use to match random number keys.</param>
+    /// <param name="logFactory">the logger factory to use.</param>
     public RandomValueProvider(string prefix, ILoggerFactory logFactory = null)
     {
         _prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
@@ -38,8 +38,8 @@ public class RandomValueProvider : ConfigurationProvider
     /// configured prefix (default random:), then the key will be parsed and the appropriate
     /// random value will be generated.
     /// </summary>
-    /// <param name="key">The key which should start with prefix</param>
-    /// <param name="value">The random value returned</param>
+    /// <param name="key">The key which should start with prefix.</param>
+    /// <param name="value">The random value returned.</param>
     /// <returns><c>True</c> if a value for the specified key was found, otherwise <c>false</c>.</returns>
     public override bool TryGet(string key, out string value)
     {

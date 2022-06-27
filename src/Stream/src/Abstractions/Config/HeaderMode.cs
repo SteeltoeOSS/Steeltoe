@@ -5,22 +5,22 @@
 namespace Steeltoe.Stream.Config;
 
 /// <summary>
-/// Specifies how headers are handled during message sending
+/// Specifies how headers are handled during message sending.
 /// </summary>
 public enum HeaderMode
 {
     /// <summary>
-    /// No headers
+    /// No headers.
     /// </summary>
     None,
 
     /// <summary>
-    /// Native headers
+    /// Native headers.
     /// </summary>
     Headers,
 
     /// <summary>
-    /// Headers embedded in payload e.g. kafka less than 0.11
+    /// Headers embedded in payload e.g. kafka less than 0.11.
     /// </summary>
     EmbeddedHeaders
 }

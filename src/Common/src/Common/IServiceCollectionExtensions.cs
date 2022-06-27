@@ -13,9 +13,9 @@ namespace Steeltoe.Common;
 public static class IServiceCollectionExtensions
 {
     /// <summary>
-    /// Try to register a default instance of <see cref="IApplicationInstanceInfo" />
+    /// Try to register a default instance of <see cref="IApplicationInstanceInfo" />.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services</param>
+    /// <param name="serviceCollection">Collection of configured services.</param>
     public static void RegisterDefaultApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {
         serviceCollection.TryAddSingleton<IApplicationInstanceInfo>(services => new ApplicationInstanceInfo(services.GetRequiredService<IConfiguration>(), true));
@@ -25,8 +25,8 @@ public static class IServiceCollectionExtensions
     /// If an instance of <see cref="IApplicationInstanceInfo"/> is found, it is returned.
     /// Otherwise a default instance is added to the collection and then returned.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services</param>
-    /// <returns>Relevant <see cref="IApplicationInstanceInfo" /></returns>
+    /// <param name="serviceCollection">Collection of configured services.</param>
+    /// <returns>Relevant <see cref="IApplicationInstanceInfo" />.</returns>
     [Obsolete("This method builds a temporary service provider and should not be used")]
     public static IApplicationInstanceInfo GetApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {

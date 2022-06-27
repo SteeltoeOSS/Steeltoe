@@ -7,13 +7,13 @@ using Steeltoe.Common.Services;
 namespace Steeltoe.Messaging;
 
 /// <summary>
-/// Simple contract for handling a Message
+/// Simple contract for handling a Message.
 /// </summary>
 public interface IMessageHandler : IServiceNameAware
 {
     /// <summary>
-    /// Handle the given method
+    /// Handle the given method.
     /// </summary>
-    /// <param name="message">the message to process</param>
+    /// <param name="message">the message to process.</param>
     void HandleMessage(IMessage message);
 }

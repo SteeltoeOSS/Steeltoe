@@ -7,12 +7,12 @@ using System.Collections.Generic;
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 /// <summary>
-/// Used internally to process a list of paths from CredHub
+/// Used internally to process a list of paths from CredHub.
 /// </summary>
 internal sealed class CredentialPathsResponse
 {
     /// <summary>
-    /// Gets or sets list of paths containing credentials
+    /// Gets or sets list of paths containing credentials.
     /// </summary>
     public List<CredentialPath> Paths { get; set; }
 }

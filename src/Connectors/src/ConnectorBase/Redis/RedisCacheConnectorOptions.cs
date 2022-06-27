@@ -148,10 +148,10 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     }
 
     /// <summary>
-    /// Get a Redis configuration object for use with Microsoft.Extensions.Caching.Redis
+    /// Get a Redis configuration object for use with Microsoft.Extensions.Caching.Redis.
     /// </summary>
-    /// <param name="optionsType">Expects Microsoft.Extensions.Caching.Redis.RedisCacheOptions</param>
-    /// <returns>This object typed as RedisCacheOptions</returns>
+    /// <param name="optionsType">Expects Microsoft.Extensions.Caching.Redis.RedisCacheOptions.</param>
+    /// <returns>This object typed as RedisCacheOptions.</returns>
     public object ToMicrosoftExtensionObject(Type optionsType)
     {
         var msftConnection = Activator.CreateInstance(optionsType);
@@ -162,11 +162,11 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     }
 
     /// <summary>
-    /// Get a Redis configuration object for use with StackExchange.Redis
+    /// Get a Redis configuration object for use with StackExchange.Redis.
     /// </summary>
-    /// <param name="optionsType">Expects StackExchange.Redis.ConfigurationOptions</param>
-    /// <returns>This object typed as ConfigurationOptions</returns>
-    /// <remarks>Includes comma in password detection and workaround for https://github.com/SteeltoeOSS/Connectors/issues/10 </remarks>
+    /// <param name="optionsType">Expects StackExchange.Redis.ConfigurationOptions.</param>
+    /// <returns>This object typed as ConfigurationOptions.</returns>
+    /// <remarks>Includes comma in password detection and workaround for https://github.com/SteeltoeOSS/Connectors/issues/10. </remarks>
     public object ToStackExchangeObject(Type optionsType)
     {
         var stackObject = Activator.CreateInstance(optionsType);

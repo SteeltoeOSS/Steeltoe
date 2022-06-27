@@ -29,11 +29,11 @@ public static class EurekaPostConfigurer
     internal const string UNKNOWN_ZONE = "unknown";
 
     /// <summary>
-    /// Update <see cref="EurekaClientOptions"/> with information from the runtime environment
+    /// Update <see cref="EurekaClientOptions"/> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">Application Configuration</param>
-    /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s)</param>
-    /// <param name="clientOptions">Eureka client configuration (for interacting with the Eureka Server)</param>
+    /// <param name="config">Application Configuration.</param>
+    /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s).</param>
+    /// <param name="clientOptions">Eureka client configuration (for interacting with the Eureka Server).</param>
     public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
     {
         var clientOpts = clientOptions ?? new EurekaClientOptions();
@@ -66,11 +66,11 @@ public static class EurekaPostConfigurer
     }
 
     /// <summary>
-    /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment
+    /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">Application Configuration</param>
-    /// <param name="options">Eureka instance information (for identifying the application)</param>
-    /// <param name="instanceInfo">Information about this application instance</param>
+    /// <param name="config">Application Configuration.</param>
+    /// <param name="options">Eureka instance information (for identifying the application).</param>
+    /// <param name="instanceInfo">Information about this application instance.</param>
     public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
     {
         var defaultIdEnding =
@@ -129,12 +129,12 @@ public static class EurekaPostConfigurer
     }
 
     /// <summary>
-    /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment
+    /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">Application Configuration</param>
-    /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s)</param>
-    /// <param name="instOptions">Eureka instance information (for identifying the application)</param>
-    /// <param name="appInfo">Information about this application instance</param>
+    /// <param name="config">Application Configuration.</param>
+    /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s).</param>
+    /// <param name="instOptions">Eureka instance information (for identifying the application).</param>
+    /// <param name="appInfo">Information about this application instance.</param>
     public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions, IApplicationInstanceInfo appInfo)
     {
         if (instOptions == null)

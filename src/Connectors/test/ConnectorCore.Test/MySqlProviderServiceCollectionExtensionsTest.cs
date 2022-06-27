@@ -14,7 +14,7 @@ using Xunit;
 namespace Steeltoe.Connector.MySql.Test;
 
 /// <summary>
-/// Tests for the extension method that adds both the DbConnection and the health check
+/// Tests for the extension method that adds both the DbConnection and the health check.
 /// </summary>
 public class MySqlProviderServiceCollectionExtensionsTest
 {

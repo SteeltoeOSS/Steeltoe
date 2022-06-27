@@ -18,9 +18,9 @@ public static class PlaceholderResolverConfigurationExtensions
     /// and provide placeholder resolution for the configuration. Typically you will want to add this configuration source as the last one so that you wrap all
     /// of the applications configuration sources with place holder resolution.
     /// </summary>
-    /// <param name="configuration">the ConfigurationManager</param>
-    /// <param name="loggerFactory">the logger factory to use</param>
-    /// <returns>builder</returns>
+    /// <param name="configuration">the ConfigurationManager.</param>
+    /// <param name="loggerFactory">the logger factory to use.</param>
+    /// <returns>builder.</returns>
     public static ConfigurationManager AddPlaceholderResolver(this ConfigurationManager configuration, ILoggerFactory loggerFactory = null)
     {
         (configuration as IConfigurationBuilder).AddPlaceholderResolver(loggerFactory);
@@ -35,9 +35,9 @@ public static class PlaceholderResolverConfigurationExtensions
     /// and provide placeholder resolution for the configuration. Typically you will want to add this configuration source as the last one so that you wrap all
     /// of the applications configuration sources with place holder resolution.
     /// </summary>
-    /// <param name="builder">the configuration builder</param>
-    /// <param name="loggerFactory">the logger factory to use</param>
-    /// <returns>builder</returns>
+    /// <param name="builder">the configuration builder.</param>
+    /// <param name="loggerFactory">the logger factory to use.</param>
+    /// <returns>builder.</returns>
     public static IConfigurationBuilder AddPlaceholderResolver(this IConfigurationBuilder builder, ILoggerFactory loggerFactory = null)
     {
         if (builder == null)
@@ -63,9 +63,9 @@ public static class PlaceholderResolverConfigurationExtensions
     /// Creates a new <see cref="ConfigurationRoot"/> from a <see cref="PlaceholderResolverProvider"/>.  The place holder resolver will be created using the existing
     /// configuration providers contained in the incoming configuration.  This results in providing placeholder resolution for those configuration sources.
     /// </summary>
-    /// <param name="configuration">incoming configuration to wrap</param>
-    /// <param name="loggerFactory">the logger factory to use</param>
-    /// <returns>a new configuration</returns>
+    /// <param name="configuration">incoming configuration to wrap.</param>
+    /// <param name="loggerFactory">the logger factory to use.</param>
+    /// <returns>a new configuration.</returns>
     public static IConfiguration AddPlaceholderResolver(this IConfiguration configuration, ILoggerFactory loggerFactory = null)
     {
         if (configuration == null)

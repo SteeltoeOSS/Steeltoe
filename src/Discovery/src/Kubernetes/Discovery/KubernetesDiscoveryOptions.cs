@@ -11,51 +11,51 @@ public class KubernetesDiscoveryOptions
     public const string KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX = "spring:cloud:kubernetes:discovery";
 
     /// <summary>
-    /// Gets or sets a value indicating whether service discovery by Kubernetes API is enabled
+    /// Gets or sets a value indicating whether service discovery by Kubernetes API is enabled.
     /// </summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value representing the service name of the local instance
+    /// Gets or sets a value representing the service name of the local instance.
     /// </summary>
     public string ServiceName { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the client is discovering all namespaces
+    /// Gets or sets a value indicating whether the client is discovering all namespaces.
     /// </summary>
     public bool AllNamespaces { get; set; }
 
     /// <summary>
     /// Gets or sets a value representing the namespace the service is being deployed to.
-    /// <para>If AllNamespaces = false, will only discover services in this namespace; </para>
-    /// If AllNamespaces = true, this + ServiceName is used to identify the local service instance
+    /// <para>If AllNamespaces = false, will only discover services in this namespace. </para>
+    /// If AllNamespaces = true, this + ServiceName is used to identify the local service instance.
     /// </summary>
     public string Namespace { get; set; } = "default";
 
     /// <summary>
-    /// Gets or sets a list of port numbers that are considered secure and use HTTPS
+    /// Gets or sets a list of port numbers that are considered secure and use HTTPS.
     /// </summary>
     public List<int> KnownSecurePorts { get; set; } = new () { 443, 8443 };
 
     /// <summary>
-    /// Gets or sets a list of labels to filter on when fetching services from the Kubernetes API
+    /// Gets or sets a list of labels to filter on when fetching services from the Kubernetes API.
     /// </summary>
     public Dictionary<string, string> ServiceLabels { get; set; }
 
     /// <summary>
-    /// Gets or sets a value holding the name of the primary port when multiple ports are defined for a service
+    /// Gets or sets a value holding the name of the primary port when multiple ports are defined for a service.
     /// </summary>
     public string PrimaryPortName { get; set; }
 
     /// <summary>
-    /// Gets or sets additional service data
+    /// Gets or sets additional service data.
     /// </summary>
     public Metadata Metadata { get; set; } = new ();
 
     /// <summary>
-    /// Gets or sets the time in seconds that service instance cache records should remain active
+    /// Gets or sets the time in seconds that service instance cache records should remain active.
     /// </summary>
-    /// <remarks>configuration property: eureka:client:cacheTTL</remarks>
+    /// <remarks>configuration property: eureka:client:cacheTTL.</remarks>
     public int CacheTTL { get; set; } = 15;
 
     public override string ToString()

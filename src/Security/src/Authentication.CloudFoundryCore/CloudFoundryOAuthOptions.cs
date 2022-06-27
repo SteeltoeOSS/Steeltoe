@@ -15,12 +15,12 @@ public class CloudFoundryOAuthOptions : OAuthOptions
     public string TokenInfoUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to validate auth server certificate
+    /// Gets or sets a value indicating whether to validate auth server certificate.
     /// </summary>
     public bool Validate_Certificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets a value indicating whether to validate auth server certificate
+    /// Gets or sets a value indicating whether gets a value indicating whether to validate auth server certificate.
     /// </summary>
     public bool ValidateCertificates
     {
@@ -29,7 +29,7 @@ public class CloudFoundryOAuthOptions : OAuthOptions
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether token issue and expiration times will be set in the auth ticket
+    /// Gets or sets a value indicating whether token issue and expiration times will be set in the auth ticket.
     /// </summary>
     public bool UseTokenLifetime { get; set; } = true;
 

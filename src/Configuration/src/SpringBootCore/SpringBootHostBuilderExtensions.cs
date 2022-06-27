@@ -12,9 +12,9 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot;
 public static class SpringBootHostBuilderExtensions
 {
     /// <summary>
-    ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable
+    ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable.
     /// </summary>
-    /// <param name="builder"><see cref="IHostBuilder"/></param>
+    /// <param name="builder"><see cref="IHostBuilder"/>.</param>
     /// <returns>The same instance of the <see cref="IHostBuilder"/> for chaining.</returns>
     public static IHostBuilder AddSpringBootConfiguration(this IHostBuilder builder)
     {
@@ -31,9 +31,9 @@ public static class SpringBootHostBuilderExtensions
     }
 
     /// <summary>
-    ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable
+    ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable.
     /// </summary>
-    /// <param name="builder"><see cref="IWebHostBuilder"/></param>
+    /// <param name="builder"><see cref="IWebHostBuilder"/>.</param>
     /// <returns>The same instance of the <see cref="IWebHostBuilder"/> for chaining.</returns>
     public static IWebHostBuilder AddSpringBootConfiguration(this IWebHostBuilder builder)
     {
@@ -51,9 +51,9 @@ public static class SpringBootHostBuilderExtensions
 
 #if NET6_0_OR_GREATER
     /// <summary>
-    ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable
+    ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable.
     /// </summary>
-    /// <param name="builder"><see cref="WebApplicationBuilder"/></param>
+    /// <param name="builder"><see cref="WebApplicationBuilder"/>.</param>
     public static WebApplicationBuilder AddSpringBootConfiguration(this WebApplicationBuilder builder)
     {
         if (builder == null)

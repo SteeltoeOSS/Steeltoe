@@ -24,7 +24,7 @@ public class CloudFoundryJwtBearerOptions : JwtBearerOptions
     public bool Validate_Certificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets a value indicating whether to validate auth server certificate
+    /// Gets or sets a value indicating whether gets a value indicating whether to validate auth server certificate.
     /// </summary>
     public bool ValidateCertificates
     {
@@ -33,7 +33,7 @@ public class CloudFoundryJwtBearerOptions : JwtBearerOptions
     }
 
     /// <summary>
-    /// Gets or sets the timeout (in ms) for calls to the auth server
+    /// Gets or sets the timeout (in ms) for calls to the auth server.
     /// </summary>
     public int Timeout { get; set; } = 100000;
 

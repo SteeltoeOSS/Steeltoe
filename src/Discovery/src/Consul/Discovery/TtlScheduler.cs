@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// The default scheduler used to issue TTL requests to the Consul server
+/// The default scheduler used to issue TTL requests to the Consul server.
 /// </summary>
 public class TtlScheduler : IScheduler
 {
@@ -49,9 +49,9 @@ public class TtlScheduler : IScheduler
     /// <summary>
     /// Initializes a new instance of the <see cref="TtlScheduler"/> class.
     /// </summary>
-    /// <param name="optionsMonitor">configuration options</param>
-    /// <param name="client">the Consul client</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="optionsMonitor">configuration options.</param>
+    /// <param name="client">the Consul client.</param>
+    /// <param name="logger">optional logger.</param>
     public TtlScheduler(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client, ILogger<TtlScheduler> logger = null)
     {
         _optionsMonitor = optionsMonitor;
@@ -62,9 +62,9 @@ public class TtlScheduler : IScheduler
     /// <summary>
     /// Initializes a new instance of the <see cref="TtlScheduler"/> class.
     /// </summary>
-    /// <param name="options">configuration options</param>
-    /// <param name="client">the Consul client</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="options">configuration options.</param>
+    /// <param name="client">the Consul client.</param>
+    /// <param name="logger">optional logger.</param>
     public TtlScheduler(ConsulDiscoveryOptions options, IConsulClient client, ILogger<TtlScheduler> logger = null)
     {
         _options = options;
@@ -120,7 +120,7 @@ public class TtlScheduler : IScheduler
     private bool _isDisposed;
 
     /// <summary>
-    /// Remove all heart beats from scheduler
+    /// Remove all heart beats from scheduler.
     /// </summary>
     public void Dispose()
     {

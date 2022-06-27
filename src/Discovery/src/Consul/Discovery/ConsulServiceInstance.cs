@@ -11,14 +11,14 @@ using System.Collections.Generic;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// A Consul service instance constructed from a ServiceEntry
+/// A Consul service instance constructed from a ServiceEntry.
 /// </summary>
 public class ConsulServiceInstance : IServiceInstance
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceInstance"/> class.
     /// </summary>
-    /// <param name="serviceEntry">the service entry from the Consul server</param>
+    /// <param name="serviceEntry">the service entry from the Consul server.</param>
     public ConsulServiceInstance(ServiceEntry serviceEntry)
     {
         // TODO: 3.0  ID = healthService.ID;

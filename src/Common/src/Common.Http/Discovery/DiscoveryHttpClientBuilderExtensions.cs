@@ -9,12 +9,12 @@ using System.Net.Http;
 namespace Steeltoe.Common.Http.Discovery;
 
 /// <summary>
-/// Extension method for configuring <see cref="DiscoveryHttpMessageHandler"/> in <see cref="HttpClient"/> message handler pipelines
+/// Extension method for configuring <see cref="DiscoveryHttpMessageHandler"/> in <see cref="HttpClient"/> message handler pipelines.
 /// </summary>
 public static class DiscoveryHttpClientBuilderExtensions
 {
     /// <summary>
-    /// Adds a <see cref="DiscoveryHttpMessageHandler"/> for performing service discovery
+    /// Adds a <see cref="DiscoveryHttpMessageHandler"/> for performing service discovery.
     /// </summary>
     /// <param name="builder">The <see cref="IHttpClientBuilder"/>.</param>
     /// <returns>An <see cref="IHttpClientBuilder"/> that can be used to configure the client.</returns>

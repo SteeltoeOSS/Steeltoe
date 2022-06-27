@@ -1470,7 +1470,7 @@ internal sealed class RefGraph
     /// <summary>
     ///  Logically a NodeListIndex represents a list of node indexes.   However it is heavily optimized
     ///  to avoid overhead.   0 means empty, a positive number is the NodeIndex+1 and a negative number 
-    ///  is index in m_links - 1;.  
+    ///  is index in m_links - 1.  
     /// </summary>
     internal enum NodeListIndex { Empty = 0 };
 

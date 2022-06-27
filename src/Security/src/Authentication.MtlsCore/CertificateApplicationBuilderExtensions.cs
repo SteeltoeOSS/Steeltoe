@@ -12,9 +12,9 @@ namespace Steeltoe.Security.Authentication.Mtls;
 public static class CertificateApplicationBuilderExtensions
 {
     /// <summary>
-    /// Start the certificate rotation service
+    /// Start the certificate rotation service.
     /// </summary>
-    /// <param name="applicationBuilder">The <see cref="ApplicationBuilder"/></param>
+    /// <param name="applicationBuilder">The <see cref="ApplicationBuilder"/>.</param>
     [Obsolete("This functionality has moved to CertificateRotationService, this method will be removed in a future release")]
     public static IApplicationBuilder UseCertificateRotation(this IApplicationBuilder applicationBuilder)
     {

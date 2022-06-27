@@ -28,7 +28,7 @@ public enum CertificateKeyLength
 
 #pragma warning disable SA1300 // ElementMustBeginWithUpperCaseLetter
 /// <summary>
-/// Overwrite mode for existing credentials (https://credhub-api.cfapps.io/#overwriting-credential-values)
+/// Overwrite mode for existing credentials (https://credhub-api.cfapps.io/#overwriting-credential-values).
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OverwiteMode
@@ -40,7 +40,7 @@ public enum OverwiteMode
 }
 
 /// <summary>
-/// Uses for certificates
+/// Uses for certificates.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum KeyUsage
@@ -57,7 +57,7 @@ public enum KeyUsage
 }
 
 /// <summary>
-/// Extended key usage for certificates
+/// Extended key usage for certificates.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ExtendedKeyUsage
@@ -71,7 +71,7 @@ public enum ExtendedKeyUsage
 }
 
 /// <summary>
-/// Operations that can be allowed for an actor
+/// Operations that can be allowed for an actor.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OperationPermissions

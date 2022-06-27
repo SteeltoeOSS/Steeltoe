@@ -9,7 +9,7 @@ public interface IRoutingConnectionFactory
     /// <summary>
     /// Returns the ConnectionFactory bound to given lookup key, or null if one does not exist.
     /// </summary>
-    /// <param name="key">the lookup key to which the factory is bound</param>
-    /// <returns>the factory if found</returns>
+    /// <param name="key">the lookup key to which the factory is bound.</param>
+    /// <returns>the factory if found.</returns>
     IConnectionFactory GetTargetConnectionFactory(object key);
 }

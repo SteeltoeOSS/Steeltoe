@@ -7,7 +7,7 @@ namespace Steeltoe.Connector.MongoDb.Test;
 public static class MongoDbTestHelpers
 {
     /// <summary>
-    /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF
+    /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF.
     /// </summary>
     public static string SingleBinding_a9s_SingleServer_VCAP = @"
             {
@@ -43,7 +43,7 @@ public static class MongoDbTestHelpers
             }";
 
     /// <summary>
-    /// Sample VCAP_SERVICES entry for a9s MongoDB with replicas
+    /// Sample VCAP_SERVICES entry for a9s MongoDB with replicas.
     /// </summary>
     public static string SingleBinding_a9s_WithReplicas_VCAP = @"
             {
@@ -87,7 +87,7 @@ public static class MongoDbTestHelpers
             }";
 
     /// <summary>
-    /// Sample VCAP_SERVICES entry for MongoDB Enterprise Service for PCF
+    /// Sample VCAP_SERVICES entry for MongoDB Enterprise Service for PCF.
     /// </summary>
     public static string SingleServer_Enterprise_VCAP = @"
             {
@@ -116,7 +116,7 @@ public static class MongoDbTestHelpers
             }";
 
     /// <summary>
-    /// Sample VCAP_SERVICES entry for Azure's CosmoDB via MongoDB API
+    /// Sample VCAP_SERVICES entry for Azure's CosmoDB via MongoDB API.
     /// </summary>
     public static string SingleServer_CosmosDb_VCAP = @"
             {

@@ -14,10 +14,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Register startup/shutdown interactions with Spring Boot Admin server
+    /// Register startup/shutdown interactions with Spring Boot Admin server.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
     {
         if (services == null)

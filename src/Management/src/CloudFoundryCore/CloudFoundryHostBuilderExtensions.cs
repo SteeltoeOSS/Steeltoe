@@ -18,7 +18,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// <summary>
     /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
     /// </summary>
-    /// <param name="webHostBuilder">Your Hostbuilder</param>
+    /// <param name="webHostBuilder">Your Hostbuilder.</param>
     /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, Action<CorsPolicyBuilder> buildCorsPolicy = null)
@@ -27,7 +27,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// <summary>
     /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
     /// </summary>
-    /// <param name="hostBuilder">Your Hostbuilder</param>
+    /// <param name="hostBuilder">Your Hostbuilder.</param>
     /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, Action<CorsPolicyBuilder> buildCorsPolicy = null)
@@ -36,8 +36,8 @@ public static class CloudFoundryHostBuilderExtensions
     /// <summary>
     /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
     /// </summary>
-    /// <param name="webHostBuilder">Your Hostbuilder</param>
-    /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses</param>
+    /// <param name="webHostBuilder">Your Hostbuilder.</param>
+    /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses.</param>
     /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
@@ -48,8 +48,8 @@ public static class CloudFoundryHostBuilderExtensions
     /// <summary>
     /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
     /// </summary>
-    /// <param name="hostBuilder">Your Hostbuilder</param>
-    /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses</param>
+    /// <param name="hostBuilder">Your Hostbuilder.</param>
+    /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses.</param>
     /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)

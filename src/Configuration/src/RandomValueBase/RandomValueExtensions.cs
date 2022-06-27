@@ -13,9 +13,9 @@ public static class RandomValueExtensions
     /// <summary>
     /// Add a random value configuration source to the <see cref="ConfigurationBuilder"/>.
     /// </summary>
-    /// <param name="builder">the configuration builder</param>
-    /// <param name="loggerFactory">the logger factory to use</param>
-    /// <returns>builder</returns>
+    /// <param name="builder">the configuration builder.</param>
+    /// <param name="loggerFactory">the logger factory to use.</param>
+    /// <returns>builder.</returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, ILoggerFactory loggerFactory = null)
     {
         if (builder == null)
@@ -32,10 +32,10 @@ public static class RandomValueExtensions
     /// <summary>
     /// Add a random value configuration source to the <see cref="ConfigurationBuilder"/>.
     /// </summary>
-    /// <param name="builder">the configuration builder</param>
-    /// <param name="prefix">the prefix used for random key values, default 'random:'</param>
-    /// <param name="loggerFactory">the logger factory to use</param>
-    /// <returns>builder</returns>
+    /// <param name="builder">the configuration builder.</param>
+    /// <param name="prefix">the prefix used for random key values, default 'random:'.</param>
+    /// <param name="loggerFactory">the logger factory to use.</param>
+    /// <returns>builder.</returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string prefix, ILoggerFactory loggerFactory = null)
     {
         if (builder == null)

@@ -13,7 +13,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder;
 
 /// <summary>
 /// Configuration source used in creating a <see cref="PlaceholderResolverProvider"/> that resolves placeholders
-/// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
+/// A placeholder takes the form of: <code> ${some:config:reference?default_if_not_present}></code>
 /// </summary>
 public class PlaceholderResolverSource : IConfigurationSource
 {
@@ -26,8 +26,8 @@ public class PlaceholderResolverSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaceholderResolverSource"/> class.
     /// </summary>
-    /// <param name="sources">the configuration sources to use</param>
-    /// <param name="logFactory">the logger factory to use</param>
+    /// <param name="sources">the configuration sources to use.</param>
+    /// <param name="logFactory">the logger factory to use.</param>
     public PlaceholderResolverSource(IList<IConfigurationSource> sources, ILoggerFactory logFactory = null)
     {
         if (sources == null)
@@ -48,8 +48,8 @@ public class PlaceholderResolverSource : IConfigurationSource
     /// <summary>
     /// Builds a <see cref="PlaceholderResolverProvider"/> from the sources.
     /// </summary>
-    /// <param name="builder">the provided builder</param>
-    /// <returns>the placeholder resolver provider</returns>
+    /// <param name="builder">the provided builder.</param>
+    /// <returns>the placeholder resolver provider.</returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
         if (_configuration != null)

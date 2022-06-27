@@ -11,7 +11,7 @@ using System.Threading;
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// A registrar used to register a service in a Consul server
+/// A registrar used to register a service in a Consul server.
 /// </summary>
 public class ConsulServiceRegistrar : IConsulServiceRegistrar
 {
@@ -44,10 +44,10 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar"/> class.
     /// </summary>
-    /// <param name="registry">the Consul service registry to use when doing registrations</param>
-    /// <param name="optionsMonitor">configuration options to use</param>
-    /// <param name="registration">the registration to register with Consul</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="registry">the Consul service registry to use when doing registrations.</param>
+    /// <param name="optionsMonitor">configuration options to use.</param>
+    /// <param name="registration">the registration to register with Consul.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulRegistration registration, ILogger<ConsulServiceRegistrar> logger = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -59,10 +59,10 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar"/> class.
     /// </summary>
-    /// <param name="registry">the Consul service registry to use when doing registrations</param>
-    /// <param name="options">configuration options to use</param>
-    /// <param name="registration">the registration to register with Consul</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="registry">the Consul service registry to use when doing registrations.</param>
+    /// <param name="options">configuration options to use.</param>
+    /// <param name="registration">the registration to register with Consul.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, IConsulRegistration registration, ILogger<ConsulServiceRegistrar> logger = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));

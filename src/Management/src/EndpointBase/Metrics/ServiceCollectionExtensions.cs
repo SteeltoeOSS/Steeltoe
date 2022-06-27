@@ -16,16 +16,16 @@ using System.Linq;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Add services used by the Metrics actuator
+/// Add services used by the Metrics actuator.
 /// </summary>
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the Metrics actuator
+    /// Adds the services used by the Metrics actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <param name="configuration">Reference to the configuration system</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <param name="configuration">Reference to the configuration system.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
@@ -57,11 +57,11 @@ public static partial class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the services used by the Prometheus actuator
+    /// Adds the services used by the Prometheus actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <param name="configuration">Reference to the configuration system</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <param name="configuration">Reference to the configuration system.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddPrometheusActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
@@ -93,11 +93,11 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by OpenTelemetry.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <param name="configure">The Action to configure OpenTelemetry</param>
-    /// <param name="name">Instrumentation Name </param>
-    /// <param name="version">Instrumentation Version</param>
-    /// <returns>A reference to the service collection </returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <param name="configure">The Action to configure OpenTelemetry.</param>
+    /// <param name="name">Instrumentation Name. </param>
+    /// <param name="version">Instrumentation Version.</param>
+    /// <returns>A reference to the service collection. </returns>
     public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
     {
         if (services.Any(sd => sd.ServiceType == typeof(MeterProvider)))
@@ -115,13 +115,13 @@ public static partial class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Configures the <see cref="MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />
+    /// Configures the <see cref="MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />.
     /// </summary>
-    /// <param name="builder">MeterProviderBuilder </param>
-    /// <param name="configure"> Configuration callback</param>
-    /// <param name="name">Instrumentation Name</param>
-    /// <param name="version">Instrumentation Version</param>
-    /// <returns>Configured MeterProviderBuilder</returns>
+    /// <param name="builder">MeterProviderBuilder. </param>
+    /// <param name="configure"> Configuration callback.</param>
+    /// <param name="name">Instrumentation Name.</param>
+    /// <param name="version">Instrumentation Version.</param>
+    /// <returns>Configured MeterProviderBuilder.</returns>
     public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
     {
         if (configure != null)

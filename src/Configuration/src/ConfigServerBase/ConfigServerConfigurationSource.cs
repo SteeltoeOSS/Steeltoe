@@ -20,26 +20,26 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     protected internal IDictionary<string, object> _properties = new Dictionary<string, object>();
 
     /// <summary>
-    /// Gets the default settings the Config Server client uses to contact the Config Server
+    /// Gets the default settings the Config Server client uses to contact the Config Server.
     /// </summary>
     public ConfigServerClientSettings DefaultSettings { get; }
 
     /// <summary>
     /// Gets or sets gets the configuration the Config Server client uses to contact the Config Server.
-    /// Values returned override the default values provided in <see cref="DefaultSettings"/>
+    /// Values returned override the default values provided in <see cref="DefaultSettings"/>.
     /// </summary>
     public IConfiguration Configuration { get; protected set; }
 
     /// <summary>
-    /// Gets the logger factory used by the Config Server client
+    /// Gets the logger factory used by the Config Server client.
     /// </summary>
     public ILoggerFactory LogFactory { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource"/> class.
     /// </summary>
-    /// <param name="configuration">configuration used by the Config Server client. Values will override those found in default settings</param>
-    /// <param name="logFactory">optional logger factory used by the client</param>
+    /// <param name="configuration">configuration used by the Config Server client. Values will override those found in default settings.</param>
+    /// <param name="logFactory">optional logger factory used by the client.</param>
     public ConfigServerConfigurationSource(IConfiguration configuration, ILoggerFactory logFactory = null)
         : this(new ConfigServerClientSettings(), configuration, logFactory)
     {
@@ -48,9 +48,9 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource"/> class.
     /// </summary>
-    /// <param name="defaultSettings">the default settings used by the Config Server client</param>
-    /// <param name="configuration">configuration used by the Config Server client. Values will override those found in default settings</param>
-    /// <param name="logFactory">optional logger factory used by the client</param>
+    /// <param name="defaultSettings">the default settings used by the Config Server client.</param>
+    /// <param name="configuration">configuration used by the Config Server client. Values will override those found in default settings.</param>
+    /// <param name="logFactory">optional logger factory used by the client.</param>
     public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IConfiguration configuration, ILoggerFactory logFactory = null)
     {
         Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -62,9 +62,9 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource"/> class.
     /// </summary>
     /// <param name="sources">configuration sources used by the Config Server client. The <see cref="Configuration"/> will be built from these sources and the
-    /// values will override those found in <see cref="DefaultSettings"/></param>
-    /// <param name="properties">properties to be used when sources are built</param>
-    /// <param name="logFactory">optional logger factory used by the client</param>
+    /// values will override those found in <see cref="DefaultSettings"/>.</param>
+    /// <param name="properties">properties to be used when sources are built.</param>
+    /// <param name="logFactory">optional logger factory used by the client.</param>
     public ConfigServerConfigurationSource(IList<IConfigurationSource> sources, IDictionary<string, object> properties = null, ILoggerFactory logFactory = null)
         : this(new ConfigServerClientSettings(), sources, properties, logFactory)
     {
@@ -73,11 +73,11 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource"/> class.
     /// </summary>
-    /// <param name="defaultSettings">the default settings used by the Config Server client</param>
+    /// <param name="defaultSettings">the default settings used by the Config Server client.</param>
     /// <param name="sources">configuration sources used by the Config Server client. The <see cref="Configuration"/> will be built from these sources and the
-    /// values will override those found in <see cref="DefaultSettings"/></param>
-    /// <param name="properties">properties to be used when sources are built</param>
-    /// <param name="logFactory">optional logger factory used by the client</param>
+    /// values will override those found in <see cref="DefaultSettings"/>.</param>
+    /// <param name="properties">properties to be used when sources are built.</param>
+    /// <param name="logFactory">optional logger factory used by the client.</param>
     public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IList<IConfigurationSource> sources, IDictionary<string, object> properties = null, ILoggerFactory logFactory = null)
     {
         if (sources == null)
@@ -97,10 +97,10 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     }
 
     /// <summary>
-    /// Returns a <see cref="ConfigServerConfigurationProvider"/> configured using the values from this <see cref="ConfigServerConfigurationSource"/>
+    /// Returns a <see cref="ConfigServerConfigurationProvider"/> configured using the values from this <see cref="ConfigServerConfigurationSource"/>.
     /// </summary>
-    /// <param name="builder">not required</param>
-    /// <returns>configuration provider</returns>
+    /// <param name="builder">not required.</param>
+    /// <returns>configuration provider.</returns>
     public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
     {
         if (Configuration == null)

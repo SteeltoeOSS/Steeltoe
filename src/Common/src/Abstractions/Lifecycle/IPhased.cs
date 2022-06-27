@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Lifecycle;
 public interface IPhased
 {
     /// <summary>
-    /// Gets the phase of this object
+    /// Gets the phase of this object.
     /// </summary>
     int Phase { get; }
 }

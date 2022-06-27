@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// An implementation of a Consul service registry
+/// An implementation of a Consul service registry.
 /// </summary>
 public class ConsulServiceRegistry : IConsulServiceRegistry
 {
@@ -42,10 +42,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistry"/> class.
     /// </summary>
-    /// <param name="client">the Consul client to use</param>
-    /// <param name="options">the configuration options</param>
-    /// <param name="scheduler">a scheduler to use for heart beats</param>
-    /// <param name="logger">an optional logger</param>
+    /// <param name="client">the Consul client to use.</param>
+    /// <param name="options">the configuration options.</param>
+    /// <param name="scheduler">a scheduler to use for heart beats.</param>
+    /// <param name="logger">an optional logger.</param>
     public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null, ILogger<ConsulServiceRegistry> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -57,10 +57,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistry"/> class.
     /// </summary>
-    /// <param name="client">the Consul client to use</param>
-    /// <param name="optionsMonitor">the configuration options</param>
-    /// <param name="scheduler">a scheduler to use for heart beats</param>
-    /// <param name="logger">an optional logger</param>
+    /// <param name="client">the Consul client to use.</param>
+    /// <param name="optionsMonitor">the configuration options.</param>
+    /// <param name="scheduler">a scheduler to use for heart beats.</param>
+    /// <param name="logger">an optional logger.</param>
     public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null, ILogger<ConsulServiceRegistry> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));

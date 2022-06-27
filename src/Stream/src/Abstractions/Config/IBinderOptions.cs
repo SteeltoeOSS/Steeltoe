@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Stream.Config;
 
 /// <summary>
-/// Contains the configuration options for a binder
+/// Contains the configuration options for a binder.
 /// </summary>
 public interface IBinderOptions
 {

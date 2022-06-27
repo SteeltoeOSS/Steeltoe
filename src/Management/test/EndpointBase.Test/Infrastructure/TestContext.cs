@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
 
 /// <summary>
-/// Provides encapsulation of data for a single test
+/// Provides encapsulation of data for a single test.
 /// </summary>
 internal sealed class TestContext : IDisposable
 {
@@ -21,17 +21,17 @@ internal sealed class TestContext : IDisposable
     private IConfigurationRoot _configurationRoot;
 
     /// <summary>
-    /// Gets or sets a delegate that allows tests to configure <see cref="IServiceCollection"/>
+    /// Gets or sets a delegate that allows tests to configure <see cref="IServiceCollection"/>.
     /// </summary>
     public Action<IServiceCollection, IConfiguration> AdditionalServices { get; set; }
 
     /// <summary>
-    /// Gets or sets a delegate that allows tests to manipulate configuration
+    /// Gets or sets a delegate that allows tests to manipulate configuration.
     /// </summary>
     public Action<IConfigurationBuilder> AdditionalConfiguration { get; set; }
 
     /// <summary>
-    /// Gets the configuration root
+    /// Gets the configuration root.
     /// </summary>
     public IConfigurationRoot Configuration
     {

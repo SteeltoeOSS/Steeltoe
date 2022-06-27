@@ -11,52 +11,52 @@ public interface IEurekaInstanceConfig
 {
     /// <summary>
     /// Gets or sets the unique Id (within the scope of the appName) of this instance to be registered with eureka.
-    /// Configuration property: eureka:instance:instanceId
+    /// Configuration property: eureka:instance:instanceId.
     /// </summary>
     string InstanceId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the application to be registered with eureka.
-    /// Configuration property: eureka:instance:name
+    /// Configuration property: eureka:instance:name.
     /// </summary>
     string AppName { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the application group to be registered with eureka.
-    /// Configuration property: eureka:instance:appGroup
+    /// Configuration property: eureka:instance:appGroup.
     /// </summary>
     string AppGroupName { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether indicates whether the instance should be enabled for taking traffic as soon as it is registered with eureka.
     /// Sometimes the application might need to do some pre-processing before it is ready to take traffic.
-    /// Configuration property: eureka:instance:instanceEnabledOnInit
+    /// Configuration property: eureka:instance:instanceEnabledOnInit.
     /// </summary>
     bool IsInstanceEnabledOnInit { get; set; }
 
     /// <summary>
-    /// Gets or sets the <code>non-secure</code> port on which the instance should receive traffic.
-    /// Configuration property: eureka:instance:port
+    /// Gets or sets the <c>non-secure</c> port on which the instance should receive traffic.
+    /// Configuration property: eureka:instance:port.
     /// </summary>
     int NonSecurePort { get; set; }
 
     /// <summary>
-    /// Gets or sets the <code>Secure port</code> on which the instance should receive traffic.
-    /// Configuration property: eureka:instance:securePort
+    /// Gets or sets the <c>Secure port</c> on which the instance should receive traffic.
+    /// Configuration property: eureka:instance:securePort.
     /// </summary>
     int SecurePort { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether indicates whether the <code>non-secure</code> port should be enabled for traffic or not.
-    /// Set true if the <code>non-secure</code> port is enabled, false otherwise.
-    /// Configuration property: eureka:instance:nonSecurePortEnabled
+    /// Gets or sets a value indicating whether indicates whether the <c>non-secure</c> port should be enabled for traffic or not.
+    /// Set true if the <c>non-secure</c> port is enabled, false otherwise.
+    /// Configuration property: eureka:instance:nonSecurePortEnabled.
     /// </summary>
     bool IsNonSecurePortEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether indicates whether the <code>secure</code> port should be enabled for traffic or not.
-    /// Set true if the <code>secure</code> port is enabled, false otherwise.
-    /// Configuration property: eureka:instance:securePortEnabled
+    /// Gets or sets a value indicating whether indicates whether the <c>secure</c> port should be enabled for traffic or not.
+    /// Set true if the <c>secure</c> port is enabled, false otherwise.
+    /// Configuration property: eureka:instance:securePortEnabled.
     /// </summary>
     bool SecurePortEnabled { get; set; }
 
@@ -67,7 +67,7 @@ public interface IEurekaInstanceConfig
     /// there by disallowing traffic to this instance.
     /// Note that the instance could still not take traffic if it implements HealthCheckCallback and then
     /// decides to make itself unavailable.
-    /// Configuration property: eureka:instance:leaseRenewalIntervalInSeconds
+    /// Configuration property: eureka:instance:leaseRenewalIntervalInSeconds.
     /// </summary>
     int LeaseRenewalIntervalInSeconds { get; set; }
 
@@ -79,7 +79,7 @@ public interface IEurekaInstanceConfig
     /// the instance is not alive. Setting this value too small could mean, the instance may be taken out
     /// of traffic because of temporary network glitches.This value to be set to atleast higher than
     /// the value specified in <see cref="LeaseRenewalIntervalInSeconds" />
-    /// Configuration property: eureka:instance:leaseExpirationDurationInSeconds
+    /// Configuration property: eureka:instance:leaseExpirationDurationInSeconds.
     /// </summary>
     int LeaseExpirationDurationInSeconds { get; set; }
 
@@ -89,7 +89,7 @@ public interface IEurekaInstanceConfig
     /// This is typically the way other instance would find this instance by using the virtual host name.
     /// Think of this as similar to the fully qualified domain name, that the users of your services will
     /// need to find this instance.
-    /// Configuration property: eureka:instance:vipAddress
+    /// Configuration property: eureka:instance:vipAddress.
     /// </summary>
     string VirtualHostName { get; set; }
 
@@ -99,22 +99,22 @@ public interface IEurekaInstanceConfig
     /// This is typically the way other instance would find this instance by using the virtual host name.
     /// Think of this as similar to the fully qualified domain name, that the users of your services will
     /// need to find this instance.
-    /// Configuration property: eureka:instance:secureVipAddress
+    /// Configuration property: eureka:instance:secureVipAddress.
     /// </summary>
     string SecureVirtualHostName { get; set; }
 
     /// <summary>
-    /// Gets or sets the <code>AWS autoscaling group name</code> associated with this instance. This information is
+    /// Gets or sets the <c>AWS autoscaling group name</c> associated with this instance. This information is
     /// specifically used in an AWS environment to automatically put an instance out of service after the instance is
     /// launched and it has been disabled for traffic..
-    /// Configuration property: eureka:instance:asgName
+    /// Configuration property: eureka:instance:asgName.
     /// </summary>
     string ASGName { get; set; }
 
     /// <summary>
     /// Gets or sets the metadata name/value pairs associated with this instance. This information is sent to eureka
     /// server and can be used by other instances.
-    /// Configuration property: eureka:instance:metadataMap
+    /// Configuration property: eureka:instance:metadataMap.
     /// </summary>
     IDictionary<string, string> MetadataMap { get; set; }
 
@@ -126,7 +126,7 @@ public interface IEurekaInstanceConfig
 
     /// <summary>
     /// Gets or sets the IPAdress of the instance. This information is for academic purposes only as the communication
-    /// from other instances primarily happen using the information supplied in <see cref="GetHostName(bool)"/>
+    /// from other instances primarily happen using the information supplied in <see cref="GetHostName(bool)"/>.
     /// </summary>
     string IpAddress { get; set; }
 
@@ -136,8 +136,8 @@ public interface IEurekaInstanceConfig
     /// <see cref="SecurePort"/> and <see cref="NonSecurePort"/>.
     ///
     /// It is normally used for informational purposes for other services to findabout the status of this instance.
-    /// Users can provide a simple <code>HTML</code> indicating what is the current status of the instance.
-    /// Configuration property: eureka:instance:statusPageUrlPath
+    /// Users can provide a simple <c>HTML</c> indicating what is the current status of the instance.
+    /// Configuration property: eureka:instance:statusPageUrlPath.
     /// </summary>
     string StatusPageUrlPath { get; set; }
 
@@ -146,11 +146,11 @@ public interface IEurekaInstanceConfig
     /// resides in the same instance talking to eureka, else in the cases where the instance is a proxy for some other server,
     /// users can provide the full URL. If the full URL is provided it takes precedence.
     ///
-    /// It is normally used for informational purposes for other services tofind about the status of this instance.
-    /// Users can provide a simple<code>HTML</code> indicating what is the current status of the instance.
+    /// It is normally used for informational purposes for other services to find about the status of this instance.
+    /// Users can provide a simple <c>HTML</c> indicating what is the current status of the instance.
     /// The full URL should follow the format http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is
     /// replaced at runtime.
-    /// Configuration property: eureka:instance:statusPageUrl
+    /// Configuration property: eureka:instance:statusPageUrl.
     /// </summary>
     string StatusPageUrl { get; set; }
 
@@ -160,7 +160,7 @@ public interface IEurekaInstanceConfig
     /// unsecure as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort"/>
     ///
     /// It is normally used for informational purposes for other services to use it as a landing page.
-    /// Configuration property: eureka:instance:homePageUrlPath
+    /// Configuration property: eureka:instance:homePageUrlPath.
     /// </summary>
     string HomePageUrlPath { get; set; }
 
@@ -169,11 +169,11 @@ public interface IEurekaInstanceConfig
     /// same instance talking to eureka, else in the cases where the instance is a proxy for some other server, users can
     /// provide the full URL. If the full URL is provided it takes precedence.
     ///
-    /// It is normally used for informational purposes for other services tofind about the status of this instance.
-    /// Users can provide a simple<code>HTML</code> indicating what is the current status of the instance.
+    /// It is normally used for informational purposes for other services to find about the status of this instance.
+    /// Users can provide a simple <c>HTML</c> indicating what is the current status of the instance.
     /// The full URL should follow the format http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is
     /// replaced at runtime.
-    /// Configuration property: eureka:instance:homePageUrl
+    /// Configuration property: eureka:instance:homePageUrl.
     /// </summary>
     string HomePageUrl { get; set; }
 
@@ -185,7 +185,7 @@ public interface IEurekaInstanceConfig
     /// It is normally used for making educated decisions based on the health of the instance - for example, it can
     /// be used to determine whether to proceed deployments to an entire farm or stop the deployments without
     /// causing further damage.
-    /// Configuration property: eureka:instance:healthCheckUrlPath
+    /// Configuration property: eureka:instance:healthCheckUrlPath.
     /// </summary>
     string HealthCheckUrlPath { get; set; }
 
@@ -198,7 +198,7 @@ public interface IEurekaInstanceConfig
     /// be used to determine whether to/ proceed deployments to an entire farm or stop the deployments without
     /// causing further damage.  The full URL should follow the format http://${eureka.hostname}:7001/ where the
     /// value ${eureka.hostname} is replaced at runtime.
-    /// Configuration property: eureka:instance:healthCheckUrl
+    /// Configuration property: eureka:instance:healthCheckUrl.
     /// </summary>
     string HealthCheckUrl { get; set; }
 
@@ -211,7 +211,7 @@ public interface IEurekaInstanceConfig
     /// be used to determine whether to/ proceed deployments to an entire farm or stop the deployments without
     /// causing further damage.  The full URL should follow the format http://${eureka.hostname}:7001/ where the
     /// value ${eureka.hostname} is replaced at runtime.
-    /// Configuration property: eureka:instance:secureHealthCheckUrl
+    /// Configuration property: eureka:instance:secureHealthCheckUrl.
     /// </summary>
     string SecureHealthCheckUrl { get; set; }
 
@@ -231,8 +231,8 @@ public interface IEurekaInstanceConfig
     /// Gets the hostname associated with this instance.
     /// This is the exact name that would be used by other instances to make calls.
     /// </summary>
-    /// <param name="refresh">refresh hostname</param>
-    /// <returns>hostname </returns>
+    /// <param name="refresh">refresh hostname.</param>
+    /// <returns>hostname. </returns>
     string GetHostName(bool refresh);
 
     string HostName { get; set; }

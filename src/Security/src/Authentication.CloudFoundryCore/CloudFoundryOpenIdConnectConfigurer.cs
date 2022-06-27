@@ -14,11 +14,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry;
 internal static class CloudFoundryOpenIdConnectConfigurer
 {
     /// <summary>
-    /// Maps service info credentials and 'security:oauth2:client' info onto OpenIdConnectOptions
+    /// Maps service info credentials and 'security:oauth2:client' info onto OpenIdConnectOptions.
     /// </summary>
-    /// <param name="si">Service info credentials parsed from VCAP_SERVICES</param>
-    /// <param name="oidcOptions">OpenId Connect options to be configured</param>
-    /// <param name="cfOptions">Cloud Foundry-related OpenId Connect configuration options</param>
+    /// <param name="si">Service info credentials parsed from VCAP_SERVICES.</param>
+    /// <param name="oidcOptions">OpenId Connect options to be configured.</param>
+    /// <param name="cfOptions">Cloud Foundry-related OpenId Connect configuration options.</param>
     internal static void Configure(SsoServiceInfo si, OpenIdConnectOptions oidcOptions, CloudFoundryOpenIdConnectOptions cfOptions)
     {
         if (oidcOptions == null || cfOptions == null)

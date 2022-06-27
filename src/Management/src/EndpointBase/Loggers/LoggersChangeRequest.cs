@@ -11,8 +11,8 @@ public class LoggersChangeRequest
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggersChangeRequest"/> class.
     /// </summary>
-    /// <param name="name">Name of the logger to update</param>
-    /// <param name="level">Minimum level to log - pass null to reset</param>
+    /// <param name="name">Name of the logger to update.</param>
+    /// <param name="level">Minimum level to log - pass null to reset.</param>
     public LoggersChangeRequest(string name, string level)
     {
         if (string.IsNullOrEmpty(name))
@@ -25,12 +25,12 @@ public class LoggersChangeRequest
     }
 
     /// <summary>
-    /// Gets name(space) of logger level to change
+    /// Gets name(space) of logger level to change.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// Gets minimum level to log, null to reset back to original
+    /// Gets minimum level to log, null to reset back to original.
     /// </summary>
     public string Level { get; }
 

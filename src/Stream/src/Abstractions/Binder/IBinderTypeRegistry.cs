@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Stream.Binder;
 
 /// <summary>
-/// TODO: See if this can be made internal
+/// TODO: See if this can be made internal.
 /// </summary>
 public interface IBinderTypeRegistry
 {

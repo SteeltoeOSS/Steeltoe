@@ -5,7 +5,7 @@
 namespace Steeltoe.Stream.Config;
 
 /// <summary>
-/// TODO: Look at making internal
+/// TODO: Look at making internal.
 /// </summary>
 public interface IMessageSourceCustomizer
 {

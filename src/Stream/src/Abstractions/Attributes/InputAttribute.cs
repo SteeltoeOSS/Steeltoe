@@ -15,7 +15,7 @@ public class InputAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="InputAttribute"/> class.
     /// </summary>
-    /// <param name="name">the binding target name</param>
+    /// <param name="name">the binding target name.</param>
     public InputAttribute(string name = null)
     {
         Name = name;

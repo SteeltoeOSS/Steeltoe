@@ -31,21 +31,21 @@ public static class HttpClientHelper
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (_, _, _, _) => true;
 
     /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not remote certificates should be validated</param>
-    /// <param name="timeoutMillis">Timeout in milliseconds</param>
+    /// <param name="validateCertificates">Whether or not remote certificates should be validated.</param>
+    /// <param name="timeoutMillis">Timeout in milliseconds.</param>
     public static HttpClient GetHttpClient(bool validateCertificates, int timeoutMillis)
     {
         return GetHttpClient(validateCertificates, null, timeoutMillis);
     }
 
     /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not remote certificates should be validated</param>
-    /// <param name="handler">A pre-defined <see cref="HttpClientHandler"/></param>
-    /// <param name="timeoutMillis">Timeout in milliseconds</param>
+    /// <param name="validateCertificates">Whether or not remote certificates should be validated.</param>
+    /// <param name="handler">A pre-defined <see cref="HttpClientHandler"/>.</param>
+    /// <param name="timeoutMillis">Timeout in milliseconds.</param>
     public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeoutMillis)
     {
         HttpClient client;
@@ -75,10 +75,10 @@ public static class HttpClientHelper
     }
 
     /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>.
     /// </summary>
-    /// <param name="handler">A pre-defined <see cref="HttpMessageHandler"/></param>
-    /// <param name="timeoutMillis">Timeout in milliseconds</param>
+    /// <param name="handler">A pre-defined <see cref="HttpMessageHandler"/>.</param>
+    /// <param name="timeoutMillis">Timeout in milliseconds.</param>
     public static HttpClient GetHttpClient(HttpMessageHandler handler, int timeoutMillis = 1500)
     {
         var client = handler == null ? new HttpClient() : new HttpClient(handler);
@@ -88,11 +88,11 @@ public static class HttpClientHelper
     }
 
     /// <summary>
-    /// Disable certificate validation on demand. Has no effect unless <see cref="Platform.IsFullFramework"/>
+    /// Disable certificate validation on demand. Has no effect unless <see cref="Platform.IsFullFramework"/>.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not certificates should be validated</param>
-    /// <param name="protocolType"><see cref="SecurityProtocolType"/></param>
-    /// <param name="prevValidator">Pre-existing certificate validation callback</param>
+    /// <param name="validateCertificates">Whether or not certificates should be validated.</param>
+    /// <param name="protocolType"><see cref="SecurityProtocolType"/>.</param>
+    /// <param name="prevValidator">Pre-existing certificate validation callback.</param>
     public static void ConfigureCertificateValidation(
         bool validateCertificates,
         out SecurityProtocolType protocolType,
@@ -115,11 +115,11 @@ public static class HttpClientHelper
     }
 
     /// <summary>
-    /// Returns certificate validation to its original state. Has no effect unless <see cref="Platform.IsFullFramework"/>
+    /// Returns certificate validation to its original state. Has no effect unless <see cref="Platform.IsFullFramework"/>.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not certificates should be validated</param>
-    /// <param name="protocolType"><see cref="SecurityProtocolType"/></param>
-    /// <param name="prevValidator">Pre-existing certificate validation callback</param>
+    /// <param name="validateCertificates">Whether or not certificates should be validated.</param>
+    /// <param name="protocolType"><see cref="SecurityProtocolType"/>.</param>
+    /// <param name="prevValidator">Pre-existing certificate validation callback.</param>
     public static void RestoreCertificateValidation(
         bool validateCertificates,
         SecurityProtocolType protocolType,
@@ -142,11 +142,11 @@ public static class HttpClientHelper
     }
 
     /// <summary>
-    /// Creates an <see cref="HttpRequestMessage" /> from the provided information
+    /// Creates an <see cref="HttpRequestMessage" /> from the provided information.
     /// </summary>
-    /// <param name="method"><see cref="HttpMethod"/></param>
-    /// <param name="requestUri">The remote Uri</param>
-    /// <param name="getAccessToken">A means of including a bearer token</param>
+    /// <param name="method"><see cref="HttpMethod"/>.</param>
+    /// <param name="requestUri">The remote Uri.</param>
+    /// <param name="getAccessToken">A means of including a bearer token.</param>
     public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, Func<string> getAccessToken)
     {
         var request = GetRequestMessage(method, requestUri, null, null);
@@ -166,12 +166,12 @@ public static class HttpClientHelper
     }
 
     /// <summary>
-    /// Creates an <see cref="HttpRequestMessage" /> from the provided information
+    /// Creates an <see cref="HttpRequestMessage" /> from the provided information.
     /// </summary>
-    /// <param name="method"><see cref="HttpMethod"/></param>
-    /// <param name="requestUri">The remote Uri</param>
-    /// <param name="userName">Optional Basic Auth Username. Not used unless password is not null or empty</param>
-    /// <param name="password">Optional Basic Auth Password</param>
+    /// <param name="method"><see cref="HttpMethod"/>.</param>
+    /// <param name="requestUri">The remote Uri.</param>
+    /// <param name="userName">Optional Basic Auth Username. Not used unless password is not null or empty.</param>
+    /// <param name="password">Optional Basic Auth Password.</param>
     public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, string userName, string password)
     {
         if (method == null)

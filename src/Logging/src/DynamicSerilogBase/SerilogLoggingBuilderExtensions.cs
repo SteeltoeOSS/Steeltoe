@@ -57,11 +57,11 @@ public static class SerilogLoggingBuilderExtensions
 
     /// <summary>
     /// Add Serilog with Console sink, wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
-    /// dynamically controlling the minimum log level via management endpoints
+    /// dynamically controlling the minimum log level via management endpoints.
     /// </summary>
-    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory</param>
-    /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider</param>
-    /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
+    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory.</param>
+    /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider.</param>
+    /// <returns>The configured <see cref="ILoggingBuilder"/>.</returns>
     public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, bool preserveDefaultConsole = false)
     {
         return builder.AddDynamicSerilog(null, preserveDefaultConsole);
@@ -71,11 +71,11 @@ public static class SerilogLoggingBuilderExtensions
     /// Add Serilog, wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
     /// dynamically controlling the minimum log level via management endpoints. Will add a Console sink if <paramref name="loggerConfiguration"/> is not provided.
     /// </summary>
-    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory</param>
-    /// <param name="loggerConfiguration">An initial <see cref="LoggerConfiguration"/></param>
-    /// <param name="preserveStaticLogger">Not supported!</param>
-    /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider</param>
-    /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
+    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory.</param>
+    /// <param name="loggerConfiguration">An initial <see cref="LoggerConfiguration"/>.</param>
+    /// <param name="preserveStaticLogger">Not supported.</param>
+    /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider.</param>
+    /// <returns>The configured <see cref="ILoggingBuilder"/>.</returns>
     [Obsolete("Please use a different overload of AddDynamicSerilog ")]
     public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, LoggerConfiguration loggerConfiguration, bool preserveStaticLogger, bool preserveDefaultConsole = false)
     {
@@ -84,21 +84,21 @@ public static class SerilogLoggingBuilderExtensions
 
     /// <summary>
     /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
-    /// dynamically controlling the minimum log level via management endpoints
+    /// dynamically controlling the minimum log level via management endpoints.
     /// </summary>
-    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory  </param>
-    /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
+    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory.  </param>
+    /// <returns>The configured <see cref="ILoggingBuilder"/>.</returns>
     [Obsolete("Please use AddDynamicSerilog instead")]
     public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder) => builder.AddDynamicSerilog();
 
     /// <summary>
     /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
-    /// dynamically controlling the minimum log level via management endpoints
+    /// dynamically controlling the minimum log level via management endpoints.
     /// </summary>
-    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory  </param>
-    /// <param name="loggerConfiguration">An initial <see cref="LoggerConfiguration"/></param>
+    /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory.  </param>
+    /// <param name="loggerConfiguration">An initial <see cref="LoggerConfiguration"/>.</param>
     /// <param name="preserveStaticLogger">Indicates whether to preserve the value of <see cref="Log.Logger"/>.</param>
-    /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
+    /// <returns>The configured <see cref="ILoggingBuilder"/>.</returns>
     [Obsolete("Please use AddDynamicSerilog instead")]
     public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder, LoggerConfiguration loggerConfiguration, bool preserveStaticLogger = false) => builder.AddDynamicSerilog(loggerConfiguration, preserveStaticLogger);
 }

@@ -10,7 +10,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 
 /// <summary>
 /// Basic PrometheusSerializer which has no OpenTelemetry dependency.
-/// Copied from OpenTelemetry.Net project
+/// Copied from OpenTelemetry.Net project.
 /// </summary>
 internal static partial class PrometheusSerializer
 {

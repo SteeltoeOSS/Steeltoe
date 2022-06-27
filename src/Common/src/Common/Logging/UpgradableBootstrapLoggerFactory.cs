@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Logging;
 /// <summary>
 /// Allows early utilization of log infrastructure before log config is even read. Any providers spawned are instantly switched over to
 /// real log providers as the application utilization progresses.
-/// This class should only be used by components start are invoke before  logging infrastructure is build (prior to service container creation)
+/// This class should only be used by components start are invoke before  logging infrastructure is build (prior to service container creation).
 /// </summary>
 internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
 {
@@ -68,7 +68,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
     }
 
     /// <summary>
-    /// Updates existing loggers to use final LoggerFactory as constructed by DI container
+    /// Updates existing loggers to use final LoggerFactory as constructed by DI container.
     /// </summary>
     public void Update(ILoggerFactory value)
     {

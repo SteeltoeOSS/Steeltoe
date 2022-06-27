@@ -7,7 +7,7 @@ using Steeltoe.Common.Attributes;
 namespace Steeltoe.Connector;
 
 /// <summary>
-/// Identifies an assembly that contains one or more <see cref="IConnectionInfo" />
+/// Identifies an assembly that contains one or more <see cref="IConnectionInfo" />.
 /// </summary>
 public sealed class ConnectionInfoAssemblyAttribute : AssemblyContainsTypeAttribute
 {

@@ -26,11 +26,11 @@ public static class SpringBootAdminApplicationBuilderExtensions
     internal static RegistrationResult RegistrationResult { get; set; }
 
     /// <summary>
-    /// Register the application with a Spring-Boot-Admin server
+    /// Register the application with a Spring-Boot-Admin server.
     /// </summary>
-    /// <param name="builder"><see cref="IApplicationBuilder"/></param>
-    /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided</param>
-    /// <param name="httpClient">A customized HttpClient. [Bring your own auth]</param>
+    /// <param name="builder"><see cref="IApplicationBuilder"/>.</param>
+    /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided.</param>
+    /// <param name="httpClient">A customized HttpClient. [Bring your own auth].</param>
     public static void RegisterWithSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration = null, HttpClient httpClient = null)
     {
         if (builder is null)

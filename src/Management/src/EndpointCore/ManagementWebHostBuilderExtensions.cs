@@ -27,9 +27,9 @@ namespace Steeltoe.Management.Endpoint;
 public static class ManagementWebHostBuilderExtensions
 {
     /// <summary>
-    /// Adds the Database Migrations actuator to the application
+    /// Adds the Database Migrations actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -39,9 +39,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Environment actuator to the application
+    /// Adds the Environment actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddEnvActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -51,9 +51,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -63,10 +63,10 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
-    /// <param name="contributors">Types that contribute to the overall health of the app</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
+    /// <param name="contributors">Types that contribute to the overall health of the app.</param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, Type[] contributors)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -76,11 +76,11 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
-    /// <param name="aggregator">Custom health aggregator</param>
-    /// <param name="contributors">Types that contribute to the overall health of the app</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
+    /// <param name="aggregator">Custom health aggregator.</param>
+    /// <param name="contributors">Types that contribute to the overall health of the app.</param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, IHealthAggregator aggregator, Type[] contributors)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -90,9 +90,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the HeapDump actuator to the application
+    /// Adds the HeapDump actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -102,9 +102,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Hypermedia actuator to the application
+    /// Adds the Hypermedia actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -114,9 +114,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Info actuator to the application
+    /// Adds the Info actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -126,10 +126,10 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Info actuator to the application
+    /// Adds the Info actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
-    /// <param name="contributors">Contributors to application information</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
+    /// <param name="contributors">Contributors to application information.</param>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder, IInfoContributor[] contributors)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -139,9 +139,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Loggers actuator to the application
+    /// Adds the Loggers actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureLogging(builder => builder.AddDynamicConsole())
@@ -152,9 +152,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Mappings actuator to the application
+    /// Adds the Mappings actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -164,9 +164,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Metrics actuator to the application
+    /// Adds the Metrics actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -176,9 +176,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Refresh actuator to the application
+    /// Adds the Refresh actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -188,10 +188,10 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the ThreadDump actuator to the application
+    /// Adds the ThreadDump actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
-    /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
+    /// <param name="mediaTypeVersion">Specify the media type version to use in the response.</param>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -201,10 +201,10 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Trace actuator to the application
+    /// Adds the Trace actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
-    /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
+    /// <param name="mediaTypeVersion">Specify the media type version to use in the response.</param>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -214,9 +214,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds the Cloud Foundry actuator to the application
+    /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((context, collection) =>
@@ -226,11 +226,11 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds all Steeltoe Actuators to the application
+    /// Adds all Steeltoe Actuators to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
-    /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" /></param>
-    /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
+    /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" />.</param>
+    /// <param name="mediaTypeVersion">Specify the media type version to use in the response.</param>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         => hostBuilder
             .ConfigureLogging(builder => builder.AddDynamicConsole())
@@ -241,9 +241,9 @@ public static class ManagementWebHostBuilderExtensions
             });
 
     /// <summary>
-    /// Adds Wavefront to the application
+    /// Adds Wavefront to the application.
     /// </summary>
-    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
     public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
         => hostBuilder
             .ConfigureServices((_, collection) => collection.AddWavefrontMetrics());

@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Order;
 public interface IOrdered
 {
     /// <summary>
-    /// Gets the order of this object
+    /// Gets the order of this object.
     /// </summary>
     int Order { get; }
 }

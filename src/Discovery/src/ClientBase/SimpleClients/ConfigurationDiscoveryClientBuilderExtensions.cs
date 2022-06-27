@@ -7,18 +7,18 @@ namespace Steeltoe.Discovery.Client.SimpleClients;
 public static class ConfigurationDiscoveryClientBuilderExtensions
 {
     /// <summary>
-    /// Allows the use of IDiscoveryClient model built from IConfiguration instead of a hosted service registry
+    /// Allows the use of IDiscoveryClient model built from IConfiguration instead of a hosted service registry.
     /// </summary>
-    /// <param name="clientBuilder">this</param>
+    /// <param name="clientBuilder">this.</param>
     /// <remarks>
-    ///     Build your list of service instances under the configuration prefix discovery:services<para></para>
+    ///     Build your list of service instances under the configuration prefix discovery:services.<para></para>
     ///     For example:
     ///       "discovery": {
     ///         "services": [
     ///           { "serviceId": "CartService", "host": "knownhost1", "port": 443, "isSecure": true },
     ///           { "serviceId": "CartService", "host": "knownhost2", "port": 443, "isSecure": true },
     ///         ]
-    ///       }
+    ///       }.
     /// </remarks>
     public static DiscoveryClientBuilder UseConfiguredInstances(this DiscoveryClientBuilder clientBuilder)
     {

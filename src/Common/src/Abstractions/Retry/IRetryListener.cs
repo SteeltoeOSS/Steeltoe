@@ -16,21 +16,21 @@ public interface IRetryListener
     /// <summary>
     /// Called before the first attempt in a retry.
     /// </summary>
-    /// <param name="context">the current retry context</param>
-    /// <returns>true if the retry should proceed</returns>
+    /// <param name="context">the current retry context.</param>
+    /// <returns>true if the retry should proceed.</returns>
     bool Open(IRetryContext context);
 
     /// <summary>
     /// Called after the final attempt (successful or not).
     /// </summary>
-    /// <param name="context">the current retry context</param>
-    /// <param name="exception">the last exception that was thrown during retry</param>
+    /// <param name="context">the current retry context.</param>
+    /// <param name="exception">the last exception that was thrown during retry.</param>
     void Close(IRetryContext context, Exception exception);
 
     /// <summary>
     /// Called after every unsuccessful attempt at a retry.
     /// </summary>
-    /// <param name="context">the current retry context</param>
-    /// <param name="exception">the last exception that was thrown during retry</param>
+    /// <param name="context">the current retry context.</param>
+    /// <param name="exception">the last exception that was thrown during retry.</param>
     void OnError(IRetryContext context, Exception exception);
 }

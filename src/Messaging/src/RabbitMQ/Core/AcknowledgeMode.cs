@@ -7,7 +7,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 public enum AcknowledgeMode
 {
     /// <summary>
-    /// No acks
+    /// No acks.
     /// </summary>
     NONE,
 
