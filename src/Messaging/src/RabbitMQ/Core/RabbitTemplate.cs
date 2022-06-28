@@ -122,8 +122,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool IsChannelTransacted { get; set; }
 
-    #region Properties
-
     public virtual string RoutingKey
     {
         get => DefaultSendDestination.RoutingKey;
@@ -280,11 +278,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             return _options;
         }
     }
-    #endregion Properties
 
-    #region Public
-
-    #region PostProcessors
     public virtual void SetBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
     {
         if (beforePublishPostProcessors == null)
@@ -398,9 +392,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
         return false;
     }
-    #endregion PostProcessors
-
-    #region IPublisherCallbackChannel.IListener
 
     public virtual void HandleConfirm(PendingConfirm pendingConfirm, bool ack)
     {
@@ -449,9 +440,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         _publisherConfirmChannels.Remove(channel, out _);
         _logger?.LogDebug("Removed publisher confirm channel: {channel} from map, size now {size}", channel, _publisherConfirmChannels.Count);
     }
-    #endregion IPublisherCallbackChannel.IListener
-
-    #region IMessageListener
 
     public virtual void OnMessageBatch(List<IMessage> messages)
     {
@@ -488,9 +476,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             pendingReply.Reply(message);
         }
     }
-    #endregion IMessageListener
 
-    #region IListenerContainerAware
     public virtual List<string> GetExpectedQueueNames()
     {
         _isListener = true;
@@ -515,9 +501,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return replyQueue;
     }
 
-    #endregion IListenerContainerAware
-
-    #region RabbitSend
     public virtual void Send(string routingKey, IMessage message)
     {
         Send(GetDefaultExchange(), routingKey, message);
@@ -562,10 +545,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                     return null;
                 }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message)), cancellationToken);
     }
-
-    #endregion RabbitSend
-
-    #region RabbitConvertAndSend
 
     public virtual void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor)
     {
@@ -679,9 +658,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return SendAsync(exchange, routingKey, messageToSend, correlationData, cancellationToken);
     }
 
-    #endregion RabbitConvertAndSend
-
-    #region RabbitReceive
     public virtual Task<IMessage> ReceiveAsync(string queueName, CancellationToken cancellationToken = default)
     {
         return Task.Run(() => DoReceive(queueName, ReceiveTimeout, cancellationToken), cancellationToken);
@@ -718,10 +694,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             return DoReceive(queueName, timeoutMillis, default);
         }
     }
-
-    #endregion RabbitReceive
-
-    #region RabbitReceiveAndConvert
 
     public virtual T ReceiveAndConvert<T>(int timeoutMillis)
     {
@@ -793,9 +765,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return Task.Run(() => DoReceiveAndConvert(queueName, timeoutMillis, type, cancellationToken));
     }
 
-    #endregion RabbitReceiveAndConvert
-
-    #region RabbitReceiveAndReply
     public virtual bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback)
     {
         return ReceiveAndReply(GetRequiredQueue(), callback);
@@ -825,9 +794,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         return DoReceiveAndReply(queueName, callback, replyToAddressCallback);
     }
-    #endregion RabbitReceiveAndReply
 
-    #region RabbitSendAndReceive
     public virtual IMessage SendAndReceive(IMessage message, CorrelationData correlationData)
     {
         return DoSendAndReceive(GetDefaultExchange(), GetDefaultRoutingKey(), message, correlationData, default);
@@ -877,10 +844,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         return Task.Run(() => DoSendAndReceive(exchange, routingKey, message, correlationData, cancellationToken), cancellationToken);
     }
-
-    #endregion RabbitSendAndReceive
-
-    #region RabbitConvertSendAndReceive
 
     public virtual T ConvertSendAndReceive<T>(object message, CorrelationData correlationData)
     {
@@ -1139,10 +1102,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }, cancellationToken);
     }
 
-    #endregion RabbitConvertSendAndReceive
-
-    #region General
-
     public virtual void CorrelationConvertAndSend(object message, CorrelationData correlationData)
     {
         ConvertAndSend(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData);
@@ -1377,11 +1336,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         await DoStop();
     }
 
-    #endregion General
-
-    #endregion Public
-
-    #region Protected
     protected internal virtual IMessage ConvertMessageIfNecessary(object message)
     {
         if (message is IMessage<byte[]> byteArrayMessage)
@@ -1834,9 +1788,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return Task.CompletedTask;
     }
 
-    #endregion Protected
-
-    #region Private
     private void Configure(RabbitOptions options)
     {
         if (options == null)
@@ -2556,9 +2507,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         _usingFastReplyTo = UseDirectReplyTo();
         _evaluatedFastReplyTo = true;
     }
-    #endregion
 
-    #region Nested Types
     protected internal sealed class PendingReply
     {
         private readonly TaskCompletionSource<IMessage> _future = new ();
@@ -2789,5 +2738,4 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey);
     }
-    #endregion
 }

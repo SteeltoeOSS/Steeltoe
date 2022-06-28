@@ -75,7 +75,6 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
         return Token.IsCancellationRequested;
     }
 
-    #region ICollapsedRequest
     public TRequestArgument Argument { get; }
 
     public bool Complete
@@ -121,6 +120,4 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
             }
         }
     }
-
-    #endregion ICollapsedRequest
 }

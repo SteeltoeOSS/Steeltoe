@@ -47,7 +47,6 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
         System.Threading.ThreadPool.SetMinThreads(Math.Max(workThreads, DEFAULT_MIN_WORKTHREADS), compThreads);
     }
 
-    #region IHystrixTaskScheduler
     public virtual int CurrentActiveCount => runningTasks;
 
     public virtual int CurrentCompletedTaskCount => completedTasks;
@@ -93,7 +92,6 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
         GC.SuppressFinalize(this);
     }
 
-    #endregion IHystrixTaskScheduler
     public override int MaximumConcurrencyLevel => maximumPoolSize;
 
     public bool IsShutdown => shutdown;

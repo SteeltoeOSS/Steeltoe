@@ -15,8 +15,6 @@ namespace Steeltoe.Connector.Redis;
 
 public static class RedisCacheServiceCollectionExtensions
 {
-    #region Microsoft.Extensions.Caching.Redis
-
     /// <summary>
     /// Add IDistributedCache and its IHealthContributor to ServiceCollection.
     /// </summary>
@@ -102,10 +100,6 @@ public static class RedisCacheServiceCollectionExtensions
         return services;
     }
 
-    #endregion
-
-    #region StackExchange.Redis
-
     /// <summary>
     /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection.
     /// </summary>
@@ -186,8 +180,6 @@ public static class RedisCacheServiceCollectionExtensions
         DoAddConnectionMultiplexer(services, info, configToConfigure, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
-
-    #endregion
 
     private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks = false)
     {

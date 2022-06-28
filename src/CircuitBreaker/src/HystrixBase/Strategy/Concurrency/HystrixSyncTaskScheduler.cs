@@ -186,7 +186,6 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
         }
     }
 
-    #region IHystrixTaskScheduler
     public override int CurrentQueueSize
     {
         get
@@ -208,8 +207,6 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
     {
         get { return CurrentQueueSize < _workQueues.Length;  }
     }
-
-    #endregion IHystrixTaskScheduler
 
     public class ThreadTaskQueue
     {

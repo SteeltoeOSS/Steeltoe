@@ -25,7 +25,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixInvokableInfo, IHystrixInvokable
 {
-    #region NestedTypes
     protected enum TimedOutStatus
     {
         NOT_EXECUTED,
@@ -182,9 +181,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    #endregion NestedTypes
-
-    #region Fields
     protected internal readonly HystrixRequestLog _currentRequestLog;
     protected internal readonly HystrixRequestCache _requestCache;
     protected internal readonly HystrixCommandExecutionHook _executionHook;
@@ -213,9 +209,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     protected HystrixCompletionSource tcs;
     private readonly ILogger _logger;
 
-    #endregion Fields
-
-    #region Constructors
     protected AbstractCommand(
         IHystrixCommandGroupKey group,
         IHystrixCommandKey key,
@@ -257,7 +250,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         /* execution semaphore override if applicable */
         _executionSemaphoreOverride = executionSemaphore;
     }
-    #endregion Constructors
 
     internal void MarkAsCollapsedCommand(IHystrixCollapserKey collapserKey, int sizeOfBatch)
     {
@@ -296,7 +288,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    #region  Init
     protected static IHystrixCommandGroupKey InitGroupKey(IHystrixCommandGroupKey fromConstructor)
     {
         if (fromConstructor == null)
@@ -444,7 +435,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             return null;
         }
     }
-    #endregion
 
     protected void Setup()
     {
@@ -606,7 +596,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected abstract TResult DoFallback();
 
-    #region Handlers
     protected virtual void HandleCleanUpAfterResponseFromCache(bool commandExecutionStarted)
     {
         var latency = Time.CurrentTimeMillis - _commandStartTimestamp;
@@ -973,8 +962,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    #endregion Handlers
-
     private void TimeoutThreadAction()
     {
         if (!Time.WaitUntil(() => isCommandTimedOut.Value == TimedOutStatus.COMPLETED, options.ExecutionTimeoutInMilliseconds))
@@ -1335,8 +1322,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         return e.Flatten();
     }
 
-    #region Marks
-
     private void MarkCollapsedCommand(IHystrixCollapserKey collapserKey, int sizeOfBatch)
     {
         _eventNotifier.MarkEvent(HystrixEventType.COLLAPSED, commandKey);
@@ -1389,9 +1374,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    #endregion Marks
-
-    #region Wraps
     private void WrapWithOnFallbackSuccessHook()
     {
         try
@@ -1507,9 +1489,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onFallbackError - {0}", hookEx);
         }
     }
-    #endregion Wraps
-
-    #region IHystrixInvokableInfo
 
     public IHystrixCommandGroupKey CommandGroup => commandGroup;
 
@@ -1571,10 +1550,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     public string PublicCacheKey => CacheKey;
 
-    #endregion IHystrixInvokableInfo
-
-    #region Properties
-
     protected bool _isFallbackUserDefined;
 
     public virtual bool IsFallbackUserDefined
@@ -1612,5 +1587,4 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     protected virtual bool ShouldOutputOnNextEvents => false;
 
     protected virtual bool CommandIsScalar => true;
-    #endregion
 }

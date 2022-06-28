@@ -21,8 +21,6 @@ internal sealed class ThisServiceInstance : IServiceInstance
         Uri = registration.Uri;
     }
 
-    #region Implementation of IServiceInstance
-
     /// <inheritdoc/>
     public string ServiceId { get; }
 
@@ -40,6 +38,4 @@ internal sealed class ThisServiceInstance : IServiceInstance
 
     /// <inheritdoc/>
     public IDictionary<string, string> Metadata { get; }
-
-    #endregion Implementation of IServiceInstance
 }

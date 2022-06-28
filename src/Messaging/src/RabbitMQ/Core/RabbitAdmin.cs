@@ -313,7 +313,6 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             });
     }
 
-    #region IConnectionListener
     public void OnCreate(IConnection connection)
     {
         _logger?.LogDebug("OnCreate for connection: {connection}", connection?.ToString());
@@ -360,7 +359,6 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     {
         _logger?.LogDebug("OnShutDown for connection: {args}", args.ToString());
     }
-    #endregion
 
     public void Initialize()
     {

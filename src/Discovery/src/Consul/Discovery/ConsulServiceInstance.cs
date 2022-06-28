@@ -32,8 +32,6 @@ public class ConsulServiceInstance : IServiceInstance
         Uri = new Uri($"{scheme}://{Host}:{Port}");
     }
 
-    #region Implementation of IServiceInstance
-
     /// <inheritdoc/>
     public string ServiceId { get; }
 
@@ -51,6 +49,4 @@ public class ConsulServiceInstance : IServiceInstance
 
     /// <inheritdoc/>
     public IDictionary<string, string> Metadata { get; }
-
-    #endregion Implementation of IServiceInstance
 }

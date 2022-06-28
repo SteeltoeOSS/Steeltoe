@@ -42,8 +42,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         channel.ModelShutdown += ShutdownCompleted;
     }
 
-    #region IPublisherCallbackChannel
-
     public virtual RC.IModel Channel { get; }
 
     public virtual IList<PendingConfirm> Expire(IListener listener, long cutoffTime)
@@ -167,9 +165,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             _afterAckCallback = callback;
         }
     }
-    #endregion
-
-    #region IModel
 
     public virtual int ChannelNumber => Channel.ChannelNumber;
 
@@ -394,9 +389,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     public virtual void WaitForConfirmsOrDie() => Channel.WaitForConfirmsOrDie();
 
     public virtual void WaitForConfirmsOrDie(TimeSpan timeout) => Channel.WaitForConfirmsOrDie(timeout);
-    #endregion
-
-    #region IDisposable Support
 
     public void Dispose()
     {
@@ -408,9 +400,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     {
     }
 
-    #endregion
-
-    #region Private
     private void ShutdownCompleted(object sender, RC.ShutdownEventArgs e)
     {
         ShutdownCompleted(e.ReplyText);
@@ -655,6 +644,4 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             }
         });
     }
-
-    #endregion
 }

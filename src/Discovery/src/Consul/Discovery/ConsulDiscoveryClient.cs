@@ -81,8 +81,6 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         }
     }
 
-    #region Implementation of IDiscoveryClient
-
     /// <inheritdoc/>
     public IServiceInstance GetLocalServiceInstance()
     {
@@ -112,8 +110,6 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
             return GetServicesAsync().GetAwaiter().GetResult();
         }
     }
-
-    #endregion Implementation of IDiscoveryClient
 
     /// <summary>
     /// Returns the instances for the provided service ID.

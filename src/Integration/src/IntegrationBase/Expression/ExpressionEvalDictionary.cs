@@ -31,7 +31,6 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
         return new ExpressionEvalDictionaryBuilder(expressions);
     }
 
-    #region IDictionary
     public object this[string key] { get => Get(key); set => throw new NotImplementedException(); }
 
     public ICollection<string> Keys => _original.Keys;
@@ -123,7 +122,6 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
     {
         throw new InvalidOperationException();
     }
-    #endregion
 
     public object Get(string key)
     {

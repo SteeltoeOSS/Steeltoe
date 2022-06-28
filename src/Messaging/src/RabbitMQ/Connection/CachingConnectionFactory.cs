@@ -529,8 +529,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     // Used in unit test
     internal int CountOpenConnections() => _allocatedConnections.Count(conn => conn.IsOpen);
 
-    #region Protected
-
     protected void Reset(LinkedList<IChannelProxy> channels, LinkedList<IChannelProxy> txChannels, Dictionary<RC.IModel, IChannelProxy> channelsAwaitingAcks)
     {
         _active = false;
@@ -564,9 +562,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             }
         }
     }
-    #endregion Protected
 
-    #region Private
     private void Configure(RabbitOptions options)
     {
         SetAddresses(options.DetermineAddresses());
@@ -1051,9 +1047,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsNonTransactional)] = new AtomicInteger();
         _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsTransactional)] = new AtomicInteger();
     }
-    #endregion
-
-    #region Nested Types
 
     internal sealed class CachedPublisherCallbackChannelProxy : CachedChannelProxy, IPublisherCallbackChannel
     {
@@ -1067,8 +1060,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             : base(factory, connection, target, channelList, transactional, logger)
         {
         }
-
-        #region IPublisherCallbackChannel
 
         public RC.IModel Channel
         {
@@ -1110,14 +1101,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         private IPublisherCallbackChannel PublisherCallbackChannel => (IPublisherCallbackChannel)_target;
 
-        #endregion
-
         public override string ToString()
         {
             return $"Cached Rabbit Channel: {_target}, conn: {_theConnection}";
         }
 
-        #region Protected
         protected override void ReturnToCache()
         {
             if (_factory._active && _publisherConfirms)
@@ -1135,7 +1123,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 DoReturnToCache();
             }
         }
-        #endregion
     }
 
     internal class CachedChannelProxy : IChannelProxy
@@ -1172,17 +1159,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             _logger = logger;
         }
 
-        #region IChannelProxy
-
         public RC.IModel TargetChannel => _target;
 
         public bool IsTransactional => _transactional;
 
         public bool IsConfirmSelected => _confirmSelected;
 
-        #endregion
-
-        #region IModel
         public int ChannelNumber
         {
             get
@@ -2184,9 +2166,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 throw;
             }
         }
-        #endregion
-
-        #region IDisposable
 
         public void Dispose()
         {
@@ -2198,14 +2177,10 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
         }
 
-        #endregion
-
         public override string ToString()
         {
             return $"Cached Rabbit Channel: {_target}, conn: {_theConnection}";
         }
-
-        #region protected
 
         protected virtual void PostException(Exception e)
         {
@@ -2486,7 +2461,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
             PhysicalClose();
         }
-        #endregion
     }
 
     internal sealed class ChannelCachingConnectionProxy : IConnectionProxy
@@ -2652,5 +2626,4 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             logger?.LogError("Unexpected invocation of {type}, with {message}:{cause} ", GetType(), message, cause);
         }
     }
-    #endregion
 }

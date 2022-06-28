@@ -20,7 +20,6 @@ public static class HystrixPlugins
     private static readonly AtomicReference<HystrixCommandExecutionHook> _commandExecutionHook = new ();
     private static readonly AtomicReference<HystrixOptionsStrategy> _options = new ();
 
-    #region EventNotifier
     public static HystrixEventNotifier EventNotifier
     {
         get
@@ -41,9 +40,7 @@ public static class HystrixPlugins
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion EventNotifier
 
-    #region  ConcurrencyStrategy
     public static HystrixConcurrencyStrategy ConcurrencyStrategy
     {
         get
@@ -64,9 +61,7 @@ public static class HystrixPlugins
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  ConcurrencyStrategy
 
-    #region  MetricsPublisher
     public static HystrixMetricsPublisher MetricsPublisher
     {
         get
@@ -89,9 +84,7 @@ public static class HystrixPlugins
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  MetricsPublisher
 
-    #region  CommandExecutionHook
     public static HystrixCommandExecutionHook CommandExecutionHook
     {
         get
@@ -112,9 +105,7 @@ public static class HystrixPlugins
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  CommandExecutionHook
 
-    #region  OptionsStrategy
     public static HystrixOptionsStrategy OptionsStrategy
     {
         get
@@ -135,7 +126,6 @@ public static class HystrixPlugins
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  OptionsStrategy
 
     public static void Reset()
     {

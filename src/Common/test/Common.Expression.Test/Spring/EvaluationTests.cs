@@ -1351,7 +1351,6 @@ public class EvaluationTests : AbstractExpressionTests
         Assert.Equal(messageCode, ex.MessageCode);
     }
 
-    #region Test Classes
 #pragma warning disable IDE1006 // Naming Styles
 
     public class MyServiceResolver : IServiceResolver
@@ -1456,5 +1455,4 @@ public class EvaluationTests : AbstractExpressionTests
     }
 
 #pragma warning restore IDE1006 // Naming Styles
-    #endregion Test Classes
 }

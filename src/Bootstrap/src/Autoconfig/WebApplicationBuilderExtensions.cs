@@ -137,7 +137,6 @@ public static class WebApplicationBuilderExtensions
         _logger.LogInformation(message);
     }
 
-    #region Config Providers
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireConfigServer(this WebApplicationBuilder webApplicationBuilder)
     {
@@ -182,9 +181,6 @@ public static class WebApplicationBuilderExtensions
         webApplicationBuilder.Services.Log(LogMessages.WireConnectorsConfiguration);
     }
 
-    #endregion
-
-    #region Connectors
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireMySqlConnection(this WebApplicationBuilder webApplicationBuilder) =>
         webApplicationBuilder.Services.AddMySqlConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireMySqlConnection);
@@ -216,7 +212,6 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireSqlServerConnection(this WebApplicationBuilder webApplicationBuilder) =>
         webApplicationBuilder.Services.AddSqlServerConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireSqlServerConnection);
-    #endregion
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDiscoveryClient(this WebApplicationBuilder webApplicationBuilder) =>

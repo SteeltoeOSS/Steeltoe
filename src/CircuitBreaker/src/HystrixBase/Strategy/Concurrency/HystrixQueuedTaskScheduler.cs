@@ -40,7 +40,6 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
         runningThreads = 1;
     }
 
-    #region IHystrixTaskScheduler
     public override int CurrentQueueSize
     {
         get
@@ -53,8 +52,6 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
     {
         get { return workQueue.Count < queueSizeRejectionThreshold; }
     }
-
-    #endregion IHystrixTaskScheduler
 
     protected override IEnumerable<Task> GetScheduledTasks()
     {

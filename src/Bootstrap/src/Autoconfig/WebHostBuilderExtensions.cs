@@ -138,7 +138,6 @@ public static class WebHostBuilderExtensions
         return host;
     }
 
-    #region Config Providers
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireConfigServer(this IWebHostBuilder hostBuilder) =>
         hostBuilder
@@ -168,9 +167,7 @@ public static class WebHostBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireConnectorConfiguration(this IWebHostBuilder hostBuilder) =>
         hostBuilder.ConfigureAppConfiguration((_, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
-    #endregion
 
-    #region Connectors
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireMySqlConnection(this IWebHostBuilder hostBuilder) =>
         hostBuilder.ConfigureServices((host, svc) => svc.AddMySqlConnection(host.Configuration)).Log(LogMessages.WireMySqlConnection);
@@ -202,7 +199,6 @@ public static class WebHostBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireSqlServerConnection(this IWebHostBuilder hostBuilder) =>
         hostBuilder.ConfigureServices((host, svc) => svc.AddSqlServerConnection(host.Configuration)).Log(LogMessages.WireSqlServerConnection);
-    #endregion
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDiscoveryClient(this IWebHostBuilder hostBuilder) =>

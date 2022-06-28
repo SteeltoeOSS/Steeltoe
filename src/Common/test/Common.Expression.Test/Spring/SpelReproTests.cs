@@ -1536,7 +1536,6 @@ public class SpelReproTests : AbstractExpressionTests
         public static string From(object no) => $"Object:{no}";
     }
 
-    #region Test Types
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE1006 // Naming Styles
     public class ValuesMethodReslover : IMethodResolver
@@ -2137,5 +2136,4 @@ public class SpelReproTests : AbstractExpressionTests
 
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning restore IDE1006 // Naming Styles
-    #endregion Test Types
 }

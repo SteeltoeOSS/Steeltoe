@@ -821,7 +821,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.True(SpelCompiler.Compile(expression));
     }
 
-    #region Test Classes
 #pragma warning disable IDE1006 // Naming Styles
 
     public class HW
@@ -883,5 +882,4 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         public string Boo = "oranges";
     }
 #pragma warning restore IDE1006 // Naming Styles
-    #endregion
 }
