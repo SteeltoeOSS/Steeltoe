@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorRouteBuilderExtensions
 {
-    public static (Type middleware, Type options) LookupMiddleware(Type endpointType)
+    public static (Type Middleware, Type Options) LookupMiddleware(Type endpointType)
     {
         return endpointType switch
         {
