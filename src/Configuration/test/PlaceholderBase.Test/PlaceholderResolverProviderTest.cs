@@ -280,7 +280,7 @@ public class PlaceholderResolverProviderTest
         var result = manager.GetValue<string>("placeholder");
         Assert.Equal("b", result);
 
-        // TODO: Investigate and fix caching issue with Iconfiguration
+        // TODO: Investigate and fix caching issue with IConfiguration
         // var builder = (IConfigurationBuilder)manager;
         // var firstSource = builder.Sources.OfType<MemoryConfigurationSource>().First(x => x.InitialData is not null && x.InitialData.SequenceEqual(valueProviderB));
         // builder.Sources.Remove(firstSource);

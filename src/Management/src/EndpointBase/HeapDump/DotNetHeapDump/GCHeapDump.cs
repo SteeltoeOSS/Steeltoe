@@ -18,7 +18,7 @@ using Address = System.UInt64;
 // Copy of version in Microsoft/Diagnostics
 
 /// <summary>
-/// Represents a .GCDump file.  You can open it for reading with the construtor
+/// Represents a .GCDump file.  You can open it for reading with the constructor
 /// and you can write one with WriteMemoryGraph 
 /// </summary>
 [ExcludeFromCodeCoverage]
@@ -305,7 +305,7 @@ internal sealed class GCHeapDump : IFastSerializable, IFastSerializableVersion
 
     void IFastSerializable.FromStream(Deserializer deserializer)
     {
-        // This is the old crufy way of reading things in.  We can abandon this eventually 
+        // This is the old crufty way of reading things in.  We can abandon this eventually 
         if (deserializer.VersionBeingRead < 8)
         {
             PreVersion8FromStream(deserializer);

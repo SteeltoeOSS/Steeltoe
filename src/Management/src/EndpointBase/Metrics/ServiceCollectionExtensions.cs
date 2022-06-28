@@ -91,7 +91,7 @@ public static partial class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Helper method to configure opentelemetry metrics. Do not use in conjuction with Extension methods provided by OpenTelemetry.
+    /// Helper method to configure opentelemetry metrics. Do not use in conjunction with Extension methods provided by OpenTelemetry.
     /// </summary>
     /// <param name="services">Reference to the service collection.</param>
     /// <param name="configure">The Action to configure OpenTelemetry.</param>

@@ -18,7 +18,7 @@ public interface IMessageRequestReplyOperations<D>
     /// Send a request message and receive the reply from a default destination.
     /// </summary>
     /// <param name="requestMessage">the message to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<IMessage> SendAndReceiveAsync(IMessage requestMessage, CancellationToken cancellationToken = default);
 
@@ -27,7 +27,7 @@ public interface IMessageRequestReplyOperations<D>
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="requestMessage">the message to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<IMessage> SendAndReceiveAsync(D destination, IMessage requestMessage, CancellationToken cancellationToken = default);
 
@@ -37,7 +37,7 @@ public interface IMessageRequestReplyOperations<D>
     /// </summary>
     /// <typeparam name="T">the target type of the payload.</typeparam>
     /// <param name="request">payload for the request message to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken = default);
 
@@ -48,7 +48,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <typeparam name="T">the target type of the payload.</typeparam>
     /// <param name="destination">the target destination.</param>
     /// <param name="request">payload for the request message to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(D destination, object request, CancellationToken cancellationToken = default);
 
@@ -60,7 +60,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <param name="destination">the target destination.</param>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="headers">the headers to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(D destination, object request, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
 
@@ -71,7 +71,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <typeparam name="T">the target type of the reply.</typeparam>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="requestPostProcessor">the post processor to apply.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default);
 
@@ -83,7 +83,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <param name="destination">the target destination.</param>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="requestPostProcessor">the post processor to apply.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(D destination, object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default);
 
@@ -96,7 +96,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="headers">the headers to send.</param>
     /// <param name="requestPostProcessor">the post processor to apply.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(D destination, object request, IDictionary<string, object> headers, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default);
 
@@ -104,7 +104,7 @@ public interface IMessageRequestReplyOperations<D>
     /// Send a request message and receive the reply from a default destination.
     /// </summary>
     /// <param name="requestMessage">the message to send.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     IMessage SendAndReceive(IMessage requestMessage);
 
     /// <summary>
@@ -112,7 +112,7 @@ public interface IMessageRequestReplyOperations<D>
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="requestMessage">the message to send.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     IMessage SendAndReceive(D destination, IMessage requestMessage);
 
     /// <summary>
@@ -121,7 +121,7 @@ public interface IMessageRequestReplyOperations<D>
     /// </summary>
     /// <typeparam name="T">the target type of the payload.</typeparam>
     /// <param name="request">payload for the request message to send.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     T ConvertSendAndReceive<T>(object request);
 
     /// <summary>
@@ -131,7 +131,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <typeparam name="T">the target type of the payload.</typeparam>
     /// <param name="destination">the target destination.</param>
     /// <param name="request">payload for the request message to send.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     T ConvertSendAndReceive<T>(D destination, object request);
 
     /// <summary>
@@ -142,7 +142,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <param name="destination">the target destination.</param>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="headers">the headers to send.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     T ConvertSendAndReceive<T>(D destination, object request, IDictionary<string, object> headers);
 
     /// <summary>
@@ -152,7 +152,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <typeparam name="T">the target type of the reply.</typeparam>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="requestPostProcessor">the post processor to apply.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     T ConvertSendAndReceive<T>(object request, IMessagePostProcessor requestPostProcessor);
 
     /// <summary>
@@ -163,7 +163,7 @@ public interface IMessageRequestReplyOperations<D>
     /// <param name="destination">the target destination.</param>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="requestPostProcessor">the post processor to apply.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     T ConvertSendAndReceive<T>(D destination, object request, IMessagePostProcessor requestPostProcessor);
 
     /// <summary>
@@ -175,6 +175,6 @@ public interface IMessageRequestReplyOperations<D>
     /// <param name="request">payload for the request message to send.</param>
     /// <param name="headers">the headers to send.</param>
     /// <param name="requestPostProcessor">the post processor to apply.</param>
-    /// <returns>the receieved message; or null.</returns>
+    /// <returns>the received message; or null.</returns>
     T ConvertSendAndReceive<T>(D destination, object request, IDictionary<string, object> headers, IMessagePostProcessor requestPostProcessor);
 }

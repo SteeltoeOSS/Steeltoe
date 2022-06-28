@@ -16,7 +16,7 @@ public class RedisCacheConfigurer
     /// <returns>A dynamically typed object for use connecting to Redis.</returns>
     public RedisCacheConnectorOptions Configure(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
     {
-        // apply service info to exising configuration
+        // apply service info to existing configuration
         UpdateOptions(si, configuration);
         return configuration;
     }

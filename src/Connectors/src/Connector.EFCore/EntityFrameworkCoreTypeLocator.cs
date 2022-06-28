@@ -18,7 +18,7 @@ public static class EntityFrameworkCoreTypeLocator
     public static string[] MySqlEntityAssemblies { get; internal set; } = { "MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
 
     /// <summary>
-    /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
     /// </summary>
     public static string[] MySqlEntityTypeNames { get; internal set; } =
     {
@@ -45,7 +45,7 @@ public static class EntityFrameworkCoreTypeLocator
     public static string[] PostgreSqlEntityAssemblies { get; internal set; } = { "Npgsql.EntityFrameworkCore.PostgreSQL" };
 
     /// <summary>
-    /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
     /// </summary>
     public static string[] PostgreSqlEntityTypeNames { get; internal set; } = { "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsBuilderExtensions" };
 
@@ -61,7 +61,7 @@ public static class EntityFrameworkCoreTypeLocator
     public static string[] SqlServerEntityAssemblies { get; internal set; } = { "Microsoft.EntityFrameworkCore.SqlServer" };
 
     /// <summary>
-    /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
     /// </summary>
     public static string[] SqlServerEntityTypeNames { get; internal set; } = { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
 
@@ -77,7 +77,7 @@ public static class EntityFrameworkCoreTypeLocator
     public static string[] OracleEntityAssemblies { get; internal set; } = { "Oracle.EntityFrameworkCore", "Devart.Data.Oracle.EFCore" };
 
     /// <summary>
-    /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
     /// </summary>
     public static string[] OracleEntityTypeNames { get; internal set; } = { "Microsoft.EntityFrameworkCore.OracleDbContextOptionsExtensions", "Devart.Data.Oracle.Entity.OracleOptionsExtension" };
 

@@ -20,7 +20,7 @@ public interface IConnection : IDisposable
     int LocalPort { get; }
 
     /// <summary>
-    /// Create a new channel, using an inernally allocated channel number.
+    /// Create a new channel, using an internally allocated channel number.
     /// </summary>
     /// <param name="transactional">true if transaction support on channel.</param>
     /// <returns>the new channel.</returns>

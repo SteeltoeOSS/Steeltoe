@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Messaging.Core;
 
 /// <summary>
-/// Provides operations for receiving messages from a destination specifed as a resolvable string.
+/// Provides operations for receiving messages from a destination specified as a resolvable string.
 /// </summary>
 /// <typeparam name="D">the destination type.</typeparam>
 public interface IDestinationResolvingMessageReceivingOperations<D> : IMessageReceivingOperations<D>

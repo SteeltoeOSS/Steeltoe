@@ -32,10 +32,10 @@ public interface IChannelInterceptorAware
     void AddInterceptor(int index, IChannelInterceptor interceptor);
 
     /// <summary>
-    /// Remove an intercetptor from the channel.
+    /// Remove an interceptor from the channel.
     /// </summary>
     /// <param name="interceptor">the interceptor.</param>
-    /// <returns>succss or failure.</returns>
+    /// <returns>success or failure.</returns>
     bool RemoveInterceptor(IChannelInterceptor interceptor);
 
     /// <summary>

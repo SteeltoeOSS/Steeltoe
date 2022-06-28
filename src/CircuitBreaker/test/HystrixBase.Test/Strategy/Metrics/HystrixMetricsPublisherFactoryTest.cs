@@ -53,7 +53,7 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
         Assert.Equal(2, factory.CommandPublishers.Count);
         Assert.Single(factory.ThreadPoolPublishers);
 
-        // we should see 2 commands and 1 threadPool publisher created
+        // we should see 2 commands and 1 thread-pool publisher created
         Assert.Equal(2, publisher.CommandCounter.Value);
         Assert.Equal(1, publisher.ThreadCounter.Value);
     }

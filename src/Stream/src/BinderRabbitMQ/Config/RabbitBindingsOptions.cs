@@ -15,7 +15,7 @@ public class RabbitBindingsOptions
     // spring.cloud.stream.rabbit.bindings.<channelName>.consumer
     // spring.cloud.stream.rabbit.bindings.<channelName>.producer
     // spring.cloud.stream.rabbit.default.consumer   NOTE: Different from Spring
-    // spring.cloud.stream.rabbit.default.producer NOTE: Diffrent from Spring
+    // spring.cloud.stream.rabbit.default.producer NOTE: Different from Spring
     public RabbitBindingsOptions()
     {
         PostProcess();

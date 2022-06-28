@@ -58,7 +58,7 @@ public class ManagementEndpointOptions : IManagementOptions
     public JsonSerializerOptions SerializerOptions { get; set; } = new () { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     /// <summary>
-    /// Gets or sets a list of <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">assembly-qualified</see> custom JsonCoverters.
+    /// Gets or sets a list of <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">assembly-qualified</see> custom JsonConverters.
     /// </summary>
     public string[] CustomJsonConverters { get; set; }
 }

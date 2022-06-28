@@ -289,7 +289,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        // 10 commands will saturate threadpools when called concurrently.
+        // 10 commands will saturate thread-pools when called concurrently.
         // submit 2 more requests and they should be THREADPOOL_REJECTED
         // should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
         var tasks = new List<Task>();

@@ -74,7 +74,7 @@ public class CloudFoundryTokenValidator
     {
         if (_options.RequiredScopes == null || !_options.RequiredScopes.Any())
         {
-            return true; // nocheck
+            return true; // no check
         }
 
         if (!validJwt.Claims.Any(x => x.Type.Equals("scope") || x.Type.Equals("authorities")))

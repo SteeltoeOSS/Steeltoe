@@ -20,7 +20,7 @@ internal class ClrDiagnosticsException : Exception
     public enum HR
     {
         /// <summary>
-        /// Unknown error occured.
+        /// Unknown error occurred.
         /// </summary>
         UnknownError = unchecked((int)(((ulong)(0x3) << 31) | ((ulong)(0x125) << 16) | ((ulong)(0x0)))),
 

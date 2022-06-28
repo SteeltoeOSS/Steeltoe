@@ -23,7 +23,7 @@ public interface IQueueChannelOperations
     int RemainingCapacity { get; }
 
     /// <summary>
-    /// Clear all items off the quewue.
+    /// Clear all items off the queue.
     /// </summary>
     /// <returns>list of removed messages.</returns>
     IList<IMessage> Clear();

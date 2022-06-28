@@ -27,6 +27,6 @@ public interface ITaskSchedulerChannelInterceptor : IChannelInterceptor
     /// <param name="message">the message to be handled.</param>
     /// <param name="channel">the channel the message is for.</param>
     /// <param name="handler">the target handler to handle the message.</param>
-    /// <param name="exception">any exception that might have occured.</param>
+    /// <param name="exception">any exception that might have occurred.</param>
     void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception exception);
 }

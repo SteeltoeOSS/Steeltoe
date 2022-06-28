@@ -37,7 +37,7 @@ public interface IChannelInterceptor : IOrdered
     /// <param name="message">the message being processed.</param>
     /// <param name="channel">the channel the message for.</param>
     /// <param name="sent">the return value of the send.</param>
-    /// <param name="exception">the exception that may have occured; can be null.</param>
+    /// <param name="exception">the exception that may have occurred; can be null.</param>
     void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception);
 
     /// <summary>
@@ -60,6 +60,6 @@ public interface IChannelInterceptor : IOrdered
     /// </summary>
     /// <param name="message">the message being processed.</param>
     /// <param name="channel">the channel the message is from.</param>
-    /// <param name="exception">the exception that may have occured; can be null.</param>
+    /// <param name="exception">the exception that may have occurred; can be null.</param>
     void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception exception);
 }

@@ -14,7 +14,7 @@ public class CredentialPermission
     public string Actor { get; set; }
 
     /// <summary>
-    /// Gets or sets list of operations permissioned for the actor.
+    /// Gets or sets list of operations permitted for the actor.
     /// </summary>
     public List<OperationPermissions> Operations { get; set; }
 }

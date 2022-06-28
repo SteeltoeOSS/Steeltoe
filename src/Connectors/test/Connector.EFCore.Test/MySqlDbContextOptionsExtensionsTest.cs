@@ -101,7 +101,7 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
 #if NET6_0_OR_GREATER
-    // Run a MySQL server with Docker to match creds below with this command
+    // Run a MySQL server with Docker to match credentials below with this command
     // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
     [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
     public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0()

@@ -97,7 +97,7 @@ public class SetValueTests : AbstractExpressionTests
         SetValueExpectError("ArrayContainer.Floats[1]", "dribble");
         SetValueExpectError("ArrayContainer.Booleans[1]", "nein");
 
-        // TODO -- this fails with NPE due to ArrayToobject converter - discuss with Andy
+        // TODO -- this fails with NPE due to ArrayToObject converter - discuss with Andy
         // SetValueExpectError("arrayContainer.doubles[1]", new ArrayList<string>());
         // SetValueExpectError("arrayContainer.shorts[1]", new ArrayList<string>());
         // SetValueExpectError("arrayContainer.longs[1]", new ArrayList<string>());

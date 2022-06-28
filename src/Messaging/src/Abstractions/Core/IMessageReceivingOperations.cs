@@ -16,7 +16,7 @@ public interface IMessageReceivingOperations<D>
     /// <summary>
     /// Receive a message from a default destination.
     /// </summary>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<IMessage> ReceiveAsync(CancellationToken cancellationToken = default);
 
@@ -24,7 +24,7 @@ public interface IMessageReceivingOperations<D>
     /// Receive a message from the given destination.
     /// </summary>
     /// <param name="destination">the target destination.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<IMessage> ReceiveAsync(D destination, CancellationToken cancellationToken = default);
 
@@ -32,7 +32,7 @@ public interface IMessageReceivingOperations<D>
     /// Receive a message from a default destination and convert its payload to the specified target type.
     /// </summary>
     /// <typeparam name="T">the type of the payload.</typeparam>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ReceiveAndConvertAsync<T>(CancellationToken cancellationToken = default);
 
@@ -41,7 +41,7 @@ public interface IMessageReceivingOperations<D>
     /// </summary>
     /// <typeparam name="T">the type of the payload.</typeparam>
     /// <param name="destination">the target destination.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ReceiveAndConvertAsync<T>(D destination, CancellationToken cancellationToken = default);
 

@@ -56,7 +56,7 @@ public interface IConnectionFactory : IDisposable, IServiceNameAware
     void AddConnectionListener(IConnectionListener connectionListener);
 
     /// <summary>
-    /// Remove a connection facotry from this factory.
+    /// Remove a connection factory from this factory.
     /// </summary>
     /// <param name="connectionListener">the listener to remove.</param>
     /// <returns>true if removed.</returns>

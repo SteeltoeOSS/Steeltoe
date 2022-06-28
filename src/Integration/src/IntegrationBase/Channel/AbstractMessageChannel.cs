@@ -206,7 +206,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     private IMessage ConvertPayloadIfNecessary(IMessage message)
     {
-        // first pass checks if the payload type already matches any of the datatypes
+        // first pass checks if the payload type already matches any of the data types
         foreach (var datatype in DataTypes)
         {
             if (datatype.IsInstanceOfType(message.Payload))
@@ -217,7 +217,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         if (MessageConverter != null)
         {
-            // second pass applies conversion if possible, attempting datatypes in order
+            // second pass applies conversion if possible, attempting data types in order
             foreach (var datatype in DataTypes)
             {
                 var converted = MessageConverter.FromMessage(message, datatype);

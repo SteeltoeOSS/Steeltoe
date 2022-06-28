@@ -117,6 +117,6 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         metricSamples = new MetricsCollection<List<MetricSample>>();
         availTags = new MetricsCollection<List<MetricTag>>();
 
-        // TODO: update the response header with actual updatetime
+        // TODO: update the response header with actual update time
     }
 }

@@ -388,7 +388,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         _output.WriteLine("Command Thread: " + commandThread.Value);
         _output.WriteLine("Subscribe Thread: " + subscribeThread.Value);
 
-        // Threads are threadpool threads and will not have hystrix- names
+        // Threads are thread-pool threads and will not have hystrix- names
         // Assert.True(commandThread.Value.Name.StartsWith("hystrix-"));
         // Assert.True(subscribeThread.Value.Name.StartsWith("hystrix-"));
 

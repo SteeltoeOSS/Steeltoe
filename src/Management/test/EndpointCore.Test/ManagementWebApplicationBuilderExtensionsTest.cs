@@ -417,7 +417,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
         await Task.Delay(3000);
 
-        // Excercise the deferred builder logic by starting the test host.
+        // Exercise the deferred builder logic by starting the test host.
         // Validate the exporter got actually added
         var exporter = host.Services.GetService<WavefrontMetricsExporter>();
         Assert.NotNull(exporter);

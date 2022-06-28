@@ -28,7 +28,7 @@ public class RandomValueSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueSource"/> class.
     /// </summary>
-    /// <param name="prefix">key prefix to use to match random number keys. Should end with the configuration seperator.</param>
+    /// <param name="prefix">key prefix to use to match random number keys. Should end with the configuration separator.</param>
     /// <param name="logFactory">the logger factory to use.</param>
     public RandomValueSource(string prefix, ILoggerFactory logFactory = null)
     {

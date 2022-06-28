@@ -50,7 +50,7 @@ public static class ConfigurationExtensions
     /// <param name="builder">Your <see cref="IConfigurationBuilder"/>.</param>
     /// <param name="certFilePath">The path on disk to locate a valid certificate file.</param>
     /// <param name="optional">Whether or not to throw an exception if the file isn't found.</param>
-    /// <remarks>In contast with <see cref="AddPemFiles(IConfigurationBuilder, string, string, bool)"/>, this extension adds the path of the file instead of the contents. Certificate parsing is handled by <see cref="ConfigureCertificateOptions"/>.</remarks>
+    /// <remarks>In contrast with <see cref="AddPemFiles(IConfigurationBuilder, string, string, bool)"/>, this extension adds the path of the file instead of the contents. Certificate parsing is handled by <see cref="ConfigureCertificateOptions"/>.</remarks>
     public static IConfigurationBuilder AddCertificateFile(this IConfigurationBuilder builder, string certFilePath, bool optional = false)
     {
         if (builder == null)

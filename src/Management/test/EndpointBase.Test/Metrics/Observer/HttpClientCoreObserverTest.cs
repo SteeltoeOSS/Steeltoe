@@ -144,7 +144,7 @@ public class HttpClientCoreObserverTest : BaseTest
         Assert.InRange(average, 975.0, 1200.0);
 
         // Assert.InRange(max, 975.0, 1200.0);
-        // TODO: Readd when aggregations are available
+        // TODO: Read when aggregations are available
         Assert.Equal(2, countSummary.Value);
 
         act.Stop();
@@ -186,7 +186,7 @@ public class HttpClientCoreObserverTest : BaseTest
         Assert.InRange(average, 975.0, 1200.0);
 
         // Assert.InRange(max, 975.0, 1200.0);
-        // TODO: Readd when aggregations are available
+        // TODO: Read when aggregations are available
         Assert.Equal(2, countSummary.Value);
 
         act.Stop();

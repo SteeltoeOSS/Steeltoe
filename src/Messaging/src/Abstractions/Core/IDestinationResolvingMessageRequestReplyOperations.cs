@@ -20,7 +20,7 @@ public interface IDestinationResolvingMessageRequestReplyOperations<D> : IMessag
     /// </summary>
     /// <param name="destinationName">the name of the target destination.</param>
     /// <param name="requestMessage">the message to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<IMessage> SendAndReceiveAsync(string destinationName, IMessage requestMessage, CancellationToken cancellationToken = default);
 
@@ -32,7 +32,7 @@ public interface IDestinationResolvingMessageRequestReplyOperations<D> : IMessag
     /// <typeparam name="T">the type of the reply.</typeparam>
     /// <param name="destinationName">the name of the target destination.</param>
     /// <param name="request">the payload for the request message.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, CancellationToken cancellationToken = default);
 
@@ -45,7 +45,7 @@ public interface IDestinationResolvingMessageRequestReplyOperations<D> : IMessag
     /// <param name="destinationName">the name of the target destination.</param>
     /// <param name="request">the payload for the request message.</param>
     /// <param name="headers">the headers to include in the message.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
 
@@ -58,7 +58,7 @@ public interface IDestinationResolvingMessageRequestReplyOperations<D> : IMessag
     /// <param name="destinationName">the name of the target destination.</param>
     /// <param name="request">the payload for the request message.</param>
     /// <param name="requestPostProcessor">post process for the request message.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default);
 
@@ -72,7 +72,7 @@ public interface IDestinationResolvingMessageRequestReplyOperations<D> : IMessag
     /// <param name="request">the payload for the request message.</param>
     /// <param name="headers">the headers to include in the message.</param>
     /// <param name="requestPostProcessor">post process for the request message.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default);
 

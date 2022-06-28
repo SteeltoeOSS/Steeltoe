@@ -53,7 +53,7 @@ public static class ActuatorRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Generic routebuilder extension for Actuators.
+    /// Generic route builder extension for Actuators.
     /// </summary>
     /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
     /// <param name="convention">A convention builder action that applies a convention to the whole collection. </param>
@@ -92,7 +92,7 @@ public static class ActuatorRouteBuilderExtensions
         foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
         {
             // Some actuators only work on some platforms. i.e. Windows and Linux
-            // Some actuators have different implemenation depending on the MediaTypeVersion
+            // Some actuators have different implementation depending on the MediaTypeVersion
 
             // Previously those checks where performed here and when adding things to the IServiceCollection
             // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
@@ -117,7 +117,7 @@ public static class ActuatorRouteBuilderExtensions
         foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
         {
             // Some actuators only work on some platforms. i.e. Windows and Linux
-            // Some actuators have different implemenation depending on the MediaTypeVersion
+            // Some actuators have different implementation depending on the MediaTypeVersion
             // Previously those checks where performed here and when adding things to the IServiceCollection
             // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
 

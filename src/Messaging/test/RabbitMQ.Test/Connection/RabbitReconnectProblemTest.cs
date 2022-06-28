@@ -44,7 +44,7 @@ public class RabbitReconnectProblemTest
         {
             // While in this loop, stop and start the broker
             // The CCF should reconnect and the receives in
-            // Checkit should stop throwing exceptions
+            // CheckIt should stop throwing exceptions
             // The available permits should always be == 2.
             Thread.Sleep(2000);
             CheckIt(template, i++, myQueue.ActualName);

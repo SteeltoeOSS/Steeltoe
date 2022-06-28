@@ -92,7 +92,7 @@ public interface ICredHubClient
     /// Get the permissions associated with a credential.
     /// </summary>
     /// <param name="credentialName">The name of the credential; must not be <see langword="null" />.</param>
-    /// <returns>List of permssions.</returns>
+    /// <returns>List of permissions.</returns>
     Task<List<CredentialPermission>> GetPermissionsAsync(string credentialName);
 
     /// <summary>

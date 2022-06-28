@@ -721,7 +721,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Adds values from a PropertySource to the Configurtation Data dictionary managed
+    /// Adds values from a PropertySource to the Configuration Data dictionary managed
     /// by this provider.
     /// </summary>
     /// <param name="source">a property source to add.</param>
@@ -953,7 +953,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Creates an appropriatly configured HttpClient that will be used in communicating with the
+    /// Creates an appropriately configured HttpClient that will be used in communicating with the
     /// Spring Cloud Configuration Server.
     /// </summary>
     /// <param name="settings">the settings used in configuring the HttpClient.</param>

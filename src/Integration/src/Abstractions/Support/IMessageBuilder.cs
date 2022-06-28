@@ -64,7 +64,7 @@ public interface IMessageBuilder
     IMessageBuilder SetReplyChannelName(string replyChannelName);
 
     /// <summary>
-    /// Adds an error channel to the messsage.
+    /// Adds an error channel to the message.
     /// </summary>
     /// <param name="errorChannel">the error channel.</param>
     /// <returns>the builder.</returns>
@@ -225,7 +225,7 @@ public interface IMessageBuilder<T> : IMessageBuilder
     new IMessageBuilder<T> SetReplyChannelName(string replyChannelName);
 
     /// <summary>
-    /// Adds an error channel to the messsage.
+    /// Adds an error channel to the message.
     /// </summary>
     /// <param name="errorChannel">the error channel.</param>
     /// <returns>the builder.</returns>

@@ -18,7 +18,7 @@ public interface IMessageSendingOperations<D>
     /// Send a message to a default destination.
     /// </summary>
     /// <param name="message">the message to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task SendAsync(IMessage message, CancellationToken cancellationToken = default);
 
@@ -27,7 +27,7 @@ public interface IMessageSendingOperations<D>
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="message">the message to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task SendAsync(D destination, IMessage message, CancellationToken cancellationToken = default);
 
@@ -36,7 +36,7 @@ public interface IMessageSendingOperations<D>
     /// and send it to a default destination.
     /// </summary>
     /// <param name="payload">the payload to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task ConvertAndSendAsync(object payload, CancellationToken cancellationToken = default);
 
@@ -46,7 +46,7 @@ public interface IMessageSendingOperations<D>
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task ConvertAndSendAsync(D destination, object payload, CancellationToken cancellationToken = default);
 
@@ -57,40 +57,40 @@ public interface IMessageSendingOperations<D>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
     /// <param name="headers">the headers to send.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
-    /// apply the psot processor, and send it to the default destination.
+    /// apply the post processor, and send it to the default destination.
     /// </summary>
     /// <param name="payload">the payload to send.</param>
     /// <param name="postProcessor">the post processor to apply.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task ConvertAndSendAsync(object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
-    /// apply the psot processor, and send it to the specified destination.
+    /// apply the post processor, and send it to the specified destination.
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
     /// <param name="postProcessor">the post processor to apply.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task ConvertAndSendAsync(D destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
-    /// with the provided headers, apply the psot processor, and send it to the specified destination.
+    /// with the provided headers, apply the post processor, and send it to the specified destination.
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
     /// <param name="headers">the headers to send.</param>
     /// <param name="postProcessor">the post processor to apply.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
 
@@ -133,7 +133,7 @@ public interface IMessageSendingOperations<D>
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
-    /// apply the psot processor, and send it to the default destination.
+    /// apply the post processor, and send it to the default destination.
     /// </summary>
     /// <param name="payload">the payload to send.</param>
     /// <param name="postProcessor">the post processor to apply.</param>
@@ -141,7 +141,7 @@ public interface IMessageSendingOperations<D>
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
-    /// apply the psot processor, and send it to the specified destination.
+    /// apply the post processor, and send it to the specified destination.
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
@@ -150,7 +150,7 @@ public interface IMessageSendingOperations<D>
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
-    /// with the provided headers, apply the psot processor, and send it to the specified destination.
+    /// with the provided headers, apply the post processor, and send it to the specified destination.
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>

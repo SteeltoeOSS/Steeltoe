@@ -37,7 +37,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
     }
 
-    // Configure either a single Host/Port or optionaly provide
+    // Configure either a single Host/Port or optionally provide
     // a list of endpoints (ie. host1:port1,host2:port2)
     public string Host { get; set; } = Default_Host;
 
@@ -73,12 +73,12 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
     public int SyncTimeout { get; set; }
 
-    // You can use this instead of configuring each option seperately
+    // You can use this instead of configuring each option separately
     // If a connection string is provided, the string will be used and
     // the options above will be ignored
     public string ConnectionString { get; set; }
 
-    // This configuration option specfic to https://github.com/aspnet/Caching
+    // This configuration option specific to https://github.com/aspnet/Caching
     public string InstanceName { get; set; }
 
     // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange

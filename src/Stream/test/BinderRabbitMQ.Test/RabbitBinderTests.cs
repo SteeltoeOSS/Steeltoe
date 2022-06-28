@@ -1289,7 +1289,7 @@ public partial class RabbitBinderTests
         Assert.Equal("foo", ((byte[])deadLetter.Payload).GetString());
         Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
 
-        // Assert.Equal(maxStackTraceSize, ((string)deadLetter.Headers[RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE]).Length); TODO: Wrapped exception doesnt contain propogate stack trace
+        // Assert.Equal(maxStackTraceSize, ((string)deadLetter.Headers[RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE]).Length); TODO: Wrapped exception doesn't contain propagated stack trace
         template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}foo.dlqpubtest2.foo", "bar");
 
         deadLetter = template.Receive($"{TEST_PREFIX}foo.dlqpubtest2.foo.dlq");

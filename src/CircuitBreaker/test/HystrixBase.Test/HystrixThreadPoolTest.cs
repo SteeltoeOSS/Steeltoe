@@ -72,7 +72,7 @@ public class HystrixThreadPoolTest : HystrixTestBase
         IHystrixThreadPool poolTwo = new HystrixThreadPoolDefault(
             threadPoolKey, HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder());
 
-        Assert.Equal(poolOne.GetScheduler(), poolTwo.GetScheduler()); // Now that we get the threadPool from the metrics object, this will always be equal
+        Assert.Equal(poolOne.GetScheduler(), poolTwo.GetScheduler()); // Now that we get the thread-pool from the metrics object, this will always be equal
         var hystrixMetricsPublisherThreadPool =
             (HystrixMetricsPublisherThreadPoolContainer)HystrixMetricsPublisherFactory
                 .CreateOrRetrievePublisherForThreadPool(threadPoolKey, null, null);

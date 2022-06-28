@@ -63,7 +63,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient"/> class.
     /// </summary>
-    /// <param name="client">a Consule client.</param>
+    /// <param name="client">a Consul client.</param>
     /// <param name="optionsMonitor">the configuration options.</param>
     /// <param name="registrar">a Consul registrar service.</param>
     /// <param name="logger">optional logger.</param>

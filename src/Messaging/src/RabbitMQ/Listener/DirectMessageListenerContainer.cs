@@ -44,7 +44,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     private volatile bool _hasStopped;
     private long _lastAlertAt;
     private Task _consumerMonitorTask;
-    private CancellationTokenSource _consumerMonitorCancelationToken;
+    private CancellationTokenSource _consumerMonitorCancellationToken;
 
     public DirectMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
         : this(null, null, name, loggerFactory)
@@ -378,7 +378,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         _logger?.LogDebug("All consumers canceled");
         if (_consumerMonitorTask != null)
         {
-            _consumerMonitorCancelationToken.Cancel();
+            _consumerMonitorCancellationToken.Cancel();
             _consumerMonitorTask = null;
         }
     }
@@ -511,12 +511,12 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     private void StartMonitor(long idleEventInterval, Dictionary<string, IQueue> namesToQueues)
     {
-        _consumerMonitorCancelationToken = new CancellationTokenSource();
+        _consumerMonitorCancellationToken = new CancellationTokenSource();
         _consumerMonitorTask = Task.Run(
             async () =>
             {
                 var shouldShutdown = false;
-                while (!_consumerMonitorCancelationToken.Token.IsCancellationRequested && !shouldShutdown)
+                while (!_consumerMonitorCancellationToken.Token.IsCancellationRequested && !shouldShutdown)
                 {
                     var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CheckIdle(idleEventInterval, now);
@@ -573,10 +573,10 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                     }
                     else
                     {
-                        await Task.Delay(TimeSpan.FromMilliseconds(MonitorInterval), _consumerMonitorCancelationToken.Token);
+                        await Task.Delay(TimeSpan.FromMilliseconds(MonitorInterval), _consumerMonitorCancellationToken.Token);
                     }
                 }
-            }, _consumerMonitorCancelationToken.Token);
+            }, _consumerMonitorCancellationToken.Token);
     }
 
     private void CheckIdle(long idleEventInterval, long now)

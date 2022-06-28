@@ -251,7 +251,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
             .Returns(mockConnection.Object)
-            .Throws(new RabbitConnectException(null)) // Happens when brokerdown
+            .Throws(new RabbitConnectException(null)) // Happens when broker down
             .Returns(mockConnection.Object);
 
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
@@ -675,7 +675,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         };
         var con = ccf.CreateConnection();
 
-        // This will return a proxy that surpresses calls to close
+        // This will return a proxy that suppresses calls to close
         var channel1 = con.CreateChannel();
         var channel2 = con.CreateChannel();
 

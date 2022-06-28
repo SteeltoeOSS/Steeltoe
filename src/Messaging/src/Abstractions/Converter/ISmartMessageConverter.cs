@@ -36,6 +36,6 @@ public interface ISmartMessageConverter : IMessageConverter
     /// <param name="payload">the object to convert.</param>
     /// <param name="headers">optional headers for the message.</param>
     /// <param name="conversionHint">an extra object passed to the converter which may used for handling the conversion.</param>
-    /// <returns>the new messagee or null if converter does not support the payload type.</returns>
+    /// <returns>the new message or null if converter does not support the payload type.</returns>
     IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint);
 }

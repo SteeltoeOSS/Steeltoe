@@ -169,7 +169,7 @@ public class ConsulDiscoveryOptions
     public string InstanceZone { get; set; }
 
     /// <summary>
-    /// Gets or sets the instance groupt to use during registration.
+    /// Gets or sets the instance group to use during registration.
     /// </summary>
     public string InstanceGroup { get; set; }
 

@@ -56,8 +56,8 @@ public static class IConfigurationExtensions
     /// </summary>
     /// <typeparam name="TServiceInfo">Type of Service Info to return.</typeparam>
     /// <param name="config">Configuration to retrieve service info from.</param>
-    /// <exception cref="ConnectorException">Thrown when multple matching services are found.</exception>
-    /// <returns>Information requried to connect to provisioned service.</returns>
+    /// <exception cref="ConnectorException">Thrown when multiple matching services are found.</exception>
+    /// <returns>Information required to connect to provisioned service.</returns>
     public static TServiceInfo GetSingletonServiceInfo<TServiceInfo>(this IConfiguration config)
         where TServiceInfo : class
     {
@@ -83,7 +83,7 @@ public static class IConfigurationExtensions
     /// <param name="configuration">Configuration to retrieve service info from.</param>
     /// <param name="serviceName">Name of the service.</param>
     /// <exception cref="ConnectorException">Thrown when service info isn't found.</exception>
-    /// <returns>Information requried to connect to provisioned service.</returns>
+    /// <returns>Information required to connect to provisioned service.</returns>
     public static TServiceInfo GetRequiredServiceInfo<TServiceInfo>(this IConfiguration configuration, string serviceName)
         where TServiceInfo : class
     {
@@ -100,7 +100,7 @@ public static class IConfigurationExtensions
     /// Evaluate whether an IConfiguration contains services bound by Cloud Foundry.
     /// </summary>
     /// <param name="configuration">Application Configuration.</param>
-    /// <returns>true if vcap:services found in config, othwerwise false.</returns>
+    /// <returns>true if vcap:services found in config, otherwise false.</returns>
     public static bool HasCloudFoundryServiceConfigurations(this IConfiguration configuration)
         => configuration.GetSection("vcap:services").GetChildren().Any();
 

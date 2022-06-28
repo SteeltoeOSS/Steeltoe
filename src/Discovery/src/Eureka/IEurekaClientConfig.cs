@@ -68,7 +68,7 @@ public interface IEurekaClientConfig
     /// registry information.
     ///
     /// Note that the delta fetches can reduce the traffic tremendously, because the rate of change with the eureka server is
-    /// normally much lower than therate of fetches.
+    /// normally much lower than the rate of fetches.
     ///
     /// The changes are effective at runtime at the next registry fetch cycle as specified by <see cref="RegistryFetchIntervalSeconds"/>
     ///

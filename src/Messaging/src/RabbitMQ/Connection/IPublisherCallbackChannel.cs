@@ -33,7 +33,7 @@ public interface IPublisherCallbackChannel : RC.IModel
     int GetPendingConfirmsCount(IListener listener);
 
     /// <summary>
-    /// Gett the total pending confirm count.
+    /// Gets the total pending confirm count.
     /// </summary>
     /// <returns>the total count.</returns>
     int GetPendingConfirmsCount();
@@ -41,7 +41,7 @@ public interface IPublisherCallbackChannel : RC.IModel
     /// <summary>
     /// Add a pending confirmation to this channels map.
     /// </summary>
-    /// <param name="listener">the listener the pending confir is for.</param>
+    /// <param name="listener">the listener the pending confirm is for.</param>
     /// <param name="sequence">the key to the map.</param>
     /// <param name="pendingConfirm">the pending confirm.</param>
     void AddPendingConfirm(IListener listener, ulong sequence, PendingConfirm pendingConfirm);

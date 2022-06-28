@@ -2367,7 +2367,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             if (_factory._channelHighWaterMarks.TryGetValue(_channelListIdentity, out var hwm))
             {
-                // No need for atomicity since we're sync'd on the channel list
+                // No need for atomicity since we're synced on the channel list
                 var prev = hwm.Value;
                 var size = _channelList.Count;
                 if (size > prev)

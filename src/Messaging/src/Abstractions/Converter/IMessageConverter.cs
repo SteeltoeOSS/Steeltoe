@@ -35,6 +35,6 @@ public interface IMessageConverter : IServiceNameAware
     /// </summary>
     /// <param name="payload">the object to convert.</param>
     /// <param name="headers">optional headers for the message.</param>
-    /// <returns>the new messagee or null if converter does not support the payload type.</returns>
+    /// <returns>the new message or null if converter does not support the payload type.</returns>
     IMessage ToMessage(object payload, IMessageHeaders headers);
 }

@@ -5210,27 +5210,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void PropertyReferenceValueType()
     {
-        // static property on valuetype
+        // static property on value type
         _expression = _parser.ParseExpression("T(DateTime).Now");
         var start = DateTime.Now.Ticks;
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
         AssertCanCompile(_expression);
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
 
-        // instance property on valuetype
+        // instance property on value type
         _expression = _parser.ParseExpression("T(DateTime).Now.Second");
         Assert.InRange(_expression.GetValue<int>(), 0, 60);
         AssertCanCompile(_expression);
         Assert.InRange(_expression.GetValue<int>(), 0, 60);
 
-        // instance property on boxed valuetype
+        // instance property on boxed value type
         _expression = _parser.ParseExpression("#a.ValueProperty");
         _context.SetVariable("a", new A(10));
         Assert.Equal(10, _expression.GetValue(_context));
         AssertCanCompile(_expression);
         Assert.Equal(10, _expression.GetValue(_context));
 
-        // static property on boxed valuetype
+        // static property on boxed value type
         _expression = _parser.ParseExpression("#a.ValuePropertyStatic");
         _context.SetVariable("a", new A(10));
         Assert.Equal(30, _expression.GetValue(_context));
@@ -5241,27 +5241,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void FieldReferenceValueType()
     {
-        // static field on unboxed valuetype
+        // static field on unboxed value type
         _expression = _parser.ParseExpression("T(DateTime).MaxValue");
         var resultI = _expression.GetValue<DateTime>();
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<DateTime>();
         Assert.Equal(resultI, resultC);
 
-        // instance field on unboxed valuetype
+        // instance field on unboxed value type
         _expression = _parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Value");
         Assert.Equal(20, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue());
 
-        // instance field on boxed valuetype
+        // instance field on boxed value type
         _expression = _parser.ParseExpression("#a.Value");
         _context.SetVariable("a", new A(10));
         Assert.Equal(10, _expression.GetValue(_context));
         AssertCanCompile(_expression);
         Assert.Equal(10, _expression.GetValue(_context));
 
-        // static field on boxed valuetype
+        // static field on boxed value type
         _expression = _parser.ParseExpression("#a.ValueFieldStatic");
         _context.SetVariable("a", new A(10));
         Assert.Equal(40, _expression.GetValue(_context));
@@ -5272,27 +5272,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReferenceValueType()
     {
-        // static method on unboxed valuetype
+        // static method on unboxed value type
         _expression = _parser.ParseExpression("T(DateTime).Parse('2/16/2008 12:15:12 PM')");
         var resultI = _expression.GetValue<DateTime>();
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<DateTime>();
         Assert.Equal(resultI, resultC);
 
-        // instance method on unboxed valuetype
+        // instance method on unboxed value type
         _expression = _parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Method()");
         Assert.Equal(20, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue());
 
-        // instance method on boxed valuetype
+        // instance method on boxed value type
         _expression = _parser.ParseExpression("#a.Method()");
         _context.SetVariable("a", new A(20));
         Assert.Equal(20, _expression.GetValue(_context));
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue(_context));
 
-        // static method on boxed valuetype
+        // static method on boxed value type
         _expression = _parser.ParseExpression("#a.StaticMethod()");
         _context.SetVariable("a", new A(10));
         Assert.Equal(40, _expression.GetValue(_context));

@@ -170,7 +170,7 @@ public class HystrixRollingNumberTest
             // sleep to get to a new bucket
             time.Increment(counter._bucketSizeInMillseconds * 3);
 
-            // incremenet again in latest bucket
+            // increment again in latest bucket
             counter.Increment(HystrixRollingNumberEvent.TIMEOUT);
 
             // we should have 4 buckets
@@ -210,7 +210,7 @@ public class HystrixRollingNumberTest
             // sleep to get to a new bucket
             time.Increment(counter._bucketSizeInMillseconds * 3);
 
-            // incremenet again in latest bucket
+            // increment again in latest bucket
             counter.Increment(HystrixRollingNumberEvent.SHORT_CIRCUITED);
 
             // we should have 4 buckets

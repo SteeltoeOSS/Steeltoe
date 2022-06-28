@@ -15,7 +15,7 @@ public interface IPollableChannel : IMessageChannel
     /// <summary>
     /// Receive a message from this channel.
     /// </summary>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     ValueTask<IMessage> ReceiveAsync(CancellationToken cancellationToken = default);
 

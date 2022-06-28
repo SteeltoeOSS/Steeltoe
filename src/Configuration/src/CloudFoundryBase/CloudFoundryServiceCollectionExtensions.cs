@@ -90,7 +90,7 @@ public static class CloudFoundryServiceCollectionExtensions
     /// <param name="services">the service container.</param>
     /// <param name="config">the applications configuration.</param>
     /// <param name="serviceLabel">the Cloud Foundry service label to use to bind to the options type.</param>
-    /// <returns>serice container.</returns>
+    /// <returns>service container.</returns>
     public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration config, string serviceLabel)
         where TOption : CloudFoundryServicesOptions
     {

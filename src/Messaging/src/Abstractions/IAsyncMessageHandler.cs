@@ -16,7 +16,7 @@ public interface IAsyncMessageHandler
     /// Handle the given method.
     /// </summary>
     /// <param name="message">the message to process.</param>
-    /// <param name="cancellationToken">token used to signal cancelation.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
     Task HandleMessage(IMessage message, CancellationToken cancellationToken = default);
 }

@@ -428,7 +428,7 @@ public class ExecutionResult
     public long StartTimestamp { get; }
 
     /// <summary>
-    /// Gets amound of time spent in run() method.
+    /// Gets amount of time spent in run() method.
     /// </summary>
     public int ExecutionLatency { get; }
 

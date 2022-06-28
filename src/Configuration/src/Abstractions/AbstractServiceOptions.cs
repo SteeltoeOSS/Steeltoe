@@ -39,7 +39,7 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
     public string Label { get; set; }
 
     /// <summary>
-    /// Gets or sets the plan level at which the service is provisoned.
+    /// Gets or sets the plan level at which the service is provisioned.
     /// </summary>
     public IEnumerable<string> Tags { get; set; }
 

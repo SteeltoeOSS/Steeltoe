@@ -52,7 +52,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestRootObject()
     {
-        // The constructor arguments are name, birthday, and nationaltiy.
+        // The constructor arguments are name, birthday, and nationality.
         var tesla = new Inventor("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian");
 
         var parser = new SpelExpressionParser();
@@ -91,13 +91,13 @@ public class SpelDocumentationTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
 
-        var helloWorld = (string)parser.ParseExpression("'Hello World'").GetValue(); // evals to "Hello World"
+        var helloWorld = (string)parser.ParseExpression("'Hello World'").GetValue(); // evaluates to "Hello World"
         Assert.Equal("Hello World", helloWorld);
 
         var avogadrosNumber = parser.ParseExpression("6.0221415E+23").GetValue<double>();
         Assert.InRange(avogadrosNumber, 6.0221415E+23, 6.0221415E+23);
 
-        var maxValue = parser.ParseExpression("0x7FFFFFFF").GetValue<int>();  // evals to 2147483647
+        var maxValue = parser.ParseExpression("0x7FFFFFFF").GetValue<int>();  // evaluates to 2147483647
         Assert.Equal(int.MaxValue, maxValue);
 
         var trueValue = parser.ParseExpression("true").GetValue<bool>();

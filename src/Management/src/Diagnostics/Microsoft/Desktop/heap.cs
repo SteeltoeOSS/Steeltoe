@@ -460,7 +460,7 @@ internal abstract class DesktopGCHeap : HeapBase
                         {
                             ulong addr = 0;
                             // We must manually get the value, as strings will not be returned as an object address.
-                            try // If this fails for whatever reasion, don't fail completely.  
+                            try // If this fails for whatever reason, don't fail completely.  
                             {
                                 addr = staticField.GetAddress(ad);
                             }
@@ -674,7 +674,7 @@ internal abstract class DesktopGCHeap : HeapBase
 
         _loadedTypes = true;
 
-        // Walking a module is sloooow.  Ensure we only walk each module once.
+        // Walking a module is slow.  Ensure we only walk each module once.
         HashSet<ulong> modules = new HashSet<ulong>();
 
         foreach (ulong module in DesktopRuntime.EnumerateModules(DesktopRuntime.GetAppDomainData(DesktopRuntime.SystemDomainAddress)))

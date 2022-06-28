@@ -16,7 +16,7 @@ public class HystrixThreadPoolOptionsTest
             MaximumSize = 15,  // maximum size of thread pool
             KeepAliveTimeMinutes = 1,   // minutes to keep a thread alive (though in practice this doesn't get used as by default we set a fixed size)
             MaxQueueSize = 100,  // size of queue (but we never allow it to grow this big ... this can't be dynamically changed so we use 'queueSizeRejectionThreshold' to artificially limit and reject)
-            QueueSizeRejectionThreshold = 10,  // number of items in queue at which point we reject (this can be dyamically changed)
+            QueueSizeRejectionThreshold = 10,  // number of items in queue at which point we reject (this can be dynamically changed)
             MetricsRollingStatisticalWindowInMilliseconds = 10000,   // milliseconds for rolling number
             MetricsRollingStatisticalWindowBuckets = 10 // number of buckets in rolling number (10 1-second buckets)
         };

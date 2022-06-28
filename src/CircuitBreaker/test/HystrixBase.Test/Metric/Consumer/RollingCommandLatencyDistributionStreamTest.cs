@@ -182,7 +182,7 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        // 10 commands with latency should occupy the entire threadpool.  execute those, then wait for bucket to roll
+        // 10 commands with latency should occupy the entire thread-pool.  execute those, then wait for bucket to roll
         // next command should be a thread-pool rejection
         var commands = new List<Command>();
         for (var i = 0; i < 10; i++)

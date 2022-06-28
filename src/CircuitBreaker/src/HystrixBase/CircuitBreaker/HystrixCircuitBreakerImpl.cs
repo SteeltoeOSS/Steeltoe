@@ -86,7 +86,7 @@ internal sealed class HystrixCircuitBreakerImpl : ICircuitBreaker
         {
             if (_circuitOpen.Value)
             {
-                // if we're open we immediately return true and don't bother attempting to 'close' ourself as that is left to allowSingleTest and a subsequent successful test to close
+                // if we're open we immediately return true and don't bother attempting to 'close' ourselves as that is left to allowSingleTest and a subsequent successful test to close
                 return true;
             }
 

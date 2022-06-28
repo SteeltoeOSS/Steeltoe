@@ -28,8 +28,8 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// Contains base functionality for DynamicLoggerProvider.
     /// </summary>
     /// <param name="getDelegateLogger">Function to a delegate Logger.</param>
-    /// <param name="initialLevels">Set the initialial filter levels.</param>
-    /// <param name="messageProcessors">Any <see cref="IDynamicMessageProcessor" /> Messageprocesors. </param>
+    /// <param name="initialLevels">Set the initial filter levels.</param>
+    /// <param name="messageProcessors">Any <see cref="IDynamicMessageProcessor" /> Message processors. </param>
     public DynamicLoggerProviderBase(Func<ILoggerProvider> getDelegateLogger, InitialLevels initialLevels, IEnumerable<IDynamicMessageProcessor> messageProcessors)
     {
         _delegate = getDelegateLogger?.Invoke() ?? throw new ArgumentNullException(nameof(getDelegateLogger));
@@ -88,7 +88,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     }
 
     /// <summary>
-    /// Sets minimum log level for a given category and its decendants - resets to configured value if level is null.
+    /// Sets minimum log level for a given category and its descendents - resets to configured value if level is null.
     /// </summary>
     /// <param name="category">Namespace/qualified class name.</param>
     /// <param name="level">Minimum level to log, pass null to reset.</param>

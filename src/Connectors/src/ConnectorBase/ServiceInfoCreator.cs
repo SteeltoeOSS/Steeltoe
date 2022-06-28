@@ -29,7 +29,7 @@ public class ServiceInfoCreator
     public static bool IsRelevant { get; } = true;
 
     /// <summary>
-    /// Gets a list of <see cref="IServiceInfo"/> that are configured in the applicaiton configuration.
+    /// Gets a list of <see cref="IServiceInfo"/> that are configured in the application configuration.
     /// </summary>
     public IList<IServiceInfo> ServiceInfos { get; } = new List<IServiceInfo>();
 

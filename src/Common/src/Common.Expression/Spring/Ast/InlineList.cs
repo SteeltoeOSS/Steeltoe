@@ -114,7 +114,7 @@ public class InlineList : SpelNode
             }
 
             // The children might be further lists if they are not constants. In this
-            // situation do not call back into generateCode() because it will register another clinit adder.
+            // situation do not call back into generateCode() because it will register another client adder.
             // Instead, directly build the list here:
             if (_children[c] is InlineList list)
             {

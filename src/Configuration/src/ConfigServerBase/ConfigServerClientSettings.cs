@@ -20,7 +20,7 @@ public class ConfigServerClientSettings
     public const string DEFAULT_URI = "http://localhost:8888";
 
     /// <summary>
-    /// Default enironment used when accessing configuration data.
+    /// Default environment used when accessing configuration data.
     /// </summary>
     public const string DEFAULT_ENVIRONMENT = "Production";
 
@@ -35,7 +35,7 @@ public class ConfigServerClientSettings
     public const bool DEFAULT_PROVIDER_ENABLED = true;
 
     /// <summary>
-    /// Default certifcate validation enabled setting.
+    /// Default certificate validation enabled setting.
     /// </summary>
     public const bool DEFAULT_CERTIFICATE_VALIDATION = true;
 
@@ -298,7 +298,7 @@ public class ConfigServerClientSettings
     public virtual X509Certificate2 ClientCertificate { get; set; }
 
     /// <summary>
-    /// Gets or sets vault token Time to Live setting in Millisecoonds.
+    /// Gets or sets vault token Time to Live setting in Milliseconds.
     /// </summary>
     public virtual int TokenTtl { get; set; } = DEFAULT_VAULT_TOKEN_TTL;
 

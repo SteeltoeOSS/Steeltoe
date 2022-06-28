@@ -2319,11 +2319,11 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         DoSend(channel, replyTo.ExchangeName, replyTo.RoutingKey, replyMessage, ReturnCallback != null && IsMandatoryFor(replyMessage), null, default);
     }
 
-    private RC.DefaultBasicConsumer CreateConsumer(string queueName, RC.IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis, CancellationToken cancelationToken)
+    private RC.DefaultBasicConsumer CreateConsumer(string queueName, RC.IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis, CancellationToken cancellationToken)
     {
         channel.BasicQos(0, 1, false);
         var latch = new CountdownEvent(1);
-        var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName, cancelationToken);
+        var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName, cancellationToken);
         RC.IModelExensions.BasicConsume(channel, queueName, false, consumer);
 
         // Waiting for consumeOK, if latch hasn't signaled, then consumeOK response never hit
@@ -2666,13 +2666,13 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         private readonly TaskCompletionSource<Delivery> _completionSource;
         private readonly string _queueName;
 
-        public DefaultTemplateConsumer(RC.IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancelationToken)
+        public DefaultTemplateConsumer(RC.IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancellationToken)
             : base(channel)
         {
             _latch = latch;
             _completionSource = completionSource;
             _queueName = queueName;
-            cancelationToken.Register(() =>
+            cancellationToken.Register(() =>
             {
                 Signal();
                 _completionSource.TrySetCanceled();

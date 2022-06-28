@@ -104,7 +104,7 @@ public class Elvis : SpelNode
         gen.Emit(OpCodes.Ldloc, ifResult);
         var callChild2 = gen.DefineLabel();
 
-        // If faild, call child2 for results
+        // If failed, call child2 for results
         gen.Emit(OpCodes.Brfalse, callChild2);
 
         // Final result is child 1, save final

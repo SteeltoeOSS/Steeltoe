@@ -29,7 +29,7 @@ public class RedisCacheConfigurerTest
     // }
 
     // [Fact]
-    // public void UpdateOptions_FromConfig_WithOutConnectionString_ReturnsExcpected()
+    // public void UpdateOptions_FromConfig_WithOutConnectionString_ReturnsExpected()
     // {
     //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
     //    RedisCacheOptions redisOptions = new RedisCacheOptions();

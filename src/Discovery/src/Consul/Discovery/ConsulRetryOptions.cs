@@ -20,22 +20,22 @@ public class ConsulRetryOptions
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the initial interval to use during retrys, defaults 1000ms.
+    /// Gets or sets the initial interval to use during retries, defaults 1000ms.
     /// </summary>
     public int InitialInterval { get; set; } = DEFAULT_INITIAL_RETRY_INTERVAL;
 
     /// <summary>
-    /// Gets or sets the maximum interval to use during retrys, defaults 2000ms.
+    /// Gets or sets the maximum interval to use during retries, defaults 2000ms.
     /// </summary>
     public int MaxInterval { get; set; } = DEFAULT_MAX_RETRY_INTERVAL;
 
     /// <summary>
-    /// Gets or sets the multiplier used when doing retrys, default 1.1.
+    /// Gets or sets the multiplier used when doing retries, default 1.1.
     /// </summary>
     public double Multiplier { get; set; } = DEFAULT_RETRY_MULTIPLIER;
 
     /// <summary>
-    /// Gets or sets the maximum number of retrys, default 6.
+    /// Gets or sets the maximum number of retries, default 6.
     /// </summary>
     public int MaxAttempts { get; set; } = DEFAULT_MAX_RETRY_ATTEMPTS;
 }

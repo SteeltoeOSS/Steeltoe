@@ -63,7 +63,7 @@ public interface IEurekaInstanceConfig
     /// <summary>
     /// Gets or sets indicates how often (in seconds) the eureka client needs to send heartbeats to eureka server
     /// to indicate that it is still alive. If the heartbeats are not received for the period specified in
-    /// <see cref="LeaseExpirationDurationInSeconds" />, eureka server will removethe instance from its view,
+    /// <see cref="LeaseExpirationDurationInSeconds" />, eureka server will remove the instance from its view,
     /// there by disallowing traffic to this instance.
     /// Note that the instance could still not take traffic if it implements HealthCheckCallback and then
     /// decides to make itself unavailable.
@@ -77,7 +77,7 @@ public interface IEurekaInstanceConfig
     ///
     /// Setting this value too long could mean that the traffic could be routed to the instance even though
     /// the instance is not alive. Setting this value too small could mean, the instance may be taken out
-    /// of traffic because of temporary network glitches.This value to be set to atleast higher than
+    /// of traffic because of temporary network glitches.This value to be set to at least higher than
     /// the value specified in <see cref="LeaseRenewalIntervalInSeconds" />
     /// Configuration property: eureka:instance:leaseExpirationDurationInSeconds.
     /// </summary>
@@ -104,7 +104,7 @@ public interface IEurekaInstanceConfig
     string SecureVirtualHostName { get; set; }
 
     /// <summary>
-    /// Gets or sets the <c>AWS autoscaling group name</c> associated with this instance. This information is
+    /// Gets or sets the <c>AWS auto-scaling group name</c> associated with this instance. This information is
     /// specifically used in an AWS environment to automatically put an instance out of service after the instance is
     /// launched and it has been disabled for traffic..
     /// Configuration property: eureka:instance:asgName.
@@ -125,17 +125,17 @@ public interface IEurekaInstanceConfig
     IDataCenterInfo DataCenterInfo { get; set; }
 
     /// <summary>
-    /// Gets or sets the IPAdress of the instance. This information is for academic purposes only as the communication
+    /// Gets or sets the IPAddress of the instance. This information is for academic purposes only as the communication
     /// from other instances primarily happen using the information supplied in <see cref="GetHostName(bool)"/>.
     /// </summary>
     string IpAddress { get; set; }
 
     /// <summary>
     /// Gets or sets the relative status page <em>Path</em> for this instance. The status page URL is then constructed out of the
-    /// <see cref="GetHostName(bool)"/> and the type of communication - secure or unsecure as specified in
+    /// <see cref="GetHostName(bool)"/> and the type of communication - secure or insecure as specified in
     /// <see cref="SecurePort"/> and <see cref="NonSecurePort"/>.
     ///
-    /// It is normally used for informational purposes for other services to findabout the status of this instance.
+    /// It is normally used for informational purposes for other services to find about the status of this instance.
     /// Users can provide a simple <c>HTML</c> indicating what is the current status of the instance.
     /// Configuration property: eureka:instance:statusPageUrlPath.
     /// </summary>
@@ -157,7 +157,7 @@ public interface IEurekaInstanceConfig
     /// <summary>
     /// Gets or sets gets the relative home page URL <em>Path</em> for this instance.
     /// The home page URL is then constructed out of the <see cref="GetHostName(bool)"/> and the type of communication - secure or
-    /// unsecure as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort"/>
+    /// insecure as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort"/>
     ///
     /// It is normally used for informational purposes for other services to use it as a landing page.
     /// Configuration property: eureka:instance:homePageUrlPath.
@@ -180,7 +180,7 @@ public interface IEurekaInstanceConfig
     /// <summary>
     /// Gets or sets gets the relative health check URL <em>Path</em> for this instance. The health check page URL
     /// is then constructed out of the <see cref="GetHostName(bool)" /> and the type of communication - secure or
-    /// unsecure as specified in <see cref="SecurePort"/> and <see cref="NonSecurePort"/>
+    /// insecure as specified in <see cref="SecurePort"/> and <see cref="NonSecurePort"/>
     ///
     /// It is normally used for making educated decisions based on the health of the instance - for example, it can
     /// be used to determine whether to proceed deployments to an entire farm or stop the deployments without

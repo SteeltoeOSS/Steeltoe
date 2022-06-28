@@ -124,7 +124,7 @@ public class HttpClientDesktopObserverTest : BaseTest
 
         Assert.Equal(2, countSummary.Value);
 
-        // TODO: Readd when aggregations are available
+        // TODO: Read when aggregations are available
         // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Min, 950.0, 1500.0);
         // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Max, 950.0, 1500.0);
         act.Stop();

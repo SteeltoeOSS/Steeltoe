@@ -26,7 +26,7 @@ public enum Status
 }
 
 /// <summary>
-/// General abstraction over acknowlegements.
+/// General abstraction over acknowledgments.
 /// </summary>
 public interface IAcknowledgmentCallback
 {

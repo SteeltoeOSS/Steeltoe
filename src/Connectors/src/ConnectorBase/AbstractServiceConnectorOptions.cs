@@ -50,7 +50,7 @@ public abstract class AbstractServiceConnectorOptions
     /// <summary>
     /// Add a Key/Value pair to a <see cref="StringBuilder"/> if the value isn't null or empty.
     /// </summary>
-    /// <param name="sb">Your stringbuilder.</param>
+    /// <param name="sb">Your string builder.</param>
     /// <param name="key">Identifier for the value to be added.</param>
     /// <param name="value">Value to be added.</param>
     protected internal void AddKeyValue(StringBuilder sb, string key, string value)
@@ -67,7 +67,7 @@ public abstract class AbstractServiceConnectorOptions
     /// <summary>
     /// Add colon delimited pairs like user:password or host:port to a <see cref="StringBuilder"/>.
     /// </summary>
-    /// <param name="sb">Your stringbuilder.</param>
+    /// <param name="sb">Your string builder.</param>
     /// <param name="part1">First item in the pair.</param>
     /// <param name="part2">Second item in the pair.</param>
     /// <param name="terminator">Character to denote the end of the pair.</param>

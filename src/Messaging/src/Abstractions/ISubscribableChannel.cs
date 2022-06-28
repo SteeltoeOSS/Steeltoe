@@ -20,7 +20,7 @@ public interface ISubscribableChannel : IMessageChannel
     /// <summary>
     /// Un-register a message handler.
     /// </summary>
-    /// <param name="handler">the handler to remvoe.</param>
+    /// <param name="handler">the handler to remove.</param>
     /// <returns>false if not registered; otherwise true.</returns>
     bool Unsubscribe(IMessageHandler handler);
 }

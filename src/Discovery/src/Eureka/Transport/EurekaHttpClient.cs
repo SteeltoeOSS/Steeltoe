@@ -96,7 +96,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string serviceUrl = null;
         _httpClient ??= GetHttpClient(Config);
 
-        // For Retrys
+        // For retries
         for (var retry = 0; retry < GetRetryCount(Config); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
@@ -320,7 +320,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string serviceUrl = null;
         _httpClient ??= GetHttpClient(Config);
 
-        // For Retrys
+        // For retries
         for (var retry = 0; retry < GetRetryCount(Config); retry++)
         {
             HttpClientHelper.ConfigureCertificateValidation(
@@ -433,7 +433,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string serviceUrl = null;
         _httpClient ??= GetHttpClient(Config);
 
-        // For Retrys
+        // For retries
         for (var retry = 0; retry < GetRetryCount(Config); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
@@ -505,7 +505,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string serviceUrl = null;
         _httpClient ??= GetHttpClient(Config);
 
-        // For Retrys
+        // For retries
         for (var retry = 0; retry < GetRetryCount(Config); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
@@ -582,7 +582,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string serviceUrl = null;
         _httpClient ??= GetHttpClient(Config);
 
-        // For Retrys
+        // For retries
         for (var retry = 0; retry < GetRetryCount(Config); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
@@ -647,7 +647,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
         lock (_lock)
         {
-            // Keep any exsisting failing service urls still in the candidate list
+            // Keep any existing failing service urls still in the candidate list
             _failingServiceUrls = _failingServiceUrls.Intersect(candidateServiceUrls).ToList();
 
             // If enough hosts are bad, we have no choice but start over again
@@ -800,7 +800,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string serviceUrl = null;
         _httpClient ??= GetHttpClient(Config);
 
-        // For Retrys
+        // For retries
         for (var retry = 0; retry < GetRetryCount(Config); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
@@ -872,7 +872,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string serviceUrl = null;
         _httpClient ??= GetHttpClient(Config);
 
-        // For Retrys
+        // For retries
         for (var retry = 0; retry < GetRetryCount(Config); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly

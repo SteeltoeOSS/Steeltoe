@@ -119,7 +119,7 @@ namespace Graphs
         }
 
         /// <summary>
-        /// ClrProfiler identifes nodes  using the physical address in Memory.  'Graph' needs it to be an NodeIndex.   
+        /// ClrProfiler identifies nodes using the physical address in Memory. 'Graph' needs it to be an NodeIndex.   
         /// THis table maps the ID that CLRProfiler uses (an address), to the NodeIndex we have assigned to it.  
         /// It is only needed while the file is being read in.  
         /// </summary>
@@ -180,7 +180,7 @@ namespace Graphs
         public override void WriteXml(System.IO.TextWriter writer, bool includeChildren = true, string prefix = "", NodeType typeStorage = null, string additinalAttribs = "")
         {
             Address end = Address + (uint)Size;
-            // base.WriteXml(writer, prefix, storage, typeStorage, additinalAttribs + " Address=\"0x" + Address.ToString("x") + "\"");
+            // base.WriteXml(writer, prefix, storage, typeStorage, additionalAttribs + " Address=\"0x" + Address.ToString("x") + "\"");
             base.WriteXml(writer, includeChildren, prefix, typeStorage, $"{additinalAttribs} Address=\"0x{Address:x}\" End=\"0x{end:x}\"");
         }
 
