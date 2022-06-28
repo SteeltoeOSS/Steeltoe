@@ -686,7 +686,7 @@ public class SpelReproTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
         var expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).CONST");
         var value = expression.GetValue(context);
-        Assert.Equal(value, TestResources.le.div.mod.reserved.Reserver.CONST);
+        Assert.Equal(TestResources.le.div.mod.reserved.Reserver.CONST, value);
     }
 
     [Fact]
