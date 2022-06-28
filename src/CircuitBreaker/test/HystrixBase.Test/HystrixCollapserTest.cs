@@ -2306,12 +2306,12 @@ public class HystrixCollapserTest : HystrixTestBase
         }
     }
 
-    private sealed class Pair<A, B>
+    private sealed class Pair<TAa, TBb>
     {
-        public readonly A AA;
-        public readonly B BB;
+        public readonly TAa AA;
+        public readonly TBb BB;
 
-        public Pair(A a, B b)
+        public Pair(TAa a, TBb b)
         {
             AA = a;
             BB = b;

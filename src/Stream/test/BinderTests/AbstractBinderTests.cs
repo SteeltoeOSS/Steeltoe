@@ -29,9 +29,9 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Stream.Binder;
 
-public abstract class AbstractBinderTests<B, T>
-    where B : AbstractTestBinder<T>
-    where T : AbstractBinder<IMessageChannel>
+public abstract class AbstractBinderTests<TTestBinder, TBinder>
+    where TTestBinder : AbstractTestBinder<TBinder>
+    where TBinder : AbstractBinder<IMessageChannel>
 {
     public ILoggerFactory LoggerFactory { get; }
 
@@ -421,7 +421,7 @@ public abstract class AbstractBinderTests<B, T>
         return ".";
     }
 
-    protected abstract B GetBinder(RabbitBindingsOptions bindingsOptions = null);
+    protected abstract TTestBinder GetBinder(RabbitBindingsOptions bindingsOptions = null);
 
     protected void BinderBindUnbindLatency()
     {

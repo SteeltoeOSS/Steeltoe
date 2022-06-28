@@ -134,7 +134,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         return new CompositeHeaderMatcher(matchers);
     }
 
-    protected virtual V GetHeaderIfAvailable<V>(IDictionary<string, object> headers, string name, Type type)
+    protected virtual TValue GetHeaderIfAvailable<TValue>(IDictionary<string, object> headers, string name, Type type)
     {
         headers.TryGetValue(name, out var value);
         if (value == null)
@@ -148,7 +148,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         }
         else
         {
-            return (V)value;
+            return (TValue)value;
         }
     }
 

@@ -6,22 +6,22 @@ using System;
 
 namespace Steeltoe.Stream.Binder;
 
-public abstract class AbstractPollableSource<H> : IPollableSource<H>
+public abstract class AbstractPollableSource<THandler> : IPollableSource<THandler>
 {
-    public abstract bool Poll(H handler);
+    public abstract bool Poll(THandler handler);
 
-    public virtual bool Poll(H handler, Type type)
+    public virtual bool Poll(THandler handler, Type type)
     {
         return Poll(handler);
     }
 
     public bool Poll(object handler)
     {
-        return Poll((H)handler);
+        return Poll((THandler)handler);
     }
 
     public bool Poll(object handler, Type type)
     {
-        return Poll((H)handler, type);
+        return Poll((THandler)handler, type);
     }
 }

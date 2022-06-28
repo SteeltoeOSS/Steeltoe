@@ -16,12 +16,12 @@ public interface IRabbitListenerContainerFactory : IServiceNameAware
     }
 }
 
-public interface IRabbitListenerContainerFactory<out C> : IRabbitListenerContainerFactory
-    where C : IMessageListenerContainer
+public interface IRabbitListenerContainerFactory<out TContainer> : IRabbitListenerContainerFactory
+    where TContainer : IMessageListenerContainer
 {
-    new C CreateListenerContainer(IRabbitListenerEndpoint endpoint);
+    new TContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint);
 
-    new C CreateListenerContainer()
+    new TContainer CreateListenerContainer()
     {
         return CreateListenerContainer(null);
     }

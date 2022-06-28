@@ -10,17 +10,17 @@ using System.Reactive.Subjects;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
-public abstract class BucketedCumulativeCounterStream<Event, Bucket, Output> : BucketedCounterStream<Event, Bucket, Output>
-    where Event : IHystrixEvent
+public abstract class BucketedCumulativeCounterStream<TEvent, TBucket, TOutput> : BucketedCounterStream<TEvent, TBucket, TOutput>
+    where TEvent : IHystrixEvent
 {
     private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
-    private readonly BehaviorSubject<Output> _counterSubject;
-    private readonly IObservable<Output> _sourceStream;
+    private readonly BehaviorSubject<TOutput> _counterSubject;
+    private readonly IObservable<TOutput> _sourceStream;
 
-    protected BucketedCumulativeCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> reduceCommandCompletion, Func<Output, Bucket, Output> reduceBucket)
+    protected BucketedCumulativeCounterStream(IHystrixEventStream<TEvent> stream, int numBuckets, int bucketSizeInMs, Func<TBucket, TEvent, TBucket> reduceCommandCompletion, Func<TOutput, TBucket, TOutput> reduceBucket)
         : base(stream, numBuckets, bucketSizeInMs, reduceCommandCompletion)
     {
-        _counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
+        _counterSubject = new BehaviorSubject<TOutput>(EmptyOutputValue);
         _sourceStream = bucketedStream
             .Scan(EmptyOutputValue, reduceBucket)
             .Skip(numBuckets)
@@ -29,7 +29,7 @@ public abstract class BucketedCumulativeCounterStream<Event, Bucket, Output> : B
             .Publish().RefCount();           // multiple subscribers should get same data
     }
 
-    public override IObservable<Output> Observe()
+    public override IObservable<TOutput> Observe()
     {
         return _sourceStream;
     }
@@ -54,7 +54,7 @@ public abstract class BucketedCumulativeCounterStream<Event, Bucket, Output> : B
 
     // Synchronous call to retrieve the last calculated bucket without waiting for any emissions
     // return last calculated bucket
-    public Output Latest
+    public TOutput Latest
     {
         get
         {

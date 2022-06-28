@@ -13,14 +13,14 @@ using System.Reactive.Subjects;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
-public class RollingDistributionStream<Event> : RollingDistributionStreamBase
-    where Event : IHystrixEvent
+public class RollingDistributionStream<TEvent> : RollingDistributionStreamBase
+    where TEvent : IHystrixEvent
 {
     private readonly BehaviorSubject<CachedValuesHistogram> _rollingDistribution = new (CachedValuesHistogram.BackedBy(CachedValuesHistogram.GetNewHistogram()));
     private readonly IObservable<CachedValuesHistogram> _rollingDistributionStream;
     private readonly AtomicReference<IDisposable> _rollingDistributionSubscription = new (null);
 
-    protected RollingDistributionStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<LongHistogram, Event, LongHistogram> addValuesToBucket)
+    protected RollingDistributionStream(IHystrixEventStream<TEvent> stream, int numBuckets, int bucketSizeInMs, Func<LongHistogram, TEvent, LongHistogram> addValuesToBucket)
     {
         var emptyDistributionsToStart = new List<LongHistogram>();
         for (var i = 0; i < numBuckets; i++)
@@ -28,7 +28,7 @@ public class RollingDistributionStream<Event> : RollingDistributionStreamBase
             emptyDistributionsToStart.Add(CachedValuesHistogram.GetNewHistogram());
         }
 
-        Func<IObservable<Event>, IObservable<LongHistogram>> reduceBucketToSingleDistribution = bucket =>
+        Func<IObservable<TEvent>, IObservable<LongHistogram>> reduceBucketToSingleDistribution = bucket =>
         {
             var result = bucket.Aggregate(CachedValuesHistogram.GetNewHistogram(), addValuesToBucket).Select(n => n);
             return result;

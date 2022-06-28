@@ -11,8 +11,8 @@ namespace Steeltoe.Messaging.Core;
 /// <summary>
 /// Provide operations for sending messages to a destination specified as a string.
 /// </summary>
-/// <typeparam name="D">the type of the destination.</typeparam>
-public interface IDestinationResolvingMessageSendingOperations<D> : IMessageSendingOperations<D>
+/// <typeparam name="TDestination">the type of the destination.</typeparam>
+public interface IDestinationResolvingMessageSendingOperations<TDestination> : IMessageSendingOperations<TDestination>
 {
     /// <summary>
     /// Resolve the given destination name to a destination and send a message to it.

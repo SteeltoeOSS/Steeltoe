@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Core;
 
-public abstract class AbstractMessageSendingTemplate<D> : IMessageSendingOperations<D>
+public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSendingOperations<TDestination>
 {
     public const string CONVERSION_HINT_HEADER = "conversionHint";
 
-    public virtual D DefaultSendDestination { get; set; }
+    public virtual TDestination DefaultSendDestination { get; set; }
 
     public virtual IMessageConverter MessageConverter { get; set; } = new SimpleMessageConverter();
 
@@ -23,12 +23,12 @@ public abstract class AbstractMessageSendingTemplate<D> : IMessageSendingOperati
         return ConvertAndSendAsync(payload, null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(D destination, object payload, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(destination, payload, (IDictionary<string, object>)null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(destination, payload, headers, null, cancellationToken);
     }
@@ -38,12 +38,12 @@ public abstract class AbstractMessageSendingTemplate<D> : IMessageSendingOperati
         return ConvertAndSendAsync(RequiredDefaultSendDestination, payload, postProcessor, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(D destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(destination, payload, null, postProcessor, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
     {
         var message = DoConvert(payload, headers, postProcessor);
         return SendAsync(destination, message, cancellationToken);
@@ -54,7 +54,7 @@ public abstract class AbstractMessageSendingTemplate<D> : IMessageSendingOperati
         return SendAsync(RequiredDefaultSendDestination, message, cancellationToken);
     }
 
-    public virtual Task SendAsync(D destination, IMessage message, CancellationToken cancellationToken = default)
+    public virtual Task SendAsync(TDestination destination, IMessage message, CancellationToken cancellationToken = default)
     {
         return DoSendAsync(destination, message, cancellationToken);
     }
@@ -64,12 +64,12 @@ public abstract class AbstractMessageSendingTemplate<D> : IMessageSendingOperati
         ConvertAndSend(payload, null);
     }
 
-    public virtual void ConvertAndSend(D destination, object payload)
+    public virtual void ConvertAndSend(TDestination destination, object payload)
     {
         ConvertAndSend(destination, payload, (IDictionary<string, object>)null);
     }
 
-    public virtual void ConvertAndSend(D destination, object payload, IDictionary<string, object> headers)
+    public virtual void ConvertAndSend(TDestination destination, object payload, IDictionary<string, object> headers)
     {
         ConvertAndSend(destination, payload, headers, null);
     }
@@ -79,12 +79,12 @@ public abstract class AbstractMessageSendingTemplate<D> : IMessageSendingOperati
         ConvertAndSend(RequiredDefaultSendDestination, payload, postProcessor);
     }
 
-    public virtual void ConvertAndSend(D destination, object payload, IMessagePostProcessor postProcessor)
+    public virtual void ConvertAndSend(TDestination destination, object payload, IMessagePostProcessor postProcessor)
     {
         ConvertAndSend(destination, payload, null, postProcessor);
     }
 
-    public virtual void ConvertAndSend(D destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
+    public virtual void ConvertAndSend(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
     {
         var message = DoConvert(payload, headers, postProcessor);
         Send(destination, message);
@@ -95,16 +95,16 @@ public abstract class AbstractMessageSendingTemplate<D> : IMessageSendingOperati
         Send(RequiredDefaultSendDestination, message);
     }
 
-    public virtual void Send(D destination, IMessage message)
+    public virtual void Send(TDestination destination, IMessage message)
     {
         DoSend(destination, message);
     }
 
-    protected abstract Task DoSendAsync(D destination, IMessage message, CancellationToken cancellationToken);
+    protected abstract Task DoSendAsync(TDestination destination, IMessage message, CancellationToken cancellationToken);
 
-    protected abstract void DoSend(D destination, IMessage message);
+    protected abstract void DoSend(TDestination destination, IMessage message);
 
-    protected virtual D RequiredDefaultSendDestination
+    protected virtual TDestination RequiredDefaultSendDestination
     {
         get => DefaultSendDestination ?? throw new InvalidOperationException("No default destination configured");
     }

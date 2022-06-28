@@ -77,34 +77,34 @@ public static class EnableBindingsExtensions
         return services;
     }
 
-    public static IServiceCollection AddStreamBinding<B>(this IServiceCollection services)
+    public static IServiceCollection AddStreamBinding<TBinding>(this IServiceCollection services)
     {
         if (services == null)
         {
             throw new ArgumentNullException(nameof(services));
         }
 
-        return services.AddStreamBindings(typeof(B));
+        return services.AddStreamBindings(typeof(TBinding));
     }
 
-    public static IServiceCollection AddStreamBindings<B1, B2>(this IServiceCollection services)
+    public static IServiceCollection AddStreamBindings<TBinding1, TBinding2>(this IServiceCollection services)
     {
         if (services == null)
         {
             throw new ArgumentNullException(nameof(services));
         }
 
-        return services.AddStreamBindings(typeof(B1), typeof(B2));
+        return services.AddStreamBindings(typeof(TBinding1), typeof(TBinding2));
     }
 
-    public static IServiceCollection AddStreamBindings<B1, B2, B3>(this IServiceCollection services)
+    public static IServiceCollection AddStreamBindings<TBinding1, TBinding2, TBinding3>(this IServiceCollection services)
     {
         if (services == null)
         {
             throw new ArgumentNullException(nameof(services));
         }
 
-        return services.AddStreamBindings(typeof(B1), typeof(B2), typeof(B3));
+        return services.AddStreamBindings(typeof(TBinding1), typeof(TBinding2), typeof(TBinding3));
     }
 
     public static IServiceCollection AddStreamBindings(this IServiceCollection services, params Type[] bindings)

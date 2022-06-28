@@ -65,17 +65,17 @@ public interface IRabbitTemplate : IServiceNameAware
 
     T ReceiveAndConvert<T>(string queueName, int timeoutMillis);
 
-    bool ReceiveAndReply<R, S>(Func<R, S> callback);
+    bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback);
 
-    bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback);
+    bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback);
 
-    bool ReceiveAndReply<R, S>(Func<R, S> callback, string replyExchange, string replyRoutingKey);
+    bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback, string replyExchange, string replyRoutingKey);
 
-    bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey);
+    bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, string replyExchange, string replyRoutingKey);
 
-    bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback);
+    bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback, Func<IMessage, TReply, Address> replyToAddressCallback);
 
-    bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback);
+    bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, Func<IMessage, TReply, Address> replyToAddressCallback);
 
     IMessage SendAndReceive(string exchange, string routingKey, IMessage message);
 

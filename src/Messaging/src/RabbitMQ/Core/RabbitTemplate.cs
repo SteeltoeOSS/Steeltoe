@@ -796,32 +796,32 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     #endregion RabbitReceiveAndConvert
 
     #region RabbitReceiveAndReply
-    public virtual bool ReceiveAndReply<R, S>(Func<R, S> callback)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback)
     {
         return ReceiveAndReply(GetRequiredQueue(), callback);
     }
 
-    public virtual bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback)
     {
         return ReceiveAndReply(queueName, callback, (request, _) => GetReplyToAddress(request));
     }
 
-    public virtual bool ReceiveAndReply<R, S>(Func<R, S> callback, string exchange, string routingKey)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback, string exchange, string routingKey)
     {
         return ReceiveAndReply(GetRequiredQueue(), callback, exchange, routingKey);
     }
 
-    public virtual bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, string replyExchange, string replyRoutingKey)
     {
         return ReceiveAndReply(queueName, callback, (_, _) => new Address(replyExchange, replyRoutingKey));
     }
 
-    public virtual bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback, Func<IMessage, TReply, Address> replyToAddressCallback)
     {
         return ReceiveAndReply(GetRequiredQueue(), callback, replyToAddressCallback);
     }
 
-    public virtual bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, Func<IMessage, TReply, Address> replyToAddressCallback)
     {
         return DoReceiveAndReply(queueName, callback, replyToAddressCallback);
     }
@@ -2128,7 +2128,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         RabbitUtils.Cancel(channel, consumer.ConsumerTag);
     }
 
-    private bool DoReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
+    private bool DoReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, Func<IMessage, TReply, Address> replyToAddressCallback)
     {
         var result = Execute(
             channel =>
@@ -2258,15 +2258,15 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
     }
 
-    private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<IMessage, S, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage)
+    private bool SendReply<TReceive, TReply>(Func<TReceive, TReply> receiveAndReplyCallback, Func<IMessage, TReply, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage)
     {
         object receive = receiveMessage;
-        if (receive is not R)
+        if (receive is not TReceive)
         {
-            receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(R));
+            receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(TReceive));
         }
 
-        if (receive is not R messageAsR)
+        if (receive is not TReceive messageAsR)
         {
             throw new ArgumentException($"'receiveAndReplyCallback' can't handle received object '{receive.GetType()}'");
         }
@@ -2285,7 +2285,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return true;
     }
 
-    private void DoSendReply<S>(Func<IMessage, S, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage, S reply)
+    private void DoSendReply<TReply>(Func<IMessage, TReply, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage, TReply reply)
     {
         var replyTo = replyToAddressCallback(receiveMessage, reply);
 

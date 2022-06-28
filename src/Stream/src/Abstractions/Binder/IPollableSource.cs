@@ -32,15 +32,15 @@ public interface IPollableSource
 /// <summary>
 /// An abstraction which defines a mechanism to poll a consumer.
 /// </summary>
-/// <typeparam name="H">the handler type.</typeparam>
-public interface IPollableSource<in H> : IPollableSource
+/// <typeparam name="THandler">the handler type.</typeparam>
+public interface IPollableSource<in THandler> : IPollableSource
 {
     /// <summary>
     /// Poll the consumer.
     /// </summary>
     /// <param name="handler">the handler to process message.</param>
     /// <returns>true if a message was handled.</returns>
-    bool Poll(H handler);
+    bool Poll(THandler handler);
 
     /// <summary>
     /// Poll the consumer and convert the payload to the specified type. Throw a
@@ -50,5 +50,5 @@ public interface IPollableSource<in H> : IPollableSource
     /// <param name="handler">the handler.</param>
     /// <param name="type">the type of the payload.</param>
     /// <returns>true if a message was handled.</returns>
-    bool Poll(H handler, Type type);
+    bool Poll(THandler handler, Type type);
 }

@@ -11,8 +11,8 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Binder;
 
-public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
-    where C : AbstractBinder<IMessageChannel>
+public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
+    where TBinder : AbstractBinder<IMessageChannel>
 {
     protected HashSet<string> _queues = new ();
 
@@ -20,9 +20,9 @@ public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
 
     public Type TargetType => typeof(IMessageChannel);
 
-    public C CoreBinder { get; private set; }
+    public TBinder CoreBinder { get; private set; }
 
-    public C Binder
+    public TBinder Binder
     {
         get => CoreBinder;
         set

@@ -19,16 +19,16 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Stream.Binder;
 
-public abstract class PartitionCapableBinderTests<B, T> : AbstractBinderTests<B, T>
-    where B : AbstractTestBinder<T>
-    where T : AbstractBinder<IMessageChannel>
+public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : AbstractBinderTests<TTestBinder, TBinder>
+    where TTestBinder : AbstractTestBinder<TBinder>
+    where TBinder : AbstractBinder<IMessageChannel>
 {
-    private readonly ILogger<PartitionCapableBinderTests<B, T>> _logger;
+    private readonly ILogger<PartitionCapableBinderTests<TTestBinder, TBinder>> _logger;
 
     protected PartitionCapableBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
         : base(output, loggerFactory)
     {
-        _logger = loggerFactory?.CreateLogger<PartitionCapableBinderTests<B, T>>();
+        _logger = loggerFactory?.CreateLogger<PartitionCapableBinderTests<TTestBinder, TBinder>>();
     }
 
     [Fact]
@@ -263,16 +263,16 @@ public abstract class PartitionCapableBinderTests<B, T> : AbstractBinderTests<B,
         return GetFieldValue<ILifecycle>(binding, "_lifecycle");
     }
 
-    protected PT GetFieldValue<PT>(object current, string name)
+    protected TValue GetFieldValue<TValue>(object current, string name)
     {
         var fi = current.GetType().GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        return (PT)fi.GetValue(current);
+        return (TValue)fi.GetValue(current);
     }
 
-    protected PT GetPropertyValue<PT>(object current, string name)
+    protected TValue GetPropertyValue<TValue>(object current, string name)
     {
         var pi = current.GetType().GetProperty(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        return (PT)pi.GetValue(current);
+        return (TValue)pi.GetValue(current);
     }
 
     protected virtual void CheckRkExpressionForPartitionedModuleSpEL(object endpoint)

@@ -35,9 +35,9 @@ public interface IServiceRegistry<in T> : IDisposable
     /// <summary>
     /// Return the current status of the service registry registration.
     /// </summary>
-    /// <typeparam name="S">the status.</typeparam>
+    /// <typeparam name="TStatus">the status.</typeparam>
     /// <param name="registration">the service registration to obtain status for.</param>
     /// <returns>the returned status.</returns>
-    S GetStatus<S>(T registration)
-        where S : class;
+    TStatus GetStatus<TStatus>(T registration)
+        where TStatus : class;
 }

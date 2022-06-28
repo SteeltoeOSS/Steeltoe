@@ -6,12 +6,12 @@ using System;
 
 namespace Steeltoe.CircuitBreaker;
 #pragma warning disable S3246 // Generic type parameters should be co/contravariant when possible
-public interface ICollapsedRequest<RequestResponseType, RequestArgumentType>
+public interface ICollapsedRequest<TRequestResponse, TRequestArgument>
 #pragma warning restore S3246 // Generic type parameters should be co/contravariant when possible
 {
-    RequestArgumentType Argument { get; }
+    TRequestArgument Argument { get; }
 
-    RequestResponseType Response { get; set; }
+    TRequestResponse Response { get; set; }
 
     Exception Exception { get; set; }
 

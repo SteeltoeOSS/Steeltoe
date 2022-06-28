@@ -90,29 +90,29 @@ public abstract class AbstractMessage
 {
 }
 
-public class Message<P> : AbstractMessage, IMessage<P>
+public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
 {
-    protected readonly P payload;
+    protected readonly TPayload payload;
 
     protected readonly IMessageHeaders headers;
 
-    protected internal Message(P payload)
+    protected internal Message(TPayload payload)
         : this(payload, new MessageHeaders())
     {
     }
 
-    protected internal Message(P payload, IDictionary<string, object> headers)
+    protected internal Message(TPayload payload, IDictionary<string, object> headers)
         : this(payload, new MessageHeaders(headers, null, null))
     {
     }
 
-    protected internal Message(P payload, IMessageHeaders headers)
+    protected internal Message(TPayload payload, IMessageHeaders headers)
     {
         this.payload = payload ?? throw new ArgumentNullException(nameof(payload));
         this.headers = headers ?? throw new ArgumentNullException(nameof(headers));
     }
 
-    public P Payload => payload;
+    public TPayload Payload => payload;
 
     public IMessageHeaders Headers => headers;
 
@@ -125,7 +125,7 @@ public class Message<P> : AbstractMessage, IMessage<P>
             return true;
         }
 
-        if (obj is not Message<P> other)
+        if (obj is not Message<TPayload> other)
         {
             return false;
         }

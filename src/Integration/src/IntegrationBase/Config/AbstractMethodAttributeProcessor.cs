@@ -19,8 +19,8 @@ using System.Reflection;
 
 namespace Steeltoe.Integration.Config;
 
-public abstract class AbstractMethodAttributeProcessor<A> : IMethodAttributeProcessor<A>
-    where A : Attribute
+public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttributeProcessor<TAttribute>
+    where TAttribute : Attribute
 {
     protected const string SEND_TIMEOUT_PROPERTY = "SendTimeout";
     protected const string INPUT_CHANNEL_PROPERTY = "InputChannel";
@@ -46,7 +46,7 @@ public abstract class AbstractMethodAttributeProcessor<A> : IMethodAttributeProc
         ConversionService = ApplicationContext.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
 
         ChannelResolver = new DefaultMessageChannelDestinationResolver(applicatonContext);
-        AnnotationType = typeof(A);
+        AnnotationType = typeof(TAttribute);
     }
 
     public object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes)
@@ -188,14 +188,14 @@ public abstract class AbstractMethodAttributeProcessor<A> : IMethodAttributeProc
         return name;
     }
 
-    protected virtual H ExtractTypeIfPossible<H>(object targetObject)
+    protected virtual T ExtractTypeIfPossible<T>(object targetObject)
     {
         if (targetObject == null)
         {
             return default;
         }
 
-        if (targetObject is H h)
+        if (targetObject is T h)
         {
             return h;
         }

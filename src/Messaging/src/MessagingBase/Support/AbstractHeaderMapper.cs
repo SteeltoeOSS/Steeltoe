@@ -72,7 +72,7 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
         return headerName;
     }
 
-    protected virtual V GetHeaderIfAvailable<V>(IDictionary<string, object> headers, string name)
+    protected virtual TValue GetHeaderIfAvailable<TValue>(IDictionary<string, object> headers, string name)
     {
         headers.TryGetValue(name, out var value);
         if (value == null)
@@ -80,7 +80,7 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
             return default;
         }
 
-        var type = typeof(V);
+        var type = typeof(TValue);
 
         if (!type.IsInstanceOfType(value))
         {
@@ -89,7 +89,7 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
         }
         else
         {
-            return (V)value;
+            return (TValue)value;
         }
     }
 }

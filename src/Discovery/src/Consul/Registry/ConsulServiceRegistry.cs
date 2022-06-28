@@ -199,12 +199,12 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc/>
-    public S GetStatus<S>(IConsulRegistration registration)
-        where S : class
+    public TStatus GetStatus<TStatus>(IConsulRegistration registration)
+        where TStatus : class
     {
         var result = GetStatusAsync(registration).GetAwaiter().GetResult();
 
-        return (S)result;
+        return (TStatus)result;
     }
 
     /// <inheritdoc/>

@@ -10,9 +10,9 @@ namespace Steeltoe.Messaging.Support;
 
 public static class MessageBuilder
 {
-    public static AbstractMessageBuilder FromMessage<P>(IMessage<P> message)
+    public static AbstractMessageBuilder FromMessage<TPayload>(IMessage<TPayload> message)
     {
-        return new MessageBuilder<P>(message);
+        return new MessageBuilder<TPayload>(message);
     }
 
     public static AbstractMessageBuilder FromMessage(IMessage message, Type payloadType = null)
@@ -29,9 +29,9 @@ public static class MessageBuilder
             null);
     }
 
-    public static AbstractMessageBuilder WithPayload<P>(P payload)
+    public static AbstractMessageBuilder WithPayload<TPayload>(TPayload payload)
     {
-        return new MessageBuilder<P>(payload, new MessageHeaderAccessor());
+        return new MessageBuilder<TPayload>(payload, new MessageHeaderAccessor());
     }
 
     public static AbstractMessageBuilder WithPayload(object payload, Type payloadType = null)
@@ -48,9 +48,9 @@ public static class MessageBuilder
             null);
     }
 
-    public static IMessage<P> CreateMessage<P>(P payload, IMessageHeaders messageHeaders)
+    public static IMessage<TPayload> CreateMessage<TPayload>(TPayload payload, IMessageHeaders messageHeaders)
     {
-        return (IMessage<P>)CreateMessage(payload, messageHeaders, typeof(P));
+        return (IMessage<TPayload>)CreateMessage(payload, messageHeaders, typeof(TPayload));
     }
 
     public static IMessage CreateMessage(object payload, IMessageHeaders messageHeaders, Type payloadType = null)
@@ -177,13 +177,13 @@ public abstract class AbstractMessageBuilder
     }
 }
 
-public class MessageBuilder<P> : AbstractMessageBuilder
+public class MessageBuilder<TPayload> : AbstractMessageBuilder
 {
     protected internal MessageBuilder()
     {
     }
 
-    protected internal MessageBuilder(IMessage<P> message)
+    protected internal MessageBuilder(IMessage<TPayload> message)
         : base(message)
     {
     }
@@ -198,7 +198,7 @@ public class MessageBuilder<P> : AbstractMessageBuilder
     {
     }
 
-    protected internal MessageBuilder(P payload, MessageHeaderAccessor accessor)
+    protected internal MessageBuilder(TPayload payload, MessageHeaderAccessor accessor)
         : base(payload, accessor)
     {
     }
@@ -269,8 +269,8 @@ public class MessageBuilder<P> : AbstractMessageBuilder
         return this;
     }
 
-    public new IMessage<P> Build()
+    public new IMessage<TPayload> Build()
     {
-        return (IMessage<P>)base.Build();
+        return (IMessage<TPayload>)base.Build();
     }
 }

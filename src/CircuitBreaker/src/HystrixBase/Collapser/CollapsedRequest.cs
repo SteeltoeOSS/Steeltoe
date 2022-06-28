@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
-public class CollapsedRequest<RequestResponseType, RequestArgumentType> : ICollapsedRequest<RequestResponseType, RequestArgumentType>
+public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRequest<TRequestResponse, TRequestArgument>
 {
     private readonly ConcurrentQueue<CancellationToken> _linkedTokens = new ();
-    private RequestResponseType _response;
+    private TRequestResponse _response;
     private Exception _exception;
     private bool _complete;
 
-    internal CollapsedRequest(RequestArgumentType arg, CancellationToken token)
+    internal CollapsedRequest(TRequestArgument arg, CancellationToken token)
     {
         Argument = arg;
         Token = token;
@@ -33,7 +33,7 @@ public class CollapsedRequest<RequestResponseType, RequestArgumentType> : IColla
 
     internal CancellationToken Token { get; }
 
-    internal TaskCompletionSource<RequestResponseType> CompletionSource { get; set; }
+    internal TaskCompletionSource<TRequestResponse> CompletionSource { get; set; }
 
     internal void SetExceptionIfResponseNotReceived(Exception e)
     {
@@ -76,7 +76,7 @@ public class CollapsedRequest<RequestResponseType, RequestArgumentType> : IColla
     }
 
     #region ICollapsedRequest
-    public RequestArgumentType Argument { get; }
+    public TRequestArgument Argument { get; }
 
     public bool Complete
     {
@@ -107,7 +107,7 @@ public class CollapsedRequest<RequestResponseType, RequestArgumentType> : IColla
         }
     }
 
-    public RequestResponseType Response
+    public TRequestResponse Response
     {
         get => _response;
 

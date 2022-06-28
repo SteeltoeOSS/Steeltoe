@@ -11,8 +11,8 @@ namespace Steeltoe.Messaging.Core;
 /// <summary>
 /// Operations for sending messages to a destination.
 /// </summary>
-/// <typeparam name="D">the type of the destination.</typeparam>
-public interface IMessageSendingOperations<D>
+/// <typeparam name="TDestination">the type of the destination.</typeparam>
+public interface IMessageSendingOperations<TDestination>
 {
     /// <summary>
     /// Send a message to a default destination.
@@ -29,7 +29,7 @@ public interface IMessageSendingOperations<D>
     /// <param name="message">the message to send.</param>
     /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
-    Task SendAsync(D destination, IMessage message, CancellationToken cancellationToken = default);
+    Task SendAsync(TDestination destination, IMessage message, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message
@@ -48,7 +48,7 @@ public interface IMessageSendingOperations<D>
     /// <param name="payload">the payload to send.</param>
     /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
-    Task ConvertAndSendAsync(D destination, object payload, CancellationToken cancellationToken = default);
+    Task ConvertAndSendAsync(TDestination destination, object payload, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message
@@ -59,7 +59,7 @@ public interface IMessageSendingOperations<D>
     /// <param name="headers">the headers to send.</param>
     /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
-    Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
+    Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
@@ -80,7 +80,7 @@ public interface IMessageSendingOperations<D>
     /// <param name="postProcessor">the post processor to apply.</param>
     /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
-    Task ConvertAndSendAsync(D destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
+    Task ConvertAndSendAsync(TDestination destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
@@ -92,7 +92,7 @@ public interface IMessageSendingOperations<D>
     /// <param name="postProcessor">the post processor to apply.</param>
     /// <param name="cancellationToken">token used to signal cancellation.</param>
     /// <returns>a task to signal completion.</returns>
-    Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
+    Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Send a message to a default destination.
@@ -105,7 +105,7 @@ public interface IMessageSendingOperations<D>
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="message">the message to send.</param>
-    void Send(D destination, IMessage message);
+    void Send(TDestination destination, IMessage message);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message
@@ -120,7 +120,7 @@ public interface IMessageSendingOperations<D>
     /// </summary>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
-    void ConvertAndSend(D destination, object payload);
+    void ConvertAndSend(TDestination destination, object payload);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message
@@ -129,7 +129,7 @@ public interface IMessageSendingOperations<D>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
     /// <param name="headers">the headers to send.</param>
-    void ConvertAndSend(D destination, object payload, IDictionary<string, object> headers);
+    void ConvertAndSend(TDestination destination, object payload, IDictionary<string, object> headers);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
@@ -146,7 +146,7 @@ public interface IMessageSendingOperations<D>
     /// <param name="destination">the target destination.</param>
     /// <param name="payload">the payload to send.</param>
     /// <param name="postProcessor">the post processor to apply.</param>
-    void ConvertAndSend(D destination, object payload, IMessagePostProcessor postProcessor);
+    void ConvertAndSend(TDestination destination, object payload, IMessagePostProcessor postProcessor);
 
     /// <summary>
     /// Convert the given object to serialized form, possibly using a message converter, wrap it as a message,
@@ -156,5 +156,5 @@ public interface IMessageSendingOperations<D>
     /// <param name="payload">the payload to send.</param>
     /// <param name="headers">the headers to send.</param>
     /// <param name="postProcessor">the post processor to apply.</param>
-    void ConvertAndSend(D destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor);
+    void ConvertAndSend(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor);
 }

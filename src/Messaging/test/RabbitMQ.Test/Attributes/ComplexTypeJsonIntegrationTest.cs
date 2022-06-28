@@ -211,11 +211,11 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         }
     }
 
-    public class Bar<A, B>
+    public class Bar<TFieldA, TFieldB>
     {
-        public A AField { get; set; }
+        public TFieldA AField { get; set; }
 
-        public B BField { get; set; }
+        public TFieldB BField { get; set; }
 
         public override string ToString()
         {

@@ -19,8 +19,8 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListenerContainerFactory<C>
-    where C : AbstractMessageListenerContainer
+public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabbitListenerContainerFactory<TContainer>
+    where TContainer : AbstractMessageListenerContainer
 {
     protected readonly ILogger _logger;
     protected readonly ILoggerFactory _loggerFactory;
@@ -101,7 +101,7 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
 
     public IRecoveryCallback ReplyRecoveryCallback { get; set; }
 
-    public Action<C> ContainerCustomizer { get; set; }
+    public Action<TContainer> ContainerCustomizer { get; set; }
 
     public bool BatchListener { get; set; }
 
@@ -162,7 +162,7 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
         BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(postProcessors);
     }
 
-    public C CreateListenerContainer(IRabbitListenerEndpoint endpoint)
+    public TContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint)
     {
         var instance = CreateContainerInstance();
 
@@ -318,9 +318,9 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
         return CreateListenerContainer(endpoint);
     }
 
-    protected abstract C CreateContainerInstance();
+    protected abstract TContainer CreateContainerInstance();
 
-    protected virtual void InitializeContainer(C instance, IRabbitListenerEndpoint endpoint)
+    protected virtual void InitializeContainer(TContainer instance, IRabbitListenerEndpoint endpoint)
     {
     }
 }

@@ -10,17 +10,17 @@ using System.Reactive.Linq;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
-public abstract class BucketedCounterStream<Event, Bucket, Output>
-    where Event : IHystrixEvent
+public abstract class BucketedCounterStream<TEvent, TBucket, TOutput>
+    where TEvent : IHystrixEvent
 {
     protected readonly int numBuckets;
     protected readonly int bucketSizeInMs;
-    protected readonly IObservable<Bucket> bucketedStream;
+    protected readonly IObservable<TBucket> bucketedStream;
     protected readonly AtomicReference<IDisposable> subscription = new (null);
 
-    private readonly Func<IObservable<Event>, IObservable<Bucket>> _reduceBucketToSummary;
+    private readonly Func<IObservable<TEvent>, IObservable<TBucket>> _reduceBucketToSummary;
 
-    protected BucketedCounterStream(IHystrixEventStream<Event> inputEventStream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> appendRawEventToBucket)
+    protected BucketedCounterStream(IHystrixEventStream<TEvent> inputEventStream, int numBuckets, int bucketSizeInMs, Func<TBucket, TEvent, TBucket> appendRawEventToBucket)
     {
         this.numBuckets = numBuckets;
         this.bucketSizeInMs = bucketSizeInMs;
@@ -30,7 +30,7 @@ public abstract class BucketedCounterStream<Event, Bucket, Output>
             return result;
         };
 
-        IList<Bucket> emptyEventCountsToStart = new List<Bucket>();
+        IList<TBucket> emptyEventCountsToStart = new List<TBucket>();
         for (var i = 0; i < numBuckets; i++)
         {
             emptyEventCountsToStart.Add(EmptyBucketSummary);
@@ -46,11 +46,11 @@ public abstract class BucketedCounterStream<Event, Bucket, Output>
         });
     }
 
-    public abstract Bucket EmptyBucketSummary { get; }
+    public abstract TBucket EmptyBucketSummary { get; }
 
-    public abstract Output EmptyOutputValue { get; }
+    public abstract TOutput EmptyOutputValue { get; }
 
-    public abstract IObservable<Output> Observe();
+    public abstract IObservable<TOutput> Observe();
 
     public void Unsubscribe()
     {

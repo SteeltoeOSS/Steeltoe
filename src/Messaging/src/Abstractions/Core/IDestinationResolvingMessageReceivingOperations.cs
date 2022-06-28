@@ -10,8 +10,8 @@ namespace Steeltoe.Messaging.Core;
 /// <summary>
 /// Provides operations for receiving messages from a destination specified as a resolvable string.
 /// </summary>
-/// <typeparam name="D">the destination type.</typeparam>
-public interface IDestinationResolvingMessageReceivingOperations<D> : IMessageReceivingOperations<D>
+/// <typeparam name="TDestination">the destination type.</typeparam>
+public interface IDestinationResolvingMessageReceivingOperations<TDestination> : IMessageReceivingOperations<TDestination>
 {
     /// <summary>
     /// Resolve the given destination and receive a message from it.
