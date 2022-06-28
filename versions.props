@@ -34,7 +34,7 @@
     <SerilogSinksDebugVersion>2.0.*</SerilogSinksDebugVersion>
     <SonarAnalyzerVersion>8.40.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
-    <StyleCopVersion>1.1.*</StyleCopVersion>
+    <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <EFCoreTestVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.0.*</EFCoreTestVersion>
     <EFCoreTestVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</EFCoreTestVersion>
