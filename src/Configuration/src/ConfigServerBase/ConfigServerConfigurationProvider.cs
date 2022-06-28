@@ -503,6 +503,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// <summary>
     /// Adds the client settings for the Configuration Server to the data dictionary.
     /// </summary>
+    /// <param name="data">The client settings to add.</param>
     protected internal virtual void AddConfigServerClientSettings(IDictionary<string, string> data)
     {
         var culture = CultureInfo.InvariantCulture;

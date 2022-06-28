@@ -192,6 +192,7 @@ public class WindowsNetworkFileShare : IDisposable
     /// <summary>
     /// Disposes the object, cancels connection with file share.
     /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         // With the current design, it's not possible to disconnect the network share from the finalizer,
