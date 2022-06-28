@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
-public partial class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListenerSetupMethodOrchestrator
+public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListenerSetupMethodOrchestrator
 {
     private readonly List<IStreamListenerParameterAdapter> _streamListenerParameterAdapters;
     private readonly List<IStreamListenerResultAdapter> _streamListenerResultAdapters;
