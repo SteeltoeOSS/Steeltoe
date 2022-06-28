@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
-
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;

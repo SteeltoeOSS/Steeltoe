@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Connector.Hystrix;
 using System;
-
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
