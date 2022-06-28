@@ -86,10 +86,6 @@ public static class Message
     }
 }
 
-public abstract class AbstractMessage
-{
-}
-
 public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
 {
     protected readonly TPayload payload;

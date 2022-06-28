@@ -8,10 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
@@ -58,38 +54,5 @@ public class Startup
         {
             endpoints.Map<HealthEndpointCore>();
         });
-    }
-}
-
-public class TestHealthCheck : IHealthCheck
-{
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-    {
-        return Task.Run(() => new HealthCheckResult(HealthStatus.Healthy));
-    }
-}
-
-public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
-{
-    public TestServiceOptions()
-    {
-        CurrentValue = new HealthCheckServiceOptions();
-        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", _ => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
-    }
-
-    public HealthCheckServiceOptions CurrentValue { get; }
-
-    public void Dispose()
-    {
-    }
-
-    public HealthCheckServiceOptions Get(string name)
-    {
-        return CurrentValue;
-    }
-
-    public IDisposable OnChange(Action<HealthCheckServiceOptions, string> listener)
-    {
-        return this;
     }
 }

@@ -96,27 +96,3 @@ public class TestCommandBuilder
         return this;
     }
 }
-
-public static class CommandKeyForUnitTest
-{
-    public static IHystrixCommandKey KEY_ONE = new HystrixCommandKeyDefault("KEY_ONE");
-    public static IHystrixCommandKey KEY_TWO = new HystrixCommandKeyDefault("KEY_TWO");
-}
-
-public static class CommandGroupForUnitTest
-{
-    public static IHystrixCommandGroupKey OWNER_ONE = new HystrixCommandGroupKeyDefault("OWNER_ONE");
-    public static IHystrixCommandGroupKey OWNER_TWO = new HystrixCommandGroupKeyDefault("OWNER_TWO");
-}
-
-public static class CommandOwnerForUnitTest
-{
-    public static IHystrixCommandGroupKey OWNER_ONE = new HystrixCommandGroupKeyDefault("OWNER_ONE");
-    public static IHystrixCommandGroupKey OWNER_TWO = new HystrixCommandGroupKeyDefault("OWNER_TWO");
-}
-
-public static class ThreadPoolKeyForUnitTest
-{
-    public static IHystrixThreadPoolKey THREAD_POOL_ONE = new HystrixThreadPoolKeyDefault("THREAD_POOL_ONE");
-    public static IHystrixThreadPoolKey THREAD_POOL_TWO = new HystrixThreadPoolKeyDefault("THREAD_POOL_TWO");
-}

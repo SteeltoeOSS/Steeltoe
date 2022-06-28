@@ -121,14 +121,3 @@ public static class BindingHelpers
         components.Add(component.Name, component);
     }
 }
-
-public struct Bindable
-{
-    public bool IsInput { get; set; }
-
-    public string Name { get; set; }
-
-    public Type BindingTargetType { get; set; }
-
-    public MethodInfo FactoryMethod { get; set; }
-}

@@ -82,10 +82,3 @@ public class SerilogOptions : ISerilogOptions
     [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
     public IEnumerable<string> FullnameExclusions => new List<string>();
 }
-
-public class MinimumLevel
-{
-    public LogEventLevel Default { get; set; } = (LogEventLevel)(-1);
-
-    public Dictionary<string, LogEventLevel> Override { get; set; }
-}

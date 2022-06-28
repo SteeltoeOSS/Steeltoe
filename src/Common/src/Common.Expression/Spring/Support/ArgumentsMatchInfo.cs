@@ -4,13 +4,6 @@
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
-public enum ArgumentsMatchKind
-{
-    EXACT,
-    CLOSE,
-    REQUIRES_CONVERSION
-}
-
 public class ArgumentsMatchInfo
 {
     private readonly ArgumentsMatchKind _kind;

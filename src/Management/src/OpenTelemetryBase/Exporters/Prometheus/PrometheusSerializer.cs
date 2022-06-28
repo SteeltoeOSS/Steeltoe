@@ -18,7 +18,7 @@ internal static partial class PrometheusSerializer
     private const byte ASCII_FULL_STOP = 0x2E; // '.'
     private const byte ASCII_HYPHEN_MINUS = 0x2D; // '-'
     private const byte ASCII_REVERSE_SOLIDUS = 0x5C; // '\\'
-    private const byte ASCII_LINEFEED = 0x0A; // `\n`
+    public const byte ASCII_LINEFEED = 0x0A; // `\n`
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int WriteDouble(byte[] buffer, int cursor, double value)

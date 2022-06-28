@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -94,33 +92,5 @@ public class BooleanExpressionTests : AbstractExpressionTests
         Evaluate("null and true", false, typeof(bool), false);
         Evaluate("!null", true, typeof(bool), false);
         Evaluate("null ? 'foo' : 'bar'", "bar", typeof(string), false);
-    }
-}
-
-public class TestGenericConversionService : IConversionService
-{
-    public bool CanBypassConvert(Type sourceType, Type targetType)
-    {
-        return false;
-    }
-
-    public bool CanConvert(Type sourceType, Type targetType)
-    {
-        return true;
-    }
-
-    public T Convert<T>(object source)
-    {
-        return (T)Convert(source, source?.GetType(), typeof(T));
-    }
-
-    public object Convert(object source, Type sourceType, Type targetType)
-    {
-        if (source == null)
-        {
-            return targetType == typeof(bool) ? false : null;
-        }
-
-        return source;
     }
 }

@@ -55,7 +55,7 @@ public class SteeltoePrometheusExporter : IMetricsExporter
             {
                 try
                 {
-                    cursor = PrometheusSerializer.WriteMetric(_buffer, cursor, metric);
+                    cursor = PrometheusSerializerAdditions.WriteMetric(_buffer, cursor, metric);
                     break;
                 }
                 catch (IndexOutOfRangeException)

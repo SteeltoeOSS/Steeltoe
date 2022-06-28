@@ -2,9 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-using System.Collections.Concurrent;
-
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
 /// <summary>
@@ -12,32 +9,4 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 /// </summary>
 public interface IHystrixThreadPoolKey : IHystrixKey
 {
-}
-
-/// <summary>
-/// Default implementation of the interface.
-/// </summary>
-public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPoolKey
-{
-    private static readonly ConcurrentDictionary<string, HystrixThreadPoolKeyDefault> Intern = new ();
-
-    internal HystrixThreadPoolKeyDefault(string name)
-        : base(name)
-    {
-    }
-
-    /// <summary>
-    /// Retrieve (or create) an interned IHystrixThreadPoolKey instance for a given name.
-    /// </summary>
-    /// <param name="name"> thread pool name. </param>
-    /// <returns> IHystrixThreadPoolKey instance that is interned (cached) so a given name will always retrieve the same instance. </returns>
-    public static IHystrixThreadPoolKey AsKey(string name)
-    {
-        return Intern.GetOrAddEx(name, k => new HystrixThreadPoolKeyDefault(k));
-    }
-
-    public static int ThreadPoolCount
-    {
-        get { return Intern.Count; }
-    }
 }

@@ -7,8 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Messaging.RabbitMQ.Config;
-using Steeltoe.Stream.Attributes;
-using Steeltoe.Stream.Messaging;
 using System;
 using Xunit;
 
@@ -75,13 +73,4 @@ public class StreamsHostTest
                 ]
             }]
         }";
-}
-
-[EnableBinding(typeof(ISink))]
-public class SampleSink
-{
-    [StreamListener("input")]
-    public void HandleInputMessage(string foo)
-    {
-    }
 }

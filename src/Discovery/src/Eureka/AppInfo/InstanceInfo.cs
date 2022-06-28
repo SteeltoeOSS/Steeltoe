@@ -382,19 +382,3 @@ public class InstanceInfo
         return string.Empty;
     }
 }
-
-public enum InstanceStatus
-{
-    UP,
-    DOWN,
-    STARTING,
-    OUT_OF_SERVICE,
-    UNKNOWN
-}
-
-public enum ActionType
-{
-    ADDED,
-    MODIFIED,
-    DELETED
-}

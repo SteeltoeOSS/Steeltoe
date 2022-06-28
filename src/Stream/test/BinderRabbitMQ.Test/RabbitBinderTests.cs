@@ -40,14 +40,20 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 using RabbitBinding = Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
 [Trait("Category", "Integration")]
-public partial class RabbitBinderTests
+public sealed class RabbitBinderTests : RabbitBinderTestBase
 {
+    public RabbitBinderTests(ITestOutputHelper output) 
+        : base(output)
+    {
+    }
+
     [Fact]
     public void TestSendAndReceiveBad()
     {

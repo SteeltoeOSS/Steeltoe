@@ -219,38 +219,3 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
         return GetCommand(isolationStrategy, ExecutionResultTest.UNRECOVERABLE_ERROR, 0, fallbackResult);
     }
 }
-
-public enum ExecutionResultTest
-{
-    SUCCESS,
-    FAILURE,
-    ASYNC_FAILURE,
-    HYSTRIX_FAILURE,
-    ASYNC_HYSTRIX_FAILURE,
-    RECOVERABLE_ERROR,
-    ASYNC_RECOVERABLE_ERROR,
-    UNRECOVERABLE_ERROR,
-    ASYNC_UNRECOVERABLE_ERROR,
-    BAD_REQUEST,
-    ASYNC_BAD_REQUEST,
-    MULTIPLE_EMITS_THEN_SUCCESS,
-    MULTIPLE_EMITS_THEN_FAILURE,
-    NO_EMITS_THEN_SUCCESS
-}
-
-public enum FallbackResultTest
-{
-    UNIMPLEMENTED,
-    SUCCESS,
-    FAILURE,
-    ASYNC_FAILURE,
-    MULTIPLE_EMITS_THEN_SUCCESS,
-    MULTIPLE_EMITS_THEN_FAILURE,
-    NO_EMITS_THEN_SUCCESS
-}
-
-public enum CacheEnabledTest
-{
-    YES,
-    NO
-}

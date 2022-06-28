@@ -22,17 +22,17 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
-public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
+public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
 {
-    private const string TEST_PREFIX = "bindertest.";
+    protected const string TEST_PREFIX = "bindertest.";
     private static readonly string _bigExceptionMessage = new ('x', 10_000);
     private bool _isDisposed;
 
-    private RabbitTestBinder _testBinder;
+    protected RabbitTestBinder _testBinder;
 
-    private int _maxStackTraceSize;
+    protected int _maxStackTraceSize;
 
-    public RabbitBinderTests(ITestOutputHelper output)
+    protected RabbitBinderTestBase(ITestOutputHelper output)
         : base(output, new XunitLoggerFactory(output))
     {
     }
@@ -100,7 +100,7 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
         return _testBinder;
     }
 
-    private DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpoint)
+    protected DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpoint)
     {
         DirectMessageListenerContainer container;
         RetryTemplate retry;
@@ -122,7 +122,7 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
         return container;
     }
 
-    private Exception BigCause(Exception innerException = null, int recursionDepth = 0)
+    protected Exception BigCause(Exception innerException = null, int recursionDepth = 0)
     {
         if (recursionDepth > 1000)
         {
@@ -147,7 +147,7 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
         return BigCause(innerException, recursionDepth + 1);
     }
 
-    private void Cleanup()
+    protected void Cleanup()
     {
         if (_testBinder != null)
         {

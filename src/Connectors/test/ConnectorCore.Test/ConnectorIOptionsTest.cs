@@ -18,7 +18,3 @@ public class ConnectorIOptionsTest
         Assert.True(opt.Value == myOpt);
     }
 }
-
-internal sealed class MyOption
-{
-}

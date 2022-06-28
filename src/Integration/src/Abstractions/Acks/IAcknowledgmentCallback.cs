@@ -5,27 +5,6 @@
 namespace Steeltoe.Integration.Acks;
 
 /// <summary>
-/// AcknowledgmentCallback status values.
-/// </summary>
-public enum Status
-{
-    /// <summary>
-    /// Mark message as accepted.
-    /// </summary>
-    ACCEPT,
-
-    /// <summary>
-    /// Mark message as rejected.
-    /// </summary>
-    REJECT,
-
-    /// <summary>
-    /// Reject message and requeue.
-    /// </summary>
-    REQUEUE
-}
-
-/// <summary>
 /// General abstraction over acknowledgments.
 /// </summary>
 public interface IAcknowledgmentCallback

@@ -24,17 +24,3 @@ public enum HystrixEventType
     CANCELLED,
     COLLAPSED
 }
-
-public enum ThreadPoolEventType
-{
-    EXECUTED,
-    REJECTED,
-    UNKNOWN
-}
-
-public enum CollapserEventType
-{
-    BATCH_EXECUTED,
-    ADDED_TO_BATCH,
-    RESPONSE_FROM_CACHE
-}

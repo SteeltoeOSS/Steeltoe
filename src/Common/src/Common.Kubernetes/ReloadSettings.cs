@@ -26,9 +26,3 @@ public class ReloadSettings
     /// </summary>
     public bool Secrets { get; set; }
 }
-
-public enum ReloadMethods
-{
-    Event,
-    Polling
-}

@@ -360,8 +360,3 @@ public class RabbitOptions
         }
     }
 }
-
-public enum ContainerType
-{
-    DIRECT
-}
