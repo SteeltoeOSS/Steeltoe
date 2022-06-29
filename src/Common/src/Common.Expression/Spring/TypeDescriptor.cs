@@ -8,7 +8,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class TypeDescriptor
 {
-#pragma warning disable IDE0090
     public static readonly TypeDescriptor V = new (typeof(void));
     public static readonly TypeDescriptor I = new (typeof(int));
     public static readonly TypeDescriptor J = new (typeof(long));
@@ -28,7 +27,6 @@ public class TypeDescriptor
     public static readonly TypeDescriptor OBJECT = new (typeof(object));
     public static readonly TypeDescriptor STRING = new (typeof(string));
     public static readonly TypeDescriptor TYPE = new (typeof(Type));
-#pragma warning restore IDE0090
 
     private TypeDescriptor _boxed;
     private TypeDescriptor _unBoxed;
@@ -119,14 +117,18 @@ public class TypeDescriptor
 
     public override bool Equals(object obj)
     {
-        var stackDescriptor = obj as TypeDescriptor;
-        if (stackDescriptor == null)
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not TypeDescriptor other)
         {
             return false;
         }
 
-        return stackDescriptor.Value == Value &&
-               stackDescriptor.IsBoxed == IsBoxed;
+        return other.Value == Value &&
+               other.IsBoxed == IsBoxed;
     }
 
     public override int GetHashCode()

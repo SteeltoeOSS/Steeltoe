@@ -19,7 +19,7 @@ public class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_ConfiguresCorsDefaults()
     {
-        var hostBuilder = new WebHostBuilder().Configure(config => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
@@ -34,7 +34,7 @@ public class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_ConfiguresCorsCustom()
     {
-        var hostBuilder = new WebHostBuilder().Configure(config => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration, myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
         var options = new ApplicationBuilder(host.Services)
@@ -53,7 +53,7 @@ public class ActuatorServiceCollectionExtensionsTest
     public void AddAllActuators_YesCFonCF()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        var hostBuilder = new WebHostBuilder().Configure(config => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
         var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
 
@@ -65,7 +65,7 @@ public class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_NoCFoffCF()
     {
-        var hostBuilder = new WebHostBuilder().Configure(config => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
         var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
 

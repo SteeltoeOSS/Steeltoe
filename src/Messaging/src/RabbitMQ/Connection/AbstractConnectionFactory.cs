@@ -13,7 +13,7 @@ using System.Threading;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public abstract class AbstractConnectionFactory : IConnectionFactory
 {
     public const int DEFAULT_CLOSE_TIMEOUT = 30000;
@@ -116,11 +116,11 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual IRecoveryListener RecoveryListener { get; set; }
 
-    public virtual bool IsSimplePublisherConfirms { get; set; } = false;
+    public virtual bool IsSimplePublisherConfirms { get; set; }
 
-    public virtual bool IsPublisherConfirms { get; set; } = false;
+    public virtual bool IsPublisherConfirms { get; set; }
 
-    public virtual bool IsPublisherReturns { get; set; } = false;
+    public virtual bool IsPublisherReturns { get; set; }
 
     public virtual IConnectionListener ConnectionListener => _connectionListener;
 
@@ -221,15 +221,21 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual void Destroy()
     {
-        if (PublisherConnectionFactory != null)
-        {
-            PublisherConnectionFactory.Destroy();
-        }
+        PublisherConnectionFactory?.Destroy();
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        Destroy();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Destroy();
+        }
     }
 
     public override string ToString()
@@ -387,4 +393,3 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         }
     }
 }
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly

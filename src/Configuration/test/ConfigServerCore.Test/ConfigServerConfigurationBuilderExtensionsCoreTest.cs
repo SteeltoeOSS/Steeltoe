@@ -18,7 +18,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
 
 public class ConfigServerConfigurationBuilderExtensionsCoreTest
 {
-    private readonly Dictionary<string, string> quickTests = new () { { "spring:cloud:config:timeout", "10" } };
+    private readonly Dictionary<string, string> _quickTests = new () { { "spring:cloud:config:timeout", "10" } };
 
     [Fact]
     public void AddConfigServer_ThrowsIfConfigBuilderNull()
@@ -43,7 +43,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_AddsConfigServerProviderToProvidersList()
     {
-        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(quickTests);
+        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
         var environment = HostingHelpers.GetHostingEnvironment();
 
         configurationBuilder.AddConfigServer(environment);
@@ -57,7 +57,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithLoggerFactorySucceeds()
     {
-        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(quickTests);
+        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
         var loggerFactory = new LoggerFactory();
         var environment = HostingHelpers.GetHostingEnvironment("Production");
 

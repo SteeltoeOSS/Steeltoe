@@ -37,7 +37,7 @@ internal static class ServiceInfoCreatorFactory
             {
                 if ((bool)alternateInfoCreator.GetProperty("IsRelevant").GetValue(null))
                 {
-                    serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod("Instance").Invoke(null, new[] { configuration });
+                    serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance)).Invoke(null, new[] { configuration });
                     return serviceInfoCreator;
                 }
             }

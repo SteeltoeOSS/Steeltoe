@@ -37,19 +37,19 @@ public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
 
     public bool AddResponseHeaders { get; set; } = true;
 
-    public bool AddPathInfo { get; set; } = false;
+    public bool AddPathInfo { get; set; }
 
-    public bool AddUserPrincipal { get; set; } = false;
+    public bool AddUserPrincipal { get; set; }
 
-    public bool AddParameters { get; set; } = false;
+    public bool AddParameters { get; set; }
 
-    public bool AddQueryString { get; set; } = false;
+    public bool AddQueryString { get; set; }
 
-    public bool AddAuthType { get; set; } = false;
+    public bool AddAuthType { get; set; }
 
-    public bool AddRemoteAddress { get; set; } = false;
+    public bool AddRemoteAddress { get; set; }
 
-    public bool AddSessionId { get; set; } = false;
+    public bool AddSessionId { get; set; }
 
     public bool AddTimeTaken { get; set; } = true;
 }

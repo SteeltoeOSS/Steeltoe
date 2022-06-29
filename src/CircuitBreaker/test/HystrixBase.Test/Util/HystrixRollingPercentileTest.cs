@@ -19,11 +19,11 @@ public class HystrixRollingPercentileTest
     private static readonly int TimeInMilliseconds = 60000;
     private static readonly int NumberOfBuckets = 12; // 12 buckets at 5000ms each
     private static readonly int BucketDataLength = 1000;
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixRollingPercentileTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -79,12 +79,12 @@ public class HystrixRollingPercentileTest
         Assert.Equal(ps.GetPercentile(0.90), p.GetPercentile(0.90));
         Assert.Equal(ps.GetPercentile(0.995), p.GetPercentile(0.995));
 
-        output.WriteLine("100th: " + ps.GetPercentile(100) + "  " + p.GetPercentile(100));
-        output.WriteLine("99.5th: " + ps.GetPercentile(99.5) + "  " + p.GetPercentile(99.5));
-        output.WriteLine("99th: " + ps.GetPercentile(99) + "  " + p.GetPercentile(99));
-        output.WriteLine("90th: " + ps.GetPercentile(90) + "  " + p.GetPercentile(90));
-        output.WriteLine("50th: " + ps.GetPercentile(50) + "  " + p.GetPercentile(50));
-        output.WriteLine("10th: " + ps.GetPercentile(10) + "  " + p.GetPercentile(10));
+        _output.WriteLine("100th: " + ps.GetPercentile(100) + "  " + p.GetPercentile(100));
+        _output.WriteLine("99.5th: " + ps.GetPercentile(99.5) + "  " + p.GetPercentile(99.5));
+        _output.WriteLine("99th: " + ps.GetPercentile(99) + "  " + p.GetPercentile(99));
+        _output.WriteLine("90th: " + ps.GetPercentile(90) + "  " + p.GetPercentile(90));
+        _output.WriteLine("50th: " + ps.GetPercentile(50) + "  " + p.GetPercentile(50));
+        _output.WriteLine("10th: " + ps.GetPercentile(10) + "  " + p.GetPercentile(10));
 
         // mean = 1000+1000+1000+2000+1000+500+200+200+1600+200+1600+1600/12
         Assert.Equal(991, ps.Mean);
@@ -124,7 +124,7 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestSampleDataOverTime1()
     {
-        output.WriteLine("\n\n***************************** testSampleDataOverTime1 \n");
+        _output.WriteLine("\n\n***************************** testSampleDataOverTime1 \n");
 
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
@@ -138,16 +138,16 @@ public class HystrixRollingPercentileTest
             p.AddValue(latency);
         }
 
-        output.WriteLine("0.01: " + p.GetPercentile(0.01));
-        output.WriteLine("Median: " + p.GetPercentile(50));
-        output.WriteLine("90th: " + p.GetPercentile(90));
-        output.WriteLine("99th: " + p.GetPercentile(99));
-        output.WriteLine("99.5th: " + p.GetPercentile(99.5));
-        output.WriteLine("99.99: " + p.GetPercentile(99.99));
+        _output.WriteLine("0.01: " + p.GetPercentile(0.01));
+        _output.WriteLine("Median: " + p.GetPercentile(50));
+        _output.WriteLine("90th: " + p.GetPercentile(90));
+        _output.WriteLine("99th: " + p.GetPercentile(99));
+        _output.WriteLine("99.5th: " + p.GetPercentile(99.5));
+        _output.WriteLine("99.99: " + p.GetPercentile(99.99));
 
-        output.WriteLine("Median: " + p.GetPercentile(50));
-        output.WriteLine("Median: " + p.GetPercentile(50));
-        output.WriteLine("Median: " + p.GetPercentile(50));
+        _output.WriteLine("Median: " + p.GetPercentile(50));
+        _output.WriteLine("Median: " + p.GetPercentile(50));
+        _output.WriteLine("Median: " + p.GetPercentile(50));
 
         /*
          * In a loop as a use case was found where very different values were calculated in subsequent requests.
@@ -169,7 +169,7 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestSampleDataOverTime2()
     {
-        output.WriteLine("\n\n***************************** testSampleDataOverTime2 \n");
+        _output.WriteLine("\n\n***************************** testSampleDataOverTime2 \n");
         var time = new MockedTime();
         var previousTime = 0;
         var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
@@ -182,12 +182,12 @@ public class HystrixRollingPercentileTest
             p.AddValue(latency);
         }
 
-        output.WriteLine("0.01: " + p.GetPercentile(0.01));
-        output.WriteLine("Median: " + p.GetPercentile(50));
-        output.WriteLine("90th: " + p.GetPercentile(90));
-        output.WriteLine("99th: " + p.GetPercentile(99));
-        output.WriteLine("99.5th: " + p.GetPercentile(99.5));
-        output.WriteLine("99.99: " + p.GetPercentile(99.99));
+        _output.WriteLine("0.01: " + p.GetPercentile(0.01));
+        _output.WriteLine("Median: " + p.GetPercentile(50));
+        _output.WriteLine("90th: " + p.GetPercentile(90));
+        _output.WriteLine("99th: " + p.GetPercentile(99));
+        _output.WriteLine("99.5th: " + p.GetPercentile(99.5));
+        _output.WriteLine("99.99: " + p.GetPercentile(99.99));
 
         if (p.GetPercentile(50) > 90 || p.GetPercentile(50) < 50)
         {
@@ -233,14 +233,14 @@ public class HystrixRollingPercentileTest
     {
         var p = new PercentileSnapshot(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 800, 768, 657, 700, 867);
 
-        output.WriteLine("0.01: " + p.GetPercentile(0.01));
-        output.WriteLine("10th: " + p.GetPercentile(10));
-        output.WriteLine("Median: " + p.GetPercentile(50));
-        output.WriteLine("75th: " + p.GetPercentile(75));
-        output.WriteLine("90th: " + p.GetPercentile(90));
-        output.WriteLine("99th: " + p.GetPercentile(99));
-        output.WriteLine("99.5th: " + p.GetPercentile(99.5));
-        output.WriteLine("99.99: " + p.GetPercentile(99.99));
+        _output.WriteLine("0.01: " + p.GetPercentile(0.01));
+        _output.WriteLine("10th: " + p.GetPercentile(10));
+        _output.WriteLine("Median: " + p.GetPercentile(50));
+        _output.WriteLine("75th: " + p.GetPercentile(75));
+        _output.WriteLine("90th: " + p.GetPercentile(90));
+        _output.WriteLine("99th: " + p.GetPercentile(99));
+        _output.WriteLine("99.5th: " + p.GetPercentile(99.5));
+        _output.WriteLine("99.99: " + p.GetPercentile(99.99));
         Assert.Equal(2, p.GetPercentile(50));
         Assert.Equal(2, p.GetPercentile(10));
         Assert.Equal(2, p.GetPercentile(75));
@@ -320,7 +320,7 @@ public class HystrixRollingPercentileTest
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
         var num_threads = 1000;  // .NET Core StackOverflow
-        var num_iterations = 1000000;
+        var num_iterations = 1_000_000;
 
         var latch = new CountdownEvent(num_threads);
 
@@ -328,7 +328,7 @@ public class HystrixRollingPercentileTest
 
         var r = new Random();
         var cts = new CancellationTokenSource();
-        var metricsPoller = Task.Run(() =>
+        Task.Run(() =>
         {
             while (!cts.Token.IsCancellationRequested)
             {
@@ -366,7 +366,7 @@ public class HystrixRollingPercentileTest
         }
 
         aggregateMetrics.AddAndGet(p.Mean + p.GetPercentile(10) + p.GetPercentile(50) + p.GetPercentile(90));
-        output.WriteLine(p.Mean + " : " + p.GetPercentile(50) + " : " + p.GetPercentile(75) + " : " + p.GetPercentile(90) + " : " + p.GetPercentile(95) + " : " + p.GetPercentile(99));
+        _output.WriteLine(p.Mean + " : " + p.GetPercentile(50) + " : " + p.GetPercentile(75) + " : " + p.GetPercentile(90) + " : " + p.GetPercentile(95) + " : " + p.GetPercentile(99));
     }
 
     [Fact]

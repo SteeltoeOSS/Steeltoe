@@ -13,15 +13,15 @@ namespace Steeltoe.Messaging.Support.Test;
 
 public class ChannelInterceptorTest
 {
-    private readonly TaskSchedulerSubscribableChannel channel;
+    private readonly TaskSchedulerSubscribableChannel _channel;
 
-    private readonly TestMessageHandler messageHandler;
+    private readonly TestMessageHandler _messageHandler;
 
     public ChannelInterceptorTest()
     {
-        channel = new TaskSchedulerSubscribableChannel();
-        messageHandler = new TestMessageHandler();
-        channel.Subscribe(messageHandler);
+        _channel = new TaskSchedulerSubscribableChannel();
+        _messageHandler = new TestMessageHandler();
+        _channel.Subscribe(_messageHandler);
     }
 
     [Fact]
@@ -32,11 +32,11 @@ public class ChannelInterceptorTest
         {
             MessageToReturn = expected
         };
-        channel.AddInterceptor(interceptor);
-        channel.Send(MessageBuilder.WithPayload("test").Build());
+        _channel.AddInterceptor(interceptor);
+        _channel.Send(MessageBuilder.WithPayload("test").Build());
 
-        Assert.Single(messageHandler.Messages);
-        var result = messageHandler.Messages[0];
+        Assert.Single(_messageHandler.Messages);
+        var result = _messageHandler.Messages[0];
 
         Assert.NotNull(result);
         Assert.Same(expected, result);
@@ -48,14 +48,14 @@ public class ChannelInterceptorTest
     {
         var interceptor1 = new PreSendInterceptor();
         var interceptor2 = new NullReturningPreSendInterceptor();
-        channel.AddInterceptor(interceptor1);
-        channel.AddInterceptor(interceptor2);
+        _channel.AddInterceptor(interceptor1);
+        _channel.AddInterceptor(interceptor2);
         var message = MessageBuilder.WithPayload("test").Build();
-        channel.Send(message);
+        _channel.Send(message);
 
         Assert.Equal(1, interceptor1.Counter);
         Assert.Equal(1, interceptor2.Counter);
-        Assert.Empty(messageHandler.Messages);
+        Assert.Empty(_messageHandler.Messages);
         Assert.True(interceptor1.WasAfterCompletionInvoked);
         Assert.False(interceptor2.WasAfterCompletionInvoked);
     }
@@ -63,10 +63,10 @@ public class ChannelInterceptorTest
     [Fact]
     public void PostSendInterceptorMessageWasSent()
     {
-        var interceptor = new PostSendInterceptorMessageWasSentChannelInterceptor(channel);
-        channel.AddInterceptor(interceptor);
+        var interceptor = new PostSendInterceptorMessageWasSentChannelInterceptor(_channel);
+        _channel.AddInterceptor(interceptor);
 
-        channel.Send(MessageBuilder.WithPayload("test").Build());
+        _channel.Send(MessageBuilder.WithPayload("test").Build());
         Assert.True(interceptor.PreSendInvoked);
         Assert.True(interceptor.CompletionInvoked);
     }
@@ -114,11 +114,11 @@ public class ChannelInterceptorTest
         {
             ExceptionToRaise = new Exception("Simulated exception")
         };
-        channel.AddInterceptor(interceptor1);
-        channel.AddInterceptor(interceptor2);
+        _channel.AddInterceptor(interceptor1);
+        _channel.AddInterceptor(interceptor2);
         try
         {
-            channel.Send(MessageBuilder.WithPayload("test").Build());
+            _channel.Send(MessageBuilder.WithPayload("test").Build());
         }
         catch (Exception ex)
         {
@@ -129,7 +129,7 @@ public class ChannelInterceptorTest
         Assert.False(interceptor2.WasAfterCompletionInvoked);
     }
 
-    // internal class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
+    // internal sealed class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
     // {
     //    protected override bool SendInternal(IMessage message, long timeout)
     //    {
@@ -141,7 +141,7 @@ public class ChannelInterceptorTest
     //        throw new NotImplementedException();
     //    }
     // }
-    internal class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
+    internal sealed class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
     {
         public AfterCompletionWithSendExceptionChannel()
         {
@@ -154,7 +154,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    internal class AfterCompletionWithSendExceptionChannelWriter : AbstractMessageChannelWriter
+    internal sealed class AfterCompletionWithSendExceptionChannelWriter : AbstractMessageChannelWriter
     {
         public AfterCompletionWithSendExceptionChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
             : base(channel, logger)
@@ -162,7 +162,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    // internal class PostSendInterceptorMessageWasNotSentChannel : AbstractMessageChannel
+    // internal sealed class PostSendInterceptorMessageWasNotSentChannel : AbstractMessageChannel
     // {
     //    protected override bool SendInternal(IMessage message, long timeout)
     //    {
@@ -174,7 +174,7 @@ public class ChannelInterceptorTest
     //        throw new NotImplementedException();
     //    }
     // }
-    internal class PostSendInterceptorMessageWasNotSentChannel : AbstractMessageChannel
+    internal sealed class PostSendInterceptorMessageWasNotSentChannel : AbstractMessageChannel
     {
         public PostSendInterceptorMessageWasNotSentChannel()
         {
@@ -187,7 +187,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    internal class PostSendInterceptorMessageWasNotSentChannelWriter : AbstractMessageChannelWriter
+    internal sealed class PostSendInterceptorMessageWasNotSentChannelWriter : AbstractMessageChannelWriter
     {
         public PostSendInterceptorMessageWasNotSentChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
             : base(channel, logger)
@@ -195,7 +195,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    internal class PostSendInterceptorMessageWasNotSentInterceptor : AbstractChannelInterceptor
+    internal sealed class PostSendInterceptorMessageWasNotSentInterceptor : AbstractChannelInterceptor
     {
         public bool PreSendInvoked;
         public bool CompletionInvoked;
@@ -227,7 +227,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    internal class PostSendInterceptorMessageWasSentChannelInterceptor : AbstractChannelInterceptor
+    internal sealed class PostSendInterceptorMessageWasSentChannelInterceptor : AbstractChannelInterceptor
     {
         public bool PreSendInvoked;
         public bool CompletionInvoked;
@@ -259,7 +259,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    internal class TestMessageHandler : IMessageHandler
+    internal sealed class TestMessageHandler : IMessageHandler
     {
         public List<IMessage> Messages { get; } = new ();
 
@@ -271,36 +271,36 @@ public class ChannelInterceptorTest
         }
     }
 
-    internal class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
+    internal abstract class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
     {
-        private volatile int counter;
+        private volatile int _counter;
 
-        private volatile bool afterCompletionInvoked;
+        private volatile bool _afterCompletionInvoked;
 
         public int Counter
         {
-            get { return counter; }
+            get { return _counter; }
         }
 
         public bool WasAfterCompletionInvoked
         {
-            get { return afterCompletionInvoked; }
+            get { return _afterCompletionInvoked; }
         }
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
             Assert.NotNull(message);
-            Interlocked.Increment(ref counter);
+            Interlocked.Increment(ref _counter);
             return message;
         }
 
         public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
         {
-            afterCompletionInvoked = true;
+            _afterCompletionInvoked = true;
         }
     }
 
-    internal class PreSendInterceptor : AbstractTestInterceptor
+    internal sealed class PreSendInterceptor : AbstractTestInterceptor
     {
         public IMessage MessageToReturn { get; set; }
 
@@ -318,7 +318,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    internal class NullReturningPreSendInterceptor : AbstractTestInterceptor
+    internal sealed class NullReturningPreSendInterceptor : AbstractTestInterceptor
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {

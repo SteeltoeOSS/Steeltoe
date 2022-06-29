@@ -99,9 +99,7 @@ public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
     }
 }
 
-#pragma warning disable SA1402 // File may only contain a single class
 public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecutable<TResult>
-#pragma warning restore SA1402 // File may only contain a single class
 {
     protected readonly Func<TResult> _run;
     protected readonly Func<TResult> _fallback;

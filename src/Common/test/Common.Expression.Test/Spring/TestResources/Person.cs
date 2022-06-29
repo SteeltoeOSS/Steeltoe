@@ -14,7 +14,7 @@ public class Person
     public Person(string name, Company company)
     {
         Name = name;
-        this.Company = company;
+        Company = company;
     }
 
     public string Name { get; set; }

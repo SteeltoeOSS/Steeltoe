@@ -28,74 +28,88 @@ public class OpPlusTests
     }
 
     [Fact]
-    public void Test_UnaryPlusWithNumberOperand()
+    public void Test_UnaryPlusWithRealOperand()
     {
         var expressionState = new ExpressionState(new StandardEvaluationContext());
-        {
-            var realLiteral = new RealLiteral("123.00", -1, -1, 123.0);
-            var o = new OpPlus(-1, -1, realLiteral);
-            var value = o.GetValueInternal(expressionState);
 
-            Assert.Equal(typeof(double), value.TypeDescriptor);
-            Assert.Equal(typeof(double), value.TypeDescriptor);
-            Assert.Equal(realLiteral.GetLiteralValue().Value, value.Value);
-        }
+        var realLiteral = new RealLiteral("123.00", -1, -1, 123.0);
+        var o = new OpPlus(-1, -1, realLiteral);
+        var value = o.GetValueInternal(expressionState);
 
-        {
-            var intLiteral = new IntLiteral("123", -1, -1, 123);
-            var o = new OpPlus(-1, -1, intLiteral);
-            var value = o.GetValueInternal(expressionState);
-
-            Assert.Equal(typeof(int), value.TypeDescriptor);
-            Assert.Equal(typeof(int), value.TypeDescriptor);
-            Assert.Equal(intLiteral.GetLiteralValue().Value, value.Value);
-        }
-
-        {
-            var longLiteral = new LongLiteral("123", -1, -1, 123L);
-            var o = new OpPlus(-1, -1, longLiteral);
-            var value = o.GetValueInternal(expressionState);
-
-            Assert.Equal(typeof(long), value.TypeDescriptor);
-            Assert.Equal(typeof(long), value.TypeDescriptor);
-            Assert.Equal(longLiteral.GetLiteralValue().Value, value.Value);
-        }
+        Assert.Equal(typeof(double), value.TypeDescriptor);
+        Assert.Equal(typeof(double), value.TypeDescriptor);
+        Assert.Equal(realLiteral.GetLiteralValue().Value, value.Value);
     }
 
     [Fact]
-    public void Test_BinaryPlusWithNumberOperands()
+    public void Test_UnaryPlusWithLongOperand()
     {
         var expressionState = new ExpressionState(new StandardEvaluationContext());
-        {
-            var n1 = new RealLiteral("123.00", -1, -1, 123.0);
-            var n2 = new RealLiteral("456.00", -1, -1, 456.0);
-            var o = new OpPlus(-1, -1, n1, n2);
-            var value = o.GetValueInternal(expressionState);
 
-            Assert.Equal(typeof(double), value.TypeDescriptor);
-            Assert.Equal(typeof(double), value.TypeDescriptor);
-            Assert.Equal(123.0d + 456.0d, value.Value);
-        }
+        var longLiteral = new LongLiteral("123", -1, -1, 123L);
+        var o = new OpPlus(-1, -1, longLiteral);
+        var value = o.GetValueInternal(expressionState);
 
-        {
-            var n1 = new LongLiteral("123", -1, -1, 123L);
-            var n2 = new LongLiteral("456", -1, -1, 456L);
-            var o = new OpPlus(-1, -1, n1, n2);
-            var value = o.GetValueInternal(expressionState);
-            Assert.Equal(typeof(long), value.TypeDescriptor);
-            Assert.Equal(typeof(long), value.TypeDescriptor);
-            Assert.Equal(123L + 456L, value.Value);
-        }
+        Assert.Equal(typeof(long), value.TypeDescriptor);
+        Assert.Equal(typeof(long), value.TypeDescriptor);
+        Assert.Equal(longLiteral.GetLiteralValue().Value, value.Value);
+    }
 
-        {
-            var n1 = new IntLiteral("123", -1, -1, 123);
-            var n2 = new IntLiteral("456", -1, -1, 456);
-            var o = new OpPlus(-1, -1, n1, n2);
-            var value = o.GetValueInternal(expressionState);
-            Assert.Equal(typeof(int), value.TypeDescriptor);
-            Assert.Equal(typeof(int), value.TypeDescriptor);
-            Assert.Equal(123 + 456, value.Value);
-        }
+    [Fact]
+    public void Test_UnaryPlusWithIntOperand()
+    {
+        var expressionState = new ExpressionState(new StandardEvaluationContext());
+
+        var intLiteral = new IntLiteral("123", -1, -1, 123);
+        var o = new OpPlus(-1, -1, intLiteral);
+        var value = o.GetValueInternal(expressionState);
+
+        Assert.Equal(typeof(int), value.TypeDescriptor);
+        Assert.Equal(typeof(int), value.TypeDescriptor);
+        Assert.Equal(intLiteral.GetLiteralValue().Value, value.Value);
+    }
+
+    [Fact]
+    public void Test_BinaryPlusWithRealOperands()
+    {
+        var expressionState = new ExpressionState(new StandardEvaluationContext());
+
+        var n1 = new RealLiteral("123.00", -1, -1, 123.0);
+        var n2 = new RealLiteral("456.00", -1, -1, 456.0);
+        var o = new OpPlus(-1, -1, n1, n2);
+        var value = o.GetValueInternal(expressionState);
+
+        Assert.Equal(typeof(double), value.TypeDescriptor);
+        Assert.Equal(typeof(double), value.TypeDescriptor);
+        Assert.Equal(123.0d + 456.0d, value.Value);
+    }
+
+    [Fact]
+    public void Test_BinaryPlusWithLongOperands()
+    {
+        var expressionState = new ExpressionState(new StandardEvaluationContext());
+
+        var n1 = new LongLiteral("123", -1, -1, 123L);
+        var n2 = new LongLiteral("456", -1, -1, 456L);
+        var o = new OpPlus(-1, -1, n1, n2);
+        var value = o.GetValueInternal(expressionState);
+        Assert.Equal(typeof(long), value.TypeDescriptor);
+        Assert.Equal(typeof(long), value.TypeDescriptor);
+        Assert.Equal(123L + 456L, value.Value);
+    }
+
+    [Fact]
+    public void Test_BinaryPlusWithIntOperands()
+    {
+        var expressionState = new ExpressionState(new StandardEvaluationContext());
+
+        var n1 = new IntLiteral("123", -1, -1, 123);
+        var n2 = new IntLiteral("456", -1, -1, 456);
+        var o = new OpPlus(-1, -1, n1, n2);
+        var value = o.GetValueInternal(expressionState);
+        Assert.Equal(typeof(int), value.TypeDescriptor);
+        Assert.Equal(typeof(int), value.TypeDescriptor);
+        Assert.Equal(123 + 456, value.Value);
     }
 
     [Fact]

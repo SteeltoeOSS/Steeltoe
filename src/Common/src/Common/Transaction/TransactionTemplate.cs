@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Transaction;
 
 public class TransactionTemplate : DefaultTransactionDefinition
 {
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
     public TransactionTemplate(ILogger logger = null)
     {
@@ -73,8 +73,14 @@ public class TransactionTemplate : DefaultTransactionDefinition
     }
 
     public override bool Equals(object other)
-        => this == other ||
-           (base.Equals(other) && (other is not TransactionTemplate otherTemplate || TransactionManager == otherTemplate.TransactionManager));
+    {
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return base.Equals(other) && (other is not TransactionTemplate otherTemplate || TransactionManager == otherTemplate.TransactionManager);
+    }
 
     public override int GetHashCode() => base.GetHashCode();
 

@@ -214,8 +214,11 @@ public class NativeMessageHeaderAccessorTest
         Assert.Contains("Already immutable", ex.Message);
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void SetImmutableIdempotent()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var headerAccessor = new NativeMessageHeaderAccessor();
         headerAccessor.AddNativeHeader("foo", "bar");

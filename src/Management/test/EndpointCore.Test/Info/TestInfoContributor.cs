@@ -6,7 +6,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;
 
-internal class TestInfoContributor : IInfoContributor
+internal sealed class TestInfoContributor : IInfoContributor
 {
     public void Contribute(IInfoBuilder builder)
     {

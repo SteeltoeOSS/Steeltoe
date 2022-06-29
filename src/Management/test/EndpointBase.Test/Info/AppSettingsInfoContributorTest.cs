@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test;
 
 public class AppSettingsInfoContributorTest : BaseTest
 {
-    private readonly Dictionary<string, string> appSettings = new ()
+    private readonly Dictionary<string, string> _appSettings = new ()
     {
         ["info:application:name"] = "foobar",
         ["info:application:version"] = "1.0.0",
@@ -39,7 +39,7 @@ public class AppSettingsInfoContributorTest : BaseTest
     public void ContributeWithNullBUilderThrows()
     {
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddInMemoryCollection(_appSettings);
         var config = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(config);
 
@@ -49,10 +49,10 @@ public class AppSettingsInfoContributorTest : BaseTest
     [Fact]
     public void ContributeAddsToBuilder()
     {
-        appSettings.Add("info:NET:ASPNET:type", "Core");
-        appSettings.Add("info:NET:ASPNET:version", "2.0.0");
+        _appSettings.Add("info:NET:ASPNET:type", "Core");
+        _appSettings.Add("info:NET:ASPNET:version", "2.0.0");
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddInMemoryCollection(_appSettings);
         var config = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(config);
 

@@ -61,7 +61,7 @@ public class SerilogWebApplicationBuilderTest
         var testSink = new TestSink();
 
         var host = TestHelpers.GetTestWebApplicationBuilder()
-            .AddDynamicSerilog((context, loggerConfiguration) =>
+            .AddDynamicSerilog((_, loggerConfiguration) =>
             {
                 loggerConfiguration
                     .MinimumLevel.Error()
@@ -100,7 +100,7 @@ public class SerilogWebApplicationBuilderTest
         startup.ConfigureServices(null);
         var sinks = SerilogDynamicWebhostBuilderTest.GetSinks(logger);
         Assert.NotNull(sinks);
-        var testSink = sinks.Where(x => x.GetType() == typeof(TestSink)).FirstOrDefault() as TestSink;
+        var testSink = sinks.FirstOrDefault(x => x.GetType() == typeof(TestSink)) as TestSink;
 
         var logs = testSink.GetLogs();
         Assert.NotEmpty(logs);

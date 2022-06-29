@@ -30,7 +30,17 @@ public class JsonCredential : ICredentialValue
 
     public override bool Equals(object obj)
     {
-        return Value.ToString() == obj.ToString();
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not JsonCredential other)
+        {
+            return false;
+        }
+
+        return ToString() == other.ToString();
     }
 
     public override int GetHashCode()

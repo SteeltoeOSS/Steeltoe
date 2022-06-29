@@ -19,7 +19,7 @@ using static Steeltoe.Messaging.RabbitMQ.Connection.IPublisherCallbackChannel;
 using RC=RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public class PublisherCallbackChannel : IPublisherCallbackChannel
 {
     public const string RETURNED_MESSAGE_CORRELATION_KEY = "spring_returned_message_correlation";
@@ -68,7 +68,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                         var correlationData = pendingConfirm.CorrelationInfo;
                         if (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))
                         {
-                            _pendingReturns.Remove(correlationData.Id, out var _); // NOSONAR never null
+                            _pendingReturns.Remove(correlationData.Id, out var _);
                         }
                     }
                     else
@@ -397,10 +397,17 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     #endregion
 
     #region IDisposable Support
+
     public void Dispose()
     {
-        // Do Nothing
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
+
     #endregion
 
     #region Private
@@ -544,7 +551,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                         correlationData.FutureSource.SetResult(new Confirm(ack, pendingConfirm.Cause));
                         if (!string.IsNullOrEmpty(correlationData.Id))
                         {
-                            _pendingReturns.Remove(correlationData.Id, out var removedConfirm);
+                            _pendingReturns.Remove(correlationData.Id, out _);
                         }
                     }
 
@@ -589,7 +596,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                         correlationData.FutureSource.SetResult(new Confirm(ack, value.Cause));
                         if (!string.IsNullOrEmpty(correlationData.Id))
                         {
-                            _pendingReturns.Remove(correlationData.Id, out var removedConfirm);
+                            _pendingReturns.Remove(correlationData.Id, out _);
                         }
                     }
 
@@ -651,4 +658,3 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
     #endregion
 }
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly

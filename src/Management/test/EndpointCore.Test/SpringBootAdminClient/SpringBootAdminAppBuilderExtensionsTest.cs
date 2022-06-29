@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
 public class SpringBootAdminAppBuilderExtensionsTest
 {
     [Fact]
-    [Obsolete]
+    [Obsolete("To be removed in the next major version.")]
     public void SpringBootAdminClient_EndToEnd()
     {
         var appsettings = new Dictionary<string, string>

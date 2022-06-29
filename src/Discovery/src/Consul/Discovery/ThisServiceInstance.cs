@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 
-internal class ThisServiceInstance : IServiceInstance
+internal sealed class ThisServiceInstance : IServiceInstance
 {
     public ThisServiceInstance(IConsulRegistration registration)
     {

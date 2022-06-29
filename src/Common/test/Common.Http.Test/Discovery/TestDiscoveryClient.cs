@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http.Test;
 
-internal class TestDiscoveryClient : IDiscoveryClient
+internal sealed class TestDiscoveryClient : IDiscoveryClient
 {
     private readonly IServiceInstance _instance;
 

@@ -16,17 +16,17 @@ public static class RabbitMQTypeLocator
     /// <summary>
     /// Gets a list of supported RabbitMQ assemblies
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = new[] { "RabbitMQ.Client" };
+    public static string[] Assemblies { get; internal set; } = { "RabbitMQ.Client" };
 
     /// <summary>
     /// Gets a list of RabbitMQ Interface types
     /// </summary>
-    public static string[] ConnectionInterfaceTypeNames { get; internal set; } = new[] { "RabbitMQ.Client.IConnectionFactory" };
+    public static string[] ConnectionInterfaceTypeNames { get; internal set; } = { "RabbitMQ.Client.IConnectionFactory" };
 
     /// <summary>
     /// Gets a list of RabbitMQ Implementation types
     /// </summary>
-    public static string[] ConnectionImplementationTypeNames { get; internal set; } = new[] { "RabbitMQ.Client.ConnectionFactory" };
+    public static string[] ConnectionImplementationTypeNames { get; internal set; } = { "RabbitMQ.Client.ConnectionFactory" };
 
     /// <summary>
     /// Gets IConnectionFactory from a RabbitMQ Library

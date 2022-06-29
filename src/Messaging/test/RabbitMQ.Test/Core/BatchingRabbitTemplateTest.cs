@@ -26,23 +26,23 @@ using Xunit.Abstractions;
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 [Trait("Category", "Integration")]
-public class BatchingRabbitTemplateTest : IDisposable
+public sealed class BatchingRabbitTemplateTest : IDisposable
 {
     public const string ROUTE = "test.queue.BatchingRabbitTemplateTests";
-    private readonly CachingConnectionFactory connectionFactory;
-    private readonly ITestOutputHelper testOutputHelper;
+    private readonly CachingConnectionFactory _connectionFactory;
+    private readonly ITestOutputHelper _testOutputHelper;
 
     public BatchingRabbitTemplateTest(ITestOutputHelper testOutputHelper)
     {
-        connectionFactory = new CachingConnectionFactory("localhost");
-        var admin = new RabbitAdmin(connectionFactory);
+        _connectionFactory = new CachingConnectionFactory("localhost");
+        var admin = new RabbitAdmin(_connectionFactory);
         admin.DeclareQueue(new Queue(ROUTE));
-        this.testOutputHelper = testOutputHelper;
+        _testOutputHelper = testOutputHelper;
     }
 
     public void Dispose()
     {
-        var admin = new RabbitAdmin(connectionFactory);
+        var admin = new RabbitAdmin(_connectionFactory);
         admin.DeleteQueue(ROUTE);
     }
 
@@ -52,7 +52,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, ROUTE, message);
@@ -68,7 +68,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 50);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, ROUTE, message);
@@ -82,7 +82,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 50);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, ROUTE, message);
@@ -97,7 +97,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, 8, 50);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, ROUTE, message);
@@ -115,7 +115,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, 15, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, ROUTE, message);
@@ -135,7 +135,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, 2, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, ROUTE, message);
@@ -153,7 +153,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, 6, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("f"));
         template.Send(string.Empty, ROUTE, message);
@@ -171,7 +171,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(10, 14, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, ROUTE, message);
@@ -190,7 +190,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var latch = new CountdownEvent(2);
         var context = new GenericApplicationContext(provider, config);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
-        var container = new DirectMessageListenerContainer(context, connectionFactory);
+        var container = new DirectMessageListenerContainer(context, _connectionFactory);
         container.SetQueueNames(ROUTE);
         var lastInBatch = new List<bool>();
         var batchSize = new AtomicInteger();
@@ -202,7 +202,7 @@ public class BatchingRabbitTemplateTest : IDisposable
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
             var template = new BatchingRabbitTemplate(batchingStrategy)
             {
-                ConnectionFactory = connectionFactory
+                ConnectionFactory = _connectionFactory
             };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
@@ -235,10 +235,8 @@ public class BatchingRabbitTemplateTest : IDisposable
         var latch = new CountdownEvent(count);
         var context = new GenericApplicationContext(provider, config);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
-        var container = new DirectMessageListenerContainer(context, connectionFactory);
+        var container = new DirectMessageListenerContainer(context, _connectionFactory);
         container.SetQueueNames(ROUTE);
-        var lastInBatch = new List<bool>();
-        var batchSize = new AtomicInteger();
         container.MessageListener = new TestDebatchListener(received, null, null, latch);
         container.PrefetchCount = 1000;
         container.BatchingStrategy = new SimpleBatchingStrategy(1000, int.MaxValue, 30000);
@@ -249,7 +247,7 @@ public class BatchingRabbitTemplateTest : IDisposable
             var batchingStrategy = new SimpleBatchingStrategy(1000, int.MaxValue, 30000);
             var template = new BatchingRabbitTemplate(batchingStrategy)
             {
-                ConnectionFactory = connectionFactory
+                ConnectionFactory = _connectionFactory
             };
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(new MessageHeaders());
             accessor.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
@@ -263,7 +261,7 @@ public class BatchingRabbitTemplateTest : IDisposable
 
             Assert.True(latch.Wait(TimeSpan.FromSeconds(60)));
             watch.Stop();
-            testOutputHelper.WriteLine(watch.ElapsedMilliseconds.ToString());
+            _testOutputHelper.WriteLine(watch.ElapsedMilliseconds.ToString());
             Assert.Equal(count, received.Count);
         }
         finally
@@ -279,7 +277,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var config = new ConfigurationBuilder().Build();
         var context = new GenericApplicationContext(provider, config);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
-        var container = new DirectMessageListenerContainer(context, connectionFactory);
+        var container = new DirectMessageListenerContainer(context, _connectionFactory);
         container.SetQueueNames(ROUTE);
         var listener = new EmptyListener();
         container.MessageListener = listener;
@@ -291,7 +289,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         {
             var template = new RabbitTemplate
             {
-                ConnectionFactory = connectionFactory
+                ConnectionFactory = _connectionFactory
             };
             var headers = new MessageHeaders(new Dictionary<string, object> { { RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4 } });
             var message = Message.Create(Encoding.UTF8.GetBytes("\u0000\u0000\u0000\u0004foo"), headers);
@@ -312,7 +310,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var gZipPostProcessor = new GZipPostProcessor();
         Assert.Equal(CompressionLevel.Fastest, gZipPostProcessor.Level);
@@ -335,7 +333,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var gZipPostProcessor = new GZipPostProcessor();
         Assert.Equal(CompressionLevel.Fastest, gZipPostProcessor.Level);
@@ -358,7 +356,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var gZipPostProcessor = new GZipPostProcessor();
         Assert.Equal(CompressionLevel.Fastest, gZipPostProcessor.Level);
@@ -385,7 +383,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var gZipPostProcessor = new GZipPostProcessor
         {
@@ -410,7 +408,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var gZipPostProcessor = new GZipPostProcessor
         {
@@ -435,7 +433,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var gZipPostProcessor = new GZipPostProcessor();
         template.SetBeforePublishPostProcessors(gZipPostProcessor);
@@ -461,7 +459,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var gZipPostProcessor = new GZipPostProcessor();
         template.SetBeforePublishPostProcessors(gZipPostProcessor);
@@ -487,7 +485,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var zipPostProcessor = new ZipPostProcessor
         {
@@ -513,7 +511,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var zipPostProcessor = new ZipPostProcessor
         {
@@ -542,7 +540,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var deflatorPostProcessor = new DeflaterPostProcessor
         {
@@ -568,7 +566,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var deflatorPostProcessor = new DeflaterPostProcessor
         {
@@ -594,7 +592,7 @@ public class BatchingRabbitTemplateTest : IDisposable
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
         var template = new BatchingRabbitTemplate(batchingStrategy)
         {
-            ConnectionFactory = connectionFactory
+            ConnectionFactory = _connectionFactory
         };
         var deflatorPostProcessor = new DeflaterPostProcessor
         {

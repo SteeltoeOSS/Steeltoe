@@ -30,7 +30,7 @@ public sealed class RabbitMQHost : IHost
 
     public void Dispose()
     {
-        _host.Dispose();
+        _host?.Dispose();
     }
 
     public Task StartAsync(CancellationToken cancellationToken = default)

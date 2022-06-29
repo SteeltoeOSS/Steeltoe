@@ -16,9 +16,8 @@ public class MimeType : IComparable<MimeType>
 
     private const string PARAM_CHARSET = "charset";
 
-    private static readonly BitArray TOKEN;
+    private static readonly BitArray TOKEN = new (128);
 
-#pragma warning disable S3963 // "static" fields should be initialized inline
     static MimeType()
     {
         // variable names refer to RFC 2616, section 2.2
@@ -51,7 +50,6 @@ public class MimeType : IComparable<MimeType>
         separators.Set(' ', true);
         separators.Set('\t', true);
 
-        TOKEN = new BitArray(128);
         for (var i = 0; i < 128; i++)
         {
             TOKEN.Set(i, true);
@@ -60,9 +58,8 @@ public class MimeType : IComparable<MimeType>
         TOKEN.And(ctl.Not());
         TOKEN.And(separators.Not());
     }
-#pragma warning restore S3963 // "static" fields should be initialized inline
 
-    private volatile string _tostringValue;
+    private volatile string _toStringValue;
 
     public MimeType(string type)
         : this(type, WILDCARD_TYPE)
@@ -145,13 +142,13 @@ public class MimeType : IComparable<MimeType>
             value = Unquote(value);
             _ = Encoding.GetEncoding(value);
         }
-        else if (!IsQuotedstring(value))
+        else if (!IsQuotedString(value))
         {
             CheckToken(value);
         }
     }
 
-    protected string Unquote(string s) => IsQuotedstring(s) ? s.Substring(1, s.Length - 1 - 1) : s;
+    protected string Unquote(string s) => IsQuotedString(s) ? s.Substring(1, s.Length - 1 - 1) : s;
 
     public bool IsWildcardType => WILDCARD_TYPE.Equals(Type);
 
@@ -290,7 +287,7 @@ public class MimeType : IComparable<MimeType>
     public bool IsPresentIn<T>(ICollection<T> mimeTypes)
         where T : MimeType
     {
-        foreach (MimeType mimeType in mimeTypes)
+        foreach (var mimeType in mimeTypes)
         {
             if (mimeType.EqualsTypeAndSubtype(this))
             {
@@ -303,7 +300,7 @@ public class MimeType : IComparable<MimeType>
 
     public override bool Equals(object other)
     {
-        if (this == other)
+        if (ReferenceEquals(this, other))
         {
             return true;
         }
@@ -328,13 +325,13 @@ public class MimeType : IComparable<MimeType>
 
     public override string ToString()
     {
-        var value = _tostringValue;
+        var value = _toStringValue;
         if (value == null)
         {
             var builder = new StringBuilder();
             AppendTo(builder);
             value = builder.ToString();
-            _tostringValue = value;
+            _toStringValue = value;
         }
 
         return value;
@@ -384,7 +381,7 @@ public class MimeType : IComparable<MimeType>
             {
                 var thisCharset = Encoding;
                 var otherCharset = other.Encoding;
-                if (thisCharset != otherCharset)
+                if (!Equals(thisCharset, otherCharset))
                 {
                     if (thisCharset == null)
                     {
@@ -436,7 +433,7 @@ public class MimeType : IComparable<MimeType>
         return map;
     }
 
-    private bool IsQuotedstring(string s)
+    private bool IsQuotedString(string s)
     {
         if (s.Length < 2)
         {

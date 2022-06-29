@@ -478,12 +478,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Can't compile this as we aren't going down the getfalse() branch in our evaluation
         expression = _parser.ParseExpression("GetTrue() or GetFalse()");
         resultI = expression.GetValue<bool>(tc);
+        Assert.True(resultI);
         AssertCantCompile(expression);
 
         expression = _parser.ParseExpression("A or B");
         tc.A = true;
         tc.B = true;
         resultI = expression.GetValue<bool>(tc);
+        Assert.True(resultI);
         AssertCantCompile(expression); // Haven't yet been into second branch
         tc.A = false;
         tc.B = true;
@@ -542,6 +544,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.A = false;
         tc.B = false;
         resultI = expression.GetValue<bool>(tc);
+        Assert.False(resultI);
         AssertCantCompile(expression); // Haven't yet been into second branch
         tc.A = true;
         tc.B = false;
@@ -856,7 +859,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Here the target method takes Object... and we are passing a string
         _expression = _parser.ParseExpression("#DoFormat('hey {0}', 'there')");
         context = new StandardEvaluationContext();
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
@@ -866,7 +869,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         _expression = _parser.ParseExpression("#DoFormat([0], 'there')");
         context = new StandardEvaluationContext(new object[] { "hey {0}" });
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
@@ -876,7 +879,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         _expression = _parser.ParseExpression("#DoFormat([0], #arg)");
         context = new StandardEvaluationContext(new object[] { "hey {0}" });
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod("Format", new[] { typeof(string), typeof(object[]) }));
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         context.SetVariable("arg", "there");
         ((SpelExpression)_expression).EvaluationContext = context;
 
@@ -890,7 +893,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReference()
     {
         var ctx = new StandardEvaluationContext();
-        var m = GetType().GetMethod("Concat", new[] { typeof(string), typeof(string) });
+        var m = GetType().GetMethod(nameof(Concat), new[] { typeof(string), typeof(string) });
         ctx.SetVariable("Concat", m);
 
         _expression = _parser.ParseExpression("#Concat('a','b')");
@@ -912,7 +915,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         ctx.SetVariable("b", "boo");
         Assert.Equal("fooboo", _expression.GetValue(ctx));
 
-        m = typeof(Math).GetMethod("Pow", new[] { typeof(double), typeof(double) });
+        m = typeof(Math).GetMethod(nameof(Math.Pow), new[] { typeof(double), typeof(double) });
         ctx.SetVariable("kapow", m);
         _expression = _parser.ParseExpression("#kapow(2.0d,2.0d)");
         Assert.Equal(4.0d, _expression.GetValue(ctx));
@@ -925,7 +928,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         // Confirms visibility of what is being called.
         var context = new StandardEvaluationContext(new object[] { "1" });
-        var m = typeof(SomeCompareMethod).GetMethod("Compare", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(object), typeof(object) }, null);
+        var m = typeof(SomeCompareMethod).GetMethod("PrivateCompare", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(object), typeof(object) }, null);
         context.RegisterFunction("doCompare", m);
         context.SetVariable("arg", "2");
 
@@ -936,7 +939,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // type not public but method is
         context = new StandardEvaluationContext(new object[] { "1" });
-        m = typeof(SomeCompareMethod).GetMethod("Compare2", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(object), typeof(object) }, null);
+        m = typeof(SomeCompareMethod).GetMethod(nameof(SomeCompareMethod.PublicCompare), BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(object), typeof(object) }, null);
         context.RegisterFunction("doCompare", m);
         context.SetVariable("arg", "2");
         _expression = _parser.ParseExpression("#doCompare([0],#arg)");
@@ -948,7 +951,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceNonCompilableArguments_SPR12359()
     {
         var context = new StandardEvaluationContext(new object[] { "1" });
-        var m = typeof(SomeCompareMethod2).GetMethod("Negate", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(int) }, null);
+        var m = typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Negate), BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(int) }, null);
         context.RegisterFunction("negate", m);
         context.SetVariable("arg", "2");
 
@@ -966,14 +969,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceVarargs_SPR12359()
     {
         var context = new StandardEvaluationContext();
-        context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod("Append", new[] { typeof(string[]) }));
-        context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod("Append2", new[] { typeof(object[]) }));
-        context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod("Append3", new[] { typeof(string[]) }));
-        context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod("Append4", new[] { typeof(string), typeof(string[]) }));
-        context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod("AppendChar", new[] { typeof(char[]) }));
-        context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod("Sum", new[] { typeof(int[]) }));
-        context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod("SumDouble", new[] { typeof(double[]) }));
-        context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod("SumFloat", new[] { typeof(float[]) }));
+        context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append), new[] { typeof(string[]) }));
+        context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append2), new[] { typeof(object[]) }));
+        context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append3), new[] { typeof(string[]) }));
+        context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append4), new[] { typeof(string), typeof(string[]) }));
+        context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.AppendChar), new[] { typeof(char[]) }));
+        context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Sum), new[] { typeof(int[]) }));
+        context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumDouble), new[] { typeof(double[]) }));
+        context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumFloat), new[] { typeof(float[]) }));
 
         context.SetVariable("stringArray", new[] { "x", "y", "z" });
         context.SetVariable("intArray", new[] { 5, 6, 9 });
@@ -1154,7 +1157,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceVarargs()
     {
         var ctx = new StandardEvaluationContext();
-        var m = GetType().GetMethod("Join", new[] { typeof(string[]) });
+        var m = GetType().GetMethod(nameof(Join), new[] { typeof(string[]) });
         ctx.SetVariable("join", m);
         _expression = _parser.ParseExpression("#join('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(ctx));
@@ -3515,9 +3518,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         // Static const field access on a T() referenced type
         _expression = _parser.ParseExpression("T(Int32).MaxValue");
-        Assert.Equal(2147483647, _expression.GetValue<int>());
+        Assert.Equal(2_147_483_647, _expression.GetValue<int>());
         AssertCanCompile(_expression);
-        Assert.Equal(2147483647, _expression.GetValue<int>());
+        Assert.Equal(2_147_483_647, _expression.GetValue<int>());
 
         // Static field access on a T() referenced type
         _expression = _parser.ParseExpression("T(String).Empty");
@@ -3732,9 +3735,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var tc = new TestClass10();
 
-        // Should call the non varargs version of concat
+        // Should call the non varargs version of Concat1
         // (which causes the '::' prefix in test output)
-        _expression = _parser.ParseExpression("Concat('test')");
+        _expression = _parser.ParseExpression("Concat1('test')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("::test", tc.S);
@@ -3744,8 +3747,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("::test", tc.S);
         tc.Reset();
 
-        // This will call the varargs concat with an empty array
-        _expression = _parser.ParseExpression("Concat()");
+        // This will call the varargs Concat1 with an empty array
+        _expression = _parser.ParseExpression("Concat1()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(string.Empty, tc.S);
@@ -3755,7 +3758,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(string.Empty, tc.S);
         tc.Reset();
 
-        // Should call the non varargs version of concat
+        // Should call the non varargs version of Concat2
         // (which causes the '::' prefix in test output)
         _expression = _parser.ParseExpression("Concat2('test')");
         AssertCantCompile(_expression);
@@ -3767,7 +3770,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("::test", tc.S);
         tc.Reset();
 
-        // This will call the varargs concat with an empty array
+        // This will call the varargs Concat2 with an empty array
         _expression = _parser.ParseExpression("Concat2()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
@@ -4074,10 +4077,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         _expression = _parser.ParseExpression("Four()");
         AssertCantCompile(_expression);
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         AssertCanCompile(_expression);
         tc.Reset();
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         tc.Reset();
 
         // static method, reference type return
@@ -4092,10 +4095,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // static method, primitive type return
         _expression = _parser.ParseExpression("Six()");
         AssertCantCompile(_expression);
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         AssertCanCompile(_expression);
         tc.Reset();
-        Assert.Equal(3277700L, _expression.GetValue(tc));
+        Assert.Equal(3_277_700L, _expression.GetValue(tc));
         tc.Reset();
 
         // non-static method, one parameter of reference type
@@ -4679,10 +4682,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var payload = new Payload();
         _expression = _parser.ParseExpression("DR[0].Threeee");
-        var v = _expression.GetValue(payload);
+        _expression.GetValue(payload);
 
         var expression = _parser.ParseExpression("DR[0].Threeee.Four lt 0.1d?#root:null");
-        v = expression.GetValue(payload);
+        var v = expression.GetValue(payload);
 
         AssertCanCompile(expression);
         var vc = expression.GetValue(payload);
@@ -5471,17 +5474,39 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     }
 
     #region Test Classes
-#pragma warning disable IDE1006
-#pragma warning disable IDE0044
-#pragma warning disable IDE0051
-#pragma warning disable SA1307
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable IDE0051 // Remove unused private members
+#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 
-    public class AHolder
+    public static class AHolder
     {
         public static A GetA()
         {
             return new A(20);
         }
+    }
+
+    public static class DelegatingStringFormat
+    {
+        public static string Format(string s, params object[] args)
+        {
+            return string.Format(s, args);
+        }
+    }
+
+    private static class SomeCompareMethod
+    {
+        public static int PublicCompare(object o1, object o2)
+        {
+            return -1;
+        }
+
+#pragma warning disable S1144 // Unused private types or members should be removed
+        private static int PrivateCompare(object o1, object o2)
+        {
+            return -1;
+        }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     public struct A
@@ -5527,7 +5552,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class MyAccessor : ICompilablePropertyAccessor
     {
-        private static readonly MethodInfo _method = typeof(Payload2).GetMethod("GetField", new[] { typeof(string) });
+        private static readonly MethodInfo _method = typeof(Payload2).GetMethod(nameof(Payload2.GetField), new[] { typeof(string) });
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
@@ -5726,7 +5751,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
     }
 
+#pragma warning disable S2326 // Unused type parameters should be removed
     public interface IMessage<T>
+#pragma warning restore S2326 // Unused type parameters should be removed
     {
         MessageHeaders Headers { get; }
 
@@ -5784,7 +5811,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Payload2
     {
-        private string _var2 = "def";
+        private readonly string _var2 = "def";
 
         public string Var1 { get; } = "abc";
 
@@ -5838,7 +5865,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Payload
     {
-        public Two[] DR { get; } = new[] { new Two() };
+        public Two[] DR { get; } = { new Two() };
 
         public Two Holder = new ();
     }
@@ -5869,8 +5896,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public static byte B2 = 66;
         public static byte B3 = 67;
 
-        public static string[] StringArray = new[] { "aaa", "bbb", "ccc" };
-        public static int[] IntArray = new[] { 11, 22, 33 };
+        public static string[] StringArray = { "aaa", "bbb", "ccc" };
+        public static int[] IntArray = { 11, 22, 33 };
 
         public int I;
         public string S;
@@ -5891,7 +5918,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public static long Six()
         {
-            return 3277700L;
+            return 3_277_700L;
         }
 
         public static void Ten(int toset)
@@ -5925,7 +5952,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public long Four()
         {
-            return 3277700L;
+            return 3_277_700L;
         }
 
         public void Seven(string toset)
@@ -6157,12 +6184,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             S = null;
         }
 
-        public void Concat(string arg)
+        public void Concat1(string arg)
         {
             S = $"::{arg}";
         }
 
-        public void Concat(params string[] vargs)
+        public void Concat1(params string[] vargs)
         {
             if (vargs == null)
             {
@@ -6227,10 +6254,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             I = (int)i;
         }
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         private TestClass8(string a, string b)
         {
             S = a + b;
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     public class Obj
@@ -6365,13 +6394,15 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         public MyContext(Dictionary<string, string> data)
         {
-            this.Data = data;
+            Data = data;
         }
 
         public Dictionary<string, string> Data { get; }
     }
 
+#pragma warning disable S1118 // Utility classes should not have public constructors
     public class TestClass7
+#pragma warning restore S1118 // Utility classes should not have public constructors
     {
         public static string Property = "UK 123".Split(' ')[0];
 
@@ -6455,7 +6486,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
+#pragma warning disable S1118 // Utility classes should not have public constructors
     public class SomeCompareMethod2
+#pragma warning restore S1118 // Utility classes should not have public constructors
     {
         public static int Negate(int i1)
         {
@@ -6552,14 +6585,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class DelegatingStringFormat
-    {
-        public static string Format(string s, params object[] args)
-        {
-            return string.Format(s, args);
-        }
-    }
-
     public class Three
     {
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1307:Accessible fields should begin with upper-case letter", Justification = "Used in Test")]
@@ -6628,31 +6653,15 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public bool B { get; set; }
     }
 
-    private class TestClass9
+    private sealed class TestClass9
     {
         public TestClass9(int i)
         {
         }
     }
 
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:Access modifier should be declared", Justification = "Used in Test")]
-    private sealed class SomeCompareMethod
-    {
-        // public
-        public static int Compare2(object o1, object o2)
-        {
-            return -1;
-        }
-
-        // method not public
-        static int Compare(object o1, object o2)
-        {
-            return -1;
-        }
-    }
-#pragma warning restore SA1307
-#pragma warning restore IDE1006
-#pragma warning restore IDE0044
-#pragma warning restore IDE0051
+#pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore IDE0051 // Remove unused private members
     #endregion Test Classes
 }

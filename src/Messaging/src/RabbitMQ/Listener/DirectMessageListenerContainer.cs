@@ -741,7 +741,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                         DoShutdown();
                         try
                         {
-                            Thread.Sleep(nextBackOff); // NOSONAR
+                            Thread.Sleep(nextBackOff);
                         }
                         catch (Exception e1)
                         {
@@ -885,7 +885,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
     }
 
-    protected internal class SimpleConsumer : RC.DefaultBasicConsumer
+    protected internal sealed class SimpleConsumer : RC.DefaultBasicConsumer
     {
         private readonly DirectMessageListenerContainer _container;
         private readonly IConnection _connection;
@@ -994,7 +994,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                 }
                 catch (Exception)
                 {
-                    // NOSONAR
+                    // Intentionally left empty.
                 }
             }
         }
@@ -1065,7 +1065,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
             TransactionTemplate ??= new TransactionTemplate(TransactionManager, TransactionAttribute, _logger);
 
-            TransactionTemplate.Execute<object>(s =>
+            TransactionTemplate.Execute<object>(_ =>
             {
                 var resourceHolder = ConnectionFactoryUtils.BindResourceToTransaction(
                     new RabbitResourceHolder(Model, false, _container._loggerFactory?.CreateLogger<RabbitResourceHolder>()), ConnectionFactory, true);
@@ -1087,7 +1087,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
                 // catch (Throwable e2)
                 // {
-                //    //NOSONAR ok to catch Throwable here because we re-throw it below
                 //    throw new WrappedTransactionException(e2);
                 // }
                 return null;

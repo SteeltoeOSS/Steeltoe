@@ -122,7 +122,7 @@ public class EventSourceListener : EventListener
 
         switch (payloadValue)
         {
-            case string stringValue:
+            case string:
                 break;
             case short shortValue:
                 longValue = shortValue;

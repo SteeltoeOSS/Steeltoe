@@ -21,11 +21,11 @@ public class EventCounterListener : EventListener
     private readonly string _eventName = "EventCounters";
     private readonly IMetricsObserverOptions _options;
 
-    private ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new ();
-    private ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new ();
+    private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new ();
+    private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new ();
 
-    private ConcurrentDictionary<string, double> _lastDoubleValue = new ();
-    private ConcurrentDictionary<string, long> _lastLongValue = new ();
+    private readonly ConcurrentDictionary<string, double> _lastDoubleValue = new ();
+    private readonly ConcurrentDictionary<string, long> _lastLongValue = new ();
 
     public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
     {
@@ -89,7 +89,8 @@ public class EventCounterListener : EventListener
         var counterName = string.Empty;
         var labelSet = new List<KeyValuePair<string, object>>();
         var excludedMetric = false;
-        string counterDisplayUnit = null, counterDisplayName = null;
+        string counterDisplayUnit = null;
+        string counterDisplayName = null;
         foreach (var payload in eventPayload)
         {
             if (excludedMetric)
@@ -100,7 +101,7 @@ public class EventCounterListener : EventListener
             var key = payload.Key;
             switch (key)
             {
-                case var kn when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
+                case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
                     if (_options.ExcludedMetrics.Contains(counterName))
                     {
@@ -108,27 +109,27 @@ public class EventCounterListener : EventListener
                     }
 
                     break;
-                case var kn when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
+                case var _ when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
                     counterDisplayName = payload.Value.ToString();
                     labelSet.Add(KeyValuePair.Create("DisplayName", (object)counterDisplayName));
                     break;
-                case var kn when key.Equals("DisplayUnits", StringComparison.OrdinalIgnoreCase):
+                case var _ when key.Equals("DisplayUnits", StringComparison.OrdinalIgnoreCase):
                     counterDisplayUnit = payload.Value.ToString();
                     labelSet.Add(KeyValuePair.Create("DisplayUnits", (object)counterDisplayUnit));
                     break;
-                case var kn when key.Equals("Mean", StringComparison.OrdinalIgnoreCase):
+                case var _ when key.Equals("Mean", StringComparison.OrdinalIgnoreCase):
                     doubleValue = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
                     break;
-                case var kn when key.Equals("Increment", StringComparison.OrdinalIgnoreCase):
+                case var _ when key.Equals("Increment", StringComparison.OrdinalIgnoreCase):
                     longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
                     break;
-                case var kn when key.Equals("IntervalSec", StringComparison.OrdinalIgnoreCase):
-                    var actualInterval = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
+                case var _ when key.Equals("IntervalSec", StringComparison.OrdinalIgnoreCase):
+                    doubleValue = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
                     break;
-                case var kn when key.Equals("Count", StringComparison.OrdinalIgnoreCase):
+                case var _ when key.Equals("Count", StringComparison.OrdinalIgnoreCase):
                     longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
                     break;
-                case var kn when key.Equals("Metadata", StringComparison.OrdinalIgnoreCase):
+                case var _ when key.Equals("Metadata", StringComparison.OrdinalIgnoreCase):
                     var metadata = payload.Value.ToString();
                     if (!string.IsNullOrEmpty(metadata))
                     {
@@ -150,14 +151,14 @@ public class EventCounterListener : EventListener
         {
             _lastDoubleValue[metricName] = doubleValue.Value;
 
-            var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
+            _doubleMeasureMetrics.GetOrAddEx(
                 metricName,
                 name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
         else if (longValue.HasValue)
         {
             _lastLongValue[metricName] = longValue.Value;
-            var longMetric = _longMeasureMetrics.GetOrAddEx(
+            _longMeasureMetrics.GetOrAddEx(
                 metricName,
                 name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
         }

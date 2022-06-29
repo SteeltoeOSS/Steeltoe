@@ -422,7 +422,7 @@ internal unsafe class MemoryReader
     #region Private Functions
     private bool MisalignedRead(ulong addr, out ulong value)
     {
-        bool res = _dataReader.ReadMemory(addr, _ptr, _ptr.Length, out int size);
+        bool res = _dataReader.ReadMemory(addr, _ptr, _ptr.Length, out _);
         fixed (byte* b = _ptr)
             if (_ptr.Length == 4)
                 value = *((uint*)b);
@@ -433,14 +433,14 @@ internal unsafe class MemoryReader
 
     private bool MisalignedRead(ulong addr, out uint value)
     {
-        bool res = _dataReader.ReadMemory(addr, _dword, _dword.Length, out int size);
+        bool res = _dataReader.ReadMemory(addr, _dword, _dword.Length, out _);
         value = BitConverter.ToUInt32(_dword, 0);
         return res;
     }
 
     private bool MisalignedRead(ulong addr, out int value)
     {
-        bool res = _dataReader.ReadMemory(addr, _dword, _dword.Length, out int size);
+        bool res = _dataReader.ReadMemory(addr, _dword, _dword.Length, out _);
         value = BitConverter.ToInt32(_dword, 0);
         return res;
     }

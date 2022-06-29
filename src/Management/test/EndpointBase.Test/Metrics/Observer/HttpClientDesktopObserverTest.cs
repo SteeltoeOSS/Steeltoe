@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class HttpClientDesktopObserverTest : BaseTest
 {
     [Fact]
@@ -25,7 +25,7 @@ public class HttpClientDesktopObserverTest : BaseTest
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();
-        var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
+        _ = new HttpClientDesktopObserver(options, null, viewRegistry);
 
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.time");
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.desktop.client.request.count");
@@ -46,8 +46,11 @@ public class HttpClientDesktopObserverTest : BaseTest
         Assert.False(observer.ShouldIgnoreRequest("/v2/apps"));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void ProcessEvent_IgnoresNulls()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var options = new MetricsObserverOptions();
 

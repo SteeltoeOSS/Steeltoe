@@ -237,7 +237,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             $"Channel '{ServiceName}' expected one of the following datataypes [{string.Join(",", DataTypes)}], but received [{message.Payload.GetType()}]");
     }
 
-    internal class ChannelInterceptorList
+    internal sealed class ChannelInterceptorList
     {
         private readonly object _lock = new ();
         private readonly ILogger _logger;

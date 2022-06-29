@@ -39,10 +39,10 @@ public class TestServerOpenIdStartup
             {
                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             })
-            .AddCloudFoundryOpenIdConnect(Configuration, (options, config) =>
+            .AddCloudFoundryOpenIdConnect(Configuration, (options, _) =>
             {
-                var configRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/.well-known/openid-configuration").Respond("application/json", openIdConfigResponse);
-                var jwksRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/token_keys").Respond("application/json", jwksResponse);
+                mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/.well-known/openid-configuration").Respond("application/json", openIdConfigResponse);
+                mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/token_keys").Respond("application/json", jwksResponse);
                 options.Backchannel = new HttpClient(mockHttpMessageHandler);
             });
     }

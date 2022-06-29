@@ -52,7 +52,7 @@ public class DiscoveryHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
-        var host = await hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).StartAsync();
+        await hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).StartAsync();
 
         Assert.True(true);
     }

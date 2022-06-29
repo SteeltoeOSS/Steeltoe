@@ -4,7 +4,6 @@
 
 using Moq;
 using Steeltoe.Common.Transaction;
-using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
@@ -21,9 +20,12 @@ public class ExternalTxManagerTests
     /// <summary>
     /// Verify that up-stack RabbitTemplate uses listener's channel (MessageListener)
     /// </summary>
-    /// TODO: Test is incomplete
+    // TODO: Test is incomplete
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void MessageListenerTest()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
@@ -31,19 +33,16 @@ public class ExternalTxManagerTests
 
         onlyChannel.Setup(m => m.IsOpen).Returns(true);
 
-        var tooManyModels = new Exception();
-
         var cachingConnectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
         mockConnectionFactory.Setup(m => m.CreateConnection()).Returns(mockConnection.Object);
         mockConnection.Setup(m => m.IsOpen).Returns(true);
-        var ensureOneModel = EnsureOneModel(onlyChannel.Object, tooManyModels);
 
         mockConnection.Setup(m => m.CreateModel()).Returns(onlyChannel.Object);
 
         RC.IBasicConsumer consumer;
         var consumerLatch = new CountdownEvent(1);
         onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), null, It.IsAny<RC.IBasicConsumer>()))
-            .Returns((string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, RC.IBasicConsumer iConsumer) =>
+            .Returns((string _, bool _, string _, bool _, bool _, IDictionary<string, object> _, RC.IBasicConsumer iConsumer) =>
             {
                 consumer = iConsumer;
                 consumerLatch.Signal();
@@ -79,28 +78,10 @@ public class ExternalTxManagerTests
         // Assert.True(consumerLatch.Wait(TimeSpan.FromSeconds(10)));
     }
 
-    private Func<RC.IModel> EnsureOneModel(RC.IModel onlyModel, Exception tooManyChannels)
-    {
-        var done = new AtomicBoolean();
-        return () =>
-        {
-            if (!done.Value)
-            {
-                done.Value = true;
-                return onlyModel;
-            }
-
-            tooManyChannels = new Exception("More than one Model requested");
-            var modelMock = new Mock<RC.IModel>();
-            modelMock.Setup(m => m.IsOpen).Returns(true);
-            return modelMock.Object;
-        };
-    }
-
     private sealed class TestListener : IMessageListener
     {
-        private IConnectionFactory _connectionFactory;
-        private CountdownEvent _latch;
+        private readonly IConnectionFactory _connectionFactory;
+        private readonly CountdownEvent _latch;
 
         public TestListener(IConnectionFactory connectionFactory, CountdownEvent latch)
         {
@@ -126,13 +107,7 @@ public class ExternalTxManagerTests
 
     private sealed class DummyTxManager : AbstractPlatformTransactionManager
     {
-        private volatile bool _committed;
-        private volatile bool _rolledBack;
-        private volatile CountdownEvent _latch = new (1);
-
-        public bool Committed => _committed;
-
-        public bool RolledBack => _rolledBack;
+        private readonly CountdownEvent _latch = new (1);
 
         protected override void DoBegin(object transaction, ITransactionDefinition definition)
         {
@@ -140,7 +115,6 @@ public class ExternalTxManagerTests
 
         protected override void DoCommit(DefaultTransactionStatus status)
         {
-            _committed = true;
             _latch.Signal();
         }
 
@@ -151,7 +125,6 @@ public class ExternalTxManagerTests
 
         protected override void DoRollback(DefaultTransactionStatus status)
         {
-            _rolledBack = true;
             _latch.Signal();
         }
     }

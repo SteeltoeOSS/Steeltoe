@@ -15,21 +15,21 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DirectChannelWriterTest
 {
-    private ServiceCollection services;
+    private readonly ServiceCollection _services;
 
     public DirectChannelWriterTest()
     {
-        services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        _services = new ServiceCollection();
+        _services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var config = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(config);
-        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        _services.AddSingleton<IConfiguration>(config);
+        _services.AddSingleton<IApplicationContext, GenericApplicationContext>();
     }
 
     [Fact]
     public async Task TestWriteAsync()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
@@ -44,7 +44,7 @@ public class DirectChannelWriterTest
     [Fact]
     public void TestTryWrite()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
@@ -59,7 +59,7 @@ public class DirectChannelWriterTest
     [Fact]
     public async Task TestWaitToWriteAsync()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
@@ -71,7 +71,7 @@ public class DirectChannelWriterTest
     [Fact]
     public void TestTryComplete()
     {
-        var provider = services.BuildServiceProvider();
+        var provider = _services.BuildServiceProvider();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         Assert.False(channel.Writer.TryComplete());
     }

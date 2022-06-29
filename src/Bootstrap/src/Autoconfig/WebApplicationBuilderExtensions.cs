@@ -5,6 +5,7 @@
 #if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
@@ -131,10 +132,9 @@ public static class WebApplicationBuilderExtensions
         return false;
     }
 
-    private static object Log(this object obj, string message)
+    private static void Log(this IServiceCollection obj, string message)
     {
         _logger.LogInformation(message);
-        return obj;
     }
 
     #region Config Providers
@@ -143,32 +143,45 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Configuration.AddConfigServer(webApplicationBuilder.Environment.EnvironmentName, _loggerFactory);
         webApplicationBuilder.Services.AddConfigServerServices();
-        webApplicationBuilder.Log(LogMessages.WireConfigServer);
+        webApplicationBuilder.Services.Log(LogMessages.WireConfigServer);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireCloudFoundryConfiguration(this WebApplicationBuilder webApplicationBuilder) =>
-        webApplicationBuilder.Configuration.AddCloudFoundry().Log(LogMessages.WireCloudFoundryConfiguration);
+    private static void WireCloudFoundryConfiguration(this WebApplicationBuilder webApplicationBuilder)
+    {
+        webApplicationBuilder.Configuration.AddCloudFoundry();
+        webApplicationBuilder.Services.Log(LogMessages.WireCloudFoundryConfiguration);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesConfiguration(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Configuration.AddKubernetes(loggerFactory: _loggerFactory);
         webApplicationBuilder.Services.AddKubernetesConfigurationServices();
-        webApplicationBuilder.Log(LogMessages.WireKubernetesConfiguration);
+        webApplicationBuilder.Services.Log(LogMessages.WireKubernetesConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRandomValueProvider(this WebApplicationBuilder webApplicationBuilder) =>
-         webApplicationBuilder.Configuration.AddRandomValueSource(_loggerFactory).Log(LogMessages.WireRandomValueProvider);
+    private static void WireRandomValueProvider(this WebApplicationBuilder webApplicationBuilder)
+    {
+        webApplicationBuilder.Configuration.AddRandomValueSource(_loggerFactory);
+        webApplicationBuilder.Services.Log(LogMessages.WireRandomValueProvider);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WirePlaceholderResolver(this WebApplicationBuilder webApplicationBuilder) =>
-        ((IConfigurationBuilder)webApplicationBuilder.Configuration).AddPlaceholderResolver(_loggerFactory).Log(LogMessages.WirePlaceholderResolver);
+    private static void WirePlaceholderResolver(this WebApplicationBuilder webApplicationBuilder)
+    {
+        ((IConfigurationBuilder)webApplicationBuilder.Configuration).AddPlaceholderResolver(_loggerFactory);
+        webApplicationBuilder.Services.Log(LogMessages.WirePlaceholderResolver);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireConnectorConfiguration(this WebApplicationBuilder webApplicationBuilder) =>
-        webApplicationBuilder.Configuration.AddConnectionStrings().Log(LogMessages.WireConnectorsConfiguration);
+    private static void WireConnectorConfiguration(this WebApplicationBuilder webApplicationBuilder)
+    {
+        webApplicationBuilder.Configuration.AddConnectionStrings();
+        webApplicationBuilder.Services.Log(LogMessages.WireConnectorsConfiguration);
+    }
+
     #endregion
 
     #region Connectors
@@ -222,7 +235,7 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Services.AddKubernetesActuators(webApplicationBuilder.Configuration);
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
-        webApplicationBuilder.Log(LogMessages.WireKubernetesActuators);
+        webApplicationBuilder.Services.Log(LogMessages.WireKubernetesActuators);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -230,7 +243,7 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Services.AddAllActuators(webApplicationBuilder.Configuration);
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
-        webApplicationBuilder.Log(LogMessages.WireAllActuators);
+        webApplicationBuilder.Services.Log(LogMessages.WireAllActuators);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -241,19 +254,23 @@ public static class WebApplicationBuilderExtensions
             return;
         }
 
-        webApplicationBuilder.AddWavefrontMetrics().Log(LogMessages.WireWavefrontMetrics);
+        webApplicationBuilder.AddWavefrontMetrics();
+        webApplicationBuilder.Services.Log(LogMessages.WireWavefrontMetrics);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDynamicSerilog(this WebApplicationBuilder webApplicationBuilder) =>
-        webApplicationBuilder.Logging.AddDynamicSerilog().Log(LogMessages.WireDynamicSerilog);
+    private static void WireDynamicSerilog(this WebApplicationBuilder webApplicationBuilder)
+    {
+        webApplicationBuilder.Logging.AddDynamicSerilog();
+        webApplicationBuilder.Services.Log(LogMessages.WireDynamicSerilog);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireCloudFoundryContainerIdentity(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Configuration.AddCloudFoundryContainerIdentity();
         webApplicationBuilder.Services.AddCloudFoundryCertificateAuth();
-        webApplicationBuilder.Log(LogMessages.WireCloudFoundryContainerIdentity);
+        webApplicationBuilder.Services.Log(LogMessages.WireCloudFoundryContainerIdentity);
     }
 }
 #endif

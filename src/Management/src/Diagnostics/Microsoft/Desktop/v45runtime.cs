@@ -509,7 +509,7 @@ internal class V45Runtime : DesktopRuntimeBase
     internal override IList<MethodTableTokenPair> GetMethodTableList(ulong module)
     {
         List<MethodTableTokenPair> mts = new List<MethodTableTokenPair>();
-        int res = _sos.TraverseModuleMap(0, module, delegate (uint index, ulong mt, IntPtr token)
+        int res = _sos.TraverseModuleMap(0, module, delegate (uint index, ulong mt, IntPtr _)
             { mts.Add(new MethodTableTokenPair(mt, index)); },
             IntPtr.Zero);
 

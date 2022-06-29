@@ -10,9 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Lifecycle;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public class DefaultLifecycleProcessor : ILifecycleProcessor
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     private readonly ILogger _logger;
     private readonly IApplicationContext _context;
@@ -50,11 +49,23 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
 
     public async Task OnClose() => await Stop();
 
-    public void Dispose() => OnClose().Wait();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     internal static int GetPhase(ILifecycle bean)
     {
         return bean is IPhased phased ? phased.Phase : 0;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            OnClose().Wait();
+        }
     }
 
     private async Task StartServices(bool autoStartupOnly)

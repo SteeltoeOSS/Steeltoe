@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonLeaseInfo
+internal sealed class JsonLeaseInfo
 {
     [JsonPropertyName("renewalIntervalInSecs")]
     public int RenewalIntervalInSecs { get; set; }

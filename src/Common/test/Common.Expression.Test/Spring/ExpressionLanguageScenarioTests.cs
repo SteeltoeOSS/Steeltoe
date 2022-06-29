@@ -31,13 +31,14 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
             var expr = parser.ParseRaw("new String('hello world')");
 
             // Evaluate it using a 'standard' context
-            var value = expr.GetValue();
+            var value1 = expr.GetValue();
 
             // They are reusable
-            value = expr.GetValue();
+            var value2 = expr.GetValue();
 
-            Assert.Equal("hello world", value);
-            Assert.IsType<string>(value);
+            Assert.Equal(value1, value2);
+            Assert.Equal("hello world", value2);
+            Assert.IsType<string>(value1);
         }
         catch (SpelEvaluationException ex)
         {
@@ -108,6 +109,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // or using assignment within the expression
         expr = parser.ParseRaw("Str='wabble'");
         value = expr.GetValue(ctx);
+        Assert.Equal("wabble", value);
         expr = parser.ParseRaw("Str");
         value = expr.GetValue(ctx);
         Assert.Equal("wabble", value);
@@ -120,6 +122,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // ... and set through setter
         expr = parser.ParseRaw("Property=4");
         value = expr.GetValue(ctx);
+        Assert.Equal(4, value);
         expr = parser.ParseRaw("Property");
         value = expr.GetValue(ctx);
         Assert.Equal(4, value);
@@ -135,7 +138,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
             // Use the standard evaluation context
             var ctx = new StandardEvaluationContext();
-            ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod("Repeat", new[] { typeof(string) }));
+            ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod(nameof(ExpressionLanguageScenarioTests.Repeat), new[] { typeof(string) }));
 
             var expr = parser.ParseRaw("#Repeat('hello')");
             var value = expr.GetValue(ctx);
@@ -187,13 +190,13 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
     public class FruitColourAccessor : IPropertyAccessor
     {
-        private static Dictionary<string, Color> propertyMap = new ();
+        private static readonly Dictionary<string, Color> _propertyMap = new ();
 
         static FruitColourAccessor()
         {
-            propertyMap.Add("Banana", Color.Yellow);
-            propertyMap.Add("Apple", Color.Red);
-            propertyMap.Add("Orange", Color.Orange);
+            _propertyMap.Add("Banana", Color.Yellow);
+            _propertyMap.Add("Apple", Color.Red);
+            _propertyMap.Add("Orange", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -203,12 +206,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return propertyMap.ContainsKey(name);
+            return _propertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            propertyMap.TryGetValue(name, out var value);
+            _propertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 
@@ -224,12 +227,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
     public class VegetableColourAccessor : IPropertyAccessor
     {
-        private static Dictionary<string, Color> propertyMap = new ();
+        private static readonly Dictionary<string, Color> _propertyMap = new ();
 
         static VegetableColourAccessor()
         {
-            propertyMap.Add("Pea", Color.Green);
-            propertyMap.Add("Carrot", Color.Orange);
+            _propertyMap.Add("Pea", Color.Green);
+            _propertyMap.Add("Carrot", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -239,12 +242,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return propertyMap.ContainsKey(name);
+            return _propertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            propertyMap.TryGetValue(name, out var value);
+            _propertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 

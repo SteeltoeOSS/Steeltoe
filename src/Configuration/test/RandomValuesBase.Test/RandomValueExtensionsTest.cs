@@ -16,7 +16,7 @@ public class RandomValueExtensionsTest
     {
         const IConfigurationBuilder configurationBuilder = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource());
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource());
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class RandomValueExtensionsTest
     {
         const string prefix = null;
 
-        var ex = Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddRandomValueSource(prefix));
+        Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddRandomValueSource(prefix));
     }
 
     [Fact]

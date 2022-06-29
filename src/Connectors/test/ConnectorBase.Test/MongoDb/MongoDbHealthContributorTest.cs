@@ -14,7 +14,7 @@ namespace Steeltoe.Connector.MongoDb.Test;
 
 public class MongoDbHealthContributorTest
 {
-    private readonly Type mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
+    private readonly Type _mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
 
     [Fact]
     public void GetMongoDbContributor_ReturnsContributor()
@@ -41,7 +41,7 @@ public class MongoDbHealthContributorTest
         var mongoDbConfig = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
         var logrFactory = new LoggerFactory();
-        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
+        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
         var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
         var status = h.Health();
@@ -56,7 +56,7 @@ public class MongoDbHealthContributorTest
         var mongoDbConfig = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
         var logrFactory = new LoggerFactory();
-        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
+        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
         var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>());
 
         var status = h.Health();

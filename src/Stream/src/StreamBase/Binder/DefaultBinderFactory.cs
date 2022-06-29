@@ -11,9 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Stream.Binder;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly: No unmanaged resources here.
+
 public class DefaultBinderFactory : IBinderFactory, IDisposable
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     private readonly object _lock = new ();
     private readonly IBinderConfigurations _binderConfigurations;
@@ -48,17 +47,26 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
 
     public void Dispose()
     {
-        if (_binderInstanceCache != null)
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            foreach (var binder in _binderInstanceCache)
+            if (_binderInstanceCache != null)
             {
-                binder.Value.Dispose();
+                foreach (var binder in _binderInstanceCache)
+                {
+                    binder.Value.Dispose();
+                }
+
+                _binderInstanceCache = null;
             }
 
-            _binderInstanceCache = null;
+            _context?.Dispose();
         }
-
-        _context.Dispose();
     }
 
     public IBinder GetBinder(string name)

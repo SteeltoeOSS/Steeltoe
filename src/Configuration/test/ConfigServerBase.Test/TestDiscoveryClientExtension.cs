@@ -8,9 +8,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-internal class TestDiscoveryClientExtension : IDiscoveryClientExtension
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+
+internal sealed class TestDiscoveryClientExtension : IDiscoveryClientExtension
 {
     public void ApplyServices(IServiceCollection services)
     {

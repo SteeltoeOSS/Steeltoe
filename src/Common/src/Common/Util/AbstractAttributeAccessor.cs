@@ -71,7 +71,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
 
     public override bool Equals(object other)
     {
-        if (this == other)
+        if (ReferenceEquals(this, other))
         {
             return true;
         }

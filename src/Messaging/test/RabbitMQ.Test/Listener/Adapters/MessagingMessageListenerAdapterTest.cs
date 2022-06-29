@@ -21,8 +21,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessagingMessageListenerAdapterTest : AbstractTest
 {
-    private readonly DefaultMessageHandlerMethodFactory factory = new ();
-    private readonly SampleBean sample = new ();
+    private readonly DefaultMessageHandlerMethodFactory _factory = new ();
+    private readonly SampleBean _sample = new ();
 
     [Fact]
     public void BuildMessageWithStandardMessage()
@@ -33,7 +33,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
             .SetHeader(RabbitMessageHeaders.REPLY_TO, "reply")
             .Build();
         var session = new Mock<RC.IModel>();
-        var listener = GetSimpleInstance("Echo", typeof(IMessage<string>));
+        var listener = GetSimpleInstance(nameof(SampleBean.Echo), typeof(IMessage<string>));
         var replyMessage = listener.BuildMessage(session.Object, result, null);
         Assert.NotNull(replyMessage);
         Assert.Equal("Response", EncodingUtils.GetDefaultEncoding().GetString(replyMessage.Payload));
@@ -48,7 +48,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("foo");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetSimpleInstance("Fail", typeof(string));
+        var listener = GetSimpleInstance(nameof(SampleBean.Fail), typeof(string));
         try
         {
             listener.OnMessage(message, mockChannel.Object);
@@ -94,7 +94,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("foo");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetMultiInstance("Fail", "FailWithReturn", true, typeof(string), typeof(byte[]));
+        var listener = GetMultiInstance(nameof(SampleBean.Fail), nameof(SampleBean.FailWithReturn), true, typeof(string), typeof(byte[]));
         try
         {
             listener.OnMessage(message, mockChannel.Object);
@@ -139,7 +139,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("foo");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetSimpleInstance("WrongParam", typeof(int));
+        var listener = GetSimpleInstance(nameof(SampleBean.WrongParam), typeof(int));
         try
         {
             listener.OnMessage(message, mockChannel.Object);
@@ -161,12 +161,12 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("\"foo\"");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetSimpleInstance("WithGenericMessageObjectType", typeof(IMessage<object>));
+        var listener = GetSimpleInstance(nameof(SampleBean.WithGenericMessageObjectType), typeof(IMessage<object>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<string>(sample.Payload);
+        Assert.IsType<string>(_sample.Payload);
     }
 
     [Fact]
@@ -175,12 +175,12 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("{ \"foostring\" : \"bar\" }");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetSimpleInstance("WithGenericMessageFooType", typeof(IMessage<Foo>));
+        var listener = GetSimpleInstance(nameof(SampleBean.WithGenericMessageFooType), typeof(IMessage<Foo>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<Foo>(sample.Payload);
+        Assert.IsType<Foo>(_sample.Payload);
     }
 
     [Fact]
@@ -189,12 +189,12 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("\"foo\"");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetSimpleInstance("WithNonGenericMessage", typeof(IMessage));
+        var listener = GetSimpleInstance(nameof(SampleBean.WithNonGenericMessage), typeof(IMessage));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<string>(sample.Payload);
+        Assert.IsType<string>(_sample.Payload);
     }
 
     [Fact]
@@ -203,12 +203,12 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("{ \"foo\" : \"bar\" }");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetSimpleInstance("WithGenericMessageDictionaryType", typeof(IMessage<Dictionary<string, string>>));
+        var listener = GetSimpleInstance(nameof(SampleBean.WithGenericMessageDictionaryType), typeof(IMessage<Dictionary<string, string>>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessage(message, mockChannel.Object);
-        Assert.IsType<Dictionary<string, string>>(sample.Payload);
+        Assert.IsType<Dictionary<string, string>>(_sample.Payload);
     }
 
     [Fact]
@@ -217,12 +217,12 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("{ \"foo1\" : \"bar1\" }");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetBatchInstance("WithMessageBatch", typeof(List<IMessage<byte[]>>));
+        var listener = GetBatchInstance(nameof(SampleBean.WithMessageBatch), typeof(List<IMessage<byte[]>>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
-        Assert.IsType<string>(sample.BatchPayloads[0]);
+        Assert.IsType<string>(_sample.BatchPayloads[0]);
     }
 
     [Fact]
@@ -231,12 +231,12 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("{ \"foostring\" : \"bar1\" }");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetBatchInstance("WithTypedMessageBatch", typeof(List<IMessage<Foo>>));
+        var listener = GetBatchInstance(nameof(SampleBean.WithTypedMessageBatch), typeof(List<IMessage<Foo>>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
-        Assert.IsType<Foo>(sample.BatchPayloads[0]);
+        Assert.IsType<Foo>(_sample.BatchPayloads[0]);
     }
 
     [Fact]
@@ -245,12 +245,12 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var message = MessageTestUtils.CreateTextMessage("{ \"foostring\" : \"bar1\" }");
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var listener = GetBatchInstance("WithFooBatch", typeof(List<Foo>));
+        var listener = GetBatchInstance(nameof(SampleBean.WithFooBatch), typeof(List<Foo>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
-        Assert.IsType<Foo>(sample.BatchPayloads[0]);
+        Assert.IsType<Foo>(_sample.BatchPayloads[0]);
     }
 
     protected MessagingMessageListenerAdapter GetSimpleInstance(string methodName, params Type[] parameterTypes)
@@ -277,10 +277,10 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var adapter = new MessagingMessageListenerAdapter(null, null, null, returnExceptions, null);
         var methods = new List<IInvocableHandlerMethod>
         {
-            factory.CreateInvocableHandlerMethod(sample, m1),
-            factory.CreateInvocableHandlerMethod(sample, m2)
+            _factory.CreateInvocableHandlerMethod(_sample, m1),
+            _factory.CreateInvocableHandlerMethod(_sample, m2)
         };
-        var handler = new DelegatingInvocableHandler(methods, sample, null, null);
+        var handler = new DelegatingInvocableHandler(methods, _sample, null, null);
         adapter.HandlerAdapter = new HandlerAdapter(handler);
         return adapter;
     }
@@ -289,7 +289,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
     {
         var adapter = new MessagingMessageListenerAdapter(null, null, m, returnExceptions, null)
         {
-            HandlerAdapter = new HandlerAdapter(factory.CreateInvocableHandlerMethod(sample, m))
+            HandlerAdapter = new HandlerAdapter(_factory.CreateInvocableHandlerMethod(_sample, m))
         };
         return adapter;
     }
@@ -304,7 +304,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
     {
         var adapter = new BatchMessagingMessageListenerAdapter(null, null, m, false, null, null)
         {
-            HandlerAdapter = new HandlerAdapter(factory.CreateInvocableHandlerMethod(sample, m))
+            HandlerAdapter = new HandlerAdapter(_factory.CreateInvocableHandlerMethod(_sample, m))
         };
         return adapter;
     }
@@ -334,11 +334,6 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         public void WithGenericMessageObjectType(IMessage<object> message)
         {
             Payload = message.Payload;
-        }
-
-        public void WithFoo(Foo foo)
-        {
-            Payload = foo;
         }
 
         public void WithGenericMessageFooType(IMessage<Foo> message)
@@ -389,8 +384,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         }
     }
 
-    private class Foo
+    private sealed class Foo
     {
-        public string FooString { get; set; }
     }
 }

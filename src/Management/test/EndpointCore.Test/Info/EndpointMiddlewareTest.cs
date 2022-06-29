@@ -64,7 +64,7 @@ public class EndpointMiddlewareTest : BaseTest
         // in the Startup class
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -93,9 +93,9 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.True(gitNode.ContainsKey("dirty"));
         Assert.True(gitNode.ContainsKey("remote"));
         Assert.True(gitNode.ContainsKey("tags"));
-        var buildInfo = gitNode["build"].TryGetProperty("time", out var bTime);
+        gitNode["build"].TryGetProperty("time", out var bTime);
         Assert.Equal("2017-07-12T18:40:39Z", bTime.GetString());
-        var commitInfo = gitNode["commit"].TryGetProperty("time", out var cTime);
+        gitNode["commit"].TryGetProperty("time", out var cTime);
         Assert.Equal("2017-06-08T12:47:02Z", cTime.GetString());
     }
 
@@ -107,7 +107,7 @@ public class EndpointMiddlewareTest : BaseTest
         Dictionary<string, string> settings = new () { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();

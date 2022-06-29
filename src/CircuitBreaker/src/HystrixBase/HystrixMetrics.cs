@@ -10,7 +10,7 @@ public abstract class HystrixMetrics
 {
     private readonly HystrixRollingNumber _counter;
 
-    protected internal HystrixMetrics(HystrixRollingNumber counter)
+    protected HystrixMetrics(HystrixRollingNumber counter)
     {
         _counter = counter;
     }

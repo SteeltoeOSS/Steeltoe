@@ -12,17 +12,9 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test;
 /// <summary>
 /// A bad fake load balancer that only resolves requests for "replaceme" as "someresolvedhost"
 /// </summary>
-internal class FakeLoadBalancer : ILoadBalancer
+internal sealed class FakeLoadBalancer : ILoadBalancer
 {
     internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new ();
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FakeLoadBalancer"/> class.
-    /// Only capable of resolving requests for "replaceme" as "someresolvedhost"
-    /// </summary>
-    public FakeLoadBalancer()
-    {
-    }
 
     public Task<Uri> ResolveServiceInstanceAsync(Uri request)
     {

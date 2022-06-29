@@ -11,7 +11,6 @@ namespace Steeltoe.Common.Security;
 
 public class CertificateRotationService : IDisposable, ICertificateRotationService
 {
-    private readonly bool _isStarted = false;
     private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
     private readonly IDisposable _subscription;
     private CertificateOptions _lastValue;
@@ -24,11 +23,6 @@ public class CertificateRotationService : IDisposable, ICertificateRotationServi
 
     public void Start()
     {
-        if (_isStarted)
-        {
-            return;
-        }
-
         RotateCert(_optionsMonitor.CurrentValue);
         _lastValue = _optionsMonitor.CurrentValue;
     }

@@ -115,21 +115,6 @@ public class HystrixRequestLog
                                 }
 
                                 break;
-                            case HystrixEventType.SUCCESS:
-                            case HystrixEventType.FAILURE:
-                            case HystrixEventType.TIMEOUT:
-                            case HystrixEventType.BAD_REQUEST:
-                            case HystrixEventType.SHORT_CIRCUITED:
-                            case HystrixEventType.THREAD_POOL_REJECTED:
-                            case HystrixEventType.SEMAPHORE_REJECTED:
-                            case HystrixEventType.FALLBACK_SUCCESS:
-                            case HystrixEventType.FALLBACK_FAILURE:
-                            case HystrixEventType.FALLBACK_REJECTION:
-                            case HystrixEventType.FALLBACK_MISSING:
-                            case HystrixEventType.EXCEPTION_THROWN:
-                            case HystrixEventType.RESPONSE_FROM_CACHE:
-                            case HystrixEventType.CANCELLED:
-                            case HystrixEventType.COLLAPSED:
                             default:
                                 builder.Append(ev).Append(", ");
                                 break;
@@ -163,7 +148,6 @@ public class HystrixRequestLog
                     executionTime = 0;
                 }
 
-                counter = 0;
                 if (aggregatedCommandExecutionTime.TryGetValue(display, out counter))
                 {
                     // add to the existing executionTime (sum of executionTimes for duplicate command displayNames)

@@ -14,14 +14,14 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 
 public class DestinationVariableMethodArgumentResolverTest
 {
-    private readonly DestinationVariableMethodArgumentResolver resolver = new (new DefaultConversionService());
-    private readonly ResolvableMethod resolvable = ResolvableMethod.On<DestinationVariableMethodArgumentResolverTest>().Named("HandleMessage").Build();
+    private readonly DestinationVariableMethodArgumentResolver _resolver = new (new DefaultConversionService());
+    private readonly ResolvableMethod _resolvable = ResolvableMethod.On<DestinationVariableMethodArgumentResolverTest>().Named(nameof(HandleMessage)).Build();
 
     [Fact]
     public void SupportsParameter()
     {
-        Assert.True(resolver.SupportsParameter(resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg()));
-        Assert.False(resolver.SupportsParameter(resolvable.AnnotNotPresent(typeof(DestinationVariableAttribute)).Arg()));
+        Assert.True(_resolver.SupportsParameter(_resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg()));
+        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotNotPresent(typeof(DestinationVariableAttribute)).Arg()));
     }
 
     [Fact]
@@ -35,12 +35,12 @@ public class DestinationVariableMethodArgumentResolverTest
 
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
 
-        var param = resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg();
-        var result = resolver.ResolveArgument(param, message);
+        var param = _resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg();
+        var result = _resolver.ResolveArgument(param, message);
         Assert.Equal("bar", result);
 
-        param = resolvable.Annot(MessagingPredicates.DestinationVar("name")).Arg();
-        result = resolver.ResolveArgument(param, message);
+        param = _resolvable.Annot(MessagingPredicates.DestinationVar("name")).Arg();
+        result = _resolver.ResolveArgument(param, message);
         Assert.Equal("value", result);
     }
 
@@ -48,7 +48,7 @@ public class DestinationVariableMethodArgumentResolverTest
     public void ResolveArgumentNotFound()
     {
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
-        Assert.Throws<MessageHandlingException>(() => resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
+        Assert.Throws<MessageHandlingException>(() => _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
     }
 
     private void HandleMessage([DestinationVariable] string foo, [DestinationVariable("name")] string param1, string param3)

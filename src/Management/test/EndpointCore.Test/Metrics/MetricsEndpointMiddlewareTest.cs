@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test;
 
 public class MetricsEndpointMiddlewareTest : BaseTest
 {
-    private PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
+    private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
 
     [Fact]
     public void ParseTag_ReturnsExpected()

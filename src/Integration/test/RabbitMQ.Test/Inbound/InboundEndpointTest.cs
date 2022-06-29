@@ -94,7 +94,7 @@ public class InboundEndpointTest
         var listener = container.MessageListener as IChannelAwareMessageListener;
         listener.OnMessage(amqpMessage, null);
         var receive = qchannel.Receive(1000);
-        var result = new JsonToObjectTransformer(context).Transform(receive) as IMessage;
+        var result = new JsonToObjectTransformer(context).Transform(receive);
         Assert.NotNull(result);
         Assert.Equal(payload, result.Payload);
         var sourceData = result.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
@@ -154,7 +154,6 @@ public class InboundEndpointTest
         var services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
-        var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
         var container = new DirectMessageListenerContainer();
         var adapter = new RabbitInboundChannelAdapter(context, container)
         {
@@ -187,7 +186,6 @@ public class InboundEndpointTest
         var services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
-        var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
         var container = new DirectMessageListenerContainer();
         var adapter = new RabbitInboundChannelAdapter(context, container);
         var outchan = new QueueChannel(context);
@@ -271,7 +269,7 @@ public class InboundEndpointTest
     // }
     public class Foo
     {
-        public string Bar { get; set; }
+        public string Bar { get; }
 
         public Foo(string bar)
         {
@@ -280,24 +278,22 @@ public class InboundEndpointTest
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null || GetType() != obj.GetType())
+            if (obj is not Foo other)
             {
                 return false;
             }
 
-            var foo = (Foo)obj;
-
-            return !(!Bar?.Equals(foo.Bar) ?? foo.Bar != null);
+            return Bar == other.Bar;
         }
 
         public override int GetHashCode()
         {
-            return Bar != null ? Bar.GetHashCode() : 0;
+            return Bar?.GetHashCode() ?? 0;
         }
     }
 }

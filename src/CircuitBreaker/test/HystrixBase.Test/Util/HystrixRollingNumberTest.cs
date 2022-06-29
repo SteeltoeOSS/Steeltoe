@@ -10,11 +10,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
 public class HystrixRollingNumberTest
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixRollingNumberTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -82,7 +82,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -112,7 +112,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -144,7 +144,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -184,7 +184,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -224,7 +224,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -312,7 +312,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -362,7 +362,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -406,7 +406,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -454,7 +454,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -490,7 +490,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }
@@ -734,7 +734,7 @@ public class HystrixRollingNumberTest
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
             Assert.True(false, $"Exception: {e.Message}");
         }
     }

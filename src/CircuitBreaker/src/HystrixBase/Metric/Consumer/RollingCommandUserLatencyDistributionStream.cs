@@ -34,7 +34,7 @@ public class RollingCommandUserLatencyDistributionStream : RollingDistributionSt
 
     public static RollingCommandUserLatencyDistributionStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
     {
-        var result = Streams.GetOrAddEx(commandKey.Name, k =>
+        var result = Streams.GetOrAddEx(commandKey.Name, _ =>
         {
             var stream = new RollingCommandUserLatencyDistributionStream(commandKey, numBuckets, bucketSizeInMs);
             stream.StartCachingStreamValuesIfUnstarted();

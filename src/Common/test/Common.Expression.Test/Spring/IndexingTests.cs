@@ -394,7 +394,7 @@ public class IndexingTests
     }
 
     [AttributeUsage(AttributeTargets.Field)]
-    public class FieldAnnotation : Attribute
+    public class FieldAnnotationAttribute : Attribute
     {
     }
 }

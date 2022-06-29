@@ -6,8 +6,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
-#pragma warning disable IDE0044
-#pragma warning disable IDE1006
+#pragma warning disable IDE1006 // Naming Styles
 public class Inventor
 {
     public List<int> ListOfInteger = new ();
@@ -16,7 +15,7 @@ public class Inventor
     public Dictionary<int, string> MapOfNumbersUpToTen = new ();
     public List<int> ListOfNumbersUpToTen = new ();
     public List<int> ListOneFive = new ();
-    public string[] StringArrayOfThreeItems = new[] { "1", "2", "3" };
+    public string[] StringArrayOfThreeItems = { "1", "2", "3" };
     public int Counter;
     public string _name;
     public string _name_;
@@ -26,15 +25,19 @@ public class Inventor
     public ArrayContainer ArrayContainer;
     public bool PublicBoolean;
 
-    private PlaceOfBirth placeOfBirth;
+    private PlaceOfBirth _placeOfBirth;
+
+    public Inventor(params string[] strings)
+    {
+    }
 
     public Inventor(string name, DateTime birthdate, string nationality)
     {
-        this.Name = name;
+        Name = name;
         _name = name;
         _name_ = name;
-        this.BirthDate = birthdate;
-        this.Nationality = nationality;
+        BirthDate = birthdate;
+        Nationality = nationality;
         ArrayContainer = new ArrayContainer();
         TestDictionary = new Dictionary<string, string>
         {
@@ -76,10 +79,10 @@ public class Inventor
 
     public PlaceOfBirth PlaceOfBirth
     {
-        get => placeOfBirth;
+        get => _placeOfBirth;
         set
         {
-            placeOfBirth = value;
+            _placeOfBirth = value;
             PlacesLived = new[] { value };
             PlacesLivedList.Add(value);
         }
@@ -174,10 +177,6 @@ public class Inventor
         return strings.Length + i;
     }
 
-    public Inventor(params string[] strings)
-    {
-    }
-
     public bool SomeProperty { get; set; }
 
     public DateTime BirthDate { get; }
@@ -190,5 +189,4 @@ public class Inventor
     {
     }
 }
-#pragma warning restore IDE0044 // Add readonly modifier
-#pragma warning restore IDE1006 // Add readonly modifier
+#pragma warning restore IDE1006 // Naming Styles

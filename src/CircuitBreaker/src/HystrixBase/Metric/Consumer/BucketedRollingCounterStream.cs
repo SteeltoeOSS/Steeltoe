@@ -64,10 +64,7 @@ public abstract class BucketedRollingCounterStream<Event, Bucket, Output> : Buck
         {
             // the stream is not yet started
             var candidateSubscription = Observe().Subscribe(counterSubject);
-            if (subscription.CompareAndSet(null, candidateSubscription))
-            {
-            }
-            else
+            if (!subscription.CompareAndSet(null, candidateSubscription))
             {
                 // lost the race to set the subscription, so we need to cancel this one
                 candidateSubscription.Dispose();

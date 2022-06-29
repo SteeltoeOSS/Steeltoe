@@ -65,7 +65,7 @@ public class HystrixRequestContext : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (State != null)
+        if (disposing && State != null)
         {
             foreach (var v in State.Keys)
             {
@@ -73,7 +73,7 @@ public class HystrixRequestContext : IDisposable
                 {
                     v.Dispose();
 
-                    State.TryRemove(v, out var oldValue);
+                    State.TryRemove(v, out _);
                 }
                 catch (Exception)
                 {

@@ -13,7 +13,7 @@ public static class HystrixCircuitBreakerFactory
 
     public static ICircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
     {
-        return CircuitBreakersByCommand.GetOrAddEx(key.Name, k => new HystrixCircuitBreakerImpl(key, group, options, metrics));
+        return CircuitBreakersByCommand.GetOrAddEx(key.Name, _ => new HystrixCircuitBreakerImpl(key, group, options, metrics));
     }
 
     public static ICircuitBreaker GetInstance(IHystrixCommandKey key)

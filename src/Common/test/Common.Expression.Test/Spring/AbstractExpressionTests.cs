@@ -14,10 +14,35 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 public abstract class AbstractExpressionTests
 {
     protected static readonly bool SHOULD_BE_WRITABLE = true;
-    protected static readonly bool SHOULD_NOT_BE_WRITABLE = false;
+    protected static readonly bool SHOULD_NOT_BE_WRITABLE;
     protected readonly IExpressionParser _parser = new SpelExpressionParser();
     protected readonly StandardEvaluationContext _context = TestScenarioCreator.GetTestEvaluationContext();
-    private static readonly bool DEBUG = false;
+    private static readonly bool DEBUG = bool.Parse(bool.FalseString);
+
+    public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
+    {
+        var expr = _parser.ParseExpression(expression);
+        Assert.NotNull(expr);
+        if (DEBUG)
+        {
+            SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
+        }
+
+        var value = expr.GetValue(_context, expectedResultType);
+        if (value == null)
+        {
+            if (expectedValue == null)
+            {
+                return;  // no point doing other checks
+            }
+
+            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
+        }
+
+        var resultType = value.GetType();
+        Assert.Equal(expectedResultType, resultType);
+        Assert.Equal(expectedValue, value);
+    }
 
     public virtual void Evaluate(string expression, object expectedValue, Type expectedResultType)
     {
@@ -46,31 +71,6 @@ public abstract class AbstractExpressionTests
         Assert.Equal(expectedValue, expectedValue is string ? StringValueOf(value) : value);
     }
 
-    public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
-    {
-        var expr = _parser.ParseExpression(expression);
-        Assert.NotNull(expr);
-        if (DEBUG)
-        {
-            SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
-        }
-
-        var value = expr.GetValue(_context, expectedResultType);
-        if (value == null)
-        {
-            if (expectedValue == null)
-            {
-                return;  // no point doing other checks
-            }
-
-            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
-        }
-
-        var resultType = value.GetType();
-        Assert.Equal(expectedResultType, resultType);
-        Assert.Equal(expectedValue, value);
-    }
-
     public virtual void Evaluate(string expression, object expectedValue, Type expectedClassOfResult, bool shouldBeWritable)
     {
         var expr = _parser.ParseExpression(expression);
@@ -96,11 +96,6 @@ public abstract class AbstractExpressionTests
 
         Assert.Equal(expectedClassOfResult, resultType);
         Assert.Equal(shouldBeWritable, expr.IsWritable(_context));
-    }
-
-    protected static string StringValueOf(object value)
-    {
-        return StringValueOf(value, false);
     }
 
     protected static void PrintDimension(StringBuilder sb, Array array, int[] indexes, int dimension)
@@ -144,6 +139,11 @@ public abstract class AbstractExpressionTests
         PrintDimension(sb, array, indexes, 0);
         sb.Append('}');
         return sb.ToString();
+    }
+
+    protected static string StringValueOf(object value)
+    {
+        return StringValueOf(value, false);
     }
 
     protected static string StringValueOf(object value, bool isNested)

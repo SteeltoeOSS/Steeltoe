@@ -29,7 +29,6 @@ public class CredHubClient : ICredHubClient
     private const int DEFAULT_TIMEOUT = 3000;
 
     private static HttpClient _httpClient;
-    private static HttpClientHandler _httpClientHandler;
     private static ILogger _logger;
     private static string _baseCredHubUrl;
 
@@ -52,8 +51,8 @@ public class CredHubClient : ICredHubClient
         _logger = logger;
         _baseCredHubUrl = credHubOptions.CredHubUrl;
         var client = new CredHubClient(credHubOptions.ValidateCertificates);
-        _httpClientHandler = new HttpClientHandler();
-        _httpClient = httpClient ?? client.InitializeHttpClient(_httpClientHandler);
+        var httpClientHandler = new HttpClientHandler();
+        _httpClient = httpClient ?? client.InitializeHttpClient(httpClientHandler);
         return client.InitializeAsync(credHubOptions);
     }
 
@@ -109,7 +108,6 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-#pragma warning disable SA1202 // Elements must be ordered by access
     public async Task<CredHubCredential<T>> WriteAsync<T>(CredentialSetRequest credentialRequest)
     {
         HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
@@ -487,4 +485,3 @@ public class CredHubClient : ICredHubClient
         }
     }
 }
-#pragma warning restore SA1202 // Elements must be ordered by access

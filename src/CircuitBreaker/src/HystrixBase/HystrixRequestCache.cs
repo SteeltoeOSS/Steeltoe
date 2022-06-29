@@ -35,7 +35,7 @@ public class HystrixRequestCache
 
     private static HystrixRequestCache GetInstance(RequestCacheKey rcKey)
     {
-        return Caches.GetOrAddEx(rcKey, k => new HystrixRequestCache(rcKey));
+        return Caches.GetOrAddEx(rcKey, _ => new HystrixRequestCache(rcKey));
     }
 
     private readonly RequestCacheKey _rcKey;
@@ -125,22 +125,16 @@ public class HystrixRequestCache
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null)
+            if (obj is not ValueCacheKey other)
             {
                 return false;
             }
 
-            if (GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (ValueCacheKey)obj;
             if (_rvKey == null)
             {
                 if (other._rvKey != null)
@@ -197,22 +191,16 @@ public class HystrixRequestCache
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null)
+            if (obj is not RequestCacheKey other)
             {
                 return false;
             }
 
-            if (GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (RequestCacheKey)obj;
             if (_type != other._type)
             {
                 return false;

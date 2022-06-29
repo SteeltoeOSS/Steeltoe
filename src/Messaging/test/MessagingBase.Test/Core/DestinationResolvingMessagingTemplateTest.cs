@@ -13,49 +13,49 @@ namespace Steeltoe.Messaging.Core.Test;
 
 public class DestinationResolvingMessagingTemplateTest
 {
-    private readonly TestDestinationResolvingMessagingTemplate template;
+    private readonly TestDestinationResolvingMessagingTemplate _template;
 
-    private readonly TaskSchedulerSubscribableChannel myChannel;
+    private readonly TaskSchedulerSubscribableChannel _myChannel;
 
-    private readonly Dictionary<string, object> headers;
+    private readonly Dictionary<string, object> _headers;
 
-    private readonly TestMessagePostProcessor postProcessor;
+    private readonly TestMessagePostProcessor _postProcessor;
 
     public DestinationResolvingMessagingTemplateTest()
     {
         var resolver = new TestMessageChannelDestinationResolver();
 
-        myChannel = new TaskSchedulerSubscribableChannel();
-        resolver.RegisterMessageChannel("myChannel", myChannel);
+        _myChannel = new TaskSchedulerSubscribableChannel();
+        resolver.RegisterMessageChannel("myChannel", _myChannel);
 
-        template = new TestDestinationResolvingMessagingTemplate
+        _template = new TestDestinationResolvingMessagingTemplate
         {
             DestinationResolver = resolver
         };
 
-        headers = new Dictionary<string, object> { { "key", "value" } };
+        _headers = new Dictionary<string, object> { { "key", "value" } };
 
-        postProcessor = new TestMessagePostProcessor();
+        _postProcessor = new TestMessagePostProcessor();
     }
 
     [Fact]
     public async Task SendAsync()
     {
         var message = Message.Create("payload");
-        await template.SendAsync("myChannel", message);
+        await _template.SendAsync("myChannel", message);
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.Same(message, template.Message);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.Same(message, _template.Message);
     }
 
     [Fact]
     public void Send()
     {
         var message = Message.Create("payload");
-        template.Send("myChannel", message);
+        _template.Send("myChannel", message);
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.Same(message, template.Message);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.Same(message, _template.Message);
     }
 
     [Fact]
@@ -75,139 +75,139 @@ public class DestinationResolvingMessagingTemplateTest
     [Fact]
     public async Task ConvertAndSendAsyncPayload()
     {
-        await template.ConvertAndSendAsync("myChannel", "payload");
+        await _template.ConvertAndSendAsync("myChannel", "payload");
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("payload", template.Message.Payload);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("payload", _template.Message.Payload);
     }
 
     [Fact]
     public void ConvertAndSendPayload()
     {
-        template.ConvertAndSend("myChannel", "payload");
+        _template.ConvertAndSend("myChannel", "payload");
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("payload", template.Message.Payload);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("payload", _template.Message.Payload);
     }
 
     [Fact]
     public async Task ConvertAndSendAsyncPayloadAndHeaders()
     {
-        await template.ConvertAndSendAsync("myChannel", "payload", headers);
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("payload", template.Message.Payload);
+        await _template.ConvertAndSendAsync("myChannel", "payload", _headers);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("payload", _template.Message.Payload);
     }
 
     [Fact]
     public void ConvertAndSendPayloadAndHeaders()
     {
-        template.ConvertAndSend("myChannel", "payload", headers);
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("payload", template.Message.Payload);
+        _template.ConvertAndSend("myChannel", "payload", _headers);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("payload", _template.Message.Payload);
     }
 
     [Fact]
     public async Task ConvertAndSendAsyncPayloadWithPostProcessor()
     {
-        await template.ConvertAndSendAsync("myChannel", "payload", postProcessor);
+        await _template.ConvertAndSendAsync("myChannel", "payload", _postProcessor);
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("payload", template.Message.Payload);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("payload", _template.Message.Payload);
 
-        Assert.NotNull(postProcessor.Message);
-        Assert.Same(postProcessor.Message, template.Message);
+        Assert.NotNull(_postProcessor.Message);
+        Assert.Same(_postProcessor.Message, _template.Message);
     }
 
     [Fact]
     public void ConvertAndSendPayloadWithPostProcessor()
     {
-        template.ConvertAndSend("myChannel", "payload", postProcessor);
+        _template.ConvertAndSend("myChannel", "payload", _postProcessor);
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("payload", template.Message.Payload);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("payload", _template.Message.Payload);
 
-        Assert.NotNull(postProcessor.Message);
-        Assert.Same(postProcessor.Message, template.Message);
+        Assert.NotNull(_postProcessor.Message);
+        Assert.Same(_postProcessor.Message, _template.Message);
     }
 
     [Fact]
     public async Task ConvertAndSendAsyncPayloadAndHeadersWithPostProcessor()
     {
-        await template.ConvertAndSendAsync("myChannel", "payload", headers, postProcessor);
+        await _template.ConvertAndSendAsync("myChannel", "payload", _headers, _postProcessor);
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("payload", template.Message.Payload);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("payload", _template.Message.Payload);
 
-        Assert.NotNull(postProcessor.Message);
-        Assert.Same(postProcessor.Message, template.Message);
+        Assert.NotNull(_postProcessor.Message);
+        Assert.Same(_postProcessor.Message, _template.Message);
     }
 
     [Fact]
     public void ConvertAndSendPayloadAndHeadersWithPostProcessor()
     {
-        template.ConvertAndSend("myChannel", "payload", headers, postProcessor);
+        _template.ConvertAndSend("myChannel", "payload", _headers, _postProcessor);
 
-        Assert.Same(myChannel, template.MessageChannel);
-        Assert.NotNull(template.Message);
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("payload", template.Message.Payload);
+        Assert.Same(_myChannel, _template.MessageChannel);
+        Assert.NotNull(_template.Message);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("payload", _template.Message.Payload);
 
-        Assert.NotNull(postProcessor.Message);
-        Assert.Same(postProcessor.Message, template.Message);
+        Assert.NotNull(_postProcessor.Message);
+        Assert.Same(_postProcessor.Message, _template.Message);
     }
 
     [Fact]
     public async Task ReceiveAsync()
     {
         var expected = Message.Create("payload");
-        template.ReceiveMessage = expected;
-        var actual = await template.ReceiveAsync("myChannel");
+        _template.ReceiveMessage = expected;
+        var actual = await _template.ReceiveAsync("myChannel");
 
         Assert.Same(expected, actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public void Receive()
     {
         var expected = Message.Create("payload");
-        template.ReceiveMessage = expected;
-        var actual = template.Receive("myChannel");
+        _template.ReceiveMessage = expected;
+        var actual = _template.Receive("myChannel");
 
         Assert.Same(expected, actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public async Task ReceiveAndConvertAsync()
     {
         var expected = Message.Create("payload");
-        template.ReceiveMessage = expected;
-        var payload = await template.ReceiveAndConvertAsync<string>("myChannel");
+        _template.ReceiveMessage = expected;
+        var payload = await _template.ReceiveAndConvertAsync<string>("myChannel");
 
         Assert.Equal("payload", payload);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public void ReceiveAndConvert()
     {
         var expected = Message.Create("payload");
-        template.ReceiveMessage = expected;
-        var payload = template.ReceiveAndConvert<string>("myChannel");
+        _template.ReceiveMessage = expected;
+        var payload = _template.ReceiveAndConvert<string>("myChannel");
 
         Assert.Equal("payload", payload);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
@@ -215,12 +215,12 @@ public class DestinationResolvingMessagingTemplateTest
     {
         var requestMessage = Message.Create("request");
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = await template.SendAndReceiveAsync("myChannel", requestMessage);
+        _template.ReceiveMessage = responseMessage;
+        var actual = await _template.SendAndReceiveAsync("myChannel", requestMessage);
 
-        Assert.Equal(requestMessage, template.Message);
+        Assert.Equal(requestMessage, _template.Message);
         Assert.Same(responseMessage, actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
@@ -228,119 +228,119 @@ public class DestinationResolvingMessagingTemplateTest
     {
         var requestMessage = Message.Create("request");
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = template.SendAndReceive("myChannel", requestMessage);
+        _template.ReceiveMessage = responseMessage;
+        var actual = _template.SendAndReceive("myChannel", requestMessage);
 
-        Assert.Equal(requestMessage, template.Message);
+        Assert.Equal(requestMessage, _template.Message);
         Assert.Same(responseMessage, actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public async Task ConvertSendAndReceiveAsync()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request");
+        _template.ReceiveMessage = responseMessage;
+        var actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request");
 
-        Assert.Equal("request", template.Message.Payload);
+        Assert.Equal("request", _template.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public void ConvertSendAndReceive()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = template.ConvertSendAndReceive<string>("myChannel", "request");
+        _template.ReceiveMessage = responseMessage;
+        var actual = _template.ConvertSendAndReceive<string>("myChannel", "request");
 
-        Assert.Equal("request", template.Message.Payload);
+        Assert.Equal("request", _template.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public async Task ConvertSendAndReceiveAsyncWithHeaders()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request", headers);
+        _template.ReceiveMessage = responseMessage;
+        var actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _headers);
 
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("request", template.Message.Payload);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("request", _template.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public void ConvertSendAndReceiveWithHeaders()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = template.ConvertSendAndReceive<string>("myChannel", "request", headers);
+        _template.ReceiveMessage = responseMessage;
+        var actual = _template.ConvertSendAndReceive<string>("myChannel", "request", _headers);
 
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("request", template.Message.Payload);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("request", _template.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public async Task ConvertSendAndReceiveAsyncWithPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request", postProcessor);
+        _template.ReceiveMessage = responseMessage;
+        var actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _postProcessor);
 
-        Assert.Equal("request", template.Message.Payload);
-        Assert.Equal("request", postProcessor.Message.Payload);
+        Assert.Equal("request", _template.Message.Payload);
+        Assert.Equal("request", _postProcessor.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public void ConvertSendAndReceiveWithPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = template.ConvertSendAndReceive<string>("myChannel", "request", postProcessor);
+        _template.ReceiveMessage = responseMessage;
+        var actual = _template.ConvertSendAndReceive<string>("myChannel", "request", _postProcessor);
 
-        Assert.Equal("request", template.Message.Payload);
-        Assert.Equal("request", postProcessor.Message.Payload);
+        Assert.Equal("request", _template.Message.Payload);
+        Assert.Equal("request", _postProcessor.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public async Task ConvertSendAndReceiveAsyncWithHeadersAndPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request", headers, postProcessor);
+        _template.ReceiveMessage = responseMessage;
+        var actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _headers, _postProcessor);
 
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("request", template.Message.Payload);
-        Assert.Equal("request", postProcessor.Message.Payload);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("request", _template.Message.Payload);
+        Assert.Equal("request", _postProcessor.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
     [Fact]
     public void ConvertSendAndReceiveWithHeadersAndPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = template.ConvertSendAndReceive<string>("myChannel", "request", headers, postProcessor);
+        _template.ReceiveMessage = responseMessage;
+        var actual = _template.ConvertSendAndReceive<string>("myChannel", "request", _headers, _postProcessor);
 
-        Assert.Equal("value", template.Message.Headers["key"]);
-        Assert.Equal("request", template.Message.Payload);
-        Assert.Equal("request", postProcessor.Message.Payload);
+        Assert.Equal("value", _template.Message.Headers["key"]);
+        Assert.Equal("request", _template.Message.Payload);
+        Assert.Equal("request", _postProcessor.Message.Payload);
         Assert.Same("response", actual);
-        Assert.Same(myChannel, template.MessageChannel);
+        Assert.Same(_myChannel, _template.MessageChannel);
     }
 
-    internal class TestDestinationResolvingMessagingTemplate : AbstractDestinationResolvingMessagingTemplate<IMessageChannel>
+    internal sealed class TestDestinationResolvingMessagingTemplate : AbstractDestinationResolvingMessagingTemplate<IMessageChannel>
     {
         public TestDestinationResolvingMessagingTemplate()
             : base(null)
@@ -393,18 +393,18 @@ public class DestinationResolvingMessagingTemplateTest
         }
     }
 
-    internal class TestMessageChannelDestinationResolver : IDestinationResolver<IMessageChannel>
+    internal sealed class TestMessageChannelDestinationResolver : IDestinationResolver<IMessageChannel>
     {
-        private readonly IDictionary<string, IMessageChannel> channels = new Dictionary<string, IMessageChannel>();
+        private readonly IDictionary<string, IMessageChannel> _channels = new Dictionary<string, IMessageChannel>();
 
         public void RegisterMessageChannel(string name, IMessageChannel channel)
         {
-            channels.Add(name, channel);
+            _channels.Add(name, channel);
         }
 
         public IMessageChannel ResolveDestination(string name)
         {
-            channels.TryGetValue(name, out var chan);
+            _channels.TryGetValue(name, out var chan);
             return chan;
         }
 

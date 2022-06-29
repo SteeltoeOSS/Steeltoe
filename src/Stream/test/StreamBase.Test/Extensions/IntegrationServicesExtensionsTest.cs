@@ -22,7 +22,6 @@ public class IntegrationServicesExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
-        var config = new ConfigurationBuilder().Build();
         container.AddIntegrationServices();
         var serviceProvider = container.BuildServiceProvider();
 

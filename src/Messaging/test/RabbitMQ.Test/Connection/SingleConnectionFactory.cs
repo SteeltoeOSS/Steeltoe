@@ -121,11 +121,11 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         return connection;
     }
 
-    public class SharedConnectionProxy : IConnectionProxy
+    public sealed class SharedConnectionProxy : IConnectionProxy
     {
         private readonly ILogger _logger;
-
         private readonly SingleConnectionFactory _factory;
+        private readonly object _lock = new ();
 
         public IConnection Target { get; set; }
 
@@ -136,11 +136,11 @@ public class SingleConnectionFactory : AbstractConnectionFactory
             Target = target;
         }
 
-        public RC.IModel CreateChannel(bool transactional)
+        public RC.IModel CreateChannel(bool transactional = false)
         {
             if (!IsOpen)
             {
-                lock (this)
+                lock (_lock)
                 {
                     if (!IsOpen)
                     {
@@ -216,40 +216,22 @@ public class SingleConnectionFactory : AbstractConnectionFactory
 
         public override int GetHashCode()
         {
-            return 31 + (Target == null ? 0 : Target.GetHashCode());
+            return Target?.GetHashCode() ?? 0;
         }
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
 
-            if (obj == null)
+            if (obj is not SharedConnectionProxy other || GetType() != obj.GetType())
             {
                 return false;
             }
 
-            if (GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (SharedConnectionProxy)obj;
-            if (Target == null)
-            {
-                if (other.Target != null)
-                {
-                    return false;
-                }
-            }
-            else if (!Target.Equals(other.Target))
-            {
-                return false;
-            }
-
-            return true;
+            return Equals(Target, other.Target);
         }
 
         public override string ToString()

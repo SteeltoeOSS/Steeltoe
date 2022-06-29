@@ -4,7 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 
-internal class MyCommand : HystrixCommand<int>
+internal sealed class MyCommand : HystrixCommand<int>
 {
     public MyCommand()
         : base(

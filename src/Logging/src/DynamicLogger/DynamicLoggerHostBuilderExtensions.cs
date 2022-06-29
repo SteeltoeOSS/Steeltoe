@@ -24,7 +24,7 @@ public static class DynamicLoggerHostBuilderExtensions
             throw new ArgumentNullException(nameof(hostBuilder));
         }
 
-        return hostBuilder.ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole());
+        return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole());
     }
 
 #if NET6_0_OR_GREATER

@@ -68,7 +68,8 @@ public static class ConsulServerUtils
             foreach (var tag in tags)
             {
                 var index = tag.IndexOf('=');
-                string key, value;
+                string key;
+                string value;
                 if (index == -1 || Equals(index + 1, tag.Length))
                 {
                     key = value = tag;

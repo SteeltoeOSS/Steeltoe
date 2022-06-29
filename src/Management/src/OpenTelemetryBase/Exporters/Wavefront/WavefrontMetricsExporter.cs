@@ -17,7 +17,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 public class WavefrontMetricsExporter : BaseExporter<Metric>
 {
     private readonly ILogger<WavefrontMetricsExporter> _logger;
-    private IWavefrontMetricSender _wavefrontSender;
+    private readonly IWavefrontMetricSender _wavefrontSender;
 
     internal WavefrontExporterOptions Options { get; }
 

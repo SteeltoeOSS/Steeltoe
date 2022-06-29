@@ -26,9 +26,9 @@ public class JsonLeaseTest : AbstractBaseTest
         Assert.NotNull(leaseInfo);
         Assert.Equal(30, leaseInfo.RenewalIntervalInSecs);
         Assert.Equal(90, leaseInfo.DurationInSecs);
-        Assert.Equal(1457714988223, leaseInfo.RegistrationTimestamp);
-        Assert.Equal(1457716158319, leaseInfo.LastRenewalTimestamp);
+        Assert.Equal(1_457_714_988_223, leaseInfo.RegistrationTimestamp);
+        Assert.Equal(1_457_716_158_319, leaseInfo.LastRenewalTimestamp);
         Assert.Equal(0, leaseInfo.EvictionTimestamp);
-        Assert.Equal(1457714988223, leaseInfo.ServiceUpTimestamp);
+        Assert.Equal(1_457_714_988_223, leaseInfo.ServiceUpTimestamp);
     }
 }

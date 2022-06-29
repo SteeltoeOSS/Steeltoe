@@ -28,7 +28,7 @@ public static class HttpClientHelper
 
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate;
 
-    private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (sender, cert, chain, sslPolicyErrors) => true;
+    private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (_, _, _, _) => true;
 
     /// <summary>
     /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
@@ -109,7 +109,7 @@ public static class HttpClientHelper
 
             // Disabling certificate validation is a bad idea, that's why it's off by default!
 #pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
-            ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
 #pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
         }
     }
@@ -307,9 +307,7 @@ public static class HttpClientHelper
         return null;
     }
 
-#pragma warning disable SA1202 // Elements must be ordered by access
     internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
-#pragma warning restore SA1202 // Elements must be ordered by access
     {
         if (Platform.IsFullFramework)
         {

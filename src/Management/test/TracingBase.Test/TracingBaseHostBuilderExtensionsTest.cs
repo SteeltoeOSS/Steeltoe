@@ -29,7 +29,7 @@ public class TracingBaseHostBuilderExtensionsTest : TestBase
             svc.AddSingleton(GetConfiguration());
             svc.AddDistributedTracing();
         });
-        var host = hostBuilder.Build();
+        hostBuilder.Build();
         var serviceProvider = services.BuildServiceProvider();
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);

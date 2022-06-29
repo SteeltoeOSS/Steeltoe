@@ -29,7 +29,7 @@ public class TestHystrixCommand<T> : HystrixCommand<T>
             null,
             null)
     {
-        this.Builder = builder;
+        Builder = builder;
     }
 
     public TestHystrixCommand(TestCommandBuilder builder, HystrixCommandExecutionHook executionHook)
@@ -49,7 +49,7 @@ public class TestHystrixCommand<T> : HystrixCommand<T>
             null,
             null)
     {
-        this.Builder = builder;
+        Builder = builder;
     }
 
     public virtual TestCommandBuilder Builder { get; }

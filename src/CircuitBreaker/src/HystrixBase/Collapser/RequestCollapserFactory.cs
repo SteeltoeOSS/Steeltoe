@@ -75,7 +75,7 @@ public class RequestCollapserFactory
 
     private RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> GetCollapserForGlobalScope<BatchReturnType, ResponseType, RequestArgumentType>(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser)
     {
-        var result = GlobalScopedCollapsers.GetOrAddEx(CollapserKey.Name, k => new RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, Properties, _timer, _concurrencyStrategy));
+        var result = GlobalScopedCollapsers.GetOrAddEx(CollapserKey.Name, _ => new RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, Properties, _timer, _concurrencyStrategy));
         return (RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>)result;
     }
 
@@ -89,11 +89,11 @@ public class RequestCollapserFactory
 
     private RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType> GetRequestVariableForCommand<BatchReturnType, ResponseType, RequestArgumentType>(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser)
     {
-        var result = RequestScopedCollapsers.GetOrAddEx(commandCollapser.CollapserKey.Name, k => new RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, Properties, _timer, _concurrencyStrategy));
+        var result = RequestScopedCollapsers.GetOrAddEx(commandCollapser.CollapserKey.Name, _ => new RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, Properties, _timer, _concurrencyStrategy));
         return (RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>)result;
     }
 
-    internal class RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType> : HystrixRequestVariableDefault<RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>>
+    internal sealed class RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType> : HystrixRequestVariableDefault<RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>>
     {
         public RequestCollapserRequestVariable(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser, IHystrixCollapserOptions properties, ICollapserTimer timer, HystrixConcurrencyStrategy concurrencyStrategy)
             : base(() => new RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, properties, timer, concurrencyStrategy), collapser => collapser.Shutdown())

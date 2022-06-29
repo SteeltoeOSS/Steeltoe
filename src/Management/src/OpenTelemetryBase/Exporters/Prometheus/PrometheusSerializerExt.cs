@@ -11,7 +11,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 /// </summary>
 internal static partial class PrometheusSerializer
 {
-    private static readonly string[] MetricTypes = new string[]
+    private static readonly string[] MetricTypes =
     {
         "untyped", "counter", "gauge", "summary", "histogram", "histogram", "histogram", "histogram", "untyped",
     };
@@ -93,7 +93,7 @@ internal static partial class PrometheusSerializer
 
                     cursor = WriteAsciiStringNoEscape(buffer, cursor, "le=\"");
 
-                    cursor = histogramMeasurement.ExplicitBound != double.PositiveInfinity
+                    cursor = !double.IsPositiveInfinity(histogramMeasurement.ExplicitBound)
                         ? WriteDouble(buffer, cursor, histogramMeasurement.ExplicitBound)
                         : WriteAsciiStringNoEscape(buffer, cursor, "+Inf");
 

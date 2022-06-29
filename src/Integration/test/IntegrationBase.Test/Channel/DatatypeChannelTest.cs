@@ -164,7 +164,7 @@ public class DatatypeChannelTest
         }
     }
 
-    private class Foo
+    private abstract class Foo
     {
     }
 

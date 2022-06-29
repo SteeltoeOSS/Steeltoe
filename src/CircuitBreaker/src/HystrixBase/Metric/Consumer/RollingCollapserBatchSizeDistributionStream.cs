@@ -43,7 +43,7 @@ public class RollingCollapserBatchSizeDistributionStream : RollingDistributionSt
 
     public static RollingCollapserBatchSizeDistributionStream GetInstance(IHystrixCollapserKey collapserKey, int numBuckets, int bucketSizeInMs)
     {
-        return Streams.GetOrAddEx(collapserKey.Name, k =>
+        return Streams.GetOrAddEx(collapserKey.Name, _ =>
         {
             var stream = new RollingCollapserBatchSizeDistributionStream(collapserKey, numBuckets, bucketSizeInMs);
             stream.StartCachingStreamValuesIfUnstarted();

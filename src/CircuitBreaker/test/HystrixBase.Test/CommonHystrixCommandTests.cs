@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using System;
 using System.Collections.Generic;
@@ -36,14 +37,8 @@ public abstract class CommonHystrixCommandTests<C> : HystrixTestBase
         }
         else
         {
-            try
-            {
-                command.Observe().ToList().SingleAsync().Wait();
-                Assert.True(false, "Expected a command failure!");
-            }
-            catch (Exception)
-            {
-            }
+            Action action = () => command.Observe().ToList().SingleAsync().Wait();
+            action.Should().Throw<Exception>("command failure was expected");
         }
 
         assertion(command);
@@ -55,10 +50,10 @@ public abstract class CommonHystrixCommandTests<C> : HystrixTestBase
 
         var o = command.Observe();
         o.Subscribe(
-            n =>
+            _ =>
             {
             },
-            e =>
+            _ =>
             {
                 latch.SignalEx();
             },
@@ -76,14 +71,8 @@ public abstract class CommonHystrixCommandTests<C> : HystrixTestBase
         }
         else
         {
-            try
-            {
-                o.ToList().SingleAsync().Wait();
-                Assert.True(false, "Expected a command failure!");
-            }
-            catch (Exception)
-            {
-            }
+            Action action = () => o.ToList().SingleAsync().Wait();
+            action.Should().Throw<Exception>("command failure was expected");
         }
     }
 

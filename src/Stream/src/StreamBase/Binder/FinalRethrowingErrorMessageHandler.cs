@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Stream.Binder;
 
-internal class FinalRethrowingErrorMessageHandler : ILastSubscriberMessageHandler
+internal sealed class FinalRethrowingErrorMessageHandler : ILastSubscriberMessageHandler
 {
     private readonly ILastSubscriberAwareChannel _errorChannel;
 
@@ -20,7 +20,7 @@ internal class FinalRethrowingErrorMessageHandler : ILastSubscriberMessageHandle
         ServiceName = $"{GetType().Name}@{GetHashCode()}";
     }
 
-    public virtual string ServiceName { get; set; }
+    public string ServiceName { get; set; }
 
     public void HandleMessage(IMessage message)
     {

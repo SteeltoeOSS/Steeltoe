@@ -37,11 +37,6 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
 
     public IMessageSource MessageSourceDelegate { get; set; } = new MessageSource();
 
-    public override void Dispose()
-    {
-        // Nothing to do here
-    }
-
     protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
     {
         var handler = new BridgeHandler(ApplicationContext)
@@ -195,7 +190,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
                     }
                     else
                     {
-                        _adapter.RetryTemplate.Execute(ctx => ProcessMessage(message), _adapter.RecoveryCallback);
+                        _adapter.RetryTemplate.Execute(_ => ProcessMessage(message), _adapter.RecoveryCallback);
                     }
                 }
                 catch (Exception e)

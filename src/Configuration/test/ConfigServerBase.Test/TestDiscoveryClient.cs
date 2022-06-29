@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-internal class TestDiscoveryClient : IDiscoveryClient
+internal sealed class TestDiscoveryClient : IDiscoveryClient
 {
     internal bool HasShutdown;
 

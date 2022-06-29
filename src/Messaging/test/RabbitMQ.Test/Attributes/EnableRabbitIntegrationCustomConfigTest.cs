@@ -31,24 +31,24 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 [Trait("Category", "Integration")]
 public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStartupFixture>
 {
-    private readonly ServiceProvider provider;
-    private readonly CustomStartupFixture fixture;
+    private readonly ServiceProvider _provider;
+    private readonly CustomStartupFixture _fixture;
 
     public EnableRabbitIntegrationCustomConfigTest(CustomStartupFixture fix)
     {
-        fixture = fix;
-        provider = fixture.Provider;
+        _fixture = fix;
+        _provider = _fixture.Provider;
     }
 
     [Fact]
     public void TestConverted()
     {
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         var foo1 = new Foo1
         {
             Bar = "bar"
         };
-        var ctx = provider.GetService<IApplicationContext>();
+        var ctx = _provider.GetService<IApplicationContext>();
         var converter = ctx.GetService<ISmartMessageConverter>(JsonMessageConverter.DEFAULT_SERVICE_NAME) as JsonMessageConverter;
         converter.TypeMapper.DefaultType = typeof(Dictionary<string, object>);
         converter.Precedence = TypePrecedence.TYPE_ID;
@@ -157,26 +157,26 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         }
     }
 
-    public class CustomStartupFixture : IDisposable
+    public sealed class CustomStartupFixture : IDisposable
     {
-        private readonly CachingConnectionFactory adminCf;
-        private readonly RabbitAdmin admin;
-        private readonly IServiceCollection services;
+        private readonly CachingConnectionFactory _adminCf;
+        private readonly RabbitAdmin _admin;
+        private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 
         public CustomStartupFixture()
         {
-            adminCf = new CachingConnectionFactory("localhost");
-            admin = new RabbitAdmin(adminCf);
+            _adminCf = new CachingConnectionFactory("localhost");
+            _admin = new RabbitAdmin(_adminCf);
             foreach (var q in Queues)
             {
                 var queue = new Queue(q);
-                admin.DeclareQueue(queue);
+                _admin.DeclareQueue(queue);
             }
 
-            services = CreateContainer();
-            Provider = services.BuildServiceProvider();
+            _services = CreateContainer();
+            Provider = _services.BuildServiceProvider();
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
@@ -184,12 +184,12 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         {
             foreach (var q in Queues)
             {
-                admin.DeleteQueue(q);
+                _admin.DeleteQueue(q);
             }
 
             // admin.DeleteQueue("sendTo.replies");
             // admin.DeleteQueue("sendTo.replies.spel");
-            adminCf.Dispose();
+            _adminCf.Dispose();
 
             Provider.Dispose();
         }
@@ -231,7 +231,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             services.AddRabbitConnectionFactory();
 
             services.AddSingleton<IRabbitListenerConfigurer, MyRabbitListenerConfigurer>();
-            services.AddRabbitMessageHandlerMethodFactory((p, f) =>
+            services.AddRabbitMessageHandlerMethodFactory((_, f) =>
             {
                 f.ServiceName = "myHandlerMethodFactory";
                 var service = DefaultConversionService.Singleton as DefaultConversionService;
@@ -241,13 +241,13 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             });
 
             // Add default container factory
-            services.AddRabbitListenerContainerFactory((p, f) =>
+            services.AddRabbitListenerContainerFactory((_, f) =>
             {
                 f.SetBeforeSendReplyPostProcessors(new AddSomeHeadersPostProcessor());
             });
 
             services.AddRabbitAdmin();
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.ReplyTimeout = 60000;
             });
@@ -258,7 +258,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             return services;
         }
 
-        public static string[] Queues = new string[]
+        public static string[] Queues =
         {
             "test.converted", "test.converted.list", "test.converted.array", "test.converted.args1",
             "test.converted.args2", "test.converted.message", "test.notconverted.message",

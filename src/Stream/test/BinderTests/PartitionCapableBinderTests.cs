@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Expression.Internal;
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration;
@@ -25,8 +23,7 @@ public abstract class PartitionCapableBinderTests<B, T> : AbstractBinderTests<B,
     where B : AbstractTestBinder<T>
     where T : AbstractBinder<IMessageChannel>
 {
-    protected static IExpressionParser spelExpressionParser = new SpelExpressionParser();
-    private ILogger<PartitionCapableBinderTests<B, T>> _logger;
+    private readonly ILogger<PartitionCapableBinderTests<B, T>> _logger;
 
     protected PartitionCapableBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
         : base(output, loggerFactory)

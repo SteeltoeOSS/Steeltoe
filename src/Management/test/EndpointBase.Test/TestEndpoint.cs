@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-internal class TestEndpoint : AbstractEndpoint<int>
+internal sealed class TestEndpoint : AbstractEndpoint<int>
 {
     public TestEndpoint(IEndpointOptions opts)
         : base(opts)

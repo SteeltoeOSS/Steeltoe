@@ -33,8 +33,8 @@ public static class CloudFoundryHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder) =>
         hostBuilder
-            .ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); })
-            .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+            .ConfigureAppConfiguration((_, config) => { config.AddCloudFoundry(); })
+            .ConfigureServices((_, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
 
     /// <summary>
     /// Add Cloud Foundry Configuration Provider
@@ -42,8 +42,8 @@ public static class CloudFoundryHostBuilderExtensions
     /// <param name="hostBuilder">Your WebHostBuilder</param>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder hostBuilder) =>
         hostBuilder
-            .ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); })
-            .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+            .ConfigureAppConfiguration((_, config) => { config.AddCloudFoundry(); })
+            .ConfigureServices((_, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
 
 #if NET6_0_OR_GREATER
     /// <summary>

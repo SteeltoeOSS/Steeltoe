@@ -93,7 +93,7 @@ public class TtlScheduler : IScheduler
             }
 
             var timer = new Timer(async s => { await PassTtl(s.ToString()).ConfigureAwait(false); }, checkId, TimeSpan.Zero, interval);
-            _serviceHeartbeats.AddOrUpdate(instanceId, timer, (key, oldTimer) =>
+            _serviceHeartbeats.AddOrUpdate(instanceId, timer, (_, oldTimer) =>
             {
                 oldTimer.Dispose();
                 return timer;
@@ -117,7 +117,7 @@ public class TtlScheduler : IScheduler
         }
     }
 
-    private bool _disposed;
+    private bool _isDisposed;
 
     /// <summary>
     /// Remove all heart beats from scheduler
@@ -130,24 +130,15 @@ public class TtlScheduler : IScheduler
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
+            foreach (var instance in _serviceHeartbeats.Keys)
             {
-                // Cleanup
-                foreach (var instance in _serviceHeartbeats.Keys)
-                {
-                    Remove(instance);
-                }
+                Remove(instance);
             }
 
-            _disposed = true;
+            _isDisposed = true;
         }
-    }
-
-    ~TtlScheduler()
-    {
-        Dispose(false);
     }
 
     private async Task PassTtl(string serviceId)

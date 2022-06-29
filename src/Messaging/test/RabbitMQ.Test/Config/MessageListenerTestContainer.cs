@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-public class MessageListenerTestContainer : IMessageListenerContainer
+public sealed class MessageListenerTestContainer : IMessageListenerContainer
 {
     internal bool StopInvoked;
     internal bool StartInvoked;

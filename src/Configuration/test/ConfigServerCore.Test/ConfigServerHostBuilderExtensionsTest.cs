@@ -17,12 +17,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
 
 public class ConfigServerHostBuilderExtensionsTest
 {
-    private readonly Dictionary<string, string> quickTests = new () { { "spring:cloud:config:timeout", "10" } };
+    private readonly Dictionary<string, string> _quickTests = new () { { "spring:cloud:config:timeout", "10" } };
 
     [Fact]
     public void AddConfigServer_DefaultWebHost_AddsConfigServer()
     {
-        var hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
+        var hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests)).UseStartup<TestConfigServerStartup>();
 
         hostBuilder.AddConfigServer();
         var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
@@ -34,7 +34,7 @@ public class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_New_WebHostBuilder_AddsConfigServer()
     {
-        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
+        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests)).UseStartup<TestConfigServerStartup>();
 
         hostBuilder.AddConfigServer();
         var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
@@ -46,7 +46,7 @@ public class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_IHostBuilder_AddsConfigServer()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).AddConfigServer();
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests)).AddConfigServer();
 
         var host = hostBuilder.Build();
         var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;

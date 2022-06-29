@@ -103,7 +103,7 @@ public class RabbitListenerMetadata
         }
     }
 
-    internal class ListenerMethod
+    internal sealed class ListenerMethod
     {
         public MethodInfo Method { get; }
 

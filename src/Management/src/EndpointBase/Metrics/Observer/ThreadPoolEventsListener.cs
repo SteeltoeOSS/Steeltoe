@@ -29,7 +29,7 @@ public class ThreadPoolEventsListener : EventSourceListener
     private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
     private const EventKeywords ThreadPoolEvents = (EventKeywords)0x10000;
 
-    private static string[] _allowedEvents = new string[]
+    private static readonly string[] _allowedEvents =
     {
         "ThreadPoolWorkerThreadStart",
         "ThreadPoolWorkerThreadWait",
@@ -40,7 +40,7 @@ public class ThreadPoolEventsListener : EventSourceListener
         "IOThreadTerminate"
     };
 
-    private static string[] _ignorePayloadNames = new string[]
+    private static readonly string[] _ignorePayloadNames =
     {
         "ClrInstanceID"
     };
@@ -97,7 +97,7 @@ public class ThreadPoolEventsListener : EventSourceListener
 
     private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
     {
-        ThreadPool.GetMaxThreads(out var maxWorker, out var maxComPort);
+        ThreadPool.GetMaxThreads(out var maxWorker, out _);
         using var nameEnumerator = eventData.PayloadNames.GetEnumerator();
         using var payloadEnumerator = eventData.Payload.GetEnumerator();
 

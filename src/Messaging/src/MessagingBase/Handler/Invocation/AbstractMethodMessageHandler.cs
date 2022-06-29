@@ -39,9 +39,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
             return _destinationPrefixes;
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             _destinationPrefixes.Clear();
             if (value != null)
@@ -61,9 +59,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
             return _customArgumentResolvers;
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             _customArgumentResolvers.Clear();
             if (value != null)
@@ -75,16 +71,12 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
     public virtual IList<IHandlerMethodArgumentResolver> ArgumentResolvers
     {
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         get
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             return MethodArgumentResolvers.Resolvers;
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             if (value == null)
             {
@@ -98,16 +90,12 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
     public virtual IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
     {
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         get
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             return MethodReturnValueHandlers.ReturnValueHandlers;
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             if (value == null)
             {
@@ -126,9 +114,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
             return _customReturnValueHandlers;
         }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
         set
-#pragma warning restore S4275 // Getters and setters should access the expected fields
         {
             _customReturnValueHandlers.Clear();
             if (value != null)

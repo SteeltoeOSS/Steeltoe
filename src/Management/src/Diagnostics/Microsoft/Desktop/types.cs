@@ -1779,7 +1779,7 @@ internal class DesktopHeapType : BaseDesktopHeapType
             return;
         }
 
-        int i = import.GetTypeDefProps((int)_token, null, 0, out int tdef, out _attributes, out int extends);
+        int i = import.GetTypeDefProps((int)_token, null, 0, out _, out _attributes, out _);
         if (i < 0 || (int)_attributes == 0)
             _attributes = (TypeAttributes)0x70000000;
     }

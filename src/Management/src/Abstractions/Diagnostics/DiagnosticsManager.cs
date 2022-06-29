@@ -93,7 +93,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         }
     }
 
-    private bool _disposed;
+    private bool _isDisposed;
 
     public void Dispose()
     {
@@ -103,32 +103,15 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     protected virtual void Dispose(bool disposing)
     {
-        // Cleanup
-        if (!_disposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
-            {
-                Stop();
+            Stop();
 
-                if (_observers != null)
-                {
-                    _observers.Clear();
-                }
+            _observers?.Clear();
+            _sources?.Clear();
+            _logger = null;
 
-                if (_sources != null)
-                {
-                    _sources.Clear();
-                }
-
-                _logger = null;
-            }
-
-            _disposed = true;
+            _isDisposed = true;
         }
-    }
-
-    ~DiagnosticsManager()
-    {
-        Dispose(false);
     }
 }

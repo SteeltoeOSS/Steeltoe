@@ -15,26 +15,19 @@ public class CommandAndCacheKey
         _cacheKey = cacheKey;
     }
 
-    public override bool Equals(object o)
+    public override bool Equals(object obj)
     {
-        if (this == o)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (o == null || GetType() != o.GetType())
+        if (obj is not CommandAndCacheKey other || GetType() != obj.GetType())
         {
             return false;
         }
 
-        var that = (CommandAndCacheKey)o;
-
-        if (!_commandName.Equals(that._commandName))
-        {
-            return false;
-        }
-
-        return _cacheKey.Equals(that._cacheKey);
+        return _commandName == other._commandName && _cacheKey == other._cacheKey;
     }
 
     public override int GetHashCode()

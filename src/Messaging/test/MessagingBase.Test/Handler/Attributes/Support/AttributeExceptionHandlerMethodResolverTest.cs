@@ -11,59 +11,59 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 
 public class AttributeExceptionHandlerMethodResolverTest
 {
-    private AttributeExceptionHandlerMethodResolver resolver = new (typeof(ExceptionController));
+    private AttributeExceptionHandlerMethodResolver _resolver = new (typeof(ExceptionController));
 
     [Fact]
     public void ResolveMethodFromAttribute()
     {
         var exception = new IOException();
-        Assert.Equal("HandleIOException", resolver.ResolveMethod(exception).Name);
+        Assert.Equal("HandleIOException", _resolver.ResolveMethod(exception).Name);
     }
 
     [Fact]
     public void ResolveMethodFromArgument()
     {
         var exception = new ArgumentException();
-        Assert.Equal("HandleArgumentException", resolver.ResolveMethod(exception).Name);
+        Assert.Equal("HandleArgumentException", _resolver.ResolveMethod(exception).Name);
     }
 
     [Fact]
     public void ResolveMethodExceptionSubType()
     {
         IOException ioException = new FileNotFoundException();
-        Assert.Equal("HandleIOException", resolver.ResolveMethod(ioException).Name);
+        Assert.Equal("HandleIOException", _resolver.ResolveMethod(ioException).Name);
         SocketException bindException = new BindException();
-        Assert.Equal("HandleSocketException", resolver.ResolveMethod(bindException).Name);
+        Assert.Equal("HandleSocketException", _resolver.ResolveMethod(bindException).Name);
     }
 
     [Fact]
     public void ResolveMethodBestMatch()
     {
         var exception = new SocketException();
-        Assert.Equal("HandleSocketException", resolver.ResolveMethod(exception).Name);
+        Assert.Equal("HandleSocketException", _resolver.ResolveMethod(exception).Name);
     }
 
     [Fact]
     public void ResolveMethodNoMatch()
     {
         var exception = new Exception();
-        Assert.Null(resolver.ResolveMethod(exception)); // 1st lookup
-        Assert.Null(resolver.ResolveMethod(exception)); // 2nd lookup from cache
+        Assert.Null(_resolver.ResolveMethod(exception)); // 1st lookup
+        Assert.Null(_resolver.ResolveMethod(exception)); // 2nd lookup from cache
     }
 
     [Fact]
     public void ResolveMethodInherited()
     {
-        resolver = new AttributeExceptionHandlerMethodResolver(typeof(InheritedController));
+        _resolver = new AttributeExceptionHandlerMethodResolver(typeof(InheritedController));
         var exception = new IOException();
-        Assert.Equal("HandleIOException", resolver.ResolveMethod(exception).Name);
+        Assert.Equal("HandleIOException", _resolver.ResolveMethod(exception).Name);
     }
 
     [Fact]
     public void ResolveMethodAgainstCause()
     {
         var exception = new AggregateException(new IOException());
-        Assert.Equal("HandleIOException", resolver.ResolveMethod(exception).Name);
+        Assert.Equal("HandleIOException", _resolver.ResolveMethod(exception).Name);
     }
 
     [Fact]
@@ -78,11 +78,11 @@ public class AttributeExceptionHandlerMethodResolverTest
         Assert.Throws<InvalidOperationException>(() => new AttributeExceptionHandlerMethodResolver(typeof(NoExceptionController)));
     }
 
-    internal class BindException : SocketException
+    internal sealed class BindException : SocketException
     {
     }
 
-    internal class ExceptionController
+    internal abstract class ExceptionController
     {
         public virtual void Handle()
         {
@@ -109,14 +109,14 @@ public class AttributeExceptionHandlerMethodResolverTest
         }
     }
 
-    internal class InheritedController : ExceptionController
+    internal sealed class InheritedController : ExceptionController
     {
         public override void HandleIOException()
         {
         }
     }
 
-    internal class AmbiguousController
+    internal sealed class AmbiguousController
     {
         public void Handle()
         {
@@ -135,7 +135,7 @@ public class AttributeExceptionHandlerMethodResolverTest
         }
     }
 
-    internal class NoExceptionController
+    internal sealed class NoExceptionController
     {
         [MessageExceptionHandler]
         public void Handle()

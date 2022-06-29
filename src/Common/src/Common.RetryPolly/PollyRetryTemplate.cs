@@ -75,7 +75,7 @@ public class PollyRetryTemplate : RetryTemplate
 
         CallListenerOpen(retryContext);
         var result = policy.Execute(
-            ctx =>
+            _ =>
             {
                 var callbackResult = retryCallback(retryContext);
 
@@ -121,7 +121,7 @@ public class PollyRetryTemplate : RetryTemplate
         }
 
         policy.Execute(
-            ctx =>
+            _ =>
             {
                 retryCallback(retryContext);
                 return null;
@@ -139,7 +139,7 @@ public class PollyRetryTemplate : RetryTemplate
 
         var fallbackPolicy = Policy<T>.Handle<Exception>()
             .Fallback(
-                (delegateResult, context, token) =>
+                (delegateResult, context, _) =>
                 {
                     var retryContext = GetRetryContext(context);
                     retryContext.LastException = delegateResult.Exception;

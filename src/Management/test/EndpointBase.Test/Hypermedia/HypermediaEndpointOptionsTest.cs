@@ -48,7 +48,6 @@ public class HypermediaEndpointOptionsTest : BaseTest
         var config = configurationBuilder.Build();
 
         var opts = new InfoEndpointOptions(config);
-        var actOpts = new HypermediaEndpointOptions(config);
 
         Assert.Equal("info", opts.Id);
         Assert.Equal("infopath", opts.Path);

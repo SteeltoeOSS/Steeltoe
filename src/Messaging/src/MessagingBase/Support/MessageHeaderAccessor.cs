@@ -15,7 +15,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
     protected AccessorMessageHeaders headers;
 
-    private static readonly MimeType[] READABLE_MIME_TYPES = new MimeType[]
+    private static readonly MimeType[] READABLE_MIME_TYPES =
     {
         MimeTypeUtils.APPLICATION_JSON,
         MimeTypeUtils.APPLICATION_XML,

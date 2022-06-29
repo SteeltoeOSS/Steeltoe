@@ -50,7 +50,6 @@ public class EndpointMiddlewareTest : BaseTest
         var logger1 = loggerFactory.CreateLogger<HeapDumper>();
         var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
         var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
-        var logger4 = loggerFactory.CreateLogger<HeapDumper>();
 
         var obs = new HeapDumper(opts, logger: logger1);
 
@@ -69,7 +68,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);

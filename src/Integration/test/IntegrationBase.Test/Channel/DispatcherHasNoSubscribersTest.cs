@@ -14,7 +14,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DispatcherHasNoSubscribersTest
 {
-    private IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public DispatcherHasNoSubscribersTest()
     {
@@ -23,7 +23,7 @@ public class DispatcherHasNoSubscribersTest
         var config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]

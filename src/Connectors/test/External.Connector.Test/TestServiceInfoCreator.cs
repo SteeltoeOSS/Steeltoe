@@ -9,7 +9,7 @@ using System;
 
 namespace External.Connector.Test;
 
-internal class TestServiceInfoCreator : ServiceInfoCreator
+internal sealed class TestServiceInfoCreator : ServiceInfoCreator
 {
     internal TestServiceInfoCreator(IConfiguration configuration)
         : base(configuration)

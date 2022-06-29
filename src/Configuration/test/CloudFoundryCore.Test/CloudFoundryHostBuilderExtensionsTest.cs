@@ -17,7 +17,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     public void WebHostAddCloudConfigurationFoundry_Adds()
     {
         var hostbuilder = new WebHostBuilder();
-        hostbuilder.Configure(builder => { });
+        hostbuilder.Configure(_ => { });
 
         hostbuilder.AddCloudFoundryConfiguration();
         var host = hostbuilder.Build();
@@ -46,7 +46,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     public void WebHostAddCloudFoundryConfiguration_Adds()
     {
         var hostbuilder = new WebHostBuilder();
-        hostbuilder.Configure(builder => { });
+        hostbuilder.Configure(_ => { });
 
         hostbuilder.AddCloudFoundryConfiguration();
         var host = hostbuilder.Build();

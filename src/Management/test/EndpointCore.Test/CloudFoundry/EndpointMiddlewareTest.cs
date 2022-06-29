@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> appSettings = new ()
+    private readonly Dictionary<string, string> _appSettings = new ()
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -66,7 +66,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -86,7 +86,7 @@ public class EndpointMiddlewareTest : BaseTest
         // arrange a server and client
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -103,7 +103,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();
@@ -116,10 +116,10 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryOptions_UseCustomJsonSerializerOptions()
     {
-        Dictionary<string, string> settings = new (appSettings) { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
+        Dictionary<string, string> settings = new (_appSettings) { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         var client = server.CreateClient();

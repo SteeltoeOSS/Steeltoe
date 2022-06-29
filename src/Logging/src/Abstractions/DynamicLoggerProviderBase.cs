@@ -13,7 +13,7 @@ namespace Steeltoe.Extensions.Logging;
 
 public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 {
-    private static readonly Filter _falseFilter = (cat, level) => false;
+    private static readonly Filter _falseFilter = (_, _) => false;
 
     private readonly ConcurrentDictionary<string, LogLevel> _originalLevels;
     private readonly ConcurrentDictionary<string, Filter> _runningFilters;
@@ -22,8 +22,6 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     private Func<string, LogLevel, bool> _filter;
     private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new ();
     private ILoggerProvider _delegate;
-
-    private bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicLoggerProviderBase"/> class.
@@ -99,13 +97,13 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
         Func<string, LogLevel, bool> filter = null;
         if (level != null)
         {
-            filter = (cat, lvl) => lvl >= level;
+            filter = (_, lvl) => lvl >= level;
         }
 
         // update the default filter for new instances
         if (category == "Default")
         {
-            _filter = filter ?? ((cat, lvl) => lvl >= GetConfiguredLevel("Default"));
+            _filter = filter ?? ((_, lvl) => lvl >= GetConfiguredLevel("Default"));
         }
         else
         {
@@ -126,7 +124,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
                     }
                     else
                     {
-                        _runningFilters.TryRemove(runningFilter.Key, out var oldVal);
+                        _runningFilters.TryRemove(runningFilter.Key, out _);
                     }
                 }
             }
@@ -154,17 +152,12 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing)
         {
-            if (disposing)
-            {
-                // Cleanup
-                _delegate?.Dispose();
-                _delegate = null;
-                _loggers = null;
-            }
+            _delegate?.Dispose();
+            _delegate = null;
 
-            _disposed = true;
+            _loggers = null;
         }
     }
 

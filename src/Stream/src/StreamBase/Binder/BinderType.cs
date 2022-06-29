@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
+
 namespace Steeltoe.Stream.Binder;
 
 public class BinderType : IBinderType
@@ -19,38 +21,23 @@ public class BinderType : IBinderType
 
     public string AssemblyPath { get; }
 
-    public override bool Equals(object o)
+    public override bool Equals(object obj)
     {
-        if (this == o)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (o == null || GetType() != o.GetType())
+        if (obj is not BinderType other || GetType() != obj.GetType())
         {
             return false;
         }
 
-        var that = (BinderType)o;
-        if (!Name.Equals(that.Name))
-        {
-            return false;
-        }
-
-        return ConfigureClass == that.ConfigureClass &&
-               AssemblyPath == that.AssemblyPath;
+        return Name == other.Name && ConfigureClass == other.ConfigureClass && AssemblyPath == other.AssemblyPath;
     }
 
     public override int GetHashCode()
     {
-        var result = Name.GetHashCode();
-        result = (31 * result) + ConfigureClass.GetHashCode();
-
-        if (!string.IsNullOrEmpty(AssemblyPath))
-        {
-            result = (31 * result) + AssemblyPath.GetHashCode();
-        }
-
-        return result;
+        return HashCode.Combine(Name, ConfigureClass, AssemblyPath);
     }
 }

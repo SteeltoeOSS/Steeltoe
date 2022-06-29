@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace Steeltoe.Management.Tracing.Test;
 
 [Serializable]
-internal class TestSamplerException : Exception
+public class TestSamplerException : Exception
 {
     public TestSamplerException()
     {

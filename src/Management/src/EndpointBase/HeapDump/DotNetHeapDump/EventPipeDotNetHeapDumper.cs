@@ -59,7 +59,7 @@ internal static class EventPipeDotNetHeapDumper
                    }, false))
             {
                 log.WriteLine("{0,5:n1}s: Flushing the type table", getElapsed().TotalSeconds);
-                typeFlushSession.Source.AllEvents += traceEvent => {
+                typeFlushSession.Source.AllEvents += _ => {
                     if (!fDone)
                     {
                         fDone = true;
@@ -222,7 +222,7 @@ internal static class EventPipeDotNetHeapDumper
 }
 
 [ExcludeFromCodeCoverage]
-internal class EventPipeSessionController : IDisposable
+internal sealed class EventPipeSessionController : IDisposable
 {
     private List<EventPipeProvider> _providers;
     private DiagnosticsClient _client;
@@ -246,25 +246,9 @@ internal class EventPipeSessionController : IDisposable
         _session.Stop();
     }
 
-    #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
-            {
-                _session?.Dispose();
-                Source?.Dispose();
-            }
-            disposedValue = true;
-        }
-    }
-
     public void Dispose()
     {
-        Dispose(true);
+        _session?.Dispose();
+        Source?.Dispose();
     }
-    #endregion
 }

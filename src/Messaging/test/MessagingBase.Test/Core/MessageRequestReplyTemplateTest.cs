@@ -12,17 +12,17 @@ namespace Steeltoe.Messaging.Core.Test;
 
 public class MessageRequestReplyTemplateTest
 {
-    private readonly TestMessagingTemplate template;
+    private readonly TestMessagingTemplate _template;
 
-    private readonly TestMessagePostProcessor postProcessor;
+    private readonly TestMessagePostProcessor _postProcessor;
 
-    private readonly Dictionary<string, object> headers;
+    private readonly Dictionary<string, object> _headers;
 
     public MessageRequestReplyTemplateTest()
     {
-        template = new TestMessagingTemplate();
-        postProcessor = new TestMessagePostProcessor();
-        headers = new Dictionary<string, object> { { "key", "value" } };
+        _template = new TestMessagingTemplate();
+        _postProcessor = new TestMessagePostProcessor();
+        _headers = new Dictionary<string, object> { { "key", "value" } };
     }
 
     [Fact]
@@ -30,12 +30,12 @@ public class MessageRequestReplyTemplateTest
     {
         var requestMessage = Message.Create("request");
         var responseMessage = Message.Create("response");
-        template.DefaultSendDestination = "home";
-        template.ReceiveMessage = responseMessage;
-        var actual = await template.SendAndReceiveAsync(requestMessage);
+        _template.DefaultSendDestination = "home";
+        _template.ReceiveMessage = responseMessage;
+        var actual = await _template.SendAndReceiveAsync(requestMessage);
 
-        Assert.Equal("home", template.Destination);
-        Assert.Same(requestMessage, template.RequestMessage);
+        Assert.Equal("home", _template.Destination);
+        Assert.Same(requestMessage, _template.RequestMessage);
         Assert.Same(responseMessage, actual);
     }
 
@@ -44,25 +44,25 @@ public class MessageRequestReplyTemplateTest
     {
         var requestMessage = Message.Create("request");
         var responseMessage = Message.Create("response");
-        template.DefaultSendDestination = "home";
-        template.ReceiveMessage = responseMessage;
-        var actual = template.SendAndReceive(requestMessage);
+        _template.DefaultSendDestination = "home";
+        _template.ReceiveMessage = responseMessage;
+        var actual = _template.SendAndReceive(requestMessage);
 
-        Assert.Equal("home", template.Destination);
-        Assert.Same(requestMessage, template.RequestMessage);
+        Assert.Equal("home", _template.Destination);
+        Assert.Same(requestMessage, _template.RequestMessage);
         Assert.Same(responseMessage, actual);
     }
 
     [Fact]
     public async Task SendAndReceiveAsyncMissingDestination()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAndReceiveAsync(Message.Create("request")));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.SendAndReceiveAsync(Message.Create("request")));
     }
 
     [Fact]
     public void SendAndReceiveMissingDestination()
     {
-        Assert.Throws<InvalidOperationException>(() => template.SendAndReceive(Message.Create("request")));
+        Assert.Throws<InvalidOperationException>(() => _template.SendAndReceive(Message.Create("request")));
     }
 
     [Fact]
@@ -70,10 +70,10 @@ public class MessageRequestReplyTemplateTest
     {
         var requestMessage = Message.Create("request");
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = await template.SendAndReceiveAsync("somewhere", requestMessage);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Same(requestMessage, template.RequestMessage);
+        _template.ReceiveMessage = responseMessage;
+        var actual = await _template.SendAndReceiveAsync("somewhere", requestMessage);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Same(requestMessage, _template.RequestMessage);
         Assert.Same(responseMessage, actual);
     }
 
@@ -82,10 +82,10 @@ public class MessageRequestReplyTemplateTest
     {
         var requestMessage = Message.Create("request");
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var actual = template.SendAndReceive("somewhere", requestMessage);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Same(requestMessage, template.RequestMessage);
+        _template.ReceiveMessage = responseMessage;
+        var actual = _template.SendAndReceive("somewhere", requestMessage);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Same(requestMessage, _template.RequestMessage);
         Assert.Same(responseMessage, actual);
     }
 
@@ -93,12 +93,12 @@ public class MessageRequestReplyTemplateTest
     public async Task ConvertAndSendAsync()
     {
         var responseMessage = Message.Create("response");
-        template.DefaultSendDestination = "home";
-        template.ReceiveMessage = responseMessage;
+        _template.DefaultSendDestination = "home";
+        _template.ReceiveMessage = responseMessage;
 
-        var response = await template.ConvertSendAndReceiveAsync<string>("request");
-        Assert.Equal("home", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        var response = await _template.ConvertSendAndReceiveAsync<string>("request");
+        Assert.Equal("home", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
     }
 
@@ -106,12 +106,12 @@ public class MessageRequestReplyTemplateTest
     public void ConvertAndSend()
     {
         var responseMessage = Message.Create("response");
-        template.DefaultSendDestination = "home";
-        template.ReceiveMessage = responseMessage;
+        _template.DefaultSendDestination = "home";
+        _template.ReceiveMessage = responseMessage;
 
-        var response = template.ConvertSendAndReceive<string>("request");
-        Assert.Equal("home", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        var response = _template.ConvertSendAndReceive<string>("request");
+        Assert.Equal("home", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
     }
 
@@ -119,10 +119,10 @@ public class MessageRequestReplyTemplateTest
     public async Task ConvertAndSendAsyncToDestination()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request");
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request");
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
     }
 
@@ -130,10 +130,10 @@ public class MessageRequestReplyTemplateTest
     public void ConvertAndSendToDestination()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = template.ConvertSendAndReceive<string>("somewhere", "request");
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = _template.ConvertSendAndReceive<string>("somewhere", "request");
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
     }
 
@@ -141,11 +141,11 @@ public class MessageRequestReplyTemplateTest
     public async Task ConvertAndSendAsyncToDestinationWithHeaders()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", headers);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Equal("value", template.RequestMessage.Headers["key"]);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _headers);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Equal("value", _template.RequestMessage.Headers["key"]);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
     }
 
@@ -153,11 +153,11 @@ public class MessageRequestReplyTemplateTest
     public void ConvertAndSendToDestinationWithHeaders()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = template.ConvertSendAndReceive<string>("somewhere", "request", headers);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Equal("value", template.RequestMessage.Headers["key"]);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = _template.ConvertSendAndReceive<string>("somewhere", "request", _headers);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Equal("value", _template.RequestMessage.Headers["key"]);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
     }
 
@@ -165,81 +165,81 @@ public class MessageRequestReplyTemplateTest
     public async Task ConvertAndSendAsyncWithPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.DefaultSendDestination = "home";
-        template.ReceiveMessage = responseMessage;
-        var response = await template.ConvertSendAndReceiveAsync<string>((object)"request", postProcessor);
+        _template.DefaultSendDestination = "home";
+        _template.ReceiveMessage = responseMessage;
+        var response = await _template.ConvertSendAndReceiveAsync<string>((object)"request", _postProcessor);
 
-        Assert.Equal("home", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        Assert.Equal("home", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
-        Assert.Same(postProcessor.Message, template.RequestMessage);
+        Assert.Same(_postProcessor.Message, _template.RequestMessage);
     }
 
     [Fact]
     public void ConvertAndSendWithPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.DefaultSendDestination = "home";
-        template.ReceiveMessage = responseMessage;
-        var response = template.ConvertSendAndReceive<string>((object)"request", postProcessor);
+        _template.DefaultSendDestination = "home";
+        _template.ReceiveMessage = responseMessage;
+        var response = _template.ConvertSendAndReceive<string>((object)"request", _postProcessor);
 
-        Assert.Equal("home", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        Assert.Equal("home", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
-        Assert.Same(postProcessor.Message, template.RequestMessage);
+        Assert.Same(_postProcessor.Message, _template.RequestMessage);
     }
 
     [Fact]
     public async Task ConvertAndSendAsyncToDestinationWithPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", postProcessor);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _postProcessor);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
-        Assert.Same(postProcessor.Message, template.RequestMessage);
+        Assert.Same(_postProcessor.Message, _template.RequestMessage);
     }
 
     [Fact]
     public void ConvertAndSendToDestinationWithPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = template.ConvertSendAndReceive<string>("somewhere", "request", postProcessor);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = _template.ConvertSendAndReceive<string>("somewhere", "request", _postProcessor);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
-        Assert.Same(postProcessor.Message, template.RequestMessage);
+        Assert.Same(_postProcessor.Message, _template.RequestMessage);
     }
 
     [Fact]
     public async Task ConvertAndSendAsyncToDestinationWithHeadersAndPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", headers, postProcessor);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Equal("value", template.RequestMessage.Headers["key"]);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _headers, _postProcessor);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Equal("value", _template.RequestMessage.Headers["key"]);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
-        Assert.Same(postProcessor.Message, template.RequestMessage);
+        Assert.Same(_postProcessor.Message, _template.RequestMessage);
     }
 
     [Fact]
     public void ConvertAndSendToDestinationWithHeadersAndPostProcessor()
     {
         var responseMessage = Message.Create("response");
-        template.ReceiveMessage = responseMessage;
-        var response = template.ConvertSendAndReceive<string>("somewhere", "request", headers, postProcessor);
-        Assert.Equal("somewhere", template.Destination);
-        Assert.Equal("value", template.RequestMessage.Headers["key"]);
-        Assert.Same("request", template.RequestMessage.Payload);
+        _template.ReceiveMessage = responseMessage;
+        var response = _template.ConvertSendAndReceive<string>("somewhere", "request", _headers, _postProcessor);
+        Assert.Equal("somewhere", _template.Destination);
+        Assert.Equal("value", _template.RequestMessage.Headers["key"]);
+        Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
-        Assert.Same(postProcessor.Message, template.RequestMessage);
+        Assert.Same(_postProcessor.Message, _template.RequestMessage);
     }
 
-    internal class TestMessagingTemplate : AbstractMessagingTemplate<string>
+    internal sealed class TestMessagingTemplate : AbstractMessagingTemplate<string>
     {
         public string Destination { get; set; }
 

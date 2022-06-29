@@ -10,9 +10,9 @@ namespace Steeltoe.Connector.Services;
 
 public class UriInfo
 {
-    private readonly char[] _questionMark = new char[] { '?' };
+    private readonly char[] _questionMark = { '?' };
 
-    private readonly char[] _colon = new char[] { ':' };
+    private readonly char[] _colon = { ':' };
 
     public UriInfo(string scheme, string host, int port, string username, string password, string path = null, string query = null)
     {

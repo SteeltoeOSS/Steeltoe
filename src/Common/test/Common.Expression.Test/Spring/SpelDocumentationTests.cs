@@ -15,27 +15,21 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelDocumentationTests : AbstractExpressionTests
 {
-    private static readonly Inventor Tesla;
-    private static readonly Inventor Pupin;
-
-    static SpelDocumentationTests()
+    private static readonly Inventor Tesla = new ("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
     {
-        Tesla = new Inventor("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
+        PlaceOfBirth = new PlaceOfBirth("SmilJan"),
+        Inventions = new[]
         {
-            PlaceOfBirth = new PlaceOfBirth("SmilJan"),
-            Inventions = new[]
-            {
-                "Telephone repeater", "Rotating magnetic field principle",
-                "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",
-                "Tesla coil transformer", "Wireless communication", "Radio", "Fluorescent lights"
-            }
-        };
+            "Telephone repeater", "Rotating magnetic field principle",
+            "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",
+            "Tesla coil transformer", "Wireless communication", "Radio", "Fluorescent lights"
+        }
+    };
 
-        Pupin = new Inventor("Pupin", new DateTime(1856, 7, 9), "Idvor")
-        {
-            PlaceOfBirth = new PlaceOfBirth("Idvor")
-        };
-    }
+    private static readonly Inventor Pupin = new ("Pupin", new DateTime(1856, 7, 9), "Idvor")
+    {
+        PlaceOfBirth = new PlaceOfBirth("Idvor")
+    };
 
     [Fact]
     public void TestMethodInvocation()
@@ -139,7 +133,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
 
         // Members List
         var societyContext = new StandardEvaluationContext();
-        var ieee = new IEEE { Members = { [0] = Tesla } };
+        var ieee = new InstituteOfElectricalAndElectronicsEngineers { Members = { [0] = Tesla } };
         societyContext.SetRootObject(ieee);
 
         // Evaluates to "Nikola Tesla"
@@ -156,7 +150,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestDictionaryAccess()
     {
         var societyContext = new StandardEvaluationContext();
-        societyContext.SetRootObject(new IEEE());
+        societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
 
         // Officer's Dictionary
         var pupin = _parser.ParseExpression("Officers['president']").GetValue<Inventor>(societyContext);
@@ -185,7 +179,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Assert.Equal("bc", c);
 
         var societyContext = new StandardEvaluationContext();
-        societyContext.SetRootObject(new IEEE());
+        societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
 
         // Evaluates to true
         var isMember = _parser.ParseExpression("IsMember('Mihajlo Pupin')").GetValue<bool>(societyContext);
@@ -229,7 +223,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestLogicalOperators()
     {
         var societyContext = new StandardEvaluationContext();
-        societyContext.SetRootObject(new IEEE());
+        societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
 
         // -- AND --
 
@@ -240,6 +234,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         // Evaluates to true
         var expression = "IsMember('Nikola Tesla') and IsMember('Mihajlo Pupin')";
         var trueValue = _parser.ParseExpression(expression).GetValue<bool>(societyContext);
+        Assert.True(trueValue);
 
         // -- OR --
 
@@ -341,7 +336,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestConstructors()
     {
         var societyContext = new StandardEvaluationContext();
-        societyContext.SetRootObject(new IEEE());
+        societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
         var einstein = _parser.ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein',new DateTime(1879, 3, 14), 'German')").GetValue<Inventor>();
         Assert.Equal("Albert Einstein", einstein.Name);
 
@@ -389,7 +384,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        context.RegisterFunction("reversestring", typeof(StringUtils).GetMethod("ReverseString", BindingFlags.Public | BindingFlags.Static));
+        context.RegisterFunction("reversestring", typeof(StringUtils).GetMethod(nameof(StringUtils.ReverseString), BindingFlags.Public | BindingFlags.Static));
 
         var helloWorldReversed = parser.ParseExpression("#reversestring('hello world')").GetValue<string>(context);
         Assert.Equal("dlrow olleh", helloWorldReversed);
@@ -403,7 +398,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Assert.Equal("falseExp", falsestring);
 
         var societyContext = new StandardEvaluationContext();
-        societyContext.SetRootObject(new IEEE());
+        societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
 
         _parser.ParseExpression("Name").SetValue(societyContext, "IEEE");
         societyContext.SetVariable("queryName", "Nikola Tesla");
@@ -422,7 +417,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestSelection()
     {
         var societyContext = new StandardEvaluationContext();
-        societyContext.SetRootObject(new IEEE());
+        societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
         var list = (List<object>)_parser.ParseExpression("Members2.?[Nationality == 'Serbian']").GetValue(societyContext);
         Assert.Single(list);
         Assert.Equal("Nikola Tesla", ((Inventor)list[0]).Name);
@@ -436,14 +431,28 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Assert.StartsWith("random number", randomPhrase);
     }
 
-    public class IEEE
+    public static class StringUtils
+    {
+        public static string ReverseString(string input)
+        {
+            var backwards = new StringBuilder();
+            for (var i = 0; i < input.Length; i++)
+            {
+                backwards.Append(input[input.Length - 1 - i]);
+            }
+
+            return backwards.ToString();
+        }
+    }
+
+    public class InstituteOfElectricalAndElectronicsEngineers
     {
         public Inventor[] Members = new Inventor[1];
         public List<object> Members2 = new ();
         public Dictionary<string, object> Officers = new ();
         public List<Dictionary<string, object>> Reverse = new ();
 
-        public IEEE()
+        public InstituteOfElectricalAndElectronicsEngineers()
         {
             Officers.Add("president", Pupin);
             var linv = new List<object>
@@ -472,19 +481,5 @@ public class SpelDocumentationTests : AbstractExpressionTests
         public string ExpressionSuffix => "}";
 
         public bool IsTemplate => true;
-    }
-
-    public class StringUtils
-    {
-        public static string ReverseString(string input)
-        {
-            var backwards = new StringBuilder();
-            for (var i = 0; i < input.Length; i++)
-            {
-                backwards.Append(input[input.Length - 1 - i]);
-            }
-
-            return backwards.ToString();
-        }
     }
 }

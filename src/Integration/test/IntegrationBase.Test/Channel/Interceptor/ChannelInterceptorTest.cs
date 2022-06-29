@@ -18,8 +18,8 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test;
 
 public class ChannelInterceptorTest
 {
-    private readonly QueueChannel channel;
-    private readonly IServiceProvider provider;
+    private readonly QueueChannel _channel;
+    private readonly IServiceProvider _provider;
 
     public ChannelInterceptorTest()
     {
@@ -30,17 +30,17 @@ public class ChannelInterceptorTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        provider = services.BuildServiceProvider();
-        channel = new QueueChannel(provider.GetService<IApplicationContext>());
+        _provider = services.BuildServiceProvider();
+        _channel = new QueueChannel(_provider.GetService<IApplicationContext>());
     }
 
     [Fact]
     public void TestPreSendInterceptorReturnsMessage()
     {
         var interceptor = new PreSendReturnsMessageInterceptor();
-        channel.AddInterceptor(interceptor);
-        channel.Send(Message.Create("test"));
-        var result = channel.Receive(0);
+        _channel.AddInterceptor(interceptor);
+        _channel.Send(Message.Create("test"));
+        var result = _channel.Receive(0);
         Assert.NotNull(result);
         Assert.Equal("test", result.Payload);
         Assert.Equal(1, result.Headers[nameof(PreSendReturnsMessageInterceptor)]);
@@ -51,17 +51,17 @@ public class ChannelInterceptorTest
     public void TestPreSendInterceptorReturnsNull()
     {
         var interceptor = new PreSendReturnsNullInterceptor();
-        channel.AddInterceptor(interceptor);
+        _channel.AddInterceptor(interceptor);
         IMessage message = Message.Create("test");
-        channel.Send(message);
+        _channel.Send(message);
         Assert.Equal(1, interceptor.Counter);
 
-        Assert.True(channel.RemoveInterceptor(interceptor));
+        Assert.True(_channel.RemoveInterceptor(interceptor));
 
-        channel.Send(Message.Create("TEST"));
+        _channel.Send(Message.Create("TEST"));
         Assert.Equal(1, interceptor.Counter);
 
-        var result = channel.Receive(0);
+        var result = _channel.Receive(0);
         Assert.NotNull(result);
         Assert.Equal("TEST", result.Payload);
     }
@@ -70,15 +70,15 @@ public class ChannelInterceptorTest
     public void TestPostSendInterceptorWithSentMessage()
     {
         var interceptor = new TestPostSendInterceptorWithSentMessageInterceptor();
-        channel.AddInterceptor(interceptor);
-        channel.Send(Message.Create("test"));
+        _channel.AddInterceptor(interceptor);
+        _channel.Send(Message.Create("test"));
         Assert.True(interceptor.Invoked);
     }
 
     [Fact]
     public void TestPostSendInterceptorWithUnsentMessage()
     {
-        var singleItemChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
+        var singleItemChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
         var interceptor = new TestPostSendInterceptorWithUnsentMessageInterceptor();
         singleItemChannel.AddInterceptor(interceptor);
         Assert.Equal(0, interceptor.InvokedCounter);
@@ -98,7 +98,7 @@ public class ChannelInterceptorTest
     [Fact]
     public void AfterCompletionWithSendException()
     {
-        AbstractMessageChannel testChannel = new AfterCompletionWithSendExceptionChannel(provider.GetService<IApplicationContext>());
+        AbstractMessageChannel testChannel = new AfterCompletionWithSendExceptionChannel(_provider.GetService<IApplicationContext>());
 
         var interceptor1 = new AfterCompletionTestInterceptor();
         var interceptor2 = new AfterCompletionTestInterceptor();
@@ -122,11 +122,11 @@ public class ChannelInterceptorTest
     {
         var interceptor1 = new AfterCompletionTestInterceptor();
         var interceptor2 = new AfterCompletionTestInterceptor { ExceptionToRaise = new Exception("Simulated exception") };
-        channel.AddInterceptor(interceptor1);
-        channel.AddInterceptor(interceptor2);
+        _channel.AddInterceptor(interceptor1);
+        _channel.AddInterceptor(interceptor2);
         try
         {
-            channel.Send(IntegrationMessageBuilder.WithPayload("test").Build());
+            _channel.Send(IntegrationMessageBuilder.WithPayload("test").Build());
         }
         catch (Exception ex)
         {
@@ -141,10 +141,10 @@ public class ChannelInterceptorTest
     public void TestPreReceiveInterceptorReturnsTrue()
     {
         var interceptor = new PreReceiveReturnsTrueInterceptor();
-        channel.AddInterceptor(interceptor);
+        _channel.AddInterceptor(interceptor);
         var message = Message.Create("test");
-        channel.Send(message);
-        var result = channel.Receive(0);
+        _channel.Send(message);
+        var result = _channel.Receive(0);
         Assert.Equal(1, interceptor.Counter);
         Assert.NotNull(result);
         Assert.True(interceptor.AfterCompletionInvoked);
@@ -154,10 +154,10 @@ public class ChannelInterceptorTest
     public void TestPreReceiveInterceptorReturnsFalse()
     {
         var interceptor = new PreReceiveReturnsFalseInterceptor();
-        channel.AddInterceptor(interceptor);
+        _channel.AddInterceptor(interceptor);
         var message = Message.Create("test");
-        channel.Send(message);
-        var result = channel.Receive(0);
+        _channel.Send(message);
+        var result = _channel.Receive(0);
         Assert.Equal(1, interceptor.Counter);
         Assert.Null(result);
     }
@@ -166,12 +166,12 @@ public class ChannelInterceptorTest
     public void TestPostReceiveInterceptor()
     {
         var interceptor = new TestPostReceiveInterceptorInterceptor();
-        channel.AddInterceptor(interceptor);
+        _channel.AddInterceptor(interceptor);
 
-        channel.Receive(0);
+        _channel.Receive(0);
         Assert.Equal(0, interceptor.Counter);
-        channel.Send(Message.Create("test"));
-        var result = channel.Receive(0);
+        _channel.Send(Message.Create("test"));
+        var result = _channel.Receive(0);
         Assert.NotNull(result);
         Assert.Equal(1, interceptor.Counter);
     }
@@ -181,12 +181,12 @@ public class ChannelInterceptorTest
     {
         var interceptor1 = new PreReceiveReturnsTrueInterceptor();
         var interceptor2 = new PreReceiveReturnsTrueInterceptor { ExceptionToRaise = new Exception("Simulated exception") };
-        channel.AddInterceptor(interceptor1);
-        channel.AddInterceptor(interceptor2);
+        _channel.AddInterceptor(interceptor1);
+        _channel.AddInterceptor(interceptor2);
 
         try
         {
-            channel.Receive(0);
+            _channel.Receive(0);
         }
         catch (Exception ex)
         {
@@ -229,16 +229,14 @@ public class ChannelInterceptorTest
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
         {
+            Assert.NotNull(message);
+            Assert.NotNull(channel);
+            if (sent)
             {
-                Assert.NotNull(message);
-                Assert.NotNull(channel);
-                if (sent)
-                {
-                    Interlocked.Increment(ref SentCounter);
-                }
-
-                Interlocked.Increment(ref InvokedCounter);
+                Interlocked.Increment(ref SentCounter);
             }
+
+            Interlocked.Increment(ref InvokedCounter);
         }
     }
 

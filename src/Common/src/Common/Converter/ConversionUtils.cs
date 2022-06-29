@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -79,13 +80,7 @@ public static class ConversionUtils
             return collection.Count;
         }
 
-        var count = 0;
-        foreach (var element in enumerable)
-        {
-            count++;
-        }
-
-        return count;
+        return enumerable.Cast<object>().Count();
     }
 
     public static Type GetNullableElementType(Type nullable)

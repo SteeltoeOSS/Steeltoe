@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Management.CloudFoundry.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class CloudFoundryServiceCollectionExtensionsTest
 {
     [Fact]
@@ -38,7 +38,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
     [Fact]
     public void AddCloudFoundryActuators_ConfiguresCorsDefaults()
     {
-        var hostBuilder = new WebHostBuilder().Configure(config => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.ConfigureServices((context, services) => services.AddCloudFoundryActuators(context.Configuration)).Build();
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
@@ -54,7 +54,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
     public void AddCloudFoundryActuators_ConfiguresCorsCustom()
     {
         Action<CorsPolicyBuilder> customCors = myPolicy => myPolicy.WithOrigins("http://google.com");
-        var hostBuilder = new WebHostBuilder().Configure(config => { });
+        var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.ConfigureServices((context, services) => services.AddCloudFoundryActuators(context.Configuration, customCors)).Build();
         var options = new ApplicationBuilder(host.Services)

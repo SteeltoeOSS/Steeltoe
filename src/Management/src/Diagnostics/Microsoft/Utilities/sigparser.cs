@@ -72,7 +72,7 @@ internal struct SigParser
 
     private bool SkipInt()
     {
-        return GetData(out int tmp);
+        return GetData(out _);
     }
 
     public bool GetData(out int data)
@@ -638,7 +638,7 @@ internal struct SigParser
     private const int mdtName = 0x71000000;       //
     private const int mdtBaseType = 0x72000000;       // Leave this on the high end value. This does not correspond to metadata table
 
-    private static readonly int[] s_tkCorEncodeToken = new[] { mdtTypeDef, mdtTypeRef, mdtTypeSpec, mdtBaseType };
+    private static readonly int[] s_tkCorEncodeToken = { mdtTypeDef, mdtTypeRef, mdtTypeSpec, mdtBaseType };
 
     private const int IMAGE_CEE_CS_CALLCONV_DEFAULT = 0x0;
 

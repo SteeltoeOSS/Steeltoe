@@ -16,16 +16,16 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
 {
     private sealed class LatchedObserver : ObserverBase<HystrixCommandCompletion>
     {
-        private readonly CountdownEvent latch;
+        private readonly CountdownEvent _latch;
 
         public LatchedObserver(CountdownEvent latch)
         {
-            this.latch = latch;
+            _latch = latch;
         }
 
         protected override void OnCompletedCore()
         {
-            latch.SignalEx();
+            _latch.SignalEx();
         }
 
         protected override void OnErrorCore(Exception error)
@@ -40,12 +40,12 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
 
     private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("COMMAND");
     private static readonly IHystrixThreadPoolKey ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
-    private readonly HystrixCommandCompletionStream commandStream = new (CommandKey);
-    private readonly ITestOutputHelper output;
+    private readonly HystrixCommandCompletionStream _commandStream = new (CommandKey);
+    private readonly ITestOutputHelper _output;
 
     public HystrixCommandCompletionStreamTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         IObserver<HystrixCommandCompletion> subscriber = new LatchedObserver(latch);
 
-        commandStream.Observe().Take(1).Subscribe(subscriber);
+        _commandStream.Observe().Take(1).Subscribe(subscriber);
 
         // no writes
         Assert.False(latch.Wait(TimeSpan.FromMilliseconds(1000)));
@@ -66,11 +66,11 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         IObserver<HystrixCommandCompletion> subscriber = new LatchedObserver(latch);
 
-        commandStream.Observe().Take(1).Subscribe(subscriber);
+        _commandStream.Observe().Take(1).Subscribe(subscriber);
 
         var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
         var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
-        commandStream.Write(@event);
+        _commandStream.Write(@event);
 
         Assert.True(latch.Wait(TimeSpan.FromMilliseconds(1000)));
     }
@@ -84,12 +84,12 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
         var latch2 = new CountdownEvent(1);
         IObserver<HystrixCommandCompletion> subscriber2 = new LatchedObserver(latch2);
 
-        commandStream.Observe().Take(1).Subscribe(subscriber1);
-        commandStream.Observe().Take(1).Subscribe(subscriber2);
+        _commandStream.Observe().Take(1).Subscribe(subscriber1);
+        _commandStream.Observe().Take(1).Subscribe(subscriber2);
 
         var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
         var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
-        commandStream.Write(@event);
+        _commandStream.Write(@event);
 
         Assert.True(latch1.Wait(TimeSpan.FromMilliseconds(1000)));
         Assert.True(latch2.Wait(TimeSpan.FromMilliseconds(10)));

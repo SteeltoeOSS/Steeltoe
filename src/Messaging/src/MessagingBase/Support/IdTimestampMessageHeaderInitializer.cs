@@ -28,7 +28,7 @@ public class IdTimestampMessageHeaderInitializer : IMessageHeaderInitializer
         headerAccessor.EnableTimestamp = EnableTimestamp;
     }
 
-    internal class DisabledIDGenerator : IIDGenerator
+    internal sealed class DisabledIDGenerator : IIDGenerator
     {
         public string GenerateId()
         {

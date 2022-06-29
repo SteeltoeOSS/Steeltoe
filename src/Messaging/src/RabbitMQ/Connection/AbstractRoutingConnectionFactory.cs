@@ -7,9 +7,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRoutingConnectionFactory
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     private readonly ConcurrentDictionary<object, IConnectionFactory> _targetConnectionFactories = new ();
 
@@ -155,7 +154,12 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public void Dispose()
     {
-        // Do nothing
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 
     public virtual void AddTargetConnectionFactory(object key, IConnectionFactory connectionFactory)

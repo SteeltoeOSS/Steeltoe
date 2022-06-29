@@ -188,7 +188,7 @@ public static class MySqlDbContextOptionsExtensions
         else
         {
             // If the server version wasn't passed in, use the EF Core lib to autodetect it (this is the part that creates an extra connection)
-            serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new[] { connection });
+            serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new object[] { connection });
             useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), EntityFrameworkCoreTypeLocator.MySqlVersionType, typeof(Action<DbContextOptionsBuilder>) });
             parms = new[] { builder, connection, serverVersion, mySqlOptionsAction };
         }

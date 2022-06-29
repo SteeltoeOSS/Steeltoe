@@ -31,18 +31,21 @@ public class TempFile : TempPath
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (!File.Exists(FullPath))
+        if (disposing)
         {
-            return;
-        }
+            if (!File.Exists(FullPath))
+            {
+                return;
+            }
 
-        try
-        {
-            File.Delete(FullPath);
-        }
-        catch
-        {
-            // ignore
+            try
+            {
+                File.Delete(FullPath);
+            }
+            catch
+            {
+                // ignore
+            }
         }
     }
 }

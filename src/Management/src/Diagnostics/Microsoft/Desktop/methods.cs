@@ -25,7 +25,7 @@ internal class DesktopMethod : ClrMethod
             return null;
 
         MethodAttributes attrs = 0;
-        if (metadata?.GetMethodProps(mdData.MDToken, out int pClass, null, 0, out int methodLength, out attrs, out IntPtr blob, out uint blobLen, out uint codeRva, out uint implFlags) < 0)
+        if (metadata?.GetMethodProps(mdData.MDToken, out _, null, 0, out _, out attrs, out _, out _, out _, out _) < 0)
             attrs = 0;
 
         return new DesktopMethod(runtime, mdData.MethodDesc, mdData, attrs);

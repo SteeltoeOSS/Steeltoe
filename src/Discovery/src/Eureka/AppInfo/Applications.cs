@@ -94,7 +94,7 @@ public class Applications
             throw new ArgumentNullException(nameof(app));
         }
 
-        ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (key, existing) => app);
+        ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (_, _) => app);
         AddInstances(app);
     }
 

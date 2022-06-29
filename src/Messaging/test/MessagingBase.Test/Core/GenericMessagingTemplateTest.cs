@@ -37,7 +37,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
-            .Callback<IMessage, int>((m, t) => sent = m)
+            .Callback<IMessage, int>((m, _) => sent = m)
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")
@@ -61,8 +61,8 @@ public class GenericMessagingTemplateTest
         var chanMock = new Mock<ISubscribableChannel>();
         var channel = chanMock.Object;
         chanMock.Setup(
-                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
-            .Callback<IMessage, CancellationToken>((m, t) => sent = m)
+                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
+            .Callback<IMessage, CancellationToken>((m, _) => sent = m)
             .Returns(new ValueTask<bool>(true));
 
         var message = MessageBuilder.WithPayload("request")
@@ -72,7 +72,7 @@ public class GenericMessagingTemplateTest
 
         await _template.SendAsync(channel, message);
 
-        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
+        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
         Assert.NotNull(sent);
         Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
         Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
@@ -86,8 +86,8 @@ public class GenericMessagingTemplateTest
         var chanMock = new Mock<ISubscribableChannel>();
         var channel = chanMock.Object;
         chanMock.Setup(
-                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
-            .Callback<IMessage, CancellationToken>((m, t) => sent = m)
+                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
+            .Callback<IMessage, CancellationToken>((m, _) => sent = m)
             .Returns(new ValueTask<bool>(true));
 
         var accessor = new MessageHeaderAccessor
@@ -97,7 +97,7 @@ public class GenericMessagingTemplateTest
         var message = Message.Create("request", accessor.MessageHeaders);
         accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
         await _template.SendAsync(channel, message);
-        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
+        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
         Assert.NotNull(sent);
         Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
         Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
@@ -112,7 +112,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
-            .Callback<IMessage, int>((m, t) => sent = m)
+            .Callback<IMessage, int>((m, _) => sent = m)
             .Returns(true);
 
         var accessor = new MessageHeaderAccessor
@@ -162,7 +162,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
-            .Callback<IMessage, int>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+            .Callback<IMessage, int>((m, _) => { Task.Run(() => handler.HandleMessage(m)); })
             .Returns(true);
         var result = _template.ConvertSendAndReceive<string>(channel, "request");
         Assert.Null(result);
@@ -185,7 +185,7 @@ public class GenericMessagingTemplateTest
         var chanMock = new Mock<ISubscribableChannel>();
         var channel = chanMock.Object;
         chanMock.Setup(
-                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
+                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
             .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m), t); })
             .Returns(new ValueTask<bool>(true));
         var result = await _template.ConvertSendAndReceiveAsync<string>(channel, "request");
@@ -193,7 +193,7 @@ public class GenericMessagingTemplateTest
         Assert.True(latch.Wait(10000));
         Assert.Null(handler._failure);
 
-        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
+        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.IsAny<int>()))
-            .Callback<IMessage, int>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+            .Callback<IMessage, int>((m, _) => { Task.Run(() => handler.HandleMessage(m)); })
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")
@@ -237,7 +237,7 @@ public class GenericMessagingTemplateTest
         var chanMock = new Mock<ISubscribableChannel>();
         var channel = chanMock.Object;
         chanMock.Setup(
-                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
+                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
             .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m), t); })
             .Returns(new ValueTask<bool>(true));
 
@@ -251,7 +251,7 @@ public class GenericMessagingTemplateTest
         Assert.True(latch.Wait(10000));
         Assert.Null(handler._failure);
 
-        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
+        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class GenericMessagingTemplateTest
         var channel = chanMock.Object;
         chanMock.Setup(
                 chan => chan.Send(It.IsAny<IMessage>(), It.IsAny<int>()))
-            .Callback<IMessage, int>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+            .Callback<IMessage, int>((m, _) => { Task.Run(() => handler.HandleMessage(m)); })
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")
@@ -299,7 +299,7 @@ public class GenericMessagingTemplateTest
         var chanMock = new Mock<ISubscribableChannel>();
         var channel = chanMock.Object;
         chanMock.Setup(
-                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
+                chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
             .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m), t); })
             .Returns(new ValueTask<bool>(true));
 
@@ -313,10 +313,10 @@ public class GenericMessagingTemplateTest
         Assert.True(latch.Wait(10000));
         Assert.Null(handler._failure);
 
-        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
+        chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
     }
 
-    internal class LateReplierMessageHandler : IMessageHandler
+    internal sealed class LateReplierMessageHandler : IMessageHandler
     {
         public CountdownEvent _latch;
         public Exception _failure;
@@ -357,7 +357,7 @@ public class GenericMessagingTemplateTest
         }
     }
 
-    internal class SendAndReceiveTestHandler : IMessageHandler
+    internal sealed class SendAndReceiveTestHandler : IMessageHandler
     {
         public string ServiceName { get; set; } = nameof(SendAndReceiveTestHandler);
 
@@ -368,7 +368,7 @@ public class GenericMessagingTemplateTest
         }
     }
 
-    internal class TestDestinationResolver : IDestinationResolver<IMessageChannel>
+    internal sealed class TestDestinationResolver : IDestinationResolver<IMessageChannel>
     {
         private readonly GenericMessagingTemplateTest _test;
 

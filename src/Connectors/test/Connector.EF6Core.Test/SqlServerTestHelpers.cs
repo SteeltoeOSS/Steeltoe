@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Connector.SqlServer.EF6.Test;
 
-public class SqlServerTestHelpers
+public static class SqlServerTestHelpers
 {
     public static string SingleServerVCAP = @"
             {

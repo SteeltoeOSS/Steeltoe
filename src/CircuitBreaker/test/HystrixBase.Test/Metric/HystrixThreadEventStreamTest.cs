@@ -17,16 +17,16 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
 {
     private sealed class LatchedObserver<T> : ObserverBase<T>
     {
-        private readonly CountdownEvent latch;
+        private readonly CountdownEvent _latch;
 
         public LatchedObserver(CountdownEvent latch)
         {
-            this.latch = latch;
+            _latch = latch;
         }
 
         protected override void OnCompletedCore()
         {
-            latch.SignalEx();
+            _latch.SignalEx();
         }
 
         protected override void OnErrorCore(Exception error)
@@ -39,23 +39,23 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         }
     }
 
-    private readonly IHystrixCommandKey commandKey;
-    private readonly IHystrixThreadPoolKey threadPoolKey;
+    private readonly IHystrixCommandKey _commandKey;
+    private readonly IHystrixThreadPoolKey _threadPoolKey;
 
-    private readonly HystrixThreadEventStream writeToStream;
-    private readonly HystrixCommandCompletionStream readCommandStream;
-    private readonly HystrixThreadPoolCompletionStream readThreadPoolStream;
-    private readonly ITestOutputHelper output;
+    private readonly HystrixThreadEventStream _writeToStream;
+    private readonly HystrixCommandCompletionStream _readCommandStream;
+    private readonly HystrixThreadPoolCompletionStream _readThreadPoolStream;
+    private readonly ITestOutputHelper _output;
 
     public HystrixThreadEventStreamTest(ITestOutputHelper output)
     {
-        this.output = output;
-        commandKey = HystrixCommandKeyDefault.AsKey("CMD-ThreadStream");
-        threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("TP-ThreadStream");
+        _output = output;
+        _commandKey = HystrixCommandKeyDefault.AsKey("CMD-ThreadStream");
+        _threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("TP-ThreadStream");
 
-        writeToStream = HystrixThreadEventStream.GetInstance();
-        readCommandStream = HystrixCommandCompletionStream.GetInstance(commandKey);
-        readThreadPoolStream = HystrixThreadPoolCompletionStream.GetInstance(threadPoolKey);
+        _writeToStream = HystrixThreadEventStream.GetInstance();
+        _readCommandStream = HystrixCommandCompletionStream.GetInstance(_commandKey);
+        _readThreadPoolStream = HystrixThreadPoolCompletionStream.GetInstance(_threadPoolKey);
     }
 
     [Fact]
@@ -66,10 +66,10 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         // no writes
         Assert.False(commandLatch.Wait(TimeSpan.FromMilliseconds(1000)));
@@ -84,13 +84,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.True(threadPoolLatch.Wait(1000));
@@ -104,13 +104,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.SUCCESS);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.False(threadPoolLatch.Wait(1000));
@@ -124,13 +124,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.FAILURE).SetExecutedInThread();
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.True(threadPoolLatch.Wait(1000));
@@ -144,13 +144,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.FAILURE);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.False(threadPoolLatch.Wait(1000));
@@ -164,13 +164,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.TIMEOUT).SetExecutedInThread();
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.True(threadPoolLatch.Wait(1000));
@@ -184,13 +184,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.TIMEOUT);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.False(threadPoolLatch.Wait(1000));
@@ -204,13 +204,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.BAD_REQUEST).SetExecutedInThread();
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.True(threadPoolLatch.Wait(1000));
@@ -224,13 +224,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.BAD_REQUEST);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.False(threadPoolLatch.Wait(1000));
@@ -244,13 +244,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.THREAD_POOL_REJECTED);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.True(threadPoolLatch.Wait(1000));
@@ -264,13 +264,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.SEMAPHORE_REJECTED);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.False(threadPoolLatch.Wait(1000));
@@ -284,22 +284,22 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<IList<HystrixCommandCompletion>> commandListSubscriber = new LatchedObserver<IList<HystrixCommandCompletion>>(commandLatch);
-        readCommandStream.Observe().Buffer(TimeSpan.FromMilliseconds(500)).Take(1)
+        _readCommandStream.Observe().Buffer(TimeSpan.FromMilliseconds(500)).Take(1)
             .Do(hystrixCommandCompletions =>
             {
-                output.WriteLine("LIST : " + hystrixCommandCompletions);
+                _output.WriteLine("LIST : " + hystrixCommandCompletions);
                 Assert.Equal(3, hystrixCommandCompletions.Count);
             }).Subscribe(commandListSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
         var cache1 = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
         var cache2 = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
-        writeToStream.ExecutionDone(cache1, commandKey, threadPoolKey);
-        writeToStream.ExecutionDone(cache2, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
+        _writeToStream.ExecutionDone(cache1, _commandKey, _threadPoolKey);
+        _writeToStream.ExecutionDone(cache2, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.True(threadPoolLatch.Wait(1000));
@@ -313,23 +313,23 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<IList<HystrixCommandCompletion>> commandListSubscriber = new LatchedObserver<IList<HystrixCommandCompletion>>(commandLatch);
-        readCommandStream.Observe().Buffer(TimeSpan.FromMilliseconds(500)).Take(1)
+        _readCommandStream.Observe().Buffer(TimeSpan.FromMilliseconds(500)).Take(1)
             .Do(hystrixCommandCompletions =>
             {
-                output.WriteLine("LIST : " + hystrixCommandCompletions);
+                _output.WriteLine("LIST : " + hystrixCommandCompletions);
                 Assert.Equal(3, hystrixCommandCompletions.Count);
             })
             .Subscribe(commandListSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.SUCCESS);
         var cache1 = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
         var cache2 = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
-        writeToStream.ExecutionDone(cache1, commandKey, threadPoolKey);
-        writeToStream.ExecutionDone(cache2, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
+        _writeToStream.ExecutionDone(cache1, _commandKey, _threadPoolKey);
+        _writeToStream.ExecutionDone(cache2, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.False(threadPoolLatch.Wait(1000));
@@ -343,13 +343,13 @@ public class HystrixThreadEventStreamTest : CommandStreamTest
         var threadPoolLatch = new CountdownEvent(1);
 
         IObserver<HystrixCommandCompletion> commandSubscriber = new LatchedObserver<HystrixCommandCompletion>(commandLatch);
-        readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
+        _readCommandStream.Observe().Take(1).Subscribe(commandSubscriber);
 
         IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
-        readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
+        _readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
         var result = ExecutionResult.From(HystrixEventType.SHORT_CIRCUITED);
-        writeToStream.ExecutionDone(result, commandKey, threadPoolKey);
+        _writeToStream.ExecutionDone(result, _commandKey, _threadPoolKey);
 
         Assert.True(commandLatch.Wait(1000));
         Assert.False(threadPoolLatch.Wait(1000));

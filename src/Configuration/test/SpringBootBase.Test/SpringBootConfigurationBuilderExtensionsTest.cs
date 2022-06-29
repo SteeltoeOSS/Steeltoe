@@ -15,7 +15,7 @@ public class SpringBootConfigurationBuilderExtensionsTest
     {
         const IConfigurationBuilder configurationBuilder = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootEnv());
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootEnv());
     }
 
     [Fact]

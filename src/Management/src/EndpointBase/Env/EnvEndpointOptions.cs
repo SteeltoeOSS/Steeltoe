@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Env;
 public class EnvEndpointOptions : AbstractEndpointOptions, IEnvOptions
 {
     private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:env";
-    private static readonly string[] KEYS_TO_SANITIZE = new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" };
+    private static readonly string[] KEYS_TO_SANITIZE = { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" };
 
     public EnvEndpointOptions()
     {

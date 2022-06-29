@@ -25,7 +25,7 @@ public class HystrixThreadPoolMetrics : HystrixMetrics
 
     public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key, IHystrixTaskScheduler taskScheduler, IHystrixThreadPoolOptions properties)
     {
-        return Metrics.GetOrAddEx(key.Name, k => new HystrixThreadPoolMetrics(key, taskScheduler, properties));
+        return Metrics.GetOrAddEx(key.Name, _ => new HystrixThreadPoolMetrics(key, taskScheduler, properties));
     }
 
     public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key)

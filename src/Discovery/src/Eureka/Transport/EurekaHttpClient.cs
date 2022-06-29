@@ -42,7 +42,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     protected HttpClient _httpClient;
     protected ILogger _logger;
     private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
-    private static readonly char[] COLON_DELIMIT = new[] { ':' };
+    private static readonly char[] COLON_DELIMIT = { ':' };
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
     private JsonSerializerOptions JsonSerializerOptions { get; set; } = new () { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -74,7 +74,6 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
     }
 
-#pragma warning disable SA1202 // Elements must be ordered by access
     public virtual Task<EurekaHttpResponse> RegisterAsync(InstanceInfo info)
     {
         if (info == null)
@@ -630,7 +629,6 @@ public class EurekaHttpClient : IEurekaHttpClient
     public virtual void Shutdown()
     {
     }
-#pragma warning restore SA1202 // Elements must be ordered by access
 
     internal string FetchAccessToken()
         => Config is not EurekaClientOptions config || string.IsNullOrEmpty(config.AccessTokenUri)
@@ -779,7 +777,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 sep = "&";
             }
 
-            uri += sb.ToString();
+            uri += sb;
         }
 
         return new Uri(uri);

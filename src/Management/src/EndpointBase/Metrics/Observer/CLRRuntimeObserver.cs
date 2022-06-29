@@ -13,7 +13,10 @@ using System.Diagnostics.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
+// TODO: [BREAKING] Rename type and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
 public class CLRRuntimeObserver : IRuntimeDiagnosticSource
+#pragma warning restore S101 // Types should be named in PascalCase
 {
     internal const string OBSERVER_NAME = "CLRRuntimeObserver";
     internal const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";
@@ -28,11 +31,11 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
     private readonly Dictionary<string, object> _workerTags = new () { { "kind", "worker" } };
     private readonly Dictionary<string, object> _comPortTags = new () { { "kind", "completionPort" } };
 
-    private ObservableGauge<double> _memoryUsedMeasure;
-    private ObservableGauge<long> _collectionCountMeasure;
-    private ObservableGauge<long> _activeThreadsMeasure;
-    private ObservableGauge<long> _availThreadsMeasure;
-    private ObservableGauge<double> _processUptimeMeasure;
+    private readonly ObservableGauge<double> _memoryUsedMeasure;
+    private readonly ObservableGauge<long> _collectionCountMeasure;
+    private readonly ObservableGauge<long> _activeThreadsMeasure;
+    private readonly ObservableGauge<long> _availThreadsMeasure;
+    private readonly ObservableGauge<double> _processUptimeMeasure;
 
     private CLRRuntimeSource.HeapMetrics _previous = default;
 

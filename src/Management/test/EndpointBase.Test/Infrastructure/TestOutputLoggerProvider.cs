@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
 /// <summary>
 /// Enables us to write logging messages to XUnit output
 /// </summary>
-internal class TestOutputLoggerProvider : ILoggerProvider
+internal sealed class TestOutputLoggerProvider : ILoggerProvider
 {
     private readonly ITestOutputHelper _output;
     private readonly ConcurrentDictionary<string, TestOutputLogger> _loggers = new ();
@@ -24,7 +24,7 @@ internal class TestOutputLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName)
     {
-        return _loggers.GetOrAdd(categoryName, name => new TestOutputLogger(_output, categoryName));
+        return _loggers.GetOrAdd(categoryName, _ => new TestOutputLogger(_output, categoryName));
     }
 
     public void Dispose()
@@ -33,7 +33,7 @@ internal class TestOutputLoggerProvider : ILoggerProvider
     }
 }
 
-internal class TestOutputLogger : ILogger
+internal sealed class TestOutputLogger : ILogger
 {
     private readonly ITestOutputHelper _output;
     private readonly string _category;

@@ -38,13 +38,19 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
     public void Dispose()
     {
-        if (Subscription != null)
-        {
-            Subscription.Dispose();
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        Subscription = null;
-        Logger?.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Subscription?.Dispose();
+            Subscription = null;
+
+            Logger?.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
+        }
     }
 
     public void Subscribe(DiagnosticListener listener)

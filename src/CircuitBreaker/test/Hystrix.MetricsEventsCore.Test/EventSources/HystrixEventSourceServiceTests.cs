@@ -31,7 +31,6 @@ public class HystrixEventSourceServiceTests
         var service = new HystrixEventSourceService(stream);
 
         using var listener = new HystrixEventsListener();
-        var token = new CancellationTokenSource().Token;
 
         service.OnNext(GetTestData());
 

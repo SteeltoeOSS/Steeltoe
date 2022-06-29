@@ -22,7 +22,7 @@ public class RollingThreadPoolMaxConcurrencyStream : RollingConcurrencyStream
 
     public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
     {
-        return Streams.GetOrAddEx(threadPoolKey.Name, k =>
+        return Streams.GetOrAddEx(threadPoolKey.Name, _ =>
         {
             var stream = new RollingThreadPoolMaxConcurrencyStream(threadPoolKey, numBuckets, bucketSizeInMs);
             stream.StartCachingStreamValuesIfUnstarted();

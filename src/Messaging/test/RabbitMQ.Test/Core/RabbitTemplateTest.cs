@@ -42,11 +42,11 @@ public class RabbitTemplateTest
             IsChannelTransacted = true
         };
 
-        txTemplate.Execute(status =>
+        txTemplate.Execute(_ =>
         {
             template.ConvertAndSend("foo", "bar");
         });
-        txTemplate.Execute(status =>
+        txTemplate.Execute(_ =>
         {
             template.ConvertAndSend("baz", "qux");
         });
@@ -84,7 +84,9 @@ public class RabbitTemplateTest
     }
 
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void DontHangConsumerThread()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
@@ -99,7 +101,7 @@ public class RabbitTemplateTest
         mockChannel.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(new RC.QueueDeclareOk("foo", 0, 0));
         mockChannel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((arg1, arg2, arg3, arg4, arg5, arg6, arg7) => consumer.Value = arg7);
+            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, arg7) => consumer.Value = arg7);
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -265,8 +267,11 @@ public class RabbitTemplateTest
         Assert.Throws<InvalidOperationException>(() => template.GetExpectedQueueNames());
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestRoutingConnectionFactory()
+#pragma warning restore S2699 // Tests should include assertions
     {
         // TODO: Test this when expression language implemented
     }
@@ -303,7 +308,7 @@ public class RabbitTemplateTest
         admin.ApplicationContext = mockContext.Object;
         var templateChannel = new AtomicReference<RC.IModel>();
         var transTemplate = new TransactionTemplate(new TestTransactionManager());
-        transTemplate.Execute(s =>
+        transTemplate.Execute(_ =>
         {
             return rabbitTemplate.Execute(c =>
             {
@@ -377,9 +382,9 @@ public class RabbitTemplateTest
     [Fact]
     public void TestAddAndRemoveBeforePublishPostProcessors()
     {
-        var mpp1 = new DoNothingMPP();
-        var mpp2 = new DoNothingMPP();
-        var mpp3 = new DoNothingMPP();
+        var mpp1 = new DoNothingMessagePostProcessor();
+        var mpp2 = new DoNothingMessagePostProcessor();
+        var mpp3 = new DoNothingMessagePostProcessor();
         var rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.AddBeforePublishPostProcessors(mpp1, mpp2);
         rabbitTemplate.AddBeforePublishPostProcessors(mpp3);
@@ -393,9 +398,9 @@ public class RabbitTemplateTest
     [Fact]
     public void TestAddAndRemoveAfterReceivePostProcessors()
     {
-        var mpp1 = new DoNothingMPP();
-        var mpp2 = new DoNothingMPP();
-        var mpp3 = new DoNothingMPP();
+        var mpp1 = new DoNothingMessagePostProcessor();
+        var mpp2 = new DoNothingMessagePostProcessor();
+        var mpp3 = new DoNothingMessagePostProcessor();
         var rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.AddAfterReceivePostProcessors(mpp1, mpp2);
         rabbitTemplate.AddAfterReceivePostProcessors(mpp3);
@@ -422,7 +427,7 @@ public class RabbitTemplateTest
         pcf.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockConnection.Setup(c => c.CreateChannel(false)).Returns(mockChannel.Object);
-        template.Invoke<object>(t => null);
+        template.Invoke<object>(_ => null);
         pcf.Verify(c => c.CreateConnection());
         mockConnection.Verify(c => c.CreateChannel(false));
     }
@@ -445,12 +450,12 @@ public class RabbitTemplateTest
         pcf.Setup(c => c.CreateConnection()).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockConnection.Setup(c => c.CreateChannel(true)).Returns(mockChannel.Object);
-        template.Invoke<object>(t => null);
+        template.Invoke<object>(_ => null);
         pcf.Verify(c => c.CreateConnection());
         mockConnection.Verify(c => c.CreateChannel(true));
     }
 
-    private sealed class DoNothingMPP : IMessagePostProcessor
+    private sealed class DoNothingMessagePostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message)
         {

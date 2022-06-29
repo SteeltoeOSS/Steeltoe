@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Invocation.Test;
 
-internal class TestExceptionResolver : AbstractExceptionHandlerMethodResolver
+internal sealed class TestExceptionResolver : AbstractExceptionHandlerMethodResolver
 {
     public TestExceptionResolver(Type handlerType)
         : base(InitExceptionMappings(handlerType))

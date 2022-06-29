@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SetValueTests : AbstractExpressionTests
 {
-    private static readonly bool DEBUG = false;
+    private static readonly bool DEBUG = bool.Parse(bool.FalseString);
 
     [Fact]
     public void TestSetProperty()

@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-internal class KubernetesSecretSource : IConfigurationSource
+internal sealed class KubernetesSecretSource : IConfigurationSource
 {
     private IKubernetes K8sClient { get; set; }
 

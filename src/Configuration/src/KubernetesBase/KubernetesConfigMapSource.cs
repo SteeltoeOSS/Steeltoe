@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-internal class KubernetesConfigMapSource : IConfigurationSource
+internal sealed class KubernetesConfigMapSource : IConfigurationSource
 {
     private IKubernetes K8sClient { get; set; }
 

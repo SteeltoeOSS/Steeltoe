@@ -83,8 +83,11 @@ public class EnableRabbitTest
         TestDefaultContainerFactoryConfiguration(context);
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public Task RabbitHandlerMethodFactoryConfiguration()
+#pragma warning restore S2699 // Tests should include assertions
     {
         // TODO:
         // var services = await RabbitHandlerMethodFactoryConfig.CreateAndStartServices();
@@ -222,7 +225,7 @@ public class EnableRabbitTest
         Assert.Single(defaultFactory.ListenerContainers);
         Assert.Single(customFactory.ListenerContainers);
         var testContainer = defaultFactory.GetListenerContainers()[0];
-        var endpoint = testContainer.Endpoint as IRabbitListenerEndpoint;
+        var endpoint = testContainer.Endpoint;
         Assert.IsType<SimpleRabbitListenerEndpoint>(endpoint);
         var simpEndpoint = endpoint as SimpleRabbitListenerEndpoint;
         Assert.IsType<MessageListenerAdapter>(simpEndpoint.MessageListener);

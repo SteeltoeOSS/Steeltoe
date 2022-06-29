@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -61,28 +62,22 @@ public class Address
 
     public override bool Equals(object obj)
     {
-        if (this == obj)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (obj == null || GetType() != obj.GetType())
+        if (obj is not Address other || GetType() != obj.GetType())
         {
             return false;
         }
 
-        var address = (Address)obj;
-
-        return !(!ExchangeName?.Equals(ExchangeName) ?? address.ExchangeName != null) &&
-               !(!RoutingKey?.Equals(address.RoutingKey) ?? address.RoutingKey != null);
+        return ExchangeName == other.ExchangeName && RoutingKey == other.RoutingKey;
     }
 
     public override int GetHashCode()
     {
-        var result = ExchangeName != null ? ExchangeName.GetHashCode() : 0;
-        var prime = 31; // NOSONAR magic #
-        result = (prime * result) + (RoutingKey != null ? RoutingKey.GetHashCode() : 0);
-        return result;
+        return HashCode.Combine(ExchangeName, RoutingKey);
     }
 
     public override string ToString()

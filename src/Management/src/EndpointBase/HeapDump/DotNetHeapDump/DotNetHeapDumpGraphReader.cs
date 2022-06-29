@@ -25,7 +25,7 @@ using Address = System.UInt64;
 /// Reads a .NET Heap dump generated from ETW
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class DotNetHeapDumpGraphReader
+internal sealed class DotNetHeapDumpGraphReader
 {
     /// <summary>
     /// A class for reading ETW events from the .NET runtime and creating a MemoryGraph from it.   This only works on V4.5.1 of the runtime or later.  

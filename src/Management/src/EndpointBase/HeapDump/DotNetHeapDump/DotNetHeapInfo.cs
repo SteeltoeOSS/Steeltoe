@@ -10,7 +10,7 @@ using Address = System.UInt64;
 
 // Copy of version in Microsoft/Diagnostics
 [ExcludeFromCodeCoverage]
-internal class DotNetHeapInfo : IFastSerializable
+internal sealed class DotNetHeapInfo : IFastSerializable
 {
     /// <summary>
     /// If we could not properly walk an object, this is incremented. 

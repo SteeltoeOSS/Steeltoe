@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
@@ -59,7 +58,6 @@ public class RedisCacheConfigurationExtensionsTest
     [Fact]
     public void CreateRedisServiceConnectorFactory_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
-        IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
         var connectorOptions = new RedisCacheConnectorOptions();
 
@@ -97,8 +95,6 @@ public class RedisCacheConfigurationExtensionsTest
     [Fact]
     public void CreateRedisServiceConnectorFactory_MultipleRedisServices_ThrowsConnectorException()
     {
-        IServiceCollection services = new ServiceCollection();
-
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVCAP);
 

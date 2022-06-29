@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DirectChannelTest
 {
-    private IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public DirectChannelTest()
     {
@@ -24,14 +24,14 @@ public class DirectChannelTest
         var config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
     public void TestSend()
     {
         var target = new ThreadNameExtractingTestTarget();
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
         var message = Message.Create("test");
         var currentId = Task.CurrentId;
@@ -45,7 +45,7 @@ public class DirectChannelTest
     public async Task TestSendAsync()
     {
         var target = new ThreadNameExtractingTestTarget();
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
         var message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
@@ -63,35 +63,35 @@ public class DirectChannelTest
          *
          *  29 million per second with increment counter in the handler
          */
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
 
         var handler = new CounterHandler();
         channel.Subscribe(handler);
         var message = Message.Create("test");
         Assert.True(channel.Send(message));
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
 
-        Assert.Equal(10000001, handler.Count);
+        Assert.Equal(10_000_001, handler.Count);
     }
 
     [Fact]
     public async Task TestSendAsyncOneHandler_10_000_000()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
 
         var handler = new CounterHandler();
         channel.Subscribe(handler);
         var message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             await channel.SendAsync(message);
         }
 
-        Assert.Equal(10000001, handler.Count);
+        Assert.Equal(10_000_001, handler.Count);
     }
 
     [Fact]
@@ -104,25 +104,25 @@ public class DirectChannelTest
          *  3. remove LB rwlock from UnicastingDispatcher 7.2 million/sec
          *  4. Move single handler optimization to dispatcher 7.3 million/sec
          */
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
         channel.Subscribe(count1);
         channel.Subscribe(count2);
         var message = Message.Create("test");
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
 
-        Assert.Equal(5000000, count1.Count);
-        Assert.Equal(5000000, count2.Count);
+        Assert.Equal(5_000_000, count1.Count);
+        Assert.Equal(5_000_000, count2.Count);
     }
 
     [Fact]
     public void TestSendFourHandlers_10_000_000()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
         var count3 = new CounterHandler();
@@ -132,22 +132,22 @@ public class DirectChannelTest
         channel.Subscribe(count3);
         channel.Subscribe(count4);
         var message = Message.Create("test");
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
 
-        Assert.Equal(10000000 / 4, count1.Count);
-        Assert.Equal(10000000 / 4, count2.Count);
-        Assert.Equal(10000000 / 4, count3.Count);
-        Assert.Equal(10000000 / 4, count4.Count);
+        Assert.Equal(10_000_000 / 4, count1.Count);
+        Assert.Equal(10_000_000 / 4, count2.Count);
+        Assert.Equal(10_000_000 / 4, count3.Count);
+        Assert.Equal(10_000_000 / 4, count4.Count);
     }
 
     [Fact]
     public void TestSendInSeparateThread()
     {
         var latch = new CountdownEvent(1);
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var target = new ThreadNameExtractingTestTarget(latch);
         channel.Subscribe(target);
         var message = Message.Create("test");
@@ -157,7 +157,7 @@ public class DirectChannelTest
         Assert.Equal("test-thread", target.ThreadName);
     }
 
-    internal class CounterHandler : IMessageHandler
+    internal sealed class CounterHandler : IMessageHandler
     {
         public int Count;
 
@@ -169,7 +169,7 @@ public class DirectChannelTest
         }
     }
 
-    internal class ThreadNameExtractingTestTarget : IMessageHandler
+    internal sealed class ThreadNameExtractingTestTarget : IMessageHandler
     {
         public readonly CountdownEvent Latch;
         public int? TaskId;

@@ -9,113 +9,58 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 public class TokenKind
 {
-#pragma warning disable S3963 // "static" fields should be initialized inline
-    static TokenKind()
-    {
-        _kinds = new Dictionary<string, TokenKind>();
-        LITERAL_INT = new TokenKind(1, "LITERAL_INT");
-        LITERAL_LONG = new TokenKind(2, "LITERAL_LONG");
-        LITERAL_HEXINT = new TokenKind(3, "LITERAL_HEXINT");
-        LITERAL_HEXLONG = new TokenKind(4, "LITERAL_HEXLONG");
-        LITERAL_STRING = new TokenKind(5, "LITERAL_STRING");
-        LITERAL_REAL = new TokenKind(6, "LITERAL_REAL");
-        LITERAL_REAL_FLOAT = new TokenKind(7, "LITERAL_REAL_FLOAT");
-        LPAREN = new TokenKind(8, "LPAREN", "(");
-        RPAREN = new TokenKind(9, "RPAREN", ")");
-        COMMA = new TokenKind(10, "COMMA", ",");
-        IDENTIFIER = new TokenKind(11, "IDENTIFIER");
-        COLON = new TokenKind(12, "COLON", ":");
-        HASH = new TokenKind(13, "HASH", "#");
-        RSQUARE = new TokenKind(14, "RSQUARE", "]");
-        LSQUARE = new TokenKind(15, "LSQUARE", "[");
-        LCURLY = new TokenKind(16, "LCURLY", "{");
-        RCURLY = new TokenKind(17, "RCURLY", "}");
-        DOT = new TokenKind(18, "DOT", ".");
-        PLUS = new TokenKind(19, "PLUS", "+");
-        STAR = new TokenKind(20, "STAR", "*");
-        MINUS = new TokenKind(21, "MINUS", "-");
-        SELECT_FIRST = new TokenKind(22, "SELECT_FIRST", "^[");
-        SELECT_LAST = new TokenKind(23, "SELECT_LAST", "$[");
-        QMARK = new TokenKind(24, "QMARK", "?");
-        PROJECT = new TokenKind(25, "PROJECT", "![");
-        DIV = new TokenKind(26, "DIV", "/");
-        GE = new TokenKind(27, "GE", ">=");
-        GT = new TokenKind(28, "GT", ">");
-        LE = new TokenKind(29, "LE", "<=");
-        LT = new TokenKind(30, "LT", "<");
-        EQ = new TokenKind(31, "EQ", "==");
-        NE = new TokenKind(32, "NE", "!=");
-        MOD = new TokenKind(33, "MOD", "%");
-        NOT = new TokenKind(34, "NOT", "!");
-        ASSIGN = new TokenKind(35, "ASSIGN", "=");
-        INSTANCEOF = new TokenKind(36, "INSTANCEOF", "instanceof");
-        MATCHES = new TokenKind(37, "MATCHES", "matches");
-        BETWEEN = new TokenKind(38, "BETWEEN", "between");
-        SELECT = new TokenKind(39, "SELECT", "?[");
-        POWER = new TokenKind(40, "POWER", "^");
-        ELVIS = new TokenKind(41, "ELVIS", "?:");
-        SAFE_NAVI = new TokenKind(42, "SAFE_NAVI", "?.");
-        SERVICE_REF = new TokenKind(43, "SERVICE_REF", "@");
-        FACTORY_SERVICE_REF = new TokenKind(44, "FACTORY_SERVICE_REF", "&");
-        SYMBOLIC_OR = new TokenKind(45, "SYMBOLIC_OR", "||");
-        SYMBOLIC_AND = new TokenKind(46, "SYMBOLIC_AND", "&&");
-        INC = new TokenKind(47, "INC", "++");
-        DEC = new TokenKind(48, "DEC", "--");
-    }
-#pragma warning restore S3963 // "static" fields should be initialized inline
+    private static readonly Dictionary<string, TokenKind> _kinds = new ();
 
     // ordered by priority - operands first
-    // When adding anything in this list requires adjusting order parameter
-    public static readonly TokenKind LITERAL_INT;
-    public static readonly TokenKind LITERAL_LONG;
-    public static readonly TokenKind LITERAL_HEXINT;
-    public static readonly TokenKind LITERAL_HEXLONG;
-    public static readonly TokenKind LITERAL_STRING;
-    public static readonly TokenKind LITERAL_REAL;
-    public static readonly TokenKind LITERAL_REAL_FLOAT;
-    public static readonly TokenKind LPAREN;
-    public static readonly TokenKind RPAREN;
-    public static readonly TokenKind COMMA;
-    public static readonly TokenKind IDENTIFIER;
-    public static readonly TokenKind COLON;
-    public static readonly TokenKind HASH;
-    public static readonly TokenKind RSQUARE;
-    public static readonly TokenKind LSQUARE;
-    public static readonly TokenKind LCURLY;
-    public static readonly TokenKind RCURLY;
-    public static readonly TokenKind DOT;
-    public static readonly TokenKind PLUS;
-    public static readonly TokenKind STAR;
-    public static readonly TokenKind MINUS;
-    public static readonly TokenKind SELECT_FIRST;
-    public static readonly TokenKind SELECT_LAST;
-    public static readonly TokenKind QMARK;
-    public static readonly TokenKind PROJECT;
-    public static readonly TokenKind DIV;
-    public static readonly TokenKind GE;
-    public static readonly TokenKind GT;
-    public static readonly TokenKind LE;
-    public static readonly TokenKind LT;
-    public static readonly TokenKind EQ;
-    public static readonly TokenKind NE;
-    public static readonly TokenKind MOD;
-    public static readonly TokenKind NOT;
-    public static readonly TokenKind ASSIGN;
-    public static readonly TokenKind INSTANCEOF;
-    public static readonly TokenKind MATCHES;
-    public static readonly TokenKind BETWEEN;
-    public static readonly TokenKind SELECT;
-    public static readonly TokenKind POWER;
-    public static readonly TokenKind ELVIS;
-    public static readonly TokenKind SAFE_NAVI;
-    public static readonly TokenKind SERVICE_REF;
-    public static readonly TokenKind FACTORY_SERVICE_REF;
-    public static readonly TokenKind SYMBOLIC_OR;
-    public static readonly TokenKind SYMBOLIC_AND;
-    public static readonly TokenKind INC;
-    public static readonly TokenKind DEC;
-
-    private static readonly Dictionary<string, TokenKind> _kinds;
+    // Adding anything in this list requires adjusting order parameter
+    public static readonly TokenKind LITERAL_INT = new (1, "LITERAL_INT");
+    public static readonly TokenKind LITERAL_LONG = new (2, "LITERAL_LONG");
+    public static readonly TokenKind LITERAL_HEXINT = new (3, "LITERAL_HEXINT");
+    public static readonly TokenKind LITERAL_HEXLONG = new (4, "LITERAL_HEXLONG");
+    public static readonly TokenKind LITERAL_STRING = new (5, "LITERAL_STRING");
+    public static readonly TokenKind LITERAL_REAL = new (6, "LITERAL_REAL");
+    public static readonly TokenKind LITERAL_REAL_FLOAT = new (7, "LITERAL_REAL_FLOAT");
+    public static readonly TokenKind LPAREN = new (8, "LPAREN", "(");
+    public static readonly TokenKind RPAREN = new (9, "RPAREN", ")");
+    public static readonly TokenKind COMMA = new (10, "COMMA", ",");
+    public static readonly TokenKind IDENTIFIER = new (11, "IDENTIFIER");
+    public static readonly TokenKind COLON = new (12, "COLON", ":");
+    public static readonly TokenKind HASH = new (13, "HASH", "#");
+    public static readonly TokenKind RSQUARE = new (14, "RSQUARE", "]");
+    public static readonly TokenKind LSQUARE = new (15, "LSQUARE", "[");
+    public static readonly TokenKind LCURLY = new (16, "LCURLY", "{");
+    public static readonly TokenKind RCURLY = new (17, "RCURLY", "}");
+    public static readonly TokenKind DOT = new (18, "DOT", ".");
+    public static readonly TokenKind PLUS = new (19, "PLUS", "+");
+    public static readonly TokenKind STAR = new (20, "STAR", "*");
+    public static readonly TokenKind MINUS = new (21, "MINUS", "-");
+    public static readonly TokenKind SELECT_FIRST = new (22, "SELECT_FIRST", "^[");
+    public static readonly TokenKind SELECT_LAST = new (23, "SELECT_LAST", "$[");
+    public static readonly TokenKind QMARK = new (24, "QMARK", "?");
+    public static readonly TokenKind PROJECT = new (25, "PROJECT", "![");
+    public static readonly TokenKind DIV = new (26, "DIV", "/");
+    public static readonly TokenKind GE = new (27, "GE", ">=");
+    public static readonly TokenKind GT = new (28, "GT", ">");
+    public static readonly TokenKind LE = new (29, "LE", "<=");
+    public static readonly TokenKind LT = new (30, "LT", "<");
+    public static readonly TokenKind EQ = new (31, "EQ", "==");
+    public static readonly TokenKind NE = new (32, "NE", "!=");
+    public static readonly TokenKind MOD = new (33, "MOD", "%");
+    public static readonly TokenKind NOT = new (34, "NOT", "!");
+    public static readonly TokenKind ASSIGN = new (35, "ASSIGN", "=");
+    public static readonly TokenKind INSTANCEOF = new (36, "INSTANCEOF", "instanceof");
+    public static readonly TokenKind MATCHES = new (37, "MATCHES", "matches");
+    public static readonly TokenKind BETWEEN = new (38, "BETWEEN", "between");
+    public static readonly TokenKind SELECT = new (39, "SELECT", "?[");
+    public static readonly TokenKind POWER = new (40, "POWER", "^");
+    public static readonly TokenKind ELVIS = new (41, "ELVIS", "?:");
+    public static readonly TokenKind SAFE_NAVI = new (42, "SAFE_NAVI", "?.");
+    public static readonly TokenKind SERVICE_REF = new (43, "SERVICE_REF", "@");
+    public static readonly TokenKind FACTORY_SERVICE_REF = new (44, "FACTORY_SERVICE_REF", "&");
+    public static readonly TokenKind SYMBOLIC_OR = new (45, "SYMBOLIC_OR", "||");
+    public static readonly TokenKind SYMBOLIC_AND = new (46, "SYMBOLIC_AND", "&&");
+    public static readonly TokenKind INC = new (47, "INC", "++");
+    public static readonly TokenKind DEC = new (48, "DEC", "--");
 
     private TokenKind(int order, string name, string tokenString)
     {
@@ -143,6 +88,11 @@ public class TokenKind
 
     public override bool Equals(object obj)
     {
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
         if (obj is not TokenKind other)
         {
             return false;

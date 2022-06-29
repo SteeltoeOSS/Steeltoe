@@ -9,18 +9,13 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http.LoadBalancer.Test;
 
-internal class BrokenLoadBalancer : ILoadBalancer
+internal sealed class BrokenLoadBalancer : ILoadBalancer
 {
     internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new ();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BrokenLoadBalancer"/> class.
     /// Throws exceptions when you try to resolve services
     /// </summary>
-    public BrokenLoadBalancer()
-    {
-    }
-
     public Task<Uri> ResolveServiceInstanceAsync(Uri request)
     {
         throw new Exception("(╯°□°）╯︵ ┻━┻");

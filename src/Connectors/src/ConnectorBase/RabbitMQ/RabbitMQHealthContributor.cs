@@ -32,16 +32,14 @@ public class RabbitMQHealthContributor : IHealthContributor
         return new RabbitMQHealthContributor(factory, logger);
     }
 
-    private readonly RabbitMQProviderConnectorFactory _factory;
     private readonly ILogger<RabbitMQHealthContributor> _logger;
     private readonly object _connFactory;
     private object _connection;
 
     public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
     {
-        _factory = factory;
         _logger = logger;
-        _connFactory = _factory.Create(null);
+        _connFactory = factory.Create(null);
     }
 
     public string Id => "RabbitMQ";

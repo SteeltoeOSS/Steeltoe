@@ -25,7 +25,7 @@ public class HystrixCommandOptionsTest
             MetricsRollingStatisticalWindowInMilliseconds = 5000, // milliseconds back that will be tracked
             MetricsRollingStatisticalWindowBuckets = 5, // buckets
             CircuitBreakerRequestVolumeThreshold = 0, // in testing we will not have a threshold unless we're specifically testing that feature
-            CircuitBreakerSleepWindowInMilliseconds = 5000000, // milliseconds after tripping circuit before allowing retry (by default set VERY long as we want it to effectively never allow a singleTest for most unit tests)
+            CircuitBreakerSleepWindowInMilliseconds = 5_000_000, // milliseconds after tripping circuit before allowing retry (by default set VERY long as we want it to effectively never allow a singleTest for most unit tests)
             CircuitBreakerEnabled = true,
             RequestLogEnabled = true,
             ExecutionIsolationSemaphoreMaxConcurrentRequests = 20,

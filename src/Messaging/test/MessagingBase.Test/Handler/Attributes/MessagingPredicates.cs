@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Test;
 
-internal class MessagingPredicates
+internal sealed class MessagingPredicates
 {
     public static DestinationVariablePredicate DestinationVar()
     {
@@ -43,64 +43,64 @@ internal class MessagingPredicates
         bool Test(T t);
     }
 
-    internal class DestinationVariablePredicate : IPredicate<ParameterInfo>
+    internal sealed class DestinationVariablePredicate : IPredicate<ParameterInfo>
     {
-        private string value;
+        private string _value;
 
         public DestinationVariablePredicate Name(string name)
         {
-            value = name;
+            _value = name;
             return this;
         }
 
         public DestinationVariablePredicate NoName()
         {
-            value = string.Empty;
+            _value = string.Empty;
             return this;
         }
 
         public bool Test(ParameterInfo parameter)
         {
             var annotation = parameter.GetCustomAttribute<DestinationVariableAttribute>();
-            return annotation != null && (value == null || annotation.Name.Equals(value));
+            return annotation != null && (_value == null || annotation.Name.Equals(_value));
         }
     }
 
-    internal class HeaderPredicate : IPredicate<ParameterInfo>
+    internal sealed class HeaderPredicate : IPredicate<ParameterInfo>
     {
-        private string name = string.Empty;
-        private bool required = true;
-        private string defaultValue;
+        private string _name = string.Empty;
+        private bool _required = true;
+        private string _defaultValue;
 
         public HeaderPredicate Name(string name)
         {
-            this.name = name;
+            _name = name;
             return this;
         }
 
         public HeaderPredicate NoName()
         {
-            name = string.Empty;
+            _name = string.Empty;
             return this;
         }
 
         public HeaderPredicate Required(bool required)
         {
-            this.required = required;
+            _required = required;
             return this;
         }
 
         public HeaderPredicate DefaultValue(string value)
         {
-            defaultValue = value;
+            _defaultValue = value;
             return this;
         }
 
         public HeaderPredicate NoAttributes()
         {
-            name = string.Empty;
-            required = true;
-            defaultValue = null;
+            _name = string.Empty;
+            _required = true;
+            _defaultValue = null;
             return this;
         }
 
@@ -108,9 +108,9 @@ internal class MessagingPredicates
         {
             var annotation = parameter.GetCustomAttribute<HeaderAttribute>();
             return annotation != null &&
-                   name == annotation.Name &&
-                   annotation.Required == required &&
-                   defaultValue == annotation.DefaultValue;
+                   _name == annotation.Name &&
+                   annotation.Required == _required &&
+                   _defaultValue == annotation.DefaultValue;
         }
     }
 }

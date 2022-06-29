@@ -25,7 +25,7 @@ public class Startup
     {
         services.AddHystrixMonitoringStreams(Configuration);
         var metricsAssembly = typeof(HystrixStreamBaseController).GetTypeInfo().Assembly;
-        var s = services
+        services
             .AddMvc().ConfigureApplicationPartManager(apm =>
             {
                 apm.ApplicationParts.Add(new AssemblyPart(metricsAssembly));

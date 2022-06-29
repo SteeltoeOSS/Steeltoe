@@ -47,7 +47,7 @@ public static class ConnectionFactoryUtils
     {
         if (TransactionSynchronizationManager.HasResource(connectionFactory) || !TransactionSynchronizationManager.IsActualTransactionActive() || !synched)
         {
-            return (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory); // NOSONAR never null
+            return (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
         }
 
         TransactionSynchronizationManager.BindResource(connectionFactory, resourceHolder);

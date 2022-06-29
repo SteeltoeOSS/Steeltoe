@@ -140,8 +140,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         var option = new TraceEndpointOptions();
 
         var obs = new TraceDiagnosticObserver(option);
-        var context = CreateRequest();
-        var time = TimeSpan.FromTicks(10000000);
+        var time = TimeSpan.FromTicks(10_000_000);
         var result = obs.GetTimeTaken(time);
         var expected = time.TotalMilliseconds.ToString();
         Assert.Equal(expected, result);
@@ -198,7 +197,7 @@ public class TraceDiagnosticObserverTest : BaseTest
 
         var obs = new TraceDiagnosticObserver(option);
         var context = CreateRequest();
-        var duration = TimeSpan.FromTicks(20000000 - 10000000);
+        var duration = TimeSpan.FromTicks(20_000_000 - 10_000_000);
         var result = obs.MakeTrace(context, duration);
         Assert.NotNull(result);
         Assert.NotNull(result.Info);

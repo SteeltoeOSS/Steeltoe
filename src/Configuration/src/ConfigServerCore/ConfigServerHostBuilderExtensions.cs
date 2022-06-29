@@ -21,7 +21,7 @@ public static class ConfigServerHostBuilderExtensions
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory = null) =>
         hostBuilder
             .ConfigureAppConfiguration((context, config) => config.AddConfigServer(context.HostingEnvironment, loggerFactory))
-            .ConfigureServices((context, services) => services.AddConfigServerServices());
+            .ConfigureServices((_, services) => services.AddConfigServerServices());
 
     /// <summary>
     /// Add Config Server and Cloud Foundry as application configuration sources.
@@ -33,7 +33,7 @@ public static class ConfigServerHostBuilderExtensions
     public static IHostBuilder AddConfigServer(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory = null) =>
         hostBuilder
             .ConfigureAppConfiguration((context, config) => config.AddConfigServer(context.HostingEnvironment, loggerFactory))
-            .ConfigureServices((context, services) => services.AddConfigServerServices());
+            .ConfigureServices((_, services) => services.AddConfigServerServices());
 
 #if NET6_0_OR_GREATER
     /// <summary>

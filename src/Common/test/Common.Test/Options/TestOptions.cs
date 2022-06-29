@@ -7,7 +7,7 @@ using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Test.Options;
 
-internal class TestOptions : AbstractOptions
+internal sealed class TestOptions : AbstractOptions
 {
     public TestOptions(IConfigurationRoot root, string prefix)
         : base(root, prefix)

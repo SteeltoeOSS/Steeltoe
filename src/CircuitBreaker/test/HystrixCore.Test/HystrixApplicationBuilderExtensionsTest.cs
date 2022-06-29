@@ -11,11 +11,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixApplicationBuilderExtensionsTest
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixApplicationBuilderExtensionsTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]

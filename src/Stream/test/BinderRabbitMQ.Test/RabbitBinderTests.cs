@@ -51,7 +51,6 @@ public partial class RabbitBinderTests
     [Fact]
     public void TestSendAndReceiveBad()
     {
-        var ccf = GetResource();
         var bindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(bindingsOptions);
 
@@ -83,7 +82,7 @@ public partial class RabbitBinderTests
         var latch = new CountdownEvent(3);
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 latch.Signal();
                 throw new Exception();
@@ -137,7 +136,7 @@ public partial class RabbitBinderTests
 
         globalEc.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 latch.Signal();
             }
@@ -811,7 +810,7 @@ public partial class RabbitBinderTests
 
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message => throw new Exception("foo")
+            OnHandleMessage = _ => throw new Exception("foo")
         });
 
         var consumerBinding = binder.BindConsumer("durabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -859,7 +858,7 @@ public partial class RabbitBinderTests
         moduleInputChannel.ComponentName = "nondurabletest";
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message => throw new Exception("foo")
+            OnHandleMessage = _ => throw new Exception("foo")
         });
 
         var consumerBinding = binder.BindConsumer("nondurabletest.0", "tgroup", moduleInputChannel, consumerProperties);
@@ -885,7 +884,7 @@ public partial class RabbitBinderTests
         moduleInputChannel.ComponentName = "dlqTest";
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message => throw new Exception("foo")
+            OnHandleMessage = _ => throw new Exception("foo")
         });
         consumerProperties.Multiplex = true;
         var consumerBinding = binder.BindConsumer("dlqtest,dlqtest2", "default", moduleInputChannel, consumerProperties);
@@ -962,7 +961,7 @@ public partial class RabbitBinderTests
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
             // Wait until unacked state is reflected in the admin
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 var info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
                 var n = 0;
@@ -1020,7 +1019,6 @@ public partial class RabbitBinderTests
     public void TestOptions()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
-        var producer = GetProducerOptions("test", rabbitBindingsOptions);
 
         var rabbitprod = rabbitBindingsOptions.GetRabbitProducerOptions("test");
         rabbitprod.Prefix = "rets";
@@ -1076,7 +1074,7 @@ public partial class RabbitBinderTests
 
         input0.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch0.CurrentCount <= 0)
                 {
@@ -1091,7 +1089,7 @@ public partial class RabbitBinderTests
 
         input1.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch1.CurrentCount <= 0)
                 {
@@ -1102,7 +1100,6 @@ public partial class RabbitBinderTests
             }
         });
         var message = MessageBuilder.WithPayload(1).Build();
-        var h = message.Headers;
         output.Send(message);
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
 
@@ -1185,7 +1182,7 @@ public partial class RabbitBinderTests
         var latch0 = new CountdownEvent(1);
         input0.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch0.CurrentCount <= 0)
                 {
@@ -1199,7 +1196,7 @@ public partial class RabbitBinderTests
         var latch1 = new CountdownEvent(1);
         input1.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch1.CurrentCount <= 0)
                 {
@@ -1268,7 +1265,7 @@ public partial class RabbitBinderTests
         var dontRepublish = new AtomicBoolean();
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = m =>
+            OnHandleMessage = _ =>
             {
                 if (dontRepublish.Value)
                 {
@@ -1349,7 +1346,6 @@ public partial class RabbitBinderTests
         // assertThat(captor.getValue().toString()).contains(("Compressed 14 to "));
         var input = new QueueChannel { ComponentName = "batchingConsumer" };
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
         var consumerBinding = binder.BindConsumer("batching.0", "test", input, consumerProperties);
 
         output.Send(fooMessage);
@@ -1391,7 +1387,6 @@ public partial class RabbitBinderTests
         var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
         var admin = new RabbitAdmin(GetResource(), logger);
 
-        var queue = new Queue("propagate");
         admin.DeclareQueue(new Queue("propagate"));
         admin.DeclareBinding(new RabbitBinding("propagate_binding", "propagate", RabbitBinding.DestinationType.QUEUE, "propagate.1", "#", null));
         var template = new RabbitTemplate(GetResource());
@@ -1621,7 +1616,7 @@ public partial class RabbitBinderTests
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, channel) =>
+            PresendHandler = (message, _) =>
             {
                 Assert.Equal("rkeTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
                 return message;
@@ -1666,7 +1661,7 @@ public partial class RabbitBinderTests
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, channel) =>
+            PresendHandler = (message, _) =>
             {
                 Assert.Equal("rkepTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
 
@@ -1732,7 +1727,7 @@ public partial class RabbitBinderTests
 
         var consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
         var binding = binder.BindConsumer("pollable", "group", (object)inboundBindTarget, consumerOptions);
-        Assert.True(typeof(DefaultBinding<IPollableSource<IMessageHandler>>).IsAssignableFrom(binding.GetType()));
+        Assert.True(binding is DefaultBinding<IPollableSource<IMessageHandler>>);
         binding.Unbind();
     }
 
@@ -1804,7 +1799,7 @@ public partial class RabbitBinderTests
             {
                 inboundBindTarget.Poll(new TestMessageHandler
                 {
-                    OnHandleMessage = m => throw new Exception("test DLQ")
+                    OnHandleMessage = _ => throw new Exception("test DLQ")
                 });
                 Thread.Sleep(100);
             }
@@ -1841,7 +1836,7 @@ public partial class RabbitBinderTests
             {
                 inboundBindTarget.Poll(new TestMessageHandler
                 {
-                    OnHandleMessage = m => throw new Exception("test DLQ")
+                    OnHandleMessage = _ => throw new Exception("test DLQ")
                 });
 
                 Thread.Sleep(100);
@@ -1880,7 +1875,7 @@ public partial class RabbitBinderTests
             Thread.Sleep(100);
             polled = inboundBindTarget.Poll(new TestMessageHandler
             {
-                OnHandleMessage = m => throw new Exception("test DLQ")
+                OnHandleMessage = _ => throw new Exception("test DLQ")
             });
         }
 
@@ -1912,8 +1907,6 @@ public partial class RabbitBinderTests
 
     private void TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(bool withRetry)
     {
-        var logger = new XunitLogger(Output);
-
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
@@ -1959,7 +1952,7 @@ public partial class RabbitBinderTests
         var latch0 = new CountdownEvent(1);
         input0.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch0.CurrentCount <= 0)
                 {
@@ -1973,7 +1966,7 @@ public partial class RabbitBinderTests
         var latch1 = new CountdownEvent(1);
         input1.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = _ =>
             {
                 if (latch1.CurrentCount <= 0)
                 {

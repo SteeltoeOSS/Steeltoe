@@ -144,7 +144,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
                 {
                     try
                     {
-                        var connection = ConnectionFactory.CreateConnection(); // NOSONAR (close)
+                        var connection = ConnectionFactory.CreateConnection();
                         if (connection != null)
                         {
                             connection.Close();

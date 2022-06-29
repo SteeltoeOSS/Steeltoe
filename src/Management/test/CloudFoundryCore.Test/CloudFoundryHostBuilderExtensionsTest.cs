@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -23,7 +22,7 @@ using Xunit;
 
 namespace Steeltoe.Management.CloudFoundry.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class CloudFoundryHostBuilderExtensionsTest
 {
     private static readonly Dictionary<string, string> ManagementSettings = new ()
@@ -31,12 +30,12 @@ public class CloudFoundryHostBuilderExtensionsTest
         ["management:endpoints:path"] = "/testing",
     };
 
-    private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
 
     [Fact]
     public void AddCloudFoundryActuators_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(configureApp => { });
+        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(_ => { });
 
         var host = hostBuilder.AddCloudFoundryActuators().Build();
         var managementOptions = host.Services.GetServices<IManagementOptions>();
@@ -56,7 +55,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     {
         var hostBuilder = WebHost.CreateDefaultBuilder()
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
-            .Configure(configureApp => { })
+            .Configure(_ => { })
             .ConfigureLogging(logging => logging.AddDynamicSerilog());
 
         var host = hostBuilder.AddCloudFoundryActuators().Build();
@@ -96,7 +95,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     public async Task AddCloudFoundryActuators_IHostBuilder_IStartupFilterFires()
     {
         var hostBuilder = new HostBuilder()
-            .ConfigureWebHost(testServerWithRouting)
+            .ConfigureWebHost(_testServerWithRouting)
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
         var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
@@ -113,7 +112,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     public async Task AddCloudFoundryActuatorsV1_IHostBuilder_IStartupFilterFires()
     {
         var hostBuilder = new HostBuilder()
-            .ConfigureWebHost(testServerWithRouting)
+            .ConfigureWebHost(_testServerWithRouting)
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
         var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
@@ -132,7 +131,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureLogging(logging => logging.AddDynamicSerilog())
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
-            .ConfigureWebHost(testServerWithRouting)
+            .ConfigureWebHost(_testServerWithRouting)
             .AddCloudFoundryActuators();
 
         var host = hostBuilder.Build();

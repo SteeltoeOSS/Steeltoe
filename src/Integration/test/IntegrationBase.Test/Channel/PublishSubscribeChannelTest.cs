@@ -14,7 +14,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class PublishSubscribeChannelTest
 {
-    private IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public PublishSubscribeChannelTest()
     {
@@ -23,7 +23,7 @@ public class PublishSubscribeChannelTest
         var config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
@@ -65,12 +65,12 @@ public class PublishSubscribeChannelTest
         channel.Subscribe(handler);
         var message = Message.Create("test");
         Assert.True(channel.Send(message));
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
 
-        Assert.Equal(10000001, handler.Count);
+        Assert.Equal(10_000_001, handler.Count);
     }
 
     [Fact]
@@ -84,12 +84,12 @@ public class PublishSubscribeChannelTest
         channel.Subscribe(handler);
         var message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             await channel.SendAsync(message);
         }
 
-        Assert.Equal(10000001, handler.Count);
+        Assert.Equal(10_000_001, handler.Count);
     }
 
     [Fact]
@@ -104,13 +104,13 @@ public class PublishSubscribeChannelTest
         channel.Subscribe(handler1);
         channel.Subscribe(handler2);
         var message = Message.Create("test");
-        for (var i = 0; i < 10000000; i++)
+        for (var i = 0; i < 10_000_000; i++)
         {
             await channel.SendAsync(message);
         }
 
-        Assert.Equal(10000000, handler1.Count);
-        Assert.Equal(10000000, handler2.Count);
+        Assert.Equal(10_000_000, handler1.Count);
+        Assert.Equal(10_000_000, handler2.Count);
     }
 
     private sealed class CounterHandler : IMessageHandler

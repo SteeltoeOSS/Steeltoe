@@ -29,7 +29,7 @@ public class TaskRunTest
         var args = new[] { "runtask=test" };
 
         WebHost.CreateDefaultBuilder(args)
-            .Configure(c => { })
+            .Configure(_ => { })
             .Build()
             .RunWithTasks();
 

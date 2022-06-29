@@ -73,7 +73,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(APP_SETTINGS))
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(APP_SETTINGS))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);

@@ -995,10 +995,15 @@ internal abstract class DataTarget : IDisposable
     /// </summary>
     public abstract IEnumerable<ModuleInfo> EnumerateModules();
 
-    /// <summary>
-    /// IDisposable implementation.
-    /// </summary>
-    public abstract void Dispose();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 }
 
 internal class DataTargetImpl : DataTarget
@@ -1135,9 +1140,14 @@ internal class DataTargetImpl : DataTarget
 
 #pragma warning restore 0618
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        _dataReader.Close();
+        if (disposing)
+        {
+            _dataReader?.Close();
+        }
+
+        base.Dispose(disposing);
     }
 }
 

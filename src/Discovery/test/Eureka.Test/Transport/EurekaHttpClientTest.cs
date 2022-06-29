@@ -64,7 +64,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             EurekaServerRetryCount = 0
         };
         var client = new EurekaHttpClient(config);
-        var ex = await Assert.ThrowsAsync<EurekaTransportException>(() => client.RegisterAsync(new InstanceInfo()));
+        await Assert.ThrowsAsync<EurekaTransportException>(() => client.RegisterAsync(new InstanceInfo()));
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             EurekaServerServiceUrls = uri
         };
         var client = new EurekaHttpClient(cconfig, server.CreateClient());
-        var resp = await client.RegisterAsync(info);
+        await client.RegisterAsync(info);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal("POST", TestConfigServerStartup.LastRequest.Method);

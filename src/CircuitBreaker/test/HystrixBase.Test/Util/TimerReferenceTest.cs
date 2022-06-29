@@ -26,18 +26,18 @@ public class TimerReferenceTest
 
     private sealed class TestListener : ITimerListener
     {
-        private readonly Stopwatch stopwatch;
+        private readonly Stopwatch _stopwatch;
 
         public TestListener(Stopwatch stopwatch)
         {
-            this.stopwatch = stopwatch;
+            _stopwatch = stopwatch;
         }
 
         public int IntervalTimeInMilliseconds => throw new NotImplementedException();
 
         public void Tick()
         {
-            stopwatch.Stop();
+            _stopwatch.Stop();
         }
     }
 }

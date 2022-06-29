@@ -17,8 +17,8 @@ public class PartitionHandler
 
     private readonly IProducerOptions _producerOptions;
 
-    private IExpressionParser _expressionParser;
-    private IEvaluationContext _evaluationContext;
+    private readonly IExpressionParser _expressionParser;
+    private readonly IEvaluationContext _evaluationContext;
 
     public PartitionHandler(
         IExpressionParser expressionParser,

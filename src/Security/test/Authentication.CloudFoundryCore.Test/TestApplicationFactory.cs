@@ -16,11 +16,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
     where TStartup : class
 {
-    private readonly IReadOnlyDictionary<string, string> configuration;
+    private readonly IReadOnlyDictionary<string, string> _configuration;
 
     public TestApplicationFactory(IReadOnlyDictionary<string, string> configuration = null)
     {
-        this.configuration = configuration ?? ImmutableDictionary<string, string>.Empty;
+        _configuration = configuration ?? ImmutableDictionary<string, string>.Empty;
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
@@ -37,9 +37,9 @@ public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
             {
                 webHostBuilder.UseStartup<TStartup>().UseTestServer();
             })
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            .ConfigureAppConfiguration((_, config) =>
             {
-                config.AddInMemoryCollection(configuration);
+                config.AddInMemoryCollection(_configuration);
             });
 
         return builder;

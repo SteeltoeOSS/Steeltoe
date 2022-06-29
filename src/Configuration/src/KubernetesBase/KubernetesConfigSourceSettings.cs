@@ -7,7 +7,7 @@ using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-internal class KubernetesConfigSourceSettings
+internal sealed class KubernetesConfigSourceSettings
 {
     internal KubernetesConfigSourceSettings(string @namespace, string name, ReloadSettings reloadSettings, ILoggerFactory loggerFactory = null)
     {

@@ -9,7 +9,7 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Discovery.Client.SimpleClients;
 
-internal class NoOpDiscoveryClientExtension : IDiscoveryClientExtension
+internal sealed class NoOpDiscoveryClientExtension : IDiscoveryClientExtension
 {
     /// <inheritdoc/>
     public void ApplyServices(IServiceCollection services)

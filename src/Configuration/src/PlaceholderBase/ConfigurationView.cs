@@ -13,7 +13,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder;
 /// <summary>
 /// Specialized implementation of ConfigurationRoot that does not call load on providers
 /// </summary>
-internal class ConfigurationView : IConfigurationRoot
+internal sealed class ConfigurationView : IConfigurationRoot
 {
     private readonly IList<IConfigurationProvider> _providers;
     private readonly ConfigurationReloadToken _changeToken = new ();

@@ -51,7 +51,7 @@ public class HystrixStreamBaseController : Controller
                         }
                     }
                 },
-                error =>
+                _ =>
                 {
                     if (SampleSubscription != null)
                     {

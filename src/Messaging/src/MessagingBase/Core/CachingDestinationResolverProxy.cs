@@ -11,7 +11,7 @@ public class CachingDestinationResolverProxy<D> : IDestinationResolver<D>
 {
     private readonly ConcurrentDictionary<string, D> _resolvedDestinationCache = new ();
 
-    private IDestinationResolver<D> _targetDestinationResolver;
+    private readonly IDestinationResolver<D> _targetDestinationResolver;
 
     public CachingDestinationResolverProxy(IDestinationResolver<D> targetDestinationResolver)
     {

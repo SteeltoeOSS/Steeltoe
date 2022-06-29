@@ -10,314 +10,314 @@ namespace Steeltoe.Common.Util.Test;
 
 public class AntPathMatcherTest
 {
-    private readonly AntPathMatcher pathMatcher = new ();
+    private readonly AntPathMatcher _pathMatcher = new ();
 
     [Fact]
     public void Match()
     {
         // test exact Matching
-        Assert.True(pathMatcher.Match("test", "test"));
-        Assert.True(pathMatcher.Match("/test", "/test"));
+        Assert.True(_pathMatcher.Match("test", "test"));
+        Assert.True(_pathMatcher.Match("/test", "/test"));
 
         // SPR-14141
-        Assert.True(pathMatcher.Match("https://example.org", "https://example.org"));
-        Assert.False(pathMatcher.Match("/test.jpg", "test.jpg"));
-        Assert.False(pathMatcher.Match("test", "/test"));
-        Assert.False(pathMatcher.Match("/test", "test"));
+        Assert.True(_pathMatcher.Match("https://example.org", "https://example.org"));
+        Assert.False(_pathMatcher.Match("/test.jpg", "test.jpg"));
+        Assert.False(_pathMatcher.Match("test", "/test"));
+        Assert.False(_pathMatcher.Match("/test", "test"));
 
         // test Matching with ?'s
-        Assert.True(pathMatcher.Match("t?st", "test"));
-        Assert.True(pathMatcher.Match("??st", "test"));
-        Assert.True(pathMatcher.Match("tes?", "test"));
-        Assert.True(pathMatcher.Match("te??", "test"));
-        Assert.True(pathMatcher.Match("?es?", "test"));
-        Assert.False(pathMatcher.Match("tes?", "tes"));
-        Assert.False(pathMatcher.Match("tes?", "testt"));
-        Assert.False(pathMatcher.Match("tes?", "tsst"));
+        Assert.True(_pathMatcher.Match("t?st", "test"));
+        Assert.True(_pathMatcher.Match("??st", "test"));
+        Assert.True(_pathMatcher.Match("tes?", "test"));
+        Assert.True(_pathMatcher.Match("te??", "test"));
+        Assert.True(_pathMatcher.Match("?es?", "test"));
+        Assert.False(_pathMatcher.Match("tes?", "tes"));
+        Assert.False(_pathMatcher.Match("tes?", "testt"));
+        Assert.False(_pathMatcher.Match("tes?", "tsst"));
 
         // test Matching with *'s
-        Assert.True(pathMatcher.Match("*", "test"));
-        Assert.True(pathMatcher.Match("test*", "test"));
-        Assert.True(pathMatcher.Match("test*", "testTest"));
-        Assert.True(pathMatcher.Match("test/*", "test/Test"));
-        Assert.True(pathMatcher.Match("test/*", "test/t"));
-        Assert.True(pathMatcher.Match("test/*", "test/"));
-        Assert.True(pathMatcher.Match("*test*", "AnothertestTest"));
-        Assert.True(pathMatcher.Match("*test", "Anothertest"));
-        Assert.True(pathMatcher.Match("*.*", "test."));
-        Assert.True(pathMatcher.Match("*.*", "test.test"));
-        Assert.True(pathMatcher.Match("*.*", "test.test.test"));
-        Assert.True(pathMatcher.Match("test*aaa", "testblaaaa"));
-        Assert.False(pathMatcher.Match("test*", "tst"));
-        Assert.False(pathMatcher.Match("test*", "tsttest"));
-        Assert.False(pathMatcher.Match("test*", "test/"));
-        Assert.False(pathMatcher.Match("test*", "test/t"));
-        Assert.False(pathMatcher.Match("test/*", "test"));
-        Assert.False(pathMatcher.Match("*test*", "tsttst"));
-        Assert.False(pathMatcher.Match("*test", "tsttst"));
-        Assert.False(pathMatcher.Match("*.*", "tsttst"));
-        Assert.False(pathMatcher.Match("test*aaa", "test"));
-        Assert.False(pathMatcher.Match("test*aaa", "testblaaab"));
+        Assert.True(_pathMatcher.Match("*", "test"));
+        Assert.True(_pathMatcher.Match("test*", "test"));
+        Assert.True(_pathMatcher.Match("test*", "testTest"));
+        Assert.True(_pathMatcher.Match("test/*", "test/Test"));
+        Assert.True(_pathMatcher.Match("test/*", "test/t"));
+        Assert.True(_pathMatcher.Match("test/*", "test/"));
+        Assert.True(_pathMatcher.Match("*test*", "AnothertestTest"));
+        Assert.True(_pathMatcher.Match("*test", "Anothertest"));
+        Assert.True(_pathMatcher.Match("*.*", "test."));
+        Assert.True(_pathMatcher.Match("*.*", "test.test"));
+        Assert.True(_pathMatcher.Match("*.*", "test.test.test"));
+        Assert.True(_pathMatcher.Match("test*aaa", "testblaaaa"));
+        Assert.False(_pathMatcher.Match("test*", "tst"));
+        Assert.False(_pathMatcher.Match("test*", "tsttest"));
+        Assert.False(_pathMatcher.Match("test*", "test/"));
+        Assert.False(_pathMatcher.Match("test*", "test/t"));
+        Assert.False(_pathMatcher.Match("test/*", "test"));
+        Assert.False(_pathMatcher.Match("*test*", "tsttst"));
+        Assert.False(_pathMatcher.Match("*test", "tsttst"));
+        Assert.False(_pathMatcher.Match("*.*", "tsttst"));
+        Assert.False(_pathMatcher.Match("test*aaa", "test"));
+        Assert.False(_pathMatcher.Match("test*aaa", "testblaaab"));
 
         // test Matching with ?'s and /'s
-        Assert.True(pathMatcher.Match("/?", "/a"));
-        Assert.True(pathMatcher.Match("/?/a", "/a/a"));
-        Assert.True(pathMatcher.Match("/a/?", "/a/b"));
-        Assert.True(pathMatcher.Match("/??/a", "/aa/a"));
-        Assert.True(pathMatcher.Match("/a/??", "/a/bb"));
-        Assert.True(pathMatcher.Match("/?", "/a"));
+        Assert.True(_pathMatcher.Match("/?", "/a"));
+        Assert.True(_pathMatcher.Match("/?/a", "/a/a"));
+        Assert.True(_pathMatcher.Match("/a/?", "/a/b"));
+        Assert.True(_pathMatcher.Match("/??/a", "/aa/a"));
+        Assert.True(_pathMatcher.Match("/a/??", "/a/bb"));
+        Assert.True(_pathMatcher.Match("/?", "/a"));
 
         // test Matching with **'s
-        Assert.True(pathMatcher.Match("/**", "/testing/testing"));
-        Assert.True(pathMatcher.Match("/*/**", "/testing/testing"));
-        Assert.True(pathMatcher.Match("/**/*", "/testing/testing"));
-        Assert.True(pathMatcher.Match("/bla/**/bla", "/bla/testing/testing/bla"));
-        Assert.True(pathMatcher.Match("/bla/**/bla", "/bla/testing/testing/bla/bla"));
-        Assert.True(pathMatcher.Match("/**/test", "/bla/bla/test"));
-        Assert.True(pathMatcher.Match("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla"));
-        Assert.True(pathMatcher.Match("/bla*bla/test", "/blaXXXbla/test"));
-        Assert.True(pathMatcher.Match("/*bla/test", "/XXXbla/test"));
-        Assert.False(pathMatcher.Match("/bla*bla/test", "/blaXXXbl/test"));
-        Assert.False(pathMatcher.Match("/*bla/test", "XXXblab/test"));
-        Assert.False(pathMatcher.Match("/*bla/test", "XXXbl/test"));
+        Assert.True(_pathMatcher.Match("/**", "/testing/testing"));
+        Assert.True(_pathMatcher.Match("/*/**", "/testing/testing"));
+        Assert.True(_pathMatcher.Match("/**/*", "/testing/testing"));
+        Assert.True(_pathMatcher.Match("/bla/**/bla", "/bla/testing/testing/bla"));
+        Assert.True(_pathMatcher.Match("/bla/**/bla", "/bla/testing/testing/bla/bla"));
+        Assert.True(_pathMatcher.Match("/**/test", "/bla/bla/test"));
+        Assert.True(_pathMatcher.Match("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla"));
+        Assert.True(_pathMatcher.Match("/bla*bla/test", "/blaXXXbla/test"));
+        Assert.True(_pathMatcher.Match("/*bla/test", "/XXXbla/test"));
+        Assert.False(_pathMatcher.Match("/bla*bla/test", "/blaXXXbl/test"));
+        Assert.False(_pathMatcher.Match("/*bla/test", "XXXblab/test"));
+        Assert.False(_pathMatcher.Match("/*bla/test", "XXXbl/test"));
 
-        Assert.False(pathMatcher.Match("/????", "/bala/bla"));
-        Assert.False(pathMatcher.Match("/**/*bla", "/bla/bla/bla/bbb"));
+        Assert.False(_pathMatcher.Match("/????", "/bala/bla"));
+        Assert.False(_pathMatcher.Match("/**/*bla", "/bla/bla/bla/bbb"));
 
-        Assert.True(pathMatcher.Match("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing/"));
-        Assert.True(pathMatcher.Match("/*bla*/**/bla/*", "/XXXblaXXXX/testing/testing/bla/testing"));
-        Assert.True(pathMatcher.Match("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing"));
-        Assert.True(pathMatcher.Match("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing.jpg"));
+        Assert.True(_pathMatcher.Match("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing/"));
+        Assert.True(_pathMatcher.Match("/*bla*/**/bla/*", "/XXXblaXXXX/testing/testing/bla/testing"));
+        Assert.True(_pathMatcher.Match("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing"));
+        Assert.True(_pathMatcher.Match("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing.jpg"));
 
-        Assert.True(pathMatcher.Match("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing/"));
-        Assert.True(pathMatcher.Match("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing"));
-        Assert.True(pathMatcher.Match("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing"));
-        Assert.False(pathMatcher.Match("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing/testing"));
+        Assert.True(_pathMatcher.Match("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing/"));
+        Assert.True(_pathMatcher.Match("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing"));
+        Assert.True(_pathMatcher.Match("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing"));
+        Assert.False(_pathMatcher.Match("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing/testing"));
 
-        Assert.False(pathMatcher.Match("/x/x/**/bla", "/x/x/x/"));
+        Assert.False(_pathMatcher.Match("/x/x/**/bla", "/x/x/x/"));
 
-        Assert.True(pathMatcher.Match("/foo/bar/**", "/foo/bar"));
+        Assert.True(_pathMatcher.Match("/foo/bar/**", "/foo/bar"));
 
-        Assert.True(pathMatcher.Match(string.Empty, string.Empty));
+        Assert.True(_pathMatcher.Match(string.Empty, string.Empty));
 
-        Assert.True(pathMatcher.Match("/{bla}.*", "/testing.html"));
+        Assert.True(_pathMatcher.Match("/{bla}.*", "/testing.html"));
     }
 
     [Fact]
     public void MatchWithTrimTokensEnabled()
     {
-        pathMatcher.TrimTokens = true;
+        _pathMatcher.TrimTokens = true;
 
-        Assert.True(pathMatcher.Match("/foo/bar", "/foo /bar"));
+        Assert.True(_pathMatcher.Match("/foo/bar", "/foo /bar"));
     }
 
     [Fact]
     public void WithMatchStart()
     {
         // test exact Matching
-        Assert.True(pathMatcher.MatchStart("test", "test"));
-        Assert.True(pathMatcher.MatchStart("/test", "/test"));
-        Assert.False(pathMatcher.MatchStart("/test.jpg", "test.jpg"));
-        Assert.False(pathMatcher.MatchStart("test", "/test"));
-        Assert.False(pathMatcher.MatchStart("/test", "test"));
+        Assert.True(_pathMatcher.MatchStart("test", "test"));
+        Assert.True(_pathMatcher.MatchStart("/test", "/test"));
+        Assert.False(_pathMatcher.MatchStart("/test.jpg", "test.jpg"));
+        Assert.False(_pathMatcher.MatchStart("test", "/test"));
+        Assert.False(_pathMatcher.MatchStart("/test", "test"));
 
         // test Matching with ?'s
-        Assert.True(pathMatcher.MatchStart("t?st", "test"));
-        Assert.True(pathMatcher.MatchStart("??st", "test"));
-        Assert.True(pathMatcher.MatchStart("tes?", "test"));
-        Assert.True(pathMatcher.MatchStart("te??", "test"));
-        Assert.True(pathMatcher.MatchStart("?es?", "test"));
-        Assert.False(pathMatcher.MatchStart("tes?", "tes"));
-        Assert.False(pathMatcher.MatchStart("tes?", "testt"));
-        Assert.False(pathMatcher.MatchStart("tes?", "tsst"));
+        Assert.True(_pathMatcher.MatchStart("t?st", "test"));
+        Assert.True(_pathMatcher.MatchStart("??st", "test"));
+        Assert.True(_pathMatcher.MatchStart("tes?", "test"));
+        Assert.True(_pathMatcher.MatchStart("te??", "test"));
+        Assert.True(_pathMatcher.MatchStart("?es?", "test"));
+        Assert.False(_pathMatcher.MatchStart("tes?", "tes"));
+        Assert.False(_pathMatcher.MatchStart("tes?", "testt"));
+        Assert.False(_pathMatcher.MatchStart("tes?", "tsst"));
 
         // test Matching with *'s
-        Assert.True(pathMatcher.MatchStart("*", "test"));
-        Assert.True(pathMatcher.MatchStart("test*", "test"));
-        Assert.True(pathMatcher.MatchStart("test*", "testTest"));
-        Assert.True(pathMatcher.MatchStart("test/*", "test/Test"));
-        Assert.True(pathMatcher.MatchStart("test/*", "test/t"));
-        Assert.True(pathMatcher.MatchStart("test/*", "test/"));
-        Assert.True(pathMatcher.MatchStart("*test*", "AnothertestTest"));
-        Assert.True(pathMatcher.MatchStart("*test", "Anothertest"));
-        Assert.True(pathMatcher.MatchStart("*.*", "test."));
-        Assert.True(pathMatcher.MatchStart("*.*", "test.test"));
-        Assert.True(pathMatcher.MatchStart("*.*", "test.test.test"));
-        Assert.True(pathMatcher.MatchStart("test*aaa", "testblaaaa"));
-        Assert.False(pathMatcher.MatchStart("test*", "tst"));
-        Assert.False(pathMatcher.MatchStart("test*", "test/"));
-        Assert.False(pathMatcher.MatchStart("test*", "tsttest"));
-        Assert.False(pathMatcher.MatchStart("test*", "test/"));
-        Assert.False(pathMatcher.MatchStart("test*", "test/t"));
-        Assert.True(pathMatcher.MatchStart("test/*", "test"));
-        Assert.True(pathMatcher.MatchStart("test/t*.txt", "test"));
-        Assert.False(pathMatcher.MatchStart("*test*", "tsttst"));
-        Assert.False(pathMatcher.MatchStart("*test", "tsttst"));
-        Assert.False(pathMatcher.MatchStart("*.*", "tsttst"));
-        Assert.False(pathMatcher.MatchStart("test*aaa", "test"));
-        Assert.False(pathMatcher.MatchStart("test*aaa", "testblaaab"));
+        Assert.True(_pathMatcher.MatchStart("*", "test"));
+        Assert.True(_pathMatcher.MatchStart("test*", "test"));
+        Assert.True(_pathMatcher.MatchStart("test*", "testTest"));
+        Assert.True(_pathMatcher.MatchStart("test/*", "test/Test"));
+        Assert.True(_pathMatcher.MatchStart("test/*", "test/t"));
+        Assert.True(_pathMatcher.MatchStart("test/*", "test/"));
+        Assert.True(_pathMatcher.MatchStart("*test*", "AnothertestTest"));
+        Assert.True(_pathMatcher.MatchStart("*test", "Anothertest"));
+        Assert.True(_pathMatcher.MatchStart("*.*", "test."));
+        Assert.True(_pathMatcher.MatchStart("*.*", "test.test"));
+        Assert.True(_pathMatcher.MatchStart("*.*", "test.test.test"));
+        Assert.True(_pathMatcher.MatchStart("test*aaa", "testblaaaa"));
+        Assert.False(_pathMatcher.MatchStart("test*", "tst"));
+        Assert.False(_pathMatcher.MatchStart("test*", "test/"));
+        Assert.False(_pathMatcher.MatchStart("test*", "tsttest"));
+        Assert.False(_pathMatcher.MatchStart("test*", "test/"));
+        Assert.False(_pathMatcher.MatchStart("test*", "test/t"));
+        Assert.True(_pathMatcher.MatchStart("test/*", "test"));
+        Assert.True(_pathMatcher.MatchStart("test/t*.txt", "test"));
+        Assert.False(_pathMatcher.MatchStart("*test*", "tsttst"));
+        Assert.False(_pathMatcher.MatchStart("*test", "tsttst"));
+        Assert.False(_pathMatcher.MatchStart("*.*", "tsttst"));
+        Assert.False(_pathMatcher.MatchStart("test*aaa", "test"));
+        Assert.False(_pathMatcher.MatchStart("test*aaa", "testblaaab"));
 
         // test Matching with ?'s and /'s
-        Assert.True(pathMatcher.MatchStart("/?", "/a"));
-        Assert.True(pathMatcher.MatchStart("/?/a", "/a/a"));
-        Assert.True(pathMatcher.MatchStart("/a/?", "/a/b"));
-        Assert.True(pathMatcher.MatchStart("/??/a", "/aa/a"));
-        Assert.True(pathMatcher.MatchStart("/a/??", "/a/bb"));
-        Assert.True(pathMatcher.MatchStart("/?", "/a"));
+        Assert.True(_pathMatcher.MatchStart("/?", "/a"));
+        Assert.True(_pathMatcher.MatchStart("/?/a", "/a/a"));
+        Assert.True(_pathMatcher.MatchStart("/a/?", "/a/b"));
+        Assert.True(_pathMatcher.MatchStart("/??/a", "/aa/a"));
+        Assert.True(_pathMatcher.MatchStart("/a/??", "/a/bb"));
+        Assert.True(_pathMatcher.MatchStart("/?", "/a"));
 
         // test Matching with **'s
-        Assert.True(pathMatcher.MatchStart("/**", "/testing/testing"));
-        Assert.True(pathMatcher.MatchStart("/*/**", "/testing/testing"));
-        Assert.True(pathMatcher.MatchStart("/**/*", "/testing/testing"));
-        Assert.True(pathMatcher.MatchStart("test*/**", "test/"));
-        Assert.True(pathMatcher.MatchStart("test*/**", "test/t"));
-        Assert.True(pathMatcher.MatchStart("/bla/**/bla", "/bla/testing/testing/bla"));
-        Assert.True(pathMatcher.MatchStart("/bla/**/bla", "/bla/testing/testing/bla/bla"));
-        Assert.True(pathMatcher.MatchStart("/**/test", "/bla/bla/test"));
-        Assert.True(pathMatcher.MatchStart("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla"));
-        Assert.True(pathMatcher.MatchStart("/bla*bla/test", "/blaXXXbla/test"));
-        Assert.True(pathMatcher.MatchStart("/*bla/test", "/XXXbla/test"));
-        Assert.False(pathMatcher.MatchStart("/bla*bla/test", "/blaXXXbl/test"));
-        Assert.False(pathMatcher.MatchStart("/*bla/test", "XXXblab/test"));
-        Assert.False(pathMatcher.MatchStart("/*bla/test", "XXXbl/test"));
+        Assert.True(_pathMatcher.MatchStart("/**", "/testing/testing"));
+        Assert.True(_pathMatcher.MatchStart("/*/**", "/testing/testing"));
+        Assert.True(_pathMatcher.MatchStart("/**/*", "/testing/testing"));
+        Assert.True(_pathMatcher.MatchStart("test*/**", "test/"));
+        Assert.True(_pathMatcher.MatchStart("test*/**", "test/t"));
+        Assert.True(_pathMatcher.MatchStart("/bla/**/bla", "/bla/testing/testing/bla"));
+        Assert.True(_pathMatcher.MatchStart("/bla/**/bla", "/bla/testing/testing/bla/bla"));
+        Assert.True(_pathMatcher.MatchStart("/**/test", "/bla/bla/test"));
+        Assert.True(_pathMatcher.MatchStart("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla"));
+        Assert.True(_pathMatcher.MatchStart("/bla*bla/test", "/blaXXXbla/test"));
+        Assert.True(_pathMatcher.MatchStart("/*bla/test", "/XXXbla/test"));
+        Assert.False(_pathMatcher.MatchStart("/bla*bla/test", "/blaXXXbl/test"));
+        Assert.False(_pathMatcher.MatchStart("/*bla/test", "XXXblab/test"));
+        Assert.False(_pathMatcher.MatchStart("/*bla/test", "XXXbl/test"));
 
-        Assert.False(pathMatcher.MatchStart("/????", "/bala/bla"));
-        Assert.True(pathMatcher.MatchStart("/**/*bla", "/bla/bla/bla/bbb"));
+        Assert.False(_pathMatcher.MatchStart("/????", "/bala/bla"));
+        Assert.True(_pathMatcher.MatchStart("/**/*bla", "/bla/bla/bla/bbb"));
 
-        Assert.True(pathMatcher.MatchStart("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing/"));
-        Assert.True(pathMatcher.MatchStart("/*bla*/**/bla/*", "/XXXblaXXXX/testing/testing/bla/testing"));
-        Assert.True(pathMatcher.MatchStart("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing"));
-        Assert.True(pathMatcher.MatchStart("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing.jpg"));
+        Assert.True(_pathMatcher.MatchStart("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing/"));
+        Assert.True(_pathMatcher.MatchStart("/*bla*/**/bla/*", "/XXXblaXXXX/testing/testing/bla/testing"));
+        Assert.True(_pathMatcher.MatchStart("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing"));
+        Assert.True(_pathMatcher.MatchStart("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing.jpg"));
 
-        Assert.True(pathMatcher.MatchStart("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing/"));
-        Assert.True(pathMatcher.MatchStart("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing"));
-        Assert.True(pathMatcher.MatchStart("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing"));
-        Assert.True(pathMatcher.MatchStart("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing/testing"));
+        Assert.True(_pathMatcher.MatchStart("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing/"));
+        Assert.True(_pathMatcher.MatchStart("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing"));
+        Assert.True(_pathMatcher.MatchStart("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing"));
+        Assert.True(_pathMatcher.MatchStart("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing/testing"));
 
-        Assert.True(pathMatcher.MatchStart("/x/x/**/bla", "/x/x/x/"));
+        Assert.True(_pathMatcher.MatchStart("/x/x/**/bla", "/x/x/x/"));
 
-        Assert.True(pathMatcher.MatchStart(string.Empty, string.Empty));
+        Assert.True(_pathMatcher.MatchStart(string.Empty, string.Empty));
     }
 
     [Fact]
     public void UniqueDeliminator()
     {
-        pathMatcher.PathSeparator = ".";
+        _pathMatcher.PathSeparator = ".";
 
         // test exact Matching
-        Assert.True(pathMatcher.Match("test", "test"));
-        Assert.True(pathMatcher.Match(".test", ".test"));
-        Assert.False(pathMatcher.Match(".test/jpg", "test/jpg"));
-        Assert.False(pathMatcher.Match("test", ".test"));
-        Assert.False(pathMatcher.Match(".test", "test"));
+        Assert.True(_pathMatcher.Match("test", "test"));
+        Assert.True(_pathMatcher.Match(".test", ".test"));
+        Assert.False(_pathMatcher.Match(".test/jpg", "test/jpg"));
+        Assert.False(_pathMatcher.Match("test", ".test"));
+        Assert.False(_pathMatcher.Match(".test", "test"));
 
         // test Matching with ?'s
-        Assert.True(pathMatcher.Match("t?st", "test"));
-        Assert.True(pathMatcher.Match("??st", "test"));
-        Assert.True(pathMatcher.Match("tes?", "test"));
-        Assert.True(pathMatcher.Match("te??", "test"));
-        Assert.True(pathMatcher.Match("?es?", "test"));
-        Assert.False(pathMatcher.Match("tes?", "tes"));
-        Assert.False(pathMatcher.Match("tes?", "testt"));
-        Assert.False(pathMatcher.Match("tes?", "tsst"));
+        Assert.True(_pathMatcher.Match("t?st", "test"));
+        Assert.True(_pathMatcher.Match("??st", "test"));
+        Assert.True(_pathMatcher.Match("tes?", "test"));
+        Assert.True(_pathMatcher.Match("te??", "test"));
+        Assert.True(_pathMatcher.Match("?es?", "test"));
+        Assert.False(_pathMatcher.Match("tes?", "tes"));
+        Assert.False(_pathMatcher.Match("tes?", "testt"));
+        Assert.False(_pathMatcher.Match("tes?", "tsst"));
 
         // test Matching with *'s
-        Assert.True(pathMatcher.Match("*", "test"));
-        Assert.True(pathMatcher.Match("test*", "test"));
-        Assert.True(pathMatcher.Match("test*", "testTest"));
-        Assert.True(pathMatcher.Match("*test*", "AnothertestTest"));
-        Assert.True(pathMatcher.Match("*test", "Anothertest"));
-        Assert.True(pathMatcher.Match("*/*", "test/"));
-        Assert.True(pathMatcher.Match("*/*", "test/test"));
-        Assert.True(pathMatcher.Match("*/*", "test/test/test"));
-        Assert.True(pathMatcher.Match("test*aaa", "testblaaaa"));
-        Assert.False(pathMatcher.Match("test*", "tst"));
-        Assert.False(pathMatcher.Match("test*", "tsttest"));
-        Assert.False(pathMatcher.Match("*test*", "tsttst"));
-        Assert.False(pathMatcher.Match("*test", "tsttst"));
-        Assert.False(pathMatcher.Match("*/*", "tsttst"));
-        Assert.False(pathMatcher.Match("test*aaa", "test"));
-        Assert.False(pathMatcher.Match("test*aaa", "testblaaab"));
+        Assert.True(_pathMatcher.Match("*", "test"));
+        Assert.True(_pathMatcher.Match("test*", "test"));
+        Assert.True(_pathMatcher.Match("test*", "testTest"));
+        Assert.True(_pathMatcher.Match("*test*", "AnothertestTest"));
+        Assert.True(_pathMatcher.Match("*test", "Anothertest"));
+        Assert.True(_pathMatcher.Match("*/*", "test/"));
+        Assert.True(_pathMatcher.Match("*/*", "test/test"));
+        Assert.True(_pathMatcher.Match("*/*", "test/test/test"));
+        Assert.True(_pathMatcher.Match("test*aaa", "testblaaaa"));
+        Assert.False(_pathMatcher.Match("test*", "tst"));
+        Assert.False(_pathMatcher.Match("test*", "tsttest"));
+        Assert.False(_pathMatcher.Match("*test*", "tsttst"));
+        Assert.False(_pathMatcher.Match("*test", "tsttst"));
+        Assert.False(_pathMatcher.Match("*/*", "tsttst"));
+        Assert.False(_pathMatcher.Match("test*aaa", "test"));
+        Assert.False(_pathMatcher.Match("test*aaa", "testblaaab"));
 
         // test Matching with ?'s and .'s
-        Assert.True(pathMatcher.Match(".?", ".a"));
-        Assert.True(pathMatcher.Match(".?.a", ".a.a"));
-        Assert.True(pathMatcher.Match(".a.?", ".a.b"));
-        Assert.True(pathMatcher.Match(".??.a", ".aa.a"));
-        Assert.True(pathMatcher.Match(".a.??", ".a.bb"));
-        Assert.True(pathMatcher.Match(".?", ".a"));
+        Assert.True(_pathMatcher.Match(".?", ".a"));
+        Assert.True(_pathMatcher.Match(".?.a", ".a.a"));
+        Assert.True(_pathMatcher.Match(".a.?", ".a.b"));
+        Assert.True(_pathMatcher.Match(".??.a", ".aa.a"));
+        Assert.True(_pathMatcher.Match(".a.??", ".a.bb"));
+        Assert.True(_pathMatcher.Match(".?", ".a"));
 
         // test Matching with **'s
-        Assert.True(pathMatcher.Match(".**", ".testing.testing"));
-        Assert.True(pathMatcher.Match(".*.**", ".testing.testing"));
-        Assert.True(pathMatcher.Match(".**.*", ".testing.testing"));
-        Assert.True(pathMatcher.Match(".bla.**.bla", ".bla.testing.testing.bla"));
-        Assert.True(pathMatcher.Match(".bla.**.bla", ".bla.testing.testing.bla.bla"));
-        Assert.True(pathMatcher.Match(".**.test", ".bla.bla.test"));
-        Assert.True(pathMatcher.Match(".bla.**.**.bla", ".bla.bla.bla.bla.bla.bla"));
-        Assert.True(pathMatcher.Match(".bla*bla.test", ".blaXXXbla.test"));
-        Assert.True(pathMatcher.Match(".*bla.test", ".XXXbla.test"));
-        Assert.False(pathMatcher.Match(".bla*bla.test", ".blaXXXbl.test"));
-        Assert.False(pathMatcher.Match(".*bla.test", "XXXblab.test"));
-        Assert.False(pathMatcher.Match(".*bla.test", "XXXbl.test"));
+        Assert.True(_pathMatcher.Match(".**", ".testing.testing"));
+        Assert.True(_pathMatcher.Match(".*.**", ".testing.testing"));
+        Assert.True(_pathMatcher.Match(".**.*", ".testing.testing"));
+        Assert.True(_pathMatcher.Match(".bla.**.bla", ".bla.testing.testing.bla"));
+        Assert.True(_pathMatcher.Match(".bla.**.bla", ".bla.testing.testing.bla.bla"));
+        Assert.True(_pathMatcher.Match(".**.test", ".bla.bla.test"));
+        Assert.True(_pathMatcher.Match(".bla.**.**.bla", ".bla.bla.bla.bla.bla.bla"));
+        Assert.True(_pathMatcher.Match(".bla*bla.test", ".blaXXXbla.test"));
+        Assert.True(_pathMatcher.Match(".*bla.test", ".XXXbla.test"));
+        Assert.False(_pathMatcher.Match(".bla*bla.test", ".blaXXXbl.test"));
+        Assert.False(_pathMatcher.Match(".*bla.test", "XXXblab.test"));
+        Assert.False(_pathMatcher.Match(".*bla.test", "XXXbl.test"));
     }
 
     [Fact]
     public void ExtractPathWithinPattern()
     {
-        Assert.Equal(string.Empty, pathMatcher.ExtractPathWithinPattern("/docs/commit.html", "/docs/commit.html"));
+        Assert.Equal(string.Empty, _pathMatcher.ExtractPathWithinPattern("/docs/commit.html", "/docs/commit.html"));
 
-        Assert.Equal("cvs/commit", pathMatcher.ExtractPathWithinPattern("/docs/*", "/docs/cvs/commit"));
-        Assert.Equal("commit.html", pathMatcher.ExtractPathWithinPattern("/docs/cvs/*.html", "/docs/cvs/commit.html"));
-        Assert.Equal("cvs/commit", pathMatcher.ExtractPathWithinPattern("/docs/**", "/docs/cvs/commit"));
-        Assert.Equal("cvs/commit.html", pathMatcher.ExtractPathWithinPattern("/docs/**/*.html", "/docs/cvs/commit.html"));
-        Assert.Equal("commit.html", pathMatcher.ExtractPathWithinPattern("/docs/**/*.html", "/docs/commit.html"));
-        Assert.Equal("commit.html", pathMatcher.ExtractPathWithinPattern("/*.html", "/commit.html"));
-        Assert.Equal("docs/commit.html", pathMatcher.ExtractPathWithinPattern("/*.html", "/docs/commit.html"));
-        Assert.Equal("/commit.html", pathMatcher.ExtractPathWithinPattern("*.html", "/commit.html"));
-        Assert.Equal("/docs/commit.html", pathMatcher.ExtractPathWithinPattern("*.html", "/docs/commit.html"));
-        Assert.Equal("/docs/commit.html", pathMatcher.ExtractPathWithinPattern("**/*.*", "/docs/commit.html"));
-        Assert.Equal("/docs/commit.html", pathMatcher.ExtractPathWithinPattern("*", "/docs/commit.html"));
+        Assert.Equal("cvs/commit", _pathMatcher.ExtractPathWithinPattern("/docs/*", "/docs/cvs/commit"));
+        Assert.Equal("commit.html", _pathMatcher.ExtractPathWithinPattern("/docs/cvs/*.html", "/docs/cvs/commit.html"));
+        Assert.Equal("cvs/commit", _pathMatcher.ExtractPathWithinPattern("/docs/**", "/docs/cvs/commit"));
+        Assert.Equal("cvs/commit.html", _pathMatcher.ExtractPathWithinPattern("/docs/**/*.html", "/docs/cvs/commit.html"));
+        Assert.Equal("commit.html", _pathMatcher.ExtractPathWithinPattern("/docs/**/*.html", "/docs/commit.html"));
+        Assert.Equal("commit.html", _pathMatcher.ExtractPathWithinPattern("/*.html", "/commit.html"));
+        Assert.Equal("docs/commit.html", _pathMatcher.ExtractPathWithinPattern("/*.html", "/docs/commit.html"));
+        Assert.Equal("/commit.html", _pathMatcher.ExtractPathWithinPattern("*.html", "/commit.html"));
+        Assert.Equal("/docs/commit.html", _pathMatcher.ExtractPathWithinPattern("*.html", "/docs/commit.html"));
+        Assert.Equal("/docs/commit.html", _pathMatcher.ExtractPathWithinPattern("**/*.*", "/docs/commit.html"));
+        Assert.Equal("/docs/commit.html", _pathMatcher.ExtractPathWithinPattern("*", "/docs/commit.html"));
 
         // SPR-10515
-        Assert.Equal("/docs/cvs/other/commit.html", pathMatcher.ExtractPathWithinPattern("**/commit.html", "/docs/cvs/other/commit.html"));
-        Assert.Equal("cvs/other/commit.html", pathMatcher.ExtractPathWithinPattern("/docs/**/commit.html", "/docs/cvs/other/commit.html"));
-        Assert.Equal("cvs/other/commit.html", pathMatcher.ExtractPathWithinPattern("/docs/**/**/**/**", "/docs/cvs/other/commit.html"));
+        Assert.Equal("/docs/cvs/other/commit.html", _pathMatcher.ExtractPathWithinPattern("**/commit.html", "/docs/cvs/other/commit.html"));
+        Assert.Equal("cvs/other/commit.html", _pathMatcher.ExtractPathWithinPattern("/docs/**/commit.html", "/docs/cvs/other/commit.html"));
+        Assert.Equal("cvs/other/commit.html", _pathMatcher.ExtractPathWithinPattern("/docs/**/**/**/**", "/docs/cvs/other/commit.html"));
 
-        Assert.Equal("docs/cvs/commit", pathMatcher.ExtractPathWithinPattern("/d?cs/*", "/docs/cvs/commit"));
-        Assert.Equal("cvs/commit.html", pathMatcher.ExtractPathWithinPattern("/docs/c?s/*.html", "/docs/cvs/commit.html"));
-        Assert.Equal("docs/cvs/commit", pathMatcher.ExtractPathWithinPattern("/d?cs/**", "/docs/cvs/commit"));
-        Assert.Equal("docs/cvs/commit.html", pathMatcher.ExtractPathWithinPattern("/d?cs/**/*.html", "/docs/cvs/commit.html"));
+        Assert.Equal("docs/cvs/commit", _pathMatcher.ExtractPathWithinPattern("/d?cs/*", "/docs/cvs/commit"));
+        Assert.Equal("cvs/commit.html", _pathMatcher.ExtractPathWithinPattern("/docs/c?s/*.html", "/docs/cvs/commit.html"));
+        Assert.Equal("docs/cvs/commit", _pathMatcher.ExtractPathWithinPattern("/d?cs/**", "/docs/cvs/commit"));
+        Assert.Equal("docs/cvs/commit.html", _pathMatcher.ExtractPathWithinPattern("/d?cs/**/*.html", "/docs/cvs/commit.html"));
     }
 
     [Fact]
     public void ExtractUriTemplateVariables()
     {
-        var result = pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}", "/hotels/1");
+        var result = _pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}", "/hotels/1");
         Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
 
-        result = pathMatcher.ExtractUriTemplateVariables("/h?tels/{hotel}", "/hotels/1");
+        result = _pathMatcher.ExtractUriTemplateVariables("/h?tels/{hotel}", "/hotels/1");
         Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
 
-        result = pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}/bookings/{booking}", "/hotels/1/bookings/2");
+        result = _pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}/bookings/{booking}", "/hotels/1/bookings/2");
         IDictionary<string, string> expected = new Dictionary<string, string>();
         expected.Add("hotel", "1");
         expected.Add("booking", "2");
         Assert.Equal(expected, result);
 
-        result = pathMatcher.ExtractUriTemplateVariables("/**/hotels/**/{hotel}", "/foo/hotels/bar/1");
+        result = _pathMatcher.ExtractUriTemplateVariables("/**/hotels/**/{hotel}", "/foo/hotels/bar/1");
         Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
 
-        result = pathMatcher.ExtractUriTemplateVariables("/{page}.html", "/42.html");
+        result = _pathMatcher.ExtractUriTemplateVariables("/{page}.html", "/42.html");
         Assert.Equal(new Dictionary<string, string> { { "page", "42" } }, result);
 
-        result = pathMatcher.ExtractUriTemplateVariables("/{page}.*", "/42.html");
+        result = _pathMatcher.ExtractUriTemplateVariables("/{page}.*", "/42.html");
         Assert.Equal(new Dictionary<string, string> { { "page", "42" } }, result);
 
-        result = pathMatcher.ExtractUriTemplateVariables("/A-{B}-C", "/A-b-C");
+        result = _pathMatcher.ExtractUriTemplateVariables("/A-{B}-C", "/A-b-C");
         Assert.Equal(new Dictionary<string, string> { { "B", "b" } }, result);
 
-        result = pathMatcher.ExtractUriTemplateVariables("/{name}.{extension}", "/test.html");
+        result = _pathMatcher.ExtractUriTemplateVariables("/{name}.{extension}", "/test.html");
         expected.Clear();
         expected.Add("name", "test");
         expected.Add("extension", "html");
@@ -327,14 +327,14 @@ public class AntPathMatcherTest
     [Fact]
     public void ExtractUriTemplateVariablesRegex()
     {
-        var result = pathMatcher
+        var result = _pathMatcher
             .ExtractUriTemplateVariables(
                 "{symbolicName:[\\w\\.]+}-{version:[\\w\\.]+}.jar",
                 "com.example-1.0.0.jar");
         Assert.Equal("com.example", result["symbolicName"]);
         Assert.Equal("1.0.0", result["version"]);
 
-        result = pathMatcher.ExtractUriTemplateVariables(
+        result = _pathMatcher.ExtractUriTemplateVariables(
             "{symbolicName:[\\w\\.]+}-sources-{version:[\\w\\.]+}.jar",
             "com.example-sources-1.0.0.jar");
         Assert.Equal("com.example", result["symbolicName"]);
@@ -344,13 +344,13 @@ public class AntPathMatcherTest
     [Fact]
     public void ExtractUriTemplateVarsRegexQualifiers()
     {
-        var result = pathMatcher.ExtractUriTemplateVariables(
+        var result = _pathMatcher.ExtractUriTemplateVariables(
             "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.]+}.jar",
             "com.example-sources-1.0.0.jar");
         Assert.Equal("com.example", result["symbolicName"]);
         Assert.Equal("1.0.0", result["version"]);
 
-        result = pathMatcher.ExtractUriTemplateVariables(
+        result = _pathMatcher.ExtractUriTemplateVariables(
             "{symbolicName:[\\w\\.]+}-sources-{version:[\\d\\.]+}-{year:\\d{4}}{month:\\d{2}}{day:\\d{2}}.jar",
             "com.example-sources-1.0.0-20100220.jar");
         Assert.Equal("com.example", result["symbolicName"]);
@@ -359,7 +359,7 @@ public class AntPathMatcherTest
         Assert.Equal("02", result["month"]);
         Assert.Equal("20", result["day"]);
 
-        result = pathMatcher.ExtractUriTemplateVariables(
+        result = _pathMatcher.ExtractUriTemplateVariables(
             "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.\\{\\}]+}.jar",
             "com.example-sources-1.0.0.{12}.jar");
         Assert.Equal("com.example", result["symbolicName"]);
@@ -369,57 +369,57 @@ public class AntPathMatcherTest
     [Fact]
     public void ExtractUriTemplateVarsRegexCapturingGroups()
     {
-        Assert.Throws<InvalidOperationException>(() => pathMatcher.ExtractUriTemplateVariables("/web/{id:foo(bar)?}", "/web/foobar"));
+        Assert.Throws<InvalidOperationException>(() => _pathMatcher.ExtractUriTemplateVariables("/web/{id:foo(bar)?}", "/web/foobar"));
     }
 
     [Fact]
     public void Combine()
     {
-        Assert.Equal(string.Empty, pathMatcher.Combine(null, null));
-        Assert.Equal("/hotels", pathMatcher.Combine("/hotels", null));
-        Assert.Equal("/hotels", pathMatcher.Combine(null, "/hotels"));
-        Assert.Equal("/hotels/booking", pathMatcher.Combine("/hotels/*", "booking"));
-        Assert.Equal("/hotels/booking", pathMatcher.Combine("/hotels/*", "/booking"));
-        Assert.Equal("/hotels/**/booking", pathMatcher.Combine("/hotels/**", "booking"));
-        Assert.Equal("/hotels/**/booking", pathMatcher.Combine("/hotels/**", "/booking"));
-        Assert.Equal("/hotels/booking", pathMatcher.Combine("/hotels", "/booking"));
-        Assert.Equal("/hotels/booking", pathMatcher.Combine("/hotels", "booking"));
-        Assert.Equal("/hotels/booking", pathMatcher.Combine("/hotels/", "booking"));
-        Assert.Equal("/hotels/{hotel}", pathMatcher.Combine("/hotels/*", "{hotel}"));
-        Assert.Equal("/hotels/**/{hotel}", pathMatcher.Combine("/hotels/**", "{hotel}"));
-        Assert.Equal("/hotels/{hotel}", pathMatcher.Combine("/hotels", "{hotel}"));
-        Assert.Equal("/hotels/{hotel}.*", pathMatcher.Combine("/hotels", "{hotel}.*"));
-        Assert.Equal("/hotels/*/booking/{booking}", pathMatcher.Combine("/hotels/*/booking", "{booking}"));
-        Assert.Equal("/hotel.html", pathMatcher.Combine("/*.html", "/hotel.html"));
-        Assert.Equal("/hotel.html", pathMatcher.Combine("/*.html", "/hotel"));
-        Assert.Equal("/hotel.html", pathMatcher.Combine("/*.html", "/hotel.*"));
-        Assert.Equal("/*.html", pathMatcher.Combine("/**", "/*.html"));
-        Assert.Equal("/*.html", pathMatcher.Combine("/*", "/*.html"));
-        Assert.Equal("/*.html", pathMatcher.Combine("/*.*", "/*.html"));
+        Assert.Equal(string.Empty, _pathMatcher.Combine(null, null));
+        Assert.Equal("/hotels", _pathMatcher.Combine("/hotels", null));
+        Assert.Equal("/hotels", _pathMatcher.Combine(null, "/hotels"));
+        Assert.Equal("/hotels/booking", _pathMatcher.Combine("/hotels/*", "booking"));
+        Assert.Equal("/hotels/booking", _pathMatcher.Combine("/hotels/*", "/booking"));
+        Assert.Equal("/hotels/**/booking", _pathMatcher.Combine("/hotels/**", "booking"));
+        Assert.Equal("/hotels/**/booking", _pathMatcher.Combine("/hotels/**", "/booking"));
+        Assert.Equal("/hotels/booking", _pathMatcher.Combine("/hotels", "/booking"));
+        Assert.Equal("/hotels/booking", _pathMatcher.Combine("/hotels", "booking"));
+        Assert.Equal("/hotels/booking", _pathMatcher.Combine("/hotels/", "booking"));
+        Assert.Equal("/hotels/{hotel}", _pathMatcher.Combine("/hotels/*", "{hotel}"));
+        Assert.Equal("/hotels/**/{hotel}", _pathMatcher.Combine("/hotels/**", "{hotel}"));
+        Assert.Equal("/hotels/{hotel}", _pathMatcher.Combine("/hotels", "{hotel}"));
+        Assert.Equal("/hotels/{hotel}.*", _pathMatcher.Combine("/hotels", "{hotel}.*"));
+        Assert.Equal("/hotels/*/booking/{booking}", _pathMatcher.Combine("/hotels/*/booking", "{booking}"));
+        Assert.Equal("/hotel.html", _pathMatcher.Combine("/*.html", "/hotel.html"));
+        Assert.Equal("/hotel.html", _pathMatcher.Combine("/*.html", "/hotel"));
+        Assert.Equal("/hotel.html", _pathMatcher.Combine("/*.html", "/hotel.*"));
+        Assert.Equal("/*.html", _pathMatcher.Combine("/**", "/*.html"));
+        Assert.Equal("/*.html", _pathMatcher.Combine("/*", "/*.html"));
+        Assert.Equal("/*.html", _pathMatcher.Combine("/*.*", "/*.html"));
 
         // SPR-8858
-        Assert.Equal("/{foo}/bar", pathMatcher.Combine("/{foo}", "/bar"));
+        Assert.Equal("/{foo}/bar", _pathMatcher.Combine("/{foo}", "/bar"));
 
         // SPR-7970
-        Assert.Equal("/user/user", pathMatcher.Combine("/user", "/user"));
+        Assert.Equal("/user/user", _pathMatcher.Combine("/user", "/user"));
 
         // SPR-10062
-        Assert.Equal("/{foo:.*[^0-9].*}/edit/", pathMatcher.Combine("/{foo:.*[^0-9].*}", "/edit/"));
+        Assert.Equal("/{foo:.*[^0-9].*}/edit/", _pathMatcher.Combine("/{foo:.*[^0-9].*}", "/edit/"));
 
         // SPR-10554
-        Assert.Equal("/1.0/foo/test", pathMatcher.Combine("/1.0", "/foo/test"));
+        Assert.Equal("/1.0/foo/test", _pathMatcher.Combine("/1.0", "/foo/test"));
 
         // SPR-12975
-        Assert.Equal("/hotel", pathMatcher.Combine("/", "/hotel"));
+        Assert.Equal("/hotel", _pathMatcher.Combine("/", "/hotel"));
 
         // SPR-12975
-        Assert.Equal("/hotel/booking", pathMatcher.Combine("/hotel/", "/booking"));
+        Assert.Equal("/hotel/booking", _pathMatcher.Combine("/hotel/", "/booking"));
     }
 
     [Fact]
     public void PatternComparator()
     {
-        var comparator = pathMatcher.GetPatternComparer("/hotels/new");
+        var comparator = _pathMatcher.GetPatternComparer("/hotels/new");
 
         Assert.Equal(0, comparator.Compare(null, null));
         Assert.Equal(1, comparator.Compare(null, "/hotels/new"));
@@ -473,7 +473,7 @@ public class AntPathMatcherTest
     [Fact]
     public void PatternComparatorSort()
     {
-        var comparator = pathMatcher.GetPatternComparer("/hotels/new");
+        var comparator = _pathMatcher.GetPatternComparer("/hotels/new");
 
         var paths = new List<string>(3);
 
@@ -550,7 +550,7 @@ public class AntPathMatcherTest
         Assert.Equal("/hotels/n*", paths[1]);
         paths.Clear();
 
-        comparator = pathMatcher.GetPatternComparer("/hotels/new.html");
+        comparator = _pathMatcher.GetPatternComparer("/hotels/new.html");
         paths.Add("/hotels/new.*");
         paths.Add("/hotels/{hotel}");
         Shuffle(paths);
@@ -559,7 +559,7 @@ public class AntPathMatcherTest
         Assert.Equal("/hotels/{hotel}", paths[1]);
         paths.Clear();
 
-        comparator = pathMatcher.GetPatternComparer("/web/endUser/action/login.html");
+        comparator = _pathMatcher.GetPatternComparer("/web/endUser/action/login.html");
         paths.Add("/**/login.*");
         paths.Add("/**/endUser/action/login.*");
         paths.Sort(comparator);
@@ -568,7 +568,7 @@ public class AntPathMatcherTest
         paths.Clear();
     }
 
-    private static Random rng = new ();
+    private static readonly Random _rng = new ();
 
     private static void Shuffle<T>(List<T> list)
     {
@@ -576,7 +576,7 @@ public class AntPathMatcherTest
         while (n > 1)
         {
             n--;
-            var k = rng.Next(n + 1);
+            var k = _rng.Next(n + 1);
             (list[k], list[n]) = (list[n], list[k]);
         }
     }

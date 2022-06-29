@@ -11,7 +11,10 @@ namespace Steeltoe.Common.Net;
 /// <summary>
 /// An interface to methods of mpr.dll used by WindowsNetworkFileShare
 /// </summary>
+// TODO: [BREAKING] Rename type to IMultipleProviderRouter and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
 public interface IMPR
+#pragma warning restore S101 // Types should be named in PascalCase
 {
     /// <summary>
     /// Makes a connection to a network resource and can redirect a local device to the network resource.

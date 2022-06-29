@@ -16,7 +16,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 
 public class DefaultMessageHandlerMethodFactoryTest
 {
-    private readonly SampleBean sample = new ();
+    private readonly SampleBean _sample = new ();
 
     [Fact]
     public void CustomConversion()
@@ -27,8 +27,8 @@ public class DefaultMessageHandlerMethodFactoryTest
 
         var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
 
-        invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(sample).Build());
-        AssertMethodInvocation(sample, "SimpleString");
+        invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(_sample).Build());
+        AssertMethodInvocation(_sample, "SimpleString");
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
 
         invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build());
-        AssertMethodInvocation(sample, "CustomArgumentResolver");
+        AssertMethodInvocation(_sample, "CustomArgumentResolver");
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         // This will work as the local resolver is set
         var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
         invocableHandlerMethod.Invoke(message);
-        AssertMethodInvocation(sample, "CustomArgumentResolver");
+        AssertMethodInvocation(_sample, "CustomArgumentResolver");
 
         // This won't work as no resolver is known for the payload
         var invocableHandlerMethod2 = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
@@ -94,7 +94,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         var instance = new DefaultMessageHandlerMethodFactory();
         var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "PayloadValidation", typeof(string));
         invocableHandlerMethod.Invoke(MessageBuilder.WithPayload("failure").Build());
-        AssertMethodInvocation(sample, "PayloadValidation");
+        AssertMethodInvocation(_sample, "PayloadValidation");
     }
 
     private DefaultMessageHandlerMethodFactory CreateInstance(List<IHandlerMethodArgumentResolver> customResolvers)
@@ -117,7 +117,7 @@ public class DefaultMessageHandlerMethodFactoryTest
 
     private IInvocableHandlerMethod CreateInvocableHandlerMethod(DefaultMessageHandlerMethodFactory factory, string methodName, params Type[] parameterTypes)
     {
-        return factory.CreateInvocableHandlerMethod(sample, GetListenerMethod(methodName, parameterTypes));
+        return factory.CreateInvocableHandlerMethod(_sample, GetListenerMethod(methodName, parameterTypes));
     }
 
     private MethodInfo GetListenerMethod(string methodName, params Type[] parameterTypes)
@@ -132,7 +132,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         Assert.True(bean.Invocations[methodName]);
     }
 
-    internal class SampleBeanConverter : AbstractConverter<SampleBean, string>
+    internal sealed class SampleBeanConverter : AbstractConverter<SampleBean, string>
     {
         public override string Convert(SampleBean soruce)
         {
@@ -140,7 +140,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         }
     }
 
-    internal class SampleBean
+    internal sealed class SampleBean
     {
         public readonly Dictionary<string, bool> Invocations = new ();
 
@@ -161,7 +161,7 @@ public class DefaultMessageHandlerMethodFactoryTest
         }
     }
 
-    internal class CustomHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
+    internal sealed class CustomHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
     {
         public bool SupportsParameter(ParameterInfo parameter)
         {

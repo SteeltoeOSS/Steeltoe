@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class AspNetCoreHostingObserverTest : BaseTest
 {
     // [Fact] TODO: Do we need these views
@@ -51,8 +51,11 @@ public class AspNetCoreHostingObserverTest : BaseTest
         Assert.False(observer.ShouldIgnoreRequest("/v2/apps"));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void ProcessEvent_IgnoresNulls()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();
@@ -113,9 +116,12 @@ public class AspNetCoreHostingObserverTest : BaseTest
         Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagContext);
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
     [Trait("Category", "FlakyOnHostedAgents")]
+#pragma warning disable S2699 // Tests should include assertions
     public void HandleStopEvent_RecordsStats()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();

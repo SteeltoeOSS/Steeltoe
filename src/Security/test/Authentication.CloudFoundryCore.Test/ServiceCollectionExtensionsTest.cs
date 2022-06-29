@@ -19,8 +19,6 @@ public class ServiceCollectionExtensionsTest
     [Fact]
     public void AddCloudFoundryCertificateAuth_ChecksNulls()
     {
-        var sColl = new ServiceCollection();
-
         var servicesException = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddCloudFoundryCertificateAuth(null));
         Assert.Equal("services", servicesException.ParamName);
     }

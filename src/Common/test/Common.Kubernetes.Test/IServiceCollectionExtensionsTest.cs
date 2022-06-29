@@ -39,7 +39,7 @@ public class IServiceCollectionExtensionsTest
     }
 
     [Fact]
-    [Obsolete]
+    [Obsolete("To be removed in the next major version.")]
     public void GetKubernetesApplicationOptions_ThrowsOnNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => IServiceCollectionExtensions.GetKubernetesApplicationOptions(null));
@@ -47,7 +47,7 @@ public class IServiceCollectionExtensionsTest
     }
 
     [Fact]
-    [Obsolete]
+    [Obsolete("To be removed in the next major version.")]
     public void GetKubernetesApplicationOptions_ReturnsAndAddsOptions()
     {
         var serviceCollection = new ServiceCollection();

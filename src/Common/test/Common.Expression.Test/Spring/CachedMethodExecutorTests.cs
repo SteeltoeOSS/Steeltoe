@@ -10,13 +10,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class CachedMethodExecutorTests
 {
-    private readonly IExpressionParser parser = new SpelExpressionParser();
-    private readonly StandardEvaluationContext context = new (new RootObject());
+    private readonly IExpressionParser _parser = new SpelExpressionParser();
+    private readonly StandardEvaluationContext _context = new (new RootObject());
 
     [Fact]
     public void TestCachedExecutionForParameters()
     {
-        var expression = parser.ParseExpression("Echo(#var)");
+        var expression = _parser.ParseExpression("Echo(#var)");
 
         AssertMethodExecution(expression, 42, "int: 42");
         AssertMethodExecution(expression, 42, "int: 42");
@@ -27,7 +27,7 @@ public class CachedMethodExecutorTests
     [Fact]
     public void TestCachedExecutionForTarget()
     {
-        var expression = parser.ParseExpression("#var.Echo(42)");
+        var expression = _parser.ParseExpression("#var.Echo(42)");
 
         AssertMethodExecution(expression, new RootObject(), "int: 42");
         AssertMethodExecution(expression, new RootObject(), "int: 42");
@@ -37,8 +37,8 @@ public class CachedMethodExecutorTests
 
     private void AssertMethodExecution(IExpression expression, object var, string expected)
     {
-        context.SetVariable("var", var);
-        Assert.Equal(expected, expression.GetValue(context));
+        _context.SetVariable("var", var);
+        Assert.Equal(expected, expression.GetValue(_context));
     }
 
     public class BaseObject

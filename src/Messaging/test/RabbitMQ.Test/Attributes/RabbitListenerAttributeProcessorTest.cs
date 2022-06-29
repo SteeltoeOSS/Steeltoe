@@ -36,7 +36,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint;
         Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
@@ -102,7 +102,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);
@@ -125,7 +125,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);
@@ -147,7 +147,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);
@@ -177,7 +177,7 @@ public class RabbitListenerAttributeProcessorTest
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
-        var container = factory.GetListenerContainers()[0] as MessageListenerTestContainer;
+        var container = factory.GetListenerContainers()[0];
 
         var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.NotNull(endpoint);
@@ -196,7 +196,7 @@ public class RabbitListenerAttributeProcessorTest
         queue2.ServiceName = "queue2";
 
         var queues = new List<IQueue> { queue1, queue2 };
-        var excep = await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
+        await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
     }
 
     [Fact]
@@ -213,19 +213,7 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.SYSTEM);
     }
 
-    public class TestTarget
-    {
-        [DeclareExchange(Name ="test", Type = ExchangeType.DIRECT)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.TOPIC)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.FANOUT)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.HEADERS)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.SYSTEM)]
-        public void Method()
-        {
-        }
-    }
-
-    public class Config
+    public static class Config
     {
         public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
         {
@@ -252,7 +240,7 @@ public class RabbitListenerAttributeProcessorTest
             services.AddRabbitListenerEndpointRegistry();
             services.AddRabbitListenerEndpointRegistrar();
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("testFactory");
-            services.AddRabbitListenerAttributeProcessor((p, r) =>
+            services.AddRabbitListenerAttributeProcessor((_, r) =>
             {
                 r.ContainerFactoryServiceName = "testFactory";
             });
@@ -269,6 +257,18 @@ public class RabbitListenerAttributeProcessorTest
             var provider = services.BuildServiceProvider();
             await provider.GetRequiredService<IHostedService>().StartAsync(default);
             return provider;
+        }
+    }
+
+    public class TestTarget
+    {
+        [DeclareExchange(Name ="test", Type = ExchangeType.DIRECT)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.TOPIC)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.FANOUT)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.HEADERS)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.SYSTEM)]
+        public void Method()
+        {
         }
     }
 

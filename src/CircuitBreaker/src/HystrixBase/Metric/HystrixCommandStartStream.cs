@@ -20,7 +20,7 @@ public class HystrixCommandStartStream : IHystrixEventStream<HystrixCommandExecu
 
     public static HystrixCommandStartStream GetInstance(IHystrixCommandKey commandKey)
     {
-        return Streams.GetOrAddEx(commandKey.Name, k => new HystrixCommandStartStream(commandKey));
+        return Streams.GetOrAddEx(commandKey.Name, _ => new HystrixCommandStartStream(commandKey));
     }
 
     internal HystrixCommandStartStream(IHystrixCommandKey commandKey)

@@ -22,15 +22,15 @@ public class TestSink : ILogEventSink
         return _currentSink ??= new TestSink();
     }
 
-    private readonly List<string> logs = new ();
+    private readonly List<string> _logs = new ();
 
     public void Emit(LogEvent logEvent)
     {
-        logs.Add(logEvent.RenderMessage());
+        _logs.Add(logEvent.RenderMessage());
     }
 
     public List<string> GetLogs()
     {
-        return logs;
+        return _logs;
     }
 }

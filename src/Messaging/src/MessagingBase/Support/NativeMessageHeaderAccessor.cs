@@ -122,7 +122,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
         var map = GetNativeHeaders();
         if (value == null)
         {
-            if (map != null && map.TryGetValue(name, out var list))
+            if (map != null && map.TryGetValue(name, out _))
             {
                 IsModified = true;
                 map.Remove(name);

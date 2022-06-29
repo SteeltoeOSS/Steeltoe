@@ -12,10 +12,4 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 [AttributeUsage(AttributeTargets.Parameter)]
 public class HeadersAttribute : Attribute
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="HeadersAttribute"/> class.
-    /// </summary>
-    public HeadersAttribute()
-    {
-    }
 }

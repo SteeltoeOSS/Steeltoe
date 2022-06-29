@@ -61,7 +61,6 @@ public class Startup
     }
 }
 
-#pragma warning disable SA1402 // File may only contain a single type
 public class TestHealthCheck : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
@@ -70,13 +69,12 @@ public class TestHealthCheck : IHealthCheck
     }
 }
 
-public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
-#pragma warning restore SA1402 // File may only contain a single type
+public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 {
     public TestServiceOptions()
     {
         CurrentValue = new HealthCheckServiceOptions();
-        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", provider => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
+        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", _ => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
     }
 
     public HealthCheckServiceOptions CurrentValue { get; }

@@ -87,8 +87,8 @@ public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, 
 
     private void PopulateNotPropagatedHeadersIfAny()
     {
-        var notPropagatedHeaders = NotPropagatedHeaders;
-
+        // var notPropagatedHeaders = NotPropagatedHeaders;
+        //
         // if (Transformer is AbstractMessageProcessingTransformer && notPropagatedHeaders.Count != 0)
         // {
         //    ((AbstractMessageProcessingTransformer)this.Transformer)

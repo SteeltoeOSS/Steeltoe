@@ -31,26 +31,29 @@ public class HttpClientCoreObserver : MetricsObserver
     private readonly string _uriTagKey = "uri";
     private readonly string _methodTagKey = "method";
     private readonly string _clientTagKey = "clientName";
-    private Histogram<double> _clientTimeMeasure;
-    private Histogram<double> _clientCountMeasure;
-    private IViewRegistry _viewRegistry;
+    private readonly Histogram<double> _clientTimeMeasure;
+    private readonly Histogram<double> _clientCountMeasure;
 
     public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger, IViewRegistry viewRegistry)
         : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
     {
-        _viewRegistry = viewRegistry ?? throw new ArgumentNullException(nameof(viewRegistry));
+        if (viewRegistry == null)
+        {
+            throw new ArgumentNullException(nameof(viewRegistry));
+        }
+
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
         _clientTimeMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.count");
 
-        _viewRegistry.AddView(
+        viewRegistry.AddView(
             "http.client.request.time",
             new ExplicitBucketHistogramConfiguration
             {
                 Boundaries = new[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
                 TagKeys = new[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
             });
-        _viewRegistry.AddView(
+        viewRegistry.AddView(
             "http.client.request.count",
             new ExplicitBucketHistogramConfiguration
             {

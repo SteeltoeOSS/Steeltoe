@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test;
 
-internal class TestTraceEndpoint : TraceEndpoint
+internal sealed class TestTraceEndpoint : TraceEndpoint
 {
     public TestTraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
         : base(options, traceRepository, logger)

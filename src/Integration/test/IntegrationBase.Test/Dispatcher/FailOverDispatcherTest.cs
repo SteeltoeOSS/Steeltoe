@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Dispatcher.Test;
 
 public class FailOverDispatcherTest
 {
-    private readonly IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public FailOverDispatcherTest()
     {
@@ -26,13 +26,13 @@ public class FailOverDispatcherTest
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
     public void SingleMessage()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var latch = new CountdownEvent(1);
         var processor = new LatchedProcessor(latch);
         dispatcher.AddHandler(CreateConsumer(processor));
@@ -43,7 +43,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void PointToPoint()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var latch = new CountdownEvent(1);
         var processor1 = new LatchedProcessor(latch);
         var processor2 = new LatchedProcessor(latch);
@@ -57,7 +57,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void NoDuplicateSubscriptions()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target = new CountingTestEndpoint(false);
         dispatcher.AddHandler(target);
         dispatcher.AddHandler(target);
@@ -76,7 +76,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void RemoveConsumerBeforeSend()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target1 = new CountingTestEndpoint(false);
         var target2 = new CountingTestEndpoint(false);
         var target3 = new CountingTestEndpoint(false);
@@ -99,7 +99,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void RemoveConsumerBetweenSends()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target1 = new CountingTestEndpoint(false);
         var target2 = new CountingTestEndpoint(false);
         var target3 = new CountingTestEndpoint(false);
@@ -143,7 +143,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void RemoveConsumerLastTargetCausesDeliveryException()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target1 = new CountingTestEndpoint(false);
         dispatcher.AddHandler(target1);
         try
@@ -163,7 +163,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void FirstHandlerReturnsTrue()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target1 = new CountingTestEndpoint(true);
         var target2 = new CountingTestEndpoint(false);
         var target3 = new CountingTestEndpoint(false);
@@ -177,7 +177,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void MiddleHandlerReturnsTrue()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target1 = new CountingTestEndpoint(false);
         var target2 = new CountingTestEndpoint(true);
         var target3 = new CountingTestEndpoint(false);
@@ -191,7 +191,7 @@ public class FailOverDispatcherTest
     [Fact]
     public void AllHandlersReturnFalse()
     {
-        var dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
+        var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target1 = new CountingTestEndpoint(false);
         var target2 = new CountingTestEndpoint(false);
         var target3 = new CountingTestEndpoint(false);
@@ -202,8 +202,9 @@ public class FailOverDispatcherTest
         {
             Assert.False(dispatcher.Dispatch(Message.Create("test")));
         }
-        catch (Exception)
+        catch (AggregateMessageDeliveryException)
         {
+            // Intentionally left empty.
         }
 
         Assert.Equal(3, target1.Counter + target2.Counter + target3.Counter);
@@ -211,7 +212,7 @@ public class FailOverDispatcherTest
 
     private ServiceActivatingHandler CreateConsumer(IMessageProcessor processor)
     {
-        var handler = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), processor);
+        var handler = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), processor);
         return handler;
     }
 

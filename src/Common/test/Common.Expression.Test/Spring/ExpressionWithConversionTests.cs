@@ -78,7 +78,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     {
         var evaluationContext = new StandardEvaluationContext();
 
-        var collectionType = typeof(TestTarget).GetMethod("Sum").GetParameters()[0].ParameterType;
+        var collectionType = typeof(TestTarget).GetMethod(nameof(TestTarget.Sum)).GetParameters()[0].ParameterType;
 
         // The type conversion is possible
         Assert.True(evaluationContext.TypeConverter.CanConvert(typeof(string), collectionType));

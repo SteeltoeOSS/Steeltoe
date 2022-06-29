@@ -270,7 +270,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         {
             if (_executionSemaphoreOverride == null)
             {
-                return _executionSemaphorePerCircuit.GetOrAddEx(commandKey.Name, k => new SemaphoreSlim(options.ExecutionIsolationSemaphoreMaxConcurrentRequests));
+                return _executionSemaphorePerCircuit.GetOrAddEx(commandKey.Name, _ => new SemaphoreSlim(options.ExecutionIsolationSemaphoreMaxConcurrentRequests));
             }
             else
             {
@@ -288,7 +288,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         if (_fallbackSemaphoreOverride == null)
         {
-            return _fallbackSemaphorePerCircuit.GetOrAddEx(commandKey.Name, k => new SemaphoreSlim(options.FallbackIsolationSemaphoreMaxConcurrentRequests));
+            return _fallbackSemaphorePerCircuit.GetOrAddEx(commandKey.Name, _ => new SemaphoreSlim(options.FallbackIsolationSemaphoreMaxConcurrentRequests));
         }
         else
         {
@@ -698,7 +698,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
                     {
                         WrapWithOnFallbackErrorHook(ex);
                         HandleFallbackError(ex, failureType, message, originalException);
+
+                        // Suppress S3626 to workaround bug at https://github.com/SonarSource/sonar-dotnet/issues/5691.
+#pragma warning disable S3626 // Jump statements should not be redundant
                         return;
+#pragma warning restore S3626 // Jump statements should not be redundant
                     }
                     finally
                     {
@@ -1489,23 +1493,18 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    private Exception WrapWithOnFallbackErrorHook(Exception e)
+    private void WrapWithOnFallbackErrorHook(Exception e)
     {
         try
         {
             if (IsFallbackUserDefined)
             {
-                return _executionHook.OnFallbackError(this, e);
-            }
-            else
-            {
-                return e;
+                _executionHook.OnFallbackError(this, e);
             }
         }
         catch (Exception hookEx)
         {
             _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onFallbackError - {0}", hookEx);
-            return e;
         }
     }
     #endregion Wraps

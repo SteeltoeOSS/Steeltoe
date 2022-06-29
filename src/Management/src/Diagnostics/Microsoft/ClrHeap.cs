@@ -1033,7 +1033,7 @@ internal abstract class HeapBase : ClrHeap
         }
 
         List<ClrObject> result = new List<ClrObject>();
-        gcdesc.WalkObject(obj, size, GetMemoryReaderForAddress(obj), (reference, offset) => result.Add(new ClrObject(reference, GetObjectType(reference))));
+        gcdesc.WalkObject(obj, size, GetMemoryReaderForAddress(obj), (reference, _) => result.Add(new ClrObject(reference, GetObjectType(reference))));
         return result;
     }
 

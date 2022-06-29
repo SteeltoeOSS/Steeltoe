@@ -18,10 +18,10 @@ public class ConfigServerConfigurationSourceTest
     {
         const ConfigServerClientSettings settings = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
-        ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, null, null));
-        ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IList<IConfigurationSource>)null));
-        ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, new List<IConfigurationSource>()));
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, null, null));
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IList<IConfigurationSource>)null));
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, new List<IConfigurationSource>()));
     }
 
     [Fact]
@@ -58,7 +58,6 @@ public class ConfigServerConfigurationSourceTest
         var settings = new ConfigServerClientSettings();
         var memSource = new MemoryConfigurationSource();
         IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
-        ILoggerFactory factory = new LoggerFactory();
 
         var source = new ConfigServerConfigurationSource(settings, sources);
         var provider = source.Build(new ConfigurationBuilder());

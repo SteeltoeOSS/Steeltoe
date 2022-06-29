@@ -19,6 +19,6 @@ public class ConnectorIOptionsTest
     }
 }
 
-internal class MyOption
+internal sealed class MyOption
 {
 }

@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IDisposable
 {
     public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
@@ -55,7 +55,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private static readonly SpelExpressionParser _parser = new ();
 
-    private RabbitOptions _options;
+    private readonly RabbitOptions _options;
     private int _activeTemplateCallbacks;
     private int _messageTagProvider;
     private int _containerInstance;
@@ -803,7 +803,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
     {
-        return ReceiveAndReply(queueName, callback, (request, replyto) => GetReplyToAddress(request));
+        return ReceiveAndReply(queueName, callback, (request, _) => GetReplyToAddress(request));
     }
 
     public virtual bool ReceiveAndReply<R, S>(Func<R, S> callback, string exchange, string routingKey)
@@ -813,7 +813,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
     {
-        return ReceiveAndReply(queueName, callback, (request, reply) => new Address(replyExchange, replyRoutingKey));
+        return ReceiveAndReply(queueName, callback, (_, _) => new Address(replyExchange, replyRoutingKey));
     }
 
     public virtual bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
@@ -1340,9 +1340,18 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return MandatoryExpression.GetValue<bool>(EvaluationContext, message);
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        Stop().Wait();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Stop().Wait();
+        }
     }
 
     public virtual async Task Start()
@@ -1416,7 +1425,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
                 var consumer = new DoSendAndReceiveTemplateConsumer(this, channel, pendingReply);
 
-                channel.ModelShutdown += (sender, args) =>
+                channel.ModelShutdown += (_, args) =>
                 {
                     if (!RabbitUtils.IsNormalChannelClose(args))
                     {
@@ -2315,7 +2324,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         channel.BasicQos(0, 1, false);
         var latch = new CountdownEvent(1);
         var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName, cancelationToken);
-        var consumeResult = RC.IModelExensions.BasicConsume(channel, queueName, false, consumer);
+        RC.IModelExensions.BasicConsume(channel, queueName, false, consumer);
 
         // Waiting for consumeOK, if latch hasn't signaled, then consumeOK response never hit
         if (!latch.Wait(TimeSpan.FromMilliseconds(timeoutMillis)))
@@ -2368,7 +2377,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             try
             {
                 return RetryTemplate.Execute(
-                    context => DoExecute(action, connectionFactory),
+                    _ => DoExecute(action, connectionFactory),
                     (IRecoveryCallback<T>)RecoveryCallback);
             }
             catch (Exception e)
@@ -2385,7 +2394,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private T DoExecute<T>(Func<RC.IModel, T> channelCallback, IConnectionFactory connectionFactory)
     {
-        // NOSONAR complexity
         if (channelCallback == null)
         {
             throw new ArgumentNullException(nameof(channelCallback));
@@ -2551,15 +2559,15 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     #endregion
 
     #region Nested Types
-    protected internal class PendingReply
+    protected internal sealed class PendingReply
     {
         private readonly TaskCompletionSource<IMessage> _future = new ();
 
-        public virtual string SavedReplyTo { get; set; }
+        public string SavedReplyTo { get; set; }
 
-        public virtual string SavedCorrelation { get; set; }
+        public string SavedCorrelation { get; set; }
 
-        public virtual IMessage Get()
+        public IMessage Get()
         {
             try
             {
@@ -2571,7 +2579,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        public virtual IMessage Get(int timeout)
+        public IMessage Get(int timeout)
         {
             try
             {
@@ -2590,17 +2598,17 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        public virtual void Reply(IMessage reply)
+        public void Reply(IMessage reply)
         {
             _future.TrySetResult(reply);
         }
 
-        public virtual void Returned(RabbitMessageReturnedException e)
+        public void Returned(RabbitMessageReturnedException e)
         {
             CompleteExceptionally(e);
         }
 
-        public virtual void CompleteExceptionally(Exception exception)
+        public void CompleteExceptionally(Exception exception)
         {
             _future.TrySetException(exception);
         }
@@ -2657,7 +2665,6 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         private readonly CountdownEvent _latch;
         private readonly TaskCompletionSource<Delivery> _completionSource;
         private readonly string _queueName;
-        private readonly CancellationToken _cancellationToken;
 
         public DefaultTemplateConsumer(RC.IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancelationToken)
             : base(channel)
@@ -2665,8 +2672,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             _latch = latch;
             _completionSource = completionSource;
             _queueName = queueName;
-            _cancellationToken = cancelationToken;
-            _cancellationToken.Register(() =>
+            cancelationToken.Register(() =>
             {
                 Signal();
                 _completionSource.TrySetCanceled();
@@ -2728,9 +2734,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     protected class ConfirmListener
     {
-        private Action<object, BasicAckEventArgs> _acks;
-        private Action<object, BasicNackEventArgs> _nacks;
-        private RC.IModel _channel;
+        private readonly Action<object, BasicAckEventArgs> _acks;
+        private readonly Action<object, BasicNackEventArgs> _nacks;
+        private readonly RC.IModel _channel;
 
         public ConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
         {
@@ -2764,16 +2770,16 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         void Confirm(CorrelationData correlationData, bool ack, string cause);
     }
 
-    private class PendingReplyReturn : IReturnCallback
+    private sealed class PendingReplyReturn : IReturnCallback
     {
-        private PendingReply _pendingReply;
+        private readonly PendingReply _pendingReply;
 
         public PendingReplyReturn(PendingReply pendingReply)
         {
             _pendingReply = pendingReply;
         }
 
-        public virtual void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
+        public void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
         {
             _pendingReply.Returned(new RabbitMessageReturnedException("Message returned", message, replyCode, replyText, exchange, routingKey));
         }
@@ -2785,4 +2791,3 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     }
     #endregion
 }
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly

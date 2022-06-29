@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace Steeltoe.Stream.Binder;
 
-internal class BinderErrorChannel : PublishSubscribeChannel, ILastSubscriberAwareChannel
+internal sealed class BinderErrorChannel : PublishSubscribeChannel, ILastSubscriberAwareChannel
 {
     private int _subscribers;
 

@@ -27,7 +27,7 @@ public static class ActuatorMediaTypes
             contentHeader = versionContentHeader;
         }
 
-        return contentHeader += ";charset=UTF-8";
+        return $"{contentHeader};charset=UTF-8";
     }
 
     private static string GetContentTypeHeaderForVersion(MediaTypeVersion version = MediaTypeVersion.V2)

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonApplication
+internal sealed class JsonApplication
 {
     [JsonPropertyName("name")]
     public string Name { get; set; }

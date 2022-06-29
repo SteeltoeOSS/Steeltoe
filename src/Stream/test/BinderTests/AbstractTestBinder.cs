@@ -66,17 +66,19 @@ public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
 
     public void Dispose()
     {
-        // Nothing to do
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 
     private void CheckChannelIsConfigured(IMessageChannel messageChannel, IConsumerOptions options)
     {
-        if (messageChannel is AbstractSubscribableChannel subChan && !options.UseNativeDecoding)
+        if (messageChannel is AbstractSubscribableChannel subChan && !options.UseNativeDecoding && subChan.ChannelInterceptors.Count == 0)
         {
-            if (subChan.ChannelInterceptors.Count == 0)
-            {
-                throw new InvalidOperationException("'messageChannel' appears to be misconfigured. Consider creating channel via AbstractBinderTest.createBindableChannel(..)");
-            }
+            throw new InvalidOperationException("'messageChannel' appears to be misconfigured. Consider creating channel via AbstractBinderTest.createBindableChannel(..)");
         }
     }
 }

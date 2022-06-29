@@ -12,11 +12,13 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Xunit;
 
+#pragma warning disable S3443 // Type should not be examined on "System.Type" instances
+
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class EvaluationTests : AbstractExpressionTests
 {
-    private static readonly bool DEBUG = false;
+    private static readonly bool DEBUG = bool.Parse(bool.FalseString);
 
     [Fact]
     public void TestCreateListsOnAttemptToIndexNull01()
@@ -976,7 +978,7 @@ public class EvaluationTests : AbstractExpressionTests
         var ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<int>(ctx));
         Assert.Equal(SpelMessage.NOT_ASSIGNABLE, ex.MessageCode);
 
-        var e2 = parser.ParseExpression("1--");
+        e1 = parser.ParseExpression("1--");
         ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<int>(ctx));
         Assert.Equal(SpelMessage.NOT_ASSIGNABLE, ex.MessageCode);
     }
@@ -1224,7 +1226,7 @@ public class EvaluationTests : AbstractExpressionTests
         ExpectFailSetValueNotSupported(parser, ctx, "('abc' matches '^a..')=('abc' matches '^a..')");
 
         // Selection
-        ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod("IsEven", new[] { typeof(int) }));
+        ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod(nameof(Spr9751.IsEven), new[] { typeof(int) }));
 
         ExpectFailNotIncrementable(parser, ctx, "({1,2,3}.?[#IsEven(#this)])++");
         ExpectFailNotDecrementable(parser, ctx, "--({1,2,3}.?[#IsEven(#this)])");
@@ -1351,7 +1353,6 @@ public class EvaluationTests : AbstractExpressionTests
 
     #region Test Classes
 #pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable IDE0044 // Add readonly modifier
 
     public class MyServiceResolver : IServiceResolver
     {
@@ -1377,14 +1378,14 @@ public class EvaluationTests : AbstractExpressionTests
         public short Sss = 15;
         public Spr9751_2 Foo = new ();
 
-        public int[] IntArray = new[] { 1, 2, 3, 4, 5 };
+        public int[] IntArray = { 1, 2, 3, 4, 5 };
         public int Index1 = 2;
 
         public int[] IntegerArray;
         public int Index2 = 2;
 
         public List<string> ListOfStrings;
-        public int Index3 = 0;
+        public int Index3;
 
         public Spr9751()
         {
@@ -1449,12 +1450,11 @@ public class EvaluationTests : AbstractExpressionTests
 
         public IList<string> FooIList { get; set; }
 
-        public IDictionary Map2 { get; } = null;
+        public IDictionary Map2 { get; }
 
-        public Foo Wibble2 { get; } = null;
+        public Foo Wibble2 { get; }
     }
 
-#pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore IDE1006 // Naming Styles
     #endregion Test Classes
 }

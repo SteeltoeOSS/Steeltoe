@@ -47,7 +47,7 @@ public class SerializeTest : HystrixTestBase
                         latch.SignalEx();
                     }
                 },
-                e =>
+                _ =>
                 {
                     latch.SignalEx();
                 },

@@ -311,7 +311,7 @@ public class PollableConsumerTest : AbstractTest
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
-        var h1 = new TestFuncMessageHandler(m => throw new Exception("test recoverer"));
+        var h1 = new TestFuncMessageHandler(_ => throw new Exception("test recoverer"));
 
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(2, h1.Count);
@@ -324,7 +324,7 @@ public class PollableConsumerTest : AbstractTest
         var lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
         Assert.Equal("test recoverer", lastErrorMessage);
 
-        var h2 = new TestFuncMessageHandler(m => throw new InvalidOperationException("no retries"));
+        var h2 = new TestFuncMessageHandler(_ => throw new InvalidOperationException("no retries"));
 
         Assert.True(pollableSource.Poll(h2));
         Assert.Equal(1, h2.Count);
@@ -364,7 +364,7 @@ public class PollableConsumerTest : AbstractTest
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
-        var h1 = new TestFuncMessageHandler(m => throw new Exception("test recoverer"));
+        var h1 = new TestFuncMessageHandler(_ => throw new Exception("test recoverer"));
 
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(1, h1.Count);
@@ -398,32 +398,32 @@ public class PollableConsumerTest : AbstractTest
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
-        var h1 = new TestFuncMessageHandler(m => throw new RequeueCurrentMessageException("test retry"));
+        var h1 = new TestFuncMessageHandler(_ => throw new RequeueCurrentMessageException("test retry"));
 
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(2, h1.Count);
         mockCallback.Verify(call => call.Acknowledge(Status.REQUEUE));
     }
 
-    private class TestErrorsErrorChannelHandler : IMessageHandler
+    private sealed class TestErrorsErrorChannelHandler : IMessageHandler
     {
-        private readonly CountdownEvent latch;
+        private readonly CountdownEvent _latch;
 
         public TestErrorsErrorChannelHandler(CountdownEvent latch)
         {
-            this.latch = latch;
+            _latch = latch;
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
-            latch.Signal();
+            _latch.Signal();
         }
     }
 
-    private class TestFuncMessageHandler : IMessageHandler
+    private sealed class TestFuncMessageHandler : IMessageHandler
     {
         public int Count { get; set; }
 
@@ -433,7 +433,7 @@ public class PollableConsumerTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public Action<IMessage> Act { get; }
 
@@ -461,20 +461,20 @@ public class PollableConsumerTest : AbstractTest
 
     private sealed class TestMessageSource : IMessageSource
     {
-        private readonly string payload;
+        private readonly string _payload;
 
         public TestMessageSource(string payload)
         {
-            this.payload = payload;
+            _payload = payload;
         }
 
         public IMessage Receive()
         {
-            return Message.Create(Encoding.UTF8.GetBytes(payload));
+            return Message.Create(Encoding.UTF8.GetBytes(_payload));
         }
     }
 
-    private class TestConvertSimpleHandler : IMessageHandler
+    private sealed class TestConvertSimpleHandler : IMessageHandler
     {
         public object Payload { get; set; }
 
@@ -485,7 +485,7 @@ public class PollableConsumerTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -494,7 +494,7 @@ public class PollableConsumerTest : AbstractTest
         }
     }
 
-    private class TestSimpleHandler : IMessageHandler
+    private sealed class TestSimpleHandler : IMessageHandler
     {
         public int Count { get; set; }
 
@@ -503,7 +503,7 @@ public class PollableConsumerTest : AbstractTest
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -560,6 +560,10 @@ public class PollableConsumerTest : AbstractTest
 
     private sealed class FooType
     {
+#pragma warning disable S1144 // Unused private types or members should be removed
+#pragma warning disable S3459 // Unassigned members should be removed
         public string Foo { get; set; }
+#pragma warning restore S3459 // Unassigned members should be removed
+#pragma warning restore S1144 // Unused private types or members should be removed
     }
 }

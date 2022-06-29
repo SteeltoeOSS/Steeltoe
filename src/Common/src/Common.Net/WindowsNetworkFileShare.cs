@@ -41,7 +41,7 @@ public class WindowsNetworkFileShare : IDisposable
 
     // Created with excel formula:
     // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
-    private static readonly ErrorClass[] Error_list = new ErrorClass[]
+    private static readonly ErrorClass[] Error_list =
     {
         new (ERROR_ACCESS_DENIED, "Error: Access Denied"),
         new (ERROR_ALREADY_ASSIGNED, "Error: Already Assigned"),
@@ -104,14 +104,6 @@ public class WindowsNetworkFileShare : IDisposable
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="WindowsNetworkFileShare"/> class.
-    /// </summary>
-    ~WindowsNetworkFileShare()
-    {
-        Dispose(false);
-    }
-
-    /// <summary>
     /// Scope of the file share
     /// </summary>
     public enum ResourceScope
@@ -131,9 +123,7 @@ public class WindowsNetworkFileShare : IDisposable
         Any = 0,
         Disk = 1,
         Print = 2,
-#pragma warning disable S4016 // Enumeration members should not be named "Reserved"
         Reserved = 8,
-#pragma warning restore S4016 // Enumeration members should not be named "Reserved"
     }
 
     /// <summary>
@@ -202,10 +192,14 @@ public class WindowsNetworkFileShare : IDisposable
     /// <summary>
     /// Disposes the object, cancels connection with file share
     /// </summary>
-    /// <param name="disposing">Not used</param>
     protected virtual void Dispose(bool disposing)
     {
-        _mpr.CancelConnection(_networkName, 0, true);
+        // With the current design, it's not possible to disconnect the network share from the finalizer,
+        // because the _mpr instance may have already been garbage-collected.
+        if (disposing)
+        {
+            _mpr.CancelConnection(_networkName, 0, true);
+        }
     }
 
     private struct ErrorClass

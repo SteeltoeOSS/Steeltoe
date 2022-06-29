@@ -134,7 +134,7 @@ public class Projection : SpelNode
             nextType = nextType.BaseType;
         }
 
-        var ifaces = newType.FindInterfaces((m, c) => true, null);
+        var ifaces = newType.FindInterfaces((_, _) => true, null);
         foreach (var nextInterface in ifaces)
         {
             if (nextInterface.IsAssignableFrom(oldType))

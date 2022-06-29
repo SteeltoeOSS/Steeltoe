@@ -77,13 +77,17 @@ public abstract class Operator : SpelNode
             {
                 var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
                 var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
+#pragma warning disable S1244 // Floating point numbers should not be tested for equality
                 return leftVal == rightVal;
+#pragma warning restore S1244 // Floating point numbers should not be tested for equality
             }
             else if (left is float || right is float)
             {
                 var leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
                 var rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
+#pragma warning disable S1244 // Floating point numbers should not be tested for equality
                 return leftVal == rightVal;
+#pragma warning restore S1244 // Floating point numbers should not be tested for equality
             }
             else if (left is long || right is long)
             {

@@ -220,6 +220,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitTimeoutException)
         {
+            // Intentionally left empty.
         }
 
         // should be ignored, and added last into channel cache.
@@ -274,6 +275,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitTimeoutException)
         {
+            // Intentionally left empty.
         }
 
         channel1.Close();
@@ -292,6 +294,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitConnectException)
         {
+            // Intentionally left empty.
         }
 
         brokerDown.Value = true;
@@ -308,7 +311,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
-        var mockChannel1 = new Mock<RC.IModel>();
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
 
@@ -327,6 +329,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         catch (RabbitTimeoutException)
         {
+            // Intentionally left empty.
         }
 
         // should be ignored, and added to cache
@@ -1299,7 +1302,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mock = new Mock<RC.ConnectionFactory>();
         IList<RC.AmqpTcpEndpoint> captured = null;
         mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
+            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
         var ccf = new CachingConnectionFactory(mock.Object);
         ccf.SetAddresses("mq1");
         ccf.CreateConnection();
@@ -1315,7 +1318,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mock = new Mock<RC.ConnectionFactory>();
         IList<RC.AmqpTcpEndpoint> captured = null;
         mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
+            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
         mock.Setup(f => f.AutomaticRecoveryEnabled).Returns(true);
         var ccf = new CachingConnectionFactory(mock.Object);
         ccf.SetAddresses("mq1,mq2");
@@ -1384,7 +1387,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var asyncClosingLatch = new CountdownEvent(1);
         pccMock.Setup(p => p.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
             .Callback(() => asyncClosingLatch.Signal());
-        var rejected = new AtomicBoolean(true);
         var closeLatch = new CountdownEvent(1);
         ccf.PublisherCallbackChannelFactory = new TestOrderlyShutdownPublisherCallbackChannelFactory(pccMock);
         pccMock.Setup(p => p.Close())
@@ -1705,44 +1707,44 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
     private sealed class TestOrderlyShutdownPublisherCallbackChannelFactory : IPublisherCallbackChannelFactory
     {
-        private readonly Mock<IPublisherCallbackChannel> pccMock;
+        private readonly Mock<IPublisherCallbackChannel> _pccMock;
 
         public TestOrderlyShutdownPublisherCallbackChannelFactory(Mock<IPublisherCallbackChannel> pccMock)
         {
-            this.pccMock = pccMock;
+            _pccMock = pccMock;
         }
 
         public IPublisherCallbackChannel CreateChannel(RC.IModel channel)
         {
-            return pccMock.Object;
+            return _pccMock.Object;
         }
     }
 
     private sealed class TestWithConnectionFactoryCachedConnectionListener : IConnectionListener
     {
-        private readonly AtomicReference<RC.IConnection> createNotification;
-        private readonly AtomicReference<RC.IConnection> closedNotification;
+        private readonly AtomicReference<RC.IConnection> _createNotification;
+        private readonly AtomicReference<RC.IConnection> _closedNotification;
 
         public TestWithConnectionFactoryCachedConnectionListener(AtomicReference<RC.IConnection> createNotification, AtomicReference<RC.IConnection> closedNotification)
         {
-            this.createNotification = createNotification;
-            this.closedNotification = closedNotification;
+            _createNotification = createNotification;
+            _closedNotification = closedNotification;
         }
 
         public void OnClose(IConnection connection)
         {
-            Assert.Null(closedNotification.Value);
+            Assert.Null(_closedNotification.Value);
             var asProxy = connection as CachingConnectionFactory.ChannelCachingConnectionProxy;
             var conDelegate = asProxy.TargetConnection.Connection;
-            closedNotification.Value = conDelegate;
+            _closedNotification.Value = conDelegate;
         }
 
         public void OnCreate(IConnection connection)
         {
-            Assert.Null(createNotification.Value);
+            Assert.Null(_createNotification.Value);
             var asProxy = connection as CachingConnectionFactory.ChannelCachingConnectionProxy;
             var conDelegate = asProxy.TargetConnection.Connection;
-            createNotification.Value = conDelegate;
+            _createNotification.Value = conDelegate;
         }
 
         public void OnShutDown(RC.ShutdownEventArgs args)

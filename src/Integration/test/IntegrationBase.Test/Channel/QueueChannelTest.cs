@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class QueueChannelTest
 {
-    private IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public QueueChannelTest()
     {
@@ -25,7 +25,7 @@ public class QueueChannelTest
         var config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class QueueChannelTest
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         var latch = new CountdownEvent(1);
         var cancellationTokenSource = new CancellationTokenSource();
-        var task = Task.Run(async () =>
+        Task.Run(async () =>
         {
             var message = await channel.ReceiveAsync(cancellationTokenSource.Token);
             messageNull = message == null;
@@ -186,28 +186,6 @@ public class QueueChannelTest
 
     [Fact]
     public void TestBlockingReceiveAsyncWithTimeout()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
-        var messageNull = false;
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        var latch = new CountdownEvent(1);
-        var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(10000);
-        Task.Run(async () =>
-        {
-            var message = await channel.ReceiveAsync(cancellationTokenSource.Token);
-            messageNull = message == null;
-            latch.Signal();
-        });
-        cancellationTokenSource.Cancel();
-        Assert.True(latch.Wait(10000));
-        Assert.True(messageNull);
-    }
-
-    [Fact]
-    public void TestBlockingReceiveWithTimeoutEmptyThenSend()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();

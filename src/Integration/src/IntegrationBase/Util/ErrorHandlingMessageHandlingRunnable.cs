@@ -11,8 +11,8 @@ namespace Steeltoe.Integration.Util;
 
 public class ErrorHandlingMessageHandlingRunnable : IMessageHandlingRunnable
 {
-    private IMessageHandlingRunnable _runnable;
-    private IErrorHandler _errorHandler;
+    private readonly IMessageHandlingRunnable _runnable;
+    private readonly IErrorHandler _errorHandler;
 
     public ErrorHandlingMessageHandlingRunnable(IMessageHandlingRunnable runnable, IErrorHandler errorHandler)
     {

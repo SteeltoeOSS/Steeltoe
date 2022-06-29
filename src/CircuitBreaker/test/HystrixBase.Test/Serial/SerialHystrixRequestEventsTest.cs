@@ -13,7 +13,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test;
 public class SerialHystrixRequestEventsTest
 {
     private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP");
-    private static readonly IHystrixThreadPoolKey ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
+    private static readonly IHystrixThreadPoolKey HystrixThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
     private static readonly IHystrixCommandKey FooKey = HystrixCommandKeyDefault.AsKey("Foo");
     private static readonly IHystrixCommandKey BarKey = HystrixCommandKeyDefault.AsKey("Bar");
     private static readonly IHystrixCollapserKey CollapserKey = HystrixCollapserKeyDefault.AsKey("FooCollapser");
@@ -298,12 +298,12 @@ public class SerialHystrixRequestEventsTest
 
     private sealed class SimpleExecution : IHystrixInvokableInfo
     {
-        private readonly ExecutionResult executionResult;
+        private readonly ExecutionResult _executionResult;
 
         public SimpleExecution(IHystrixCommandKey commandKey, int latency, params HystrixEventType[] events)
         {
             CommandKey = commandKey;
-            executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
+            _executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
             PublicCacheKey = null;
             OriginatingCollapserKey = null;
         }
@@ -311,7 +311,7 @@ public class SerialHystrixRequestEventsTest
         public SimpleExecution(IHystrixCommandKey commandKey, int latency, string cacheKey, params HystrixEventType[] events)
         {
             CommandKey = commandKey;
-            executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
+            _executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
             PublicCacheKey = cacheKey;
             OriginatingCollapserKey = null;
         }
@@ -319,7 +319,7 @@ public class SerialHystrixRequestEventsTest
         public SimpleExecution(IHystrixCommandKey commandKey, string cacheKey)
         {
             CommandKey = commandKey;
-            executionResult = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
+            _executionResult = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
             PublicCacheKey = cacheKey;
             OriginatingCollapserKey = null;
         }
@@ -333,7 +333,7 @@ public class SerialHystrixRequestEventsTest
                 interimResult = interimResult.AddEvent(HystrixEventType.COLLAPSED);
             }
 
-            executionResult = interimResult;
+            _executionResult = interimResult;
             PublicCacheKey = null;
             OriginatingCollapserKey = collapserKey;
         }
@@ -347,7 +347,7 @@ public class SerialHystrixRequestEventsTest
 
         public IHystrixThreadPoolKey ThreadPoolKey
         {
-            get { return SerialHystrixRequestEventsTest.ThreadPoolKey; }
+            get { return SerialHystrixRequestEventsTest.HystrixThreadPoolKey; }
         }
 
         public string PublicCacheKey { get; private set; }
@@ -381,12 +381,12 @@ public class SerialHystrixRequestEventsTest
 
         public bool IsSuccessfulExecution
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.SUCCESS); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.SUCCESS); }
         }
 
         public bool IsFailedExecution
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.FAILURE); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.FAILURE); }
         }
 
         public Exception FailedExecutionException
@@ -396,62 +396,62 @@ public class SerialHystrixRequestEventsTest
 
         public bool IsResponseFromFallback
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.FALLBACK_SUCCESS); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.FALLBACK_SUCCESS); }
         }
 
         public bool IsResponseTimedOut
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.TIMEOUT); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.TIMEOUT); }
         }
 
         public bool IsResponseShortCircuited
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.SHORT_CIRCUITED); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.SHORT_CIRCUITED); }
         }
 
         public bool IsResponseFromCache
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.RESPONSE_FROM_CACHE); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.RESPONSE_FROM_CACHE); }
         }
 
         public bool IsResponseRejected
         {
-            get { return executionResult.IsResponseRejected; }
+            get { return _executionResult.IsResponseRejected; }
         }
 
         public bool IsResponseSemaphoreRejected
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.SEMAPHORE_REJECTED); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.SEMAPHORE_REJECTED); }
         }
 
         public bool IsResponseThreadPoolRejected
         {
-            get { return executionResult.Eventcounts.Contains(HystrixEventType.THREAD_POOL_REJECTED); }
+            get { return _executionResult.Eventcounts.Contains(HystrixEventType.THREAD_POOL_REJECTED); }
         }
 
         public List<HystrixEventType> ExecutionEvents
         {
-            get { return executionResult.OrderedList; }
+            get { return _executionResult.OrderedList; }
         }
 
         public int NumberEmissions
         {
-            get { return executionResult.Eventcounts.GetCount(HystrixEventType.EMIT); }
+            get { return _executionResult.Eventcounts.GetCount(HystrixEventType.EMIT); }
         }
 
         public int NumberFallbackEmissions
         {
-            get { return executionResult.Eventcounts.GetCount(HystrixEventType.FALLBACK_EMIT); }
+            get { return _executionResult.Eventcounts.GetCount(HystrixEventType.FALLBACK_EMIT); }
         }
 
         public int NumberCollapsed
         {
-            get { return executionResult.Eventcounts.GetCount(HystrixEventType.COLLAPSED); }
+            get { return _executionResult.Eventcounts.GetCount(HystrixEventType.COLLAPSED); }
         }
 
         public int ExecutionTimeInMilliseconds
         {
-            get { return executionResult.ExecutionLatency; }
+            get { return _executionResult.ExecutionLatency; }
         }
 
         public long CommandRunStartTimeInNanos
@@ -461,13 +461,13 @@ public class SerialHystrixRequestEventsTest
 
         public ExecutionResult.EventCounts EventCounts
         {
-            get { return executionResult.Eventcounts; }
+            get { return _executionResult.Eventcounts; }
         }
 
         public override string ToString()
         {
             return
-                $"SimpleExecution{{commandKey={CommandKey.Name}, executionResult={executionResult}, cacheKey='{PublicCacheKey}', collapserKey={OriginatingCollapserKey}}}";
+                $"SimpleExecution{{commandKey={CommandKey.Name}, executionResult={_executionResult}, cacheKey='{PublicCacheKey}', collapserKey={OriginatingCollapserKey}}}";
         }
     }
 }

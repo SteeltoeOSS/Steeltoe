@@ -25,7 +25,7 @@ public class ApplicationInfoManager
 
     public virtual InstanceInfo InstanceInfo { get; protected internal set; }
 
-    public event StatusChangedHandler StatusChangedEvent;
+    public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
     public virtual InstanceStatus InstanceStatus
     {
@@ -52,16 +52,14 @@ public class ApplicationInfoManager
                 if (prev != value)
                 {
                     InstanceInfo.Status = value;
-                    if (StatusChangedEvent != null)
+
+                    try
                     {
-                        try
-                        {
-                            StatusChangedEvent(this, new StatusChangedArgs(prev, value, InstanceInfo.InstanceId));
-                        }
-                        catch (Exception e)
-                        {
-                            _logger?.LogError("StatusChangedEvent Exception:", e);
-                        }
+                        StatusChanged?.Invoke(this, new StatusChangedEventArgs(prev, value, InstanceInfo.InstanceId));
+                    }
+                    catch (Exception e)
+                    {
+                        _logger?.LogError(e, "StatusChanged event exception");
                     }
                 }
             }
@@ -100,5 +98,3 @@ public class ApplicationInfoManager
         }
     }
 }
-
-public delegate void StatusChangedHandler(object sender, StatusChangedArgs args);

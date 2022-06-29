@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Steeltoe.Connector;
 
-internal class ConnectionStringConfigurationProvider : ConfigurationProvider
+internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvider
 {
     internal Lazy<IConfiguration> Configuration { get; private set; }
 

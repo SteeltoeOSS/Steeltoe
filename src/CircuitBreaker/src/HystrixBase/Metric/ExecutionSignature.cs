@@ -28,31 +28,19 @@ public class ExecutionSignature
         return new ExecutionSignature(execution.CommandKey, execution.EventCounts, cacheKey, cachedCount, execution.OriginatingCollapserKey, execution.NumberCollapsed);
     }
 
-    public override bool Equals(object o)
+    public override bool Equals(object obj)
     {
-        if (this == o)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (o == null || GetType() != o.GetType())
+        if (obj is not ExecutionSignature other || GetType() != obj.GetType())
         {
             return false;
         }
 
-        var that = (ExecutionSignature)o;
-
-        if (!CommandName.Equals(that.CommandName))
-        {
-            return false;
-        }
-
-        if (!Eventcounts.Equals(that.Eventcounts))
-        {
-            return false;
-        }
-
-        return !(!_cacheKey?.Equals(that._cacheKey) ?? that._cacheKey != null);
+        return CommandName == other.CommandName && Equals(Eventcounts, other.Eventcounts) && _cacheKey == other._cacheKey;
     }
 
     public override int GetHashCode()

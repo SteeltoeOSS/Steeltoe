@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 public class ThreadInfo
 {
     [JsonPropertyName("blockedCount")]
-    public long BlockedCount { get; set; } = 0; // Not available
+    public long BlockedCount { get; set; } // Not available
 
     [JsonPropertyName("blockedTime")]
     public long BlockedTime { get; set; } = -1;  // Not available
@@ -47,7 +47,7 @@ public class ThreadInfo
     public TState ThreadState { get; set; }
 
     [JsonPropertyName("waitedCount")]
-    public long WaitedCount { get; set; } = 0; // Not available
+    public long WaitedCount { get; set; } // Not available
 
     [JsonPropertyName("waitedTime")]
     public long WaitedTime { get; set; } = -1; // Not available

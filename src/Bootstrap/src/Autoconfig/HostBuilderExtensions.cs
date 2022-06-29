@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#pragma warning disable 0436
+#pragma warning disable 0436 // Type conflicts with imported type
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -144,7 +144,7 @@ public static class HostBuilderExtensions
     private static void WireConfigServer(this IHostBuilder hostBuilder) =>
         hostBuilder
             .ConfigureAppConfiguration((context, cfg) => cfg.AddConfigServer(context.HostingEnvironment, _loggerFactory))
-            .ConfigureServices((context, services) => services.AddConfigServerServices())
+            .ConfigureServices((_, services) => services.AddConfigServerServices())
             .Log(LogMessages.WireConfigServer);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -168,7 +168,7 @@ public static class HostBuilderExtensions
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireConnectorConfiguration(this IHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureAppConfiguration((host, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
+        hostBuilder.ConfigureAppConfiguration((_, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
     #endregion
 
     #region Connectors
@@ -211,11 +211,11 @@ public static class HostBuilderExtensions
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDistributedTracingBase(this IHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracing()).Log(LogMessages.WireDistributedTracing);
+        hostBuilder.ConfigureServices((_, svc) => svc.AddDistributedTracing()).Log(LogMessages.WireDistributedTracing);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDistributedTracingCore(this IHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracingAspNetCore()).Log(LogMessages.WireDistributedTracing);
+        hostBuilder.ConfigureServices((_, svc) => svc.AddDistributedTracingAspNetCore()).Log(LogMessages.WireDistributedTracing);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -250,8 +250,8 @@ public static class HostBuilderExtensions
     private static void WireCloudFoundryContainerIdentity(this IHostBuilder hostBuilder) =>
         hostBuilder
             .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity())
-            .ConfigureServices((host, svc) => svc.AddCloudFoundryCertificateAuth())
+            .ConfigureServices((_, svc) => svc.AddCloudFoundryCertificateAuth())
             .Log(LogMessages.WireCloudFoundryContainerIdentity);
 }
 
-#pragma warning restore 0436
+#pragma warning restore 0436 // Type conflicts with imported type

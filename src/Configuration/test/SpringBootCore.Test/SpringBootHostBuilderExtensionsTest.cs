@@ -27,10 +27,10 @@ public class SpringBootHostBuilderExtensionsTest
         const WebApplicationBuilder webAppBuilder = null;
 #endif
 
-        var ex = Assert.Throws<ArgumentNullException>(() => builder.AddSpringBootConfiguration());
-        ex = Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddSpringBootConfiguration());
+        Assert.Throws<ArgumentNullException>(() => builder.AddSpringBootConfiguration());
+        Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddSpringBootConfiguration());
 #if NET6_0_OR_GREATER
-        ex = Assert.Throws<ArgumentNullException>(() => webAppBuilder.AddSpringBootConfiguration());
+        Assert.Throws<ArgumentNullException>(() => webAppBuilder.AddSpringBootConfiguration());
 #endif
     }
 

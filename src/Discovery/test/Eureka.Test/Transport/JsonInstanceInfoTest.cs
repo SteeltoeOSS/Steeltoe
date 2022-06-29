@@ -59,10 +59,10 @@ public class JsonInstanceInfoTest : AbstractBaseTest
         var leaseInfo = result.LeaseInfo;
         Assert.Equal(30, leaseInfo.RenewalIntervalInSecs);
         Assert.Equal(90, leaseInfo.DurationInSecs);
-        Assert.Equal(1457714988223, leaseInfo.RegistrationTimestamp);
-        Assert.Equal(1457716158319, leaseInfo.LastRenewalTimestamp);
+        Assert.Equal(1_457_714_988_223, leaseInfo.RegistrationTimestamp);
+        Assert.Equal(1_457_716_158_319, leaseInfo.LastRenewalTimestamp);
         Assert.Equal(0, leaseInfo.EvictionTimestamp);
-        Assert.Equal(1457714988223, leaseInfo.ServiceUpTimestamp);
+        Assert.Equal(1_457_714_988_223, leaseInfo.ServiceUpTimestamp);
         var metadata = result.Metadata;
         Assert.NotNull(metadata);
         Assert.True(metadata.Count == 1);
@@ -73,8 +73,8 @@ public class JsonInstanceInfoTest : AbstractBaseTest
         Assert.Equal("http://localhost:8080/health", result.HealthCheckUrl);
         Assert.Equal("foo", result.VipAddress);
         Assert.False(result.IsCoordinatingDiscoveryServer);
-        Assert.Equal(1457714988223, result.LastUpdatedTimestamp);
-        Assert.Equal(1457714988172, result.LastDirtyTimestamp);
+        Assert.Equal(1_457_714_988_223, result.LastUpdatedTimestamp);
+        Assert.Equal(1_457_714_988_172, result.LastDirtyTimestamp);
         Assert.Equal(ActionType.ADDED, result.Actiontype);
     }
 }

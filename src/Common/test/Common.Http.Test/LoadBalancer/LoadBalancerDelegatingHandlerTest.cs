@@ -43,7 +43,7 @@ public class LoadBalancerDelegatingHandlerTest
         var handler = new LoadBalancerDelegatingHandler(loadBalancer) { InnerHandler = new TestInnerDelegatingHandler() };
         var invoker = new HttpMessageInvoker(handler);
 
-        var result = await Assert.ThrowsAsync<Exception>(async () => await invoker.SendAsync(httpRequestMessage, default));
+        await Assert.ThrowsAsync<Exception>(async () => await invoker.SendAsync(httpRequestMessage, default));
 
         Assert.Empty(loadBalancer.Stats);
     }

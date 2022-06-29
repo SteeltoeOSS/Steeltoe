@@ -74,7 +74,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         var t = PeekToken();
         if (t != null)
         {
-            if (t.Kind == TokenKind.ASSIGN)
+            if (Equals(t.Kind, TokenKind.ASSIGN))
             {
                 // a=b
                 expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 1);
@@ -84,7 +84,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 return new Assign(t.StartPos, t.EndPos, expr, assignedValue);
             }
 
-            if (t.Kind == TokenKind.ELVIS)
+            if (Equals(t.Kind, TokenKind.ELVIS))
             {
                 // a?:b (a if it isn't null, otherwise b)
                 expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 2);
@@ -95,7 +95,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 return new Elvis(t.StartPos, t.EndPos, expr, valueIfNull);
             }
 
-            if (t.Kind == TokenKind.QMARK)
+            if (Equals(t.Kind, TokenKind.QMARK))
             {
                 // a?b:c
                 expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 1);
@@ -155,32 +155,32 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
             if (relationalOperatorToken.IsNumericRelationalOperator)
             {
-                if (tk == TokenKind.GT)
+                if (Equals(tk, TokenKind.GT))
                 {
                     return new OpGT(t.StartPos, t.EndPos, expr, rhExpr);
                 }
 
-                if (tk == TokenKind.LT)
+                if (Equals(tk, TokenKind.LT))
                 {
                     return new OpLT(t.StartPos, t.EndPos, expr, rhExpr);
                 }
 
-                if (tk == TokenKind.LE)
+                if (Equals(tk, TokenKind.LE))
                 {
                     return new OpLE(t.StartPos, t.EndPos, expr, rhExpr);
                 }
 
-                if (tk == TokenKind.GE)
+                if (Equals(tk, TokenKind.GE))
                 {
                     return new OpGE(t.StartPos, t.EndPos, expr, rhExpr);
                 }
 
-                if (tk == TokenKind.EQ)
+                if (Equals(tk, TokenKind.EQ))
                 {
                     return new OpEQ(t.StartPos, t.EndPos, expr, rhExpr);
                 }
 
-                if (tk != TokenKind.NE)
+                if (!Equals(tk, TokenKind.NE))
                 {
                     throw new InvalidOperationException("Not-equals token expected");
                 }
@@ -188,17 +188,17 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 return new OpNE(t.StartPos, t.EndPos, expr, rhExpr);
             }
 
-            if (tk == TokenKind.INSTANCEOF)
+            if (Equals(tk, TokenKind.INSTANCEOF))
             {
                 return new OperatorInstanceof(t.StartPos, t.EndPos, expr, rhExpr);
             }
 
-            if (tk == TokenKind.MATCHES)
+            if (Equals(tk, TokenKind.MATCHES))
             {
                 return new OperatorMatches(t.StartPos, t.EndPos, expr, rhExpr);
             }
 
-            if (tk != TokenKind.BETWEEN)
+            if (!Equals(tk, TokenKind.BETWEEN))
             {
                 throw new InvalidOperationException("Between token expected");
             }
@@ -218,11 +218,11 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             var t = TakeToken();
             var rhExpr = EatProductExpression();
             CheckRightOperand(t, rhExpr);
-            if (t.Kind == TokenKind.PLUS)
+            if (Equals(t.Kind, TokenKind.PLUS))
             {
                 expr = new OpPlus(t.StartPos, t.EndPos, expr, rhExpr);
             }
-            else if (t.Kind == TokenKind.MINUS)
+            else if (Equals(t.Kind, TokenKind.MINUS))
             {
                 expr = new OpMinus(t.StartPos, t.EndPos, expr, rhExpr);
             }
@@ -239,17 +239,17 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             var t = TakeToken();  // consume STAR/DIV/MOD
             var rhExpr = EatPowerIncDecExpression();
             CheckOperands(t, expr, rhExpr);
-            if (t.Kind == TokenKind.STAR)
+            if (Equals(t.Kind, TokenKind.STAR))
             {
                 expr = new OpMultiply(t.StartPos, t.EndPos, expr, rhExpr);
             }
-            else if (t.Kind == TokenKind.DIV)
+            else if (Equals(t.Kind, TokenKind.DIV))
             {
                 expr = new OpDivide(t.StartPos, t.EndPos, expr, rhExpr);
             }
             else
             {
-                if (t.Kind != TokenKind.MOD)
+                if (!Equals(t.Kind, TokenKind.MOD))
                 {
                     throw new InvalidOperationException("Mod token expected");
                 }
@@ -275,7 +275,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         if (expr != null && PeekToken(TokenKind.INC, TokenKind.DEC))
         {
             var t = TakeToken();  // consume INC/DEC
-            if (t.Kind == TokenKind.INC)
+            if (Equals(t.Kind, TokenKind.INC))
             {
                 return new OpInc(t.StartPos, t.EndPos, true, expr);
             }
@@ -297,17 +297,17 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 throw new InvalidOperationException("No node");
             }
 
-            if (t.Kind == TokenKind.NOT)
+            if (Equals(t.Kind, TokenKind.NOT))
             {
                 return new OperatorNot(t.StartPos, t.EndPos, expr);
             }
 
-            if (t.Kind == TokenKind.PLUS)
+            if (Equals(t.Kind, TokenKind.PLUS))
             {
                 return new OpPlus(t.StartPos, t.EndPos, expr);
             }
 
-            if (t.Kind != TokenKind.MINUS)
+            if (!Equals(t.Kind, TokenKind.MINUS))
             {
                 throw new InvalidOperationException("Minus token expected");
             }
@@ -319,7 +319,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         {
             var t = TakeToken();
             var expr = EatUnaryExpression();
-            if (t.Kind == TokenKind.INC)
+            if (Equals(t.Kind, TokenKind.INC))
             {
                 return new OpInc(t.StartPos, t.EndPos, false, expr);
             }
@@ -372,7 +372,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
     private SpelNode EatDottedNode()
     {
         var t = TakeToken();  // it was a '.' or a '?.'
-        var nullSafeNavigation = t.Kind == TokenKind.SAFE_NAVI;
+        var nullSafeNavigation = Equals(t.Kind, TokenKind.SAFE_NAVI);
         if (MaybeEatMethodOrProperty(nullSafeNavigation) || MaybeEatFunctionOrVar() ||
             MaybeEatProjection(nullSafeNavigation) || MaybeEatSelection(nullSafeNavigation))
         {
@@ -453,14 +453,14 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 throw InternalException(pos, SpelMessage.RUN_OUT_OF_ARGUMENTS);
             }
 
-            if (t.Kind != TokenKind.RPAREN)
+            if (!Equals(t.Kind, TokenKind.RPAREN))
             {
                 accumulatedArguments.Add(EatExpression());
             }
 
             next = PeekToken();
         }
-        while (next != null && next.Kind == TokenKind.COMMA);
+        while (next != null && Equals(next.Kind, TokenKind.COMMA));
 
         if (next == null)
         {
@@ -537,7 +537,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             }
 
             ServiceReference serviceReference;
-            if (serviceRefToken.Kind == TokenKind.FACTORY_SERVICE_REF)
+            if (Equals(serviceRefToken.Kind, TokenKind.FACTORY_SERVICE_REF))
             {
                 var serviceNameString = new string(TokenKind.FACTORY_SERVICE_REF.TokenChars) + serviceName;
                 serviceReference = new ServiceReference(serviceRefToken.StartPos, serviceNameToken.EndPos, serviceNameString);
@@ -783,11 +783,11 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         }
 
         EatToken(TokenKind.RSQUARE);
-        if (t.Kind == TokenKind.SELECT_FIRST)
+        if (Equals(t.Kind, TokenKind.SELECT_FIRST))
         {
             ConstructedNodes.Push(new Selection(nullSafeNavigation, Selection.FIRST, t.StartPos, t.EndPos, expr));
         }
-        else if (t.Kind == TokenKind.SELECT_LAST)
+        else if (Equals(t.Kind, TokenKind.SELECT_LAST))
         {
             ConstructedNodes.Push(new Selection(nullSafeNavigation, Selection.LAST, t.StartPos, t.EndPos, expr));
         }
@@ -806,7 +806,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         while (IsValidQualifiedId(node))
         {
             NextToken();
-            if (node.Kind != TokenKind.DOT)
+            if (!Equals(node.Kind, TokenKind.DOT))
             {
                 qualifiedIdPieces.Add(new Identifier(node.StringValue, node.StartPos, node.EndPos));
             }
@@ -829,12 +829,12 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool IsValidQualifiedId(Token node)
     {
-        if (node == null || node.Kind == TokenKind.LITERAL_STRING)
+        if (node == null || Equals(node.Kind, TokenKind.LITERAL_STRING))
         {
             return false;
         }
 
-        if (node.Kind == TokenKind.DOT || node.Kind == TokenKind.IDENTIFIER)
+        if (Equals(node.Kind, TokenKind.DOT) || Equals(node.Kind, TokenKind.IDENTIFIER))
         {
             return true;
         }
@@ -936,27 +936,27 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        if (t.Kind == TokenKind.LITERAL_INT)
+        if (Equals(t.Kind, TokenKind.LITERAL_INT))
         {
             Push(Literal.GetIntLiteral(t.StringValue, t.StartPos, t.EndPos, NumberStyles.Integer));
         }
-        else if (t.Kind == TokenKind.LITERAL_LONG)
+        else if (Equals(t.Kind, TokenKind.LITERAL_LONG))
         {
             Push(Literal.GetLongLiteral(t.StringValue, t.StartPos, t.EndPos, NumberStyles.Integer));
         }
-        else if (t.Kind == TokenKind.LITERAL_HEXINT)
+        else if (Equals(t.Kind, TokenKind.LITERAL_HEXINT))
         {
             Push(Literal.GetIntLiteral(t.StringValue, t.StartPos, t.EndPos, NumberStyles.HexNumber));
         }
-        else if (t.Kind == TokenKind.LITERAL_HEXLONG)
+        else if (Equals(t.Kind, TokenKind.LITERAL_HEXLONG))
         {
             Push(Literal.GetLongLiteral(t.StringValue, t.StartPos, t.EndPos, NumberStyles.HexNumber));
         }
-        else if (t.Kind == TokenKind.LITERAL_REAL)
+        else if (Equals(t.Kind, TokenKind.LITERAL_REAL))
         {
             Push(Literal.GetRealLiteral(t.StringValue, t.StartPos, t.EndPos, false));
         }
-        else if (t.Kind == TokenKind.LITERAL_REAL_FLOAT)
+        else if (Equals(t.Kind, TokenKind.LITERAL_REAL_FLOAT))
         {
             Push(Literal.GetRealLiteral(t.StringValue, t.StartPos, t.EndPos, true));
         }
@@ -968,7 +968,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         {
             Push(new BooleanLiteral(t.StringValue, t.StartPos, t.EndPos, false));
         }
-        else if (t.Kind == TokenKind.LITERAL_STRING)
+        else if (Equals(t.Kind, TokenKind.LITERAL_STRING))
         {
             Push(new StringLiteral(t.StringValue, t.StartPos, t.EndPos, t.StringValue));
         }
@@ -1046,7 +1046,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             throw InternalException(pos, SpelMessage.OOD);
         }
 
-        if (t.Kind != expectedKind)
+        if (!Equals(t.Kind, expectedKind))
         {
             throw InternalException(t.StartPos, SpelMessage.NOT_EXPECTED_TOKEN, expectedKind.ToString().ToLower(), t.Kind.ToString().ToLower());
         }
@@ -1067,7 +1067,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        if (t.Kind == desiredTokenKind)
+        if (Equals(t.Kind, desiredTokenKind))
         {
             if (consumeIfMatched)
             {
@@ -1080,7 +1080,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         // Might be one of the textual forms of the operators (e.g. NE for != ) -
         // in which case we can treat it as an identifier. The list is represented here:
         // Tokenizer.alternativeOperatorNames and those ones are in order in the TokenKind enum.
-        if (desiredTokenKind == TokenKind.IDENTIFIER &&
+        if (Equals(desiredTokenKind, TokenKind.IDENTIFIER) &&
             t.Kind.Ordinal >= TokenKind.DIV.Ordinal &&
             t.Kind.Ordinal <= TokenKind.NOT.Ordinal &&
             t.Data != null)
@@ -1100,7 +1100,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        return t.Kind == possible1 || t.Kind == possible2;
+        return Equals(t.Kind, possible1) || Equals(t.Kind, possible2);
     }
 
     private bool PeekToken(TokenKind possible1, TokenKind possible2, TokenKind possible3)
@@ -1111,7 +1111,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        return t.Kind == possible1 || t.Kind == possible2 || t.Kind == possible3;
+        return Equals(t.Kind, possible1) || Equals(t.Kind, possible2) || Equals(t.Kind, possible3);
     }
 
     private Token PeekToken()
@@ -1132,7 +1132,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        return t.Kind == TokenKind.IDENTIFIER && identifierString.Equals(t.StringValue, StringComparison.InvariantCultureIgnoreCase);
+        return Equals(t.Kind, TokenKind.IDENTIFIER) && identifierString.Equals(t.StringValue, StringComparison.InvariantCultureIgnoreCase);
     }
 
     private bool PeekSelectToken()
@@ -1143,7 +1143,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        return t.Kind == TokenKind.SELECT || t.Kind == TokenKind.SELECT_FIRST || t.Kind == TokenKind.SELECT_LAST;
+        return Equals(t.Kind, TokenKind.SELECT) || Equals(t.Kind, TokenKind.SELECT_FIRST) || Equals(t.Kind, TokenKind.SELECT_LAST);
     }
 
     private Token TakeToken()

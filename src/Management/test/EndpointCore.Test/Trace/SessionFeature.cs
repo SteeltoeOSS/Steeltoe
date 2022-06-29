@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test;
 
-internal class SessionFeature : ISessionFeature
+internal sealed class SessionFeature : ISessionFeature
 {
     public ISession Session { get; set; }
 }

@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class HttpClientCoreObserverTest : BaseTest
 {
     private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
@@ -27,7 +27,7 @@ public class HttpClientCoreObserverTest : BaseTest
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();
-        var observer = new HttpClientCoreObserver(options, null, viewRegistry);
+        _ = new HttpClientCoreObserver(options, null, viewRegistry);
 
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.time");
         Assert.Contains(viewRegistry.Views, v => v.Key == "http.client.request.count");
@@ -47,8 +47,11 @@ public class HttpClientCoreObserverTest : BaseTest
         Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void ProcessEvent_IgnoresNulls()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var options = new MetricsObserverOptions();
         var viewRegistry = new ViewRegistry();
@@ -161,7 +164,6 @@ public class HttpClientCoreObserverTest : BaseTest
         using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
 
         var req = GetHttpRequestMessage();
-        var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
         var act = new Activity("Test");
         act.Start();

@@ -38,8 +38,8 @@ public class CachePropertiesTest
         Assert.Equal(3, props["idleChannelsTx"]);
         Assert.Equal(2, props["idleChannelsNotTxHighWater"]);
         Assert.Equal(3, props["idleChannelsTxHighWater"]);
-        ch1 = c1.CreateChannel();
-        ch3 = c1.CreateChannel(true);
+        c1.CreateChannel();
+        c1.CreateChannel(true);
         props = channelCf.GetCacheProperties();
         Assert.Equal(1, props["idleChannelsNotTx"]);
         Assert.Equal(2, props["idleChannelsTx"]);

@@ -168,7 +168,7 @@ public class RabbitOptions
 
     public class SslOptions
     {
-        public bool Enabled { get; set; } = false;
+        public bool Enabled { get; set; }
 
         public bool ValidateServerCertificate { get; set; } = true; // SslPolicyErrors.RemoteCertificateNotAvailable, SslPolicyErrors.RemoteCertificateChainErrors
 
@@ -201,7 +201,7 @@ public class RabbitOptions
     {
         public RetryOptions Retry { get; set; } = new ();
 
-        public bool Mandatory { get; set; } = false;
+        public bool Mandatory { get; set; }
 
         public TimeSpan? ReceiveTimeout { get; set; }
 
@@ -242,7 +242,7 @@ public class RabbitOptions
 
         public ListenerRetryOptions Retry { get; set; } = new ();
 
-        public bool MissingQueuesFatal { get; set; } = false;
+        public bool MissingQueuesFatal { get; set; }
 
         public int? ConsumersPerQueue { get; set; }
 
@@ -251,7 +251,7 @@ public class RabbitOptions
 
     public class RetryOptions
     {
-        public bool Enabled { get; set; } = false;
+        public bool Enabled { get; set; }
 
         public int MaxAttempts { get; set; } = 3;
 

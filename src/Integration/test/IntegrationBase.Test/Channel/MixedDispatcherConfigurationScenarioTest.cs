@@ -15,20 +15,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
+// TODO: Fix violations and remove the next suppression, by either:
+// - Removing the try with empty catch block
+// - Add the next comment in the empty catch block: // Intentionally left empty.
+// While you're at it, catch specific exceptions (use `when` condition to narrow down) instead of System.Exception.
+#pragma warning disable S108 // Nested blocks of code should not be left empty
+
 namespace Steeltoe.Integration.Channel.Test;
 
 public class MixedDispatcherConfigurationScenarioTest
 {
     private const int TOTAL_EXECUTIONS = 40;
-    private readonly IMessage message = Message.Create("test");
-    private readonly CountdownEvent allDone;
-    private readonly CountdownEvent start;
-    private readonly Mock<IMessageHandler> handlerA;
-    private readonly Mock<IMessageHandler> handlerB;
-    private readonly Mock<IMessageHandler> handlerC;
-    private readonly Mock<IList<Exception>> exceptionRegistry;
-    private readonly IServiceProvider provider;
-    private int failed;
+    private readonly IMessage _message = Message.Create("test");
+    private readonly CountdownEvent _allDone;
+    private readonly CountdownEvent _start;
+    private readonly Mock<IMessageHandler> _handlerA;
+    private readonly Mock<IMessageHandler> _handlerB;
+    private readonly Mock<IMessageHandler> _handlerC;
+    private readonly Mock<IList<Exception>> _exceptionRegistry;
+    private readonly IServiceProvider _provider;
+    private int _failed;
 
     public MixedDispatcherConfigurationScenarioTest()
     {
@@ -39,31 +45,31 @@ public class MixedDispatcherConfigurationScenarioTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
 
-        handlerA = new Mock<IMessageHandler>();
-        handlerB = new Mock<IMessageHandler>();
-        handlerC = new Mock<IMessageHandler>();
-        allDone = new CountdownEvent(TOTAL_EXECUTIONS);
-        start = new CountdownEvent(1);
-        failed = 0;
-        exceptionRegistry = new Mock<IList<Exception>>();
+        _handlerA = new Mock<IMessageHandler>();
+        _handlerB = new Mock<IMessageHandler>();
+        _handlerC = new Mock<IMessageHandler>();
+        _allDone = new CountdownEvent(TOTAL_EXECUTIONS);
+        _start = new CountdownEvent(1);
+        _failed = 0;
+        _exceptionRegistry = new Mock<IList<Exception>>();
     }
 
     [Fact]
     public void NoFailoverNoLoadBalancing()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover")
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover")
         {
             Failover = false
         };
-        handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+        _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
         try
         {
-            channel.Send(message);
+            channel.Send(_message);
         }
         catch (Exception)
         {
@@ -71,48 +77,48 @@ public class MixedDispatcherConfigurationScenarioTest
 
         try
         {
-            channel.Send(message);
+            channel.Send(_message);
         }
         catch (Exception)
         {
         }
 
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(2));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(2));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
     }
 
     [Fact]
     public void NoFailoverNoLoadBalancingConcurrent()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover")
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover")
         {
             Failover = false
         };
-        handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+        _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
 
         void MessageSenderTask()
         {
-            start.Wait();
+            _start.Wait();
 
             var sent = false;
             try
             {
-                sent = channel.Send(message);
+                sent = channel.Send(_message);
             }
             catch (Exception e2)
             {
-                exceptionRegistry.Object.Add(e2);
+                _exceptionRegistry.Object.Add(e2);
             }
 
             if (!sent)
             {
-                failed = 1;
+                _failed = 1;
             }
 
-            allDone.Signal();
+            _allDone.Signal();
         }
 
         for (var i = 0; i < TOTAL_EXECUTIONS; i++)
@@ -120,40 +126,40 @@ public class MixedDispatcherConfigurationScenarioTest
             Task.Run(MessageSenderTask);
         }
 
-        start.Signal();
-        Assert.True(allDone.Wait(10000));
+        _start.Signal();
+        Assert.True(_allDone.Wait(10000));
 
-        Assert.Equal(1, failed);
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
+        Assert.Equal(1, _failed);
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
 
-        exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
+        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
     }
 
     [Fact]
     public void NoFailoverNoLoadBalancingWithExecutorConcurrent()
     {
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor")
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor")
         {
             Failover = false
         };
-        handlerA.Setup(h => h.HandleMessage(message)).Callback(() =>
+        _handlerA.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             var e = new Exception();
-            failed = 1;
-            exceptionRegistry.Object.Add(e);
-            allDone.Signal();
+            _failed = 1;
+            _exceptionRegistry.Object.Add(e);
+            _allDone.Signal();
             throw e;
         });
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
 
         void MessageSenderTask()
         {
-            start.Wait();
+            _start.Wait();
 
-            channel.Send(message);
+            channel.Send(_message);
         }
 
         for (var i = 0; i < TOTAL_EXECUTIONS; i++)
@@ -161,80 +167,80 @@ public class MixedDispatcherConfigurationScenarioTest
             Task.Run(MessageSenderTask);
         }
 
-        start.Signal();
-        Assert.True(allDone.Wait(10000));
+        _start.Signal();
+        Assert.True(_allDone.Wait(10000));
 
-        Assert.Equal(1, failed);
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
+        Assert.Equal(1, _failed);
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
 
-        exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
+        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
     }
 
     [Fact]
     public void NoFailoverLoadBalancing()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover")
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>(), "loadBalancerNoFailover")
         {
             Failover = false
         };
-        handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+        _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
-        dispatcher.AddHandler(handlerC.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
+        dispatcher.AddHandler(_handlerC.Object);
 
         try
         {
-            channel.Send(message);
+            channel.Send(_message);
         }
         catch (Exception)
         {
         }
 
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(0));
-        handlerC.Verify(h => h.HandleMessage(message), Times.Exactly(0));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
+        _handlerC.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
         try
         {
-            channel.Send(message);
+            channel.Send(_message);
         }
         catch (Exception)
         {
         }
 
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(1));
-        handlerC.Verify(h => h.HandleMessage(message), Times.Exactly(0));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
+        _handlerC.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
         try
         {
-            channel.Send(message);
+            channel.Send(_message);
         }
         catch (Exception)
         {
         }
 
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(1));
-        handlerC.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
+        _handlerC.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
     }
 
     [Fact]
     public void NoFailoverLoadBalancingConcurrent()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover")
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>(), "loadBalancerNoFailover")
         {
             Failover = false
         };
-        handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+        _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
-        dispatcher.AddHandler(handlerC.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
+        dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
         var allDone1 = new CountdownEvent(TOTAL_EXECUTIONS);
-        var message2 = message;
+        var message2 = _message;
         var failed1 = 0;
         void MessageSenderTask()
         {
@@ -247,7 +253,7 @@ public class MixedDispatcherConfigurationScenarioTest
             }
             catch (Exception e2)
             {
-                exceptionRegistry.Object.Add(e2);
+                _exceptionRegistry.Object.Add(e2);
             }
 
             if (!sent)
@@ -267,42 +273,42 @@ public class MixedDispatcherConfigurationScenarioTest
         Assert.True(allDone1.Wait(10000));
 
         Assert.Equal(1, failed1);
-        handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(14));
-        handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
-        handlerC.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
-        exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
+        _handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(14));
+        _handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+        _handlerC.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
     }
 
     [Fact]
     public void NoFailoverLoadBalancingWithExecutorConcurrent()
     {
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default)
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default)
         {
             Failover = false
         };
 
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
-        dispatcher.AddHandler(handlerC.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
+        dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
         var allDone1 = new CountdownEvent(TOTAL_EXECUTIONS);
-        var message2 = message;
+        var message2 = _message;
         var failed1 = 0;
-        handlerA.Setup(h => h.HandleMessage(message)).Callback(() =>
+        _handlerA.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             failed1 = 1;
             var e = new Exception();
-            exceptionRegistry.Object.Add(e);
+            _exceptionRegistry.Object.Add(e);
             allDone1.Signal();
             throw e;
         });
-        handlerB.Setup(h => h.HandleMessage(message)).Callback(() =>
+        _handlerB.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             allDone1.Signal();
         });
-        handlerC.Setup(h => h.HandleMessage(message)).Callback(() =>
+        _handlerC.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             allDone1.Signal();
         });
@@ -311,7 +317,7 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             start1.Wait();
 
-            channel.Send(message);
+            channel.Send(_message);
         }
 
         for (var i = 0; i < TOTAL_EXECUTIONS; i++)
@@ -322,63 +328,63 @@ public class MixedDispatcherConfigurationScenarioTest
         start1.Signal();
         Assert.True(allDone1.Wait(10000));
         Assert.Equal(1, failed1);
-        handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(14));
-        handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
-        handlerC.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
-        exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
+        _handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(14));
+        _handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+        _handlerC.Verify(h => h.HandleMessage(message2), Times.Exactly(13));
+        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(14));
     }
 
     [Fact]
     public void FailoverNoLoadBalancing()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "loadBalancerNoFailover")
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>(), null, "loadBalancerNoFailover")
         {
             Failover = true
         };
-        handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+        _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
 
         try
         {
-            channel.Send(message);
+            channel.Send(_message);
         }
         catch (Exception)
         { /* ignore */
         }
 
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(1));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(1));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
 
         try
         {
-            channel.Send(message);
+            channel.Send(_message);
         }
         catch (Exception)
         { /* ignore */
         }
 
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(2));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(2));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(2));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(2));
     }
 
     [Fact]
     public void FailoverNoLoadBalancingConcurrent()
     {
-        var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerFailover")
+        var channel = new DirectChannel(_provider.GetService<IApplicationContext>(), null, "noLoadBalancerFailover")
         {
             Failover = true
         };
-        handlerA.Setup(h => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
+        _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
-        dispatcher.AddHandler(handlerC.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
+        dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
         var allDone1 = new CountdownEvent(TOTAL_EXECUTIONS);
-        var message2 = message;
+        var message2 = _message;
         var failed1 = 0;
 
         void MessageSenderTask()
@@ -392,7 +398,7 @@ public class MixedDispatcherConfigurationScenarioTest
             }
             catch (Exception e2)
             {
-                exceptionRegistry.Object.Add(e2);
+                _exceptionRegistry.Object.Add(e2);
             }
 
             if (!sent)
@@ -411,41 +417,41 @@ public class MixedDispatcherConfigurationScenarioTest
         start1.Signal();
         Assert.True(allDone1.Wait(10000));
         Assert.Equal(0, failed1);
-        handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
-        handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
-        handlerC.Verify(h => h.HandleMessage(message2), Times.Never());
-        exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Never());
+        _handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerC.Verify(h => h.HandleMessage(message2), Times.Never());
+        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Never());
     }
 
     [Fact]
     public void FailoverNoLoadBalancingWithExecutorConcurrent()
     {
-        var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, null)
+        var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, null)
         {
             Failover = true
         };
 
         var dispatcher = channel.Dispatcher;
-        dispatcher.AddHandler(handlerA.Object);
-        dispatcher.AddHandler(handlerB.Object);
-        dispatcher.AddHandler(handlerC.Object);
+        dispatcher.AddHandler(_handlerA.Object);
+        dispatcher.AddHandler(_handlerB.Object);
+        dispatcher.AddHandler(_handlerC.Object);
 
-        handlerA.Setup(h => h.HandleMessage(message)).Callback(() =>
+        _handlerA.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
-            failed = 1;
+            _failed = 1;
             var e = new Exception();
             throw e;
         });
-        handlerB.Setup(h => h.HandleMessage(message)).Callback(() =>
+        _handlerB.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
-            allDone.Signal();
+            _allDone.Signal();
         });
 
         void MessageSenderTask()
         {
-            start.Wait();
+            _start.Wait();
 
-            channel.Send(message);
+            channel.Send(_message);
         }
 
         for (var i = 0; i < TOTAL_EXECUTIONS; i++)
@@ -453,10 +459,10 @@ public class MixedDispatcherConfigurationScenarioTest
             Task.Run(MessageSenderTask);
         }
 
-        start.Signal();
-        Assert.True(allDone.Wait(10000));
-        handlerA.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-        handlerB.Verify(h => h.HandleMessage(message), Times.Exactly(TOTAL_EXECUTIONS));
-        handlerC.Verify(h => h.HandleMessage(message), Times.Never());
+        _start.Signal();
+        Assert.True(_allDone.Wait(10000));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerC.Verify(h => h.HandleMessage(_message), Times.Never());
     }
 }

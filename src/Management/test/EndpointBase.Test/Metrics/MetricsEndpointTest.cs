@@ -43,7 +43,7 @@ public class MetricsEndpointTest : BaseTest
                 services.AddMetricsActuatorServices(configuration);
             };
 
-            var meterFactory = tc.GetService<MeterProvider>();
+            tc.GetService<MeterProvider>();
             var ep = tc.GetService<IMetricsEndpoint>();
             var requests = OpenTelemetryMetrics.Meter.CreateCounter<long>("http.server.requests");
             requests.Add(1);
@@ -67,7 +67,7 @@ public class MetricsEndpointTest : BaseTest
             {
                 services.AddMetricsActuatorServices(configuration);
             };
-            var meterFactory = tc.GetService<MeterProvider>();
+            tc.GetService<MeterProvider>();
             var ep = tc.GetService<IMetricsEndpoint>();
             var result = ep.Invoke(null);
             Assert.NotNull(result);
@@ -86,7 +86,7 @@ public class MetricsEndpointTest : BaseTest
         {
             services.AddMetricsActuatorServices(configuration);
         };
-        var meterFactory = tc.GetService<MeterProvider>();
+        tc.GetService<MeterProvider>();
         var ep = tc.GetService<IMetricsEndpoint>();
 
         var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
@@ -160,7 +160,7 @@ public class MetricsEndpointTest : BaseTest
         {
             services.AddMetricsActuatorServices(configuration);
         };
-        var meterFactory = tc.GetService<MeterProvider>();
+        tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
 
         var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test7");
@@ -255,7 +255,7 @@ public class MetricsEndpointTest : BaseTest
         {
             services.AddMetricsActuatorServices(configuration);
         };
-        var meterFactory = tc.GetService<MeterProvider>();
+        tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
         var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test2");
 
@@ -321,7 +321,7 @@ public class MetricsEndpointTest : BaseTest
         {
             services.AddMetricsActuatorServices(configuration);
         };
-        var meterFactory = tc.GetService<MeterProvider>();
+        tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
 
         var testMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("test.test1");
@@ -372,14 +372,7 @@ public class MetricsEndpointTest : BaseTest
             testMeasure.Record(i, context4.AsReadonlySpan());
         }
 
-        var alltags = new List<KeyValuePair<string, string>>
-        {
-            new ("a", "v1"),
-            new ("b", "v1"),
-            new ("c", "v1")
-        };
-
-        ep.GetMetricsCollection(out var measurements, out var tags);
+        ep.GetMetricsCollection(out var measurements, out _);
         Assert.NotNull(measurements);
         Assert.Single(measurements);
 
@@ -485,7 +478,7 @@ public class MetricsEndpointTest : BaseTest
         {
             services.AddMetricsActuatorServices(configuration);
         };
-        var meterFactory = tc.GetService<MeterProvider>();
+        tc.GetService<MeterProvider>();
         var ep = tc.GetService<IMetricsEndpoint>();
 
         var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");

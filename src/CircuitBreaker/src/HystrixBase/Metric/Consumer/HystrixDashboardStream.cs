@@ -22,7 +22,7 @@ public class HystrixDashboardStream
     {
         _delayInMs = delayInMs;
         _singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
-            .Map(timestamp => new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()))
+            .Map(_ => new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()))
             .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
             .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })
             .Publish().RefCount();

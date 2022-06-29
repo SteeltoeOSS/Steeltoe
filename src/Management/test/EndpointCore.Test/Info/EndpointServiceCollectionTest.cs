@@ -51,7 +51,7 @@ public class EndpointServiceCollectionTest : BaseTest
             item.GetType() == typeof(GitInfoContributor) ||
             item.GetType() == typeof(AppSettingsInfoContributor) ||
             item.GetType() == typeof(BuildInfoContributor) ||
-            item.GetType() == typeof(TestInfoContributor));
+            item is TestInfoContributor);
 
         var ep = serviceProvider.GetService<InfoEndpoint>();
         Assert.NotNull(ep);

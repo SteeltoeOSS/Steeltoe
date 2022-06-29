@@ -166,7 +166,7 @@ public class BlockingQueueConsumerTest
         var consumerCaptor = new AtomicReference<RC.IBasicConsumer>();
         var consumerLatch = new CountdownEvent(2);
         channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((a1, a2, a3, a4, a5, a6, a7) =>
+            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, a7) =>
             {
                 consumerCaptor.Value = a7;
                 consumerLatch.Signal();

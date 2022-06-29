@@ -13,22 +13,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 
 public class HystrixThreadPoolDefault : IHystrixThreadPool
 {
-    private readonly IHystrixThreadPoolOptions _properties;
     private readonly IHystrixTaskScheduler _taskScheduler;
     private readonly HystrixThreadPoolMetrics _metrics;
     private readonly int _queueSize;
 
     public HystrixThreadPoolDefault(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions propertiesDefaults)
     {
-        _properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
-        _properties = propertiesDefaults ?? new HystrixThreadPoolOptions(threadPoolKey);
+        var properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
         var concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
-        _queueSize = _properties.MaxQueueSize;
-        _metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(_properties), _properties);
+        _queueSize = properties.MaxQueueSize;
+        _metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(properties), properties);
         _taskScheduler = _metrics.TaskScheduler;
 
         /* strategy: HystrixMetricsPublisherThreadPool */
-        HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForThreadPool(threadPoolKey, _metrics, _properties);
+        HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForThreadPool(threadPoolKey, _metrics, properties);
     }
 
     public IHystrixTaskScheduler GetScheduler()
@@ -64,7 +62,10 @@ public class HystrixThreadPoolDefault : IHystrixThreadPool
 
     protected virtual void Dispose(bool disposing)
     {
-        _taskScheduler.Dispose();
+        if (disposing)
+        {
+            _taskScheduler?.Dispose();
+        }
     }
 
     public bool IsQueueSpaceAvailable

@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 public class HystrixEventsListener : EventSourceListener
 {
     private const string EventSourceName = "Steeltoe.Hystrix.Events";
-    private static string[] _allowedEvents = new string[]
+    private static readonly string[] _allowedEvents =
     {
         "CommandMetrics",
         "ThreadPoolMetrics",

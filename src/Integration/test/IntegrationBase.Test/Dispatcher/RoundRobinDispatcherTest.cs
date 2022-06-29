@@ -15,15 +15,15 @@ namespace Steeltoe.Integration.Dispatcher.Test;
 
 public class RoundRobinDispatcherTest
 {
-    private readonly UnicastingDispatcher dispatcher;
+    private readonly UnicastingDispatcher _dispatcher;
 
-    private readonly Mock<IMessage> messageMock = new ();
+    private readonly Mock<IMessage> _messageMock = new ();
 
-    private readonly Mock<IMessageHandler> handlerMock = new ();
+    private readonly Mock<IMessageHandler> _handlerMock = new ();
 
-    private readonly Mock<IMessageHandler> differentHandlerMock = new ();
+    private readonly Mock<IMessageHandler> _differentHandlerMock = new ();
 
-    private readonly IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public RoundRobinDispatcherTest()
     {
@@ -32,8 +32,8 @@ public class RoundRobinDispatcherTest
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        provider = services.BuildServiceProvider();
-        dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>())
+        _provider = services.BuildServiceProvider();
+        _dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>())
         {
             LoadBalancingStrategy = new RoundRobinLoadBalancingStrategy()
         };
@@ -42,69 +42,69 @@ public class RoundRobinDispatcherTest
     [Fact]
     public void DispatchMessageWithSingleHandler()
     {
-        dispatcher.AddHandler(handlerMock.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        handlerMock.Verify(h => h.HandleMessage(messageMock.Object));
+        _dispatcher.AddHandler(_handlerMock.Object);
+        _dispatcher.Dispatch(_messageMock.Object);
+        _handlerMock.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void DifferentHandlerInvokedOnSecondMessage()
     {
-        dispatcher.AddHandler(handlerMock.Object);
-        dispatcher.AddHandler(differentHandlerMock.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        dispatcher.Dispatch(messageMock.Object);
-        handlerMock.Verify(h => h.HandleMessage(messageMock.Object));
-        differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object));
+        _dispatcher.AddHandler(_handlerMock.Object);
+        _dispatcher.AddHandler(_differentHandlerMock.Object);
+        _dispatcher.Dispatch(_messageMock.Object);
+        _dispatcher.Dispatch(_messageMock.Object);
+        _handlerMock.Verify(h => h.HandleMessage(_messageMock.Object));
+        _differentHandlerMock.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 
     [Fact]
     public void MultipleCyclesThroughHandlers()
     {
-        dispatcher.AddHandler(handlerMock.Object);
-        dispatcher.AddHandler(differentHandlerMock.Object);
+        _dispatcher.AddHandler(_handlerMock.Object);
+        _dispatcher.AddHandler(_differentHandlerMock.Object);
         for (var i = 0; i < 7; i++)
         {
-            dispatcher.Dispatch(messageMock.Object);
+            _dispatcher.Dispatch(_messageMock.Object);
         }
 
-        handlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(4));
-        differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.Exactly(3));
+        _handlerMock.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(4));
+        _differentHandlerMock.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(3));
     }
 
     [Fact]
     public void CurrentHandlerIndexOverFlow()
     {
-        dispatcher.AddHandler(handlerMock.Object);
-        dispatcher.AddHandler(differentHandlerMock.Object);
-        var balancer = dispatcher.LoadBalancingStrategy as RoundRobinLoadBalancingStrategy;
+        _dispatcher.AddHandler(_handlerMock.Object);
+        _dispatcher.AddHandler(_differentHandlerMock.Object);
+        var balancer = _dispatcher.LoadBalancingStrategy as RoundRobinLoadBalancingStrategy;
         balancer.CurrentHandlerIndex = int.MaxValue - 5;
 
         for (var i = 0; i < 40; i++)
         {
-            dispatcher.Dispatch(messageMock.Object);
+            _dispatcher.Dispatch(_messageMock.Object);
         }
 
-        handlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.AtLeast(18));
-        differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object), Times.AtLeast(18));
+        _handlerMock.Verify(h => h.HandleMessage(_messageMock.Object), Times.AtLeast(18));
+        _differentHandlerMock.Verify(h => h.HandleMessage(_messageMock.Object), Times.AtLeast(18));
     }
 
     [Fact]
     public void TestExceptionEnhancement()
     {
-        dispatcher.AddHandler(handlerMock.Object);
-        handlerMock.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException("Mock Exception"));
-        var ex = Assert.Throws<MessageDeliveryException>(() => dispatcher.Dispatch(messageMock.Object));
-        Assert.Equal(messageMock.Object, ex.FailedMessage);
+        _dispatcher.AddHandler(_handlerMock.Object);
+        _handlerMock.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException("Mock Exception"));
+        var ex = Assert.Throws<MessageDeliveryException>(() => _dispatcher.Dispatch(_messageMock.Object));
+        Assert.Equal(_messageMock.Object, ex.FailedMessage);
     }
 
     [Fact]
     public void TestNoExceptionEnhancement()
     {
-        dispatcher.AddHandler(handlerMock.Object);
+        _dispatcher.AddHandler(_handlerMock.Object);
         var dontReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
-        handlerMock.Setup(h => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
-        var ex = Assert.Throws<MessagingException>(() => dispatcher.Dispatch(messageMock.Object));
+        _handlerMock.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
+        var ex = Assert.Throws<MessagingException>(() => _dispatcher.Dispatch(_messageMock.Object));
         Assert.Equal("Mock Exception", ex.Message);
         Assert.Equal(dontReplaceThisMessage, ex.FailedMessage);
     }
@@ -113,13 +113,13 @@ public class RoundRobinDispatcherTest
     public void TestFailOver()
     {
         var testException = new Exception("intentional");
-        handlerMock.Setup(h => h.HandleMessage(messageMock.Object)).Throws(testException);
+        _handlerMock.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(testException);
 
-        dispatcher.AddHandler(handlerMock.Object);
-        dispatcher.AddHandler(differentHandlerMock.Object);
+        _dispatcher.AddHandler(_handlerMock.Object);
+        _dispatcher.AddHandler(_differentHandlerMock.Object);
 
-        dispatcher.Dispatch(messageMock.Object);
-        handlerMock.Verify(h => h.HandleMessage(messageMock.Object));
-        differentHandlerMock.Verify(h => h.HandleMessage(messageMock.Object));
+        _dispatcher.Dispatch(_messageMock.Object);
+        _handlerMock.Verify(h => h.HandleMessage(_messageMock.Object));
+        _differentHandlerMock.Verify(h => h.HandleMessage(_messageMock.Object));
     }
 }

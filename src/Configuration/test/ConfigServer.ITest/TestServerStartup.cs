@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest;
 
-internal class TestServerStartup
+internal sealed class TestServerStartup
 {
     public TestServerStartup(IConfiguration configuration)
     {
@@ -27,7 +27,6 @@ internal class TestServerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        var config = app.ApplicationServices.GetServices<IConfiguration>();
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {

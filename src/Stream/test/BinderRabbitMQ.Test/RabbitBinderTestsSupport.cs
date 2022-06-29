@@ -26,7 +26,7 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
 {
     private const string TEST_PREFIX = "bindertest.";
     private static readonly string _bigExceptionMessage = new ('x', 10_000);
-    private bool _disposed;
+    private bool _isDisposed;
 
     private RabbitTestBinder _testBinder;
 
@@ -74,14 +74,10 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
-            {
-                Cleanup();
-            }
-
-            _disposed = true;
+            Cleanup();
+            _isDisposed = true;
         }
     }
 
@@ -126,8 +122,13 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
         return container;
     }
 
-    private Exception BigCause(Exception innerException = null)
+    private Exception BigCause(Exception innerException = null, int recursionDepth = 0)
     {
+        if (recursionDepth > 1000)
+        {
+            throw new InvalidOperationException("Internal error: Infinite recursion detected.");
+        }
+
         try
         {
             var capturedException = innerException ?? new Exception(_bigExceptionMessage);
@@ -143,7 +144,7 @@ public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestB
             innerException = ex;
         }
 
-        return BigCause(innerException);
+        return BigCause(innerException, recursionDepth + 1);
     }
 
     private void Cleanup()

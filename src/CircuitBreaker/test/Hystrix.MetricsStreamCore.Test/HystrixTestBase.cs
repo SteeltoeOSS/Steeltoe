@@ -12,11 +12,11 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
 
-public class HystrixTestBase : IDisposable
+public abstract class HystrixTestBase : IDisposable
 {
     protected HystrixRequestContext context;
 
-    public HystrixTestBase()
+    protected HystrixTestBase()
     {
         context = HystrixRequestContext.InitializeContext();
 
@@ -33,14 +33,20 @@ public class HystrixTestBase : IDisposable
         HystrixOptionsFactory.Reset();
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        if (context != null)
-        {
-            context.Dispose();
-            context = null;
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        HystrixThreadPoolFactory.Shutdown();
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            context?.Dispose();
+            context = null;
+
+            HystrixThreadPoolFactory.Shutdown();
+        }
     }
 }

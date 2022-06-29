@@ -650,7 +650,7 @@ public class AntPathMatcher : IPathMatcher
         private sealed class PatternInfo
         {
             private readonly string _pattern;
-            private bool _catchAllPattern;
+            private readonly bool _catchAllPattern;
             private int? _length;
 
             public PatternInfo(string pattern)
@@ -735,7 +735,7 @@ public class AntPathMatcher : IPathMatcher
         private const string DEFAULT_VARIABLE_PATTERN = "(.*)";
         private static readonly Regex GLOB_PATTERN = new ("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
         private readonly List<string> _variableNames = new ();
-        private Regex _pattern;
+        private readonly Regex _pattern;
 
         public AntPathStringMatcher(string pattern)
             : this(pattern, true)

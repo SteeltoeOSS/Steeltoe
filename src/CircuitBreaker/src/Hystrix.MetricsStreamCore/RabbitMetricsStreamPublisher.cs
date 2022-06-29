@@ -86,17 +86,15 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
 
     protected override void Dispose(bool disposing)
     {
-        base.Dispose(disposing);
-        if (Channel != null)
+        if (disposing)
         {
-            Channel.Dispose();
+            Channel?.Dispose();
             Channel = null;
-        }
 
-        if (Connection != null)
-        {
-            Connection.Dispose();
+            Connection?.Dispose();
             Connection = null;
         }
+
+        base.Dispose(disposing);
     }
 }

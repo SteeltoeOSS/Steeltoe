@@ -74,7 +74,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
 
         var timer = new Stopwatch();
         timer.Start();
-        var discoveryClient = provider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
+        provider.GetService<IDiscoveryClient>();
         timer.Stop();
         Assert.InRange(timer.ElapsedMilliseconds, 0, 3500);
     }

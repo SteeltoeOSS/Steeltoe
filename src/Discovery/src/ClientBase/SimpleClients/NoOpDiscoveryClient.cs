@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Client.SimpleClients;
 
-internal class NoOpDiscoveryClient : IDiscoveryClient
+internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 {
     internal NoOpDiscoveryClient(IConfiguration configuration, ILogger<NoOpDiscoveryClient> logger = null)
     {

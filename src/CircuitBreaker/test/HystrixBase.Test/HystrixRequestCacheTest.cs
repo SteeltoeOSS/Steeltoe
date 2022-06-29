@@ -12,11 +12,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixRequestCacheTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixRequestCacheTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     [Fact]
@@ -77,7 +77,6 @@ public class HystrixRequestCacheTest : HystrixTestBase
     [Fact]
     public void TestClearCache()
     {
-        var strategy = HystrixConcurrencyStrategyDefault.GetInstance();
         try
         {
             var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
@@ -96,7 +95,6 @@ public class HystrixRequestCacheTest : HystrixTestBase
     [Fact]
     public void TestCacheWithoutRequestContext()
     {
-        var strategy = HystrixConcurrencyStrategyDefault.GetInstance();
         context.Dispose();
 
         var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));

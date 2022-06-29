@@ -117,7 +117,7 @@ public abstract class AbstractExpressionEvaluator
         {
             Exception cause = null;
             if (ex is EvaluationException)
-            { // NOSONAR
+            {
                 cause = ex.InnerException;
             }
 

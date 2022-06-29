@@ -39,7 +39,7 @@ public class QueueBuilder : AbstractBuilder
         }
     }
 
-    private static INamingStrategy _namingStrategy = Base64UrlNamingStrategy.DEFAULT;
+    private static readonly INamingStrategy _namingStrategy = Base64UrlNamingStrategy.DEFAULT;
     private readonly string _name;
     private bool _durable;
     private bool _exclusive;

@@ -24,13 +24,13 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     public const string TEST_QUEUE = "test.complex.send.and.receive";
     public const string TEST_QUEUE2 = "test.complex.receive";
 
-    private readonly ServiceProvider provider;
-    private readonly StartupFixture fixture;
+    private readonly ServiceProvider _provider;
+    private readonly StartupFixture _fixture;
 
     public ComplexTypeJsonIntegrationTest(StartupFixture fix)
     {
-        fixture = fix;
-        provider = fixture.Provider;
+        _fixture = fix;
+        _provider = _fixture.Provider;
     }
 
     public static Foo<Bar<Baz, Qux>> MakeAFoo()
@@ -48,7 +48,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestSendAndReceive()
     {
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         IMessagePostProcessor pp = new EmptyPostProcessor();
         object message = "foo";
         Assert.NotNull(template.ConvertSendAndReceiveAsType(message, typeof(Foo<Bar<Baz, Qux>>)));
@@ -62,7 +62,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestReceive()
     {
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         var foo = MakeAFoo();
         var pp = new TestPostProcessor();
         template.ConvertAndSend(TEST_QUEUE2, foo, pp);
@@ -73,7 +73,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestReceiveNoWait()
     {
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         var foo = MakeAFoo();
         var pp = new TestPostProcessor();
         template.ConvertAndSend(TEST_QUEUE2, foo, pp);
@@ -92,7 +92,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public async Task TestAsyncSendAndReceive()
     {
-        var template = provider.GetRabbitTemplate();
+        var template = _provider.GetRabbitTemplate();
         IMessagePostProcessor pp = new EmptyPostProcessor();
         object message = "foo";
         Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, typeof(Foo<Bar<Baz, Qux>>)));
@@ -133,16 +133,16 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         }
     }
 
-    public class StartupFixture : IDisposable
+    public sealed class StartupFixture : IDisposable
     {
-        private readonly IServiceCollection services;
+        private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 
         public StartupFixture()
         {
-            services = CreateContainer();
-            Provider = services.BuildServiceProvider();
+            _services = CreateContainer();
+            Provider = _services.BuildServiceProvider();
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
@@ -169,7 +169,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
             services.AddRabbitAdmin();
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.DefaultReceiveDestination = TEST_QUEUE2;
                 t.DefaultSendDestination = TEST_QUEUE;

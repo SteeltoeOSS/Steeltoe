@@ -19,12 +19,12 @@ public class ReloadSettings
     /// <summary>
     /// Gets or sets a value indicating whether config maps should be reloaded if changed
     /// </summary>
-    public bool ConfigMaps { get; set; } = false;
+    public bool ConfigMaps { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether secrets should be reloaded if changed
     /// </summary>
-    public bool Secrets { get; set; } = false;
+    public bool Secrets { get; set; }
 }
 
 public enum ReloadMethods

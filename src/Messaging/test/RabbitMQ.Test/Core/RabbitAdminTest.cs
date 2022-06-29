@@ -36,12 +36,15 @@ public class RabbitAdminTest : AbstractTest
         Assert.Throws<ArgumentNullException>(() => new RabbitAdmin(connectionFactory));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestNoFailOnStartupWithMissingBroker()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var serviceCollection = CreateContainer();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "foo";
             f.Port = 434343;
@@ -50,7 +53,7 @@ public class RabbitAdminTest : AbstractTest
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
-        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory)
+        _ = new RabbitAdmin(applicationContext, connectionFactory)
         {
             AutoStartup = true
         };
@@ -62,7 +65,7 @@ public class RabbitAdminTest : AbstractTest
     {
         var serviceCollection = CreateContainer();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
             f.Port = 434343;
@@ -83,7 +86,7 @@ public class RabbitAdminTest : AbstractTest
     public async Task TestGetQueueProperties()
     {
         var serviceCollection = CreateContainer();
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
         });
@@ -138,7 +141,7 @@ public class RabbitAdminTest : AbstractTest
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.nonDur", false, false));
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.ad", true, true));
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.all", false, true));
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
         });
@@ -210,7 +213,7 @@ public class RabbitAdminTest : AbstractTest
             new Binding("b3", "q4", DestinationType.QUEUE, "e4", "k4", null));
         serviceCollection.AddSingleton(ds);
         var provider = serviceCollection.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin() as RabbitAdmin;
+        var admin = provider.GetRabbitAdmin();
         var template = admin.RabbitTemplate;
         template.ConvertAndSend("e1", "k1", "foo");
         template.ConvertAndSend("e2", "k2", "bar");
@@ -261,7 +264,7 @@ public class RabbitAdminTest : AbstractTest
         }
 
         var goodName = "foobar";
-        var name = admin.DeclareQueue(new Queue(goodName));
+        admin.DeclareQueue(new Queue(goodName));
         Assert.Null(admin.GetQueueProperties(longName));
         Assert.NotNull(admin.GetQueueProperties(goodName));
         admin.DeleteQueue(goodName);
@@ -321,7 +324,7 @@ public class RabbitAdminTest : AbstractTest
         var template = new RabbitTemplate(connectionFactory.Object);
         var admin = new RabbitAdmin(template);
 
-        template.Invoke<object>(o =>
+        template.Invoke<object>(_ =>
         {
             admin.DeclareQueue();
             admin.DeclareQueue();
@@ -352,14 +355,14 @@ public class RabbitAdminTest : AbstractTest
         var rtt = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1);
         var serviceCollection = CreateContainer();
         serviceCollection.AddSingleton<IConnectionFactory>(ccf);
-        serviceCollection.AddRabbitAdmin((p, a) =>
+        serviceCollection.AddRabbitAdmin((_, a) =>
         {
             a.RetryTemplate = rtt;
         });
         var foo = new AnonymousQueue("foo");
         serviceCollection.AddRabbitQueue(foo);
         var provider = serviceCollection.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
+        _ = provider.GetRabbitAdmin();
         Assert.Throws<RabbitUncategorizedException>(() => ccf.CreateConnection());
         channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(3));
     }

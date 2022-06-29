@@ -141,7 +141,6 @@ public class ConsulRegistrationTest
     [Fact]
     public void GetDefaultInstanceId_ReturnsExpected()
     {
-        var options = new ConsulDiscoveryOptions();
         var appsettings = new Dictionary<string, string> { { "consul:discovery:serviceName", "serviceName" } };
         var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
         var result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));

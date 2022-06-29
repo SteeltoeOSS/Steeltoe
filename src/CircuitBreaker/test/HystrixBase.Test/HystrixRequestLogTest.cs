@@ -8,6 +8,12 @@ using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 
+// TODO: Fix violations and remove the next suppression, by either:
+// - Removing the try with empty catch block
+// - Add the next comment in the empty catch block: // Intentionally left empty.
+// While you're at it, catch specific exceptions (use `when` condition to narrow down) instead of System.Exception.
+#pragma warning disable S108 // Nested blocks of code should not be left empty
+
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixRequestLogTest : HystrixTestBase
@@ -191,12 +197,12 @@ public class HystrixRequestLogTest : HystrixTestBase
 
     private sealed class TestCommand : HystrixCommand<string>
     {
-        private readonly string value;
-        private readonly bool fail;
-        private readonly bool failOnFallback;
-        private readonly bool timeout;
-        private readonly bool useFallback;
-        private readonly bool useCache;
+        private readonly string _value;
+        private readonly bool _fail;
+        private readonly bool _failOnFallback;
+        private readonly bool _timeout;
+        private readonly bool _useFallback;
+        private readonly bool _useCache;
 
         public TestCommand(string commandName, string value, bool fail, bool failOnFallback)
             : base(new HystrixCommandOptions
@@ -205,23 +211,23 @@ public class HystrixRequestLogTest : HystrixTestBase
                 CommandKey = HystrixCommandKeyDefault.AsKey(commandName)
             })
         {
-            this.value = value;
-            this.fail = fail;
-            this.failOnFallback = failOnFallback;
-            timeout = false;
-            useFallback = true;
-            useCache = true;
+            _value = value;
+            _fail = fail;
+            _failOnFallback = failOnFallback;
+            _timeout = false;
+            _useFallback = true;
+            _useCache = true;
         }
 
         public TestCommand(string value, bool fail, bool failOnFallback)
             : base(HystrixCommandGroupKeyDefault.AsKey("RequestLogTestCommand"))
         {
-            this.value = value;
-            this.fail = fail;
-            this.failOnFallback = failOnFallback;
-            timeout = false;
-            useFallback = true;
-            useCache = true;
+            _value = value;
+            _fail = fail;
+            _failOnFallback = failOnFallback;
+            _timeout = false;
+            _useFallback = true;
+            _useCache = true;
         }
 
         public TestCommand(string value, bool fail, bool failOnFallback, bool timeout)
@@ -231,22 +237,22 @@ public class HystrixRequestLogTest : HystrixTestBase
                 ExecutionTimeoutInMilliseconds = 500
             })
         {
-            this.value = value;
-            this.fail = fail;
-            this.failOnFallback = failOnFallback;
-            this.timeout = timeout;
-            useFallback = false;
-            useCache = false;
+            _value = value;
+            _fail = fail;
+            _failOnFallback = failOnFallback;
+            _timeout = timeout;
+            _useFallback = false;
+            _useCache = false;
         }
 
         protected override string Run()
         {
             // output.WriteLine(Task.CurrentId + " : " + DateTime.Now.ToString());
-            if (fail)
+            if (_fail)
             {
                 throw new Exception("forced failure");
             }
-            else if (timeout)
+            else if (_timeout)
             {
                 Time.WaitUntil(() => _token.IsCancellationRequested, 10000);
                 _token.ThrowIfCancellationRequested();
@@ -255,20 +261,20 @@ public class HystrixRequestLogTest : HystrixTestBase
                 // token.ThrowIfCancellationRequested();
             }
 
-            return value;
+            return _value;
         }
 
         protected override string RunFallback()
         {
-            if (useFallback)
+            if (_useFallback)
             {
-                if (failOnFallback)
+                if (_failOnFallback)
                 {
                     throw new Exception("forced fallback failure");
                 }
                 else
                 {
-                    return $"{value}-fallback";
+                    return $"{_value}-fallback";
                 }
             }
             else
@@ -281,9 +287,9 @@ public class HystrixRequestLogTest : HystrixTestBase
         {
             get
             {
-                if (useCache)
+                if (_useCache)
                 {
-                    return value;
+                    return _value;
                 }
                 else
                 {

@@ -15,16 +15,16 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 [Trait("Category", "Integration")]
-public class CachingConnectionFactoryIntegrationTests : IDisposable
+public sealed class CachingConnectionFactoryIntegrationTests : IDisposable
 {
     public const string CF_INTEGRATION_TEST_QUEUE = "cfIntegrationTest";
     private const string CF_INTEGRATION_CONNECTION_NAME = "cfIntegrationTestConnectionName";
 
-    private readonly CachingConnectionFactory connectionFactory;
+    private readonly CachingConnectionFactory _connectionFactory;
 
     public CachingConnectionFactoryIntegrationTests()
     {
-        connectionFactory = new CachingConnectionFactory("localhost")
+        _connectionFactory = new CachingConnectionFactory("localhost")
         {
             ServiceName = CF_INTEGRATION_CONNECTION_NAME
         };
@@ -32,39 +32,39 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
 
     public void Dispose()
     {
-        connectionFactory.Destroy();
+        _connectionFactory.Destroy();
     }
 
     [Fact]
     public void TestCachedConnections()
     {
-        connectionFactory.CacheMode = CachingMode.CONNECTION;
-        connectionFactory.ConnectionCacheSize = 5;
+        _connectionFactory.CacheMode = CachingMode.CONNECTION;
+        _connectionFactory.ConnectionCacheSize = 5;
         var connections = new List<IConnection>
         {
-            connectionFactory.CreateConnection(),
-            connectionFactory.CreateConnection()
+            _connectionFactory.CreateConnection(),
+            _connectionFactory.CreateConnection()
         };
         Assert.NotSame(connections[0], connections[1]);
-        connections.Add(connectionFactory.CreateConnection());
-        connections.Add(connectionFactory.CreateConnection());
-        connections.Add(connectionFactory.CreateConnection());
-        connections.Add(connectionFactory.CreateConnection());
-        var allocatedConnections = connectionFactory._allocatedConnections;
+        connections.Add(_connectionFactory.CreateConnection());
+        connections.Add(_connectionFactory.CreateConnection());
+        connections.Add(_connectionFactory.CreateConnection());
+        connections.Add(_connectionFactory.CreateConnection());
+        var allocatedConnections = _connectionFactory._allocatedConnections;
         Assert.Equal(6, allocatedConnections.Count);
         foreach (var c in allocatedConnections)
         {
             c.Close();
         }
 
-        var idleConnections = connectionFactory._idleConnections;
+        var idleConnections = _connectionFactory._idleConnections;
         Assert.Equal(6, idleConnections.Count);
         connections.Clear();
-        connections.Add(connectionFactory.CreateConnection());
-        connections.Add(connectionFactory.CreateConnection());
-        allocatedConnections = connectionFactory._allocatedConnections;
+        connections.Add(_connectionFactory.CreateConnection());
+        connections.Add(_connectionFactory.CreateConnection());
+        allocatedConnections = _connectionFactory._allocatedConnections;
         Assert.Equal(6, allocatedConnections.Count);
-        idleConnections = connectionFactory._idleConnections;
+        idleConnections = _connectionFactory._idleConnections;
         Assert.Equal(4, idleConnections.Count);
         foreach (var c in connections)
         {
@@ -75,14 +75,14 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
     [Fact]
     public void TestCachedConnectionsChannelLimit()
     {
-        connectionFactory.CacheMode = CachingMode.CONNECTION;
-        connectionFactory.ConnectionCacheSize = 2;
-        connectionFactory.ChannelCacheSize = 1;
-        connectionFactory.ChannelCheckoutTimeout = 10;
+        _connectionFactory.CacheMode = CachingMode.CONNECTION;
+        _connectionFactory.ConnectionCacheSize = 2;
+        _connectionFactory.ChannelCacheSize = 1;
+        _connectionFactory.ChannelCheckoutTimeout = 10;
         var connections = new List<IConnection>
         {
-            connectionFactory.CreateConnection(),
-            connectionFactory.CreateConnection()
+            _connectionFactory.CreateConnection(),
+            _connectionFactory.CreateConnection()
         };
         var channels = new List<RC.IModel>
         {
@@ -128,15 +128,15 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
     [Fact]
     public void TestCachedConnectionsAndChannels()
     {
-        connectionFactory.CacheMode = CachingMode.CONNECTION;
-        connectionFactory.ConnectionCacheSize = 1;
-        connectionFactory.ChannelCacheSize = 3;
+        _connectionFactory.CacheMode = CachingMode.CONNECTION;
+        _connectionFactory.ConnectionCacheSize = 1;
+        _connectionFactory.ChannelCacheSize = 3;
         var connections = new List<IConnection>
         {
-            connectionFactory.CreateConnection(),
-            connectionFactory.CreateConnection()
+            _connectionFactory.CreateConnection(),
+            _connectionFactory.CreateConnection()
         };
-        var allocatedConnections = connectionFactory._allocatedConnections;
+        var allocatedConnections = _connectionFactory._allocatedConnections;
         Assert.Equal(2, allocatedConnections.Count);
         Assert.NotSame(connections[0], connections[1]);
         var channels = new List<RC.IModel>();
@@ -148,11 +148,11 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
             channels.Add(connections[1].CreateChannel(true));
         }
 
-        var cachedChannels = connectionFactory._allocatedConnectionNonTransactionalChannels;
+        var cachedChannels = _connectionFactory._allocatedConnectionNonTransactionalChannels;
         Assert.Empty(cachedChannels[(ChannelCachingConnectionProxy)connections[0]]);
         Assert.Empty(cachedChannels[(ChannelCachingConnectionProxy)connections[1]]);
 
-        var cachedTxChannels = connectionFactory._allocatedConnectionTransactionalChannels;
+        var cachedTxChannels = _connectionFactory._allocatedConnectionTransactionalChannels;
         Assert.Empty(cachedTxChannels[(ChannelCachingConnectionProxy)connections[0]]);
         Assert.Empty(cachedTxChannels[(ChannelCachingConnectionProxy)connections[1]]);
         foreach (var c in channels)
@@ -172,11 +172,11 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
             Assert.Equal(channels[(i * 4) + 3], connections[1].CreateChannel(true));
         }
 
-        cachedChannels = connectionFactory._allocatedConnectionNonTransactionalChannels;
+        cachedChannels = _connectionFactory._allocatedConnectionNonTransactionalChannels;
         Assert.Empty(cachedChannels[(ChannelCachingConnectionProxy)connections[0]]);
         Assert.Empty(cachedChannels[(ChannelCachingConnectionProxy)connections[1]]);
 
-        cachedTxChannels = connectionFactory._allocatedConnectionTransactionalChannels;
+        cachedTxChannels = _connectionFactory._allocatedConnectionTransactionalChannels;
         Assert.Empty(cachedTxChannels[(ChannelCachingConnectionProxy)connections[0]]);
         Assert.Empty(cachedTxChannels[(ChannelCachingConnectionProxy)connections[1]]);
         foreach (var c in channels)
@@ -194,35 +194,35 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
         Assert.Equal(3, cachedTxChannels[(ChannelCachingConnectionProxy)connections[0]].Count);
         Assert.Empty(cachedTxChannels[(ChannelCachingConnectionProxy)connections[1]]);
 
-        allocatedConnections = connectionFactory._allocatedConnections;
+        allocatedConnections = _connectionFactory._allocatedConnections;
         Assert.Equal(2, allocatedConnections.Count);
-        var props = connectionFactory.GetCacheProperties();
+        var props = _connectionFactory.GetCacheProperties();
         Assert.Equal(1, props["openConnections"]);
 
-        var connection = connectionFactory.CreateConnection();
+        var connection = _connectionFactory.CreateConnection();
         var rabbitConnection = connection.Connection;
         rabbitConnection.Close();
 
         var channel = connection.CreateChannel();
-        allocatedConnections = connectionFactory._allocatedConnections;
+        allocatedConnections = _connectionFactory._allocatedConnections;
         Assert.Equal(2, allocatedConnections.Count);
-        props = connectionFactory.GetCacheProperties();
+        props = _connectionFactory.GetCacheProperties();
         Assert.Equal(1, props["openConnections"]);
 
         channel.Close();
         connection.Close();
 
-        allocatedConnections = connectionFactory._allocatedConnections;
+        allocatedConnections = _connectionFactory._allocatedConnections;
         Assert.Equal(2, allocatedConnections.Count);
-        props = connectionFactory.GetCacheProperties();
+        props = _connectionFactory.GetCacheProperties();
         Assert.Equal(1, props["openConnections"]);
     }
 
     [Fact]
     public void TestSendAndReceiveFromVolatileQueue()
     {
-        var template = new RabbitTemplate(connectionFactory);
-        var admin = new RabbitAdmin(connectionFactory);
+        var template = new RabbitTemplate(_connectionFactory);
+        var admin = new RabbitAdmin(_connectionFactory);
         var queue = admin.DeclareQueue();
         template.ConvertAndSend(queue.QueueName, "message");
         var result = template.ReceiveAndConvert<string>(queue.QueueName);
@@ -232,30 +232,30 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
     [Fact]
     public void TestReceiveFromNonExistentVirtualHost()
     {
-        connectionFactory.VirtualHost = "non-existent";
-        var template = new RabbitTemplate(connectionFactory);
+        _connectionFactory.VirtualHost = "non-existent";
+        var template = new RabbitTemplate(_connectionFactory);
         Assert.Throws<RabbitConnectException>(() => template.ReceiveAndConvert<string>("foo"));
     }
 
     [Fact]
     public void TestSendAndReceiveFromVolatileQueueAfterImplicitRemoval()
     {
-        var template = new RabbitTemplate(connectionFactory);
-        var admin = new RabbitAdmin(connectionFactory);
+        var template = new RabbitTemplate(_connectionFactory);
+        var admin = new RabbitAdmin(_connectionFactory);
         var queue = admin.DeclareQueue();
         template.ConvertAndSend(queue.QueueName, "message");
-        connectionFactory.ResetConnection();
+        _connectionFactory.ResetConnection();
         Assert.Throws<RabbitIOException>(() => template.ReceiveAndConvert<string>(queue.QueueName));
     }
 
     [Fact]
     public void TestMixTransactionalAndNonTransactional()
     {
-        var template1 = new RabbitTemplate(connectionFactory);
-        var template2 = new RabbitTemplate(connectionFactory);
+        var template1 = new RabbitTemplate(_connectionFactory);
+        var template2 = new RabbitTemplate(_connectionFactory);
         template1.IsChannelTransacted = true;
 
-        var admin = new RabbitAdmin(connectionFactory);
+        var admin = new RabbitAdmin(_connectionFactory);
         var queue = admin.DeclareQueue();
         template1.ConvertAndSend(queue.QueueName, "message");
         var result = template2.ReceiveAndConvert<string>(queue.QueueName);
@@ -271,8 +271,8 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
     [Fact]
     public void TestHardErrorAndReconnectNoAuto()
     {
-        var template = new RabbitTemplate(connectionFactory);
-        var admin = new RabbitAdmin(connectionFactory);
+        var template = new RabbitTemplate(_connectionFactory);
+        var admin = new RabbitAdmin(_connectionFactory);
         var queue = new Config.Queue(CF_INTEGRATION_TEST_QUEUE);
         admin.DeclareQueue(queue);
         var route = queue.QueueName;
@@ -281,7 +281,7 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
         {
             template.Execute(channel =>
             {
-                channel.ModelShutdown += (sender, args) =>
+                channel.ModelShutdown += (_, args) =>
                 {
                     latch.Signal();
                     throw new ShutdownSignalException(args);
@@ -294,6 +294,7 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
         }
         catch (RabbitIOException)
         {
+            // Intentionally left empty.
         }
 
         template.ConvertAndSend(route, "message");
@@ -308,7 +309,7 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
     [Fact]
     public void TestConnectionName()
     {
-        var connection = connectionFactory.CreateConnection() as ChannelCachingConnectionProxy;
+        var connection = _connectionFactory.CreateConnection() as ChannelCachingConnectionProxy;
         var rabbitConnection = connection.Target.Connection;
         Assert.StartsWith(CF_INTEGRATION_CONNECTION_NAME, rabbitConnection.ClientProvidedName);
     }
@@ -316,20 +317,20 @@ public class CachingConnectionFactoryIntegrationTests : IDisposable
     [Fact]
     public void TestDestroy()
     {
-        var connection1 = connectionFactory.CreateConnection();
-        connectionFactory.Destroy();
-        var connection2 = connectionFactory.CreateConnection();
+        var connection1 = _connectionFactory.CreateConnection();
+        _connectionFactory.Destroy();
+        var connection2 = _connectionFactory.CreateConnection();
         Assert.Same(connection1, connection2);
 
-        connectionFactory.Dispose();
-        Assert.Throws<RabbitApplicationContextClosedException>(() => connectionFactory.CreateConnection());
+        _connectionFactory.Dispose();
+        Assert.Throws<RabbitApplicationContextClosedException>(() => _connectionFactory.CreateConnection());
     }
 
     [Fact]
     public void TestChannelMax()
     {
-        connectionFactory.RabbitConnectionFactory.RequestedChannelMax = 1;
-        var connection = connectionFactory.CreateConnection();
+        _connectionFactory.RabbitConnectionFactory.RequestedChannelMax = 1;
+        var connection = _connectionFactory.CreateConnection();
         connection.CreateChannel(true);
         Assert.Throws<RabbitResourceNotAvailableException>(() => connection.CreateChannel());
     }

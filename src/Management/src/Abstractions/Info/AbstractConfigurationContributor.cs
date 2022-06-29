@@ -46,10 +46,7 @@ public abstract class AbstractConfigurationContributor
                 result[prefix] = dict = new Dictionary<string, object>();
             }
 
-            foreach (var child in children)
-            {
-                AddChildren(dict, children);
-            }
+            AddChildren(dict, children);
 
             return result;
         }

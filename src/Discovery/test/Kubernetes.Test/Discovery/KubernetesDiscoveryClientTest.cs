@@ -88,20 +88,12 @@ public class KubernetesDiscoveryClientTest
         var instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
         Assert.NotNull(instances);
-        Assert.Equal(actual: instances.Count, expected: 2);
+        Assert.Equal(2, instances.Count);
 
-        Assert.Equal(
-            actual: instances.Count(s => s.Host.Equals("ip1") && !s.IsSecure),
-            expected: 1);
-        Assert.Equal(
-            actual: instances.Count(s => s.Host.Equals("ip2") && !s.IsSecure),
-            expected: 1);
-        Assert.Equal(
-            actual: instances.Count(s => s.InstanceId.Equals("uid1")),
-            expected: 1);
-        Assert.Equal(
-            actual: instances.Count(s => s.InstanceId.Equals("uid2")),
-            expected: 1);
+        Assert.Equal(1, instances.Count(s => s.Host.Equals("ip1") && !s.IsSecure));
+        Assert.Equal(1, instances.Count(s => s.Host.Equals("ip2") && !s.IsSecure));
+        Assert.Equal(1, instances.Count(s => s.InstanceId.Equals("uid1")));
+        Assert.Equal(1, instances.Count(s => s.InstanceId.Equals("uid2")));
     }
 
     [Fact]
@@ -261,7 +253,7 @@ public class KubernetesDiscoveryClientTest
         var services = discoveryClient.Services;
 
         Assert.NotNull(services);
-        Assert.Equal(actual: services.Count, expected: 3);
+        Assert.Equal(3, services.Count);
         Assert.True(services.Contains("endpoint1"));
         Assert.True(services.Contains("endpoint2"));
         Assert.True(services.Contains("endpoint3"));
@@ -304,7 +296,7 @@ public class KubernetesDiscoveryClientTest
         });
 
         Assert.NotNull(services);
-        Assert.Equal(actual: services.Count, expected: 2);
+        Assert.Equal(2, services.Count);
         Assert.True(services.Contains("endpoint1"));
         Assert.True(services.Contains("endpoint2"));
     }
@@ -349,7 +341,7 @@ public class KubernetesDiscoveryClientTest
         services = discoveryClient.Services;
 
         Assert.NotNull(services);
-        Assert.Equal(actual: services.Count, expected: 2);
+        Assert.Equal(2, services.Count);
         Assert.True(services.Contains("endpoint1"));
         Assert.True(services.Contains("endpoint2"));
     }

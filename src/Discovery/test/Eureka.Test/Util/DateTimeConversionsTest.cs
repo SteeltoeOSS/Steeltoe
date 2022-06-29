@@ -22,13 +22,13 @@ public class DateTimeConversionsTest
     {
         var dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Utc).AddMilliseconds(708);
         var millis = DateTimeConversions.ToJavaMillis(dt);
-        Assert.Equal(1457973741708, millis);
+        Assert.Equal(1_457_973_741_708, millis);
     }
 
     [Fact]
     public void FromJavaMillis()
     {
-        var millis = 1457973741708;
+        var millis = 1_457_973_741_708;
         var dt = DateTimeConversions.FromJavaMillis(millis);
         Assert.Equal(3, dt.Month);
         Assert.Equal(14, dt.Day);

@@ -41,12 +41,13 @@ public static class TestHelpers
     {
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        serviceCollection.AddLogging(builder => builder.AddConsole(opts =>
-        {
+
 #if NETCOREAPP3_1
-            opts.DisableColors = true;
+        serviceCollection.AddLogging(builder => builder.AddConsole(opts => opts.DisableColors = true));
+#else
+        serviceCollection.AddLogging(builder => builder.AddConsole());
 #endif
-        }));
+
         serviceCollection.AddLogging(builder => builder.AddDebug());
         return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
     }

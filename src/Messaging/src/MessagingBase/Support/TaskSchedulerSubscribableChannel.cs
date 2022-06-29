@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.Support;
 public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 {
     protected List<ITaskSchedulerChannelInterceptor> _schedulerInterceptors = new ();
-    private object _lock = new ();
+    private readonly object _lock = new ();
 
     public TaskSchedulerSubscribableChannel(ILogger logger = null)
         : this(null, logger)

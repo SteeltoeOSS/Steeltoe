@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Diagnostics;
 
-internal class MiniDumper
+internal sealed class MiniDumper
 {
     public struct Result
     {
@@ -30,7 +30,7 @@ internal class MiniDumper
 
             unsafe
             {
-                var ptr = (MINIDUMP_CALLBACK_INFORMATION*)callbackParam;
+                var ptr = (MiniDumpCallbackInformation*)callbackParam;
                 ptr->CallbackRoutine = Marshal.GetFunctionPointerForDelegate(callbackDelegate);
                 ptr->CallbackParam = IntPtr.Zero;
             }
@@ -64,29 +64,29 @@ internal class MiniDumper
         return result;
     }
 
-    internal static MINIDUMP_TYPE GetMiniDumpType()
+    internal static MiniDumpTypes GetMiniDumpType()
     {
-        var minidumpFlags = MINIDUMP_TYPE.MiniDumpWithDataSegs |
-                            MINIDUMP_TYPE.MiniDumpWithTokenInformation |
-                            MINIDUMP_TYPE.MiniDumpWithPrivateWriteCopyMemory |
-                            MINIDUMP_TYPE.MiniDumpWithPrivateReadWriteMemory |
-                            MINIDUMP_TYPE.MiniDumpWithUnloadedModules |
-                            MINIDUMP_TYPE.MiniDumpWithFullMemory |
-                            MINIDUMP_TYPE.MiniDumpWithHandleData |
-                            MINIDUMP_TYPE.MiniDumpWithThreadInfo |
-                            MINIDUMP_TYPE.MiniDumpWithFullMemoryInfo |
-                            MINIDUMP_TYPE.MiniDumpWithProcessThreadData |
-                            MINIDUMP_TYPE.MiniDumpWithModuleHeaders;
+        var minidumpFlags = MiniDumpTypes.MiniDumpWithDataSegs |
+                            MiniDumpTypes.MiniDumpWithTokenInformation |
+                            MiniDumpTypes.MiniDumpWithPrivateWriteCopyMemory |
+                            MiniDumpTypes.MiniDumpWithPrivateReadWriteMemory |
+                            MiniDumpTypes.MiniDumpWithUnloadedModules |
+                            MiniDumpTypes.MiniDumpWithFullMemory |
+                            MiniDumpTypes.MiniDumpWithHandleData |
+                            MiniDumpTypes.MiniDumpWithThreadInfo |
+                            MiniDumpTypes.MiniDumpWithFullMemoryInfo |
+                            MiniDumpTypes.MiniDumpWithProcessThreadData |
+                            MiniDumpTypes.MiniDumpWithModuleHeaders;
         return minidumpFlags;
     }
 
-    internal struct MINIDUMP_CALLBACK_INFORMATION
+    internal struct MiniDumpCallbackInformation
     {
         public IntPtr CallbackRoutine;
         public IntPtr CallbackParam;
     }
 
-    internal enum MINIDUMP_CALLBACK_TYPE : uint
+    internal enum MiniDumpCallbackType : uint
     {
         ModuleCallback,
         ThreadCallback,
@@ -111,9 +111,11 @@ internal class MiniDumper
     }
 
     [Flags]
-    internal enum MINIDUMP_TYPE : uint
+    internal enum MiniDumpTypes : uint
     {
+#pragma warning disable S2346 // Flags enumerations zero-value members should be named "None"
         MiniDumpNormal = 0x00000000,
+#pragma warning restore S2346 // Flags enumerations zero-value members should be named "None"
         MiniDumpWithDataSegs = 0x00000001,
         MiniDumpWithFullMemory = 0x00000002,
         MiniDumpWithHandleData = 0x00000004,
@@ -137,14 +139,17 @@ internal class MiniDumper
         MiniDumpFilterTriage = 0x00100000,
     }
 
+// TODO: [BREAKING] Rename type and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
     internal struct MINIDUMP_CALLBACK_OUTPUT
+#pragma warning restore S101 // Types should be named in PascalCase
     {
         public int Status; // HRESULT
     }
 
     [DllImport("DbgHelp", SetLastError = true)]
 
-    private static extern int MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MINIDUMP_TYPE dumpType, IntPtr excepParam, IntPtr userParam, IntPtr callParam);
+    private static extern int MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MiniDumpTypes dumpType, IntPtr excepParam, IntPtr userParam, IntPtr callParam);
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     internal delegate int MiniDumpCallback(IntPtr callbackParam, IntPtr callbackInput, IntPtr callbackOutput);
@@ -153,7 +158,7 @@ internal class MiniDumper
     {
         unsafe
         {
-            if (Marshal.ReadByte(input + sizeof(int) + IntPtr.Size) == (int)MINIDUMP_CALLBACK_TYPE.IsProcessSnapshotCallback)
+            if (Marshal.ReadByte(input + sizeof(int) + IntPtr.Size) == (int)MiniDumpCallbackType.IsProcessSnapshotCallback)
             {
                 var o = (MINIDUMP_CALLBACK_OUTPUT*)output;
 

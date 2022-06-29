@@ -254,7 +254,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
     {
         public class HasRoleExecutor : IMethodExecutor
         {
-            private ITypeConverter _tc;
+            private readonly ITypeConverter _tc;
 
             public HasRoleExecutor(ITypeConverter typeConverter)
             {
@@ -270,7 +270,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             {
                 try
                 {
-                    var m = typeof(HasRoleExecutor).GetMethod("HasRole", new[] { typeof(string[]) });
+                    var m = typeof(HasRoleExecutor).GetMethod(nameof(HasRoleExecutor.HasRole), new[] { typeof(string[]) });
                     var args = arguments;
                     if (args != null)
                     {

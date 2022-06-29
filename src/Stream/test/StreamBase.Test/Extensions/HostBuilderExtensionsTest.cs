@@ -32,7 +32,7 @@ public class HostBuilderExtensionsTest
     [Fact]
     public void WebHostBuilderExtensionTest()
     {
-        var hostBuilder = WebHost.CreateDefaultBuilder().Configure(b => { }).AddStreamServices<SampleSink>();
+        var hostBuilder = WebHost.CreateDefaultBuilder().Configure(_ => { }).AddStreamServices<SampleSink>();
         hostBuilder.ConfigureServices(services => services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot));
         var host = hostBuilder.Build();
         var configRoot = host.Services.GetService<IConfigurationRoot>();

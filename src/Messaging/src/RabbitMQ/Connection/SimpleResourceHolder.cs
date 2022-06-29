@@ -20,7 +20,7 @@ public static class SimpleResourceHolder
 
     private static readonly AsyncLocal<Dictionary<object, Stack<object>>> _stack = new ();
 
-    private static Dictionary<object, object> _empty = new ();
+    private static readonly Dictionary<object, object> _empty = new ();
 
     public static IDictionary<object, object> GetResources()
     {

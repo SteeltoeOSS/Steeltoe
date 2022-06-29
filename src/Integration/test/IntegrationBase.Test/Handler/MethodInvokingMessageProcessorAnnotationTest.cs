@@ -24,7 +24,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void OptionalHeader()
     {
-        var method = _testService.GetType().GetMethod("OptionalHeader");
+        var method = typeof(TestService).GetMethod(nameof(OptionalHeader));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<int?>(context, _testService, method);
         var result = processor.ProcessMessage(Message.Create("foo"));
@@ -34,7 +34,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void RequiredHeaderNotProvided()
     {
-        var method = _testService.GetType().GetMethod("RequiredHeader");
+        var method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
         Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(Message.Create("foo")));
@@ -43,7 +43,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void RequiredHeaderNotProvidedOnSecondMessage()
     {
-        var method = _testService.GetType().GetMethod("RequiredHeader");
+        var method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
         var messageWithHeader = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
@@ -56,7 +56,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithRequiredHeaderProvided()
     {
-        var method = _testService.GetType().GetMethod("RequiredHeader");
+        var method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
         var context = GetDefaultContext();
         var message = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
         var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
@@ -67,7 +67,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithOptionalAndRequiredHeaderAndOnlyOptionalHeaderProvided()
     {
-        var method = _testService.GetType().GetMethod("OptionalAndRequiredHeader");
+        var method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<string>(context, _testService, method);
         var message = MessageBuilder.WithPayload("foo").SetHeader("prop", "bar").Build();
@@ -77,7 +77,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithOptionalAndRequiredHeaderAndOnlyRequiredHeaderProvided()
     {
-        var method = _testService.GetType().GetMethod("OptionalAndRequiredHeader");
+        var method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<string>(context, _testService, method);
         var message = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
@@ -88,7 +88,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithOptionalAndRequiredHeaderAndBothHeadersProvided()
     {
-        var method = _testService.GetType().GetMethod("OptionalAndRequiredHeader");
+        var method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<string>(context, _testService, method);
         var message = MessageBuilder.WithPayload("foo")
@@ -102,7 +102,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithMapAndObjectMethod()
     {
-        var method = _testService.GetType().GetMethod("MapHeadersAndPayload");
+        var method = typeof(TestService).GetMethod(nameof(TestService.MapHeadersAndPayload));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
         var message = MessageBuilder.WithPayload("test")
@@ -121,7 +121,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithMapMethodAndHeadersAnnotation()
     {
-        var method = _testService.GetType().GetMethod("MapHeaders");
+        var method = typeof(TestService).GetMethod(nameof(TestService.MapHeaders));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
         var message = MessageBuilder.WithPayload("test")
@@ -136,7 +136,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithMapMethodAndMapPayload()
     {
-        var method = _testService.GetType().GetMethod("MapPayload");
+        var method = typeof(TestService).GetMethod(nameof(TestService.MapPayload));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
         var payload = new Dictionary<string, int>
@@ -158,7 +158,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     public void HeaderAnnotationWithExpression()
     {
         var message = GetMessage();
-        var method = _testService.GetType().GetMethod("HeaderAnnotationWithExpression");
+        var method = typeof(TestService).GetMethod(nameof(TestService.HeaderAnnotationWithExpression));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
         var result = processor.ProcessMessage(message);
@@ -169,7 +169,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     public void IrrelevantAnnotation()
     {
         var message = MessageBuilder.WithPayload("foo").Build();
-        var method = _testService.GetType().GetMethod("IrrelevantAnnotation");
+        var method = typeof(TestService).GetMethod(nameof(TestService.IrrelevantAnnotation));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
@@ -181,7 +181,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     public void MultipleAnnotatedArgs()
     {
         var message = GetMessage();
-        var method = _testService.GetType().GetMethod("MultipleAnnotatedArguments");
+        var method = typeof(TestService).GetMethod(nameof(TestService.MultipleAnnotatedArguments));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
@@ -198,7 +198,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToPayload()
     {
-        var method = _testService.GetType().GetMethod("MapOnly");
+        var method = typeof(TestService).GetMethod(nameof(TestService.MapOnly));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
@@ -211,7 +211,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToPayloadArg()
     {
-        var method = _testService.GetType().GetMethod("PayloadAnnotationFirstName");
+        var method = typeof(TestService).GetMethod(nameof(TestService.PayloadAnnotationFirstName));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
@@ -224,7 +224,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToPayloadArgs()
     {
-        var method = _testService.GetType().GetMethod("PayloadAnnotationFullName");
+        var method = typeof(TestService).GetMethod(nameof(TestService.PayloadAnnotationFullName));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
@@ -236,7 +236,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToPayloadArgsHeaderArgs()
     {
-        var method = _testService.GetType().GetMethod("PayloadArgAndHeaderArg");
+        var method = typeof(TestService).GetMethod(nameof(TestService.PayloadArgAndHeaderArg));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
         var message = MessageBuilder.WithPayload(_employee).SetHeader("day", "monday").Build();
@@ -247,7 +247,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageInvalidMethodWithMultipleMappingAnnotations()
     {
-        var method = typeof(MultipleMappingAnnotationTestBean).GetMethod("Test");
+        var method = typeof(MultipleMappingAnnotationTestBean).GetMethod(nameof(MultipleMappingAnnotationTestBean.Test));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
         var message = MessageBuilder.WithPayload("payload").SetHeader("foo", "bar").Build();
@@ -257,7 +257,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     // [Fact]
     // public void FromMessageToHeadersWithExpressions()
     // {
-    //    var method = _testService.GetType().GetMethod("HeadersWithExpressions");
+    //    var method = typeof(TestService).GetMethod(nameof(TestService.HeadersWithExpressions));
     //    var context = GetDefaultContext();
     //    var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
     //    var employee = new Employee("John", "Doe");
@@ -268,10 +268,9 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToHyphenatedHeaderName()
     {
-        var method = _testService.GetType().GetMethod("HeaderNameWithHyphen");
+        var method = typeof(TestService).GetMethod(nameof(TestService.HeaderNameWithHyphen));
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var employee = new Employee("John", "Doe");
         var message = MessageBuilder.WithPayload("payload").SetHeader("foo-bar", "abc").Build();
         var result = processor.ProcessMessage(message);
         Assert.Equal("ABC", result);

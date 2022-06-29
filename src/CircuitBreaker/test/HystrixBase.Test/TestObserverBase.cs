@@ -20,20 +20,20 @@ public class TestObserverBase<T> : ObserverBase<T>
 
     public volatile bool StreamRunning;
 
-    private readonly CountdownEvent latch;
-    private readonly ITestOutputHelper output;
+    private readonly CountdownEvent _latch;
+    private readonly ITestOutputHelper _output;
 
     public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
     {
-        this.latch = latch;
-        this.output = output;
+        _latch = latch;
+        _output = output;
     }
 
     protected override void OnCompletedCore()
     {
-        output?.WriteLine("OnComplete @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId);
+        _output?.WriteLine("OnComplete @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId);
         StreamRunning = false;
-        latch.SignalEx();
+        _latch.SignalEx();
     }
 
     protected override void OnErrorCore(Exception error)
@@ -49,22 +49,16 @@ public class TestObserverBase<T> : ObserverBase<T>
             StreamRunning = true;
         }
 
-        if (output != null)
+        if (_output != null)
         {
-            try
+            var toString = value.ToString();
+            if (value is Array array)
             {
-                var tostring = value.ToString();
-                if (value is Array array)
-                {
-                    tostring = Join(",", array);
-                }
+                toString = Join(",", array);
+            }
 
-                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
-                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            }
-            catch (Exception)
-            {
-            }
+            _output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + toString);
+            _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         }
     }
 

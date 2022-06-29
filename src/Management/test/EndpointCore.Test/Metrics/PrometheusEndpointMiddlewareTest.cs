@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test;
 
-[Obsolete]
+[Obsolete("To be removed in the next major version.")]
 public class PrometheusEndpointMiddlewareTest : BaseTest
 {
     [Fact]
@@ -73,42 +73,5 @@ public class PrometheusEndpointMiddlewareTest : BaseTest
         }
 
         return context;
-    }
-
-    private void SetupTestView(SteeltoePrometheusExporter prometheusExporter)
-    {
-        /*var tagsComponent = new TagsComponent();
-        var tagger = tagsComponent.Tagger;
-
-        var aKey = TagKey.Create("a");
-        var bKey = TagKey.Create("b");
-        var cKey = TagKey.Create("c");
-
-        var viewName = "test.test";
-        var measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.Bytes);
-
-        var testViewName = ViewName.Create(viewName);
-        var testView = View.Create(
-                                    testViewName,
-                                    "test",
-                                    measure,
-                                    Sum.Create(),
-                                    new List<ITagKey>() { aKey, bKey, cKey });
-
-        stats.ViewManager.RegisterView(testView);
-
-        var context1 = tagger
-            .EmptyBuilder
-            .Put(TagKey.Create("a"), TagValue.Create("v1"))
-            .Put(TagKey.Create("b"), TagValue.Create("v1"))
-            .Put(TagKey.Create("c"), TagValue.Create("v1"))
-            .Build();
-
-        for (var i = 0; i < 10; i++)
-        {
-            stats.StatsRecorder.NewMeasureMap().Put(measure, i).Record(context1);
-        }
-
-    */
     }
 }

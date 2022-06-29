@@ -24,9 +24,8 @@ using System.Threading.Tasks;
 using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+
 public abstract class AbstractMessageListenerContainer : IMessageListenerContainer
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     public const int DEFAULT_FAILED_DECLARATION_RETRY_INTERVAL = 5000;
     public const long DEFAULT_SHUTDOWN_TIMEOUT = 5000;
@@ -381,7 +380,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         var connectionFactory = ConnectionFactory;
         if (connectionFactory is IRoutingConnectionFactory routingFactory)
         {
-            var targetConnectionFactory = routingFactory.GetTargetConnectionFactory(GetRoutingLookupKey()); // NOSONAR never null
+            var targetConnectionFactory = routingFactory.GetTargetConnectionFactory(GetRoutingLookupKey());
             if (targetConnectionFactory != null)
             {
                 return targetConnectionFactory;
@@ -430,9 +429,18 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        Shutdown();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Shutdown();
+        }
     }
 
     public virtual void Shutdown()
@@ -1106,7 +1114,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             resourceHolder.SynchronizedWithTransaction = false;
         }
 
-        ConnectionFactoryUtils.ReleaseResources(resourceHolder); // NOSONAR - null check in method
+        ConnectionFactoryUtils.ReleaseResources(resourceHolder);
         if (boundHere)
         {
             // unbind if we bound

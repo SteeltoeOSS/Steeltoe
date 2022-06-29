@@ -17,9 +17,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test;
 
 public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
 {
-    private readonly ITestOutputHelper output;
-    private RollingCollapserBatchSizeDistributionStream stream;
-    private IDisposable latchSubscription;
+    private readonly ITestOutputHelper _output;
+    private RollingCollapserBatchSizeDistributionStream _stream;
+    private IDisposable _latchSubscription;
 
     private sealed class LatchedObserver : TestObserverBase<CachedValuesHistogram>
     {
@@ -31,16 +31,21 @@ public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
 
     public RollingCollapserBatchSizeDistributionStreamTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        latchSubscription?.Dispose();
-        stream?.Unsubscribe();
-        latchSubscription = null;
-        stream = null;
-        base.Dispose();
+        if (disposing)
+        {
+            _latchSubscription?.Dispose();
+            _latchSubscription = null;
+
+            _stream?.Unsubscribe();
+            _stream = null;
+        }
+
+        base.Dispose(disposing);
     }
 
     [Fact]
@@ -49,13 +54,13 @@ public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
     {
         var key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-A");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
-        Assert.Equal(0, stream.Latest.GetTotalCount());
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
+        Assert.Equal(0, _stream.Latest.GetTotalCount());
     }
 
     [Fact]
@@ -64,58 +69,58 @@ public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
     {
         var key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         // First collapser created with key will be used for all command creations
         var tasks = new List<Task>();
 
-        var c1 = Collapser.From(output, key, 1);
+        var c1 = Collapser.From(_output, key, 1);
         tasks.Add(c1.ExecuteAsync());
-        var c2 = Collapser.From(output, key, 2);
+        var c2 = Collapser.From(_output, key, 2);
         tasks.Add(c2.ExecuteAsync());
-        var c3 = Collapser.From(output, key, 3);
+        var c3 = Collapser.From(_output, key, 3);
         tasks.Add(c3.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 1 too long to start");
         c1.CommandCreated = false;
 
-        var c4 = Collapser.From(output, key, 4);
+        var c4 = Collapser.From(_output, key, 4);
         tasks.Add(c4.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 2 too long to start");
         c1.CommandCreated = false;
 
-        var c5 = Collapser.From(output, key, 5);
+        var c5 = Collapser.From(_output, key, 5);
         tasks.Add(c5.ExecuteAsync());
-        var c6 = Collapser.From(output, key, 6);
+        var c6 = Collapser.From(_output, key, 6);
         tasks.Add(c6.ExecuteAsync());
-        var c7 = Collapser.From(output, key, 7);
+        var c7 = Collapser.From(_output, key, 7);
         tasks.Add(c7.ExecuteAsync());
-        var c8 = Collapser.From(output, key, 8);
+        var c8 = Collapser.From(_output, key, 8);
         tasks.Add(c8.ExecuteAsync());
-        var c9 = Collapser.From(output, key, 9);
+        var c9 = Collapser.From(_output, key, 9);
         tasks.Add(c9.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 3 too long to start");
         c1.CommandCreated = false;
 
-        var c10 = Collapser.From(output, key, 10);
+        var c10 = Collapser.From(_output, key, 10);
         tasks.Add(c10.ExecuteAsync());
-        var c11 = Collapser.From(output, key, 11);
+        var c11 = Collapser.From(_output, key, 11);
         tasks.Add(c11.ExecuteAsync());
-        var c12 = Collapser.From(output, key, 12);
+        var c12 = Collapser.From(_output, key, 12);
         tasks.Add(c12.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 4 too long to start");
 
         Task.WaitAll(tasks.ToArray());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
         // should have 4 batches: 3, 1, 5, 3
-        Assert.Equal(4, stream.Latest.GetTotalCount());
-        Assert.Equal(3, stream.LatestMean);
-        Assert.Equal(1, stream.GetLatestPercentile(0));
-        Assert.Equal(5, stream.GetLatestPercentile(100));
+        Assert.Equal(4, _stream.Latest.GetTotalCount());
+        Assert.Equal(3, _stream.LatestMean);
+        Assert.Equal(1, _stream.GetLatestPercentile(0));
+        Assert.Equal(5, _stream.GetLatestPercentile(100));
     }
 
     // by doing a take(30), all metrics should fall out of window and we should observe an empty histogram
@@ -125,47 +130,47 @@ public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
     {
         var key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
+        var observer = new LatchedObserver(_output, latch);
 
-        stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-        latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
+        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         // First collapser created with key will be used for all command creations
         var tasks = new List<Task>();
 
-        var c1 = Collapser.From(output, key, 1);
+        var c1 = Collapser.From(_output, key, 1);
         tasks.Add(c1.ExecuteAsync());
-        var c2 = Collapser.From(output, key, 2);
+        var c2 = Collapser.From(_output, key, 2);
         tasks.Add(c2.ExecuteAsync());
-        var c3 = Collapser.From(output, key, 3);
+        var c3 = Collapser.From(_output, key, 3);
         tasks.Add(c3.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 1 too long to start");
         c1.CommandCreated = false;
 
-        var c4 = Collapser.From(output, key, 4);
+        var c4 = Collapser.From(_output, key, 4);
         tasks.Add(c4.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 2 too long to start");
         c1.CommandCreated = false;
 
-        var c5 = Collapser.From(output, key, 5);
+        var c5 = Collapser.From(_output, key, 5);
         tasks.Add(c5.ExecuteAsync());
-        var c6 = Collapser.From(output, key, 6);
+        var c6 = Collapser.From(_output, key, 6);
         tasks.Add(c6.ExecuteAsync());
-        var c7 = Collapser.From(output, key, 7);
+        var c7 = Collapser.From(_output, key, 7);
         tasks.Add(c7.ExecuteAsync());
-        var c8 = Collapser.From(output, key, 8);
+        var c8 = Collapser.From(_output, key, 8);
         tasks.Add(c8.ExecuteAsync());
-        var c9 = Collapser.From(output, key, 9);
+        var c9 = Collapser.From(_output, key, 9);
         tasks.Add(c9.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 3 too long to start");
         c1.CommandCreated = false;
 
-        var c10 = Collapser.From(output, key, 10);
+        var c10 = Collapser.From(_output, key, 10);
         tasks.Add(c10.ExecuteAsync());
-        var c11 = Collapser.From(output, key, 11);
+        var c11 = Collapser.From(_output, key, 11);
         tasks.Add(c11.ExecuteAsync());
-        var c12 = Collapser.From(output, key, 12);
+        var c12 = Collapser.From(_output, key, 12);
         tasks.Add(c12.ExecuteAsync());
         Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 4 too long to start");
 
@@ -173,7 +178,7 @@ public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
 
         Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
-        Assert.Equal(0, stream.Latest.GetTotalCount());
-        Assert.Equal(0, stream.LatestMean);
+        Assert.Equal(0, _stream.Latest.GetTotalCount());
+        Assert.Equal(0, _stream.LatestMean);
     }
 }

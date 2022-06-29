@@ -8,7 +8,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Internal;
 
-internal class EndpointMappingEntry
+internal sealed class EndpointMappingEntry
 {
     public Action<IEndpointRouteBuilder, Action<IEndpointConventionBuilder>> SetupConvention { get; set; }
 

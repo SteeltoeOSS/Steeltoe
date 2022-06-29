@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-internal class SpringBootAdminClientHostedService : IHostedService
+internal sealed class SpringBootAdminClientHostedService : IHostedService
 {
     private readonly SpringBootAdminClientOptions _options;
     private readonly ManagementEndpointOptions _mgmtOptions;

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-internal class KubernetesProviderBase : ConfigurationProvider
+internal abstract class KubernetesProviderBase : ConfigurationProvider
 {
     internal bool Polling { get; private set; }
 
@@ -21,9 +21,9 @@ internal class KubernetesProviderBase : ConfigurationProvider
 
     protected CancellationToken CancellationToken { get; set; }
 
-    protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(this.GetType());
+    protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(GetType());
 
-    internal KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
+    protected KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
     {
         K8sClient = kubernetes ?? throw new ArgumentNullException(nameof(kubernetes));
         Settings = settings ?? throw new ArgumentNullException(nameof(settings));

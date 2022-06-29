@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test;
 
-internal class TestLogProvider : IDynamicLoggerProvider
+internal sealed class TestLogProvider : IDynamicLoggerProvider
 {
     public string Category { get; set; }
 
@@ -27,7 +27,6 @@ internal class TestLogProvider : IDynamicLoggerProvider
 
     public void Dispose()
     {
-        throw new NotImplementedException();
     }
 
     public ICollection<ILoggerConfiguration> GetLoggerConfigurations()

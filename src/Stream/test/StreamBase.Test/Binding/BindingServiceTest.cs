@@ -152,11 +152,7 @@ public class BindingServiceTest : AbstractTest
                 "spring.cloud.stream.bindings.output.producer.partitionCount=0")
             .BuildServiceProvider();
 
-        var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
-
         IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var mockBinder = Mock.Get(binder);
 
         var service = provider.GetService<BindingService>();
         Assert.Throws<InvalidOperationException>(() => service.BindProducer(outputChannel, "output"));
@@ -215,9 +211,6 @@ public class BindingServiceTest : AbstractTest
                 "spring.cloud.stream.bindings.input.consumer.concurrency=0")
             .BuildServiceProvider();
 
-        var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
-
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
         var service = provider.GetService<BindingService>();
@@ -240,13 +233,16 @@ public class BindingServiceTest : AbstractTest
         IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
         var service = provider.GetService<BindingService>();
-        var binding1 = service.BindConsumer(inputChannel, "input");
+        service.BindConsumer(inputChannel, "input");
 
         Assert.Throws<InvalidOperationException>(() => service.BindProducer(outputChannel, "output"));
     }
 
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void TestUnrecognizedBinderAllowedIfNotUsed()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var searchDirectories = GetSearchDirectories("MockBinder");
         var mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";
@@ -294,7 +290,7 @@ public class BindingServiceTest : AbstractTest
         var fail = new CountdownEvent(2);
         var mockBinding = new Mock<IBinding>();
 
-        Func<string, string, object, IConsumerOptions, IBinding> func = (name, group, target, options) =>
+        Func<string, string, object, IConsumerOptions, IBinding> func = (_, _, _, _) =>
         {
             fail.Signal();
             if (fail.CurrentCount == 1)
@@ -334,7 +330,7 @@ public class BindingServiceTest : AbstractTest
         var mockBinding = new Mock<IBinding>();
         var prop = binder.GetType().GetProperty("BindProducerFunc");
 
-        Func<string, object, IProducerOptions, IBinding> func = (name, target, options) =>
+        Func<string, object, IProducerOptions, IBinding> func = (_, _, _) =>
         {
             fail.Signal();
             if (fail.CurrentCount == 1)

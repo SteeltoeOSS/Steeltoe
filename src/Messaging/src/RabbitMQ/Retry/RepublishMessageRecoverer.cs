@@ -23,7 +23,7 @@ public class RepublishMessageRecoverer : IMessageRecoverer
     private const int ELLIPSIS_LENGTH = 3;
     private const int MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE = 100 - ELLIPSIS_LENGTH;
 
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
     public RepublishMessageRecoverer(RabbitTemplate errorTemplate, ILogger logger = null)
         : this(errorTemplate, null, null, logger)

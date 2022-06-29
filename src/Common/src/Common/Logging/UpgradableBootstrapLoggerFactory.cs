@@ -14,9 +14,7 @@ namespace Steeltoe.Common.Logging;
 /// real log providers as the application utilization progresses.
 /// This class should only be used by components start are invoke before  logging infrastructure is build (prior to service container creation)
 /// </summary>
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-internal class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
 {
     public UpgradableBootstrapLoggerFactory()
         : this(DefaultConfigure)
@@ -42,11 +40,11 @@ internal class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
         });
     }
 
-    private Dictionary<string, BoostrapLoggerInst> _loggers = new ();
+    private readonly Dictionary<string, BoostrapLoggerInst> _loggers = new ();
+
+    private readonly object _lock = new ();
 
     private ILoggerFactory _factoryInstance;
-
-    private object _lock = new ();
 
     private ILoggerFactory _innerFactory;
 
@@ -127,7 +125,7 @@ internal class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
 
     private static void DefaultConfigure(ILoggingBuilder builder, IConfiguration configuration) => builder.AddConsole().AddConfiguration(configuration.GetSection("Logging"));
 
-    internal class BoostrapLoggerInst : ILogger
+    internal sealed class BoostrapLoggerInst : ILogger
     {
         public volatile ILogger Logger;
 

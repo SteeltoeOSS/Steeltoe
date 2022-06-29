@@ -18,7 +18,7 @@ namespace Steeltoe.Integration.Endpoint.Test;
 
 public class CorrelationIdTest
 {
-    private readonly IServiceProvider provider;
+    private readonly IServiceProvider _provider;
 
     public CorrelationIdTest()
     {
@@ -30,7 +30,7 @@ public class CorrelationIdTest
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider();
     }
 
     [Fact]
@@ -38,13 +38,13 @@ public class CorrelationIdTest
     {
         object correlationId = "123-ABC";
         var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
-        var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
+        var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
+        var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+        var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
         {
             OutputChannel = outputChannel
         };
-        var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
         var reply = outputChannel.Receive(0);
@@ -57,13 +57,13 @@ public class CorrelationIdTest
     {
         object correlationId = "correlationId";
         var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
-        var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
+        var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
+        var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+        var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
         {
             OutputChannel = outputChannel
         };
-        var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
         var reply = outputChannel.Receive(0);
@@ -77,13 +77,13 @@ public class CorrelationIdTest
     {
         object correlationId = "123-ABC";
         var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
-        var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
+        var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
+        var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+        var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
         {
             OutputChannel = outputChannel
         };
-        var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
         var reply = outputChannel.Receive(0);
@@ -95,13 +95,13 @@ public class CorrelationIdTest
     public async Task TestCorrelationNotCopiedFromRequestMessgeIdIfAlreadySetByHandler()
     {
         IMessage message = Message.Create("test");
-        var inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        var serviceActivator = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
+        var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
+        var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+        var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
         {
             OutputChannel = outputChannel
         };
-        var endpoint = new EventDrivenConsumerEndpoint(provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
         var reply = outputChannel.Receive(0);

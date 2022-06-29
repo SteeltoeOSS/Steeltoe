@@ -4,7 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
-internal class DummyCommand : HystrixCommand, IDummyCommand
+internal sealed class DummyCommand : HystrixCommand, IDummyCommand
 {
     private readonly IHystrixCommandOptions _opts;
 

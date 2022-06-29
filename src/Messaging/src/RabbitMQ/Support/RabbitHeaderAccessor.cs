@@ -79,7 +79,7 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     protected internal RabbitHeaderAccessor(MessageHeaders headers)
         : base(headers)
     {
-        headers = new RabbitAccessorMessageHeaders(this, headers);
+        this.headers = new RabbitAccessorMessageHeaders(this, headers);
     }
 
     public string AppId

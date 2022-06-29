@@ -16,8 +16,8 @@ namespace Steeltoe.Integration.Handler.Test;
 
 public class BridgeHandlerTest
 {
-    private readonly BridgeHandler handler;
-    private readonly IServiceProvider provider;
+    private readonly BridgeHandler _handler;
+    private readonly IServiceProvider _provider;
 
     public BridgeHandlerTest()
     {
@@ -28,17 +28,17 @@ public class BridgeHandlerTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        provider = services.BuildServiceProvider();
-        handler = new BridgeHandler(provider.GetService<IApplicationContext>());
+        _provider = services.BuildServiceProvider();
+        _handler = new BridgeHandler(_provider.GetService<IApplicationContext>());
     }
 
     [Fact]
     public void SimpleBridge()
     {
-        var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>());
-        handler.OutputChannel = outputChannel;
+        var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>());
+        _handler.OutputChannel = outputChannel;
         var request = Message.Create("test");
-        handler.HandleMessage(request);
+        _handler.HandleMessage(request);
         var reply = outputChannel.Receive(0);
         Assert.NotNull(reply);
         Assert.Equal(request.Payload, reply.Payload);
@@ -49,16 +49,16 @@ public class BridgeHandlerTest
     public void MissingOutputChannelVerifiedAtRuntime()
     {
         var request = Message.Create("test");
-        var ex = Assert.Throws<MessageHandlingException>(() => handler.HandleMessage(request));
+        var ex = Assert.Throws<MessageHandlingException>(() => _handler.HandleMessage(request));
         Assert.IsType<DestinationResolutionException>(ex.InnerException);
     }
 
     [Fact]
     public void MissingOutputChannelAllowedForReplyChannelMessages()
     {
-        var replyChannel = new QueueChannel(provider.GetService<IApplicationContext>());
+        var replyChannel = new QueueChannel(_provider.GetService<IApplicationContext>());
         var request = IntegrationMessageBuilder.WithPayload("tst").SetReplyChannel(replyChannel).Build();
-        handler.HandleMessage(request);
+        _handler.HandleMessage(request);
         var reply = replyChannel.Receive();
         Assert.NotNull(reply);
         Assert.Equal(request.Payload, reply.Payload);

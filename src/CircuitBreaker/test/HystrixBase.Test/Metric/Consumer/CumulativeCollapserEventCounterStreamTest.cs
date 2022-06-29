@@ -7,7 +7,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Test;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,22 +24,27 @@ public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
         }
     }
 
-    private readonly ITestOutputHelper output;
-    private CumulativeCollapserEventCounterStream stream;
-    private IDisposable latchSubscription;
+    private readonly ITestOutputHelper _output;
+    private CumulativeCollapserEventCounterStream _stream;
+    private IDisposable _latchSubscription;
 
     public CumulativeCollapserEventCounterStreamTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        latchSubscription?.Dispose();
-        stream?.Unsubscribe();
-        latchSubscription = null;
-        stream = null;
-        base.Dispose();
+        if (disposing)
+        {
+            _latchSubscription?.Dispose();
+            _latchSubscription = null;
+
+            _stream?.Unsubscribe();
+            _stream = null;
+        }
+
+        base.Dispose(disposing);
     }
 
     [Fact]
@@ -49,17 +53,17 @@ public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
         var key = HystrixCollapserKeyDefault.AsKey("CumulativeCollapser-A");
 
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
-        stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
+        var observer = new LatchedObserver(_output, latch);
+        _stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
 
-        latchSubscription = stream.Observe().Subscribe(observer);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
 
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
-        Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
+        Assert.Equal(CollapserEventTypeHelper.Values.Count, _stream.Latest.Length);
 
-        Assert.Equal(0, stream.GetLatest(CollapserEventType.ADDED_TO_BATCH));
-        Assert.Equal(0, stream.GetLatest(CollapserEventType.BATCH_EXECUTED));
-        Assert.Equal(0, stream.GetLatest(CollapserEventType.RESPONSE_FROM_CACHE));
+        Assert.Equal(0, _stream.GetLatest(CollapserEventType.ADDED_TO_BATCH));
+        Assert.Equal(0, _stream.GetLatest(CollapserEventType.BATCH_EXECUTED));
+        Assert.Equal(0, _stream.GetLatest(CollapserEventType.RESPONSE_FROM_CACHE));
     }
 
     [Fact]
@@ -67,24 +71,24 @@ public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
     {
         var key = HystrixCollapserKeyDefault.AsKey("CumulativeCollapser-B");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
-        stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        var observer = new LatchedObserver(_output, latch);
+        _stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
 
         var tasks = new List<Task>();
         for (var i = 0; i < 3; i++)
         {
-            tasks.Add(Collapser.From(output, key, i).ExecuteAsync());
+            tasks.Add(Collapser.From(_output, key, i).ExecuteAsync());
         }
 
         Task.WaitAll(tasks.ToArray());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
-        Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
+        Assert.Equal(CollapserEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[CollapserEventTypeHelper.Values.Count];
         expected[(int)CollapserEventType.BATCH_EXECUTED] = 1;
         expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
-        Assert.Equal(expected, stream.Latest);
+        Assert.Equal(expected, _stream.Latest);
     }
 
     [Fact]
@@ -92,27 +96,27 @@ public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
     {
         var key = HystrixCollapserKeyDefault.AsKey("CumulativeCollapser-C");
         var latch = new CountdownEvent(1);
-        var observer = new LatchedObserver(output, latch);
-        stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
-        latchSubscription = stream.Observe().Subscribe(observer);
+        var observer = new LatchedObserver(_output, latch);
+        _stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
+        _latchSubscription = _stream.Observe().Subscribe(observer);
 
         var tasks = new List<Task>();
         for (var i = 0; i < 3; i++)
         {
-            tasks.Add(Collapser.From(output, key, i).ExecuteAsync());
-            tasks.Add(Collapser.From(output, key, i).ExecuteAsync()); // same arg - should get a response from cache
-            tasks.Add(Collapser.From(output, key, i).ExecuteAsync()); // same arg - should get a response from cache
+            tasks.Add(Collapser.From(_output, key, i).ExecuteAsync());
+            tasks.Add(Collapser.From(_output, key, i).ExecuteAsync()); // same arg - should get a response from cache
+            tasks.Add(Collapser.From(_output, key, i).ExecuteAsync()); // same arg - should get a response from cache
         }
 
         Task.WaitAll(tasks.ToArray());
-        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+        Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
-        Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
+        Assert.Equal(CollapserEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[CollapserEventTypeHelper.Values.Count];
         expected[(int)CollapserEventType.BATCH_EXECUTED] = 1;
         expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
         expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 6;
-        Assert.Equal(expected, stream.Latest);
+        Assert.Equal(expected, _stream.Latest);
     }
 
     // by doing a take(30), we expect all values to stay in the stream, as cumulative counters never age out of window
@@ -120,42 +124,26 @@ public class CumulativeCollapserEventCounterStreamTest : CommandStreamTest
     public void TestCollapsedAndResponseFromCacheAgeOutOfCumulativeWindow()
     {
         var key = HystrixCollapserKeyDefault.AsKey("CumulativeCollapser-D");
-        stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
-        stream.StartCachingStreamValuesIfUnstarted();
+        _stream = CumulativeCollapserEventCounterStream.GetInstance(key, 10, 100);
+        _stream.StartCachingStreamValuesIfUnstarted();
 
         var latch = new CountdownEvent(1);
-        latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(new LatchedObserver(output, latch));
+        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(new LatchedObserver(_output, latch));
 
         for (var i = 0; i < 3; i++)
         {
-            Collapser.From(output, key, i).Observe();
-            Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
-            Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
+            Collapser.From(_output, key, i).Observe();
+            Collapser.From(_output, key, i).Observe(); // same arg - should get a response from cache
+            Collapser.From(_output, key, i).Observe(); // same arg - should get a response from cache
         }
 
         Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
-        Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
+        Assert.Equal(CollapserEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[CollapserEventTypeHelper.Values.Count];
         expected[(int)CollapserEventType.BATCH_EXECUTED] = 1;
         expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
         expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 6;
-        Assert.Equal(expected, stream.Latest);
-    }
-
-    private static string CollapserEventsToStr(long[] eventCounts)
-    {
-        var sb = new StringBuilder();
-        sb.Append('[');
-        foreach (var eventType in CollapserEventTypeHelper.Values)
-        {
-            if (eventCounts[(int)eventType] > 0)
-            {
-                sb.Append(eventType).Append("->").Append(eventCounts[(int)eventType]).Append(", ");
-            }
-        }
-
-        sb.Append(']');
-        return sb.ToString();
+        Assert.Equal(expected, _stream.Latest);
     }
 }

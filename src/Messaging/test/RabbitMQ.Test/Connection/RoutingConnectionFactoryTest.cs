@@ -295,56 +295,56 @@ public class RoutingConnectionFactoryTest
 
     private sealed class TestDirectReplyToMessageListenerContainer : DirectReplyToMessageListenerContainer
     {
-        private readonly AtomicReference<object> connectionMakerKey;
-        private readonly SimpleRoutingConnectionFactory simpleFactory;
+        private readonly AtomicReference<object> _connectionMakerKey;
+        private readonly SimpleRoutingConnectionFactory _simpleFactory;
 
         public TestDirectReplyToMessageListenerContainer(SimpleRoutingConnectionFactory connectionFactory, AtomicReference<object> connectionMakerKey)
             : base(null, connectionFactory)
         {
-            this.connectionMakerKey = connectionMakerKey;
-            simpleFactory = connectionFactory;
+            _connectionMakerKey = connectionMakerKey;
+            _simpleFactory = connectionFactory;
         }
 
         protected override void RedeclareElementsIfNecessary()
         {
-            connectionMakerKey.Value = simpleFactory.DetermineCurrentLookupKey();
+            _connectionMakerKey.Value = _simpleFactory.DetermineCurrentLookupKey();
         }
     }
 
     private sealed class TestDirectMessageListenerContainer : DirectMessageListenerContainer
     {
-        private readonly AtomicReference<object> connectionMakerKey2;
-        private readonly SimpleRoutingConnectionFactory simpleFactory;
+        private readonly AtomicReference<object> _connectionMakerKey2;
+        private readonly SimpleRoutingConnectionFactory _simpleFactory;
 
         public TestDirectMessageListenerContainer(SimpleRoutingConnectionFactory connectionFactory, AtomicReference<object> connectionMakerKey2)
             : base(null, connectionFactory)
         {
-            this.connectionMakerKey2 = connectionMakerKey2;
-            simpleFactory = connectionFactory;
+            _connectionMakerKey2 = connectionMakerKey2;
+            _simpleFactory = connectionFactory;
         }
 
         protected override void RedeclareElementsIfNecessary()
         {
-            connectionMakerKey2.Value = simpleFactory.DetermineCurrentLookupKey();
+            _connectionMakerKey2.Value = _simpleFactory.DetermineCurrentLookupKey();
         }
     }
 
     private sealed class TestAbstractRoutingConnectionFactoryFactory : AbstractRoutingConnectionFactory
     {
-        private readonly AtomicBoolean lookupFlag;
-        private readonly AtomicInteger count;
+        private readonly AtomicBoolean _lookupFlag;
+        private readonly AtomicInteger _count;
 
         public TestAbstractRoutingConnectionFactoryFactory(AtomicBoolean lookupFlag, AtomicInteger count)
         {
-            this.lookupFlag = lookupFlag;
-            this.count = count;
+            _lookupFlag = lookupFlag;
+            _count = count;
         }
 
         public override string ServiceName { get; set; } = "TestAbstractRoutingConnectionFactoryFactory";
 
         public override object DetermineCurrentLookupKey()
         {
-            return count.IncrementAndGet() > 3 ? null : (bool?)lookupFlag.GetAndSet(!lookupFlag.Value);
+            return _count.IncrementAndGet() > 3 ? null : (bool?)_lookupFlag.GetAndSet(!_lookupFlag.Value);
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;
 
-internal class TestInfoEndpoint : InfoEndpoint
+internal sealed class TestInfoEndpoint : InfoEndpoint
 {
     public TestInfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
         : base(options, contributors, logger)

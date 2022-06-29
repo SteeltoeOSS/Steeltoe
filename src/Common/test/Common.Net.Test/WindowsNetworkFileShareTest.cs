@@ -26,7 +26,7 @@ public class WindowsNetworkFileShareTest
     [Fact]
     public void WindowsNetworkFileShare_Constructor_SetsValuesOn_ConnectSuccess()
     {
-        var fakeMPR = new FakeMPR();
+        var fakeMPR = new FakeMultipleProviderRouter();
 
         _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMPR);
 
@@ -38,7 +38,7 @@ public class WindowsNetworkFileShareTest
     [Fact]
     public void WindowsNetworkFileShare_Constructor_ConcatsUserAndDomain()
     {
-        var fakeMPR = new FakeMPR();
+        var fakeMPR = new FakeMultipleProviderRouter();
 
         _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMPR);
 
@@ -50,7 +50,7 @@ public class WindowsNetworkFileShareTest
     [Fact]
     public void WindowsNetworkFileShare_Constructor_ThrowsOn_ConnectFail()
     {
-        var fakeMPR = new FakeMPR(false);
+        var fakeMPR = new FakeMultipleProviderRouter(false);
 
         var exception = Assert.Throws<ExternalException>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMPR));
 

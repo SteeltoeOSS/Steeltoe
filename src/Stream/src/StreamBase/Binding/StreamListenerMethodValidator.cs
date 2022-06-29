@@ -195,7 +195,7 @@ public class StreamListenerMethodValidator
         var sendTo = Method.GetCustomAttribute<SendToAttribute>();
         if (sendTo != null)
         {
-            if (ObjectUtils.IsEmpty(sendTo.Destinations))
+            if (ObjectUtils.IsNullOrEmpty(sendTo.Destinations))
             {
                 throw new ArgumentException(StreamListenerErrorMessages.ATLEAST_ONE_OUTPUT);
             }

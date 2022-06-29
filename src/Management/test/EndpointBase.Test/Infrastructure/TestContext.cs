@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
 /// <summary>
 /// Provides encapsulation of data for a single test
 /// </summary>
-internal class TestContext : IDisposable
+internal sealed class TestContext : IDisposable
 {
     private readonly TestOutputLoggerProvider _loggerProvider;
     private readonly IServiceCollection _serviceCollection = new ServiceCollection();

@@ -36,25 +36,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("Performance check for SpEL expression: 'Convert.ToDouble(Payload)/18D'");
 
         var stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -65,25 +65,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(2d, o);
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -94,25 +94,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("Performance check for SpEL expression: 'Payload / 18D");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -123,25 +123,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(2d, o);
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(nh);
+            _expression.GetValue(nh);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -156,25 +156,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("Performance check for SpEL expression: '{'abcde','ijklm'}[0].substring({1,3,4}[0],{1,3,4}[1])'");
 
         var stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -185,25 +185,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal("bcd", o);
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -218,25 +218,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("Performance check for SpEL expression: '{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0],{1,3,4}[1])'");
 
         var stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -247,25 +247,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal("jkl", o);
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue();
+            _expression.GetValue();
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -281,25 +281,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("Performance check for SpEL expression: 'hello' + World + ' spring'");
 
         var stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -310,25 +310,25 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal("helloworld spring", o);
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
         stime = DateTime.Now.Ticks;
-        for (var i = 0; i < 1000000; i++)
+        for (var i = 0; i < 1_000_000; i++)
         {
-            o = _expression.GetValue(g);
+            _expression.GetValue(g);
         }
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
@@ -340,7 +340,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         var payload = new Payload();
         var expression = _parser.ParseExpression("DR[0].DRFixedSection.Duration lt 0.1");
         var b = false;
-        long iTotal = 0, cTotal = 0;
+        long iTotal = 0;
+        long cTotal = 0;
 
         // warmup
         for (var i = 0; i < _count; i++)
@@ -404,10 +405,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingMethodReference()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new HW();
         var expression = _parser.ParseExpression("Hello()");
 
@@ -465,10 +468,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceField()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Name");
 
@@ -526,10 +531,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceNestedField()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Foo.Bar.Boo");
 
@@ -587,10 +594,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceNestedMixedFieldGetter()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Foo.Baz.Boo");
 
@@ -648,10 +657,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingNestedMixedFieldPropertyReferenceMethodReference()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Foo.Bay().Boo");
 
@@ -709,10 +720,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void CompilingPropertyReferenceGetter()
     {
-        long interpretedTotal = 0, compiledTotal = 0;
-        long stime, etime;
-        string interpretedResult = null, compiledResult = null;
-
+        long interpretedTotal = 0;
+        long compiledTotal = 0;
+        long stime;
+        long etime;
+        string interpretedResult = null;
+        string compiledResult = null;
         var testdata = new TestClass2();
         var expression = _parser.ParseExpression("Name2");
 
@@ -810,7 +823,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     #region Test Classes
 #pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable IDE0044 // Naming Styles
 
     public class HW
     {
@@ -822,7 +834,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     public class Payload
     {
-        public Two[] DR { get; } = new Two[] { new () };
+        public Two[] DR { get; } = { new () };
     }
 
     public class Two
@@ -870,7 +882,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     {
         public string Boo = "oranges";
     }
-#pragma warning restore IDE1006
-#pragma warning restore IDE0044
+#pragma warning restore IDE1006 // Naming Styles
     #endregion
 }

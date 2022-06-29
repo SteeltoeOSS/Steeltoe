@@ -21,26 +21,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixCollapserTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public HystrixCollapserTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        base.Dispose();
-        HystrixCollapserMetrics.Reset();
+        base.Dispose(disposing);
+
+        if (disposing)
+        {
+            HystrixCollapserMetrics.Reset();
+        }
     }
 
     [Fact]
     public void TestTwoRequests()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var response1 = collapser1.ExecuteAsync();
-        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
+        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(_output, timer, 2);
         var response2 = collapser2.ExecuteAsync();
 
         timer.IncrementTime(10); // let time pass that equals the default delay/period
@@ -67,17 +71,17 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestMultipleBatches()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var response1 = collapser1.ExecuteAsync();
-        var response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync();
+        var response2 = new TestRequestCollapser(_output, timer, 2).ExecuteAsync();
         timer.IncrementTime(10); // let time pass that equals the default delay/period
 
         Assert.Equal("1", GetResult(response1, 1000));
         Assert.Equal("2", GetResult(response2, 1000));
 
         // now request more
-        var response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
+        var response3 = new TestRequestCollapser(_output, timer, 3).ExecuteAsync();
         timer.IncrementTime(10); // let time pass that equals the default delay/period
 
         Assert.Equal("3", GetResult(response3, 1000));
@@ -94,25 +98,25 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestMaxRequestsInBatch()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1, 2, 10);
-        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2, 2, 10);
-        HystrixCollapser<List<string>, string, string> collapser3 = new TestRequestCollapser(output, timer, 3, 2, 10);
-        output.WriteLine("*** " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Constructed the collapsers");
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1, 2, 10);
+        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(_output, timer, 2, 2, 10);
+        HystrixCollapser<List<string>, string, string> collapser3 = new TestRequestCollapser(_output, timer, 3, 2, 10);
+        _output.WriteLine("*** " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Constructed the collapsers");
         var response1 = collapser1.ExecuteAsync();
         var response2 = collapser2.ExecuteAsync();
         var response3 = collapser3.ExecuteAsync();
-        output.WriteLine("*** " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " queued the collapsers");
+        _output.WriteLine("*** " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " queued the collapsers");
 
         timer.IncrementTime(10); // let time pass that equals the default delay/period
-        output.WriteLine("*** " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " incremented the virtual timer");
+        _output.WriteLine("*** " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " incremented the virtual timer");
 
         Assert.Equal("1", GetResult(response1, 1000));
         Assert.Equal("2", GetResult(response2, 1000));
         Assert.Equal("3", GetResult(response3, 1000));
 
         // we should have had it execute twice because the batch size was 2
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(2, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         var cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands;
@@ -123,21 +127,21 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestsOverTime()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var response1 = collapser1.ExecuteAsync();
         timer.IncrementTime(5);
-        var response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync();
+        var response2 = new TestRequestCollapser(_output, timer, 2).ExecuteAsync();
         timer.IncrementTime(8);
 
         // should execute here
-        var response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
+        var response3 = new TestRequestCollapser(_output, timer, 3).ExecuteAsync();
         timer.IncrementTime(6);
-        var response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
+        var response4 = new TestRequestCollapser(_output, timer, 4).ExecuteAsync();
         timer.IncrementTime(8);
 
         // should execute here
-        var response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
+        var response5 = new TestRequestCollapser(_output, timer, 5).ExecuteAsync();
         timer.IncrementTime(10);
 
         // should execute here
@@ -165,7 +169,7 @@ public class HystrixCollapserTest : HystrixTestBase
         var observables = new List<IObservable<int>>();
         for (var i = 0; i < num; i++)
         {
-            var c = new MyCollapser(output, "5", true);
+            var c = new MyCollapser(_output, "5", true);
             var observable = c.ToObservable();
             observables.Add(observable);
         }
@@ -173,7 +177,7 @@ public class HystrixCollapserTest : HystrixTestBase
         var subscribers = new List<TestSubscriber<int>>();
         foreach (var o in observables)
         {
-            var sub = new TestSubscriber<int>(output);
+            var sub = new TestSubscriber<int>(_output);
             subscribers.Add(sub);
             o.Subscribe(sub);
         }
@@ -184,7 +188,7 @@ public class HystrixCollapserTest : HystrixTestBase
         foreach (var sub in subscribers)
         {
             sub.AwaitTerminalEvent(1000);
-            output.WriteLine("Subscriber received : " + sub.OnNextEvents.Count);
+            _output.WriteLine("Subscriber received : " + sub.OnNextEvents.Count);
             sub.AssertNoErrors();
             sub.AssertValues(5);
         }
@@ -198,14 +202,14 @@ public class HystrixCollapserTest : HystrixTestBase
         var observables = new List<IObservable<int>>();
         for (var i = 0; i < num; i++)
         {
-            var c = new MyCollapser(output, "5", false, 500);
+            var c = new MyCollapser(_output, "5", false, 500);
             observables.Add(c.ToObservable());
         }
 
         var subscribers = new List<TestSubscriber<int>>();
         foreach (var o in observables)
         {
-            var sub = new TestSubscriber<int>(output);
+            var sub = new TestSubscriber<int>(_output);
             subscribers.Add(sub);
             o.Subscribe(sub);
         }
@@ -223,14 +227,14 @@ public class HystrixCollapserTest : HystrixTestBase
             sub.AwaitTerminalEvent(1000);
             if (sub.OnCompletedEvents.Count == 0)
             {
-                output.WriteLine(Thread.CurrentThread.ManagedThreadId + " Error : " + sub.OnErrorEvents.Count);
+                _output.WriteLine(Thread.CurrentThread.ManagedThreadId + " Error : " + sub.OnErrorEvents.Count);
                 sub.AssertError(typeof(ArgumentException));
                 sub.AssertNoValues();
                 numErrors.GetAndIncrement();
             }
             else
             {
-                output.WriteLine(Thread.CurrentThread.ManagedThreadId + " OnNext : " + sub.OnNextEvents.Count);
+                _output.WriteLine(Thread.CurrentThread.ManagedThreadId + " OnNext : " + sub.OnNextEvents.Count);
                 sub.AssertValues(5);
                 sub.AssertCompleted();
                 sub.AssertNoErrors();
@@ -269,7 +273,7 @@ public class HystrixCollapserTest : HystrixTestBase
         var collapsers = new List<MyCollapser>();
         for (var i = 0; i < num; i++)
         {
-            var c = new MyCollapser(output, "5", true);
+            var c = new MyCollapser(_output, "5", true);
             collapsers.Add(c);
             var obs = c.ToObservable();
             observables.Add(obs);
@@ -280,7 +284,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
         foreach (var o in observables)
         {
-            var sub = new TestSubscriber<int>(output);
+            var sub = new TestSubscriber<int>(_output);
             subscribers.Add(sub);
             var s = o.Subscribe(sub);
             sub.Subscription = s;
@@ -301,13 +305,13 @@ public class HystrixCollapserTest : HystrixTestBase
             if (!sub.IsUnsubscribed)
             {
                 sub.AwaitTerminalEvent(1000);
-                output.WriteLine("Subscriber received : " + sub.OnNextEvents.Count);
+                _output.WriteLine("Subscriber received : " + sub.OnNextEvents.Count);
                 sub.AssertNoErrors();
                 sub.AssertValues(5);
             }
             else
             {
-                output.WriteLine("Subscriber is unsubscribed");
+                _output.WriteLine("Subscriber is unsubscribed");
             }
         }
     }
@@ -315,12 +319,12 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestUnsubscribeOnOneDoesntKillBatch()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var cts1 = new CancellationTokenSource();
         var cts2 = new CancellationTokenSource();
         var response1 = collapser1.ExecuteAsync(cts1.Token);
-        var response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync(cts2.Token);
+        var response2 = new TestRequestCollapser(_output, timer, 2).ExecuteAsync(cts2.Token);
 
         // kill the first
         cts1.Cancel();
@@ -350,12 +354,12 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestShardedRequests()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestShardedRequestCollapser(output, timer, "1a");
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestShardedRequestCollapser(_output, timer, "1a");
         var response1 = collapser1.ExecuteAsync();
-        var response2 = new TestShardedRequestCollapser(output, timer, "2b").ExecuteAsync();
-        var response3 = new TestShardedRequestCollapser(output, timer, "3b").ExecuteAsync();
-        var response4 = new TestShardedRequestCollapser(output, timer, "4a").ExecuteAsync();
+        var response2 = new TestShardedRequestCollapser(_output, timer, "2b").ExecuteAsync();
+        var response3 = new TestShardedRequestCollapser(_output, timer, "3b").ExecuteAsync();
+        var response4 = new TestShardedRequestCollapser(_output, timer, "4a").ExecuteAsync();
         timer.IncrementTime(10); // let time pass that equals the default delay/period
 
         Assert.Equal("1a", GetResult(response1, 1000));
@@ -374,16 +378,16 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestScope()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, "1");
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, "1");
         var response1 = collapser1.ExecuteAsync();
-        var response2 = new TestRequestCollapser(output, timer, "2").ExecuteAsync();
+        var response2 = new TestRequestCollapser(_output, timer, "2").ExecuteAsync();
 
         // simulate a new request
         RequestCollapserFactory.ResetRequest();
 
-        var response3 = new TestRequestCollapser(output, timer, "3").ExecuteAsync();
-        var response4 = new TestRequestCollapser(output, timer, "4").ExecuteAsync();
+        var response3 = new TestRequestCollapser(_output, timer, "3").ExecuteAsync();
+        var response4 = new TestRequestCollapser(_output, timer, "4").ExecuteAsync();
 
         timer.IncrementTime(10); // let time pass that equals the default delay/period
 
@@ -403,16 +407,16 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestGlobalScope()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestGloballyScopedRequestCollapser(output, timer, "1");
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestGloballyScopedRequestCollapser(_output, timer, "1");
         var response1 = collapser1.ExecuteAsync();
-        var response2 = new TestGloballyScopedRequestCollapser(output, timer, "2").ExecuteAsync();
+        var response2 = new TestGloballyScopedRequestCollapser(_output, timer, "2").ExecuteAsync();
 
         // simulate a new request
         RequestCollapserFactory.ResetRequest();
 
-        var response3 = new TestGloballyScopedRequestCollapser(output, timer, "3").ExecuteAsync();
-        var response4 = new TestGloballyScopedRequestCollapser(output, timer, "4").ExecuteAsync();
+        var response3 = new TestGloballyScopedRequestCollapser(_output, timer, "3").ExecuteAsync();
+        var response4 = new TestGloballyScopedRequestCollapser(_output, timer, "4").ExecuteAsync();
 
         timer.IncrementTime(10); // let time pass that equals the default delay/period
         Assert.Equal("1", GetResult(response1, 1000));
@@ -430,10 +434,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestErrorHandlingViaFutureException()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithFaultyCreateCommand(output, timer, "1");
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithFaultyCreateCommand(_output, timer, "1");
         var response1 = collapser1.ExecuteAsync();
-        var response2 = new TestRequestCollapserWithFaultyCreateCommand(output, timer, "2").ExecuteAsync();
+        var response2 = new TestRequestCollapserWithFaultyCreateCommand(_output, timer, "2").ExecuteAsync();
         timer.IncrementTime(10); // let time pass that equals the default delay/period
 
         try
@@ -464,10 +468,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestErrorHandlingWhenMapToResponseFails()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithFaultyMapToResponse(output, timer, "1");
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithFaultyMapToResponse(_output, timer, "1");
         var response1 = collapser1.ExecuteAsync();
-        var response2 = new TestRequestCollapserWithFaultyMapToResponse(output, timer, "2").ExecuteAsync();
+        var response2 = new TestRequestCollapserWithFaultyMapToResponse(_output, timer, "2").ExecuteAsync();
         timer.IncrementTime(10); // let time pass that equals the default delay/period
         try
         {
@@ -503,21 +507,21 @@ public class HystrixCollapserTest : HystrixTestBase
     public void TestRequestVariableLifecycle1()
     {
         // do actual work
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var response1 = collapser1.ExecuteAsync();
         timer.IncrementTime(5);
-        var response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync();
+        var response2 = new TestRequestCollapser(_output, timer, 2).ExecuteAsync();
         timer.IncrementTime(8);
 
         // should execute here
-        var response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
+        var response3 = new TestRequestCollapser(_output, timer, 3).ExecuteAsync();
         timer.IncrementTime(6);
-        var response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
+        var response4 = new TestRequestCollapser(_output, timer, 4).ExecuteAsync();
         timer.IncrementTime(8);
 
         // should execute here
-        var response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
+        var response5 = new TestRequestCollapser(_output, timer, 5).ExecuteAsync();
         timer.IncrementTime(10);
 
         // should execute here
@@ -535,16 +539,16 @@ public class HystrixCollapserTest : HystrixTestBase
             Assert.Equal(3, t.Task.Count.Value);
         }
 
-        output.WriteLine("timer.tasks.size() A: " + timer.Tasks.Count);
-        output.WriteLine("tasks in test: " + timer.Tasks);
+        _output.WriteLine("timer.tasks.size() A: " + timer.Tasks.Count);
+        _output.WriteLine("tasks in test: " + timer.Tasks);
 
         var cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
         Assert.Equal(2, cmdIterator[0].NumberCollapsed);
         Assert.Equal(2, cmdIterator[1].NumberCollapsed);
         Assert.Equal(1, cmdIterator[2].NumberCollapsed);
 
-        output.WriteLine("timer.tasks.size() B: " + timer.Tasks.Count);
-        var rv = RequestCollapserFactory.GetRequestVariable<List<string>, string, string>(new TestRequestCollapser(output, timer, 1).CollapserKey.Name);
+        _output.WriteLine("timer.tasks.size() B: " + timer.Tasks.Count);
+        var rv = RequestCollapserFactory.GetRequestVariable<List<string>, string, string>(new TestRequestCollapser(_output, timer, 1).CollapserKey.Name);
 
         context.Dispose();
 
@@ -557,7 +561,7 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestVariableLifecycle2()
     {
-        var timer = new TestCollapserTimer(output);
+        var timer = new TestCollapserTimer(_output);
         var responses = new ConcurrentDictionary<Task<string>, Task<string>>();
         var threads = new List<Task>();
 
@@ -571,7 +575,7 @@ public class HystrixCollapserTest : HystrixTestBase
                     for (var i = 0; i < 100; i++)
                     {
                         var uniqueInt = (outerLoop * 100) + i;
-                        var tsk = new TestRequestCollapser(output, timer, uniqueInt).ExecuteAsync();
+                        var tsk = new TestRequestCollapser(_output, timer, uniqueInt).ExecuteAsync();
                         responses.TryAdd(tsk, tsk);
                     }
                 },
@@ -593,18 +597,18 @@ public class HystrixCollapserTest : HystrixTestBase
         }
 
         timer.IncrementTime(5);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 2);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 2);
         var response2 = collapser1.ExecuteAsync();
         timer.IncrementTime(8);
 
         // should execute here
-        var response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
+        var response3 = new TestRequestCollapser(_output, timer, 3).ExecuteAsync();
         timer.IncrementTime(6);
-        var response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
+        var response4 = new TestRequestCollapser(_output, timer, 4).ExecuteAsync();
         timer.IncrementTime(8);
 
         // should execute here
-        var response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
+        var response5 = new TestRequestCollapser(_output, timer, 5).ExecuteAsync();
         timer.IncrementTime(10);
 
         // should execute here
@@ -630,7 +634,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal(500, cmdIterator[0].NumberCollapsed);
         Assert.Equal(2, cmdIterator[1].NumberCollapsed);
         Assert.Equal(1, cmdIterator[2].NumberCollapsed);
-        var rv = RequestCollapserFactory.GetRequestVariable<List<string>, string, string>(new TestRequestCollapser(output, timer, 1).CollapserKey.Name);
+        var rv = RequestCollapserFactory.GetRequestVariable<List<string>, string, string>(new TestRequestCollapser(_output, timer, 1).CollapserKey.Name);
 
         context.Dispose();
 
@@ -643,9 +647,9 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestCache1()
     {
-        var timer = new TestCollapserTimer(output);
-        var command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", true);
-        var command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", true);
+        var timer = new TestCollapserTimer(_output);
+        var command1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "A", true);
+        var command2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "A", true);
 
         var f1 = command1.ExecuteAsync();
         var f2 = command2.ExecuteAsync();
@@ -681,7 +685,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         var command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.AsEnumerable().First();
-        output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
+        _output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
         Assert.Equal(2, command.ExecutionEvents.Count);
         Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
         Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
@@ -692,9 +696,9 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestCache2()
     {
-        var timer = new TestCollapserTimer(output);
-        var command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", true);
-        var command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", true);
+        var timer = new TestCollapserTimer(_output);
+        var command1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "A", true);
+        var command2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "B", true);
 
         var f1 = command1.ExecuteAsync();
         var f2 = command2.ExecuteAsync();
@@ -732,7 +736,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         var command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.AsEnumerable().First();
-        output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
+        _output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
         Assert.Equal(2, command.ExecutionEvents.Count);
         Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
         Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
@@ -741,10 +745,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestCache3()
     {
-        var timer = new TestCollapserTimer(output);
-        var command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", true);
-        var command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", true);
-        var command3 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", true);
+        var timer = new TestCollapserTimer(_output);
+        var command1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "A", true);
+        var command2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "B", true);
+        var command3 = new SuccessfulCacheableCollapsedCommand(_output, timer, "B", true);
 
         var f1 = command1.ExecuteAsync();
         var f2 = command2.ExecuteAsync();
@@ -782,10 +786,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestNoRequestCache3()
     {
-        var timer = new TestCollapserTimer(output);
-        var command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", false);
-        var command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", false);
-        var command3 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", false);
+        var timer = new TestCollapserTimer(_output);
+        var command1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "A", false);
+        var command2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "B", false);
+        var command3 = new SuccessfulCacheableCollapsedCommand(_output, timer, "B", false);
 
         var f1 = command1.ExecuteAsync();
         var f2 = command2.ExecuteAsync();
@@ -834,9 +838,9 @@ public class HystrixCollapserTest : HystrixTestBase
     {
         var commands = new ConcurrentQueue<HystrixCommand<List<string>>>();
 
-        var timer = new TestCollapserTimer(output);
-        var command1 = new SuccessfulCacheableCollapsedCommand(output, timer, null, true, commands);
-        var command2 = new SuccessfulCacheableCollapsedCommand(output, timer, null, true, commands);
+        var timer = new TestCollapserTimer(_output);
+        var command1 = new SuccessfulCacheableCollapsedCommand(_output, timer, null, true, commands);
+        var command2 = new SuccessfulCacheableCollapsedCommand(_output, timer, null, true, commands);
 
         var f1 = command1.ExecuteAsync();
         var f2 = command2.ExecuteAsync();
@@ -873,9 +877,9 @@ public class HystrixCollapserTest : HystrixTestBase
     {
         var commands = new ConcurrentQueue<HystrixCommand<List<string>>>();
 
-        var timer = new TestCollapserTimer(output);
-        var command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "FAILURE", true, commands);
-        var command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "FAILURE", true, commands);
+        var timer = new TestCollapserTimer(_output);
+        var command1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "FAILURE", true, commands);
+        var command2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "FAILURE", true, commands);
 
         var f1 = command1.ExecuteAsync();
         var f2 = command2.ExecuteAsync();
@@ -929,9 +933,9 @@ public class HystrixCollapserTest : HystrixTestBase
     {
         var commands = new ConcurrentQueue<HystrixCommand<List<string>>>();
 
-        var timer = new TestCollapserTimer(output);
-        var command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "TIMEOUT", true, commands);
-        var command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "TIMEOUT", true, commands);
+        var timer = new TestCollapserTimer(_output);
+        var command1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "TIMEOUT", true, commands);
+        var command2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "TIMEOUT", true, commands);
 
         var f1 = command1.ExecuteAsync();
         var f2 = command2.ExecuteAsync();
@@ -982,10 +986,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public async Task TestRequestWithCommandShortCircuited()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithShortCircuitedCommand(output, timer, "1");
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithShortCircuitedCommand(_output, timer, "1");
         var response1 = collapser1.Observe();
-        var response2 = new TestRequestCollapserWithShortCircuitedCommand(output, timer, "2").Observe();
+        var response2 = new TestRequestCollapserWithShortCircuitedCommand(_output, timer, "2").Observe();
         timer.IncrementTime(10); // let time pass that equals the default delay/period
 
         try
@@ -995,7 +999,7 @@ public class HystrixCollapserTest : HystrixTestBase
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
 
             // what we expect
         }
@@ -1007,7 +1011,7 @@ public class HystrixCollapserTest : HystrixTestBase
         }
         catch (Exception e)
         {
-            output.WriteLine(e.ToString());
+            _output.WriteLine(e.ToString());
 
             // what we expect
         }
@@ -1022,10 +1026,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestVoidResponseTypeFireAndForgetCollapsing1()
     {
-        var timer = new TestCollapserTimer(output);
-        var collapser1 = new TestCollapserWithVoidResponseType(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        var collapser1 = new TestCollapserWithVoidResponseType(_output, timer, 1);
         var response1 = collapser1.ExecuteAsync();
-        var response2 = new TestCollapserWithVoidResponseType(output, timer, 2).ExecuteAsync();
+        var response2 = new TestCollapserWithVoidResponseType(_output, timer, 2).ExecuteAsync();
         timer.IncrementTime(100); // let time pass that equals the default delay/period
 
         // normally someone wouldn't wait on these, but we need to make sure they do in fact return
@@ -1042,10 +1046,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestVoidResponseTypeFireAndForgetCollapsing2()
     {
-        var timer = new TestCollapserTimer(output);
-        var collapser1 = new TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        var collapser1 = new TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(_output, timer, 1);
         var response1 = collapser1.ExecuteAsync();
-        new TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(output, timer, 2).ExecuteAsync();
+        new TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(_output, timer, 2).ExecuteAsync();
         timer.IncrementTime(100); // let time pass that equals the default delay/period
 
         // we will fetch one of these just so we wait for completion ... but expect an error
@@ -1070,7 +1074,7 @@ public class HystrixCollapserTest : HystrixTestBase
     public void TestVoidResponseTypeFireAndForgetCollapsing3()
     {
         ICollapserTimer timer = new RealCollapserTimer();
-        var collapser1 = new TestCollapserWithVoidResponseType(output, timer, 1);
+        var collapser1 = new TestCollapserWithVoidResponseType(_output, timer, 1);
         Assert.Null(collapser1.Execute());
 
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
@@ -1082,10 +1086,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestEarlyUnsubscribeExecutedViaToObservable()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var response1 = collapser1.ToObservable();
-        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
+        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(_output, timer, 2);
         var response2 = collapser2.ToObservable();
 
         var latch1 = new CountdownEvent(1);
@@ -1097,46 +1101,46 @@ public class HystrixCollapserTest : HystrixTestBase
         var s1 = response1
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                 latch2.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
 
@@ -1150,7 +1154,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Null(value1.Value);
         Assert.Equal("2", value2.Value);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         var metrics = collapser1.Metrics;
         Assert.True(metrics == collapser2.Metrics);
@@ -1162,10 +1166,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestEarlyUnsubscribeExecutedViaObserve()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var response1 = collapser1.Observe();
-        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
+        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(_output, timer, 2);
         var response2 = collapser2.Observe();
 
         var latch1 = new CountdownEvent(1);
@@ -1177,46 +1181,46 @@ public class HystrixCollapserTest : HystrixTestBase
         var s1 = response1
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                 latch2.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
         s1.Dispose();
@@ -1229,7 +1233,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Null(value1.Value);
         Assert.Equal("2", value2.Value);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         var metrics = collapser1.Metrics;
         Assert.True(metrics == collapser2.Metrics);
@@ -1241,10 +1245,10 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestEarlyUnsubscribeFromAllCancelsBatch()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
         var response1 = collapser1.Observe();
-        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
+        HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(_output, timer, 2);
         var response2 = collapser2.Observe();
 
         var latch1 = new CountdownEvent(1);
@@ -1256,46 +1260,46 @@ public class HystrixCollapserTest : HystrixTestBase
         var s1 = response1
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
                     latch1.SignalEx();
                 });
 
         var s2 = response2
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                 latch2.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
 
@@ -1310,17 +1314,17 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Null(value1.Value);
         Assert.Null(value2.Value);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(0, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
     }
 
     [Fact]
     public void TestRequestThenCacheHitAndCacheHitUnsubscribed()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response1 = collapser1.Observe();
-        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response2 = collapser2.Observe();
 
         var latch1 = new CountdownEvent(1);
@@ -1329,49 +1333,49 @@ public class HystrixCollapserTest : HystrixTestBase
         var value1 = new AtomicReference<string>(null);
         var value2 = new AtomicReference<string>(null);
 
-        var s1 = response1
+        response1
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
                     latch1.SignalEx();
                 });
 
         var s2 = response2
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                 latch2.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
 
@@ -1385,7 +1389,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal("foo", value1.Value);
         Assert.Null(value2.Value);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         var cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
@@ -1397,10 +1401,10 @@ public class HystrixCollapserTest : HystrixTestBase
     public void TestRequestThenCacheHitAndOriginalUnsubscribed()
     {
         // TODO:
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response1 = collapser1.Observe();
-        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response2 = collapser2.Observe();
 
         var latch1 = new CountdownEvent(1);
@@ -1411,46 +1415,46 @@ public class HystrixCollapserTest : HystrixTestBase
         var s1 = response1
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                 latch2.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
 
@@ -1464,7 +1468,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Null(value1.Value);
         Assert.Equal("foo", value2.Value);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         var cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
@@ -1475,12 +1479,12 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestThenTwoCacheHitsOriginalAndOneCacheHitUnsubscribed()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response1 = collapser1.Observe();
-        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response2 = collapser2.Observe();
-        HystrixCollapser<List<string>, string, string> collapser3 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        HystrixCollapser<List<string>, string, string> collapser3 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response3 = collapser3.Observe();
 
         var latch1 = new CountdownEvent(1);
@@ -1493,69 +1497,69 @@ public class HystrixCollapserTest : HystrixTestBase
         var s1 = response1
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
                     latch1.SignalEx();
                 });
 
-        var s2 = response2
+        response2
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                 latch2.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
 
         var s3 = response3
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s3 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s3 Unsubscribed!");
                 latch3.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s3 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s3 OnNext : " + s);
                     value3.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s3 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s3 OnError : " + e);
                     latch3.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s3 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s3 OnCompleted!");
                     latch3.SignalEx();
                 });
 
@@ -1572,7 +1576,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal("foo", value2.Value);
         Assert.Null(value3.Value);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         var cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
@@ -1584,12 +1588,12 @@ public class HystrixCollapserTest : HystrixTestBase
 
     public void TestRequestThenTwoCacheHitsAllUnsubscribed()
     {
-        var timer = new TestCollapserTimer(output);
-        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        var timer = new TestCollapserTimer(_output);
+        HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response1 = collapser1.Observe();
-        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response2 = collapser2.Observe();
-        HystrixCollapser<List<string>, string, string> collapser3 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+        HystrixCollapser<List<string>, string, string> collapser3 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         var response3 = collapser3.Observe();
 
         var latch1 = new CountdownEvent(1);
@@ -1603,69 +1607,69 @@ public class HystrixCollapserTest : HystrixTestBase
         var s1 = response1
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnNext : " + s);
                     value1.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s1 OnCompleted!");
                     latch1.SignalEx();
                 });
 
         var s2 = response2
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                 latch2.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnNext : " + s);
                     value2.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
 
         var s3 = response3
             .OnDispose(() =>
             {
-                output.WriteLine(Time.CurrentTimeMillis + " : s3 Unsubscribed!");
+                _output.WriteLine(Time.CurrentTimeMillis + " : s3 Unsubscribed!");
                 latch3.SignalEx();
             })
             .Subscribe(
                 s =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s3 OnNext : " + s);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s3 OnNext : " + s);
                     value3.Value = s;
                 },
                 e =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s3 OnError : " + e);
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s3 OnError : " + e);
                     latch3.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(Time.CurrentTimeMillis + " : s3 OnCompleted!");
+                    _output.WriteLine(Time.CurrentTimeMillis + " : s3 OnCompleted!");
                     latch3.SignalEx();
                 });
 
@@ -1683,7 +1687,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Null(value2.Value);
         Assert.Null(value3.Value);
 
-        output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(0, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
     }
 
@@ -1791,18 +1795,18 @@ public class HystrixCollapserTest : HystrixTestBase
         {
         }
 
-        private static HystrixCollapserMetrics CreateMetrics()
-        {
-            var key = HystrixCollapserKeyDefault.AsKey("COLLAPSER_ONE");
-            return HystrixCollapserMetrics.GetInstance(key, new HystrixCollapserOptions(key));
-        }
-
         public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds, ConcurrentQueue<HystrixCommand<List<string>>> executionLog)
             : base(CollapserKeyFromString(timer), scope, timer, GetOptions(CollapserKeyFromString(timer), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds), CreateMetrics())
         {
             this.value = value;
             commandsExecuted = executionLog;
             this.output = output;
+        }
+
+        private static HystrixCollapserMetrics CreateMetrics()
+        {
+            var key = HystrixCollapserKeyDefault.AsKey("COLLAPSER_ONE");
+            return HystrixCollapserMetrics.GetInstance(key, new HystrixCollapserOptions(key));
         }
 
         public static IHystrixCollapserOptions GetOptions(IHystrixCollapserKey key, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds)
@@ -1930,23 +1934,23 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class TestCollapserCommand : TestHystrixCommand<List<string>>
     {
-        private readonly ICollection<ICollapsedRequest<string, string>> requests;
-        private readonly ITestOutputHelper output;
+        private readonly ICollection<ICollapsedRequest<string, string>> _requests;
+        private readonly ITestOutputHelper _outputHelper;
 
-        public TestCollapserCommand(ITestOutputHelper output, ICollection<ICollapsedRequest<string, string>> requests)
+        public TestCollapserCommand(ITestOutputHelper outputHelper, ICollection<ICollapsedRequest<string, string>> requests)
             : base(TestPropsBuilder().SetCommandOptionDefaults(GetCommandOptions()))
         {
-            this.requests = requests;
-            this.output = output;
+            _requests = requests;
+            _outputHelper = outputHelper;
         }
 
         protected override List<string> Run()
         {
-            output.WriteLine(">>> TestCollapserCommand run() ... batch size: " + requests.Count);
+            _outputHelper.WriteLine(">>> TestCollapserCommand run() ... batch size: " + _requests.Count);
 
             // simulate a batch request
             var response = new List<string>();
-            foreach (var request in requests)
+            foreach (var request in _requests)
             {
                 if (request.Argument == null)
                 {
@@ -1967,7 +1971,7 @@ public class HystrixCollapserTest : HystrixTestBase
                         }
                         catch (Exception e)
                         {
-                            output.WriteLine(e.ToString());
+                            _outputHelper.WriteLine(e.ToString());
                         }
                     }
 
@@ -1988,25 +1992,25 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class SuccessfulCacheableCollapsedCommand : TestRequestCollapser
     {
-        private readonly bool cacheEnabled;
+        private readonly bool _cacheEnabled;
 
         public SuccessfulCacheableCollapsedCommand(ITestOutputHelper output, TestCollapserTimer timer, string value, bool cacheEnabled)
             : base(output, timer, value)
         {
-            this.cacheEnabled = cacheEnabled;
+            _cacheEnabled = cacheEnabled;
         }
 
         public SuccessfulCacheableCollapsedCommand(ITestOutputHelper output, TestCollapserTimer timer, string value, bool cacheEnabled, ConcurrentQueue<HystrixCommand<List<string>>> executionLog)
             : base(output, timer, value, executionLog)
         {
-            this.cacheEnabled = cacheEnabled;
+            _cacheEnabled = cacheEnabled;
         }
 
         protected override string CacheKey
         {
             get
             {
-                if (cacheEnabled)
+                if (_cacheEnabled)
                 {
                     return $"aCacheKey_{value}";
                 }
@@ -2020,17 +2024,17 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class ShortCircuitedCommand : HystrixCommand<List<string>>
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public ShortCircuitedCommand(ITestOutputHelper output)
             : base(GetCommandOptions())
         {
-            this.output = output;
+            _output = output;
         }
 
         protected override List<string> Run()
         {
-            output.WriteLine("*** execution (this shouldn't happen)");
+            _output.WriteLine("*** execution (this shouldn't happen)");
 
             // this won't ever get called as we're forcing short-circuiting
             var values = new List<string>
@@ -2053,17 +2057,17 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class FireAndForgetCommand : HystrixCommand<object>
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public FireAndForgetCommand(ITestOutputHelper output, List<int> values)
             : base(GetCommandOptions())
         {
-            this.output = output;
+            _output = output;
         }
 
         protected override object Run()
         {
-            output.WriteLine("*** FireAndForgetCommand execution: " + Thread.CurrentThread.ManagedThreadId);
+            _output.WriteLine("*** FireAndForgetCommand execution: " + Thread.CurrentThread.ManagedThreadId);
             return null;
         }
 
@@ -2080,17 +2084,17 @@ public class HystrixCollapserTest : HystrixTestBase
     {
         public readonly ConcurrentDictionary<ATask, ATask> Tasks = new ();
         private readonly object _lock = new ();
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public TestCollapserTimer(ITestOutputHelper output)
         {
-            this.output = output;
+            _output = output;
         }
 
         public TimerReference AddListener(ITimerListener collapseTask)
         {
             var listener = new TestTimerListener(collapseTask);
-            var t = new ATask(output, listener);
+            var t = new ATask(_output, listener);
             Tasks.TryAdd(t, t);
 
             var refr = new TestTimerReference(this, listener, TimeSpan.FromMilliseconds(0));
@@ -2111,22 +2115,25 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class TestTimerReference : TimerReference
     {
-        private readonly TestCollapserTimer ctimer;
+        private readonly TestCollapserTimer _ctimer;
 
         public TestTimerReference(TestCollapserTimer ctimer, ITimerListener listener, TimeSpan period)
             : base(listener, period)
         {
-            this.ctimer = ctimer;
+            _ctimer = ctimer;
         }
 
         protected override void Dispose(bool disposing)
         {
-            // Called when context is disposed
-            foreach (var v in ctimer.Tasks.Values)
+            if (disposing)
             {
-                if (v.Task == _listener)
+                // Called when context is disposed
+                foreach (var v in _ctimer.Tasks.Values)
                 {
-                    _ = ctimer.Tasks.TryRemove(v, out var removed);
+                    if (v.Task == _listener)
+                    {
+                        _ = _ctimer.Tasks.TryRemove(v, out _);
+                    }
                 }
             }
 
@@ -2141,14 +2148,14 @@ public class HystrixCollapserTest : HystrixTestBase
         // our relative time that we'll use
         public volatile int Time;
         public volatile int ExecutionCount;
-        private readonly int delay = 10;
+        private readonly int _delay = 10;
         private readonly object _lock = new ();
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public ATask(ITestOutputHelper output, TestTimerListener task)
         {
             Task = task;
-            this.output = output;
+            _output = output;
         }
 
         public void IncrementTime(int timeInMilliseconds)
@@ -2160,8 +2167,8 @@ public class HystrixCollapserTest : HystrixTestBase
                 {
                     if (ExecutionCount == 0)
                     {
-                        output.WriteLine("ExecutionCount 0 => Time: " + Time + " Delay: " + delay);
-                        if (Time >= delay)
+                        _output.WriteLine("ExecutionCount 0 => Time: " + Time + " Delay: " + _delay);
+                        if (Time >= _delay)
                         {
                             // first execution, we're past the delay time
                             ExecuteTask();
@@ -2169,8 +2176,8 @@ public class HystrixCollapserTest : HystrixTestBase
                     }
                     else
                     {
-                        output.WriteLine("ExecutionCount 1+ => Time: " + Time + " Delay: " + delay);
-                        if (Time >= delay)
+                        _output.WriteLine("ExecutionCount 1+ => Time: " + Time + " Delay: " + _delay);
+                        if (Time >= _delay)
                         {
                             // subsequent executions, we're past the interval time
                             ExecuteTask();
@@ -2184,11 +2191,11 @@ public class HystrixCollapserTest : HystrixTestBase
         {
             lock (_lock)
             {
-                output.WriteLine("Executing task ...");
+                _output.WriteLine("Executing task ...");
                 Task.Tick();
                 Time = 0; // we reset time after each execution
                 ExecutionCount++;
-                output.WriteLine("executionCount: " + ExecutionCount);
+                _output.WriteLine("executionCount: " + ExecutionCount);
             }
         }
     }
@@ -2219,13 +2226,13 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class TestCollapserWithVoidResponseType : HystrixCollapser<object, object, int>
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public TestCollapserWithVoidResponseType(ITestOutputHelper output, ICollapserTimer timer, int value)
             : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
         {
-            this.RequestArgument = value;
-            this.output = output;
+            RequestArgument = value;
+            _output = output;
         }
 
         private static IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey key)
@@ -2248,7 +2255,7 @@ public class HystrixCollapserTest : HystrixTestBase
                 args.Add(request.Argument);
             }
 
-            return new FireAndForgetCommand(output, args);
+            return new FireAndForgetCommand(_output, args);
         }
 
         protected override void MapResponseToRequests(object batchResponse, ICollection<ICollapsedRequest<object, int>> requests)
@@ -2262,13 +2269,13 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests : HystrixCollapser<object, object, int>
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(ITestOutputHelper output, ICollapserTimer timer, int value)
             : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
         {
-            this.RequestArgument = value;
-            this.output = output;
+            RequestArgument = value;
+            _output = output;
         }
 
         public override int RequestArgument { get; }
@@ -2281,7 +2288,7 @@ public class HystrixCollapserTest : HystrixTestBase
                 args.Add(request.Argument);
             }
 
-            return new FireAndForgetCommand(output, args);
+            return new FireAndForgetCommand(_output, args);
         }
 
         protected override void MapResponseToRequests(object batchResponse, ICollection<ICollapsedRequest<object, int>> requests)
@@ -2313,21 +2320,21 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class MyCommand : HystrixCommand<List<Pair<string, int>>>
     {
-        private readonly List<string> args;
-        private readonly ITestOutputHelper output;
+        private readonly List<string> _args;
+        private readonly ITestOutputHelper _output;
 
         public MyCommand(ITestOutputHelper output, List<string> args)
             : base(GetCommandOptions())
         {
-            this.args = args;
-            this.output = output;
+            _args = args;
+            _output = output;
         }
 
         protected override List<Pair<string, int>> Run()
         {
-            output.WriteLine("Executing batch command on : " + Thread.CurrentThread.ManagedThreadId + " with args : " + args);
+            _output.WriteLine("Executing batch command on : " + Thread.CurrentThread.ManagedThreadId + " with args : " + _args);
             var results = new List<Pair<string, int>>();
-            foreach (var arg in args)
+            foreach (var arg in _args)
             {
                 results.Add(new Pair<string, int>(arg, int.Parse(arg)));
             }
@@ -2347,8 +2354,8 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class MyCollapser : HystrixCollapser<List<Pair<string, int>>, int, string>
     {
-        private readonly string arg;
-        private readonly ITestOutputHelper output;
+        private readonly string _arg;
+        private readonly ITestOutputHelper _output;
 
         public MyCollapser(ITestOutputHelper output, string arg, bool reqCacheEnabled)
             : base(
@@ -2358,8 +2365,8 @@ public class HystrixCollapserTest : HystrixTestBase
                 GetCollapserOptions(reqCacheEnabled),
                 HystrixCollapserMetrics.GetInstance(HystrixCollapserKeyDefault.AsKey("UNITTEST"), GetCollapserOptions(reqCacheEnabled)))
         {
-            this.arg = arg;
-            this.output = output;
+            _arg = arg;
+            _output = output;
         }
 
         public MyCollapser(ITestOutputHelper output, string arg, bool reqCacheEnabled, int timerDelayInMilliseconds)
@@ -2370,11 +2377,11 @@ public class HystrixCollapserTest : HystrixTestBase
                 GetCollapserOptions(reqCacheEnabled, timerDelayInMilliseconds),
                 HystrixCollapserMetrics.GetInstance(HystrixCollapserKeyDefault.AsKey("UNITTEST"), GetCollapserOptions(reqCacheEnabled, timerDelayInMilliseconds)))
         {
-            this.arg = arg;
-            this.output = output;
+            _arg = arg;
+            _output = output;
         }
 
-        public override string RequestArgument => arg;
+        public override string RequestArgument => _arg;
 
         protected override HystrixCommand<List<Pair<string, int>>> CreateCommand(ICollection<ICollapsedRequest<int, string>> collapsedRequests)
         {
@@ -2384,7 +2391,7 @@ public class HystrixCollapserTest : HystrixTestBase
                 args.Add(req.Argument);
             }
 
-            return new MyCommand(output, args);
+            return new MyCommand(_output, args);
         }
 
         protected override void MapResponseToRequests(List<Pair<string, int>> batchResponse, ICollection<ICollapsedRequest<int, string>> collapsedRequests)
@@ -2401,7 +2408,7 @@ public class HystrixCollapserTest : HystrixTestBase
             }
         }
 
-        protected override string CacheKey => arg;
+        protected override string CacheKey => _arg;
 
         private static IHystrixCollapserOptions GetCollapserOptions(bool reqCacheEnabled)
         {
@@ -2425,13 +2432,13 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class TestSubscriber<T> : ObserverBase<T>
     {
-        private readonly CountdownEvent latch = new (1);
-        private readonly ITestOutputHelper output;
-        private int completions;
+        private readonly CountdownEvent _latch = new (1);
+        private readonly ITestOutputHelper _output;
+        private int _completions;
 
         public TestSubscriber(ITestOutputHelper output)
         {
-            this.output = output;
+            _output = output;
             OnNextEvents = new List<T>();
             OnErrorEvents = new List<Exception>();
         }
@@ -2452,7 +2459,7 @@ public class HystrixCollapserTest : HystrixTestBase
         {
             get
             {
-                var c = completions;
+                var c = _completions;
                 var results = new List<Notification<T>>();
                 for (var i = 0; i < c; i++)
                 {
@@ -2473,7 +2480,7 @@ public class HystrixCollapserTest : HystrixTestBase
         {
             try
             {
-                latch.Wait(timeInMilli);
+                _latch.Wait(timeInMilli);
             }
             catch (Exception e)
             {
@@ -2529,7 +2536,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
         internal void AssertCompleted()
         {
-            var s = completions;
+            var s = _completions;
             if (s == 0)
             {
                 Assert.False(true, "Not completed!");
@@ -2542,21 +2549,21 @@ public class HystrixCollapserTest : HystrixTestBase
 
         protected override void OnCompletedCore()
         {
-            output.WriteLine("OnCompleted @ " + Time.CurrentTimeMillis);
-            completions++;
-            latch.SignalEx();
+            _output.WriteLine("OnCompleted @ " + Time.CurrentTimeMillis);
+            _completions++;
+            _latch.SignalEx();
         }
 
         protected override void OnErrorCore(Exception error)
         {
-            output.WriteLine("OnError @ " + Time.CurrentTimeMillis + " : " + error.Message);
+            _output.WriteLine("OnError @ " + Time.CurrentTimeMillis + " : " + error.Message);
             OnErrorEvents.Add(error);
-            latch.SignalEx();
+            _latch.SignalEx();
         }
 
         protected override void OnNextCore(T value)
         {
-            output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + value);
+            _output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + value);
             OnNextEvents.Add(value);
         }
     }

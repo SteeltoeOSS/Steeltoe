@@ -24,7 +24,7 @@ public class TestConfigServerStartup
 
     public static string Response { get; set; }
 
-    public static int[] ReturnStatus { get; set; } = new[] { 200 };
+    public static int[] ReturnStatus { get; set; } = { 200 };
 
     public static HttpRequestInfo LastRequest { get; set; }
 
@@ -58,28 +58,19 @@ public class TestConfigServerStartup
 
     public int GetStatusCode(string path)
     {
-        if (!string.IsNullOrEmpty(Label))
+        if (!string.IsNullOrEmpty(Label) && !path.Contains(Label))
         {
-            if (!path.Contains(Label))
-            {
-                return 404;
-            }
+            return 404;
         }
 
-        if (!string.IsNullOrEmpty(Env))
+        if (!string.IsNullOrEmpty(Env) && !path.Contains(Env))
         {
-            if (!path.Contains(Env))
-            {
-                return 404;
-            }
+            return 404;
         }
 
-        if (!string.IsNullOrEmpty(AppName))
+        if (!string.IsNullOrEmpty(AppName) && !path.Contains(AppName))
         {
-            if (!path.Contains(AppName))
-            {
-                return 404;
-            }
+            return 404;
         }
 
         return ReturnStatus[RequestCount];

@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonApplications
+internal sealed class JsonApplications
 {
     [JsonPropertyName("apps__hashcode")]
     public string AppsHashCode { get; set; }

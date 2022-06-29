@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class ConfigurationAccessorTests
 {
-    private IServiceProvider serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public ConfigurationAccessorTests()
     {
@@ -27,13 +27,13 @@ public class ConfigurationAccessorTests
         collection.AddSingleton<IConfiguration>(config);
         collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, config));
 
-        serviceProvider = collection.BuildServiceProvider();
+        _serviceProvider = collection.BuildServiceProvider();
     }
 
     [Fact]
     public void TestBraceAccess()
     {
-        var rootObject = new ServiceExpressionContext(serviceProvider.GetService<IApplicationContext>());
+        var rootObject = new ServiceExpressionContext(_serviceProvider.GetService<IApplicationContext>());
         var context = new StandardEvaluationContext(rootObject);
         context.AddPropertyAccessor(new ServiceExpressionContextAccessor());
         context.AddPropertyAccessor(new ConfigurationAccessor());

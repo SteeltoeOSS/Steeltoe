@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Connector.Services.Test;
 
-internal class TestServiceInfoFactory : ServiceInfoFactory
+internal sealed class TestServiceInfoFactory : ServiceInfoFactory
 {
     public TestServiceInfoFactory(Tags tags, string scheme)
         : base(tags, scheme)

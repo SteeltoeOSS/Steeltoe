@@ -13,11 +13,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
 public class RabbitBindingsOptionsTest
 {
-    private readonly ITestOutputHelper output;
+    private readonly ITestOutputHelper _output;
 
     public RabbitBindingsOptionsTest(ITestOutputHelper output)
     {
-        this.output = output;
+        _output = output;
     }
 
     public static class AssertOptionEquals
@@ -236,21 +236,21 @@ public class RabbitBindingsOptionsTest
         var children = inputBindingSection.GetChildren();
         foreach (var child in children)
         {
-            output.WriteLine(child.Key + ":" + child.Value);
+            _output.WriteLine(child.Key + ":" + child.Value);
             var pi = optionsObject.GetType().GetProperty(child.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
 
             object value = null;
             if (pi == null)
             {
                 // Check for dictionary Type
-                if (typeof(IDictionary<string, string>).IsAssignableFrom(optionsObject.GetType()))
+                if (optionsObject is IDictionary<string, string>)
                 {
                     var dict = optionsObject as Dictionary<string, string>;
                     value = dict?[child.Key];
                 }
 
                 // Check for list Type
-                else if (typeof(List<string>).IsAssignableFrom(optionsObject.GetType()))
+                else if (optionsObject is List<string>)
                 {
                     var list = optionsObject as IList<string>;
                     value = list?[int.Parse(child.Key)];

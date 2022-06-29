@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 [Obsolete("This class is moving to EndpointBase")]
-internal class Application
+internal sealed class Application
 {
     [JsonPropertyName("name")]
     public string Name { get; set; }
@@ -27,10 +27,8 @@ internal class Application
     public Dictionary<string, object> Metadata { get; set; }
 }
 
-#pragma warning disable SA1402 // File may only contain a single type
 [Obsolete("This class is moving to EndpointBase")]
-internal class RegistrationResult
-#pragma warning restore SA1402 // File may only contain a single type
+internal sealed class RegistrationResult
 {
     public string Id { get; set; }
 }

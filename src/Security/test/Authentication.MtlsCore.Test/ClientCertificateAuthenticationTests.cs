@@ -63,7 +63,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedValidWithClientEku);
 
@@ -78,7 +78,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedValidWithNoEku);
 
@@ -107,7 +107,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 AllowedCertificateTypes = CertificateTypes.Chained,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedValidWithNoEku);
 
@@ -122,7 +122,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedValidWithServerEku);
 
@@ -138,7 +138,7 @@ public class ClientCertificateAuthenticationTests
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
                 ValidateCertificateUse = false,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedValidWithServerEku);
 
@@ -154,7 +154,7 @@ public class ClientCertificateAuthenticationTests
             {
                 AllowedCertificateTypes = CertificateTypes.Chained,
                 ValidateCertificateUse = false,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedValidWithServerEku);
 
@@ -171,7 +171,7 @@ public class ClientCertificateAuthenticationTests
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
                 ValidateCertificateUse = false,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedExpired);
 
@@ -187,7 +187,7 @@ public class ClientCertificateAuthenticationTests
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
                 ValidateValidityPeriod = false,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedExpired);
 
@@ -205,7 +205,7 @@ public class ClientCertificateAuthenticationTests
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
                 ValidateCertificateUse = false,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedNotYetValid);
 
@@ -221,7 +221,7 @@ public class ClientCertificateAuthenticationTests
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
                 ValidateValidityPeriod = false,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             Certificates.SelfSignedNotYetValid);
 
@@ -236,7 +236,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 ValidateCertificateUse = false,
-                Events = failedValidationEvents
+                Events = _failedValidationEvents
             },
             Certificates.SelfSignedValidWithServerEku);
 
@@ -252,7 +252,7 @@ public class ClientCertificateAuthenticationTests
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
                 ValidateCertificateUse = false,
-                Events = unprocessedValidationEvents
+                Events = _unprocessedValidationEvents
             },
             Certificates.SelfSignedValidWithServerEku);
 
@@ -266,7 +266,7 @@ public class ClientCertificateAuthenticationTests
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
             {
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             });
 
         var response = await server.CreateClient().GetAsync("https://example.com/");
@@ -279,7 +279,7 @@ public class ClientCertificateAuthenticationTests
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
             {
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             }, Certificates.SignedClient);
 
         var response = await server.CreateClient().GetAsync("https://example.com/");
@@ -293,7 +293,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                Events = successfulValidationEvents,
+                Events = _successfulValidationEvents,
                 IssuerChain = new List<X509Certificate2> { Certificates.SelfSignedPrimaryRoot, Certificates.SignedSecondaryRoot }
             }, Certificates.SignedClient);
 
@@ -308,7 +308,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             wireUpHeaderMiddleware: true);
 
@@ -324,7 +324,7 @@ public class ClientCertificateAuthenticationTests
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
             {
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             wireUpHeaderMiddleware: true);
 
@@ -341,7 +341,7 @@ public class ClientCertificateAuthenticationTests
             new MutualTlsAuthenticationOptions
             {
                 AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             wireUpHeaderMiddleware: true,
             headerName: "X-ARR-ClientCert");
@@ -358,7 +358,7 @@ public class ClientCertificateAuthenticationTests
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
             {
-                Events = successfulValidationEvents
+                Events = _successfulValidationEvents
             },
             wireUpHeaderMiddleware: true,
             headerName: "X-ARR-ClientCert");
@@ -550,7 +550,6 @@ public class ClientCertificateAuthenticationTests
 
                 app.Run(async context =>
                 {
-                    var request = context.Request;
                     var response = context.Response;
 
                     var authenticationResult = await context.AuthenticateAsync();
@@ -611,7 +610,7 @@ public class ClientCertificateAuthenticationTests
         return server;
     }
 
-    private readonly CertificateAuthenticationEvents successfulValidationEvents = new ()
+    private readonly CertificateAuthenticationEvents _successfulValidationEvents = new ()
     {
         OnCertificateValidated = context =>
         {
@@ -627,7 +626,7 @@ public class ClientCertificateAuthenticationTests
         }
     };
 
-    private readonly CertificateAuthenticationEvents failedValidationEvents = new ()
+    private readonly CertificateAuthenticationEvents _failedValidationEvents = new ()
     {
         OnCertificateValidated = context =>
         {
@@ -636,9 +635,9 @@ public class ClientCertificateAuthenticationTests
         }
     };
 
-    private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new ()
+    private readonly CertificateAuthenticationEvents _unprocessedValidationEvents = new ()
     {
-        OnCertificateValidated = context => Task.CompletedTask
+        OnCertificateValidated = _ => Task.CompletedTask
     };
 
     private static class Certificates

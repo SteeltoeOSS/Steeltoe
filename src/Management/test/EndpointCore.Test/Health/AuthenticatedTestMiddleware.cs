@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
-internal class AuthenticatedTestMiddleware
+internal sealed class AuthenticatedTestMiddleware
 {
     private readonly RequestDelegate _next;
 

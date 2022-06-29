@@ -128,7 +128,7 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
             }
             else
             {
-                RetryTemplate.Execute(ctx => Handle(message, handler), _recoveryCallback);
+                RetryTemplate.Execute(_ => Handle(message, handler), _recoveryCallback);
             }
 
             return true;

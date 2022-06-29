@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class ParsingTests
 {
-    private SpelExpressionParser parser = new ();
+    private readonly SpelExpressionParser _parser = new ();
 
     // literals
     [Fact]
@@ -484,7 +484,7 @@ public class ParsingTests
 
     private void ParseCheck(string expression, string expectedStringFormOfAST)
     {
-        var e = parser.ParseRaw(expression) as SpelExpression;
+        var e = _parser.ParseRaw(expression) as SpelExpression;
         Assert.NotNull(e);
         Assert.Equal(expectedStringFormOfAST, e.ToStringAST(), true);
     }

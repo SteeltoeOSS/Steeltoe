@@ -222,7 +222,7 @@ public class DiscoveryClient : IEurekaClient
 
         if (ClientConfig.ShouldOnDemandUpdateStatusChange)
         {
-            _appInfoManager.StatusChangedEvent -= Instance_StatusChangedEvent;
+            _appInfoManager.StatusChanged -= HandleInstanceStatusChanged;
         }
 
         if (ClientConfig.ShouldRegisterWithEureka)
@@ -246,13 +246,13 @@ public class DiscoveryClient : IEurekaClient
 
     internal Timer CacheRefreshTimer => _cacheRefreshTimer;
 
-    internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
+    internal async void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
     {
         var info = _appInfoManager.InstanceInfo;
         if (info != null)
         {
             _logger.LogDebug(
-                "Instance_StatusChangedEvent {previousStatus}, {currentStatus}, {instanceId}, {dirty}",
+                "HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}",
                 args.Previous,
                 args.Current,
                 args.InstanceId,
@@ -266,12 +266,12 @@ public class DiscoveryClient : IEurekaClient
                     if (result)
                     {
                         info.IsDirty = false;
-                        _logger.LogInformation("Instance_StatusChangedEvent RegisterAsync Succeed");
+                        _logger.LogInformation("HandleInstanceStatusChanged RegisterAsync Succeed");
                     }
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Instance_StatusChangedEvent RegisterAsync Failed");
+                    _logger.LogError(e, "HandleInstanceStatusChanged RegisterAsync Failed");
                 }
             }
         }
@@ -580,7 +580,7 @@ public class DiscoveryClient : IEurekaClient
             _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, HeartBeatTaskAsync);
             if (ClientConfig.ShouldOnDemandUpdateStatusChange)
             {
-                _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
+                _appInfoManager.StatusChanged += HandleInstanceStatusChanged;
             }
         }
 

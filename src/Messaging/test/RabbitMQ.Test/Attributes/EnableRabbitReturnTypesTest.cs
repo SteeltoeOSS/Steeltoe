@@ -84,9 +84,6 @@ public class EnableRabbitReturnTypesTest
             var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.2", "4");
             Assert.NotNull(reply2);
         }
-        catch (Exception)
-        {
-        }
         finally
         {
             var admin = provider.GetRabbitAdmin();
@@ -229,9 +226,9 @@ public class EnableRabbitReturnTypesTest
         services.AddRabbitListenerEndpointRegistry();
         services.AddRabbitListenerEndpointRegistrar();
         services.AddRabbitListenerAttributeProcessor();
-        services.AddSingleton<IConnectionFactory>(p => new CachingConnectionFactory("localhost"));
+        services.AddSingleton<IConnectionFactory>(_ => new CachingConnectionFactory("localhost"));
 
-        services.AddRabbitListenerContainerFactory((p, f) =>
+        services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.DefaultRequeueRejected = false;
         });

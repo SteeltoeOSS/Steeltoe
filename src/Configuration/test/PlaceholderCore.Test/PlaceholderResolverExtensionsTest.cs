@@ -25,8 +25,8 @@ public class PlaceholderResolverExtensionsTest
         const IServiceCollection services = null;
         const IConfigurationRoot config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(config));
-        ex = Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(config));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(config));
+        Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(config));
     }
 
     [Fact]

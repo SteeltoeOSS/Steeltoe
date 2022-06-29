@@ -16,7 +16,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class ServiceFactoryAccessorTests
 {
-    private IServiceProvider serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public ServiceFactoryAccessorTests()
     {
@@ -26,20 +26,17 @@ public class ServiceFactoryAccessorTests
         collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, config));
         collection.AddSingleton(typeof(Car));
         collection.AddSingleton(typeof(Boat));
-        serviceProvider = collection.BuildServiceProvider();
+        _serviceProvider = collection.BuildServiceProvider();
     }
 
     [Fact]
     public void TestServiceAccess()
     {
-        var appContext = serviceProvider.GetService<IApplicationContext>();
+        var appContext = _serviceProvider.GetService<IApplicationContext>();
         var context = new StandardEvaluationContext
         {
             ServiceResolver = new ServiceFactoryResolver(appContext)
         };
-
-        var car = appContext.GetService<Car>();
-        var boat = appContext.GetService<Boat>();
 
         var expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Colour");
         Assert.Equal("red", expr.GetValue<string>(context));

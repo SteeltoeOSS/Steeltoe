@@ -45,16 +45,6 @@ public class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void SettingsConstructor__ThrowsIfEnvironmentNull()
-    {
-        var settings = new ConfigServerClientSettings();
-        const HttpClient httpClient = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
-        Assert.Contains(nameof(httpClient), ex.Message);
-    }
-
-    [Fact]
     public void SettingsConstructor__WithLoggerFactorySucceeds()
     {
         var logFactory = new LoggerFactory();
@@ -214,7 +204,7 @@ public class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    [Obsolete]
+    [Obsolete("To be removed in the next major version.")]
     public void AddPropertySource_ChangesDataDictionary()
     {
         var properties = new Dictionary<string, object>
@@ -300,7 +290,7 @@ public class ConfigServerConfigurationProviderTest
     {
         var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
 
-        var ex = await Assert.ThrowsAsync<UriFormatException>(() => provider.RemoteLoadAsync(new[] { "foobar\\foobar\\" }, null));
+        await Assert.ThrowsAsync<UriFormatException>(() => provider.RemoteLoadAsync(new[] { "foobar\\foobar\\" }, null));
     }
 
     [Fact]
@@ -310,7 +300,7 @@ public class ConfigServerConfigurationProviderTest
 
         try
         {
-            var ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new[] { "http://localhost:9999/app/profile" }, null));
+            await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new[] { "http://localhost:9999/app/profile" }, null));
         }
         catch (ThrowsException e)
         {
@@ -334,7 +324,7 @@ public class ConfigServerConfigurationProviderTest
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
 
-        var ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
+        await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
@@ -556,7 +546,7 @@ public class ConfigServerConfigurationProviderTest
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
 
-        var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
     }
 
     [Fact]
@@ -573,7 +563,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
 
-        var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
@@ -590,7 +580,7 @@ public class ConfigServerConfigurationProviderTest
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
 
-        var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
     }
 
     [Fact]
@@ -607,7 +597,7 @@ public class ConfigServerConfigurationProviderTest
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
 
-        var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
@@ -631,7 +621,7 @@ public class ConfigServerConfigurationProviderTest
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
 
-        var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         Assert.Equal(6, TestConfigServerStartup.RequestCount);
     }
 
@@ -823,9 +813,7 @@ public class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-#pragma warning disable SA1202 // Elements should be ordered by access
     public void GetLabels_Null()
-#pragma warning restore SA1202 // Elements should be ordered by access
     {
         var settings = new ConfigServerClientSettings();
         var provider = new ConfigServerConfigurationProvider(settings);
@@ -1150,6 +1138,9 @@ public class ConfigServerConfigurationProviderTest
             options = configuration.Get<TestOptions>();
         }
 
+        _ = nameof(TestOptions.Name);
+        _ = nameof(TestOptions.Version);
+
         Assert.Equal("my-app", options.Name);
         Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
     }
@@ -1166,8 +1157,10 @@ public class ConfigServerConfigurationProviderTest
 
     private sealed class TestOptions
     {
+#pragma warning disable S3459 // Unassigned members should be removed
         public string Name { get; set; }
 
         public string Version { get; set; }
+#pragma warning restore S3459 // Unassigned members should be removed
     }
 }

@@ -133,14 +133,9 @@ public class InstanceInfo
 
     public override bool Equals(object obj)
     {
-        if (this == obj)
+        if (ReferenceEquals(this, obj))
         {
             return true;
-        }
-
-        if (obj == null)
-        {
-            return false;
         }
 
         if (obj is not InstanceInfo other)
@@ -148,18 +143,12 @@ public class InstanceInfo
             return false;
         }
 
-        if (other.InstanceId.Equals(InstanceId))
-        {
-            return true;
-        }
-
-        return false;
+        return InstanceId == other.InstanceId;
     }
 
     public override int GetHashCode()
     {
-        var result = (31 * 1) + (InstanceId == null ? 0 : InstanceId.GetHashCode());
-        return result;
+        return InstanceId?.GetHashCode() ?? 0;
     }
 
     public override string ToString()

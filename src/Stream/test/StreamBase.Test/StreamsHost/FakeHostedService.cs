@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Stream.StreamHost;
 
-public class FakeHostedService : IHostedService, IDisposable
+public sealed class FakeHostedService : IHostedService, IDisposable
 {
     public int StartCount { get; internal set; }
 

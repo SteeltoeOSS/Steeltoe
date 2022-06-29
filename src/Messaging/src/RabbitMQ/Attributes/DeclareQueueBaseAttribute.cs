@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
-public abstract class DeclareQueueBase : Attribute
+public abstract class DeclareQueueBaseAttribute : Attribute
 {
     public virtual string Durable { get; set; } = string.Empty;
 

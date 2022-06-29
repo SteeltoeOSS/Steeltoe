@@ -28,7 +28,7 @@ public abstract class AbstractTransactionDefinition : ITransactionDefinition
 
     public virtual int Timeout { get; set; } = TIMEOUT_DEFAULT;
 
-    public virtual bool IsReadOnly { get; set; } = false;
+    public virtual bool IsReadOnly { get; set; }
 
-    public virtual string Name { get; set; } = null;
+    public virtual string Name { get; set; }
 }

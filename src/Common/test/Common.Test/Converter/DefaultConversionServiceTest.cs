@@ -397,7 +397,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToObject()
     {
-        var array = new object[] { 3L };
+        var array = new[] { 3L };
         var result = ConversionService.Convert<long>(array);
         Assert.Equal(3L, result);
     }
@@ -405,7 +405,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToObjectWithElementConversion()
     {
-        object[] array = new[] { "3" };
+        var array = new[] { "3" };
         var result = ConversionService.Convert<int>(array);
         Assert.Equal(3, result);
     }
@@ -814,49 +814,49 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertObjectToStringWithValueOfMethodPresentUsingToString()
     {
-        ISBN.Reset();
-        Assert.Equal("123456789", ConversionService.Convert<string>(new ISBN("123456789")));
+        Isbn.Reset();
+        Assert.Equal("123456789", ConversionService.Convert<string>(new Isbn("123456789")));
 
-        Assert.Equal(1, ISBN.ConstructorCount);
-        Assert.Equal(0, ISBN.ValueOfCount);
-        Assert.Equal(1, ISBN.ToStringCount);
+        Assert.Equal(1, Isbn.ConstructorCount);
+        Assert.Equal(0, Isbn.ValueOfCount);
+        Assert.Equal(1, Isbn.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToObjectUsingValueOfMethod()
     {
-        ISBN.Reset();
-        Assert.Equal(new ISBN("123456789"), ConversionService.Convert<ISBN>("123456789"));
+        Isbn.Reset();
+        Assert.Equal(new Isbn("123456789"), ConversionService.Convert<Isbn>("123456789"));
 
-        Assert.Equal(2, ISBN.ConstructorCount);
-        Assert.Equal(1, ISBN.ValueOfCount);
-        Assert.Equal(0, ISBN.ToStringCount);
+        Assert.Equal(2, Isbn.ConstructorCount);
+        Assert.Equal(1, Isbn.ValueOfCount);
+        Assert.Equal(0, Isbn.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToStringUsingToString()
     {
-        SSN.Reset();
-        Assert.Equal("123456789", ConversionService.Convert<string>(new SSN("123456789")));
+        SocialSecurityNumber.Reset();
+        Assert.Equal("123456789", ConversionService.Convert<string>(new SocialSecurityNumber("123456789")));
 
-        Assert.Equal(1, SSN.ConstructorCount);
-        Assert.Equal(1, SSN.ToStringCount);
+        Assert.Equal(1, SocialSecurityNumber.ConstructorCount);
+        Assert.Equal(1, SocialSecurityNumber.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToObjectUsingObjectConstructor()
     {
-        SSN.Reset();
-        Assert.Equal(new SSN("123456789"), ConversionService.Convert<SSN>("123456789"));
+        SocialSecurityNumber.Reset();
+        Assert.Equal(new SocialSecurityNumber("123456789"), ConversionService.Convert<SocialSecurityNumber>("123456789"));
 
-        Assert.Equal(2, SSN.ConstructorCount);
-        Assert.Equal(0, SSN.ToStringCount);
+        Assert.Equal(2, SocialSecurityNumber.ConstructorCount);
+        Assert.Equal(0, SocialSecurityNumber.ToStringCount);
     }
 
     [Fact]
     public void ConvertObjectToObjectNoValueOfMethodOrConstructor()
     {
-        Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<SSN>(3L));
+        Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<SocialSecurityNumber>(3L));
     }
 
     [Fact]
@@ -898,7 +898,7 @@ public class DefaultConversionServiceTest
         Assert.Equal("utf-8", ConversionService.Convert<string>(Encoding.UTF8));
     }
 
-    private sealed class ISBN
+    private sealed class Isbn
     {
         public static int ConstructorCount;
         public static int ToStringCount;
@@ -911,40 +911,47 @@ public class DefaultConversionServiceTest
             ValueOfCount = 0;
         }
 
-        public static ISBN ValueOf(string value)
+#pragma warning disable S1144 // Unused private types or members should be removed
+        public static Isbn ValueOf(string value)
         {
             ValueOfCount++;
-            return new ISBN(value);
+            return new Isbn(value);
         }
+#pragma warning restore S1144 // Unused private types or members should be removed
 
-        private readonly string value;
+        private readonly string _value;
 
-        public ISBN(string value)
+        public Isbn(string value)
         {
             ConstructorCount++;
-            this.value = value;
+            _value = value;
         }
 
-        public override bool Equals(object o)
+        public override bool Equals(object obj)
         {
-            if (o is not ISBN isbn)
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is not Isbn other)
             {
                 return false;
             }
 
-            return value.Equals(isbn.value);
+            return _value.Equals(other._value);
         }
 
-        public override int GetHashCode() => value.GetHashCode();
+        public override int GetHashCode() => _value.GetHashCode();
 
         public override string ToString()
         {
             ToStringCount++;
-            return value;
+            return _value;
         }
     }
 
-    private sealed class SSN
+    private sealed class SocialSecurityNumber
     {
         public static int ConstructorCount;
 
@@ -956,30 +963,35 @@ public class DefaultConversionServiceTest
             ToStringCount = 0;
         }
 
-        private readonly string value;
+        private readonly string _value;
 
-        public SSN(string value)
+        public SocialSecurityNumber(string value)
         {
             ConstructorCount++;
-            this.value = value;
+            _value = value;
         }
 
-        public override bool Equals(object o)
+        public override bool Equals(object obj)
         {
-            if (o is not SSN ssn)
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is not SocialSecurityNumber ssn)
             {
                 return false;
             }
 
-            return value.Equals(ssn.value);
+            return _value.Equals(ssn._value);
         }
 
-        public override int GetHashCode() => value.GetHashCode();
+        public override int GetHashCode() => _value.GetHashCode();
 
         public override string ToString()
         {
             ToStringCount++;
-            return value;
+            return _value;
         }
     }
 }

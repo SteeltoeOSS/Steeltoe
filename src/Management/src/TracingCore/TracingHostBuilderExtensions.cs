@@ -26,7 +26,7 @@ public static class TracingHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
     public static IWebHostBuilder AddDistributedTracingAspNetCore(this IWebHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
-        => hostBuilder.ConfigureServices((context, services) => services.AddDistributedTracingAspNetCore(action));
+        => hostBuilder.ConfigureServices((_, services) => services.AddDistributedTracingAspNetCore(action));
 
 #if NET6_0_OR_GREATER
     /// <summary>

@@ -21,7 +21,7 @@ public static class DiscoveryWebHostBuilderExtensions
     /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
     /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
     public static IWebHostBuilder AddDiscoveryClient(this IWebHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureServices((context, collection) => collection.AddDiscoveryClient());
+        hostBuilder.ConfigureServices((_, collection) => collection.AddDiscoveryClient());
 
     /// <summary>
     /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
@@ -33,5 +33,5 @@ public static class DiscoveryWebHostBuilderExtensions
     /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
     /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
     public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction) =>
-        hostBuilder.ConfigureServices((context, collection) => collection.AddServiceDiscovery(optionsAction));
+        hostBuilder.ConfigureServices((_, collection) => collection.AddServiceDiscovery(optionsAction));
 }

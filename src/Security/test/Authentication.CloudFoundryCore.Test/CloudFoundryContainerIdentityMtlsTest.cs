@@ -18,11 +18,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertificatesFixture>
 {
-    private readonly ClientCertificatesFixture fixture;
+    private readonly ClientCertificatesFixture _fixture;
 
     public CloudFoundryContainerIdentityMtlsTest(ClientCertificatesFixture fixture)
     {
-        this.fixture = fixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     private IHostBuilder GetHostBuilder()
     {
         return new HostBuilder()
-            .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity(fixture.ServerOrgId.ToString(), fixture.ServerSpaceId.ToString()))
+            .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity(_fixture.ServerOrgId.ToString(), _fixture.ServerSpaceId.ToString()))
             .ConfigureWebHostDefaults(webHost => webHost.UseStartup<TestServerCertificateStartup>())
             .ConfigureWebHost(webBuilder =>
             {

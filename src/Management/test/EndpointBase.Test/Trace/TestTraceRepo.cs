@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test;
 
-internal class TestTraceRepo : ITraceRepository
+internal sealed class TestTraceRepo : ITraceRepository
 {
     public bool GetTracesCalled { get; set; }
 

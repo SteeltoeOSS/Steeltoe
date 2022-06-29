@@ -67,7 +67,7 @@ public class ContentNegotiationTests
         // arrange a server and client
         var builder = new WebHostBuilder()
             .StartupByEpName(epName)
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -83,7 +83,6 @@ public class ContentNegotiationTests
 
         // send the request
         var result = await client.GetAsync(epPath);
-        var json = await result.Content.ReadAsStringAsync();
 
         var contentHeaders = result.Content.Headers.GetValues("Content-Type");
         Assert.Contains(contentHeaders, header => header.StartsWith(contentType));

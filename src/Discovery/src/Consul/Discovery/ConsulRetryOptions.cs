@@ -17,7 +17,7 @@ public class ConsulRetryOptions
     /// <summary>
     /// Gets or sets a value indicating whether retries are enabled, defaults false
     /// </summary>
-    public bool Enabled { get; set; } = false;
+    public bool Enabled { get; set; }
 
     /// <summary>
     /// Gets or sets the initial interval to use during retrys, defaults 1000ms

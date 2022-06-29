@@ -67,7 +67,7 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
         return destination;
     }
 
-    internal class SpringIntegrationConsumerDestination : IConsumerDestination
+    internal sealed class SpringIntegrationConsumerDestination : IConsumerDestination
     {
         public SpringIntegrationConsumerDestination(string name, ISubscribableChannel channel)
         {
@@ -85,7 +85,7 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
         public string Name { get; }
     }
 
-    internal class SpringIntegrationProducerDestination : IProducerDestination
+    internal sealed class SpringIntegrationProducerDestination : IProducerDestination
     {
         public SpringIntegrationProducerDestination(string name, ISubscribableChannel channel)
         {

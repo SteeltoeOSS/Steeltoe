@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 
-internal class CredHubResponse<T>
+internal sealed class CredHubResponse<T>
 {
     public List<CredHubCredential<T>> Data { get; set; }
 }

@@ -21,6 +21,6 @@ public class JsonSerializationTest : AbstractBaseTest
     'ipAddr':'192.168.56.1',
     
 ";
-        var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonInstanceInfo>(json));
+        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonInstanceInfo>(json));
     }
 }

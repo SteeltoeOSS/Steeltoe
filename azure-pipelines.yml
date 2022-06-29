@@ -54,7 +54,7 @@ jobs:
     inputs:
       command: build
       projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)
+      arguments: --no-restore -c $(buildConfiguration) -v n /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
@@ -133,7 +133,7 @@ jobs:
     inputs:
       command: build
       projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True
+      arguments: --no-restore -c $(buildConfiguration) -v n
   - script: |
       docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server --spring.cloud.config.server.git.default-label=main
       docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management

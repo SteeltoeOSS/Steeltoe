@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
+internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 {
     private const string ConfigFileKeyPrefix = "appsettings";
     private const string ConfigFileKeySuffix = "json";
@@ -55,19 +55,11 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+        ConfigMapWatcher?.Dispose();
+        ConfigMapWatcher = null;
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            ConfigMapWatcher?.Dispose();
-            ConfigMapWatcher = null;
-            K8sClient.Dispose();
-            K8sClient = null;
-        }
+        K8sClient?.Dispose();
+        K8sClient = null;
     }
 
     private static IDictionary<string, string> ParseConfigMapFile(Stream jsonFileContents)
@@ -87,29 +79,7 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
             switch (Settings.ReloadSettings.Mode)
             {
                 case ReloadMethods.Event:
-                    ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
-                        Settings.Name,
-                        Settings.Namespace,
-                        onEvent: (eventType, item) =>
-                        {
-                            Logger?.LogInformation("Recieved {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
-                            switch (eventType)
-                            {
-                                case WatchEventType.Added:
-                                case WatchEventType.Modified:
-                                case WatchEventType.Deleted:
-                                    ProcessData(item);
-                                    break;
-                                default:
-                                    Logger?.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
-                                    break;
-                            }
-                        },
-                        onError: exception =>
-                        {
-                            Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
-                        },
-                        onClosed: () => { Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
+                    EnableEventReloading();
                     break;
                 case ReloadMethods.Polling:
                     StartPolling(Settings.ReloadSettings.Period);
@@ -119,6 +89,30 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
                     break;
             }
         }
+    }
+
+    private void EnableEventReloading()
+    {
+        ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
+            Settings.Name,
+            Settings.Namespace,
+            onEvent: (eventType, item) =>
+            {
+                Logger?.LogInformation("Recieved {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
+                switch (eventType)
+                {
+                    case WatchEventType.Added:
+                    case WatchEventType.Modified:
+                    case WatchEventType.Deleted:
+                        ProcessData(item);
+                        break;
+                    default:
+                        Logger?.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
+                        break;
+                }
+            },
+            onError: exception => Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
+            onClosed: () => Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name)).GetAwaiter().GetResult();
     }
 
     private void ProcessData(V1ConfigMap item)

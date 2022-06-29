@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Options;
@@ -33,7 +32,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
 
-public class DiscoveryServiceCollectionExtensionsTest : IDisposable
+public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
 {
     private static readonly Dictionary<string, string> FastEureka = new () { { "eureka:client:ShouldRegisterWithEureka", "false" }, { "eureka:client:ShouldFetchRegistry", "false" } };
 
@@ -121,13 +120,12 @@ public class DiscoveryServiceCollectionExtensionsTest : IDisposable
         Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
     }
 
-#pragma warning disable SA1202 // Elements should be ordered by access
     private object GetInnerHttpHandler(object handler)
     {
         while (handler is not null)
         {
             handler = handler.GetType().GetProperty("InnerHandler").GetValue(handler);
-            if (handler is HttpClientHandler h)
+            if (handler is HttpClientHandler)
             {
                 break;
             }
@@ -138,7 +136,6 @@ public class DiscoveryServiceCollectionExtensionsTest : IDisposable
 
     [Fact]
     public void AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
-#pragma warning restore SA1202 // Elements should be ordered by access
     {
         var appsettings = new Dictionary<string, string> { { "spring:application:name", "myName" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
@@ -352,7 +349,7 @@ public class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
         const IServiceCollection serviceCollection = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(builder => { }));
+        var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(_ => { }));
         Assert.Contains(nameof(serviceCollection), ex.Message);
     }
 
@@ -795,16 +792,5 @@ public class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
-    internal class TestClientHandlerProvider : IHttpClientHandlerProvider
-    {
-        public bool Called { get; set; }
-
-        public HttpClientHandler GetHttpClientHandler()
-        {
-            Called = true;
-            return new HttpClientHandler();
-        }
     }
 }

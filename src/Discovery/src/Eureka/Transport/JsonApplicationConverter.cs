@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal class JsonApplicationConverter : JsonConverter<List<JsonApplication>>
+internal sealed class JsonApplicationConverter : JsonConverter<List<JsonApplication>>
 {
     public override bool CanConvert(Type typeToConvert)
     {

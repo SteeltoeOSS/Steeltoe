@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.Attributes;
@@ -25,7 +24,7 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-    public bool ConfigureServicesInvoked { get; set; } = false;
+    public bool ConfigureServicesInvoked { get; set; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -42,8 +41,6 @@ public class Startup
         services.AddSingleton<RabbitMessageChannelBinder>();
         services.AddSingleton<IBinder>(p =>
         {
-            var logger = p.GetRequiredService<ILogger<RabbitMessageChannelBinder>>();
-            var exchangeprov = p.GetRequiredService<RabbitExchangeQueueProvisioner>();
             return p.GetRequiredService<RabbitMessageChannelBinder>();
         });
     }

@@ -53,24 +53,27 @@ public class MutableMessage : IMessage
         return sb.ToString();
     }
 
-    public override int GetHashCode() => (_headers.GetHashCode() * 23) + ObjectUtils.NullSafeHashCode(_payload);
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_headers, _payload);
+    }
 
     public override bool Equals(object obj)
     {
-        if (this == obj)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (obj is MutableMessage other)
+        if (obj is not MutableMessage other)
         {
-            var thisId = _headers.Id;
-            var otherId = other._headers.Id;
-            return ObjectUtils.NullSafeEquals(thisId, otherId) &&
-                   _headers.Equals(other._headers) && _payload.Equals(other._payload);
+            return false;
         }
 
-        return false;
+        var thisId = _headers.Id;
+        var otherId = other._headers.Id;
+
+        return ObjectUtils.NullSafeEquals(thisId, otherId) && _headers.Equals(other._headers) && _payload.Equals(other._payload);
     }
 
     protected internal IDictionary<string, object> RawHeaders => _headers.RawHeaders;
@@ -99,19 +102,19 @@ public class MutableMessage<T> : MutableMessage, IMessage<T>
 
     public override bool Equals(object obj)
     {
-        if (this == obj)
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (obj is MutableMessage<T> other)
+        if (obj is not MutableMessage<T> other)
         {
-            var thisId = _headers.Id;
-            var otherId = other._headers.Id;
-            return ObjectUtils.NullSafeEquals(thisId, otherId) &&
-                   _headers.Equals(other._headers) && _payload.Equals(other._payload);
+            return false;
         }
 
-        return false;
+        var thisId = _headers.Id;
+        var otherId = other._headers.Id;
+
+        return ObjectUtils.NullSafeEquals(thisId, otherId) && _headers.Equals(other._headers) && _payload.Equals(other._payload);
     }
 }

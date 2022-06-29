@@ -71,7 +71,7 @@ public class ServiceExpressionContext : IServiceExpressionContext
 
     public override bool Equals(object other)
     {
-        if (this == other)
+        if (ReferenceEquals(this, other))
         {
             return true;
         }

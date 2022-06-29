@@ -106,7 +106,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
 
         if (ChannelResolver != null)
         {
-            return ChannelResolver.ResolveDestination(header); // NOSONAR not null
+            return ChannelResolver.ResolveDestination(header);
         }
         else
         {

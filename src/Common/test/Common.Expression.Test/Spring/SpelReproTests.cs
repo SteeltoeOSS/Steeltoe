@@ -595,13 +595,18 @@ public class SpelReproTests : AbstractExpressionTests
     //    result = expression.GetValue(evaluationContext, "foo", typeof(String));
     //    Assert.Equal(result).isEqualTo("OK");
     // }
+
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void VarargsAndPrimitives_SPR8174()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var emptyEvalContext = new StandardEvaluationContext();
         var args = new List<Type> { typeof(long) };
         var ru = new ReflectionUtil<int>();
         var me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "MethodToCall", args);
+        me.Execute(emptyEvalContext, ru, 1);
 
         args[0] = typeof(int);
         me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
@@ -708,7 +713,6 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         var methodResolvers = new List<IMethodResolver> { new ParseReflectiveMethodResolver() };
         context.MethodResolvers = methodResolvers;
-        var type = typeof(NumberStyles);
         context.SetVariable("parseFormat", NumberStyles.HexNumber);
         var expression = parser.ParseExpression("-Parse('FF', #parseFormat)");
 
@@ -751,7 +755,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var expectedResult = Math.Abs(-10.2f);
         var parser = new SpelExpressionParser();
-        var testObject = new SPR9486_FunctionsClass();
+        var testObject = new FunctionsClass();
 
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("Abs(-10.2f)");
@@ -850,67 +854,61 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatEqFloatUnaryMinus()
     {
-        var expectedResult = -10.21f == -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("-10.21f == -10.2f");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatEqDoubleUnaryMinus()
     {
-        var expectedResult = -10.21f == -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("-10.21f == -10.2");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatEqFloat()
     {
-        var expectedResult = 10.215f == 10.2109f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f == 10.2109f");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatEqDouble()
     {
-        var expectedResult = 10.215f == 10.2109;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f == 10.2109");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(false, result);
     }
 
     [Fact]
     public void SPR9486_FloatNotEqFloat()
     {
-        var expectedResult = 10.215f != 10.2109f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f != 10.2109f");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(true, result);
     }
 
     [Fact]
     public void SPR9486_FloatNotEqDouble()
     {
-        var expectedResult = 10.215f != 10.2109;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var expression = parser.ParseExpression("10.215f != 10.2109");
         var result = expression.GetValue(context, null);
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(true, result);
     }
 
     [Fact]
@@ -1112,8 +1110,12 @@ public class SpelReproTests : AbstractExpressionTests
     //    var fromClass = parser.ParseExpression("T(" + typeof(StaticFinalImpl2).FullName.Replace("+", "$") + ").VALUE").GetValue<string>(context);
     //    Assert.Equal("interfaceValue", fromClass);
     // }
+
+    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
+#pragma warning disable S2699 // Tests should include assertions
     public void SPR10210()
+#pragma warning restore S2699 // Tests should include assertions
     {
         var context = new StandardEvaluationContext();
         context.SetVariable("bridgeExample", new SPR10210.D());
@@ -1137,23 +1139,23 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         var spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
 
-        context.SetVariable("enumType", typeof(ABC));
+        context.SetVariable("enumType", typeof(Abc));
         var result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         var asArray = result as Array;
-        Assert.Equal(ABC.A, asArray.GetValue(0));
-        Assert.Equal(ABC.B, asArray.GetValue(1));
-        Assert.Equal(ABC.C, asArray.GetValue(2));
+        Assert.Equal(Abc.A, asArray.GetValue(0));
+        Assert.Equal(Abc.B, asArray.GetValue(1));
+        Assert.Equal(Abc.C, asArray.GetValue(2));
 
-        context.SetVariable("enumType", typeof(XYZ));
+        context.SetVariable("enumType", typeof(Xyz));
         result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         asArray = result as Array;
-        Assert.Equal(XYZ.X, asArray.GetValue(0));
-        Assert.Equal(XYZ.Y, asArray.GetValue(1));
-        Assert.Equal(XYZ.Z, asArray.GetValue(2));
+        Assert.Equal(Xyz.X, asArray.GetValue(0));
+        Assert.Equal(Xyz.Y, asArray.GetValue(1));
+        Assert.Equal(Xyz.Z, asArray.GetValue(2));
     }
 
     [Fact]
@@ -1165,23 +1167,23 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         var spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
 
-        context.SetVariable("enumType", typeof(ABC));
+        context.SetVariable("enumType", typeof(Abc));
         var result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         var asArray = result as Array;
-        Assert.Equal(ABC.A, asArray.GetValue(0));
-        Assert.Equal(ABC.B, asArray.GetValue(1));
-        Assert.Equal(ABC.C, asArray.GetValue(2));
+        Assert.Equal(Abc.A, asArray.GetValue(0));
+        Assert.Equal(Abc.B, asArray.GetValue(1));
+        Assert.Equal(Abc.C, asArray.GetValue(2));
 
         context.AddMethodResolver(new ValuesMethodReslover());
         result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         asArray = result as Array;
-        Assert.Equal(XYZ.X, asArray.GetValue(0));
-        Assert.Equal(XYZ.Y, asArray.GetValue(1));
-        Assert.Equal(XYZ.Z, asArray.GetValue(2));
+        Assert.Equal(Xyz.X, asArray.GetValue(0));
+        Assert.Equal(Xyz.Y, asArray.GetValue(1));
+        Assert.Equal(Xyz.Z, asArray.GetValue(2));
     }
 
     [Fact]
@@ -1518,6 +1520,22 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Equal(expectedMessage, message);
     }
 
+    public static class FooLists
+    {
+        public static List<T> NewArrayList<T>(IEnumerable<T> iterable) => new (iterable);
+
+        public static List<T> NewArrayList<T>(params object[] elements) => throw new InvalidOperationException();
+    }
+
+    public static class DistanceEnforcer
+    {
+        public static string From(ValueType no) => $"ValueType:{no}";
+
+        public static string From(int no) => $"Integer:{no}";
+
+        public static string From(object no) => $"Object:{no}";
+    }
+
     #region Test Types
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE1006 // Naming Styles
@@ -1532,8 +1550,8 @@ public class SpelReproTests : AbstractExpressionTests
         {
             try
             {
-                var method = typeof(Enum).GetMethod("GetValues", new[] { typeof(Type) });
-                var value = method.Invoke(null, new object[] { typeof(XYZ) });
+                var method = typeof(Enum).GetMethod(nameof(Enum.GetValues), new[] { typeof(Type) });
+                var value = method.Invoke(null, new object[] { typeof(Xyz) });
                 return new TypedValue(value, value == null ? typeof(object) : value.GetType());
             }
             catch (Exception ex)
@@ -1549,7 +1567,7 @@ public class SpelReproTests : AbstractExpressionTests
         {
             try
             {
-                return new[] { typeof(int).GetMethod("Parse", new[] { typeof(string), typeof(NumberStyles) }) };
+                return new[] { typeof(int).GetMethod(nameof(int.Parse), new[] { typeof(string), typeof(NumberStyles) }) };
             }
             catch (Exception)
             {
@@ -1722,15 +1740,6 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class CCC
-    {
-        public bool Method(object o)
-        {
-            Console.WriteLine(o);
-            return false;
-        }
-    }
-
     public class C
     {
         public List<string> Ls;
@@ -1802,7 +1811,7 @@ public class SpelReproTests : AbstractExpressionTests
         public Dictionary<string, string> Map = new ();
     }
 
-    public class SPR9486_FunctionsClass
+    public class FunctionsClass // SPR9486
     {
         public int Abs(int value) => Math.Abs(value);
 
@@ -1908,16 +1917,8 @@ public class SpelReproTests : AbstractExpressionTests
 
         public Dictionary<string, string> GetMap(object target)
         {
-            try
-            {
-                var f = target.GetType().GetField(_mapName);
-                return (Dictionary<string, string>)f.GetValue(target);
-            }
-            catch (Exception)
-            {
-            }
-
-            return null;
+            var f = target.GetType().GetField(_mapName);
+            return (Dictionary<string, string>)f.GetValue(target);
         }
 
         public bool CanRead(IEvaluationContext context, object target, string name) => GetMap(target).ContainsKey(name);
@@ -1973,14 +1974,14 @@ public class SpelReproTests : AbstractExpressionTests
         public BeanClass(params ListOf[] list) => List = new List<ListOf>(list);
     }
 
-    public enum ABC
+    public enum Abc
     {
         A,
         B,
         C
     }
 
-    public enum XYZ
+    public enum Xyz
     {
         X,
         Y,
@@ -2047,22 +2048,22 @@ public class SpelReproTests : AbstractExpressionTests
     public class TestClass2
     {
         // SPR-9194
-        private readonly string str;
+        private readonly string _str;
 
-        public TestClass2(string str) => this.str = str;
+        public TestClass2(string str) => _str = str;
 
-        public override bool Equals(object other) => this == other || (other is TestClass2 @class && str.Equals(@class.str));
+        public override bool Equals(object obj) => ReferenceEquals(this, obj) || (obj is TestClass2 other && _str.Equals(other._str));
 
-        public override int GetHashCode() => str.GetHashCode();
+        public override int GetHashCode() => _str.GetHashCode();
     }
 
     public class Spr11445Class : IServiceResolver
     {
-        private readonly AtomicInteger counter = new ();
+        private readonly AtomicInteger _counter = new ();
 
         public int Echo(int invocation) => invocation;
 
-        public int Parameter() => counter.IncrementAndGet();
+        public int Parameter() => _counter.IncrementAndGet();
 
         public object Resolve(IEvaluationContext context, string beanName) => beanName.Equals("bean") ? this : null;
     }
@@ -2074,7 +2075,7 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class Item : IList<Item>, IList
     {
-        private List<Item> _children = new ();
+        private readonly List<Item> _children = new ();
 
         public Item this[int index] { get => _children[index]; set => _children[index] = value; }
 
@@ -2134,21 +2135,6 @@ public class SpelReproTests : AbstractExpressionTests
         public string Name => "foo";
     }
 
-    public class FooLists
-    {
-        public static List<T> NewArrayList<T>(IEnumerable<T> iterable) => new (iterable);
-
-        public static List<T> NewArrayList<T>(params object[] elements) => throw new InvalidOperationException();
-    }
-
-    public class DistanceEnforcer
-    {
-        public static string From(ValueType no) => $"ValueType:{no}";
-
-        public static string From(int no) => $"Integer:{no}";
-
-        public static string From(object no) => $"Object:{no}";
-    }
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning restore IDE1006 // Naming Styles
     #endregion Test Types

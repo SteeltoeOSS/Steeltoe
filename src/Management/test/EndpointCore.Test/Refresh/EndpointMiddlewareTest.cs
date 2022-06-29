@@ -62,7 +62,7 @@ public class EndpointMiddlewareTest : BaseTest
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);

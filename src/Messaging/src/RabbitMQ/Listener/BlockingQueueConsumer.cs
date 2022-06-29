@@ -272,8 +272,8 @@ public class BlockingQueueConsumer
         RabbitUtils.SetPhysicalCloseRequired(Channel, true);
         ConnectionFactoryUtils.ReleaseResources(ResourceHolder);
         DeliveryTags.Clear();
-        _ = Consumers.TakeWhile(kvp => Consumers.Count > 0);
-        _ = Queue.TakeWhile(d => Queue.Count > 0);
+        _ = Consumers.TakeWhile(_ => Consumers.Count > 0);
+        _ = Queue.TakeWhile(_ => Queue.Count > 0);
     }
 
     public void RollbackOnExceptionIfNecessary(Exception ex)
@@ -305,7 +305,7 @@ public class BlockingQueueConsumer
         catch (Exception e)
         {
             Logger?.LogError(ex, "Application exception overridden by rollback exception");
-            throw RabbitExceptionTranslator.ConvertRabbitAccessException(e); // NOSONAR stack trace loss
+            throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
         }
         finally
         {
@@ -535,6 +535,7 @@ public class BlockingQueueConsumer
                     }
                     catch (TimeoutException)
                     {
+                        // Intentionally left empty.
                     }
 
                     throw new FatalListenerStartupException("Illegal Argument on Queue Declaration", e);
@@ -708,7 +709,7 @@ public class BlockingQueueConsumer
         public override void HandleBasicCancel(string consumerTag)
         {
             Logger?.LogWarning("Cancel received for {consumerTag} : {queueName} : {consumer}", consumerTag, QueueName, ToString());
-            Consumer.Consumers.Remove(QueueName, out var me);
+            Consumer.Consumers.Remove(QueueName, out _);
             if (Consumer.Consumers.Count != 0)
             {
                 Consumer.BasicCancel(false);
@@ -736,7 +737,7 @@ public class BlockingQueueConsumer
                     if (!Consumer.Queue.TryAdd(delivery, Consumer.ShutdownTimeout))
                     {
                         RabbitUtils.SetPhysicalCloseRequired(Model, true);
-                        _ = Consumer.Queue.TakeWhile(d => Consumer.Queue.Count > 0);
+                        _ = Consumer.Queue.TakeWhile(_ => Consumer.Queue.Count > 0);
                         if (!Canceled)
                         {
                             RabbitUtils.Cancel(Model, consumerTag);

@@ -26,13 +26,10 @@ public class TestConfigServerStartup
     {
         app.Run(async context =>
         {
-            if (!string.IsNullOrEmpty(Host))
+            if (!string.IsNullOrEmpty(Host) && !Host.Equals(context.Request.Host.Value))
             {
-                if (!Host.Equals(context.Request.Host.Value))
-                {
-                    context.Response.StatusCode = 500;
-                    return;
-                }
+                context.Response.StatusCode = 500;
+                return;
             }
 
             LastRequest = new HttpRequestInfo(context.Request);

@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;
 
-internal class TestLogger : ILogger<InfoEndpoint>
+internal sealed class TestLogger : ILogger<InfoEndpoint>
 {
     public IDisposable BeginScope<TState>(TState state)
     {

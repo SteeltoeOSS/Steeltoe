@@ -240,11 +240,9 @@ public class PropertyAccessTests : AbstractExpressionTests
         Assert.Equal(SpelMessage.ARRAY_INDEX_OUT_OF_BOUNDS, ex.MessageCode);
     }
 
-#pragma warning disable IDE1006 // Naming Styles
-
     private sealed class StringyPropertyAccessor : IPropertyAccessor
     {
-        private int flibbles = 7;
+        private int _flibbles = 7;
 
         public IList<Type> GetSpecificTargetClasses()
         {
@@ -253,22 +251,12 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            if (target is not string)
-            {
-                throw new SystemException("Assertion Failed! target should be string");
-            }
-
-            return name.Equals("flibbles");
+            return CanReadOrWrite(target, name);
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)
         {
-            if (target is not string)
-            {
-                throw new SystemException("Assertion Failed! target should be string");
-            }
-
-            return name.Equals("flibbles");
+            return CanReadOrWrite(target, name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
@@ -278,7 +266,7 @@ public class PropertyAccessTests : AbstractExpressionTests
                 throw new SystemException("Assertion Failed! name should be flibbles");
             }
 
-            return new TypedValue(flibbles);
+            return new TypedValue(_flibbles);
         }
 
         public void Write(IEvaluationContext context, object target, string name, object newValue)
@@ -290,22 +278,32 @@ public class PropertyAccessTests : AbstractExpressionTests
 
             try
             {
-                flibbles = (int)context.TypeConverter.ConvertValue(newValue, newValue?.GetType(), typeof(int));
+                _flibbles = (int)context.TypeConverter.ConvertValue(newValue, newValue?.GetType(), typeof(int));
             }
             catch (EvaluationException)
             {
                 throw new AccessException($"Cannot set flibbles to an object of type '{newValue?.GetType()}'");
             }
         }
+
+        private static bool CanReadOrWrite(object target, string name)
+        {
+            if (target is not string)
+            {
+                throw new SystemException("Assertion Failed! target should be string");
+            }
+
+            return name.Equals("flibbles");
+        }
     }
 
     private sealed class ConfigurablePropertyAccessor : IPropertyAccessor
     {
-        private readonly Dictionary<string, object> values;
+        private readonly Dictionary<string, object> _values;
 
         public ConfigurablePropertyAccessor(Dictionary<string, object> values)
         {
-            this.values = values;
+            _values = values;
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -320,7 +318,7 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            return new TypedValue(values[name]);
+            return new TypedValue(_values[name]);
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)
@@ -332,5 +330,4 @@ public class PropertyAccessTests : AbstractExpressionTests
         {
         }
     }
-#pragma warning restore IDE1006 // Naming Styles
 }

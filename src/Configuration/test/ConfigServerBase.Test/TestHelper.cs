@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class TestHelper
+public static class TestHelper
 {
     public static void VerifyDefaults(ConfigServerClientSettings settings)
     {

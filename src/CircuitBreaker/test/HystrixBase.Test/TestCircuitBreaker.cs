@@ -7,23 +7,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 public class TestCircuitBreaker : ICircuitBreaker
 {
     public readonly HystrixCommandMetrics Metrics;
-    private bool forceShortCircuit;
+    private bool _forceShortCircuit;
 
     public TestCircuitBreaker()
     {
         Metrics = HystrixCircuitBreakerTest.GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
-        forceShortCircuit = false;
+        _forceShortCircuit = false;
     }
 
     public TestCircuitBreaker(IHystrixCommandKey commandKey)
     {
         Metrics = HystrixCircuitBreakerTest.GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
-        forceShortCircuit = false;
+        _forceShortCircuit = false;
     }
 
     public TestCircuitBreaker SetForceShortCircuit(bool value)
     {
-        forceShortCircuit = value;
+        _forceShortCircuit = value;
         return this;
     }
 
@@ -32,7 +32,7 @@ public class TestCircuitBreaker : ICircuitBreaker
         get
         {
             // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.Healthcounts);
-            if (forceShortCircuit)
+            if (_forceShortCircuit)
             {
                 return true;
             }

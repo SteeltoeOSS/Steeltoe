@@ -431,10 +431,15 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         ResetConnection();
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        Destroy();
-        _stopped = true;
+        if (disposing)
+        {
+            Destroy();
+            _stopped = true;
+        }
+
+        base.Dispose(disposing);
     }
 
     public IDictionary<string, object> GetCacheProperties()
@@ -1050,7 +1055,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
     #region Nested Types
 
-    internal class CachedPublisherCallbackChannelProxy : CachedChannelProxy, IPublisherCallbackChannel
+    internal sealed class CachedPublisherCallbackChannelProxy : CachedChannelProxy, IPublisherCallbackChannel
     {
         public CachedPublisherCallbackChannelProxy(
             CachingConnectionFactory factory,
@@ -1133,9 +1138,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         #endregion
     }
 
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
     internal class CachedChannelProxy : IChannelProxy
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
         protected const int ASYNC_CLOSE_TIMEOUT = 5_000;
         protected readonly CachingConnectionFactory _factory;
@@ -2184,9 +2187,15 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         #endregion
 
         #region IDisposable
+
         public void Dispose()
         {
-            // Do Nothing
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
         }
 
         #endregion
@@ -2480,9 +2489,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         #endregion
     }
 
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    internal class ChannelCachingConnectionProxy : IConnectionProxy
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+    internal sealed class ChannelCachingConnectionProxy : IConnectionProxy
     {
         internal readonly Dictionary<RC.IModel, IChannelProxy> _channelsAwaitingAcks = new ();
         internal int _closeNotified;

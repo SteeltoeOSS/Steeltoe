@@ -20,8 +20,8 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 public class WavefrontTraceExporter : BaseExporter<Activity>
 {
     private readonly ILogger<WavefrontTraceExporter> _logger;
-    private WavefrontDirectIngestionClient _wavefrontSender;
-    private WavefrontExporterOptions _options;
+    private readonly WavefrontDirectIngestionClient _wavefrontSender;
+    private readonly WavefrontExporterOptions _options;
 
     public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
     {

@@ -105,8 +105,17 @@ public class MessageHeaders : IMessageHeaders
 
     public override bool Equals(object obj)
     {
-        return this == obj ||
-               (obj is MessageHeaders messageHeaders && ContentsEqual(messageHeaders.headers));
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not MessageHeaders other)
+        {
+            return false;
+        }
+
+        return ContentsEqual(other.headers);
     }
 
     public override int GetHashCode()
@@ -279,9 +288,9 @@ public class MessageHeaders : IMessageHeaders
 
     object IDictionary.this[object key] { get => Get<object>((string)key); set => throw new InvalidOperationException(); }
 
-    internal bool ContentsEqual(IDictionary<string, object> other)
+    private bool ContentsEqual(IDictionary<string, object> other)
     {
-        if (other == null)
+        if (ReferenceEquals(other, null))
         {
             return false;
         }
@@ -291,16 +300,14 @@ public class MessageHeaders : IMessageHeaders
             return false;
         }
 
-        foreach (var entry in headers)
+        foreach (var pair in headers)
         {
-            if (other.TryGetValue(entry.Key, out var ovalue))
+            if (!other.TryGetValue(pair.Key, out var otherValue))
             {
-                if (ovalue != entry.Value)
-                {
-                    return false;
-                }
+                return false;
             }
-            else
+
+            if (!Equals(pair.Value, otherValue))
             {
                 return false;
             }

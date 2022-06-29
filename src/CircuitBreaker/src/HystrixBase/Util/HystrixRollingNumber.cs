@@ -276,7 +276,7 @@ public class HystrixRollingNumber
         }
     }
 
-    internal class Bucket
+    internal sealed class Bucket
     {
         internal readonly long _windowStart;
         internal readonly LongAdder[] _adderForCounterType;
@@ -352,7 +352,7 @@ public class HystrixRollingNumber
         }
     }
 
-    internal class CumulativeSum
+    internal sealed class CumulativeSum
     {
         internal readonly LongAdder[] _adderForCounterType;
         internal readonly LongMaxUpdater[] _updaterForCounterType;
@@ -441,13 +441,13 @@ public class HystrixRollingNumber
         }
     }
 
-    internal class BucketCircularArray : IEnumerable<Bucket>
+    internal sealed class BucketCircularArray : IEnumerable<Bucket>
     {
         private readonly AtomicReference<ListState> _state;
         private readonly int _dataLength; // we don't resize, we always stay the same, so remember this
         private readonly int _numBuckets;
 
-        internal class ListState
+        internal sealed class ListState
         {
             /*
                 * this is an AtomicReferenceArray and not a normal Array because we're copying the reference

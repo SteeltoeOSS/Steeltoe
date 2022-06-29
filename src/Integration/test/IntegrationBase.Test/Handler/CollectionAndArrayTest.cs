@@ -17,8 +17,8 @@ namespace Steeltoe.Integration.Handler.Test;
 
 public class CollectionAndArrayTest
 {
-    private readonly TestAbstractReplyProducingMessageHandler handler;
-    private readonly IServiceProvider provider;
+    private readonly TestAbstractReplyProducingMessageHandler _handler;
+    private readonly IServiceProvider _provider;
 
     public CollectionAndArrayTest()
     {
@@ -29,17 +29,17 @@ public class CollectionAndArrayTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        provider = services.BuildServiceProvider();
-        handler = new TestAbstractReplyProducingMessageHandler(provider.GetService<IApplicationContext>());
+        _provider = services.BuildServiceProvider();
+        _handler = new TestAbstractReplyProducingMessageHandler(_provider.GetService<IApplicationContext>());
     }
 
     [Fact]
     public void ListWithRequestReplyHandler()
     {
-        handler.ReturnValue = new List<string> { "foo", "bar" };
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+        _handler.ReturnValue = new List<string> { "foo", "bar" };
+        var channel = new QueueChannel(_provider.GetService<IApplicationContext>());
         var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
-        handler.HandleMessage(message);
+        _handler.HandleMessage(message);
         var reply1 = channel.Receive(0);
         var reply2 = channel.Receive(0);
         Assert.NotNull(reply1);
@@ -51,10 +51,10 @@ public class CollectionAndArrayTest
     [Fact]
     public void SetWithRequestReplyHandler()
     {
-        handler.ReturnValue = new HashSet<string>(new[] { "foo", "bar" });
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+        _handler.ReturnValue = new HashSet<string>(new[] { "foo", "bar" });
+        var channel = new QueueChannel(_provider.GetService<IApplicationContext>());
         var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
-        handler.HandleMessage(message);
+        _handler.HandleMessage(message);
         var reply1 = channel.Receive(0);
         var reply2 = channel.Receive(0);
         Assert.NotNull(reply1);
@@ -66,10 +66,10 @@ public class CollectionAndArrayTest
     [Fact]
     public void ArrayWithRequestReplyHandler()
     {
-        handler.ReturnValue = new[] { "foo", "bar" };
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+        _handler.ReturnValue = new[] { "foo", "bar" };
+        var channel = new QueueChannel(_provider.GetService<IApplicationContext>());
         var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
-        handler.HandleMessage(message);
+        _handler.HandleMessage(message);
         var reply1 = channel.Receive(0);
         var reply2 = channel.Receive(0);
         Assert.NotNull(reply1);

@@ -204,7 +204,7 @@ public class TaskSchedulerSubscribableChannelTest
         Assert.True(interceptor.WasAfterHandledInvoked);
     }
 
-    internal class UnsubscribeHandler : IMessageHandler
+    internal sealed class UnsubscribeHandler : IMessageHandler
     {
         private readonly TaskSchedulerSubscribableChannelTest _test;
         private readonly TaskSchedulerSubscribableChannelWriterTest _test2;
@@ -228,7 +228,7 @@ public class TaskSchedulerSubscribableChannelTest
         }
     }
 
-    internal class TestScheduler : TaskScheduler
+    internal sealed class TestScheduler : TaskScheduler
     {
         public bool WasTaskScheduled;
 
@@ -251,36 +251,36 @@ public class TaskSchedulerSubscribableChannelTest
         }
     }
 
-    internal class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
+    internal abstract class AbstractTestInterceptor : AbstractTaskSchedulerChannelInterceptor
     {
-        private volatile int counter;
+        private volatile int _counter;
 
-        private volatile bool afterHandledInvoked;
+        private volatile bool _afterHandledInvoked;
 
         public int Counter
         {
-            get { return counter; }
+            get { return _counter; }
         }
 
         public bool WasAfterHandledInvoked
         {
-            get { return afterHandledInvoked; }
+            get { return _afterHandledInvoked; }
         }
 
         public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
         {
             Assert.NotNull(message);
-            Interlocked.Increment(ref counter);
+            Interlocked.Increment(ref _counter);
             return message;
         }
 
         public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception ex)
         {
-            afterHandledInvoked = true;
+            _afterHandledInvoked = true;
         }
     }
 
-    internal class BeforeHandleInterceptor : AbstractTestInterceptor
+    internal sealed class BeforeHandleInterceptor : AbstractTestInterceptor
     {
         public IMessage MessageToReturn { get; set; }
 
@@ -298,7 +298,7 @@ public class TaskSchedulerSubscribableChannelTest
         }
     }
 
-    internal class NullReturningBeforeHandleInterceptor : AbstractTestInterceptor
+    internal sealed class NullReturningBeforeHandleInterceptor : AbstractTestInterceptor
     {
         public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
         {

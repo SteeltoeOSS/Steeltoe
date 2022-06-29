@@ -36,12 +36,7 @@ public class SerilogDynamicLoggerFactory : ILoggerFactory
     {
         if (disposing)
         {
-            _provider.Dispose();
+            _provider?.Dispose();
         }
-    }
-
-    ~SerilogDynamicLoggerFactory()
-    {
-        Dispose(false);
     }
 }

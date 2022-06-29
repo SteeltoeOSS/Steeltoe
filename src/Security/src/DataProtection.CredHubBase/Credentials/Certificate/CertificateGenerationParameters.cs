@@ -80,5 +80,5 @@ public class CertificateGenerationParameters : KeyParameters
     /// Gets or sets a value indicating whether whether to self-sign generated credential value
     /// </summary>
     [JsonPropertyName("self_sign")]
-    public bool SelfSign { get; set; } = false;
+    public bool SelfSign { get; set; }
 }
