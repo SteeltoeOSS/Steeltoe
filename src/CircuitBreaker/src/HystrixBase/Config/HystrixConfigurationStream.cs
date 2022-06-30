@@ -8,12 +8,18 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
+using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Config;
 
 public class HystrixConfigurationStream
 {
-    private static readonly int DataEmissionIntervalInMs = 5000;
+    private const int DataEmissionIntervalInMs = 5000;
+
+    // The data emission interval is looked up on startup only
+    private static readonly Lazy<HystrixConfigurationStream> LazyInstance = new(() => new(DataEmissionIntervalInMs),
+        LazyThreadSafetyMode.ExecutionAndPublication);
+
     private readonly IObservable<HystrixConfiguration> _allConfigurationStream;
     private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
 
@@ -39,13 +45,9 @@ public class HystrixConfigurationStream
             .Publish().RefCount();
     }
 
-    // The data emission interval is looked up on startup only
-    private static readonly HystrixConfigurationStream INSTANCE =
-        new (DataEmissionIntervalInMs);
-
     public static HystrixConfigurationStream GetInstance()
     {
-        return INSTANCE;
+        return LazyInstance.Value;
     }
 
     // Return a ref-counted stream that will only do work when at least one subscriber is present
