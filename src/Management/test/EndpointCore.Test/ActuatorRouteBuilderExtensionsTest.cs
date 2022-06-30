@@ -25,7 +25,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint;
 
-public class ActuatorRouteBuilderExtensionsTest
+public partial class ActuatorRouteBuilderExtensionsTest
 {
     public static IEnumerable<object[]> IEndpointImplementations
     {
@@ -101,18 +101,7 @@ public class ActuatorRouteBuilderExtensionsTest
                             .UseRouting()
                             .UseAuthentication()
                             .UseAuthorization()
-                            .UseEndpoints(endpoints =>
-                            {
-                                endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
-#if NET6_0_OR_GREATER
-                                endpoints.MapActuatorEndpoint(type, convention => convention.RequireAuthorization("TestAuth"));
-#else
-#pragma warning disable CS0618 // Type or member is obsolete
-                                endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth");
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-
-                            }))
+                            .UseEndpoints(endpoints => MapEndpoints(type, endpoints)))
                     .UseTestServer();
             });
 

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Connector.EFCore.Test;
 
-public class EntityFrameworkCoreTypeLocatorTest
+public partial class EntityFrameworkCoreTypeLocatorTest
 {
     [Fact]
     public void Property_Can_Locate_MySqlDbContextOptionsType()
@@ -16,34 +16,6 @@ public class EntityFrameworkCoreTypeLocatorTest
 
         Assert.NotNull(type);
     }
-
-#if NET6_0_OR_GREATER
-    [Fact]
-    public void Options_Found_In_Pomelo_Assembly()
-    {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "Pomelo.EntityFrameworkCore.MySql" };
-
-        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
-
-        Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
-    }
-#else
-    [Fact]
-    public void Options_Found_In_MySql_Assembly()
-    {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "MySql.EntityFrameworkCore" };
-
-        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
-
-        Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
-    }
-#endif
 
     [Fact]
     public void Property_Can_Locate_PostgreSqlDbContextOptionsType()

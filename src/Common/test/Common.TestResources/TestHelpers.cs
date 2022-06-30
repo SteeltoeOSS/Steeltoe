@@ -2,13 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
-#endif
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -16,7 +10,7 @@ using System.Reflection;
 
 namespace Steeltoe;
 
-public static class TestHelpers
+public static partial class TestHelpers
 {
     public static Stream StringToStream(string str)
     {
@@ -35,23 +29,6 @@ public static class TestHelpers
         var reader = new StreamReader(stream);
 
         return reader.ReadToEnd();
-    }
-
-    public static ILoggerFactory GetLoggerFactory()
-    {
-        IServiceCollection serviceCollection = new ServiceCollection();
-        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-
-#if NET6_0_OR_GREATER
-        serviceCollection.AddLogging(builder => builder.AddConsole());
-#else
-#pragma warning disable CS0618 // Type or member is obsolete
-        serviceCollection.AddLogging(builder => builder.AddConsole(opts => opts.DisableColors = true));
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-
-        serviceCollection.AddLogging(builder => builder.AddDebug());
-        return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
     }
 
     public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string> collection)
@@ -102,14 +79,4 @@ public static class TestHelpers
     {
         { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
     }.ToImmutableDictionary();
-
-#if NET6_0_OR_GREATER
-    public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
-    {
-        var webAppBuilder = WebApplication.CreateBuilder(args);
-        webAppBuilder.Configuration.AddInMemoryCollection(_fastTestsConfiguration);
-        webAppBuilder.WebHost.UseTestServer();
-        return webAppBuilder;
-    }
-#endif
 }

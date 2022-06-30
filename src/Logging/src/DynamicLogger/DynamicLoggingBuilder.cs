@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using System;
 using System.Linq;
 
@@ -51,27 +50,5 @@ public static class DynamicLoggingBuilder
         }
 
         return builder;
-    }
-
-    internal sealed class ConsoleLoggerOptionsSetup : ConfigureFromConfigurationOptions<ConsoleLoggerOptions>
-    {
-        public ConsoleLoggerOptionsSetup(ILoggerProviderConfiguration<ConsoleLoggerProvider> providerConfiguration)
-            : base(providerConfiguration.Configuration)
-        {
-        }
-
-#if !NET6_0_OR_GREATER
-        public override void Configure(ConsoleLoggerOptions options)
-        {
-            if (Platform.IsCloudFoundry)
-            {
-#pragma warning disable CS0618 // Type or member is obsolete
-                options.DisableColors = true;
-#pragma warning restore CS0618 // Type or member is obsolete
-            }
-
-            base.Configure(options);
-        }
-#endif
     }
 }

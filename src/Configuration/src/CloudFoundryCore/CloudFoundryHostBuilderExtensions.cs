@@ -2,14 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-public static class CloudFoundryHostBuilderExtensions
+public static partial class CloudFoundryHostBuilderExtensions
 {
     /// <summary>
     /// Add Cloud Foundry Configuration Provider.
@@ -44,17 +43,4 @@ public static class CloudFoundryHostBuilderExtensions
         hostBuilder
             .ConfigureAppConfiguration((_, config) => { config.AddCloudFoundry(); })
             .ConfigureServices((_, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
-
-#if NET6_0_OR_GREATER
-    /// <summary>
-    /// Add Cloud Foundry Configuration Provider.
-    /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder"/>.</param>
-    public static WebApplicationBuilder AddCloudFoundryConfiguration(this WebApplicationBuilder applicationBuilder)
-    {
-        applicationBuilder.Configuration.AddCloudFoundry();
-        applicationBuilder.Services.RegisterCloudFoundryApplicationInstanceInfo();
-        return applicationBuilder;
-    }
-#endif
 }

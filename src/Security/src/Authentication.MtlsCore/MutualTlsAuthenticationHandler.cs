@@ -169,10 +169,19 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
                 x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
         {
             Logger.LogInformation("Certificate not valid by standard rules, trying custom validation");
-            isValid = Options.IssuerChain.Intersect(chain.ChainElements.Cast<X509ChainElement>().Select(c => c.Certificate)).Any();
+            isValid = Options.IssuerChain.Intersect(ToGenericEnumerable(chain.ChainElements).Select(c => c.Certificate)).Any();
         }
 
         return isValid;
+    }
+
+    private static IEnumerable<X509ChainElement> ToGenericEnumerable(X509ChainElementCollection collection)
+    {
+#if NETCOREAPP3_1
+        return collection.Cast<X509ChainElement>();
+#else
+        return collection;
+#endif
     }
 
     private X509ChainPolicy BuildChainPolicy(X509Certificate2 certificate)
