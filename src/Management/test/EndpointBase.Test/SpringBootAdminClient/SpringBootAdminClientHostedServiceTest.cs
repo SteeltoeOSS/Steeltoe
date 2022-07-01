@@ -19,7 +19,7 @@ public class SpringBootAdminClientHostedServiceTest
     [Fact]
     public async Task SpringBootAdminClient_RegistersAndDeletes()
     {
-        var appsettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string>
         {
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:health:path"] = "myhealth",
@@ -28,7 +28,7 @@ public class SpringBootAdminClientHostedServiceTest
             ["spring:application:name"] = "MySteeltoeApplication",
         };
 
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var appInfo = new ApplicationInstanceInfo(config);
         var sbaOptions = new SpringBootAdminClientOptions(config, appInfo);
         var mgmtOptions = new ManagementEndpointOptions(config);
@@ -47,6 +47,36 @@ public class SpringBootAdminClientHostedServiceTest
         await service.StopAsync(default);
 
         httpMessageHandler.VerifyNoOutstandingExpectation();
-        Assert.Equal("1234567", SpringBootAdminClientHostedService.RegistrationResult.Id);
+        Assert.Equal("1234567", SpringBootAdminClientHostedService.RegistrationResult?.Id);
+    }
+
+    [Fact]
+    public async Task SpringBootAdminClient_DoesntThrow_WhenNoServerRunning()
+    {
+        var appSettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:health:path"] = "myhealth",
+            ["URLS"] = "http://localhost:8080;https://localhost:8082",
+            ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
+            ["spring:application:name"] = "MySteeltoeApplication",
+        };
+
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var appInfo = new ApplicationInstanceInfo(config);
+        var sbaOptions = new SpringBootAdminClientOptions(config, appInfo);
+        var mgmtOptions = new ManagementEndpointOptions(config);
+        var healthOptions = new HealthEndpointOptions(config);
+        var httpMessageHandler = new MockHttpMessageHandler();
+        httpMessageHandler
+            .Expect(HttpMethod.Post, "http://springbootadmin:9090/instances")
+            .Throw(new HttpRequestException("No connection could be made because the target machine actively refused it."));
+
+
+        Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
+        var service = new SpringBootAdminClientHostedService(sbaOptions, mgmtOptions, healthOptions, httpMessageHandler.ToHttpClient());
+        await service.StartAsync(default);
+
+        httpMessageHandler.VerifyNoOutstandingExpectation();
     }
 }

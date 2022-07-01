@@ -23,6 +23,10 @@ public static class SpringBootAdminApplicationBuilderExtensions
 {
     private const int ConnectionTimeoutMs = 100000;
 
+    static SpringBootAdminApplicationBuilderExtensions()
+    {
+    }
+
     internal static RegistrationResult RegistrationResult { get; set; }
 
     /// <summary>
@@ -64,14 +68,24 @@ public static class SpringBootAdminApplicationBuilderExtensions
         {
             logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
 
-            var result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
-            if (result.IsSuccessStatusCode)
+            HttpResponseMessage result = null;
+            string exceptionMessage = null;
+            try
+            {
+                result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
+            {
+                exceptionMessage = ex.Message;
+            }
+
+            if (result is { IsSuccessStatusCode: true })
             {
                 RegistrationResult = result.Content.ReadFromJsonAsync<RegistrationResult>().GetAwaiter().GetResult();
             }
             else
             {
-                logger.LogError($"Error registering with SpringBootAdmin {result}");
+                logger?.LogError("Error registering with SpringBootAdmin: {result}.", result?.ToString() ?? exceptionMessage);
             }
         });
 

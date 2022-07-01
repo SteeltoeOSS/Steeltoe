@@ -9,6 +9,7 @@ using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -22,17 +23,17 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     private readonly ManagementEndpointOptions _mgmtOptions;
     private readonly HealthEndpointOptions _healthOptions;
     private readonly HttpClient _httpClient;
-    private readonly ILogger _logger;
+    private readonly ILogger<SpringBootAdminClientHostedService> _logger;
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions mgmtOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger logger = null)
+    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions mgmtOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
     {
         _options = options;
         _mgmtOptions = mgmtOptions;
         _healthOptions = healthOptions;
         _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMS);
-        _logger = logger ?? NullLogger.Instance;
+        _logger = logger ?? NullLogger<SpringBootAdminClientHostedService>.Instance;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -50,14 +51,25 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         app.Metadata.Merge(_options.Metadata);
 
         _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMS);
-        var result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app);
-        if (result.IsSuccessStatusCode)
+
+        HttpResponseMessage result = null;
+        string exceptionMessage = null;
+        try
+        {
+            result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            exceptionMessage = ex.Message;
+        }
+
+        if (result is { IsSuccessStatusCode: true })
         {
             RegistrationResult = await result.Content.ReadFromJsonAsync<RegistrationResult>();
         }
         else
         {
-            _logger.LogError($"Error registering with SpringBootAdmin {result}");
+            _logger.LogError("Error registering with SpringBootAdmin: {message}.", result?.ToString() ?? exceptionMessage);
         }
     }
 
