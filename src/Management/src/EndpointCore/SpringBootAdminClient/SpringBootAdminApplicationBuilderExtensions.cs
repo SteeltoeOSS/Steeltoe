@@ -21,11 +21,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [Obsolete("This extension will be removed in a future release, please use SpringBootAdminClientHostedService instead")]
 public static class SpringBootAdminApplicationBuilderExtensions
 {
-    private const int ConnectionTimeoutMs = 100000;
-
-    static SpringBootAdminApplicationBuilderExtensions()
-    {
-    }
+    private const int _connectionTimeoutMs = 100000;
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
@@ -50,7 +46,7 @@ public static class SpringBootAdminApplicationBuilderExtensions
         var mgmtOptions = new ManagementEndpointOptions(configuration);
         var healthOptions = new HealthEndpointOptions(configuration);
         var basePath = options.BasePath.TrimEnd('/');
-        httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, ConnectionTimeoutMs);
+        httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, _connectionTimeoutMs);
 
         var app = new Application
         {

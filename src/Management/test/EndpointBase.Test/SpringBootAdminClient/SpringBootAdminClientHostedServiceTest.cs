@@ -72,7 +72,6 @@ public class SpringBootAdminClientHostedServiceTest
             .Expect(HttpMethod.Post, "http://springbootadmin:9090/instances")
             .Throw(new HttpRequestException("No connection could be made because the target machine actively refused it."));
 
-
         Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
         var service = new SpringBootAdminClientHostedService(sbaOptions, mgmtOptions, healthOptions, httpMessageHandler.ToHttpClient());
         await service.StartAsync(default);
