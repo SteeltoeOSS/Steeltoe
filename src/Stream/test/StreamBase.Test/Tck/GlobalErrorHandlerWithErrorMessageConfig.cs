@@ -13,7 +13,7 @@ public class GlobalErrorHandlerWithErrorMessageConfig
 {
     public bool GlobalErroInvoked { get; set; }
 
-    [StreamListener(ISink.INPUT)]
+    [StreamListener(ISink.InputName)]
     public void Input(string value)
     {
         throw new Exception("test exception");

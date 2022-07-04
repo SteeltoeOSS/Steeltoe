@@ -122,7 +122,7 @@ public class MessageSendingTemplateTest
 
         var actual = _template.Message.Headers;
         Assert.Same(messageHeaders, actual);
-        Assert.Equal(new MimeType("text", "plain", Encoding.UTF8), actual[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(new MimeType("text", "plain", Encoding.UTF8), actual[MessageHeaders.ContentType]);
         Assert.Equal("bar", actual["foo"]);
     }
 
@@ -161,7 +161,7 @@ public class MessageSendingTemplateTest
         var converter = new CompositeMessageConverter(new List<IMessageConverter> { new NewtonJsonMessageConverter() });
         _template.MessageConverter = converter;
 
-        _headers.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_XML);
+        _headers.Add(MessageHeaders.ContentType, MimeTypeUtils.ApplicationXml);
         await Assert.ThrowsAsync<MessageConversionException>(() => _template.ConvertAndSendAsync("home", "payload", new MessageHeaders(_headers)));
     }
 
@@ -254,7 +254,7 @@ public class MessageSendingTemplateTest
 
         var actual = _template.Message.Headers;
         Assert.Same(messageHeaders, actual);
-        Assert.Equal(new MimeType("text", "plain", Encoding.UTF8), actual[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(new MimeType("text", "plain", Encoding.UTF8), actual[MessageHeaders.ContentType]);
         Assert.Equal("bar", actual["foo"]);
     }
 
@@ -293,7 +293,7 @@ public class MessageSendingTemplateTest
         var converter = new CompositeMessageConverter(new List<IMessageConverter> { new NewtonJsonMessageConverter() });
         _template.MessageConverter = converter;
 
-        _headers.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_XML);
+        _headers.Add(MessageHeaders.ContentType, MimeTypeUtils.ApplicationXml);
         Assert.Throws<MessageConversionException>(() => _template.ConvertAndSend("home", "payload", new MessageHeaders(_headers)));
     }
 

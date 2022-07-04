@@ -37,7 +37,7 @@ public abstract class CommandStreamTest : HystrixTestBase
             _fallbackExecutionResult = fallbackExecutionResult;
             _fallbackExecutionLatency = fallbackExecutionLatency;
             CacheKey = arg;
-            _isFallbackUserDefined = true;
+            innerIsFallbackUserDefined = true;
         }
 
         public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType)
@@ -47,7 +47,7 @@ public abstract class CommandStreamTest : HystrixTestBase
 
         public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency)
         {
-            return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.THREAD);
+            return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.Thread);
         }
 
         public static Command From(
@@ -57,7 +57,7 @@ public abstract class CommandStreamTest : HystrixTestBase
             int latency,
             HystrixEventType desiredFallbackEventType)
         {
-            return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.THREAD, desiredFallbackEventType);
+            return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.Thread, desiredFallbackEventType);
         }
 
         public static Command From(
@@ -68,7 +68,7 @@ public abstract class CommandStreamTest : HystrixTestBase
             HystrixEventType desiredFallbackEventType,
             int fallbackLatency)
         {
-            return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.THREAD, desiredFallbackEventType, fallbackLatency);
+            return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.Thread, desiredFallbackEventType, fallbackLatency);
         }
 
         public static Command From(
@@ -78,7 +78,7 @@ public abstract class CommandStreamTest : HystrixTestBase
             int latency,
             ExecutionIsolationStrategy isolationStrategy)
         {
-            return From(groupKey, key, desiredEventType, latency, isolationStrategy, HystrixEventType.FALLBACK_SUCCESS, 0);
+            return From(groupKey, key, desiredEventType, latency, isolationStrategy, HystrixEventType.FallbackSuccess, 0);
         }
 
         public static Command From(
@@ -131,21 +131,21 @@ public abstract class CommandStreamTest : HystrixTestBase
 
             switch (desiredEventType)
             {
-                case HystrixEventType.SUCCESS:
+                case HystrixEventType.Success:
                     uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
-                    return new Command(setter, HystrixEventType.SUCCESS, latency, uniqueArg, desiredFallbackEventType, 0);
-                case HystrixEventType.FAILURE:
+                    return new Command(setter, HystrixEventType.Success, latency, uniqueArg, desiredFallbackEventType, 0);
+                case HystrixEventType.Failure:
                     uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
-                    return new Command(setter, HystrixEventType.FAILURE, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
-                case HystrixEventType.TIMEOUT:
+                    return new Command(setter, HystrixEventType.Failure, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
+                case HystrixEventType.Timeout:
                     uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
-                    return new Command(setter, HystrixEventType.SUCCESS, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency); // use 1000 so that it always times out (at 600ms)
-                case HystrixEventType.BAD_REQUEST:
+                    return new Command(setter, HystrixEventType.Success, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency); // use 1000 so that it always times out (at 600ms)
+                case HystrixEventType.BadRequest:
                     uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
-                    return new Command(setter, HystrixEventType.BAD_REQUEST, latency, uniqueArg, desiredFallbackEventType, 0);
-                case HystrixEventType.RESPONSE_FROM_CACHE:
+                    return new Command(setter, HystrixEventType.BadRequest, latency, uniqueArg, desiredFallbackEventType, 0);
+                case HystrixEventType.ResponseFromCache:
                     var arg = UniqueId.Value + string.Empty;
-                    return new Command(setter, HystrixEventType.SUCCESS, 0, arg, desiredFallbackEventType, 0);
+                    return new Command(setter, HystrixEventType.Success, 0, arg, desiredFallbackEventType, 0);
                 default:
                     throw new Exception("not supported yet");
             }
@@ -153,8 +153,8 @@ public abstract class CommandStreamTest : HystrixTestBase
 
         public static List<Command> GetCommandsWithResponseFromCache(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key)
         {
-            var cmd1 = From(groupKey, key, HystrixEventType.SUCCESS);
-            var cmd2 = From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            var cmd1 = From(groupKey, key, HystrixEventType.Success);
+            var cmd2 = From(groupKey, key, HystrixEventType.ResponseFromCache);
             var cmds = new List<Command>
             {
                 cmd1,
@@ -167,17 +167,17 @@ public abstract class CommandStreamTest : HystrixTestBase
         protected override int Run()
         {
             // sw.Start();
-            Time.WaitUntil(() => _token.IsCancellationRequested, _executionLatency);
+            Time.WaitUntil(() => Token.IsCancellationRequested, _executionLatency);
 
             // sw.Stop();
-            _token.ThrowIfCancellationRequested();
+            Token.ThrowIfCancellationRequested();
 
             return _executionResult2 switch
             {
-                HystrixEventType.SUCCESS => 1,
-                HystrixEventType.FAILURE => throw new Exception("induced failure"),
-                HystrixEventType.BAD_REQUEST => throw new HystrixBadRequestException("induced bad request"),
-                _ => throw new Exception($"unhandled HystrixEventType : {_executionResult}"),
+                HystrixEventType.Success => 1,
+                HystrixEventType.Failure => throw new Exception("induced failure"),
+                HystrixEventType.BadRequest => throw new HystrixBadRequestException("induced bad request"),
+                _ => throw new Exception($"unhandled HystrixEventType : {ExecutionResult}"),
             };
         }
 
@@ -187,9 +187,9 @@ public abstract class CommandStreamTest : HystrixTestBase
 
             return _fallbackExecutionResult switch
             {
-                HystrixEventType.FALLBACK_SUCCESS => -1,
-                HystrixEventType.FALLBACK_FAILURE => throw new Exception("induced failure"),
-                HystrixEventType.FALLBACK_MISSING => throw new InvalidOperationException("fallback not defined"),
+                HystrixEventType.FallbackSuccess => -1,
+                HystrixEventType.FallbackFailure => throw new Exception("induced failure"),
+                HystrixEventType.FallbackMissing => throw new InvalidOperationException("fallback not defined"),
                 _ => throw new Exception($"unhandled HystrixEventType : {_fallbackExecutionResult}"),
             };
         }

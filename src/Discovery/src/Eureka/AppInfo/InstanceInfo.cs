@@ -181,7 +181,7 @@ public class InstanceInfo
 
     internal InstanceInfo()
     {
-        OverriddenStatus = InstanceStatus.UNKNOWN;
+        OverriddenStatus = InstanceStatus.Unknown;
         IsSecurePortEnabled = false;
         IsCoordinatingDiscoveryServer = false;
         IsUnsecurePortEnabled = true;
@@ -192,7 +192,7 @@ public class InstanceInfo
         _sid = "na";
         _metaData = new Dictionary<string, string>();
         _isDirty = false;
-        _status = InstanceStatus.UP;
+        _status = InstanceStatus.Up;
     }
 
     internal static InstanceInfo FromInstanceConfig(IEurekaInstanceConfig instanceConfig)
@@ -218,20 +218,20 @@ public class InstanceInfo
         info.DataCenterInfo = instanceConfig.DataCenterInfo;
         info.IpAddr = instanceConfig.IpAddress;
         info.HostName = defaultAddress;
-        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfig.Default_NonSecurePort : instanceConfig.NonSecurePort;
+        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfig.DefaultNonSecurePort : instanceConfig.NonSecurePort;
         info.IsUnsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfig.Default_SecurePort : instanceConfig.SecurePort;
+        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfig.DefaultSecurePort : instanceConfig.SecurePort;
         info.IsSecurePortEnabled = instanceConfig.SecurePortEnabled;
         info.VipAddress = instanceConfig.VirtualHostName;
         info.SecureVipAddress = instanceConfig.SecureVirtualHostName;
         info.HomePageUrl = MakeUrl(info, instanceConfig.HomePageUrlPath, instanceConfig.HomePageUrl);
         info.StatusPageUrl = MakeUrl(info, instanceConfig.StatusPageUrlPath, instanceConfig.StatusPageUrl);
-        info.AsgName = instanceConfig.ASGName;
+        info.AsgName = instanceConfig.AsgName;
         info.HealthCheckUrl = MakeUrl(info, instanceConfig.HealthCheckUrlPath, instanceConfig.HealthCheckUrl, instanceConfig.SecureHealthCheckUrl);
 
         if (!instanceConfig.IsInstanceEnabledOnInit)
         {
-            info._status = InstanceStatus.STARTING;
+            info._status = InstanceStatus.Starting;
         }
 
         if (!string.IsNullOrEmpty(info.InstanceId))

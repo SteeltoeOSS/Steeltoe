@@ -10,8 +10,8 @@ namespace Steeltoe.Common.Util;
 
 public static class ObjectUtils
 {
-    private const int INITIAL_HASH = 7;
-    private const int MULTIPLIER = 31;
+    private const int InitialHash = 7;
+    private const int Multiplier = 31;
 
     [Obsolete("Use IsNullOrEmpty instead.")]
     public static bool IsEmpty(object[] array)
@@ -137,10 +137,10 @@ public static class ObjectUtils
             return 0;
         }
 
-        var hash = INITIAL_HASH;
+        var hash = InitialHash;
         foreach (var element in array)
         {
-            hash = (MULTIPLIER * hash) + NullSafeHashCode(element);
+            hash = (Multiplier * hash) + NullSafeHashCode(element);
         }
 
         return hash;

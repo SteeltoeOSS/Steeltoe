@@ -340,7 +340,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         var context = CreateRequest("GET", "/");
         var result = await middle.GetPermissions(context);
         Assert.NotNull(result);
-        Assert.Equal(Permissions.NONE, result.Permissions);
+        Assert.Equal(Permissions.None, result.Permissions);
         Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
     }
 

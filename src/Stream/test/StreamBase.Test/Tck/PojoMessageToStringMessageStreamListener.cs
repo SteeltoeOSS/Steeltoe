@@ -13,10 +13,10 @@ namespace Steeltoe.Stream.Tck;
 
 public class PojoMessageToStringMessageStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public IMessage<string> Echo(IMessage<Person> value)
     {
-        return (IMessage<string>)MessageBuilder.WithPayload(value.Payload.ToString()).SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
+        return (IMessage<string>)MessageBuilder.WithPayload(value.Payload.ToString()).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
     }
 }

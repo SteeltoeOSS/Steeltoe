@@ -12,12 +12,12 @@ using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;
 
-public class IServiceCollectionExtensionsTest
+public class ServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddKubernetesApplicationInstanceInfo_ThrowsOnNull()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => IServiceCollectionExtensions.AddKubernetesApplicationInstanceInfo(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesApplicationInstanceInfo(null));
         Assert.Equal("serviceCollection", ex.ParamName);
     }
 
@@ -42,7 +42,7 @@ public class IServiceCollectionExtensionsTest
     [Obsolete("To be removed in the next major version.")]
     public void GetKubernetesApplicationOptions_ThrowsOnNull()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => IServiceCollectionExtensions.GetKubernetesApplicationOptions(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.GetKubernetesApplicationOptions(null));
         Assert.Equal("serviceCollection", ex.ParamName);
     }
 
@@ -65,7 +65,7 @@ public class IServiceCollectionExtensionsTest
     [Fact]
     public void AddKubernetesClient_ThrowsOnNulls()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => IServiceCollectionExtensions.AddKubernetesClient(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesClient(null));
         Assert.Equal("serviceCollection", ex.ParamName);
     }
 

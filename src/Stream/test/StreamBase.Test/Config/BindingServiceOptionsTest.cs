@@ -132,7 +132,7 @@ public class BindingServiceOptionsTest
     {
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(new Dictionary<string, string>());
-        var configuration = builder.Build().GetSection(BindingServiceOptions.PREFIX);
+        var configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
         var options = new BindingServiceOptions(configuration);
         options.PostProcess();
 
@@ -166,7 +166,7 @@ public class BindingServiceOptionsTest
             { "spring:cloud:stream:bindingRetryInterval", "500" },
         });
 
-        var configuration = builder.Build().GetSection(BindingServiceOptions.PREFIX);
+        var configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
         var options = new BindingServiceOptions(configuration);
         options.PostProcess();
 
@@ -199,7 +199,7 @@ public class BindingServiceOptionsTest
             { "spring:cloud:stream:bindingRetryInterval", "100" },
         });
 
-        var configuration = builder.Build().GetSection(BindingServiceOptions.PREFIX);
+        var configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
         var options = new BindingServiceOptions(configuration);
         options.PostProcess();
 

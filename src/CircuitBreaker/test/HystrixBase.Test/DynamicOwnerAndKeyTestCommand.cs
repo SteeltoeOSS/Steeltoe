@@ -14,7 +14,7 @@ internal sealed class DynamicOwnerAndKeyTestCommand : TestHystrixCommand<bool>
 
     protected override bool Run()
     {
-        _output?.WriteLine("successfully executed");
+        Output?.WriteLine("successfully executed");
         return true;
     }
 }

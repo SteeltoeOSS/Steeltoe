@@ -18,7 +18,7 @@ public class SpringBootCmdSourceTest
             .Build();
 
         var source = new SpringBootCmdSource(config);
-        Assert.Equal(config, source._config);
+        Assert.Equal(config, source.Config);
     }
 
     [Fact]

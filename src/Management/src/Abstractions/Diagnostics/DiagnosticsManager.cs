@@ -14,14 +14,14 @@ namespace Steeltoe.Common.Diagnostics;
 
 public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
-    internal IDisposable _listenersSubscription;
-    internal ILogger<DiagnosticsManager> _logger;
-    internal IList<IDiagnosticObserver> _observers;
-    internal IList<IRuntimeDiagnosticSource> _sources;
-    internal IList<EventListener> _eventListeners;
+    internal IDisposable ListenersSubscription;
+    internal ILogger<DiagnosticsManager> Logger;
+    internal IList<IDiagnosticObserver> InnerObservers;
+    internal IList<IRuntimeDiagnosticSource> InnerSources;
+    internal IList<EventListener> EventListeners;
 
-    internal bool _workerThreadShutdown;
-    internal int _started;
+    internal bool WorkerThreadShutdown;
+    internal int Started;
     private static readonly Lazy<DiagnosticsManager> AsSingleton = new (() => new DiagnosticsManager());
 
     public static DiagnosticsManager Instance => AsSingleton.Value;
@@ -37,22 +37,22 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
             throw new ArgumentNullException(nameof(observers));
         }
 
-        _logger = logger;
-        _observers = observers.ToList();
-        _sources = runtimeSources.ToList();
-        _eventListeners = eventListeners.ToList();
+        Logger = logger;
+        InnerObservers = observers.ToList();
+        InnerSources = runtimeSources.ToList();
+        EventListeners = eventListeners.ToList();
     }
 
     internal DiagnosticsManager(ILogger<DiagnosticsManager> logger = null)
     {
-        _logger = logger;
-        _observers = new List<IDiagnosticObserver>();
-        _sources = new List<IRuntimeDiagnosticSource>();
+        Logger = logger;
+        InnerObservers = new List<IDiagnosticObserver>();
+        InnerSources = new List<IRuntimeDiagnosticSource>();
     }
 
-    public IList<IDiagnosticObserver> Observers => _observers;
+    public IList<IDiagnosticObserver> Observers => InnerObservers;
 
-    public IList<IRuntimeDiagnosticSource> Sources => _sources;
+    public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
 
     public void OnCompleted()
     {
@@ -66,7 +66,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public void OnNext(DiagnosticListener value)
     {
-        foreach (var listener in _observers)
+        foreach (var listener in InnerObservers)
         {
             listener.Subscribe(value);
         }
@@ -74,19 +74,19 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public void Start()
     {
-        if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref Started, 1, 0) == 0)
         {
-            _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
+            ListenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
         }
     }
 
     public void Stop()
     {
-        if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
+        if (Interlocked.CompareExchange(ref Started, 0, 1) == 1)
         {
-            _workerThreadShutdown = true;
+            WorkerThreadShutdown = true;
 
-            foreach (var listener in _observers)
+            foreach (var listener in InnerObservers)
             {
                 listener.Dispose();
             }
@@ -107,9 +107,9 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         {
             Stop();
 
-            _observers?.Clear();
-            _sources?.Clear();
-            _logger = null;
+            InnerObservers?.Clear();
+            InnerSources?.Clear();
+            Logger = null;
 
             _isDisposed = true;
         }

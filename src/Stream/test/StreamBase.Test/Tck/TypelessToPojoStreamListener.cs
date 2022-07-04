@@ -13,8 +13,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class TypelessToPojoStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public Person Echo(object value)
     {
         var settings = new JsonSerializerSettings

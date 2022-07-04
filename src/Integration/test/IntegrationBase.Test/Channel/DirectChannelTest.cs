@@ -185,7 +185,7 @@ public class DirectChannelTest
 
         public ThreadNameExtractingTestTarget(CountdownEvent latch)
         {
-            Latch = latch;
+            this.Latch = latch;
         }
 
         public void HandleMessage(IMessage message)

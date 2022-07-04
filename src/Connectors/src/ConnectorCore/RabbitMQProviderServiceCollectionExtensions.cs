@@ -77,7 +77,7 @@ public static class RabbitMQProviderServiceCollectionExtensions
 
     private static void DoAdd(IServiceCollection services, RabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
     {
-        var rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
+        var rabbitMQInterfaceType = RabbitMQTypeLocator.ConnectionFactoryInterface;
         var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
         var rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);

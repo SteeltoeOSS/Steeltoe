@@ -16,7 +16,7 @@ public class JsonSetRequest : CredentialSetRequest
     public JsonSetRequest(string credentialName, JsonElement value)
     {
         Name = credentialName;
-        Type = CredentialType.JSON;
+        Type = CredentialType.Json;
         Value = new JsonCredential(value);
     }
 
@@ -28,7 +28,7 @@ public class JsonSetRequest : CredentialSetRequest
     public JsonSetRequest(string credentialName, string value)
     {
         Name = credentialName;
-        Type = CredentialType.JSON;
+        Type = CredentialType.Json;
         Value = new JsonCredential(value);
     }
 }

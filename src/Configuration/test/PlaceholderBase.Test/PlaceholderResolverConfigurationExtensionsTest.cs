@@ -56,7 +56,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
             configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
-        Assert.NotNull(provider._logger);
+        Assert.NotNull(provider.Logger);
     }
 
     // Mac issue https://github.com/dotnet/runtime/issues/30056

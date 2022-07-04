@@ -16,20 +16,20 @@ public class EurekaClientOptionsTest : AbstractBaseTest
     {
         var opts = new EurekaClientOptions();
         Assert.True(opts.Enabled);
-        Assert.Equal(EurekaClientConfig.Default_RegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
+        Assert.Equal(EurekaClientConfig.DefaultRegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
         Assert.Null(opts.ProxyHost);
         Assert.Equal(0, opts.ProxyPort);
         Assert.Null(opts.ProxyUserName);
         Assert.Null(opts.ProxyPassword);
         Assert.True(opts.ShouldGZipContent);
-        Assert.Equal(EurekaClientConfig.Default_EurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
+        Assert.Equal(EurekaClientConfig.DefaultEurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
         Assert.True(opts.ShouldRegisterWithEureka);
         Assert.False(opts.ShouldDisableDelta);
         Assert.True(opts.ShouldFilterOnlyUpInstances);
         Assert.True(opts.ShouldFetchRegistry);
         Assert.Null(opts.RegistryRefreshSingleVipAddress);
         Assert.True(opts.ShouldOnDemandUpdateStatusChange);
-        Assert.Equal(EurekaClientConfig.Default_ServerServiceUrl, opts.EurekaServerServiceUrls);
+        Assert.Equal(EurekaClientConfig.DefaultServerServiceUrl, opts.EurekaServerServiceUrls);
         Assert.NotNull(opts.Health);
         Assert.True(opts.Health.Enabled); // Health contrib enabled
         Assert.True(opts.Health.CheckEnabled); // Health check enabled
@@ -102,7 +102,7 @@ public class EurekaClientOptionsTest : AbstractBaseTest
         configurationBuilder.AddJsonFile(fileName);
         var config = configurationBuilder.Build();
 
-        var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         var co = new EurekaClientOptions();
         clientSection.Bind(co);
 

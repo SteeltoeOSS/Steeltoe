@@ -58,11 +58,11 @@ public class ReflectiveMethodResolver : IMethodResolver
             {
                 methods.Sort((m1, m2) =>
                 {
-                    var m1pl = m1.GetParameters().Length;
-                    var m2pl = m2.GetParameters().Length;
+                    var m1Pl = m1.GetParameters().Length;
+                    var m2Pl = m2.GetParameters().Length;
 
                     // vararg methods go last
-                    if (m1pl == m2pl)
+                    if (m1Pl == m2Pl)
                     {
                         if (!m1.IsVarArgs() && m2.IsVarArgs())
                         {
@@ -78,7 +78,7 @@ public class ReflectiveMethodResolver : IMethodResolver
                         }
                     }
 
-                    return m1pl.CompareTo(m2pl);
+                    return m1Pl.CompareTo(m2Pl);
                 });
             }
 
@@ -163,7 +163,7 @@ public class ReflectiveMethodResolver : IMethodResolver
             {
                 if (multipleOptions)
                 {
-                    throw new SpelEvaluationException(SpelMessage.MULTIPLE_POSSIBLE_METHODS, name);
+                    throw new SpelEvaluationException(SpelMessage.MultiplePossibleMethods, name);
                 }
 
                 return new ReflectiveMethodExecutor(matchRequiringConversion);

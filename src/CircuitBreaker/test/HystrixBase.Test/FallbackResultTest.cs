@@ -6,11 +6,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public enum FallbackResultTest
 {
-    UNIMPLEMENTED,
-    SUCCESS,
-    FAILURE,
-    ASYNC_FAILURE,
-    MULTIPLE_EMITS_THEN_SUCCESS,
-    MULTIPLE_EMITS_THEN_FAILURE,
-    NO_EMITS_THEN_SUCCESS
+    Unimplemented,
+    Success,
+    Failure,
+    AsyncFailure,
+    MultipleEmitsThenSuccess,
+    MultipleEmitsThenFailure,
+    NoEmitsThenSuccess
 }

@@ -16,11 +16,11 @@ public class EurekaHealthCheckHandlerTest
     public void MapToInstanceStatus_ReturnsExpected()
     {
         var handler = new EurekaHealthCheckHandler();
-        Assert.Equal(InstanceStatus.DOWN, handler.MapToInstanceStatus(HealthStatus.DOWN));
-        Assert.Equal(InstanceStatus.UP, handler.MapToInstanceStatus(HealthStatus.UP));
-        Assert.Equal(InstanceStatus.UNKNOWN, handler.MapToInstanceStatus(HealthStatus.WARNING));
-        Assert.Equal(InstanceStatus.UNKNOWN, handler.MapToInstanceStatus(HealthStatus.UNKNOWN));
-        Assert.Equal(InstanceStatus.OUT_OF_SERVICE, handler.MapToInstanceStatus(HealthStatus.OUT_OF_SERVICE));
+        Assert.Equal(InstanceStatus.Down, handler.MapToInstanceStatus(HealthStatus.Down));
+        Assert.Equal(InstanceStatus.Up, handler.MapToInstanceStatus(HealthStatus.Up));
+        Assert.Equal(InstanceStatus.Unknown, handler.MapToInstanceStatus(HealthStatus.Warning));
+        Assert.Equal(InstanceStatus.Unknown, handler.MapToInstanceStatus(HealthStatus.Unknown));
+        Assert.Equal(InstanceStatus.OutOfService, handler.MapToInstanceStatus(HealthStatus.OutOfService));
     }
 
     [Fact]
@@ -40,71 +40,71 @@ public class EurekaHealthCheckHandlerTest
         var handler = new EurekaHealthCheckHandler();
 
         var results = new List<HealthCheckResult>();
-        Assert.Equal(HealthStatus.UNKNOWN, handler.AggregateStatus(results));
+        Assert.Equal(HealthStatus.Unknown, handler.AggregateStatus(results));
 
         results = new List<HealthCheckResult>
         {
             new ()
             {
-                Status = HealthStatus.DOWN
+                Status = HealthStatus.Down
             },
             new ()
             {
-                Status = HealthStatus.UP
+                Status = HealthStatus.Up
             }
         };
-        Assert.Equal(HealthStatus.DOWN, handler.AggregateStatus(results));
+        Assert.Equal(HealthStatus.Down, handler.AggregateStatus(results));
         results = new List<HealthCheckResult>
         {
             new ()
             {
-                Status = HealthStatus.UP
+                Status = HealthStatus.Up
             },
             new ()
             {
-                Status = HealthStatus.DOWN
+                Status = HealthStatus.Down
             }
         };
-        Assert.Equal(HealthStatus.DOWN, handler.AggregateStatus(results));
+        Assert.Equal(HealthStatus.Down, handler.AggregateStatus(results));
 
         results = new List<HealthCheckResult>
         {
             new ()
             {
-                Status = HealthStatus.UP
+                Status = HealthStatus.Up
             },
             new ()
             {
-                Status = HealthStatus.OUT_OF_SERVICE
+                Status = HealthStatus.OutOfService
             }
         };
-        Assert.Equal(HealthStatus.OUT_OF_SERVICE, handler.AggregateStatus(results));
+        Assert.Equal(HealthStatus.OutOfService, handler.AggregateStatus(results));
 
         results = new List<HealthCheckResult>
         {
             new ()
             {
-                Status = HealthStatus.UP
+                Status = HealthStatus.Up
             },
             new ()
             {
-                Status = HealthStatus.WARNING
+                Status = HealthStatus.Warning
             }
         };
 
-        Assert.Equal(HealthStatus.UP, handler.AggregateStatus(results));
+        Assert.Equal(HealthStatus.Up, handler.AggregateStatus(results));
         results = new List<HealthCheckResult>
         {
             new ()
             {
-                Status = HealthStatus.WARNING
+                Status = HealthStatus.Warning
             },
             new ()
             {
-                Status = HealthStatus.WARNING
+                Status = HealthStatus.Warning
             }
         };
-        Assert.Equal(HealthStatus.UNKNOWN, handler.AggregateStatus(results));
+        Assert.Equal(HealthStatus.Unknown, handler.AggregateStatus(results));
     }
 
     public class TestContributor : IHealthContributor

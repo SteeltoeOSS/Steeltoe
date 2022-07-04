@@ -16,8 +16,8 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// </summary>
 public class ConsulServiceRegistry : IConsulServiceRegistry
 {
-    private const string UP = "UP";
-    private const string OUT_OF_SERVICE = "OUT_OF_SERVICE";
+    private const string Up = "UP";
+    private const string OutOfService = "OUT_OF_SERVICE";
 
     private readonly IConsulClient _client;
     private readonly IScheduler _scheduler;
@@ -140,12 +140,12 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
 
     private Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
     {
-        if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
+        if (OutOfService.Equals(status, StringComparison.OrdinalIgnoreCase))
         {
-            return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE);
+            return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OutOfService);
         }
 
-        if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
+        if (Up.Equals(status, StringComparison.OrdinalIgnoreCase))
         {
             return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
         }
@@ -173,11 +173,11 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         {
             if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
             {
-                return OUT_OF_SERVICE;
+                return OutOfService;
             }
         }
 
-        return UP;
+        return Up;
     }
 
     /// <inheritdoc/>

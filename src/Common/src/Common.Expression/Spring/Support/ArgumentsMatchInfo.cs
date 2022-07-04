@@ -13,11 +13,11 @@ public class ArgumentsMatchInfo
         _kind = kind;
     }
 
-    public bool IsExactMatch => _kind == ArgumentsMatchKind.EXACT;
+    public bool IsExactMatch => _kind == ArgumentsMatchKind.Exact;
 
-    public bool IsCloseMatch => _kind == ArgumentsMatchKind.CLOSE;
+    public bool IsCloseMatch => _kind == ArgumentsMatchKind.Close;
 
-    public bool IsMatchRequiringConversion => _kind == ArgumentsMatchKind.REQUIRES_CONVERSION;
+    public bool IsMatchRequiringConversion => _kind == ArgumentsMatchKind.RequiresConversion;
 
     public override string ToString()
     {

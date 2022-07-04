@@ -17,16 +17,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixCommandMetrics : HystrixMetrics
 {
-    private static readonly IList<HystrixEventType> ALL_EVENT_TYPES = HystrixEventTypeHelper.Values;
+    private static readonly IList<HystrixEventType> AllEventTypes = HystrixEventTypeHelper.Values;
 
     public static Func<long[], HystrixCommandCompletion, long[]> AppendEventToBucket { get; } = (initialCountArray, execution) =>
     {
         var eventCounts = execution.Eventcounts;
-        foreach (var eventType in ALL_EVENT_TYPES)
+        foreach (var eventType in AllEventTypes)
         {
             switch (eventType)
             {
-                case HystrixEventType.EXCEPTION_THROWN: break; // this is just a sum of other anyway - don't do the work here
+                case HystrixEventType.ExceptionThrown: break; // this is just a sum of other anyway - don't do the work here
                 default:
                     var ordinal = (int)eventType;
                     initialCountArray[ordinal] += eventCounts.GetCount(eventType);
@@ -39,11 +39,11 @@ public class HystrixCommandMetrics : HystrixMetrics
 
     public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
     {
-        foreach (var eventType in ALL_EVENT_TYPES)
+        foreach (var eventType in AllEventTypes)
         {
             switch (eventType)
             {
-                case HystrixEventType.EXCEPTION_THROWN:
+                case HystrixEventType.ExceptionThrown:
                     foreach (var exceptionEventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
                     {
                         var ordinal1 = (int)eventType;

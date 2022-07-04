@@ -46,7 +46,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         var conn = new Mock<IConnection>();
         var channel = new Mock<RC.IModel>();
         cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
-        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DefaultServiceName);
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -59,7 +59,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         services.AddRabbitQueue(queue);
         var exchange = new DirectExchange("bar");
         services.AddRabbitExchange(exchange);
-        var binding = new Binding("baz", "foo", Binding.DestinationType.QUEUE, "bar", "foo", null);
+        var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
         var provider = services.BuildServiceProvider();
         var context = provider.GetApplicationContext();
@@ -113,7 +113,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             })
             .Returns(() => mockConnections[connectionNumber.Value]);
 
-        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
+        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection);
         var queue = new Queue("foo");
         services.AddRabbitQueue(queue);
         var provider = services.BuildServiceProvider();
@@ -142,7 +142,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         var conn = new Mock<IConnection>();
         var channel = new Mock<RC.IModel>();
         cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
-        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DefaultServiceName);
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -155,7 +155,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         services.AddRabbitQueue(queue);
         var exchange = new DirectExchange("bar");
         services.AddRabbitExchange(exchange);
-        var binding = new Binding("baz", "foo", Binding.DestinationType.QUEUE, "bar", "foo", null);
+        var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
         var provider = services.BuildServiceProvider();
         var context = provider.GetApplicationContext();
@@ -190,7 +190,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         var conn = new Mock<IConnection>();
         var channel = new Mock<RC.IModel>();
         cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
-        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DefaultServiceName);
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -204,7 +204,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         services.AddRabbitQueue(queue);
         var exchange = new DirectExchange("bar");
         services.AddRabbitExchange(exchange);
-        var binding = new Binding("baz", "foo", Binding.DestinationType.QUEUE, "bar", "foo", null);
+        var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
         var provider = services.BuildServiceProvider();
         var context = provider.GetApplicationContext();
@@ -241,7 +241,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         var conn = new Mock<IConnection>();
         var channel = new Mock<RC.IModel>();
         cf.Setup(f => f.CreateConnection()).Returns(conn.Object);
-        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DEFAULT_SERVICE_NAME);
+        cf.SetupGet(f => f.ServiceName).Returns(CachingConnectionFactory.DefaultServiceName);
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -261,7 +261,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             ShouldDeclare = false
         };
         services.AddRabbitExchange(exchange);
-        var binding = new Binding("baz", "foo", Binding.DestinationType.QUEUE, "bar", "foo", null)
+        var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null)
         {
             ShouldDeclare = false
         };
@@ -519,7 +519,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             exchange.IsInternal = true;
             services.AddRabbitExchange(exchange);
 
-            var binding = new Binding("foo.binding", "foo", Binding.DestinationType.QUEUE, "bar", "foo", null);
+            var binding = new Binding("foo.binding", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
             binding.SetAdminsThatShouldDeclare("admin1");
             services.AddRabbitBinding(binding);
             services.AddSingleton<IDeclarableCustomizer, Customizer1>();

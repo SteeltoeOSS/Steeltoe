@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Discovery;
 
-public static class IServiceInstanceProviderExtensions
+public static class ServiceInstanceProviderExtensions
 {
     public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(
         this IServiceInstanceProvider serviceInstanceProvider,

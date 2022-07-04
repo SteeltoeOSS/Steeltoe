@@ -28,7 +28,7 @@ public class CredHubClient : ICredHubClient
         PropertyNameCaseInsensitive = true
     };
 
-    private const int DEFAULT_TIMEOUT = 3000;
+    private const int DefaultTimeout = 3000;
 
     private static HttpClient _httpClient;
     private static ILogger _logger;
@@ -48,7 +48,7 @@ public class CredHubClient : ICredHubClient
     /// <param name="logger">Pass in a logger if you want logs.</param>
     /// <param name="httpClient">Primarily for tests, optionally provide your own http client.</param>
     /// <returns>An initialized CredHub client (using UAA OAuth).</returns>
-    public static Task<CredHubClient> CreateUAAClientAsync(CredHubOptions credHubOptions, ILogger logger = null, HttpClient httpClient = null)
+    public static Task<CredHubClient> CreateUaaClientAsync(CredHubOptions credHubOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _logger = logger;
         _baseCredHubUrl = credHubOptions.CredHubUrl;
@@ -60,7 +60,7 @@ public class CredHubClient : ICredHubClient
 
     private HttpClient InitializeHttpClient(HttpClientHandler httpClientHandler)
     {
-        return HttpClientHelper.GetHttpClient(_validateCertificates, httpClientHandler, DEFAULT_TIMEOUT);
+        return HttpClientHelper.GetHttpClient(_validateCertificates, httpClientHandler, DefaultTimeout);
     }
 
     private async Task<CredHubClient> InitializeAsync(CredHubOptions options)

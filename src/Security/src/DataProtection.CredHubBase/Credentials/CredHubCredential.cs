@@ -11,7 +11,7 @@ public class CredHubCredential<T> : CredHubBaseObject
     /// <summary>
     /// Gets or sets when this (version of this) credential was created.
     /// </summary>
-    public DateTime Version_Created_At { get; set; }
+    public DateTime VersionCreatedAt { get; set; }
 
     /// <summary>
     /// Gets or sets credential ID (assigned by CredHub).

@@ -6,7 +6,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public enum ThreadPoolEventType
 {
-    EXECUTED,
-    REJECTED,
-    UNKNOWN
+    Executed,
+    Rejected,
+    Unknown
 }

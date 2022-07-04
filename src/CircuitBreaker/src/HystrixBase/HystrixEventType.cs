@@ -6,21 +6,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public enum HystrixEventType
 {
-    EMIT,
-    SUCCESS,
-    FAILURE,
-    TIMEOUT,
-    BAD_REQUEST,
-    SHORT_CIRCUITED,
-    THREAD_POOL_REJECTED,
-    SEMAPHORE_REJECTED,
-    FALLBACK_EMIT,
-    FALLBACK_SUCCESS,
-    FALLBACK_FAILURE,
-    FALLBACK_REJECTION,
-    FALLBACK_MISSING,
-    EXCEPTION_THROWN,
-    RESPONSE_FROM_CACHE,
-    CANCELLED,
-    COLLAPSED
+    Emit,
+    Success,
+    Failure,
+    Timeout,
+    BadRequest,
+    ShortCircuited,
+    ThreadPoolRejected,
+    SemaphoreRejected,
+    FallbackEmit,
+    FallbackSuccess,
+    FallbackFailure,
+    FallbackRejection,
+    FallbackMissing,
+    ExceptionThrown,
+    ResponseFromCache,
+    Cancelled,
+    Collapsed
 }

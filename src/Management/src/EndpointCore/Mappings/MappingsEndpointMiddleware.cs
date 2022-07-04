@@ -48,7 +48,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleMappingsRequestAsync(context);
         }
@@ -61,9 +61,9 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         var result = GetApplicationMappings(context);
         var serialInfo = Serialize(result);
 
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 
@@ -173,7 +173,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
-            HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string> { MappingDescription.ALL_HTTP_METHODS },
+            HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string> { MappingDescription.AllHttpMethods },
             Consumes = new List<string>(),
             Produces = new List<string>()
         };

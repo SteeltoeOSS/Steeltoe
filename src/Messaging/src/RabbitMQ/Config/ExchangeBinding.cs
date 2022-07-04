@@ -14,7 +14,7 @@ public class ExchangeBinding : Binding, IExchangeBinding
     }
 
     public ExchangeBinding(string name, string exchangeDestination, string exchange, string routingKey, Dictionary<string, object> arguments)
-        : base(name, exchangeDestination, DestinationType.EXCHANGE, exchange, routingKey, arguments)
+        : base(name, exchangeDestination, DestinationType.Exchange, exchange, routingKey, arguments)
     {
     }
 }

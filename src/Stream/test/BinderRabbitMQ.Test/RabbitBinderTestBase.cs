@@ -24,13 +24,13 @@ namespace Steeltoe.Stream.Binder.Rabbit;
 
 public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
 {
-    protected const string TEST_PREFIX = "bindertest.";
-    private static readonly string _bigExceptionMessage = new ('x', 10_000);
+    protected const string TestPrefix = "bindertest.";
+    private static readonly string BigExceptionMessage = new ('x', 10_000);
     private bool _isDisposed;
 
-    protected RabbitTestBinder _testBinder;
+    protected RabbitTestBinder testBinder;
 
-    protected int _maxStackTraceSize;
+    protected int maxStackTraceSize;
 
     protected RabbitBinderTestBase(ITestOutputHelper output)
         : base(output, new XunitLoggerFactory(output))
@@ -83,7 +83,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
     protected override RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions = null)
     {
-        if (_testBinder == null)
+        if (testBinder == null)
         {
             var options = new RabbitOptions
             {
@@ -94,10 +94,10 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
             var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(null);
             var bindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions ?? new RabbitBindingsOptions());
 
-            _testBinder = new RabbitTestBinder(ccf, rabbitOptions, binderOptions, bindingsOptions, LoggerFactory);
+            testBinder = new RabbitTestBinder(ccf, rabbitOptions, binderOptions, bindingsOptions, LoggerFactory);
         }
 
-        return _testBinder;
+        return testBinder;
     }
 
     protected DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpoint)
@@ -106,7 +106,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         RetryTemplate retry;
         container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
 
-        Assert.Equal(AcknowledgeMode.NONE, container.AcknowledgeMode);
+        Assert.Equal(AcknowledgeMode.None, container.AcknowledgeMode);
         Assert.StartsWith("foo.props.0", container.GetQueueNames()[0]);
         Assert.False(container.IsChannelTransacted);
         Assert.Equal(2, container.ConsumersPerQueue);
@@ -131,12 +131,12 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
         try
         {
-            var capturedException = innerException ?? new Exception(_bigExceptionMessage);
+            var capturedException = innerException ?? new Exception(BigExceptionMessage);
             ExceptionDispatchInfo.Capture(capturedException).Throw();
         }
         catch (Exception ex)
         {
-            if (ex.StackTrace != null && ex.StackTrace.Length > _maxStackTraceSize)
+            if (ex.StackTrace != null && ex.StackTrace.Length > maxStackTraceSize)
             {
                 return ex;
             }
@@ -149,9 +149,9 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
     protected void Cleanup()
     {
-        if (_testBinder != null)
+        if (testBinder != null)
         {
-            Cleanup(_testBinder);
+            Cleanup(testBinder);
         }
 
         if (CachingConnectionFactory != null)
@@ -161,7 +161,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
             CachingConnectionFactory = null;
         }
 
-        _testBinder = null;
+        testBinder = null;
     }
 
     private void Cleanup(RabbitTestBinder binder)

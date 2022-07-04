@@ -14,9 +14,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class DirectReplyToMessageListenerContainer : DirectMessageListenerContainer
 {
-    internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> _inUseConsumerChannels = new ();
-    internal readonly ConcurrentDictionary<SimpleConsumer, long> _whenUsed = new ();
-    private const int DEFAULT_IDLE = 60000;
+    internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> InUseConsumerChannels = new ();
+    internal readonly ConcurrentDictionary<SimpleConsumer, long> WhenUsed = new ();
+    private const int DefaultIdle = 60000;
     private int _consumerCount;
 
     public DirectReplyToMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
@@ -32,10 +32,10 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
     public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
         : base(applicationContext, connectionFactory, name, loggerFactory)
     {
-        base.SetQueueNames(Address.AMQ_RABBITMQ_REPLY_TO);
-        AcknowledgeMode = AcknowledgeMode.NONE;
+        base.SetQueueNames(Address.AmqRabbitmqReplyTo);
+        AcknowledgeMode = AcknowledgeMode.None;
         base.ConsumersPerQueue = 0;
-        IdleEventInterval = DEFAULT_IDLE;
+        IdleEventInterval = DefaultIdle;
     }
 
     public override int ConsumersPerQueue
@@ -98,7 +98,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     public ChannelHolder GetChannelHolder()
     {
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
             ChannelHolder channelHolder = null;
             while (channelHolder == null)
@@ -108,13 +108,13 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                     throw new InvalidOperationException("Direct reply-to container is not running");
                 }
 
-                foreach (var consumer in _consumers)
+                foreach (var consumer in Consumers)
                 {
                     var candidate = consumer.Model;
-                    if (candidate.IsOpen && _inUseConsumerChannels.TryAdd(candidate, consumer))
+                    if (candidate.IsOpen && InUseConsumerChannels.TryAdd(candidate, consumer))
                     {
                         channelHolder = new ChannelHolder(candidate, consumer.IncrementAndGetEpoch());
-                        _whenUsed[consumer] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                        WhenUsed[consumer] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                         break;
                     }
                 }
@@ -132,12 +132,12 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     public void ReleaseConsumerFor(ChannelHolder channelHolder, bool cancelConsumer, string message)
     {
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
-            _inUseConsumerChannels.TryGetValue(channelHolder.Channel, out var consumer);
+            InUseConsumerChannels.TryGetValue(channelHolder.Channel, out var consumer);
             if (consumer != null && consumer.Epoch == channelHolder.ConsumerEpoch)
             {
-                _inUseConsumerChannels.Remove(channelHolder.Channel, out _);
+                InUseConsumerChannels.Remove(channelHolder.Channel, out _);
                 if (cancelConsumer)
                 {
                     if (message == null)
@@ -169,13 +169,13 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
     protected override void ProcessMonitorTask()
     {
         var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
             long reduce = 0;
-            foreach (var c in _consumers)
+            foreach (var c in Consumers)
             {
-                if (_whenUsed.TryGetValue(c, out var howlong)
-                    && !_inUseConsumerChannels.Values.Contains(c)
+                if (WhenUsed.TryGetValue(c, out var howlong)
+                    && !InUseConsumerChannels.Values.Contains(c)
                     && howlong < now - IdleEventInterval)
                 {
                     reduce++;
@@ -184,7 +184,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
             if (reduce > 0)
             {
-                _logger?.LogDebug("Reducing idle consumes by {reduce}", reduce);
+                Logger?.LogDebug("Reducing idle consumes by {reduce}", reduce);
                 _consumerCount = (int)Math.Max(0, _consumerCount - reduce);
                 base.ConsumersPerQueue = _consumerCount;
             }
@@ -193,9 +193,9 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     protected override int FindIdleConsumer()
     {
-        for (var i = 0; i < _consumers.Count; i++)
+        for (var i = 0; i < Consumers.Count; i++)
         {
-            if (!_inUseConsumerChannels.Values.Contains(_consumers[i]))
+            if (!InUseConsumerChannels.Values.Contains(Consumers[i]))
             {
                 return i;
             }
@@ -206,8 +206,8 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     protected override void ConsumerRemoved(SimpleConsumer consumer)
     {
-        _inUseConsumerChannels.Remove(consumer.Model, out _);
-        _whenUsed.Remove(consumer, out _);
+        InUseConsumerChannels.Remove(consumer.Model, out _);
+        WhenUsed.Remove(consumer, out _);
     }
 
     public class ChannelHolder
@@ -244,7 +244,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         {
             get
             {
-                return AcknowledgeMode.NONE;
+                return AcknowledgeMode.None;
             }
 
             set
@@ -263,7 +263,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                 }
                 finally
                 {
-                    _container._inUseConsumerChannels.Remove(channel, out _);
+                    _container.InUseConsumerChannels.Remove(channel, out _);
                 }
             }
             else
@@ -274,7 +274,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                 }
                 finally
                 {
-                    _container._inUseConsumerChannels.Remove(channel, out _);
+                    _container.InUseConsumerChannels.Remove(channel, out _);
                 }
             }
         }
@@ -294,7 +294,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                 }
                 finally
                 {
-                    _container._inUseConsumerChannels.Remove(channel, out _);
+                    _container.InUseConsumerChannels.Remove(channel, out _);
                 }
             }
             else
@@ -305,7 +305,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                 }
                 finally
                 {
-                    _container._inUseConsumerChannels.Remove(channel, out _);
+                    _container.InUseConsumerChannels.Remove(channel, out _);
                 }
             }
         }

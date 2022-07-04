@@ -12,7 +12,7 @@ public class RollingCollapserEventCounterStream : BucketedRollingCounterStream<H
 {
     private static readonly ConcurrentDictionary<string, RollingCollapserEventCounterStream> Streams = new ();
 
-    private static readonly int NUM_EVENT_TYPES = CollapserEventTypeHelper.Values.Count;
+    private static readonly int NumEventTypes = CollapserEventTypeHelper.Values.Count;
 
     public static RollingCollapserEventCounterStream GetInstance(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions properties)
     {
@@ -58,12 +58,12 @@ public class RollingCollapserEventCounterStream : BucketedRollingCounterStream<H
 
     public override long[] EmptyBucketSummary
     {
-        get { return new long[NUM_EVENT_TYPES]; }
+        get { return new long[NumEventTypes]; }
     }
 
     public override long[] EmptyOutputValue
     {
-        get { return new long[NUM_EVENT_TYPES]; }
+        get { return new long[NumEventTypes]; }
     }
 
     public long GetLatest(CollapserEventType eventType)

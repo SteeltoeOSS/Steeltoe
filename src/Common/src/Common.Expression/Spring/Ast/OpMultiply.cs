@@ -34,28 +34,28 @@ public class OpMultiply : Operator
             }
             else if (leftNumber is double || rightNumber is double)
             {
-                _exitTypeDescriptor = TypeDescriptor.D;
+                exitTypeDescriptor = TypeDescriptor.D;
                 var leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal * rightVal);
             }
             else if (leftNumber is float || rightNumber is float)
             {
-                _exitTypeDescriptor = TypeDescriptor.F;
+                exitTypeDescriptor = TypeDescriptor.F;
                 var leftVal = leftNumber.ToSingle(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToSingle(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal * rightVal);
             }
             else if (leftNumber is long || rightNumber is long)
             {
-                _exitTypeDescriptor = TypeDescriptor.J;
+                exitTypeDescriptor = TypeDescriptor.J;
                 var leftVal = leftNumber.ToInt64(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToInt64(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal * rightVal);
             }
             else if (CodeFlow.IsIntegerForNumericOp(leftNumber) || CodeFlow.IsIntegerForNumericOp(rightNumber))
             {
-                _exitTypeDescriptor = TypeDescriptor.I;
+                exitTypeDescriptor = TypeDescriptor.I;
                 var leftVal = leftNumber.ToInt32(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToInt32(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal * rightVal);
@@ -81,7 +81,7 @@ public class OpMultiply : Operator
             return new TypedValue(result.ToString());
         }
 
-        return state.Operate(Operation.MULTIPLY, leftOperand, rightOperand);
+        return state.Operate(Operation.Multiply, leftOperand, rightOperand);
     }
 
     public override bool IsCompilable()
@@ -91,26 +91,26 @@ public class OpMultiply : Operator
             return false;
         }
 
-        if (_children.Length > 1 && !RightOperand.IsCompilable())
+        if (children.Length > 1 && !RightOperand.IsCompilable())
         {
             return false;
         }
 
-        return _exitTypeDescriptor != null;
+        return exitTypeDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         LeftOperand.GenerateCode(gen, cf);
         var leftDesc = LeftOperand.ExitDescriptor;
-        var exitDesc = _exitTypeDescriptor;
+        var exitDesc = exitTypeDescriptor;
         if (exitDesc == null)
         {
             throw new InvalidOperationException("No exit type descriptor");
         }
 
         CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
-        if (_children.Length > 1)
+        if (children.Length > 1)
         {
             cf.EnterCompilationScope();
             RightOperand.GenerateCode(gen, cf);
@@ -120,6 +120,6 @@ public class OpMultiply : Operator
             gen.Emit(OpCodes.Mul);
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

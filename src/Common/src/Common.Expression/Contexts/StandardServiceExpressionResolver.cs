@@ -12,15 +12,15 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class StandardServiceExpressionResolver : IServiceExpressionResolver
 {
-    public static readonly string DEFAULT_EXPRESSION_PREFIX = "#{";
-    public static readonly string DEFAULT_EXPRESSION_SUFFIX = "}";
+    public static readonly string DefaultExpressionPrefix = "#{";
+    public static readonly string DefaultExpressionSuffix = "}";
 
     private readonly ConcurrentDictionary<string, IExpression> _expressionCache = new ();
     private readonly ConcurrentDictionary<IServiceExpressionContext, IEvaluationContext> _evaluationCache = new ();
     private readonly IParserContext _serviceExpressionParserContext;
     private IExpressionParser _expressionParser;
-    private string _expressionPrefix = DEFAULT_EXPRESSION_PREFIX;
-    private string _expressionSuffix = DEFAULT_EXPRESSION_SUFFIX;
+    private string _expressionPrefix = DefaultExpressionPrefix;
+    private string _expressionSuffix = DefaultExpressionSuffix;
 
     public StandardServiceExpressionResolver()
     {

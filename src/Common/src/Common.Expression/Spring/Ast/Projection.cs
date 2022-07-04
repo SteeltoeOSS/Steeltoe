@@ -23,9 +23,9 @@ public class Projection : SpelNode
         return GetValueRef(state).GetValue();
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        return $"![{GetChild(0).ToStringAST()}]";
+        return $"![{GetChild(0).ToStringAst()}]";
     }
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
@@ -49,7 +49,7 @@ public class Projection : SpelNode
                 {
                     state.PushActiveContextObject(new TypedValue(entry));
                     state.EnterScope();
-                    result.Add(_children[0].GetValueInternal(state).Value);
+                    result.Add(children[0].GetValueInternal(state).Value);
                 }
                 finally
                 {
@@ -71,7 +71,7 @@ public class Projection : SpelNode
                 {
                     state.PushActiveContextObject(new TypedValue(element));
                     state.EnterScope("index", result.Count);
-                    var value = _children[0].GetValueInternal(state).Value;
+                    var value = children[0].GetValueInternal(state).Value;
                     if (value != null && operandAsArray != null)
                     {
                         arrayElementType = DetermineCommonType(arrayElementType, value.GetType());
@@ -102,13 +102,13 @@ public class Projection : SpelNode
         {
             if (_nullSafe)
             {
-                return NullValueRef.INSTANCE;
+                return NullValueRef.Instance;
             }
 
-            throw new SpelEvaluationException(StartPosition, SpelMessage.PROJECTION_NOT_SUPPORTED_ON_TYPE, "null");
+            throw new SpelEvaluationException(StartPosition, SpelMessage.ProjectionNotSupportedOnType, "null");
         }
 
-        throw new SpelEvaluationException(StartPosition, SpelMessage.PROJECTION_NOT_SUPPORTED_ON_TYPE, operand.GetType().FullName);
+        throw new SpelEvaluationException(StartPosition, SpelMessage.ProjectionNotSupportedOnType, operand.GetType().FullName);
     }
 
     private Type DetermineCommonType(Type oldType, Type newType)

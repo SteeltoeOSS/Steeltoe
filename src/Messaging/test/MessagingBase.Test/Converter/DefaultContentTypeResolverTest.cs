@@ -16,11 +16,11 @@ public class DefaultContentTypeResolverTest
     {
         var map = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON }
+            { MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson }
         };
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, resolver.Resolve(headers));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, resolver.Resolve(headers));
     }
 
     [Fact]
@@ -28,11 +28,11 @@ public class DefaultContentTypeResolverTest
     {
         var map = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON_VALUE }
+            { MessageHeaders.ContentType, MimeTypeUtils.ApplicationJsonValue }
         };
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, resolver.Resolve(headers));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, resolver.Resolve(headers));
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class DefaultContentTypeResolverTest
     {
         var map = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE, "invalidContentType" }
+            { MessageHeaders.ContentType, "invalidContentType" }
         };
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
@@ -52,7 +52,7 @@ public class DefaultContentTypeResolverTest
     {
         var map = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE, 1 }
+            { MessageHeaders.ContentType, 1 }
         };
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
@@ -72,10 +72,10 @@ public class DefaultContentTypeResolverTest
     {
         var resolver = new DefaultContentTypeResolver
         {
-            DefaultMimeType = MimeTypeUtils.APPLICATION_JSON
+            DefaultMimeType = MimeTypeUtils.ApplicationJson
         };
         var headers = new MessageHeaders(new Dictionary<string, object>());
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, resolver.Resolve(headers));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, resolver.Resolve(headers));
     }
 }

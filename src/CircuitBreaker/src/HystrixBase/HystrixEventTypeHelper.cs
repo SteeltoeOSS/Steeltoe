@@ -14,23 +14,23 @@ public static class HystrixEventTypeHelper
     {
         return evType switch
         {
-            HystrixEventType.EMIT => false,
-            HystrixEventType.SUCCESS => false,
-            HystrixEventType.FAILURE => false,
-            HystrixEventType.TIMEOUT => false,
-            HystrixEventType.BAD_REQUEST => false,
-            HystrixEventType.SHORT_CIRCUITED => false,
-            HystrixEventType.THREAD_POOL_REJECTED => false,
-            HystrixEventType.SEMAPHORE_REJECTED => false,
-            HystrixEventType.FALLBACK_EMIT => false,
-            HystrixEventType.FALLBACK_SUCCESS => false,
-            HystrixEventType.FALLBACK_FAILURE => false,
-            HystrixEventType.FALLBACK_REJECTION => false,
-            HystrixEventType.FALLBACK_MISSING => false,
-            HystrixEventType.EXCEPTION_THROWN => false,
-            HystrixEventType.RESPONSE_FROM_CACHE => false,
-            HystrixEventType.CANCELLED => false,
-            HystrixEventType.COLLAPSED => false,
+            HystrixEventType.Emit => false,
+            HystrixEventType.Success => false,
+            HystrixEventType.Failure => false,
+            HystrixEventType.Timeout => false,
+            HystrixEventType.BadRequest => false,
+            HystrixEventType.ShortCircuited => false,
+            HystrixEventType.ThreadPoolRejected => false,
+            HystrixEventType.SemaphoreRejected => false,
+            HystrixEventType.FallbackEmit => false,
+            HystrixEventType.FallbackSuccess => false,
+            HystrixEventType.FallbackFailure => false,
+            HystrixEventType.FallbackRejection => false,
+            HystrixEventType.FallbackMissing => false,
+            HystrixEventType.ExceptionThrown => false,
+            HystrixEventType.ResponseFromCache => false,
+            HystrixEventType.Cancelled => false,
+            HystrixEventType.Collapsed => false,
             _ => throw new ArgumentOutOfRangeException(),
         };
     }
@@ -39,53 +39,53 @@ public static class HystrixEventTypeHelper
     {
         return @event switch
         {
-            HystrixRollingNumberEvent.EMIT => HystrixEventType.EMIT,
-            HystrixRollingNumberEvent.SUCCESS => HystrixEventType.SUCCESS,
-            HystrixRollingNumberEvent.FAILURE => HystrixEventType.FAILURE,
-            HystrixRollingNumberEvent.TIMEOUT => HystrixEventType.TIMEOUT,
-            HystrixRollingNumberEvent.SHORT_CIRCUITED => HystrixEventType.SHORT_CIRCUITED,
-            HystrixRollingNumberEvent.THREAD_POOL_REJECTED => HystrixEventType.THREAD_POOL_REJECTED,
-            HystrixRollingNumberEvent.SEMAPHORE_REJECTED => HystrixEventType.SEMAPHORE_REJECTED,
-            HystrixRollingNumberEvent.FALLBACK_EMIT => HystrixEventType.FALLBACK_EMIT,
-            HystrixRollingNumberEvent.FALLBACK_SUCCESS => HystrixEventType.FALLBACK_SUCCESS,
-            HystrixRollingNumberEvent.FALLBACK_FAILURE => HystrixEventType.FALLBACK_FAILURE,
-            HystrixRollingNumberEvent.FALLBACK_REJECTION => HystrixEventType.FALLBACK_REJECTION,
-            HystrixRollingNumberEvent.FALLBACK_MISSING => HystrixEventType.FALLBACK_MISSING,
-            HystrixRollingNumberEvent.EXCEPTION_THROWN => HystrixEventType.EXCEPTION_THROWN,
-            HystrixRollingNumberEvent.RESPONSE_FROM_CACHE => HystrixEventType.RESPONSE_FROM_CACHE,
-            HystrixRollingNumberEvent.COLLAPSED => HystrixEventType.COLLAPSED,
-            HystrixRollingNumberEvent.BAD_REQUEST => HystrixEventType.BAD_REQUEST,
+            HystrixRollingNumberEvent.Emit => HystrixEventType.Emit,
+            HystrixRollingNumberEvent.Success => HystrixEventType.Success,
+            HystrixRollingNumberEvent.Failure => HystrixEventType.Failure,
+            HystrixRollingNumberEvent.Timeout => HystrixEventType.Timeout,
+            HystrixRollingNumberEvent.ShortCircuited => HystrixEventType.ShortCircuited,
+            HystrixRollingNumberEvent.ThreadPoolRejected => HystrixEventType.ThreadPoolRejected,
+            HystrixRollingNumberEvent.SemaphoreRejected => HystrixEventType.SemaphoreRejected,
+            HystrixRollingNumberEvent.FallbackEmit => HystrixEventType.FallbackEmit,
+            HystrixRollingNumberEvent.FallbackSuccess => HystrixEventType.FallbackSuccess,
+            HystrixRollingNumberEvent.FallbackFailure => HystrixEventType.FallbackFailure,
+            HystrixRollingNumberEvent.FallbackRejection => HystrixEventType.FallbackRejection,
+            HystrixRollingNumberEvent.FallbackMissing => HystrixEventType.FallbackMissing,
+            HystrixRollingNumberEvent.ExceptionThrown => HystrixEventType.ExceptionThrown,
+            HystrixRollingNumberEvent.ResponseFromCache => HystrixEventType.ResponseFromCache,
+            HystrixRollingNumberEvent.Collapsed => HystrixEventType.Collapsed,
+            HystrixRollingNumberEvent.BadRequest => HystrixEventType.BadRequest,
             _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType : {@event}"),
         };
     }
 
     public static IList<HystrixEventType> Values { get; } = new List<HystrixEventType>
     {
-        HystrixEventType.EMIT,
-        HystrixEventType.SUCCESS,
-        HystrixEventType.FAILURE,
-        HystrixEventType.TIMEOUT,
-        HystrixEventType.BAD_REQUEST,
-        HystrixEventType.SHORT_CIRCUITED,
-        HystrixEventType.THREAD_POOL_REJECTED,
-        HystrixEventType.SEMAPHORE_REJECTED,
-        HystrixEventType.FALLBACK_EMIT,
-        HystrixEventType.FALLBACK_SUCCESS,
-        HystrixEventType.FALLBACK_FAILURE,
-        HystrixEventType.FALLBACK_REJECTION,
-        HystrixEventType.FALLBACK_MISSING,
-        HystrixEventType.EXCEPTION_THROWN,
-        HystrixEventType.RESPONSE_FROM_CACHE,
-        HystrixEventType.CANCELLED,
-        HystrixEventType.COLLAPSED
+        HystrixEventType.Emit,
+        HystrixEventType.Success,
+        HystrixEventType.Failure,
+        HystrixEventType.Timeout,
+        HystrixEventType.BadRequest,
+        HystrixEventType.ShortCircuited,
+        HystrixEventType.ThreadPoolRejected,
+        HystrixEventType.SemaphoreRejected,
+        HystrixEventType.FallbackEmit,
+        HystrixEventType.FallbackSuccess,
+        HystrixEventType.FallbackFailure,
+        HystrixEventType.FallbackRejection,
+        HystrixEventType.FallbackMissing,
+        HystrixEventType.ExceptionThrown,
+        HystrixEventType.ResponseFromCache,
+        HystrixEventType.Cancelled,
+        HystrixEventType.Collapsed
     };
 
     public static IList<HystrixEventType> ExceptionProducingEventTypes { get; } = new List<HystrixEventType>
     {
-        HystrixEventType.BAD_REQUEST,
-        HystrixEventType.FALLBACK_FAILURE,
-        HystrixEventType.FALLBACK_MISSING,
-        HystrixEventType.FALLBACK_REJECTION
+        HystrixEventType.BadRequest,
+        HystrixEventType.FallbackFailure,
+        HystrixEventType.FallbackMissing,
+        HystrixEventType.FallbackRejection
     };
 
     public static IList<HystrixEventType> TerminalEventTypes { get; } = GetTerminalEventTypes();

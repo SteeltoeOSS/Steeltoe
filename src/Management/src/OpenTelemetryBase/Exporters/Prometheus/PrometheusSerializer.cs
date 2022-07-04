@@ -14,11 +14,11 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 /// </summary>
 internal static partial class PrometheusSerializer
 {
-    private const byte ASCII_QUOTATION_MARK = 0x22; // '"'
-    private const byte ASCII_FULL_STOP = 0x2E; // '.'
-    private const byte ASCII_HYPHEN_MINUS = 0x2D; // '-'
-    private const byte ASCII_REVERSE_SOLIDUS = 0x5C; // '\\'
-    public const byte ASCII_LINEFEED = 0x0A; // `\n`
+    private const byte AsciiQuotationMark = 0x22; // '"'
+    private const byte AsciiFullStop = 0x2E; // '.'
+    private const byte AsciiHyphenMinus = 0x2D; // '-'
+    private const byte AsciiReverseSolidus = 0x5C; // '\\'
+    public const byte AsciiLinefeed = 0x0A; // `\n`
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int WriteDouble(byte[] buffer, int cursor, double value)
@@ -96,12 +96,12 @@ internal static partial class PrometheusSerializer
             var ordinal = (ushort)ch;
             switch (ordinal)
             {
-                case ASCII_REVERSE_SOLIDUS:
-                    buffer[cursor++] = ASCII_REVERSE_SOLIDUS;
-                    buffer[cursor++] = ASCII_REVERSE_SOLIDUS;
+                case AsciiReverseSolidus:
+                    buffer[cursor++] = AsciiReverseSolidus;
+                    buffer[cursor++] = AsciiReverseSolidus;
                     break;
-                case ASCII_LINEFEED:
-                    buffer[cursor++] = ASCII_REVERSE_SOLIDUS;
+                case AsciiLinefeed:
+                    buffer[cursor++] = AsciiReverseSolidus;
                     buffer[cursor++] = unchecked((byte)'n');
                     break;
                 default:
@@ -154,16 +154,16 @@ internal static partial class PrometheusSerializer
             var ordinal = (ushort)ch;
             switch (ordinal)
             {
-                case ASCII_QUOTATION_MARK:
-                    buffer[cursor++] = ASCII_REVERSE_SOLIDUS;
-                    buffer[cursor++] = ASCII_QUOTATION_MARK;
+                case AsciiQuotationMark:
+                    buffer[cursor++] = AsciiReverseSolidus;
+                    buffer[cursor++] = AsciiQuotationMark;
                     break;
-                case ASCII_REVERSE_SOLIDUS:
-                    buffer[cursor++] = ASCII_REVERSE_SOLIDUS;
-                    buffer[cursor++] = ASCII_REVERSE_SOLIDUS;
+                case AsciiReverseSolidus:
+                    buffer[cursor++] = AsciiReverseSolidus;
+                    buffer[cursor++] = AsciiReverseSolidus;
                     break;
-                case ASCII_LINEFEED:
-                    buffer[cursor++] = ASCII_REVERSE_SOLIDUS;
+                case AsciiLinefeed:
+                    buffer[cursor++] = AsciiReverseSolidus;
                     buffer[cursor++] = unchecked((byte)'n');
                     break;
                 default:
@@ -199,8 +199,8 @@ internal static partial class PrometheusSerializer
             var ordinal = (ushort)ch;
             switch (ordinal)
             {
-                case ASCII_FULL_STOP:
-                case ASCII_HYPHEN_MINUS:
+                case AsciiFullStop:
+                case AsciiHyphenMinus:
                     buffer[cursor++] = unchecked((byte)'_');
                     break;
                 default:
@@ -245,7 +245,7 @@ internal static partial class PrometheusSerializer
             cursor = WriteUnicodeString(buffer, cursor, metricDescription);
         }
 
-        buffer[cursor++] = ASCII_LINEFEED;
+        buffer[cursor++] = AsciiLinefeed;
 
         return cursor;
     }
@@ -260,7 +260,7 @@ internal static partial class PrometheusSerializer
         buffer[cursor++] = unchecked((byte)' ');
         cursor = WriteAsciiStringNoEscape(buffer, cursor, metricType);
 
-        buffer[cursor++] = ASCII_LINEFEED;
+        buffer[cursor++] = AsciiLinefeed;
 
         return cursor;
     }

@@ -91,8 +91,8 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
         return tags;
     }
 
-    private Guid FromActivitySpanId(ActivitySpanId spanID)
+    private Guid FromActivitySpanId(ActivitySpanId spanId)
     {
-        return Guid.Parse($"0000000000000000{spanID}");
+        return Guid.Parse($"0000000000000000{spanId}");
     }
 }

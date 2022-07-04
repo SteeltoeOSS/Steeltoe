@@ -276,7 +276,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             connectionFactory,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             true,
             1,
             null,

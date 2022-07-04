@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 
 public class SerilogDynamicProvider : DynamicLoggerProviderBase
 {
-    private static readonly object _sync = new ();
+    private static readonly object Sync = new ();
     private static Serilog.Core.Logger _serilogger;
 
     public SerilogDynamicProvider(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
@@ -34,7 +34,7 @@ public class SerilogDynamicProvider : DynamicLoggerProviderBase
     {
         var serilogOptions = serilogOptionsMonitor?.CurrentValue ?? throw new ArgumentNullException(nameof(serilogOptionsMonitor));
 
-        lock (_sync)
+        lock (Sync)
         {
             _serilogger ??= serilogOptions.GetSerilogConfiguration().CreateLogger(); // Cannot create more than once, so protect with a lock and static property
         }

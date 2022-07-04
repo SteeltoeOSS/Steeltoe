@@ -87,8 +87,8 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_MultiplePostgresServices_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVcapEdb);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -103,8 +103,8 @@ public class PostgresProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_EDB);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
@@ -126,8 +126,8 @@ public class PostgresProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_Azure);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapAzure);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();
@@ -152,8 +152,8 @@ public class PostgresProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_Crunchy);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapCrunchy);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();

@@ -8,7 +8,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public class CloudFoundryJwtBearerOptionsTest
 {
-    private const string DEFAULT_JWT_TOKEN_URL =
+    private const string DefaultJwtTokenUrl =
         $"http://{CloudFoundryDefaults.OAuthServiceUrl}{CloudFoundryDefaults.JwtTokenUri}";
 
     public static TheoryData<string, string> SetEndpointsData()
@@ -16,9 +16,9 @@ public class CloudFoundryJwtBearerOptionsTest
         var data = new TheoryData<string, string>();
         var newDomain = "http://not-the-original-domain";
 
-        data.Add(string.Empty, DEFAULT_JWT_TOKEN_URL);
-        data.Add("   ", DEFAULT_JWT_TOKEN_URL);
-        data.Add(default, DEFAULT_JWT_TOKEN_URL);
+        data.Add(string.Empty, DefaultJwtTokenUrl);
+        data.Add("   ", DefaultJwtTokenUrl);
+        data.Add(default, DefaultJwtTokenUrl);
         data.Add(newDomain, newDomain + CloudFoundryDefaults.JwtTokenUri);
 
         return data;
@@ -30,7 +30,7 @@ public class CloudFoundryJwtBearerOptionsTest
         var opts = new CloudFoundryJwtBearerOptions();
 
         Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
-        Assert.Equal(DEFAULT_JWT_TOKEN_URL, opts.JwtKeyUrl);
+        Assert.Equal(DefaultJwtTokenUrl, opts.JwtKeyUrl);
         Assert.True(opts.SaveToken);
     }
 

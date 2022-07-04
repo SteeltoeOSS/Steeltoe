@@ -8,7 +8,7 @@ using System;
 
 namespace Steeltoe.Common;
 
-public static class IServiceProviderExtensions
+public static class ServiceProviderExtensions
 {
     /// <summary>
     /// If an instance of <see cref="IApplicationInstanceInfo"/> is found, it is returned.

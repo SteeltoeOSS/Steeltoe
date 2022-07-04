@@ -211,15 +211,15 @@ public class BroadcastingDispatcherTest
         Assert.Equal(2, messages.Count);
 
         Assert.True(messages.TryDequeue(out var message));
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out var value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var value);
         Assert.Null(value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out value);
         Assert.Null(value);
 
         Assert.True(messages.TryDequeue(out message));
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out value);
         Assert.Null(value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out value);
         Assert.Null(value);
     }
 
@@ -243,27 +243,27 @@ public class BroadcastingDispatcherTest
         Assert.Equal(3, messages.Count);
 
         Assert.True(messages.TryDequeue(out var message));
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out var value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var value);
         Assert.Equal(1, value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out value);
         Assert.Equal(3, value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.CORRELATION_ID, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out value);
         Assert.Equal(originalId, value);
 
         Assert.True(messages.TryDequeue(out message));
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out value);
         Assert.Equal(2, value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out value);
         Assert.Equal(3, value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.CORRELATION_ID, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out value);
         Assert.Equal(originalId, value);
 
         Assert.True(messages.TryDequeue(out message));
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out value);
         Assert.Equal(3, value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out value);
         Assert.Equal(3, value);
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.CORRELATION_ID, out value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out value);
         Assert.Equal(originalId, value);
     }
 
@@ -357,7 +357,7 @@ public class BroadcastingDispatcherTest
 
         public MessageStoringTestEndpoint(ConcurrentQueue<IMessage> messageList)
         {
-            MessageList = messageList;
+            this.MessageList = messageList;
         }
 
         public void HandleMessage(IMessage message)

@@ -207,7 +207,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             services.AddRabbitExchange(dlx);
 
             var allArgs1 = QueueBuilder.NonDurable("all.args.1")
-                .TTL(1000)
+                .Ttl(1000)
                 .Expires(200000)
                 .MaxLength(42)
                 .MaxLengthBytes(10000)
@@ -222,7 +222,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             services.AddRabbitQueue(allArgs1);
 
             var allArgs2 = QueueBuilder.NonDurable("all.args.2")
-                .TTL(1000)
+                .Ttl(1000)
                 .Expires(200000)
                 .MaxLength(42)
                 .MaxLengthBytes(10000)
@@ -236,7 +236,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             services.AddRabbitQueue(allArgs2);
 
             var allArgs3 = QueueBuilder.NonDurable("all.args.3")
-                .TTL(1000)
+                .Ttl(1000)
                 .Expires(200000)
                 .MaxLength(42)
                 .MaxLengthBytes(10000)

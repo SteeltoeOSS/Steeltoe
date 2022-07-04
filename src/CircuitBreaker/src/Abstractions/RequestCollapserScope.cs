@@ -6,6 +6,6 @@ namespace Steeltoe.CircuitBreaker;
 
 public enum RequestCollapserScope
 {
-    REQUEST,
-    GLOBAL
+    Request,
+    Global
 }

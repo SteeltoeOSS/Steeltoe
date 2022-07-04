@@ -14,15 +14,15 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
 public class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
 {
-    private const string GITSETTINGS_PREFIX = "git";
-    private const string GITPROPERTIES_FILE = "git.properties";
+    private const string GitsettingsPrefix = "git";
+    private const string GitpropertiesFile = "git.properties";
 
-    private static readonly List<string> DATETIME_INPUT_KEYS = new () { "time" };
+    private static readonly List<string> DatetimeInputKeys = new () { "time" };
     private readonly string _propFile;
     private readonly ILogger _logger;
 
     public GitInfoContributor(ILogger<GitInfoContributor> logger = null)
-        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GITPROPERTIES_FILE)
+        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GitpropertiesFile)
     {
         _logger = logger;
     }
@@ -35,8 +35,8 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
 
     public virtual void Contribute(IInfoBuilder builder)
     {
-        _config = ReadGitProperties(_propFile);
-        Contribute(builder, GITSETTINGS_PREFIX, true);
+        config = ReadGitProperties(_propFile);
+        Contribute(builder, GitsettingsPrefix, true);
     }
 
     public virtual IConfiguration ReadGitProperties(string propFile)
@@ -84,7 +84,7 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
     {
         object valueToInsert = value;
 
-        if (DATETIME_INPUT_KEYS.Contains(key))
+        if (DatetimeInputKeys.Contains(key))
         {
             // Normalize datetime values to ISO8601 format
             valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);

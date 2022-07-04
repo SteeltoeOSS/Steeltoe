@@ -70,8 +70,8 @@ public class SqlServerProviderConnectorOptionsTest
         };
 
         // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -88,8 +88,8 @@ public class SqlServerProviderConnectorOptionsTest
     [Fact]
     public void CloudFoundryConfig_Found_By_Name()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPNoTag);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapNoTag);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -108,8 +108,8 @@ public class SqlServerProviderConnectorOptionsTest
     [Fact]
     public void CloudFoundryConfig_Found_By_Tag()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPIgnoreName);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapIgnoreName);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -135,8 +135,8 @@ public class SqlServerProviderConnectorOptionsTest
         };
 
         // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP_CredsInUrl);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapCredsInUrl);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();

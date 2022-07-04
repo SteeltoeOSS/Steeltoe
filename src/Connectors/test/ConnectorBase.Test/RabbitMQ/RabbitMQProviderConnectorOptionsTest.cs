@@ -43,7 +43,7 @@ public class RabbitMQProviderConnectorOptionsTest
         Assert.Equal("username", sconfig.Username);
         Assert.Null(sconfig.Uri);
         Assert.True(sconfig.SslEnabled);
-        Assert.Equal(RabbitMQProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
+        Assert.Equal(RabbitMQProviderConnectorOptions.DefaultSslPort, sconfig.SslPort);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class RabbitMQProviderConnectorOptionsTest
         Assert.Equal("username", sconfig.Username);
         Assert.Null(sconfig.Uri);
         Assert.True(sconfig.SslEnabled);
-        Assert.Equal(RabbitMQProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
+        Assert.Equal(RabbitMQProviderConnectorOptions.DefaultSslPort, sconfig.SslPort);
     }
 
     [Fact]

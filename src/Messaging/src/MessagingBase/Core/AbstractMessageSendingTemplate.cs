@@ -12,7 +12,7 @@ namespace Steeltoe.Messaging.Core;
 
 public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSendingOperations<TDestination>
 {
-    public const string CONVERSION_HINT_HEADER = "conversionHint";
+    public const string ConversionHintHeader = "conversionHint";
 
     public virtual TDestination DefaultSendDestination { get; set; }
 
@@ -113,7 +113,7 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
     {
         IMessageHeaders messageHeaders = null;
         object conversionHint = null;
-        headers?.TryGetValue(CONVERSION_HINT_HEADER, out conversionHint);
+        headers?.TryGetValue(ConversionHintHeader, out conversionHint);
 
         var headersToUse = ProcessHeadersToSend(headers);
         if (headersToUse != null)
@@ -137,7 +137,7 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
             var payloadType = payload.GetType().Name;
 
             object contentType = null;
-            messageHeaders?.TryGetValue(MessageHeaders.CONTENT_TYPE, out contentType);
+            messageHeaders?.TryGetValue(MessageHeaders.ContentType, out contentType);
             contentType ??= "unknown";
 
             throw new MessageConversionException($"Unable to convert payload with type='{payloadType}', contentType='{contentType}', converter=[{MessageConverter}]");

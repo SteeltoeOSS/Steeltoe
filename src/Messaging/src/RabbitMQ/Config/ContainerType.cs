@@ -6,5 +6,5 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public enum ContainerType
 {
-    DIRECT
+    Direct
 }

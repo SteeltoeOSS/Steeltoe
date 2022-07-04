@@ -55,7 +55,7 @@ public class ConsulDiscoveryOptionsTest
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
         var config = new ConfigurationBuilder().Build();
         var opts = new ConsulDiscoveryOptions { NetUtils = mockNetUtils.Object };
-        config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(opts);
+        config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         opts.ApplyNetUtils();
 
@@ -70,7 +70,7 @@ public class ConsulDiscoveryOptionsTest
         var appSettings = new Dictionary<string, string> { { "consul:discovery:UseNetUtils", "true" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var opts = new ConsulDiscoveryOptions { NetUtils = mockNetUtils.Object };
-        config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(opts);
+        config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         opts.ApplyNetUtils();
 
@@ -85,15 +85,15 @@ public class ConsulDiscoveryOptionsTest
     {
         var appSettings = new Dictionary<string, string> { { "consul:discovery:UseNetUtils", "true" }, { "spring:cloud:inet:SkipReverseDnsLookup", "true" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var opts = new ConsulDiscoveryOptions { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
-        config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(opts);
+        var opts = new ConsulDiscoveryOptions { NetUtils = new InetUtils(config.GetSection(InetOptions.Prefix).Get<InetOptions>()) };
+        config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
-        var noSlowReverseDNSQuery = new Stopwatch();
-        noSlowReverseDNSQuery.Start();
+        var noSlowReverseDnsQuery = new Stopwatch();
+        noSlowReverseDnsQuery.Start();
         opts.ApplyNetUtils();
-        noSlowReverseDNSQuery.Stop();
+        noSlowReverseDnsQuery.Stop();
 
         Assert.NotNull(opts.HostName);
-        Assert.InRange(noSlowReverseDNSQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+        Assert.InRange(noSlowReverseDnsQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
     }
 }

@@ -23,9 +23,9 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
 
     public Task Invoke(HttpContext context)
     {
-        _logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
+        logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
 
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleInfoRequestAsync(context);
         }
@@ -36,9 +36,9 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     protected internal Task HandleInfoRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

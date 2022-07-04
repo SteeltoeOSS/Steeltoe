@@ -19,7 +19,7 @@ public class TypedValueHolderValueRef : IValueRef
 
     public void SetValue(object newValue)
     {
-        throw new SpelEvaluationException(_node.StartPosition, SpelMessage.NOT_ASSIGNABLE, _node.ToStringAST());
+        throw new SpelEvaluationException(_node.StartPosition, SpelMessage.NotAssignable, _node.ToStringAst());
     }
 
     public bool IsWritable => false;

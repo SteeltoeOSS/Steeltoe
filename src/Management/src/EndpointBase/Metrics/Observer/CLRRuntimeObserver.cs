@@ -15,14 +15,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class ClrRuntimeObserver : IRuntimeDiagnosticSource
 {
-    internal const string OBSERVER_NAME = "CLRRuntimeObserver";
-    internal const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";
+    internal const string ObserverName = "CLRRuntimeObserver";
+    internal const string DiagnosticName = "Steeltoe.ClrMetrics";
 
-    internal const string HEAP_EVENT = "Steeltoe.ClrMetrics.Heap";
-    internal const string THREADS_EVENT = "Steeltoe.ClrMetrics.Threads";
+    internal const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
+    internal const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
-    private const string GENERATION_TAGVALUE_NAME = "gen";
-    private const string GENERATION_KEY = "generation";
+    private const string GenerationTagvalueName = "gen";
+    private const string GenerationKey = "generation";
 
     private readonly Dictionary<string, object> _heapTags = new () { { "area", "heap" } };
     private readonly Dictionary<string, object> _workerTags = new () { { "kind", "worker" } };
@@ -98,7 +98,7 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
                 count = count - _previous.CollectionCounts[i];
             }
 
-            var tags = new Dictionary<string, object> { { GENERATION_KEY, GENERATION_TAGVALUE_NAME + i } };
+            var tags = new Dictionary<string, object> { { GenerationKey, GenerationTagvalueName + i } };
 
             yield return new Measurement<long>(count, tags.AsReadonlySpan());
         }

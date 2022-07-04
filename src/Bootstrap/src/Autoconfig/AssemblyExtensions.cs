@@ -15,7 +15,7 @@ internal static class AssemblyExtensions
 {
     internal static IEnumerable<string> ExcludedAssemblies { get; set; }
 
-    private static readonly HashSet<string> _missingAssemblies = new ();
+    private static readonly HashSet<string> MissingAssemblies = new ();
 
     internal static Assembly LoadAnyVersion(object sender, ResolveEventArgs args)
     {
@@ -23,7 +23,7 @@ internal static class AssemblyExtensions
         static string GetSimpleName(string assemblyName) => new Regex(",.*").Replace(assemblyName, string.Empty);
 
         var name = GetSimpleName(args.Name);
-        if (_missingAssemblies.Contains(name))
+        if (MissingAssemblies.Contains(name))
         {
             return null;
         }
@@ -44,9 +44,9 @@ internal static class AssemblyExtensions
             return args.RequestingAssembly;
         }
 
-        _missingAssemblies.Add(name); // throw it in there to prevent recursive attempts to resolve
+        MissingAssemblies.Add(name); // throw it in there to prevent recursive attempts to resolve
         assembly = Assembly.Load(name);
-        _missingAssemblies.Remove(name);
+        MissingAssemblies.Remove(name);
         return assembly;
     }
 

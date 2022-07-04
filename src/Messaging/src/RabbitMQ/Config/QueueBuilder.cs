@@ -39,7 +39,7 @@ public class QueueBuilder : AbstractBuilder
         }
     }
 
-    private static readonly INamingStrategy _namingStrategy = Base64UrlNamingStrategy.DEFAULT;
+    private static readonly INamingStrategy NamingStrategy = Base64UrlNamingStrategy.Default;
     private readonly string _name;
     private bool _durable;
     private bool _exclusive;
@@ -47,7 +47,7 @@ public class QueueBuilder : AbstractBuilder
 
     public static QueueBuilder Durable()
     {
-        return Durable(_namingStrategy.GenerateName());
+        return Durable(NamingStrategy.GenerateName());
     }
 
     public static QueueBuilder Durable(string name)
@@ -60,7 +60,7 @@ public class QueueBuilder : AbstractBuilder
 
     public static QueueBuilder NonDurable()
     {
-        return new QueueBuilder(_namingStrategy.GenerateName());
+        return new QueueBuilder(NamingStrategy.GenerateName());
     }
 
     public static QueueBuilder NonDurable(string name)
@@ -102,7 +102,7 @@ public class QueueBuilder : AbstractBuilder
         return this;
     }
 
-    public QueueBuilder TTL(int ttl)
+    public QueueBuilder Ttl(int ttl)
     {
         return WithArgument("x-message-ttl", ttl);
     }

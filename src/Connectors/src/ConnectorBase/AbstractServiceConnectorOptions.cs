@@ -10,12 +10,12 @@ namespace Steeltoe.Connector;
 
 public abstract class AbstractServiceConnectorOptions
 {
-    protected const char Default_Terminator = ';';
-    protected const char Default_Separator = '=';
+    protected const char DefaultTerminator = ';';
+    protected const char DefaultSeparator = '=';
     private readonly char _keyValueTerm;
     private readonly char _keyValueSep;
 
-    protected AbstractServiceConnectorOptions(IConfiguration config, char terminator = Default_Terminator, char separator = Default_Separator)
+    protected AbstractServiceConnectorOptions(IConfiguration config, char terminator = DefaultTerminator, char separator = DefaultSeparator)
         : this(terminator, separator)
     {
         if (config == null)
@@ -27,7 +27,7 @@ public abstract class AbstractServiceConnectorOptions
     }
 
     protected AbstractServiceConnectorOptions()
-        : this(Default_Terminator, Default_Separator)
+        : this(DefaultTerminator, DefaultSeparator)
     {
     }
 

@@ -10,19 +10,19 @@ namespace Steeltoe.Messaging.Converter;
 
 public abstract class AbstractTypeMapper
 {
-    public const string DEFAULT_CLASSID_FIELD_NAME = MessageHeaders.TYPE_ID;
-    public const string DEFAULT_CONTENT_CLASSID_FIELD_NAME = MessageHeaders.CONTENT_TYPE_ID;
-    public const string DEFAULT_KEY_CLASSID_FIELD_NAME = MessageHeaders.KEY_TYPE_ID;
+    public const string DefaultClassidFieldName = MessageHeaders.TypeId;
+    public const string DefaultContentClassidFieldName = MessageHeaders.ContentTypeId;
+    public const string DefaultKeyClassidFieldName = MessageHeaders.KeyTypeId;
 
     private readonly Dictionary<Type, string> _classIdMapping = new ();
 
     public Dictionary<string, Type> IdClassMapping { get; } = new ();
 
-    public string ClassIdFieldName { get; internal set; } = DEFAULT_CLASSID_FIELD_NAME;
+    public string ClassIdFieldName { get; internal set; } = DefaultClassidFieldName;
 
-    public string ContentClassIdFieldName { get; internal set; } = DEFAULT_CONTENT_CLASSID_FIELD_NAME;
+    public string ContentClassIdFieldName { get; internal set; } = DefaultContentClassidFieldName;
 
-    public string KeyClassIdFieldName { get; internal set; } = DEFAULT_KEY_CLASSID_FIELD_NAME;
+    public string KeyClassIdFieldName { get; internal set; } = DefaultKeyClassidFieldName;
 
     public void SetIdClassMapping(Dictionary<string, Type> mapping)
     {
@@ -71,7 +71,7 @@ public abstract class AbstractTypeMapper
 
     protected Type FromInferredTypeHeader(IMessageHeaders headers)
     {
-        return headers.Get<Type>(MessageHeaders.INFERRED_ARGUMENT_TYPE);
+        return headers.Get<Type>(MessageHeaders.InferredArgumentType);
     }
 
     protected virtual Type GetContentType(Type type)

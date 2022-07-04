@@ -11,9 +11,9 @@ namespace Steeltoe.Management.Tracing;
 
 public class TracingOptions : ITracingOptions
 {
-    internal const string CONFIG_PREFIX = "management:tracing";
-    internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
-    internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
+    internal const string ConfigPrefix = "management:tracing";
+    internal const string DefaultIngressIgnorePattern = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+    internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
     internal const int DefaultMaxPayloadSizeInBytes = 4096;
     private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
@@ -24,7 +24,7 @@ public class TracingOptions : ITracingOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(CONFIG_PREFIX);
+        var section = config.GetSection(ConfigPrefix);
         if (section != null)
         {
             section.Bind(this);
@@ -34,12 +34,12 @@ public class TracingOptions : ITracingOptions
 
         if (string.IsNullOrEmpty(IngressIgnorePattern))
         {
-            IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
+            IngressIgnorePattern = DefaultIngressIgnorePattern;
         }
 
         if (string.IsNullOrEmpty(EgressIgnorePattern))
         {
-            EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
+            EgressIgnorePattern = DefaultEgressIgnorePattern;
         }
     }
 
@@ -48,7 +48,7 @@ public class TracingOptions : ITracingOptions
     }
 
     /// <inheritdoc />
-    public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, $"{CONFIG_PREFIX}:name");
+    public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, $"{ConfigPrefix}:name");
 
     /// <inheritdoc />
     public string IngressIgnorePattern { get; set; }

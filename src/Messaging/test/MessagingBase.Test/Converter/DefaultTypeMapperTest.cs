@@ -70,7 +70,7 @@ public class DefaultTypeMapperTest
     }
 
     [Fact]
-    public void ShouldLookInTheContentClassIdFieldNameToFindTheContainerClassIDWhenClassIdIsContainerType()
+    public void ShouldLookInTheContentClassIdFieldNameToFindTheContainerClassIdWhenClassIdIsContainerType()
     {
         var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader("contentType", typeof(string).ToString());
@@ -120,7 +120,7 @@ public class DefaultTypeMapperTest
     }
 
     [Fact]
-    public void ShouldLookInTheValueClassIdFieldNameToFindTheValueClassIDWhenClassIdIsAMap()
+    public void ShouldLookInTheValueClassIdFieldNameToFindTheValueClassIdWhenClassIdIsAMap()
     {
         var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader("keyType", typeof(int).ToString());

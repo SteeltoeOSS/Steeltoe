@@ -15,7 +15,7 @@ public class BooleanLiteral : Literal
         : base(payload, startPos, endPos)
     {
         _value = BooleanTypedValue.ForValue(value);
-        _exitTypeDescriptor = TypeDescriptor.Z;
+        exitTypeDescriptor = TypeDescriptor.Z;
     }
 
     public override ITypedValue GetLiteralValue()
@@ -28,10 +28,10 @@ public class BooleanLiteral : Literal
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         var result = gen.DeclareLocal(typeof(bool));
-        gen.Emit(_value.Equals(BooleanTypedValue.TRUE) ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
+        gen.Emit(_value.Equals(BooleanTypedValue.True) ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
 
         gen.Emit(OpCodes.Stloc, result);
         gen.Emit(OpCodes.Ldloc, result);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

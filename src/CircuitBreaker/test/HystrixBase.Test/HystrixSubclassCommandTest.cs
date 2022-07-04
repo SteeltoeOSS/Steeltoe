@@ -53,7 +53,7 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         var info2 = infos[1];
         Assert.Equal("SuperCommand", info2.CommandKey.Name);
         Assert.Equal(2, info2.ExecutionEvents.Count);
-        Assert.Equal(HystrixEventType.RESPONSE_FROM_CACHE, info2.ExecutionEvents[1]);
+        Assert.Equal(HystrixEventType.ResponseFromCache, info2.ExecutionEvents[1]);
         var info3 = infos[2];
         Assert.Equal("SuperCommand", info3.CommandKey.Name);
         Assert.Single(info3.ExecutionEvents);
@@ -79,7 +79,7 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         var info2 = infos[1];
         Assert.Equal("SubCommandNoOverride", info2.CommandKey.Name);
         Assert.Equal(2, info2.ExecutionEvents.Count);
-        Assert.Equal(HystrixEventType.RESPONSE_FROM_CACHE, info2.ExecutionEvents[1]);
+        Assert.Equal(HystrixEventType.ResponseFromCache, info2.ExecutionEvents[1]);
         var info3 = infos[2];
         Assert.Equal("SubCommandNoOverride", info3.CommandKey.Name);
         Assert.Single(info3.ExecutionEvents);

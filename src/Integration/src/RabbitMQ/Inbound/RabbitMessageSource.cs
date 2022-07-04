@@ -89,11 +89,11 @@ public class RabbitMessageSource : AbstractMessageSource<object>
 
             var builder = MessageBuilderFactory.WithPayload(payload)
                 .CopyHeaders(accessor.MessageHeaders)
-                .SetHeader(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK, callback);
+                .SetHeader(IntegrationMessageHeaderAccessor.AcknowledgmentCallback, callback);
             if (RawMessageHeader)
             {
-                builder.SetHeader(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE, message);
-                builder.SetHeader(IntegrationMessageHeaderAccessor.SOURCE_DATA, message);
+                builder.SetHeader(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage, message);
+                builder.SetHeader(IntegrationMessageHeaderAccessor.SourceData, message);
             }
 
             return builder;
@@ -159,13 +159,13 @@ public class RabbitMessageSource : AbstractMessageSource<object>
                 var deliveryTag = AckInfo.Response.DeliveryTag;
                 switch (status)
                 {
-                    case Status.ACCEPT:
+                    case Status.Accept:
                         AckInfo.Channel.BasicAck(deliveryTag, false);
                         break;
-                    case Status.REJECT:
+                    case Status.Reject:
                         AckInfo.Channel.BasicReject(deliveryTag, false);
                         break;
-                    case Status.REQUEUE:
+                    case Status.Requeue:
                         AckInfo.Channel.BasicReject(deliveryTag, true);
                         break;
                     default:

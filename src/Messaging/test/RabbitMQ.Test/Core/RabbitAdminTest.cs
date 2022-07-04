@@ -119,7 +119,7 @@ public class RabbitAdminTest : AbstractTest
             Assert.True(n < 100);
 
             var props = rabbitAdmin.GetQueueProperties(queueName);
-            Assert.True(props.TryGetValue(RabbitAdmin.QUEUE_CONSUMER_COUNT, out var consumerCount));
+            Assert.True(props.TryGetValue(RabbitAdmin.QueueConsumerCount, out var consumerCount));
             Assert.Equal(1U, consumerCount);
             channel.Close();
         }
@@ -203,14 +203,14 @@ public class RabbitAdminTest : AbstractTest
         serviceCollection.AddSingleton(qs);
         var bs = new Declarables(
             "bs",
-            new Binding("b1", "q2", DestinationType.QUEUE, "e2", "k2", null),
-            new Binding("b2", "q3", DestinationType.QUEUE, "e3", "k3", null));
+            new Binding("b1", "q2", DestinationType.Queue, "e2", "k2", null),
+            new Binding("b2", "q3", DestinationType.Queue, "e3", "k3", null));
         serviceCollection.AddSingleton(bs);
         var ds = new Declarables(
             "ds",
             new DirectExchange("e4", false, true),
             new Queue("q4", false, false, true),
-            new Binding("b3", "q4", DestinationType.QUEUE, "e4", "k4", null));
+            new Binding("b3", "q4", DestinationType.Queue, "e4", "k4", null));
         serviceCollection.AddSingleton(ds);
         var provider = serviceCollection.BuildServiceProvider();
         var admin = provider.GetRabbitAdmin();
@@ -301,7 +301,7 @@ public class RabbitAdminTest : AbstractTest
         Assert.Same(toBeThrown, lastEvent.Exception.InnerException);
         Assert.IsType<DirectExchange>(lastEvent.Declarable);
 
-        admin.DeclareBinding(new Binding("foo", "foo", DestinationType.QUEUE, "bar", "baz", null));
+        admin.DeclareBinding(new Binding("foo", "foo", DestinationType.Queue, "bar", "baz", null));
         lastEvent = admin.LastDeclarationExceptionEvent;
         Assert.Same(admin, lastEvent.Source);
         Assert.Same(toBeThrown, lastEvent.Exception.InnerException);

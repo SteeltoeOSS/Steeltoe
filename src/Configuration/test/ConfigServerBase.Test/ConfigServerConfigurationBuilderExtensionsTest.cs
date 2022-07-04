@@ -154,7 +154,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -208,7 +208,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -250,7 +250,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -286,7 +286,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -344,14 +344,14 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("testName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
         Assert.Equal("myPassword", settings.Password);
     }
 
-    private const string VCAPServicesV2 = @"
+    private const string VcapServicesV2 = @"
                 {
                     ""p-config-server"": [
                     {
@@ -376,7 +376,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                     }]
                 }";
 
-    private const string VCAPServicesV3 = @"
+    private const string VcapServicesV3 = @"
                 {
                     ""p.config-server"": [
                     {
@@ -401,7 +401,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                     }]
                 }";
 
-    private const string VCAPServicesAlt = @"
+    private const string VcapServicesAlt = @"
                 {
                     ""config-server"": [
                     {
@@ -427,9 +427,9 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                 }";
 
     [Theory]
-    [InlineData(VCAPServicesV2)]
-    [InlineData(VCAPServicesV3)]
-    [InlineData(VCAPServicesAlt)]
+    [InlineData(VcapServicesV2)]
+    [InlineData(VcapServicesV3)]
+    [InlineData(VcapServicesAlt)]
     public void AddConfigServer_VCAP_SERVICES_Override_Defaults(string vcapservices)
     {
         var configurationBuilder = new ConfigurationBuilder();

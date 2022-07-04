@@ -21,7 +21,7 @@ public abstract class BucketedCumulativeCounterStream<TEvent, TBucket, TOutput> 
         : base(stream, numBuckets, bucketSizeInMs, reduceCommandCompletion)
     {
         _counterSubject = new BehaviorSubject<TOutput>(EmptyOutputValue);
-        _sourceStream = bucketedStream
+        _sourceStream = BucketedStream
             .Scan(EmptyOutputValue, reduceBucket)
             .Skip(numBuckets)
             .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
@@ -36,11 +36,11 @@ public abstract class BucketedCumulativeCounterStream<TEvent, TBucket, TOutput> 
 
     public void StartCachingStreamValuesIfUnstarted()
     {
-        if (subscription.Value == null)
+        if (Subscription.Value == null)
         {
             // the stream is not yet started
             var candidateSubscription = Observe().Subscribe(_counterSubject);
-            if (subscription.CompareAndSet(null, candidateSubscription))
+            if (Subscription.CompareAndSet(null, candidateSubscription))
             {
                 // won the race to set the subscription
             }

@@ -6,6 +6,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public enum CacheEnabledTest
 {
-    YES,
-    NO
+    Yes,
+    No
 }

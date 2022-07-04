@@ -9,8 +9,8 @@ public enum CredentialType
     Value,
     Password,
     User,
-    JSON,
+    Json,
     Certificate,
-    RSA,
-    SSH
+    Rsa,
+    Ssh
 }

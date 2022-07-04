@@ -22,7 +22,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -32,7 +32,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 
     public override string HandleRequest()
     {
-        var result = _endpoint.Invoke();
+        var result = innerEndpoint.Invoke();
         return result;
     }
 
@@ -41,7 +41,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
         var request = context.Request;
         var response = context.Response;
 
-        _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+        logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
         // GET /metrics/{metricName}?tag=key:value&tag=key:value
         var serialInfo = HandleRequest();

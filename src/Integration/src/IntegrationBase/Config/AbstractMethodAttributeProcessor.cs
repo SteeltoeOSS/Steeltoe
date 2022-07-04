@@ -22,8 +22,8 @@ namespace Steeltoe.Integration.Config;
 public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttributeProcessor<TAttribute>
     where TAttribute : Attribute
 {
-    protected const string SEND_TIMEOUT_PROPERTY = "SendTimeout";
-    protected const string INPUT_CHANNEL_PROPERTY = "InputChannel";
+    protected const string SendTimeoutPropertyName = "SendTimeout";
+    protected const string InputChannelPropertyName = "InputChannel";
     private readonly ILogger _logger;
 
     protected virtual List<string> MessageHandlerProperties { get; } = new ();
@@ -36,13 +36,13 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected virtual Type AnnotationType { get; }
 
-    protected virtual string InputChannelProperty { get; } = INPUT_CHANNEL_PROPERTY;
+    protected virtual string InputChannelProperty { get; } = InputChannelPropertyName;
 
     protected AbstractMethodAttributeProcessor(IApplicationContext applicatonContext, ILogger logger)
     {
         ApplicationContext = applicatonContext ?? throw new ArgumentNullException(nameof(applicatonContext));
         _logger = logger;
-        MessageHandlerProperties.Add(SEND_TIMEOUT_PROPERTY);
+        MessageHandlerProperties.Add(SendTimeoutPropertyName);
         ConversionService = ApplicationContext.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
 
         ChannelResolver = new DefaultMessageChannelDestinationResolver(applicatonContext);

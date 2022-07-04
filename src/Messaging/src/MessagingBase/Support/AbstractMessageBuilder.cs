@@ -9,9 +9,9 @@ namespace Steeltoe.Messaging.Support;
 
 public abstract class AbstractMessageBuilder
 {
-    protected readonly object payload;
+    protected readonly object Payload;
 
-    protected readonly IMessage originalMessage;
+    protected readonly IMessage OriginalMessage;
 
     protected MessageHeaderAccessor headerAccessor;
 
@@ -26,22 +26,22 @@ public abstract class AbstractMessageBuilder
             throw new ArgumentNullException(nameof(message));
         }
 
-        payload = message.Payload;
-        originalMessage = message;
+        Payload = message.Payload;
+        OriginalMessage = message;
         headerAccessor = new MessageHeaderAccessor(message);
     }
 
     protected AbstractMessageBuilder(MessageHeaderAccessor accessor)
     {
-        payload = null;
-        originalMessage = null;
+        Payload = null;
+        OriginalMessage = null;
         headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
     }
 
     protected AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
     {
-        this.payload = payload ?? throw new ArgumentNullException(nameof(payload));
-        originalMessage = null;
+        this.Payload = payload ?? throw new ArgumentNullException(nameof(payload));
+        OriginalMessage = null;
         headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
     }
 
@@ -69,12 +69,12 @@ public abstract class AbstractMessageBuilder
 
     public virtual IMessage Build()
     {
-        if (originalMessage != null && !headerAccessor.IsModified)
+        if (OriginalMessage != null && !headerAccessor.IsModified)
         {
-            return originalMessage;
+            return OriginalMessage;
         }
 
         var headersToUse = headerAccessor.ToMessageHeaders();
-        return Message.Create(payload, headersToUse, payload.GetType());
+        return Message.Create(Payload, headersToUse, Payload.GetType());
     }
 }

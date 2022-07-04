@@ -42,8 +42,8 @@ public class HystrixRequestLog
         }
     }
 
-    protected internal const int MAX_STORAGE = 1000;
-    private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new (MAX_STORAGE);
+    protected internal const int MaxStorage = 1000;
+    private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new (MaxStorage);
 
     internal HystrixRequestLog()
     {
@@ -91,7 +91,7 @@ public class HystrixRequestLog
                     {
                         switch (ev)
                         {
-                            case HystrixEventType.EMIT:
+                            case HystrixEventType.Emit:
                                 var numEmissions = command.NumberEmissions;
                                 if (numEmissions > 1)
                                 {
@@ -103,7 +103,7 @@ public class HystrixRequestLog
                                 }
 
                                 break;
-                            case HystrixEventType.FALLBACK_EMIT:
+                            case HystrixEventType.FallbackEmit:
                                 var numFallbackEmissions = command.NumberFallbackEmissions;
                                 if (numFallbackEmissions > 1)
                                 {

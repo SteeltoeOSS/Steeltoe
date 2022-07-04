@@ -14,7 +14,7 @@ public class ThreadDumpStartup
 {
     public ThreadDumpStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

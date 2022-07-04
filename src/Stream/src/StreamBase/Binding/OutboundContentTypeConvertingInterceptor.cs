@@ -27,31 +27,31 @@ internal sealed class OutboundContentTypeConvertingInterceptor : AbstractContent
         // In fact in the future we should consider propagating knowledge of the
         // default content type
         // to MessageConverters instead of interceptors
-        if (message.Payload is byte[] && message.Headers.ContainsKey(MessageHeaders.CONTENT_TYPE))
+        if (message.Payload is byte[] && message.Headers.ContainsKey(MessageHeaders.ContentType))
         {
             return message;
         }
 
         // ===== 1.3 backward compatibility code part-1 ===
         string oct = null;
-        if (message.Headers.ContainsKey(MessageHeaders.CONTENT_TYPE))
+        if (message.Headers.ContainsKey(MessageHeaders.ContentType))
         {
-            oct = message.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE).ToString();
+            oct = message.Headers.Get<MimeType>(MessageHeaders.ContentType).ToString();
         }
 
         var ct = oct;
         if (message.Payload is string)
         {
-            ct = MimeTypeUtils.APPLICATION_JSON_VALUE.Equals(oct)
-                ? MimeTypeUtils.APPLICATION_JSON_VALUE
-                : MimeTypeUtils.TEXT_PLAIN_VALUE;
+            ct = MimeTypeUtils.ApplicationJsonValue.Equals(oct)
+                ? MimeTypeUtils.ApplicationJsonValue
+                : MimeTypeUtils.TextPlainValue;
         }
 
         // ===== END 1.3 backward compatibility code part-1 ===
-        if (!message.Headers.ContainsKey(MessageHeaders.CONTENT_TYPE))
+        if (!message.Headers.ContainsKey(MessageHeaders.ContentType))
         {
             var messageHeaders = message.Headers as MessageHeaders;
-            messageHeaders.RawHeaders[MessageHeaders.CONTENT_TYPE] = _mimeType;
+            messageHeaders.RawHeaders[MessageHeaders.ContentType] = MimeType;
         }
 
         var result = message.Payload is byte[] ? message : _messageConverter.ToMessage(message.Payload, message.Headers);
@@ -65,8 +65,8 @@ internal sealed class OutboundContentTypeConvertingInterceptor : AbstractContent
         if (ct != null && !ct.Equals(oct) && oct != null)
         {
             var messageHeaders = result.Headers as MessageHeaders;
-            messageHeaders.RawHeaders[MessageHeaders.CONTENT_TYPE] = MimeType.ToMimeType(ct);
-            messageHeaders.RawHeaders[BinderHeaders.BINDER_ORIGINAL_CONTENT_TYPE] = MimeType.ToMimeType(oct);
+            messageHeaders.RawHeaders[MessageHeaders.ContentType] = MimeType.ToMimeType(ct);
+            messageHeaders.RawHeaders[BinderHeaders.BinderOriginalContentType] = MimeType.ToMimeType(oct);
         }
 
         // ===== END 1.3 backward compatibility code part-2 ===

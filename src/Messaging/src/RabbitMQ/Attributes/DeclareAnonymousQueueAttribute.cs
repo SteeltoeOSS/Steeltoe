@@ -18,7 +18,7 @@ public class DeclareAnonymousQueueAttribute : DeclareQueueBaseAttribute
         }
 
         Id = id;
-        Name = Base64UrlNamingStrategy.DEFAULT.GenerateName();
+        Name = Base64UrlNamingStrategy.Default.GenerateName();
     }
 
     public string Id { get; set; }

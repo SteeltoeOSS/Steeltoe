@@ -13,8 +13,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class StringToMapMessageStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public string Echo(IMessage<Dictionary<object, object>> value)
     {
         Assert.IsType<Dictionary<object, object>>(value.Payload);

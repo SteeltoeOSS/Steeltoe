@@ -15,7 +15,7 @@ public class IntLiteral : Literal
         : base(payload, startPos, endPos)
     {
         _value = new TypedValue(value);
-        _exitTypeDescriptor = TypeDescriptor.I;
+        exitTypeDescriptor = TypeDescriptor.I;
     }
 
     public override ITypedValue GetLiteralValue() => _value;
@@ -42,6 +42,6 @@ public class IntLiteral : Literal
             gen.Emit(OpCodes.Ldc_I4, intValue);
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

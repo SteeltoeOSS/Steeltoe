@@ -16,7 +16,7 @@ namespace Steeltoe.Connector;
 
 public class ServiceInfoCreator
 {
-    private static readonly object _lock = new ();
+    private static readonly object Lock = new ();
     private static ServiceInfoCreator _me;
 
     protected internal IConfiguration Configuration { get; }
@@ -47,7 +47,7 @@ public class ServiceInfoCreator
 
         if (config != _me?.Configuration)
         {
-            lock (_lock)
+            lock (Lock)
             {
                 if (config != _me?.Configuration)
                 {

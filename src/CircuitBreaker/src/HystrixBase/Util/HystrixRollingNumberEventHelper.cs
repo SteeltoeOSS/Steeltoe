@@ -11,27 +11,27 @@ internal static class HystrixRollingNumberEventHelper
 {
     static HystrixRollingNumberEventHelper()
     {
-        Values.Add(HystrixRollingNumberEvent.SUCCESS);
-        Values.Add(HystrixRollingNumberEvent.FAILURE);
-        Values.Add(HystrixRollingNumberEvent.TIMEOUT);
-        Values.Add(HystrixRollingNumberEvent.SHORT_CIRCUITED);
-        Values.Add(HystrixRollingNumberEvent.THREAD_POOL_REJECTED);
-        Values.Add(HystrixRollingNumberEvent.SEMAPHORE_REJECTED);
-        Values.Add(HystrixRollingNumberEvent.BAD_REQUEST);
-        Values.Add(HystrixRollingNumberEvent.FALLBACK_SUCCESS);
-        Values.Add(HystrixRollingNumberEvent.FALLBACK_FAILURE);
-        Values.Add(HystrixRollingNumberEvent.FALLBACK_REJECTION);
-        Values.Add(HystrixRollingNumberEvent.FALLBACK_MISSING);
-        Values.Add(HystrixRollingNumberEvent.EXCEPTION_THROWN);
-        Values.Add(HystrixRollingNumberEvent.COMMAND_MAX_ACTIVE);
-        Values.Add(HystrixRollingNumberEvent.EMIT);
-        Values.Add(HystrixRollingNumberEvent.FALLBACK_EMIT);
-        Values.Add(HystrixRollingNumberEvent.THREAD_EXECUTION);
-        Values.Add(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE);
-        Values.Add(HystrixRollingNumberEvent.COLLAPSED);
-        Values.Add(HystrixRollingNumberEvent.RESPONSE_FROM_CACHE);
-        Values.Add(HystrixRollingNumberEvent.COLLAPSER_REQUEST_BATCHED);
-        Values.Add(HystrixRollingNumberEvent.COLLAPSER_BATCH);
+        Values.Add(HystrixRollingNumberEvent.Success);
+        Values.Add(HystrixRollingNumberEvent.Failure);
+        Values.Add(HystrixRollingNumberEvent.Timeout);
+        Values.Add(HystrixRollingNumberEvent.ShortCircuited);
+        Values.Add(HystrixRollingNumberEvent.ThreadPoolRejected);
+        Values.Add(HystrixRollingNumberEvent.SemaphoreRejected);
+        Values.Add(HystrixRollingNumberEvent.BadRequest);
+        Values.Add(HystrixRollingNumberEvent.FallbackSuccess);
+        Values.Add(HystrixRollingNumberEvent.FallbackFailure);
+        Values.Add(HystrixRollingNumberEvent.FallbackRejection);
+        Values.Add(HystrixRollingNumberEvent.FallbackMissing);
+        Values.Add(HystrixRollingNumberEvent.ExceptionThrown);
+        Values.Add(HystrixRollingNumberEvent.CommandMaxActive);
+        Values.Add(HystrixRollingNumberEvent.Emit);
+        Values.Add(HystrixRollingNumberEvent.FallbackEmit);
+        Values.Add(HystrixRollingNumberEvent.ThreadExecution);
+        Values.Add(HystrixRollingNumberEvent.ThreadMaxActive);
+        Values.Add(HystrixRollingNumberEvent.Collapsed);
+        Values.Add(HystrixRollingNumberEvent.ResponseFromCache);
+        Values.Add(HystrixRollingNumberEvent.CollapserRequestBatched);
+        Values.Add(HystrixRollingNumberEvent.CollapserBatch);
     }
 
     public static IList<HystrixRollingNumberEvent> Values { get; } = new List<HystrixRollingNumberEvent>();
@@ -40,22 +40,22 @@ internal static class HystrixRollingNumberEventHelper
     {
         return eventType switch
         {
-            HystrixEventType.BAD_REQUEST => HystrixRollingNumberEvent.BAD_REQUEST,
-            HystrixEventType.COLLAPSED => HystrixRollingNumberEvent.COLLAPSED,
-            HystrixEventType.EMIT => HystrixRollingNumberEvent.EMIT,
-            HystrixEventType.EXCEPTION_THROWN => HystrixRollingNumberEvent.EXCEPTION_THROWN,
-            HystrixEventType.FAILURE => HystrixRollingNumberEvent.FAILURE,
-            HystrixEventType.FALLBACK_EMIT => HystrixRollingNumberEvent.FALLBACK_EMIT,
-            HystrixEventType.FALLBACK_FAILURE => HystrixRollingNumberEvent.FALLBACK_FAILURE,
-            HystrixEventType.FALLBACK_MISSING => HystrixRollingNumberEvent.FALLBACK_MISSING,
-            HystrixEventType.FALLBACK_REJECTION => HystrixRollingNumberEvent.FALLBACK_REJECTION,
-            HystrixEventType.FALLBACK_SUCCESS => HystrixRollingNumberEvent.FALLBACK_SUCCESS,
-            HystrixEventType.RESPONSE_FROM_CACHE => HystrixRollingNumberEvent.RESPONSE_FROM_CACHE,
-            HystrixEventType.SEMAPHORE_REJECTED => HystrixRollingNumberEvent.SEMAPHORE_REJECTED,
-            HystrixEventType.SHORT_CIRCUITED => HystrixRollingNumberEvent.SHORT_CIRCUITED,
-            HystrixEventType.SUCCESS => HystrixRollingNumberEvent.SUCCESS,
-            HystrixEventType.THREAD_POOL_REJECTED => HystrixRollingNumberEvent.THREAD_POOL_REJECTED,
-            HystrixEventType.TIMEOUT => HystrixRollingNumberEvent.TIMEOUT,
+            HystrixEventType.BadRequest => HystrixRollingNumberEvent.BadRequest,
+            HystrixEventType.Collapsed => HystrixRollingNumberEvent.Collapsed,
+            HystrixEventType.Emit => HystrixRollingNumberEvent.Emit,
+            HystrixEventType.ExceptionThrown => HystrixRollingNumberEvent.ExceptionThrown,
+            HystrixEventType.Failure => HystrixRollingNumberEvent.Failure,
+            HystrixEventType.FallbackEmit => HystrixRollingNumberEvent.FallbackEmit,
+            HystrixEventType.FallbackFailure => HystrixRollingNumberEvent.FallbackFailure,
+            HystrixEventType.FallbackMissing => HystrixRollingNumberEvent.FallbackMissing,
+            HystrixEventType.FallbackRejection => HystrixRollingNumberEvent.FallbackRejection,
+            HystrixEventType.FallbackSuccess => HystrixRollingNumberEvent.FallbackSuccess,
+            HystrixEventType.ResponseFromCache => HystrixRollingNumberEvent.ResponseFromCache,
+            HystrixEventType.SemaphoreRejected => HystrixRollingNumberEvent.SemaphoreRejected,
+            HystrixEventType.ShortCircuited => HystrixRollingNumberEvent.ShortCircuited,
+            HystrixEventType.Success => HystrixRollingNumberEvent.Success,
+            HystrixEventType.ThreadPoolRejected => HystrixRollingNumberEvent.ThreadPoolRejected,
+            HystrixEventType.Timeout => HystrixRollingNumberEvent.Timeout,
             _ => throw new ArgumentOutOfRangeException($"Unknown HystrixEventType : {eventType}"),
         };
     }
@@ -64,25 +64,25 @@ internal static class HystrixRollingNumberEventHelper
     {
         switch (@event)
         {
-            case HystrixRollingNumberEvent.SUCCESS:
-            case HystrixRollingNumberEvent.FAILURE:
-            case HystrixRollingNumberEvent.TIMEOUT:
-            case HystrixRollingNumberEvent.SHORT_CIRCUITED:
-            case HystrixRollingNumberEvent.THREAD_POOL_REJECTED:
-            case HystrixRollingNumberEvent.SEMAPHORE_REJECTED:
-            case HystrixRollingNumberEvent.BAD_REQUEST:
-            case HystrixRollingNumberEvent.FALLBACK_SUCCESS:
-            case HystrixRollingNumberEvent.FALLBACK_FAILURE:
-            case HystrixRollingNumberEvent.FALLBACK_REJECTION:
-            case HystrixRollingNumberEvent.FALLBACK_MISSING:
-            case HystrixRollingNumberEvent.EXCEPTION_THROWN:
-            case HystrixRollingNumberEvent.EMIT:
-            case HystrixRollingNumberEvent.FALLBACK_EMIT:
-            case HystrixRollingNumberEvent.THREAD_EXECUTION:
-            case HystrixRollingNumberEvent.COLLAPSED:
-            case HystrixRollingNumberEvent.RESPONSE_FROM_CACHE:
-            case HystrixRollingNumberEvent.COLLAPSER_REQUEST_BATCHED:
-            case HystrixRollingNumberEvent.COLLAPSER_BATCH:
+            case HystrixRollingNumberEvent.Success:
+            case HystrixRollingNumberEvent.Failure:
+            case HystrixRollingNumberEvent.Timeout:
+            case HystrixRollingNumberEvent.ShortCircuited:
+            case HystrixRollingNumberEvent.ThreadPoolRejected:
+            case HystrixRollingNumberEvent.SemaphoreRejected:
+            case HystrixRollingNumberEvent.BadRequest:
+            case HystrixRollingNumberEvent.FallbackSuccess:
+            case HystrixRollingNumberEvent.FallbackFailure:
+            case HystrixRollingNumberEvent.FallbackRejection:
+            case HystrixRollingNumberEvent.FallbackMissing:
+            case HystrixRollingNumberEvent.ExceptionThrown:
+            case HystrixRollingNumberEvent.Emit:
+            case HystrixRollingNumberEvent.FallbackEmit:
+            case HystrixRollingNumberEvent.ThreadExecution:
+            case HystrixRollingNumberEvent.Collapsed:
+            case HystrixRollingNumberEvent.ResponseFromCache:
+            case HystrixRollingNumberEvent.CollapserRequestBatched:
+            case HystrixRollingNumberEvent.CollapserBatch:
                 return true;
             default:
                 return false;
@@ -93,8 +93,8 @@ internal static class HystrixRollingNumberEventHelper
     {
         switch (@event)
         {
-            case HystrixRollingNumberEvent.COMMAND_MAX_ACTIVE:
-            case HystrixRollingNumberEvent.THREAD_MAX_ACTIVE:
+            case HystrixRollingNumberEvent.CommandMaxActive:
+            case HystrixRollingNumberEvent.ThreadMaxActive:
                 return true;
             default:
                 return false;

@@ -21,7 +21,7 @@ public class ContentNegotiationTests
         ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
 
-    public static IEnumerable<object[]> EndpointMiddleware_ContentNegotiation_TestCases
+    public static IEnumerable<object[]> EndpointMiddlewareContentNegotiationTestCases
     {
         get
         {
@@ -41,13 +41,13 @@ public class ContentNegotiationTests
 
             var negotations = new[]
             {
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptAppJson_RetrunsAppJson" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptInvalid_RetrunsAppJson" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptV1_RetrunsAppJson_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptV2_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.ANY }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptANY_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleAscOrdered_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleDescOrdered_RetrunsV2_WhenV2Configured" }
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptAppJson_RetrunsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptInvalid_RetrunsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1Json }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptV1_RetrunsAppJson_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptV2_RetrunsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.Any }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptANY_RetrunsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleAscOrdered_RetrunsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleDescOrdered_RetrunsV2_WhenV2Configured" }
             };
 
             foreach (var endpoint in endpoints)
@@ -61,7 +61,7 @@ public class ContentNegotiationTests
     }
 
     [Theory]
-    [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
+    [MemberData(nameof(EndpointMiddlewareContentNegotiationTestCases))]
     public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
     {
         // arrange a server and client

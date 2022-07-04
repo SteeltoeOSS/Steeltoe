@@ -31,7 +31,7 @@ public class MessageListenerAdapterTest
     {
         var headers = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE,  MimeTypeUtils.TEXT_PLAIN_VALUE }
+            { MessageHeaders.ContentType,  MimeTypeUtils.TextPlainValue }
         };
         _messageProperties = new MessageHeaders(headers);
         _adapter = new MessageListenerAdapter(null);
@@ -45,7 +45,7 @@ public class MessageListenerAdapterTest
         var channelMock = new Mock<RC.IModel>();
         var delgate = new TestDelegate(called);
         extendedAdapter.Instance = delgate;
-        extendedAdapter.ContainerAckMode = AcknowledgeMode.MANUAL;
+        extendedAdapter.ContainerAckMode = AcknowledgeMode.Manual;
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         extendedAdapter.OnMessage(Message.Create(bytes, _messageProperties), channelMock.Object);
         Assert.True(called.Value);
@@ -150,7 +150,7 @@ public class MessageListenerAdapterTest
         var dele = new TestAsyncDelegate();
         _adapter = new MessageListenerAdapter(null, dele, nameof(TestAsyncDelegate.MyPojoMessageMethod))
         {
-            ContainerAckMode = AcknowledgeMode.MANUAL,
+            ContainerAckMode = AcknowledgeMode.Manual,
             ResponseExchange = "default"
         };
         var mockChannel = new Mock<RC.IModel>();

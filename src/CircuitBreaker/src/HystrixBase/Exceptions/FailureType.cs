@@ -6,11 +6,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 
 public enum FailureType
 {
-    BAD_REQUEST_EXCEPTION,
-    COMMAND_EXCEPTION,
-    TIMEOUT,
-    SHORTCIRCUIT,
-    REJECTED_THREAD_EXECUTION,
-    REJECTED_SEMAPHORE_EXECUTION,
-    REJECTED_SEMAPHORE_FALLBACK
+    BadRequestException,
+    CommandException,
+    Timeout,
+    Shortcircuit,
+    RejectedThreadExecution,
+    RejectedSemaphoreExecution,
+    RejectedSemaphoreFallback
 }

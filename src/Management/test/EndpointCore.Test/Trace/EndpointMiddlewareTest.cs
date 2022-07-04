@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> APP_SETTINGS = new ()
+    private static readonly Dictionary<string, string> AppSettings = new ()
     {
         ["Logging:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
@@ -73,7 +73,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(APP_SETTINGS))
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);

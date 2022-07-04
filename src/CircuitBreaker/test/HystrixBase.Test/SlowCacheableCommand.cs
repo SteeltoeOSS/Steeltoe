@@ -24,7 +24,7 @@ internal sealed class SlowCacheableCommand : TestHystrixCommand<string>
         Executed = true;
         Time.Wait(_duration);
 
-        _output?.WriteLine("successfully executed");
+        Output?.WriteLine("successfully executed");
         return _value;
     }
 

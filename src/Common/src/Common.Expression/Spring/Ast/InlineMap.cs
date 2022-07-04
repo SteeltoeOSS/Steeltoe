@@ -52,7 +52,7 @@ public class InlineMap : SpelNode
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sb = new StringBuilder("{");
         var count = ChildCount;
@@ -63,9 +63,9 @@ public class InlineMap : SpelNode
                 sb.Append(',');
             }
 
-            sb.Append(GetChild(c++).ToStringAST());
+            sb.Append(GetChild(c++).ToStringAst());
             sb.Append(':');
-            sb.Append(GetChild(c).ToStringAST());
+            sb.Append(GetChild(c).ToStringAst());
         }
 
         sb.Append('}');

@@ -22,7 +22,7 @@ namespace Steeltoe.Integration.Channel;
 
 public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChannel, IChannelInterceptorAware
 {
-    protected const int INDEFINITE_TIMEOUT = -1;
+    protected const int IndefiniteTimeout = -1;
     private IIntegrationServices _integrationServices;
     private IMessageConverter _messageConverter;
 
@@ -34,7 +34,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
     protected AbstractMessageChannel(IApplicationContext context, string name, ILogger logger = null)
     {
         ApplicationContext = context;
-        this.logger = logger;
+        this.Logger = logger;
         ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
         Interceptors = new ChannelInterceptorList(logger);
     }
@@ -133,7 +133,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     internal ChannelInterceptorList Interceptors { get; set; }
 
-    protected ILogger logger;
+    protected readonly ILogger Logger;
 
     protected virtual bool DoSend(IMessage message, int timeout)
     {
@@ -161,7 +161,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 message = ConvertPayloadIfNecessary(message);
             }
 
-            logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
 
             if (Interceptors.Count > 0)
             {
@@ -175,7 +175,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
             sent = DoSendInternal(message, cancellationToken);
 
-            logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
 
             if (interceptorStack != null)
             {

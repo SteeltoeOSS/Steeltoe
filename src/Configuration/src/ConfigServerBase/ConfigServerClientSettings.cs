@@ -17,110 +17,110 @@ public class ConfigServerClientSettings
     /// <summary>
     /// Default Config Server address used by provider.
     /// </summary>
-    public const string DEFAULT_URI = "http://localhost:8888";
+    public const string DefaultUri = "http://localhost:8888";
 
     /// <summary>
     /// Default environment used when accessing configuration data.
     /// </summary>
-    public const string DEFAULT_ENVIRONMENT = "Production";
+    public const string DefaultEnvironment = "Production";
 
     /// <summary>
     /// Default fail fast setting.
     /// </summary>
-    public const bool DEFAULT_FAILFAST = false;
+    public const bool DefaultFailfast = false;
 
     /// <summary>
     /// Default Config Server provider enabled setting.
     /// </summary>
-    public const bool DEFAULT_PROVIDER_ENABLED = true;
+    public const bool DefaultProviderEnabled = true;
 
     /// <summary>
     /// Default certificate validation enabled setting.
     /// </summary>
-    public const bool DEFAULT_CERTIFICATE_VALIDATION = true;
+    public const bool DefaultCertificateValidation = true;
 
     /// <summary>
     /// Default number of retries to be attempted.
     /// </summary>
-    public const int DEFAULT_MAX_RETRY_ATTEMPTS = 6;
+    public const int DefaultMaxRetryAttempts = 6;
 
     /// <summary>
     /// Default initial retry interval in milliseconds.
     /// </summary>
-    public const int DEFAULT_INITIAL_RETRY_INTERVAL = 1000;
+    public const int DefaultInitialRetryInterval = 1000;
 
     /// <summary>
     /// Default multiplier for next retry interval.
     /// </summary>
-    public const double DEFAULT_RETRY_MULTIPLIER = 1.1;
+    public const double DefaultRetryMultiplier = 1.1;
 
     /// <summary>
     /// Default initial retry interval in milliseconds.
     /// </summary>
-    public const int DEFAULT_MAX_RETRY_INTERVAL = 2000;
+    public const int DefaultMaxRetryInterval = 2000;
 
     /// <summary>
     /// Default retry enabled setting.
     /// </summary>
-    public const bool DEFAULT_RETRY_ENABLED = false;
+    public const bool DefaultRetryEnabled = false;
 
     /// <summary>
     /// Default timeout in milliseconds.
     /// </summary>
-    public const int DEFAULT_TIMEOUT_MILLISECONDS = 6 * 1000;
+    public const int DefaultTimeoutMilliseconds = 6 * 1000;
 
     /// <summary>
     /// Default Vault Token Time to Live setting.
     /// </summary>
-    public const int DEFAULT_VAULT_TOKEN_TTL = 300000;
+    public const int DefaultVaultTokenTtl = 300000;
 
     /// <summary>
     /// Default Vault Token renewal rate.
     /// </summary>
-    public const int DEFAULT_VAULT_TOKEN_RENEW_RATE = 60000;
+    public const int DefaultVaultTokenRenewRate = 60000;
 
     /// <summary>
     /// Default Disable Vault Token renewal.
     /// </summary>
-    public const bool DEFAULT_DISABLE_TOKEN_RENEWAL = false;
+    public const bool DefaultDisableTokenRenewal = false;
 
     /// <summary>
     /// Default address used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public const string DEFAULT_ACCESS_TOKEN_URI = null;
+    public const string DefaultAccessTokenUri = null;
 
     /// <summary>
     /// Default client id used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public const string DEFAULT_CLIENT_ID = null;
+    public const string DefaultClientId = null;
 
     /// <summary>
     /// Default client secret used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public const string DEFAULT_CLIENT_SECRET = null;
+    public const string DefaultClientSecret = null;
 
     /// <summary>
     /// Default discovery first enabled setting.
     /// </summary>
-    public const bool DEFAULT_DISCOVERY_ENABLED = false;
+    public const bool DefaultDiscoveryEnabled = false;
 
     /// <summary>
     /// Default discovery first service id setting.
     /// </summary>
-    public const string DEFAULT_CONFIGSERVER_SERVICEID = "configserver";
+    public const string DefaultConfigserverServiceid = "configserver";
 
     /// <summary>
     /// Default health check enabled setting.
     /// </summary>
-    public const bool DEFAULT_HEALTH_ENABLED = true;
+    public const bool DefaultHealthEnabled = true;
 
     /// <summary>
     /// Default health check time to live in milliseconds setting.
     /// </summary>
-    public const long DEFAULT_HEALTH_TIMETOLIVE = 60 * 5 * 1000;
+    public const long DefaultHealthTimetolive = 60 * 5 * 1000;
 
-    private static readonly char[] COLON_DELIMIT = { ':' };
-    private static readonly char[] COMMA_DELIMIT = { ',' };
+    private static readonly char[] ColonDelimit = { ':' };
+    private static readonly char[] CommaDelimit = { ',' };
 
     private string _username;
     private string _password;
@@ -131,21 +131,21 @@ public class ConfigServerClientSettings
     /// <remarks>Initialize Config Server client settings with defaults.</remarks>
     public ConfigServerClientSettings()
     {
-        ValidateCertificates = DEFAULT_CERTIFICATE_VALIDATION;
-        FailFast = DEFAULT_FAILFAST;
-        Environment = DEFAULT_ENVIRONMENT;
-        Enabled = DEFAULT_PROVIDER_ENABLED;
-        Uri = DEFAULT_URI;
-        RetryEnabled = DEFAULT_RETRY_ENABLED;
-        RetryInitialInterval = DEFAULT_INITIAL_RETRY_INTERVAL;
-        RetryMaxInterval = DEFAULT_MAX_RETRY_INTERVAL;
-        RetryAttempts = DEFAULT_MAX_RETRY_ATTEMPTS;
-        RetryMultiplier = DEFAULT_RETRY_MULTIPLIER;
-        Timeout = DEFAULT_TIMEOUT_MILLISECONDS;
-        DiscoveryEnabled = DEFAULT_DISCOVERY_ENABLED;
-        DiscoveryServiceId = DEFAULT_CONFIGSERVER_SERVICEID;
-        HealthEnabled = DEFAULT_HEALTH_ENABLED;
-        HealthTimeToLive = DEFAULT_HEALTH_TIMETOLIVE;
+        ValidateCertificates = DefaultCertificateValidation;
+        FailFast = DefaultFailfast;
+        Environment = DefaultEnvironment;
+        Enabled = DefaultProviderEnabled;
+        Uri = DefaultUri;
+        RetryEnabled = DefaultRetryEnabled;
+        RetryInitialInterval = DefaultInitialRetryInterval;
+        RetryMaxInterval = DefaultMaxRetryInterval;
+        RetryAttempts = DefaultMaxRetryAttempts;
+        RetryMultiplier = DefaultRetryMultiplier;
+        Timeout = DefaultTimeoutMilliseconds;
+        DiscoveryEnabled = DefaultDiscoveryEnabled;
+        DiscoveryServiceId = DefaultConfigserverServiceid;
+        HealthEnabled = DefaultHealthEnabled;
+        HealthTimeToLive = DefaultHealthTimetolive;
     }
 
     /// <summary>
@@ -283,31 +283,31 @@ public class ConfigServerClientSettings
     /// <summary>
     /// Gets or sets address used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public virtual string AccessTokenUri { get; set; } = DEFAULT_ACCESS_TOKEN_URI;
+    public virtual string AccessTokenUri { get; set; } = DefaultAccessTokenUri;
 
     /// <summary>
     /// Gets or sets client id used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public virtual string ClientId { get; set; } = DEFAULT_CLIENT_ID;
+    public virtual string ClientId { get; set; } = DefaultClientId;
 
     /// <summary>
     /// Gets or sets client secret used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public virtual string ClientSecret { get; set; } = DEFAULT_CLIENT_SECRET;
+    public virtual string ClientSecret { get; set; } = DefaultClientSecret;
 
     public virtual X509Certificate2 ClientCertificate { get; set; }
 
     /// <summary>
     /// Gets or sets vault token Time to Live setting in Milliseconds.
     /// </summary>
-    public virtual int TokenTtl { get; set; } = DEFAULT_VAULT_TOKEN_TTL;
+    public virtual int TokenTtl { get; set; } = DefaultVaultTokenTtl;
 
     /// <summary>
     /// Gets or sets vault token renew rate in Milliseconds.
     /// </summary>
-    public virtual int TokenRenewRate { get; set; } = DEFAULT_VAULT_TOKEN_RENEW_RATE;
+    public virtual int TokenRenewRate { get; set; } = DefaultVaultTokenRenewRate;
 
-    public virtual bool DisableTokenRenewal { get; set; } = DEFAULT_DISABLE_TOKEN_RENEWAL;
+    public virtual bool DisableTokenRenewal { get; set; } = DefaultDisableTokenRenewal;
 
     /// <summary>
     /// Gets or sets headers that will be added to the config server request.
@@ -355,7 +355,7 @@ public class ConfigServerClientSettings
     {
         if (!string.IsNullOrEmpty(Uri))
         {
-            var uris = Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+            var uris = Uri.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
             for (var i = 0; i < uris.Length; i++)
             {
                 var uri = GetRawUri(uris[i]);
@@ -377,7 +377,7 @@ public class ConfigServerClientSettings
     {
         if (!string.IsNullOrEmpty(Uri))
         {
-            return Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+            return Uri.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
         }
 
         return Array.Empty<string>();
@@ -435,7 +435,7 @@ public class ConfigServerClientSettings
         var userInfo = GetUserInfo(uri);
         if (!string.IsNullOrEmpty(userInfo))
         {
-            var info = userInfo.Split(COLON_DELIMIT);
+            var info = userInfo.Split(ColonDelimit);
             if (info.Length > index)
             {
                 result = info[index];

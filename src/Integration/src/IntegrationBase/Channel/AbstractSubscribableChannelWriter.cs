@@ -15,7 +15,7 @@ public abstract class AbstractSubscribableChannelWriter : AbstractMessageChannel
     {
     }
 
-    public virtual AbstractSubscribableChannel Channel => (AbstractSubscribableChannel)channel;
+    public virtual AbstractSubscribableChannel Channel => (AbstractSubscribableChannel)innerChannel;
 
     public override ValueTask<bool> WaitToWriteAsync(CancellationToken cancellationToken = default)
     {

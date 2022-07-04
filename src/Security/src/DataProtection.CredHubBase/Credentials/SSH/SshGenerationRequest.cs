@@ -6,7 +6,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 
 public class SshGenerationRequest : CredHubGenerateRequest
 {
-    private readonly SshGenerationParameters _defaultParams = new () { KeyLength = CertificateKeyLength.Length_2048, SshComment = null };
+    private readonly SshGenerationParameters _defaultParams = new () { KeyLength = CertificateKeyLength.Length2048, SshComment = null };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SshGenerationRequest"/> class.
@@ -18,7 +18,7 @@ public class SshGenerationRequest : CredHubGenerateRequest
     public SshGenerationRequest(string credentialName, SshGenerationParameters parameters = null, OverwiteMode overwriteMode = OverwiteMode.converge)
     {
         Name = credentialName;
-        Type = CredentialType.SSH;
+        Type = CredentialType.Ssh;
         Parameters = parameters ?? _defaultParams;
         Mode = overwriteMode;
     }

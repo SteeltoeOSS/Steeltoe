@@ -13,15 +13,15 @@ namespace Steeltoe.Messaging.Handler;
 public class HandlerMethod
 {
     // Keep these readonly for perf reasons
-    protected readonly Invoker _invoker;
-    protected readonly int _argCount;
-    protected readonly object _handler;
+    protected readonly Invoker InnerInvoker;
+    protected readonly int InnerArgCount;
+    protected readonly object InnerHandler;
 
     public delegate object Invoker(object target, object[] args);
 
     public object Handler
     {
-        get { return _handler; }
+        get { return InnerHandler; }
     }
 
     public MethodInfo Method { get; }
@@ -32,12 +32,12 @@ public class HandlerMethod
 
     protected internal Invoker HandlerInvoker
     {
-        get { return _invoker; }
+        get { return InnerInvoker; }
     }
 
     protected internal int ArgCount
     {
-        get { return _argCount;  }
+        get { return InnerArgCount;  }
     }
 
     public HandlerMethod(object handler, MethodInfo handlerMethod)
@@ -47,11 +47,11 @@ public class HandlerMethod
             throw new ArgumentNullException(nameof(handlerMethod));
         }
 
-        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
         HandlerType = handler.GetType();
         Method = handlerMethod;
-        _argCount = Method.GetParameters().Length;
-        _invoker = CreateInvoker();
+        InnerArgCount = Method.GetParameters().Length;
+        InnerInvoker = CreateInvoker();
     }
 
     public HandlerMethod(object handler, string handlerMethodName, params Type[] parameterTypes)
@@ -61,11 +61,11 @@ public class HandlerMethod
             throw new ArgumentNullException(nameof(handlerMethodName));
         }
 
-        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
         HandlerType = handler.GetType();
         Method = HandlerType.GetMethod(handlerMethodName, parameterTypes);
-        _argCount = Method.GetParameters().Length;
-        _invoker = CreateInvoker();
+        InnerArgCount = Method.GetParameters().Length;
+        InnerInvoker = CreateInvoker();
     }
 
     private HandlerMethod(HandlerMethod handlerMethod, object handler)
@@ -75,11 +75,11 @@ public class HandlerMethod
             throw new ArgumentNullException(nameof(handlerMethod));
         }
 
-        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
         HandlerType = handlerMethod.HandlerType;
         Method = handlerMethod.Method;
-        _invoker = handlerMethod.HandlerInvoker;
-        _argCount = handlerMethod.ArgCount;
+        InnerInvoker = handlerMethod.HandlerInvoker;
+        InnerArgCount = handlerMethod.ArgCount;
         ResolvedFromHandlerMethod = handlerMethod;
     }
 
@@ -144,11 +144,11 @@ public class HandlerMethod
             throw new ArgumentNullException(nameof(handlerMethod));
         }
 
-        _handler = handlerMethod.Handler;
+        InnerHandler = handlerMethod.Handler;
         HandlerType = handlerMethod.HandlerType;
         Method = handlerMethod.Method;
-        _invoker = handlerMethod.HandlerInvoker;
-        _argCount = handlerMethod.ArgCount;
+        InnerInvoker = handlerMethod.HandlerInvoker;
+        InnerArgCount = handlerMethod.ArgCount;
     }
 
     protected virtual void AssertTargetBean(MethodInfo method, object targetBean, object[] args)

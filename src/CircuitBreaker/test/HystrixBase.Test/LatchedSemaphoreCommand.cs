@@ -55,7 +55,7 @@ internal sealed class LatchedSemaphoreCommand : TestHystrixCommand<bool>
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions)
     {
-        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.SEMAPHORE;
+        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.Semaphore;
         hystrixCommandOptions.CircuitBreakerEnabled = false;
         return hystrixCommandOptions;
     }

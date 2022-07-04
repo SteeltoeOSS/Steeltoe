@@ -78,7 +78,7 @@ public static class CloudFoundryHelper
     public static DateTime GetIssueTime(JsonElement payload)
     {
         var time = payload.GetProperty("iat").GetInt64();
-        return ToAbsoluteUTC(time);
+        return ToAbsoluteUtc(time);
     }
 
     /// <summary>
@@ -89,10 +89,10 @@ public static class CloudFoundryHelper
     public static DateTime GetExpTime(JsonElement payload)
     {
         var time = payload.GetProperty("exp").GetInt64();
-        return ToAbsoluteUTC(time);
+        return ToAbsoluteUtc(time);
     }
 
-    private static DateTime ToAbsoluteUTC(long secondsPastEpoch)
+    private static DateTime ToAbsoluteUtc(long secondsPastEpoch)
     {
         return BaseTime.AddSeconds(secondsPastEpoch);
     }

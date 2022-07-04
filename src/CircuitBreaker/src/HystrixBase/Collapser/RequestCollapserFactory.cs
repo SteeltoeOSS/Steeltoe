@@ -55,11 +55,11 @@ public class RequestCollapserFactory
 
     public RequestCollapser<TBatchReturn, TResponse, TRequestArgument> GetRequestCollapser<TBatchReturn, TResponse, TRequestArgument>(HystrixCollapser<TBatchReturn, TResponse, TRequestArgument> commandCollapser)
     {
-        if (Scope == RequestCollapserScope.REQUEST)
+        if (Scope == RequestCollapserScope.Request)
         {
             return GetCollapserForUserRequest(commandCollapser);
         }
-        else if (Scope == RequestCollapserScope.GLOBAL)
+        else if (Scope == RequestCollapserScope.Global)
         {
             return GetCollapserForGlobalScope(commandCollapser);
         }

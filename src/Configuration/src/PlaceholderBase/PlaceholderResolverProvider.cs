@@ -18,8 +18,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder;
 /// </summary>
 public class PlaceholderResolverProvider : IPlaceholderResolverProvider
 {
-    internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
-    internal ILogger<PlaceholderResolverProvider> _logger;
+    internal IList<IConfigurationProvider> InnerProviders = new List<IConfigurationProvider>();
+    internal ILogger<PlaceholderResolverProvider> Logger;
 
     private IConfigurationRoot _configuration;
 
@@ -37,7 +37,7 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     public PlaceholderResolverProvider(IConfigurationRoot configuration, ILoggerFactory logFactory = null)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
+        Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>
@@ -49,11 +49,11 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <param name="logFactory">the logger factory to use.</param>
     public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory logFactory = null)
     {
-        _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-        _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
+        this.InnerProviders = providers ?? throw new ArgumentNullException(nameof(providers));
+        Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
     }
 
-    public IList<IConfigurationProvider> Providers => _providers;
+    public IList<IConfigurationProvider> Providers => InnerProviders;
 
     public IList<string> ResolvedKeys { get; } = new List<string>();
 
@@ -131,7 +131,7 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     {
         if (Configuration == null)
         {
-            _configuration = new ConfigurationRoot(_providers);
+            _configuration = new ConfigurationRoot(InnerProviders);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Steeltoe.Stream.Tck;
 
 public class ByteArrayMessageToStringJsonMessageServiceActivator
 {
-    [ServiceActivator(InputChannel = ISink.INPUT, OutputChannel = ISource.OUTPUT)]
+    [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public IMessage<string> Echo(IMessage<byte[]> value)
     {
         var settings = new JsonSerializerSettings

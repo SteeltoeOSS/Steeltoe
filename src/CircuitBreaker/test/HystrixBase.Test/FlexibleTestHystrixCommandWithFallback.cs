@@ -22,15 +22,15 @@ internal sealed class FlexibleTestHystrixCommandWithFallback : AbstractFlexibleT
     protected override int RunFallback()
     {
         AddLatency(_fallbackLatency);
-        if (_fallbackResult == FallbackResultTest.SUCCESS)
+        if (_fallbackResult == FallbackResultTest.Success)
         {
-            return FlexibleTestHystrixCommand.FALLBACK_VALUE;
+            return FlexibleTestHystrixCommand.FallbackValue;
         }
-        else if (_fallbackResult == FallbackResultTest.FAILURE)
+        else if (_fallbackResult == FallbackResultTest.Failure)
         {
             throw new Exception("Fallback Failure for TestHystrixCommand");
         }
-        else if (_fallbackResult == FallbackResultTest.UNIMPLEMENTED)
+        else if (_fallbackResult == FallbackResultTest.Unimplemented)
         {
             return base.RunFallback();
         }

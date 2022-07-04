@@ -14,8 +14,8 @@ namespace Steeltoe.Stream.Binding;
 
 public class BindingService : IBindingService
 {
-    internal IDictionary<string, IBinding> _producerBindings = new Dictionary<string, IBinding>();
-    internal IDictionary<string, List<IBinding>> _consumerBindings = new Dictionary<string, List<IBinding>>();
+    internal IDictionary<string, IBinding> ProducerBindings = new Dictionary<string, IBinding>();
+    internal IDictionary<string, List<IBinding>> ConsumerBindings = new Dictionary<string, List<IBinding>>();
     private readonly IBinderFactory _binderFactory;
     private readonly BindingServiceOptions _bindingServiceOptions;
     private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
@@ -71,7 +71,7 @@ public class BindingService : IBindingService
             }
         }
 
-        _consumerBindings[name] = new List<IBinding>(bindings);
+        ConsumerBindings[name] = new List<IBinding>(bindings);
         return bindings;
     }
 
@@ -82,7 +82,7 @@ public class BindingService : IBindingService
         var producerOptions = Options.GetProducerOptions(name);
         ValidateOptions(producerOptions);
         var binding = DoBindProducer(outputChannel, bindingTarget, binder, producerOptions);
-        _producerBindings[name] = binding;
+        ProducerBindings[name] = binding;
         return binding;
     }
 
@@ -148,9 +148,9 @@ public class BindingService : IBindingService
 
     public void UnbindProducers(string outputName)
     {
-        if (_producerBindings.TryGetValue(outputName, out var binding))
+        if (ProducerBindings.TryGetValue(outputName, out var binding))
         {
-            _producerBindings.Remove(outputName);
+            ProducerBindings.Remove(outputName);
             binding.Unbind();
         }
         else
@@ -161,9 +161,9 @@ public class BindingService : IBindingService
 
     public void UnbindConsumers(string inputName)
     {
-        if (_consumerBindings.TryGetValue(inputName, out var bindings))
+        if (ConsumerBindings.TryGetValue(inputName, out var bindings))
         {
-            _consumerBindings.Remove(inputName);
+            ConsumerBindings.Remove(inputName);
             foreach (var binding in bindings)
             {
                 binding.Unbind();

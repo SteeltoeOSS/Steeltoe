@@ -19,8 +19,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class DelegatingInvocableHandler
 {
-    private static readonly SpelExpressionParser PARSER = new ();
-    private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
+    private static readonly SpelExpressionParser Parser = new ();
+    private static readonly IParserContext ParserContext = new TemplateParserContext("!{", "}");
 
     private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new ();
     private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new ();
@@ -56,7 +56,7 @@ public class DelegatingInvocableHandler
         var payloadClass = message.Payload.GetType();
         var handler = GetHandlerForPayload(payloadClass);
         var result = handler.Invoke(message, providedArgs);
-        if (!message.Headers.TryGetValue(RabbitMessageHeaders.REPLY_TO, out _) && _handlerSendTo.TryGetValue(handler, out var replyTo))
+        if (!message.Headers.TryGetValue(RabbitMessageHeaders.ReplyTo, out _) && _handlerSendTo.TryGetValue(handler, out var replyTo))
         {
             return new InvocationResult(result, replyTo, handler.Method.ReturnType, handler.Handler, handler.Method);
         }
@@ -206,7 +206,7 @@ public class DelegatingInvocableHandler
 
         if (replyTo != null)
         {
-            _handlerSendTo[handler] = PARSER.ParseExpression(replyTo, PARSER_CONTEXT);
+            _handlerSendTo[handler] = Parser.ParseExpression(replyTo, ParserContext);
         }
     }
 

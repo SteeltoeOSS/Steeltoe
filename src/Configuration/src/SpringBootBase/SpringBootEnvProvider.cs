@@ -15,7 +15,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot;
 /// </summary>
 public class SpringBootEnvProvider : JsonStreamConfigurationProvider
 {
-    private const string SPRING_APPLICATION_JSON = "SPRING_APPLICATION_JSON";
+    private const string SpringApplicationJson = "SPRING_APPLICATION_JSON";
     private readonly string _springApplicationJson;
 
     /// <summary>
@@ -33,7 +33,7 @@ public class SpringBootEnvProvider : JsonStreamConfigurationProvider
     /// </summary>
     public override void Load()
     {
-        var json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SPRING_APPLICATION_JSON);
+        var json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
         if (!string.IsNullOrEmpty(json))
         {
             Source.Stream = GetMemoryStream(json);

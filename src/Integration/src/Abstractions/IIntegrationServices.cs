@@ -34,7 +34,7 @@ public interface IIntegrationServices
     /// <summary>
     /// Gets or sets the current id generator.
     /// </summary>
-    IIDGenerator IdGenerator { get; set; }
+    IIdGenerator IdGenerator { get; set; }
 
     /// <summary>
     /// Gets or sets the current id expression parser.

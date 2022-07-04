@@ -28,7 +28,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound;
 
 public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 {
-    private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
+    private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new ();
     private readonly ILogger _logger;
 
     public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer, ILogger logger = null)
@@ -79,7 +79,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 
     protected override IAttributeAccessor GetErrorMessageAttributes(IMessage message)
     {
-        var attributes = _attributesHolder.Value;
+        var attributes = AttributesHolder.Value;
         if (attributes == null)
         {
             return base.GetErrorMessageAttributes(message);
@@ -96,16 +96,16 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
         var needAttributes = needHolder || RetryTemplate != null;
         if (needHolder)
         {
-            _attributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
+            AttributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
         }
 
         if (needAttributes)
         {
-            var attributes = RetryTemplate != null ? RetrySynchronizationManager.GetContext() : _attributesHolder.Value;
+            var attributes = RetryTemplate != null ? RetrySynchronizationManager.GetContext() : AttributesHolder.Value;
             if (attributes != null)
             {
-                attributes.SetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY, endMessage);
-                attributes.SetAttribute(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE, original);
+                attributes.SetAttribute(ErrorMessageUtils.InputMessageContextKey, endMessage);
+                attributes.SetAttribute(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage, original);
             }
         }
     }
@@ -141,7 +141,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
                             try
                             {
                                 _logger?.LogTrace($"RabbitInboundChannelAdapter::OnMessage Context: {context}");
-                                var deliveryAttempts = message.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
+                                var deliveryAttempts = message.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DeliveryAttempt);
                                 deliveryAttempts?.IncrementAndGet();
                                 _adapter.SetAttributesIfNecessary(message, toSend);
                                 _adapter.SendMessage(message);
@@ -171,7 +171,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
             {
                 if (retryDisabled)
                 {
-                    _attributesHolder.Value = null;
+                    AttributesHolder.Value = null;
                 }
             }
         }
@@ -195,7 +195,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
         {
             get
             {
-                return _adapter.MessageListenerContainer.AcknowledgeMode == AcknowledgeMode.MANUAL;
+                return _adapter.MessageListenerContainer.AcknowledgeMode == AcknowledgeMode.Manual;
             }
         }
 
@@ -223,18 +223,18 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             if (IsManualAck)
             {
-                accessor.SetHeader(RabbitMessageHeaders.DELIVERY_TAG, message.Headers.DeliveryTag());
-                accessor.SetHeader(RabbitMessageHeaders.CHANNEL, channel);
+                accessor.SetHeader(RabbitMessageHeaders.DeliveryTag, message.Headers.DeliveryTag());
+                accessor.SetHeader(RabbitMessageHeaders.Channel, channel);
             }
 
             if (_adapter.RetryTemplate != null)
             {
-                accessor.SetHeader(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT, new AtomicInteger());
+                accessor.SetHeader(IntegrationMessageHeaderAccessor.DeliveryAttempt, new AtomicInteger());
             }
 
             if (_adapter.BindSourceMessage)
             {
-                accessor.SetHeader(IntegrationMessageHeaderAccessor.SOURCE_DATA, message);
+                accessor.SetHeader(IntegrationMessageHeaderAccessor.SourceData, message);
             }
 
             var messagingMessage = _adapter.IntegrationServices.MessageBuilderFactory

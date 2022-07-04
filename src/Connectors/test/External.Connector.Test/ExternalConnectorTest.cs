@@ -42,7 +42,7 @@ public class ExternalConnectorTest
     {
         var config = new ConfigurationBuilder().Build();
 
-        var serviceInfos = config.GetServiceInfos<DB2ServiceInfo>();
+        var serviceInfos = config.GetServiceInfos<Db2ServiceInfo>();
 
         Assert.Single(serviceInfos);
         var serviceInfo = serviceInfos.First();

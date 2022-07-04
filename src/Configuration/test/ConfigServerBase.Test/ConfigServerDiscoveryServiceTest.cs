@@ -40,8 +40,8 @@ public class ConfigServerDiscoveryServiceTest
         var logFactory = new LoggerFactory();
 
         var service = new ConfigServerDiscoveryService(config, settings, logFactory);
-        Assert.NotNull(service._discoveryClient);
-        Assert.IsType<EurekaDiscoveryClient>(service._discoveryClient);
+        Assert.NotNull(service.DiscoveryClient);
+        Assert.IsType<EurekaDiscoveryClient>(service.DiscoveryClient);
     }
 
     [Fact]
@@ -122,12 +122,12 @@ public class ConfigServerDiscoveryServiceTest
         var testDiscoveryClient = new TestDiscoveryClient();
         var logFactory = new LoggerFactory();
         var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
-        Assert.IsType<EurekaDiscoveryClient>(service._discoveryClient);
+        Assert.IsType<EurekaDiscoveryClient>(service.DiscoveryClient);
 
         // replace the bootstrapped eureka client with a test client
         await service.ProvideRuntimeReplacementsAsync(testDiscoveryClient, logFactory);
-        service._discoveryClient.Should().Be(testDiscoveryClient);
-        service._logFactory.Should().NotBeNull();
+        service.DiscoveryClient.Should().Be(testDiscoveryClient);
+        service.LogFactory.Should().NotBeNull();
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class ConfigServerDiscoveryServiceTest
         var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
-        var originalClient = service._discoveryClient as TestDiscoveryClient;
+        var originalClient = service.DiscoveryClient as TestDiscoveryClient;
 
         // replace the bootstrapped eureka client with a test client
         await service.ProvideRuntimeReplacementsAsync(replacementDiscoveryClient, null);
@@ -154,7 +154,7 @@ public class ConfigServerDiscoveryServiceTest
         var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
-        var originalClient = service._discoveryClient as TestDiscoveryClient;
+        var originalClient = service.DiscoveryClient as TestDiscoveryClient;
 
         // replace the bootstrapped eureka client with a test client
         await service.ShutdownAsync();

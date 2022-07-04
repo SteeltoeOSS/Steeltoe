@@ -13,50 +13,50 @@ namespace Steeltoe.Stream.Binding;
 
 internal sealed class PartitioningInterceptor : AbstractChannelInterceptor
 {
-    internal readonly IBindingOptions _bindingOptions;
+    internal readonly IBindingOptions BindingOptions;
 
-    internal readonly PartitionHandler _partitionHandler;
-    internal readonly IMessageBuilderFactory _messageBuilderFactory = new MutableIntegrationMessageBuilderFactory();
+    internal readonly PartitionHandler PartitionHandler;
+    internal readonly IMessageBuilderFactory MessageBuilderFactory = new MutableIntegrationMessageBuilderFactory();
 
     private readonly IExpressionParser _expressionParser;
     private readonly IEvaluationContext _evaluationContext;
 
     public PartitioningInterceptor(IExpressionParser expressionParser, IEvaluationContext evaluationContext, IBindingOptions bindingOptions, IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
     {
-        _bindingOptions = bindingOptions;
+        BindingOptions = bindingOptions;
         _expressionParser = expressionParser;
         _evaluationContext = evaluationContext;
-        _partitionHandler = new PartitionHandler(
+        PartitionHandler = new PartitionHandler(
             expressionParser,
             evaluationContext,
-            _bindingOptions.Producer,
+            BindingOptions.Producer,
             partitionKeyExtractorStrategy,
             partitionSelectorStrategy);
     }
 
     public int PartitionCount
     {
-        get { return _partitionHandler.PartitionCount; }
-        set { _partitionHandler.PartitionCount = value; }
+        get { return PartitionHandler.PartitionCount; }
+        set { PartitionHandler.PartitionCount = value; }
     }
 
     public override IMessage PreSend(IMessage message, IMessageChannel channel)
     {
         var objMessage = message as IMessage<object> ?? Message.Create(message.Payload, message.Headers); // Primitives are not covariant with out T, so box the primitive ...
 
-        if (!message.Headers.ContainsKey(BinderHeaders.PARTITION_OVERRIDE))
+        if (!message.Headers.ContainsKey(BinderHeaders.PartitionOverride))
         {
-            var partition = _partitionHandler.DeterminePartition(message);
-            return _messageBuilderFactory
+            var partition = PartitionHandler.DeterminePartition(message);
+            return MessageBuilderFactory
                 .FromMessage(objMessage)
-                .SetHeader(BinderHeaders.PARTITION_HEADER, partition).Build();
+                .SetHeader(BinderHeaders.PartitionHeader, partition).Build();
         }
         else
         {
-            return _messageBuilderFactory
+            return MessageBuilderFactory
                 .FromMessage(objMessage)
-                .SetHeader(BinderHeaders.PARTITION_HEADER, message.Headers[BinderHeaders.PARTITION_OVERRIDE])
-                .RemoveHeader(BinderHeaders.PARTITION_OVERRIDE).Build();
+                .SetHeader(BinderHeaders.PartitionHeader, message.Headers[BinderHeaders.PartitionOverride])
+                .RemoveHeader(BinderHeaders.PartitionOverride).Build();
         }
     }
 }

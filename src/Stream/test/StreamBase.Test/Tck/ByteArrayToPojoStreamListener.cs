@@ -13,8 +13,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class ByteArrayToPojoStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public Person Echo(byte[] value)
     {
         var settings = new JsonSerializerSettings

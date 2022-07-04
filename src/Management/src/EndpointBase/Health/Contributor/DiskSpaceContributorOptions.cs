@@ -9,13 +9,13 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
 public class DiskSpaceContributorOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:health:diskspace";
-    private const long DEFAULT_THRESHOLD = 10 * 1024 * 1024;
+    private const string ManagementInfoPrefix = "management:endpoints:health:diskspace";
+    private const long DefaultThreshold = 10 * 1024 * 1024;
 
     public DiskSpaceContributorOptions()
     {
         Path = ".";
-        Threshold = DEFAULT_THRESHOLD;
+        Threshold = DefaultThreshold;
     }
 
     public DiskSpaceContributorOptions(IConfiguration config)
@@ -25,7 +25,7 @@ public class DiskSpaceContributorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(MANAGEMENT_INFO_PREFIX);
+        var section = config.GetSection(ManagementInfoPrefix);
         if (section != null)
         {
             section.Bind(this);
@@ -38,7 +38,7 @@ public class DiskSpaceContributorOptions
 
         if (Threshold == -1)
         {
-            Threshold = DEFAULT_THRESHOLD;
+            Threshold = DefaultThreshold;
         }
     }
 

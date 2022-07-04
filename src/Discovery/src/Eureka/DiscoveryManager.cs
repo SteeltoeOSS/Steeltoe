@@ -14,13 +14,13 @@ public class DiscoveryManager
     {
     }
 
-    protected static readonly DiscoveryManager _instance = new ();
+    protected static readonly DiscoveryManager InnerInstance = new ();
 
     public static DiscoveryManager Instance
     {
         get
         {
-            return _instance;
+            return InnerInstance;
         }
     }
 
@@ -38,7 +38,7 @@ public class DiscoveryManager
         }
     }
 
-    protected ILogger _logger;
+    protected ILogger logger;
 
     public virtual void Initialize(IEurekaClientConfig clientConfig, ILoggerFactory logFactory = null)
     {
@@ -52,14 +52,14 @@ public class DiscoveryManager
 
     public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
     {
-        _logger = logFactory?.CreateLogger<DiscoveryManager>();
+        logger = logFactory?.CreateLogger<DiscoveryManager>();
         ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
         Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
     }
 
     public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
     {
-        _logger = logFactory?.CreateLogger<DiscoveryManager>();
+        logger = logFactory?.CreateLogger<DiscoveryManager>();
         ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
         InstanceConfig = instanceConfig ?? throw new ArgumentNullException(nameof(instanceConfig));
 

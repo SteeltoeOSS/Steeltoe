@@ -73,7 +73,7 @@ public class ConsulHealthContributor : IHealthContributor
         var result = new HealthCheckResult();
         var leaderStatus = GetLeaderStatusAsync().GetAwaiter().GetResult();
         var services = GetCatalogServicesAsync().GetAwaiter().GetResult();
-        result.Status = HealthStatus.UP;
+        result.Status = HealthStatus.Up;
         result.Details.Add("leader", leaderStatus);
         result.Details.Add("services", services);
         return result;

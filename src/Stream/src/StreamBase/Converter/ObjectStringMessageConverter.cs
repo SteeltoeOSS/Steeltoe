@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Converter;
 
 public class ObjectStringMessageConverter : AbstractMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(ObjectStringMessageConverter);
+    public const string DefaultServiceName = nameof(ObjectStringMessageConverter);
 
     public ObjectStringMessageConverter()
         : base(new MimeType("text", "*", EncodingUtils.Utf8))
@@ -19,7 +19,7 @@ public class ObjectStringMessageConverter : AbstractMessageConverter
         StrictContentTypeMatch = true;
     }
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     // only supports the conversion to String
     public override bool CanConvertFrom(IMessage message, Type targetClass) => SupportsMimeType(message.Headers);

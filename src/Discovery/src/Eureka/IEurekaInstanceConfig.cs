@@ -109,7 +109,7 @@ public interface IEurekaInstanceConfig
     /// launched and it has been disabled for traffic..
     /// Configuration property: eureka:instance:asgName.
     /// </summary>
-    string ASGName { get; set; }
+    string AsgName { get; set; }
 
     /// <summary>
     /// Gets or sets the metadata name/value pairs associated with this instance. This information is sent to eureka

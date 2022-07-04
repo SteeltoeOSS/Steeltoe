@@ -47,11 +47,11 @@ public class WebHostBuilderExtensionsTest
         var exclusions = SteeltoeAssemblies.AllAssemblies
             .Except(new List<string>
             {
-                SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerCore,
-                SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore
+                SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore,
+                SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore
             });
         var hostBuilder = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -66,7 +66,7 @@ public class WebHostBuilderExtensionsTest
     public void CloudFoundryConfiguration_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -81,7 +81,7 @@ public class WebHostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("KUBERNETES_SERVICE_HOST", "TEST");
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesCore });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -96,7 +96,7 @@ public class WebHostBuilderExtensionsTest
     public void RandomValueConfiguration_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Extensions_Configuration_RandomValueBase })
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValueBase })
             .ToList();
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
@@ -111,7 +111,7 @@ public class WebHostBuilderExtensionsTest
     public void PlaceholderResolver_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderCore });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -125,9 +125,9 @@ public class WebHostBuilderExtensionsTest
     public void Connectors_AreAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeConnectorConnectorCore });
         var hostBuilder = new WebHostBuilder()
-            .ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
+            .ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -149,7 +149,7 @@ public class WebHostBuilderExtensionsTest
     public void DynamicSerilog_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilogCore });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -163,9 +163,9 @@ public class WebHostBuilderExtensionsTest
     public void ServiceDiscoveryBase_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Discovery_ClientBase });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeDiscoveryClientBase });
         var hostBuilder = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -179,10 +179,10 @@ public class WebHostBuilderExtensionsTest
     public void ServiceDiscoveryCore_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Discovery_ClientCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeDiscoveryClientCore });
 
         var host = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._fastTestsConfiguration))
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .AddSteeltoe(exclusions).Configure(_ => { }).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
 
@@ -194,10 +194,10 @@ public class WebHostBuilderExtensionsTest
     public void WavefrontMetricsExporter_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementEndpointCore });
 
         var host = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
             .AddSteeltoe(exclusions).Configure(_ => { }).Build();
         var exporter = host.Services.GetService<WavefrontMetricsExporter>();
 
@@ -208,10 +208,10 @@ public class WebHostBuilderExtensionsTest
     public void WavefrontTraceExporter_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementTracingCore });
 
         var host = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers._wavefrontConfiguration))
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
             .AddSteeltoe(exclusions).Configure(_ => { }).Build();
 
         var tracerProvider = host.Services.GetService<TracerProvider>();
@@ -226,7 +226,7 @@ public class WebHostBuilderExtensionsTest
     public async Task KubernetesActuators_AreAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_KubernetesCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementKubernetesCore });
         var hostBuilder = _testServerWithRouting;
 
         var host = hostBuilder.AddSteeltoe(exclusions).Start();
@@ -250,7 +250,7 @@ public class WebHostBuilderExtensionsTest
     public async Task CloudFoundryActuators_AreAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementCloudFoundryCore });
         var hostBuilder = _testServerWithRouting;
 
         var host = hostBuilder.AddSteeltoe(exclusions).Start();
@@ -276,7 +276,7 @@ public class WebHostBuilderExtensionsTest
     public void AllActuators_AreAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_EndpointCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementEndpointCore });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -292,7 +292,7 @@ public class WebHostBuilderExtensionsTest
     public void TracingBase_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingBase });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementTracingBase });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -315,7 +315,7 @@ public class WebHostBuilderExtensionsTest
     public void TracingCore_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementTracingCore });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -338,7 +338,7 @@ public class WebHostBuilderExtensionsTest
     public void CloudFoundryContainerSecurity_IsAutowired()
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
-            .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Security_Authentication_CloudFoundryCore });
+            .Except(new List<string> { SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundryCore });
         var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();

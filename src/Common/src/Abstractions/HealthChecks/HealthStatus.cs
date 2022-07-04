@@ -6,9 +6,9 @@ namespace Steeltoe.Common.HealthChecks;
 
 public enum HealthStatus
 {
-    UNKNOWN,
-    UP,
-    WARNING,
-    OUT_OF_SERVICE,
-    DOWN,
+    Unknown,
+    Up,
+    Warning,
+    OutOfService,
+    Down,
 }

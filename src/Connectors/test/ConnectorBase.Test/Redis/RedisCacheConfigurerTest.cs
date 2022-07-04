@@ -50,7 +50,7 @@ public class RedisCacheConfigurerTest
     {
         var configurer = new RedisCacheConfigurer();
         var connOptions = new RedisCacheConnectorOptions();
-        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
         configurer.UpdateOptions(si, connOptions);
 
         Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
@@ -88,7 +88,7 @@ public class RedisCacheConfigurerTest
             Password = "password",
             InstanceName = "instanceId"
         };
-        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
         var connectionSettings = configurer.Configure(si, config);
         Assert.NotNull(connectionSettings);
 
@@ -128,7 +128,7 @@ public class RedisCacheConfigurerTest
             Port = 1234,
             Password = "password"
         };
-        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
 
         var opts = configurer.Configure(si, config);
         Assert.NotNull(opts);

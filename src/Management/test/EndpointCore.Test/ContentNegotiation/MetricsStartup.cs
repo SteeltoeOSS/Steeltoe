@@ -14,7 +14,7 @@ public class MetricsStartup
 {
     public MetricsStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

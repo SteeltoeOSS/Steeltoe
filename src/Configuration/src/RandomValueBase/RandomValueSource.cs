@@ -12,16 +12,16 @@ namespace Steeltoe.Extensions.Configuration.RandomValue;
 /// </summary>
 public class RandomValueSource : IConfigurationSource
 {
-    public const string PREFIX = "random:";
-    internal ILoggerFactory _loggerFactory;
-    internal string _prefix;
+    public const string RandomPrefix = "random:";
+    internal ILoggerFactory LoggerFactory;
+    internal string Prefix;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueSource"/> class.
     /// </summary>
     /// <param name="logFactory">the logger factory to use.</param>
     public RandomValueSource(ILoggerFactory logFactory = null)
-        : this(PREFIX, logFactory)
+        : this(RandomPrefix, logFactory)
     {
     }
 
@@ -32,8 +32,8 @@ public class RandomValueSource : IConfigurationSource
     /// <param name="logFactory">the logger factory to use.</param>
     public RandomValueSource(string prefix, ILoggerFactory logFactory = null)
     {
-        _loggerFactory = logFactory;
-        _prefix = prefix;
+        LoggerFactory = logFactory;
+        this.Prefix = prefix;
     }
 
     /// <summary>
@@ -43,6 +43,6 @@ public class RandomValueSource : IConfigurationSource
     /// <returns>the random number provider.</returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new RandomValueProvider(_prefix, _loggerFactory);
+        return new RandomValueProvider(Prefix, LoggerFactory);
     }
 }

@@ -13,7 +13,7 @@ namespace Steeltoe.Extensions.Logging;
 
 public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 {
-    private static readonly Filter _falseFilter = (_, _) => false;
+    private static readonly Filter FalseFilter = (_, _) => false;
 
     private readonly ConcurrentDictionary<string, LogLevel> _originalLevels;
     private readonly ConcurrentDictionary<string, Filter> _runningFilters;
@@ -37,7 +37,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
         _runningFilters = new ConcurrentDictionary<string, Filter>(initialLevels.RunningLevelFilters ?? throw new ArgumentNullException(nameof(initialLevels.RunningLevelFilters)));
 
         _messageProcessors = messageProcessors;
-        _filter = initialLevels.DefaultLevelFilter ?? _falseFilter;
+        _filter = initialLevels.DefaultLevelFilter ?? FalseFilter;
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
             return _filter;
         }
 
-        return _falseFilter;
+        return FalseFilter;
     }
 
     /// <summary>

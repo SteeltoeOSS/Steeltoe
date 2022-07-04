@@ -22,9 +22,9 @@ public class GCEventsListener : EventSourceListener
     private const string GCHeapStats = "GCHeapStats_V1";
     private const string GCHeapStatsV2 = "GCHeapStats_V2";
     private const EventKeywords GCEventsKeywords = (EventKeywords)0x1;
-    private const string GENERATION_TAGVALUE_NAME = "gen";
+    private const string GenerationTagvalueName = "gen";
 
-    private static readonly string[] _ignorePayloadNames =
+    private static readonly string[] IgnorePayloadNames =
     {
         "ClrInstanceID"
     };
@@ -56,7 +56,7 @@ public class GCEventsListener : EventSourceListener
         {
             if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture) || eventData.EventName.Equals(GCHeapStatsV2, StringComparison.InvariantCulture))
             {
-                ExtractAndRecordMetric(EventSourceName, eventData, _memoryLabels, _ignorePayloadNames);
+                ExtractAndRecordMetric(EventSourceName, eventData, _memoryLabels, IgnorePayloadNames);
                 RecordAdditionalMetrics(eventData);
             }
         }
@@ -89,7 +89,7 @@ public class GCEventsListener : EventSourceListener
                 count -= _previousCollectionCounts[i];
             }
 
-            var genKeylabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GENERATION_TAGVALUE_NAME + i) };
+            var genKeylabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GenerationTagvalueName + i) };
             _collectionCount.Add(count, genKeylabelSet.AsReadonlySpan());
         }
 

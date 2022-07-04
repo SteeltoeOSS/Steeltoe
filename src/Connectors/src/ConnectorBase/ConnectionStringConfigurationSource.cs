@@ -11,7 +11,7 @@ namespace Steeltoe.Connector;
 
 public class ConnectionStringConfigurationSource : IConfigurationSource
 {
-    internal IList<IConfigurationSource> _sources;
+    internal IList<IConfigurationSource> Sources;
 
     public ConnectionStringConfigurationSource(IList<IConfigurationSource> sources)
     {
@@ -20,9 +20,9 @@ public class ConnectionStringConfigurationSource : IConfigurationSource
             throw new ArgumentNullException(nameof(sources));
         }
 
-        _sources = new List<IConfigurationSource>(sources);
+        this.Sources = new List<IConfigurationSource>(sources);
     }
 
     /// <inheritdoc />
-    public IConfigurationProvider Build(IConfigurationBuilder builder) => new ConnectionStringConfigurationProvider(_sources.Select(s => s.Build(builder)));
+    public IConfigurationProvider Build(IConfigurationBuilder builder) => new ConnectionStringConfigurationProvider(Sources.Select(s => s.Build(builder)));
 }

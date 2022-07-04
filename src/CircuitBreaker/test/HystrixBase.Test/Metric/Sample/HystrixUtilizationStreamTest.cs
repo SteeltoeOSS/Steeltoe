@@ -43,7 +43,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
 
         for (var i = 0; i < 2; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Observe();
         }
 
@@ -137,7 +137,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
         // execute 1 command, then unsubscribe from first stream. then execute the rest
         for (var i = 0; i < 50; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Execute();
             if (i == 1)
             {
@@ -212,7 +212,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
         // execute 2 commands, then unsubscribe from both streams, then execute the rest
         for (var i = 0; i < 10; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Execute();
             if (i == 2)
             {
@@ -279,7 +279,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
 
         for (var i = 0; i < 50; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Execute();
         }
 

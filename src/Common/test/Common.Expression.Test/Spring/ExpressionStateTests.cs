@@ -42,7 +42,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     {
         var state = GetState();
         var typedValue = state.LookupVariable("foo");
-        Assert.Equal(TypedValue.NULL, typedValue);
+        Assert.Equal(TypedValue.Null, typedValue);
 
         state.SetVariable("foo", 34);
         typedValue = state.LookupVariable("foo");
@@ -60,11 +60,11 @@ public class ExpressionStateTests : AbstractExpressionTests
     {
         var state = GetState();
         var typedValue = state.LookupVariable("foo");
-        Assert.Equal(TypedValue.NULL, typedValue);
+        Assert.Equal(TypedValue.Null, typedValue);
 
         state.SetLocalVariable("foo", 34);
         typedValue = state.LookupVariable("foo");
-        Assert.Equal(TypedValue.NULL, typedValue);
+        Assert.Equal(TypedValue.Null, typedValue);
 
         state.SetVariable("goo", "hello");
         Assert.Null(state.LookupLocalVariable("goo"));
@@ -107,7 +107,7 @@ public class ExpressionStateTests : AbstractExpressionTests
 
         // assertEquals(null, state.RootContextObject.Value);
         state = new ExpressionState(new StandardEvaluationContext());
-        Assert.Equal(TypedValue.NULL, state.RootContextObject);
+        Assert.Equal(TypedValue.Null, state.RootContextObject);
 
         ((StandardEvaluationContext)state.EvaluationContext).SetRootObject(null);
         Assert.Null(state.RootContextObject.Value);
@@ -134,7 +134,7 @@ public class ExpressionStateTests : AbstractExpressionTests
         Assert.Equal(state.RootContextObject.Value, state.GetActiveContextObject().Value);
 
         state = new ExpressionState(new StandardEvaluationContext());
-        Assert.Equal(TypedValue.NULL, state.GetActiveContextObject());
+        Assert.Equal(TypedValue.Null, state.GetActiveContextObject());
     }
 
     [Fact]
@@ -202,11 +202,11 @@ public class ExpressionStateTests : AbstractExpressionTests
     public void TestOperators()
     {
         var state = GetState();
-        var ex = Assert.Throws<SpelEvaluationException>(() => state.Operate(Operation.ADD, 1, 2));
-        Assert.Equal(SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES, ex.MessageCode);
+        var ex = Assert.Throws<SpelEvaluationException>(() => state.Operate(Operation.Add, 1, 2));
+        Assert.Equal(SpelMessage.OperatorNotSupportedBetweenTypes, ex.MessageCode);
 
-        ex = Assert.Throws<SpelEvaluationException>(() => state.Operate(Operation.ADD, null, null));
-        Assert.Equal(SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES, ex.MessageCode);
+        ex = Assert.Throws<SpelEvaluationException>(() => state.Operate(Operation.Add, null, null));
+        Assert.Equal(SpelMessage.OperatorNotSupportedBetweenTypes, ex.MessageCode);
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class ExpressionStateTests : AbstractExpressionTests
         Assert.NotNull(state.EvaluationContext.TypeLocator);
         Assert.Equal(typeof(int), state.FindType("System.Int32"));
         var ex = Assert.Throws<SpelEvaluationException>(() => state.FindType("someMadeUpName"));
-        Assert.Equal(SpelMessage.TYPE_NOT_FOUND, ex.MessageCode);
+        Assert.Equal(SpelMessage.TypeNotFound, ex.MessageCode);
     }
 
     [Fact]

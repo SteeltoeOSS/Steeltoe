@@ -44,7 +44,7 @@ public class ThreadInfo
 
     [JsonPropertyName("threadState")]
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public TState ThreadState { get; set; }
+    public State ThreadState { get; set; }
 
     [JsonPropertyName("waitedCount")]
     public long WaitedCount { get; set; } // Not available

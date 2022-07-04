@@ -8,20 +8,20 @@ namespace Steeltoe.Management;
 
 public abstract class AbstractEndpoint : IEndpoint
 {
-    protected IEndpointOptions options;
+    protected IEndpointOptions innerOptions;
 
     protected AbstractEndpoint(IEndpointOptions options)
     {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
+        this.innerOptions = options ?? throw new ArgumentNullException(nameof(options));
     }
 
-    public virtual string Id => options.Id;
+    public virtual string Id => innerOptions.Id;
 
-    public virtual bool Enabled => options.Enabled.Value;
+    public virtual bool Enabled => innerOptions.Enabled.Value;
 
-    public virtual IEndpointOptions Options => options;
+    public virtual IEndpointOptions Options => innerOptions;
 
-    public string Path => options.Path;
+    public string Path => innerOptions.Path;
 }
 
 /// <summary>

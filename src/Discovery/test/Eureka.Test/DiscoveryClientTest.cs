@@ -185,7 +185,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             HostName = "localhost",
             AppName = "FOO",
             IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            Status = InstanceStatus.Starting
         };
         app.InstanceMap[inst.InstanceId] = inst;
         apps.Add(app);
@@ -252,7 +252,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             HostName = "localhost",
             AppName = "FOO",
             IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -292,7 +292,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             HostName = "localhost",
             AppName = "FOO",
             IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -331,7 +331,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             HostName = "localhost",
             AppName = "FOO",
             IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -373,7 +373,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             HostName = "localhost",
             AppName = "FOO",
             IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -407,7 +407,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             HostName = "localhost",
             AppName = "FOO",
             IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -452,12 +452,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetInstancesByVipAddress_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -493,12 +493,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetNextServerFromEureka_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -557,12 +557,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetInstanceById_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -607,12 +607,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetApplication_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -661,13 +661,13 @@ public class DiscoveryClientTest : AbstractBaseTest
         ApplicationInfoManager.Instance.Initialize(iconfig);
 
         var client = new DiscoveryClient(config);
-        var myHandler = new MyHealthCheckHandler(InstanceStatus.DOWN);
+        var myHandler = new MyHealthCheckHandler(InstanceStatus.Down);
         client.HealthCheckHandler = myHandler;
 
         client.RefreshInstanceInfo();
 
         Assert.True(myHandler.Called);
-        Assert.Equal(InstanceStatus.DOWN, ApplicationInfoManager.Instance.InstanceInfo.Status);
+        Assert.Equal(InstanceStatus.Down, ApplicationInfoManager.Instance.InstanceInfo.Status);
     }
 
     [Fact]

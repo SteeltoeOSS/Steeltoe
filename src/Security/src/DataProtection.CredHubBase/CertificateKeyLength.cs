@@ -6,7 +6,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 
 public enum CertificateKeyLength
 {
-    Length_2048 = 2048,
-    Length_3072 = 3072,
-    Length_4096 = 4096
+    Length2048 = 2048,
+    Length3072 = 3072,
+    Length4096 = 4096
 }

@@ -12,7 +12,7 @@ public class RollingCommandEventCounterStream : BucketedRollingCounterStream<Hys
 {
     private static readonly ConcurrentDictionary<string, RollingCommandEventCounterStream> Streams = new ();
 
-    private static readonly int NUM_EVENT_TYPES = HystrixEventTypeHelper.Values.Count;
+    private static readonly int NumEventTypes = HystrixEventTypeHelper.Values.Count;
 
     public static RollingCommandEventCounterStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
     {
@@ -52,12 +52,12 @@ public class RollingCommandEventCounterStream : BucketedRollingCounterStream<Hys
 
     public override long[] EmptyBucketSummary
     {
-        get { return new long[NUM_EVENT_TYPES]; }
+        get { return new long[NumEventTypes]; }
     }
 
     public override long[] EmptyOutputValue
     {
-        get { return new long[NUM_EVENT_TYPES]; }
+        get { return new long[NumEventTypes]; }
     }
 
     public long GetLatest(HystrixEventType eventType)

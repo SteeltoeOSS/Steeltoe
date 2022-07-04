@@ -23,7 +23,7 @@ public class ThreadDumpEndpointV2 : AbstractEndpoint<ThreadDumpResult>, IThreadD
     {
         get
         {
-            return options as IThreadDumpOptions;
+            return innerOptions as IThreadDumpOptions;
         }
     }
 

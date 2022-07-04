@@ -12,8 +12,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class CollectionWithParameterizedTypesStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public List<Employee<Person>> Echo(List<Employee<Person>> value)
     {
         Assert.True(value.Count > 0);

@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Steeltoe.Connector;
 
-public static class IConfigurationExtensions
+public static class ConfigurationExtensions
 {
     /// <summary>
     /// Get configuration info for all services of a given service type.

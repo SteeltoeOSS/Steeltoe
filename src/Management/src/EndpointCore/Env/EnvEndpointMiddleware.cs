@@ -22,7 +22,7 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleEnvRequestAsync(context);
         }
@@ -33,9 +33,9 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     protected internal Task HandleEnvRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

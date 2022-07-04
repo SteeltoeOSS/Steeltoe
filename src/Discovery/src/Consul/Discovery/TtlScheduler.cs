@@ -17,9 +17,9 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// </summary>
 public class TtlScheduler : IScheduler
 {
-    internal readonly ConcurrentDictionary<string, Timer> _serviceHeartbeats = new (StringComparer.OrdinalIgnoreCase);
+    internal readonly ConcurrentDictionary<string, Timer> ServiceHeartbeats = new (StringComparer.OrdinalIgnoreCase);
 
-    internal readonly IConsulClient _client;
+    internal readonly IConsulClient Client;
 
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
@@ -55,7 +55,7 @@ public class TtlScheduler : IScheduler
     public TtlScheduler(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client, ILogger<TtlScheduler> logger = null)
     {
         _optionsMonitor = optionsMonitor;
-        _client = client;
+        this.Client = client;
         _logger = logger;
     }
 
@@ -68,7 +68,7 @@ public class TtlScheduler : IScheduler
     public TtlScheduler(ConsulDiscoveryOptions options, IConsulClient client, ILogger<TtlScheduler> logger = null)
     {
         _options = options;
-        _client = client;
+        this.Client = client;
         _logger = logger;
     }
 
@@ -93,7 +93,7 @@ public class TtlScheduler : IScheduler
             }
 
             var timer = new Timer(async s => { await PassTtl(s.ToString()).ConfigureAwait(false); }, checkId, TimeSpan.Zero, interval);
-            _serviceHeartbeats.AddOrUpdate(instanceId, timer, (_, oldTimer) =>
+            ServiceHeartbeats.AddOrUpdate(instanceId, timer, (_, oldTimer) =>
             {
                 oldTimer.Dispose();
                 return timer;
@@ -111,7 +111,7 @@ public class TtlScheduler : IScheduler
 
         _logger?.LogDebug("Remove {instanceId}", instanceId);
 
-        if (_serviceHeartbeats.TryRemove(instanceId, out var timer))
+        if (ServiceHeartbeats.TryRemove(instanceId, out var timer))
         {
             timer.Dispose();
         }
@@ -132,7 +132,7 @@ public class TtlScheduler : IScheduler
     {
         if (disposing && !_isDisposed)
         {
-            foreach (var instance in _serviceHeartbeats.Keys)
+            foreach (var instance in ServiceHeartbeats.Keys)
             {
                 Remove(instance);
             }
@@ -147,7 +147,7 @@ public class TtlScheduler : IScheduler
 
         try
         {
-            await _client.Agent.PassTTL(serviceId, "ttl");
+            await Client.Agent.PassTTL(serviceId, "ttl");
         }
         catch (Exception e)
         {

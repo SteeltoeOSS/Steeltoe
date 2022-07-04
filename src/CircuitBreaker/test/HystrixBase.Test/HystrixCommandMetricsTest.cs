@@ -28,7 +28,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         var key = "cmd-metrics-A";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-        var metrics = cmd1._metrics;
+        var metrics = cmd1.InnerMetrics;
 
         Assert.True(WaitForHealthCountToUpdate(key, 1000), "Health count stream took to long");
 
@@ -90,7 +90,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         var key = "cmd-metrics-B";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-        var metrics = cmd1._metrics;
+        var metrics = cmd1.InnerMetrics;
 
         Assert.True(WaitForHealthCountToUpdate(key, 1000), "Health count stream took to long");
         cmd1.Execute();
@@ -152,7 +152,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         for (var i = 0; i < 8; i++)
         {
             HystrixCommand<bool> cmd = new SuccessCommand(key, 900);
-            metrics ??= cmd._metrics;
+            metrics ??= cmd.InnerMetrics;
 
             var eagerObservable = cmd.Observe();
             cmdResults.Add(eagerObservable);

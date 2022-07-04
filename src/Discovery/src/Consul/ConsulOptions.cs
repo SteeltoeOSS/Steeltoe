@@ -10,7 +10,7 @@ namespace Steeltoe.Discovery.Consul;
 /// </summary>
 public class ConsulOptions
 {
-    public const string CONSUL_CONFIGURATION_PREFIX = "consul";
+    public const string ConsulConfigurationPrefix = "consul";
 
     /// <summary>
     /// Gets or sets the host address of the Consul server, default localhost.

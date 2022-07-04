@@ -10,11 +10,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 public static class ConfigurationSettingsHelper
 {
-    private const string SPRING_APPLICATION_PREFIX = "spring:application";
-    private const string VCAP_APPLICATION_PREFIX = "vcap:application";
-    private const string VCAP_SERVICES_CONFIGSERVER_PREFIX = "vcap:services:p-config-server:0";
-    private const string VCAP_SERVICES_CONFIGSERVER30_PREFIX = "vcap:services:p.config-server:0";
-    private const string VCAP_SERVICES_CONFIGSERVERALT_PREFIX = "vcap:services:config-server:0";
+    private const string SpringApplicationPrefix = "spring:application";
+    private const string VcapApplicationPrefix = "vcap:application";
+    private const string VcapServicesConfigserverPrefix = "vcap:services:p-config-server:0";
+    private const string VcapServicesConfigserver30Prefix = "vcap:services:p.config-server:0";
+    private const string VcapServicesConfigserverAltPrefix = "vcap:services:config-server:0";
 
     public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
     {
@@ -154,7 +154,7 @@ public static class ConfigurationSettingsHelper
 
     private static string GetEnvironment(IConfigurationSection section, string def)
     {
-        return section.GetValue("env", string.IsNullOrEmpty(def) ? ConfigServerClientSettings.DEFAULT_ENVIRONMENT : def);
+        return section.GetValue("env", string.IsNullOrEmpty(def) ? ConfigServerClientSettings.DefaultEnvironment : def);
     }
 
     private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, bool def)
@@ -164,17 +164,17 @@ public static class ConfigurationSettingsHelper
 
     private static int GetTokenRenewRate(IConfigurationSection configServerSection)
     {
-        return configServerSection.GetValue("tokenRenewRate", ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE);
+        return configServerSection.GetValue("tokenRenewRate", ConfigServerClientSettings.DefaultVaultTokenRenewRate);
     }
 
     private static bool GetDisableTokenRenewal(IConfigurationSection configServerSection)
     {
-        return configServerSection.GetValue("disableTokenRenewal", ConfigServerClientSettings.DEFAULT_DISABLE_TOKEN_RENEWAL);
+        return configServerSection.GetValue("disableTokenRenewal", ConfigServerClientSettings.DefaultDisableTokenRenewal);
     }
 
     private static int GetTokenTtl(IConfigurationSection configServerSection)
     {
-        return configServerSection.GetValue("tokenTtl", ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL);
+        return configServerSection.GetValue("tokenTtl", ConfigServerClientSettings.DefaultVaultTokenTtl);
     }
 
     private static TimeSpan GetPollingInterval(IConfigurationSection clientConfigsection, TimeSpan def)
@@ -187,10 +187,10 @@ public static class ConfigurationSettingsHelper
         return ConfigurationValuesHelper.GetSetting(
             "credentials:client_secret",
             config,
-            ConfigServerClientSettings.DEFAULT_CLIENT_SECRET,
-            VCAP_SERVICES_CONFIGSERVER_PREFIX,
-            VCAP_SERVICES_CONFIGSERVER30_PREFIX,
-            VCAP_SERVICES_CONFIGSERVERALT_PREFIX,
+            ConfigServerClientSettings.DefaultClientSecret,
+            VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix,
+            VcapServicesConfigserverAltPrefix,
             configPrefix);
     }
 
@@ -199,10 +199,10 @@ public static class ConfigurationSettingsHelper
         return ConfigurationValuesHelper.GetSetting(
             "credentials:client_id",
             config,
-            ConfigServerClientSettings.DEFAULT_CLIENT_ID,
-            VCAP_SERVICES_CONFIGSERVER_PREFIX,
-            VCAP_SERVICES_CONFIGSERVER30_PREFIX,
-            VCAP_SERVICES_CONFIGSERVERALT_PREFIX,
+            ConfigServerClientSettings.DefaultClientId,
+            VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix,
+            VcapServicesConfigserverAltPrefix,
             configPrefix);
     }
 
@@ -211,10 +211,10 @@ public static class ConfigurationSettingsHelper
         return ConfigurationValuesHelper.GetSetting(
             "credentials:access_token_uri",
             config,
-            ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI,
-            VCAP_SERVICES_CONFIGSERVER_PREFIX,
-            VCAP_SERVICES_CONFIGSERVER30_PREFIX,
-            VCAP_SERVICES_CONFIGSERVERALT_PREFIX,
+            ConfigServerClientSettings.DefaultAccessTokenUri,
+            VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix,
+            VcapServicesConfigserverAltPrefix,
             configPrefix);
     }
 
@@ -225,8 +225,8 @@ public static class ConfigurationSettingsHelper
             config,
             defName,
             configPrefix,
-            SPRING_APPLICATION_PREFIX,
-            VCAP_APPLICATION_PREFIX);
+            SpringApplicationPrefix,
+            VcapApplicationPrefix);
     }
 
     private static string GetCloudFoundryUri(string configPrefix, IConfiguration config, string def)
@@ -236,8 +236,8 @@ public static class ConfigurationSettingsHelper
             config,
             def,
             configPrefix,
-            VCAP_SERVICES_CONFIGSERVER_PREFIX,
-            VCAP_SERVICES_CONFIGSERVER30_PREFIX,
-            VCAP_SERVICES_CONFIGSERVERALT_PREFIX);
+            VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix,
+            VcapServicesConfigserverAltPrefix);
     }
 }

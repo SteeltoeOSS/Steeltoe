@@ -9,7 +9,7 @@ namespace Steeltoe.Connector.Services;
 public class RedisServiceInfoFactory : ServiceInfoFactory
 {
     public RedisServiceInfoFactory()
-        : base(new Tags("redis"), new[] { RedisServiceInfo.REDIS_SCHEME, RedisServiceInfo.REDIS_SECURE_SCHEME })
+        : base(new Tags("redis"), new[] { RedisServiceInfo.RedisScheme, RedisServiceInfo.RedisSecureScheme })
     {
     }
 
@@ -26,7 +26,7 @@ public class RedisServiceInfoFactory : ServiceInfoFactory
 
             return new RedisServiceInfo(
                 binding.Name,
-                tlsEnabled ? RedisServiceInfo.REDIS_SECURE_SCHEME : RedisServiceInfo.REDIS_SCHEME,
+                tlsEnabled ? RedisServiceInfo.RedisSecureScheme : RedisServiceInfo.RedisScheme,
                 host,
                 tlsEnabled ? tlsPort : port,
                 password);

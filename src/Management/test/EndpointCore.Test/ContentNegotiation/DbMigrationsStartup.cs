@@ -14,7 +14,7 @@ public class DbMigrationsStartup
 {
     public DbMigrationsStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

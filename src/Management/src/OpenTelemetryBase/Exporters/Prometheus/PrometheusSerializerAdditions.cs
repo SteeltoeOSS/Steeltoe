@@ -67,7 +67,7 @@ internal static class PrometheusSerializerAdditions
 
                 cursor = PrometheusSerializer.WriteLong(buffer, cursor, timestamp);
 
-                buffer[cursor++] = PrometheusSerializer.ASCII_LINEFEED;
+                buffer[cursor++] = PrometheusSerializer.AsciiLinefeed;
             }
         }
         else
@@ -104,7 +104,7 @@ internal static class PrometheusSerializerAdditions
 
                     cursor = PrometheusSerializer.WriteLong(buffer, cursor, timestamp);
 
-                    buffer[cursor++] = PrometheusSerializer.ASCII_LINEFEED;
+                    buffer[cursor++] = PrometheusSerializer.AsciiLinefeed;
                 }
 
                 // Histogram sum
@@ -131,7 +131,7 @@ internal static class PrometheusSerializerAdditions
 
                 cursor = PrometheusSerializer.WriteLong(buffer, cursor, timestamp);
 
-                buffer[cursor++] = PrometheusSerializer.ASCII_LINEFEED;
+                buffer[cursor++] = PrometheusSerializer.AsciiLinefeed;
 
                 // Histogram count
                 cursor = PrometheusSerializer.WriteMetricName(buffer, cursor, metric.Name, metric.Unit);
@@ -157,11 +157,11 @@ internal static class PrometheusSerializerAdditions
 
                 cursor = PrometheusSerializer.WriteLong(buffer, cursor, timestamp);
 
-                buffer[cursor++] = PrometheusSerializer.ASCII_LINEFEED;
+                buffer[cursor++] = PrometheusSerializer.AsciiLinefeed;
             }
         }
 
-        buffer[cursor++] = PrometheusSerializer.ASCII_LINEFEED;
+        buffer[cursor++] = PrometheusSerializer.AsciiLinefeed;
 
         return cursor;
     }

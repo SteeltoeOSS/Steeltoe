@@ -58,12 +58,12 @@ public class HttpClientDesktopObserverTest : BaseTest
         var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
         observer.ProcessEvent("foobar", null);
-        observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
+        observer.ProcessEvent(HttpClientDesktopObserver.StopEvent, null);
 
         var act = new Activity("Test");
         act.Start();
-        observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
-        observer.ProcessEvent(HttpClientDesktopObserver.STOPEX_EVENT, null);
+        observer.ProcessEvent(HttpClientDesktopObserver.StopEvent, null);
+        observer.ProcessEvent(HttpClientDesktopObserver.StopexEvent, null);
         act.Stop();
     }
 

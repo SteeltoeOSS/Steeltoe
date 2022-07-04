@@ -14,7 +14,7 @@ public class RefreshStartup
 {
     public RefreshStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

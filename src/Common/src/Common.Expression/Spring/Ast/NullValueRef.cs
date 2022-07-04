@@ -6,16 +6,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class NullValueRef : IValueRef
 {
-    public static readonly NullValueRef INSTANCE = new ();
+    public static readonly NullValueRef Instance = new ();
 
-    public ITypedValue GetValue() => TypedValue.NULL;
+    public ITypedValue GetValue() => TypedValue.Null;
 
     public void SetValue(object newValue)
     {
         // The exception position '0' isn't right but the overhead of creating
         // instances of this per node (where the node is solely for error reporting)
         // would be unfortunate.
-        throw new SpelEvaluationException(0, SpelMessage.NOT_ASSIGNABLE, "null");
+        throw new SpelEvaluationException(0, SpelMessage.NotAssignable, "null");
     }
 
     public bool IsWritable => false;

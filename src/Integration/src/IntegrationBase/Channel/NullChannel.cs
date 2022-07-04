@@ -16,7 +16,7 @@ public class NullChannel : Channel<IMessage>, IPollableChannel
 {
     private readonly ILogger _logger;
 
-    public string ServiceName { get; set; } = IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME;
+    public string ServiceName { get; set; } = IntegrationContextUtils.NullChannelBeanName;
 
     public NullChannel(ILogger logger = null)
     {

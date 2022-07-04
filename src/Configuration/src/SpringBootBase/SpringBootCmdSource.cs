@@ -13,7 +13,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot;
 /// </summary>
 public class SpringBootCmdSource : IConfigurationSource
 {
-    internal IConfiguration _config;
+    internal IConfiguration Config;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpringBootCmdSource"/> class.
@@ -21,11 +21,11 @@ public class SpringBootCmdSource : IConfigurationSource
     /// <param name="configuration">The <see cref="CommandLineConfigurationProvider"/> provider by the framework. </param>
     public SpringBootCmdSource(IConfiguration configuration)
     {
-        _config = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        Config = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new SpringBootCmdProvider(_config);
+        return new SpringBootCmdProvider(Config);
     }
 }

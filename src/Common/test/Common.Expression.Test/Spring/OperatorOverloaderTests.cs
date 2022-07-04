@@ -13,18 +13,18 @@ public class OperatorOverloaderTests : AbstractExpressionTests
     public void TestSimpleOperations()
     {
         // no built in support for this:
-        EvaluateAndCheckError("'abc'-true", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
+        EvaluateAndCheckError("'abc'-true", SpelMessage.OperatorNotSupportedBetweenTypes);
 
         var eContext = TestScenarioCreator.GetTestEvaluationContext();
         eContext.OperatorOverloader = new StringAndBooleanAddition();
 
-        var expr = (SpelExpression)_parser.ParseExpression("'abc'+true");
+        var expr = (SpelExpression)Parser.ParseExpression("'abc'+true");
         Assert.Equal("abcTrue", expr.GetValue(eContext));
 
-        expr = (SpelExpression)_parser.ParseExpression("'abc'-true");
+        expr = (SpelExpression)Parser.ParseExpression("'abc'-true");
         Assert.Equal("abc", expr.GetValue(eContext));
 
-        expr = (SpelExpression)_parser.ParseExpression("'abc'+null");
+        expr = (SpelExpression)Parser.ParseExpression("'abc'+null");
         Assert.Equal("abcnull", expr.GetValue(eContext));
     }
 
@@ -32,7 +32,7 @@ public class OperatorOverloaderTests : AbstractExpressionTests
     {
         public object Operate(Operation operation, object leftOperand, object rightOperand)
         {
-            if (operation == Operation.ADD)
+            if (operation == Operation.Add)
             {
                 return (string)leftOperand + (bool)rightOperand;
             }

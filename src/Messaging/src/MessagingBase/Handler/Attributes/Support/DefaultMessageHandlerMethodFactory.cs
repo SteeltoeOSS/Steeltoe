@@ -13,11 +13,11 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
 public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(DefaultMessageHandlerMethodFactory);
+    public const string DefaultServiceName = nameof(DefaultMessageHandlerMethodFactory);
 
-    protected readonly HandlerMethodArgumentResolverComposite _argumentResolvers = new ();
+    protected readonly HandlerMethodArgumentResolverComposite ArgumentResolvers = new ();
 
-    public virtual string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public virtual string ServiceName { get; set; } = DefaultServiceName;
 
     public virtual IConversionService ConversionService { get; set; }
 
@@ -55,9 +55,9 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
 
         MessageConverter ??= new GenericMessageConverter(ConversionService);
 
-        if (_argumentResolvers.Resolvers.Count == 0)
+        if (ArgumentResolvers.Resolvers.Count == 0)
         {
-            _argumentResolvers.AddResolvers(InitArgumentResolvers());
+            ArgumentResolvers.AddResolvers(InitArgumentResolvers());
         }
 
         ApplicationContext = context;
@@ -67,38 +67,38 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
     {
         if (argumentResolvers == null)
         {
-            _argumentResolvers.Clear();
+            ArgumentResolvers.Clear();
             return;
         }
 
         if (argumentResolvers.Count > 0)
         {
-            _argumentResolvers.Clear();
+            ArgumentResolvers.Clear();
         }
 
-        _argumentResolvers.AddResolvers(argumentResolvers);
+        ArgumentResolvers.AddResolvers(argumentResolvers);
     }
 
     public virtual IInvocableHandlerMethod CreateInvocableHandlerMethod(object bean, MethodInfo method)
     {
         var handlerMethod = new InvocableHandlerMethod(bean, method)
         {
-            MessageMethodArgumentResolvers = _argumentResolvers
+            MessageMethodArgumentResolvers = ArgumentResolvers
         };
         return handlerMethod;
     }
 
     public virtual void Initialize()
     {
-        _argumentResolvers.Clear();
+        ArgumentResolvers.Clear();
 
         ConversionService ??= new GenericConversionService();
 
         MessageConverter ??= new GenericMessageConverter(ConversionService);
 
-        if (_argumentResolvers.Resolvers.Count == 0)
+        if (ArgumentResolvers.Resolvers.Count == 0)
         {
-            _argumentResolvers.AddResolvers(InitArgumentResolvers());
+            ArgumentResolvers.AddResolvers(InitArgumentResolvers());
         }
     }
 

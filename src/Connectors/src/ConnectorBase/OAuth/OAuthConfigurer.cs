@@ -26,11 +26,11 @@ public class OAuthConfigurer
 
         options.ClientId = si.ClientId;
         options.ClientSecret = si.ClientSecret;
-        options.AccessTokenUrl = si.AuthDomain + OAuthConnectorDefaults.Default_AccessTokenUri;
-        options.UserAuthorizationUrl = si.AuthDomain + OAuthConnectorDefaults.Default_AuthorizationUri;
-        options.TokenInfoUrl = si.AuthDomain + OAuthConnectorDefaults.Default_CheckTokenUri;
-        options.UserInfoUrl = si.AuthDomain + OAuthConnectorDefaults.Default_UserInfoUri;
-        options.JwtKeyUrl = si.AuthDomain + OAuthConnectorDefaults.Default_JwtTokenKey;
+        options.AccessTokenUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultAccessTokenUri;
+        options.UserAuthorizationUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultAuthorizationUri;
+        options.TokenInfoUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultCheckTokenUri;
+        options.UserInfoUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultUserInfoUri;
+        options.JwtKeyUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultJwtTokenKey;
     }
 
     internal void UpdateOptions(OAuthConnectorOptions config, OAuthServiceOptions options)

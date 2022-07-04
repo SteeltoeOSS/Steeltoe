@@ -8,16 +8,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class CloudFoundryManagementOptions : ManagementEndpointOptions
 {
-    private const string DEFAULT_ACTUATOR_PATH = "/cloudfoundryapplication";
+    private const string DefaultActuatorPath = "/cloudfoundryapplication";
 
     public CloudFoundryManagementOptions()
     {
-        Path = DEFAULT_ACTUATOR_PATH;
+        Path = DefaultActuatorPath;
     }
 
     public CloudFoundryManagementOptions(IConfiguration config)
         : base(config)
     {
-        Path = DEFAULT_ACTUATOR_PATH;
+        Path = DefaultActuatorPath;
     }
 }

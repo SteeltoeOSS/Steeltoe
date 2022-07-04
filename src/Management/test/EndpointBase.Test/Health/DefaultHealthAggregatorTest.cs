@@ -18,7 +18,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         var agg = new DefaultHealthAggregator();
         var result = agg.Aggregate(null);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UNKNOWN, result.Status);
+        Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);
     }
 
@@ -32,7 +32,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         var agg = new DefaultHealthAggregator();
         var result = agg.Aggregate(contribs);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
     }
 
@@ -49,7 +49,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         var agg = new DefaultHealthAggregator();
         var result = agg.Aggregate(contribs);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.DOWN, result.Status);
+        Assert.Equal(HealthStatus.Down, result.Status);
         Assert.NotNull(result.Details);
     }
 
@@ -65,7 +65,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         var agg = new DefaultHealthAggregator();
         var result = agg.Aggregate(contribs);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Contains("Up-9", result.Details.Keys);
     }
 
@@ -81,7 +81,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         var agg = new DefaultHealthAggregator();
         var result = agg.Aggregate(contribs);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
+        Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.NotNull(result.Details);
     }
 
@@ -100,7 +100,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         var result = agg.Aggregate(contribs);
         t.Stop();
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.InRange(t.ElapsedMilliseconds, 450, 1200);
     }
 }

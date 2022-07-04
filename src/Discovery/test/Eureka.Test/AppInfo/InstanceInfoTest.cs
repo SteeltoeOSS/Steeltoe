@@ -15,7 +15,7 @@ public class InstanceInfoTest : AbstractBaseTest
     public void DefaultConstructor_InitializedWithDefaults()
     {
         var info = new InstanceInfo();
-        Assert.Equal(InstanceStatus.UNKNOWN, info.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
         Assert.False(info.IsSecurePortEnabled);
         Assert.True(info.IsUnsecurePortEnabled);
         Assert.Equal(1, info.CountryId);
@@ -26,7 +26,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(info.Metadata);
         Assert.False(info.IsDirty);
         Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
-        Assert.Equal(InstanceStatus.UP, info.Status);
+        Assert.Equal(InstanceStatus.Up, info.Status);
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public class InstanceInfoTest : AbstractBaseTest
             CountryId = 1,
             DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
             HostName = "HostName",
-            Status = InstanceStatus.DOWN,
-            OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
+            Status = InstanceStatus.Down,
+            OverriddenStatus = InstanceStatus.OutOfService,
             LeaseInfo = new JsonLeaseInfo
             {
                 RenewalIntervalInSecs = 1,
@@ -66,7 +66,7 @@ public class InstanceInfoTest : AbstractBaseTest
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
-            Actiontype = ActionType.ADDED,
+            Actiontype = ActionType.Added,
             AsgName = "AsgName"
         };
 
@@ -92,8 +92,8 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(1, info.CountryId);
         Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
         Assert.Equal("HostName", info.HostName);
-        Assert.Equal(InstanceStatus.DOWN, info.Status);
-        Assert.Equal(InstanceStatus.OUT_OF_SERVICE, info.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Down, info.Status);
+        Assert.Equal(InstanceStatus.OutOfService, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
         Assert.Equal(1, info.LeaseInfo.RenewalIntervalInSecs);
         Assert.Equal(2, info.LeaseInfo.DurationInSecs);
@@ -107,7 +107,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Empty(info.Metadata);
         Assert.Equal(635_935_705_417_080_000L, info.LastUpdatedTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LastDirtyTimestamp);
-        Assert.Equal(ActionType.ADDED, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.Actiontype);
         Assert.Equal("AsgName", info.AsgName);
     }
 
@@ -120,7 +120,7 @@ public class InstanceInfoTest : AbstractBaseTest
 
         // Verify
         Assert.Equal(config.GetHostName(false), info.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.Default_Appname.ToUpperInvariant(), info.AppName);
+        Assert.Equal(EurekaInstanceConfig.DefaultAppname.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
         Assert.Equal(config.IpAddress, info.IpAddr);
         Assert.Equal("na", info.Sid);
@@ -137,8 +137,8 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(1, info.CountryId);
         Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
         Assert.Equal(config.GetHostName(false), info.HostName);
-        Assert.Equal(InstanceStatus.STARTING, info.Status);
-        Assert.Equal(InstanceStatus.UNKNOWN, info.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Starting, info.Status);
+        Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
         Assert.Equal(30, info.LeaseInfo.RenewalIntervalInSecs);
         Assert.Equal(90, info.LeaseInfo.DurationInSecs);
@@ -151,7 +151,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(info.Metadata);
         Assert.Empty(info.Metadata);
         Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.ADDED, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.Actiontype);
         Assert.Null(info.AsgName);
     }
 
@@ -168,7 +168,7 @@ public class InstanceInfoTest : AbstractBaseTest
 
         // Verify
         Assert.Equal(config.GetHostName(false), info.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.Default_Appname.ToUpperInvariant(), info.AppName);
+        Assert.Equal(EurekaInstanceConfig.DefaultAppname.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
         Assert.Equal(config.IpAddress, info.IpAddr);
         Assert.Equal("na", info.Sid);
@@ -185,8 +185,8 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(1, info.CountryId);
         Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
         Assert.Equal(config.GetHostName(false), info.HostName);
-        Assert.Equal(InstanceStatus.STARTING, info.Status);
-        Assert.Equal(InstanceStatus.UNKNOWN, info.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Starting, info.Status);
+        Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
         Assert.Equal(30, info.LeaseInfo.RenewalIntervalInSecs);
         Assert.Equal(90, info.LeaseInfo.DurationInSecs);
@@ -199,7 +199,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(info.Metadata);
         Assert.Empty(info.Metadata);
         Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.ADDED, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.Actiontype);
         Assert.Null(info.AsgName);
     }
 
@@ -214,7 +214,7 @@ public class InstanceInfoTest : AbstractBaseTest
 
         // Verify
         Assert.Equal(config.GetHostName(false), jinfo.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.Default_Appname.ToUpperInvariant(), jinfo.AppName);
+        Assert.Equal(EurekaInstanceConfig.DefaultAppname.ToUpperInvariant(), jinfo.AppName);
         Assert.Null(jinfo.AppGroupName);
         Assert.Equal(config.IpAddress, jinfo.IpAddr);
         Assert.Equal("na", jinfo.Sid);
@@ -235,8 +235,8 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal("MyOwn", jinfo.DataCenterInfo.Name);
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", jinfo.DataCenterInfo.ClassName);
         Assert.Equal(config.GetHostName(false), jinfo.HostName);
-        Assert.Equal(InstanceStatus.STARTING, jinfo.Status);
-        Assert.Equal(InstanceStatus.UNKNOWN, jinfo.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Starting, jinfo.Status);
+        Assert.Equal(InstanceStatus.Unknown, jinfo.OverriddenStatus);
         Assert.NotNull(jinfo.LeaseInfo);
         Assert.Equal(30, jinfo.LeaseInfo.RenewalIntervalInSecs);
         Assert.Equal(90, jinfo.LeaseInfo.DurationInSecs);
@@ -251,7 +251,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.True(jinfo.Metadata.ContainsKey("@class"));
         Assert.True(jinfo.Metadata.ContainsValue("java.util.Collections$EmptyMap"));
         Assert.Equal(jinfo.LastDirtyTimestamp, jinfo.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.ADDED, jinfo.Actiontype);
+        Assert.Equal(ActionType.Added, jinfo.Actiontype);
         Assert.Null(jinfo.AsgName);
     }
 

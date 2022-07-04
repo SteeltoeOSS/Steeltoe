@@ -86,7 +86,7 @@ public interface IPublisherCallbackChannel : RC.IModel
         /// <summary>
         /// Gets the UUID used to identify this listener for returns.
         /// </summary>
-        string UUID { get; }
+        string Uuid { get; }
 
         /// <summary>
         /// Gets a value indicating whether this is a confirm listener.

@@ -37,8 +37,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void MysqlConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
         var config = new ConfigurationBuilder().AddCloudFoundry().Build();
 
         var cm = new ConnectionStringManager(config);
@@ -62,8 +62,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void PostgresConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVcapEdb);
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         var connInfo = cm.Get<PostgresConnectionInfo>("myPostgres");
 
@@ -85,8 +85,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void SqlServerConnectionInfo_ByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         var connInfo = cm.Get<SqlServerConnectionInfo>("mySqlServerService");
@@ -109,8 +109,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void RedisConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         var connInfo = cm.Get<RedisConnectionInfo>("myRedisService1");
@@ -144,8 +144,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void MongoDbConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBinding_Enterprise_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBindingEnterpriseVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         var connInfo = cm.Get<MongoDbConnectionInfo>("steeltoe");
@@ -164,7 +164,7 @@ public class ConnectionStringManagerTest
     [InlineData("rabbitmq")]
     [InlineData("redis")]
     [InlineData("sqlserver")]
-    public void IConnectionInfoTypeFoundByName(string value)
+    public void ConnectionInfoTypeFoundByName(string value)
     {
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
         Assert.StartsWith(value, manager.GetByTypeName(value).Name, StringComparison.InvariantCultureIgnoreCase);
@@ -207,7 +207,7 @@ public class ConnectionStringManagerTest
     public void ConnectionTypeLocatorFromInfoThrowsOnUnknown()
     {
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        var exception = Assert.Throws<ConnectorException>(() => manager.GetFromServiceInfo(new DB2ServiceInfo("id", "http://idk")));
+        var exception = Assert.Throws<ConnectorException>(() => manager.GetFromServiceInfo(new Db2ServiceInfo("id", "http://idk")));
         Assert.Contains("DB2ServiceInfo", exception.Message);
     }
 }

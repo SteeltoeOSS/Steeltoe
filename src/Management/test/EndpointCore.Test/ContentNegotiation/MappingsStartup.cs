@@ -14,7 +14,7 @@ public class MappingsStartup
 {
     public MappingsStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

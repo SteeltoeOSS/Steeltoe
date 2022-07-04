@@ -10,5 +10,5 @@ public class HystrixMetricsStreamOptions
 
     public int SendRate { get; set; } = 500;
 
-    public bool Validate_Certificates { get; set; } = true;
+    public bool ValidateCertificates { get; set; } = true;
 }

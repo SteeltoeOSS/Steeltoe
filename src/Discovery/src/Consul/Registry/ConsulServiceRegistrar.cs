@@ -15,10 +15,10 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// </summary>
 public class ConsulServiceRegistrar : IConsulServiceRegistrar
 {
-    internal int _running;
+    internal int IsRunning;
 
-    private const int NOT_RUNNING = 0;
-    private const int RUNNING = 1;
+    private const int NotRunning = 0;
+    private const int Running = 1;
 
     private readonly ILogger<ConsulServiceRegistrar> _logger;
     private readonly IConsulServiceRegistry _registry;
@@ -80,7 +80,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
             return;
         }
 
-        if (Interlocked.CompareExchange(ref _running, RUNNING, NOT_RUNNING) == NOT_RUNNING)
+        if (Interlocked.CompareExchange(ref IsRunning, Running, NotRunning) == NotRunning)
         {
             if (Options.IsRetryEnabled && Options.FailFast)
             {
@@ -169,7 +169,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     {
         if (disposing && !_isDisposed)
         {
-            if (Interlocked.CompareExchange(ref _running, NOT_RUNNING, RUNNING) == RUNNING)
+            if (Interlocked.CompareExchange(ref IsRunning, NotRunning, Running) == Running)
             {
                 Deregister();
             }

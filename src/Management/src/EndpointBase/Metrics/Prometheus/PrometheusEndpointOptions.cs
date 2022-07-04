@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEndpointOptions
 {
-    internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:prometheus";
+    internal const string ManagementInfoPrefix = "management:endpoints:prometheus";
 
     public PrometheusEndpointOptions()
     {
@@ -17,7 +17,7 @@ public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEnd
     }
 
     public PrometheusEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {

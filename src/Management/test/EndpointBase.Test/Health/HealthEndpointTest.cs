@@ -50,7 +50,7 @@ public class HealthEndpointTest : BaseTest
 
         var health = ep.Invoke(null);
         Assert.NotNull(health);
-        Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+        Assert.Equal(HealthStatus.Unknown, health.Status);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class HealthEndpointTest : BaseTest
             }
         }
 
-        Assert.Equal(HealthStatus.UP, info.Status);
+        Assert.Equal(HealthStatus.Up, info.Status);
     }
 
     [Fact]
@@ -124,10 +124,10 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.DOWN }));
-        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OUT_OF_SERVICE }));
-        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UP }));
-        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UNKNOWN }));
+        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Down }));
+        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OutOfService }));
+        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Up }));
+        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Unknown }));
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class HealthEndpointTest : BaseTest
 
         var result = ep.Invoke(context);
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
         Assert.True(result.Groups.Count() == 2);
     }
@@ -179,7 +179,7 @@ public class HealthEndpointTest : BaseTest
 
         var result = ep.Invoke(context);
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
         Assert.True(result.Groups.Count() == 2);
     }
@@ -204,7 +204,7 @@ public class HealthEndpointTest : BaseTest
 
         var result = ep.Invoke(context);
 
-        Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
+        Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.True(result.Details.Keys.Count == 4);
         Assert.True(result.Groups.Count() == 2);
     }

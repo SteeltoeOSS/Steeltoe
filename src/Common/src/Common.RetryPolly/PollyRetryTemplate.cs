@@ -13,12 +13,12 @@ namespace Steeltoe.Common.Retry;
 
 public class PollyRetryTemplate : RetryTemplate
 {
-    private const string RECOVERY_CALLBACK_KEY = "PollyRetryTemplate.RecoveryCallback";
-    private const string RETRYCONTEXT_KEY = "PollyRetryTemplate.RetryContext";
+    private const string RecoveryCallbackKey = "PollyRetryTemplate.RecoveryCallback";
+    private const string RetrycontextKey = "PollyRetryTemplate.RetryContext";
 
-    private const string RECOVERED = "context.recovered";
-    private const string CLOSED = "context.closed";
-    private const string RECOVERED_RESULT = "context.recovered.result";
+    private const string Recovered = "context.recovered";
+    private const string Closed = "context.closed";
+    private const string RecoveredResult = "context.recovered.result";
 
     private readonly BinaryExceptionClassifier _retryableExceptions;
     private readonly int _maxAttempts;
@@ -65,12 +65,12 @@ public class PollyRetryTemplate : RetryTemplate
         var retryContext = new RetryContext();
         var context = new Context
         {
-            { RETRYCONTEXT_KEY, retryContext }
+            { RetrycontextKey, retryContext }
         };
         RetrySynchronizationManager.Register(retryContext);
         if (recoveryCallback != null)
         {
-            retryContext.SetAttribute(RECOVERY_CALLBACK_KEY, recoveryCallback);
+            retryContext.SetAttribute(RecoveryCallbackKey, recoveryCallback);
         }
 
         CallListenerOpen(retryContext);
@@ -81,10 +81,10 @@ public class PollyRetryTemplate : RetryTemplate
 
                 if (recoveryCallback != null)
                 {
-                    var recovered = (bool?)retryContext.GetAttribute(RECOVERED);
+                    var recovered = (bool?)retryContext.GetAttribute(Recovered);
                     if (recovered != null && recovered.Value)
                     {
-                        callbackResult = (T)retryContext.GetAttribute(RECOVERED_RESULT);
+                        callbackResult = (T)retryContext.GetAttribute(RecoveredResult);
                     }
                 }
 
@@ -107,12 +107,12 @@ public class PollyRetryTemplate : RetryTemplate
         var retryContext = new RetryContext();
         var context = new Context
         {
-            { RETRYCONTEXT_KEY, retryContext }
+            { RetrycontextKey, retryContext }
         };
         RetrySynchronizationManager.Register(retryContext);
         if (recoveryCallback != null)
         {
-            retryContext.SetAttribute(RECOVERY_CALLBACK_KEY, recoveryCallback);
+            retryContext.SetAttribute(RecoveryCallbackKey, recoveryCallback);
         }
 
         if (!CallListenerOpen(retryContext))
@@ -144,11 +144,11 @@ public class PollyRetryTemplate : RetryTemplate
                     var retryContext = GetRetryContext(context);
                     retryContext.LastException = delegateResult.Exception;
                     var result = default(T);
-                    if (retryContext.GetAttribute(RECOVERY_CALLBACK_KEY) is IRecoveryCallback callback)
+                    if (retryContext.GetAttribute(RecoveryCallbackKey) is IRecoveryCallback callback)
                     {
                         result = (T)callback.Recover(retryContext);
-                        retryContext.SetAttribute(RECOVERED, true);
-                        retryContext.SetAttribute(RECOVERED_RESULT, result);
+                        retryContext.SetAttribute(Recovered, true);
+                        retryContext.SetAttribute(RecoveredResult, result);
                     }
                     else if (delegateResult.Exception != null)
                     {
@@ -168,7 +168,7 @@ public class PollyRetryTemplate : RetryTemplate
 
     private RetryContext GetRetryContext(Context context)
     {
-        if (context.TryGetValue(RETRYCONTEXT_KEY, out var obj))
+        if (context.TryGetValue(RetrycontextKey, out var obj))
         {
             return (RetryContext)obj;
         }
@@ -207,7 +207,7 @@ public class PollyRetryTemplate : RetryTemplate
 
     private void CallListenerClose(RetryContext context, Exception ex)
     {
-        context.SetAttribute(CLOSED, true);
+        context.SetAttribute(Closed, true);
         foreach (var listener in listeners)
         {
             listener.Close(context, ex);

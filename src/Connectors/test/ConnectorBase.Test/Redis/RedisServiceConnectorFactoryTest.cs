@@ -22,7 +22,7 @@ public class RedisServiceConnectorFactoryTest
             Password = "password",
             InstanceName = "instanceId"
         };
-        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
 
         var factory = new RedisServiceConnectorFactory(si, config, typeof(RedisCache), typeof(RedisCacheOptions), null);
         var cache = factory.Create(null);
@@ -43,7 +43,7 @@ public class RedisServiceConnectorFactoryTest
             AbortOnConnectFail = false,
             ConnectTimeout = 1
         };
-        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "127.0.0.1", 4321, "sipassword");
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "127.0.0.1", 4321, "sipassword");
 
         var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions), RedisTypeLocator.StackExchangeInitializer);
         var multi = factory.Create(null);

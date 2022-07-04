@@ -25,8 +25,8 @@ public class MongoDbConnectionInfoTest
     [Fact]
     public void MongoDbConnectionInfo_FromCosmosVCAP()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServer_CosmosDb_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServerCosmosDbVcap);
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
 
         var connInfo = cm.Get<MongoDbConnectionInfo>();

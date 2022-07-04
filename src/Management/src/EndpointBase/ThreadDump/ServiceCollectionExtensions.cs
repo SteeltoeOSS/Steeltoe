@@ -53,7 +53,7 @@ public static partial class ServiceCollectionExtensions
         }
 
         services.TryAddSingleton<IThreadDumpOptions>(options);
-        services.TryAddSingleton<IThreadDumper, ThreadDumperEP>();
+        services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
 
         return services;

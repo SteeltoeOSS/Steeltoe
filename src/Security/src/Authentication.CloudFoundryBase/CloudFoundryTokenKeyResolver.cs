@@ -37,7 +37,7 @@ public class CloudFoundryTokenKeyResolver
         _httpClientTimeoutMillis = 100000;
     }
 
-    public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates, int httpClientTimeoutMS)
+    public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates, int httpClientTimeoutMs)
     {
         if (string.IsNullOrEmpty(jwtKeyUrl))
         {
@@ -47,7 +47,7 @@ public class CloudFoundryTokenKeyResolver
         _jwtKeyUrl = jwtKeyUrl;
         _httpHandler = httpHandler;
         _validateCertificates = validateCertificates;
-        _httpClientTimeoutMillis = httpClientTimeoutMS;
+        _httpClientTimeoutMillis = httpClientTimeoutMs;
     }
 
     public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)

@@ -30,7 +30,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void CompilingMathematicalExpressionsWithDifferentOperandTypes()
     {
         var nh = new NumberHolder();
-        _expression = _parser.ParseExpression("(T(Convert).ToDouble(Payload))/18D");
+        _expression = Parser.ParseExpression("(T(Convert).ToDouble(Payload))/18D");
         var o = _expression.GetValue(nh);
         Assert.Equal(2d, o);
         _output.WriteLine("Performance check for SpEL expression: 'Convert.ToDouble(Payload)/18D'");
@@ -88,7 +88,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         _output.WriteLine("One million iterations: " + ((DateTime.Now.Ticks - stime) / 10000) + "ms");
 
-        _expression = _parser.ParseExpression("Payload/18D");
+        _expression = Parser.ParseExpression("Payload/18D");
         o = _expression.GetValue(nh);
         Assert.Equal(2d, o);
         _output.WriteLine("Performance check for SpEL expression: 'Payload / 18D");
@@ -150,7 +150,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void InlineLists()
     {
-        _expression = _parser.ParseExpression("{'abcde','ijklm'}[0].Substring({1,3,4}[0],{1,3,4}[1])");
+        _expression = Parser.ParseExpression("{'abcde','ijklm'}[0].Substring({1,3,4}[0],{1,3,4}[1])");
         var o = _expression.GetValue();
         Assert.Equal("bcd", o);
         _output.WriteLine("Performance check for SpEL expression: '{'abcde','ijklm'}[0].substring({1,3,4}[0],{1,3,4}[1])'");
@@ -212,7 +212,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void InlineNestedLists()
     {
-        _expression = _parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0],{1,3,4}[1])");
+        _expression = Parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0],{1,3,4}[1])");
         var o = _expression.GetValue();
         Assert.Equal("jkl", o);
         _output.WriteLine("Performance check for SpEL expression: '{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0],{1,3,4}[1])'");
@@ -275,7 +275,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void StringConcatenation()
     {
         var g = new Greeter();
-        _expression = _parser.ParseExpression("'hello' + World + ' spring'");
+        _expression = Parser.ParseExpression("'hello' + World + ' spring'");
         var o = _expression.GetValue(g);
         Assert.Equal("helloworld spring", o);
         _output.WriteLine("Performance check for SpEL expression: 'hello' + World + ' spring'");
@@ -338,7 +338,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void ComplexExpressionPerformance()
     {
         var payload = new Payload();
-        var expression = _parser.ParseExpression("DR[0].DRFixedSection.Duration lt 0.1");
+        var expression = Parser.ParseExpression("DR[0].DRFixedSection.Duration lt 0.1");
         var b = false;
         long iTotal = 0;
         long cTotal = 0;
@@ -412,7 +412,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         string interpretedResult = null;
         string compiledResult = null;
         var testdata = new HW();
-        var expression = _parser.ParseExpression("Hello()");
+        var expression = Parser.ParseExpression("Hello()");
 
         // warmup
         for (var i = 0; i < _count; i++)
@@ -475,7 +475,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         string interpretedResult = null;
         string compiledResult = null;
         var testdata = new TestClass2();
-        var expression = _parser.ParseExpression("Name");
+        var expression = Parser.ParseExpression("Name");
 
         // warmup
         for (var i = 0; i < _count; i++)
@@ -538,7 +538,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         string interpretedResult = null;
         string compiledResult = null;
         var testdata = new TestClass2();
-        var expression = _parser.ParseExpression("Foo.Bar.Boo");
+        var expression = Parser.ParseExpression("Foo.Bar.Boo");
 
         // warmup
         for (var i = 0; i < _count; i++)
@@ -601,7 +601,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         string interpretedResult = null;
         string compiledResult = null;
         var testdata = new TestClass2();
-        var expression = _parser.ParseExpression("Foo.Baz.Boo");
+        var expression = Parser.ParseExpression("Foo.Baz.Boo");
 
         // warmup
         for (var i = 0; i < _count; i++)
@@ -664,7 +664,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         string interpretedResult = null;
         string compiledResult = null;
         var testdata = new TestClass2();
-        var expression = _parser.ParseExpression("Foo.Bay().Boo");
+        var expression = Parser.ParseExpression("Foo.Bay().Boo");
 
         // warmup
         for (var i = 0; i < _count; i++)
@@ -727,7 +727,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         string interpretedResult = null;
         string compiledResult = null;
         var testdata = new TestClass2();
-        var expression = _parser.ParseExpression("Name2");
+        var expression = Parser.ParseExpression("Name2");
 
         // warmup
         for (var i = 0; i < _count; i++)

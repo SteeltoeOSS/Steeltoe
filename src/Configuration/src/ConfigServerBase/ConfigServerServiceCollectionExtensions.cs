@@ -31,7 +31,7 @@ public static class ConfigServerServiceCollectionExtensions
 
         services.AddOptions();
 
-        var section = config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX);
+        var section = config.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix);
         services.Configure<ConfigServerClientSettingsOptions>(section);
 
         return services;
@@ -48,7 +48,7 @@ public static class ConfigServerServiceCollectionExtensions
             .AddOptions<ConfigServerClientSettingsOptions>()
             .Configure<IConfiguration>((options, config) =>
             {
-                config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX).Bind(options);
+                config.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix).Bind(options);
             });
 
         return services;

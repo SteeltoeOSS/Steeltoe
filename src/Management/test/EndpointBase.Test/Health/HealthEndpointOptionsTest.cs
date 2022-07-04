@@ -21,7 +21,7 @@ public class HealthEndpointOptionsTest : BaseTest
         Assert.Null(opts.Enabled);
         Assert.Equal("health", opts.Id);
         Assert.Equal(ShowDetails.Always, opts.ShowDetails);
-        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
+        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class HealthEndpointOptionsTest : BaseTest
         Assert.True(opts.Enabled);
         Assert.Equal("health", opts.Id);
         Assert.Equal("health", opts.Path);
-        Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
+        Assert.Equal(Permissions.None, opts.RequiredPermissions);
         Assert.Equal(3, opts.Groups.Count);
         Assert.True(opts.Groups.ContainsKey("custom"));
         Assert.True(opts.Groups.ContainsKey("liveness"));

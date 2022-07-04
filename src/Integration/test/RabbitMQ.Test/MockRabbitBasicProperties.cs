@@ -45,10 +45,6 @@ public class MockRabbitBasicProperties : IBasicProperties
 
     int IContentHeader.ProtocolClassId => 0;
 
-    public ushort ProtocolClassId;
-
-    public string ProtocolClassName;
-
     public void ClearAppId()
     {
     }

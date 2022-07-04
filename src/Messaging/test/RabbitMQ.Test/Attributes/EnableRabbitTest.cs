@@ -210,7 +210,7 @@ public class EnableRabbitTest
         var listener = container.MessageListener as MessagingMessageListenerAdapter;
         var accessor = new RabbitHeaderAccessor
         {
-            ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN
+            ContentType = MessageHeaders.ContentTypeTextPlain
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("Hello"), accessor.MessageHeaders);
         var mockChannel = new Mock<RC.IModel>();

@@ -12,7 +12,7 @@ public class HealthCountsStream : BucketedRollingCounterStream<HystrixCommandCom
 {
     private static readonly ConcurrentDictionary<string, HealthCountsStream> Streams = new ();
 
-    private static readonly int NUM_EVENT_TYPES = HystrixEventTypeHelper.Values.Count;
+    private static readonly int NumEventTypes = HystrixEventTypeHelper.Values.Count;
 
     private static Func<HealthCounts, long[], HealthCounts> HealthCheckAccumulator { get; } = (healthCounts, bucketEventCounts) => healthCounts.Plus(bucketEventCounts);
 
@@ -71,7 +71,7 @@ public class HealthCountsStream : BucketedRollingCounterStream<HystrixCommandCom
 
     public override long[] EmptyBucketSummary
     {
-        get { return new long[NUM_EVENT_TYPES]; }
+        get { return new long[NumEventTypes]; }
     }
 
     public override HealthCounts EmptyOutputValue

@@ -314,7 +314,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
 
-        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection)
         {
             ChannelCacheSize = 1,
             ConnectionLimit = 1,
@@ -361,13 +361,13 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     [Fact]
     public void TestCheckoutsWithRefreshedConnectionModeChannel()
     {
-        TestCheckoutsWithRefreshedConnectionGuts(CachingConnectionFactory.CachingMode.CHANNEL);
+        TestCheckoutsWithRefreshedConnectionGuts(CachingConnectionFactory.CachingMode.Channel);
     }
 
     [Fact]
     public void TestCheckoutsWithRefreshedConnectionModeConnection()
     {
-        TestCheckoutsWithRefreshedConnectionGuts(CachingConnectionFactory.CachingMode.CONNECTION);
+        TestCheckoutsWithRefreshedConnectionGuts(CachingConnectionFactory.CachingMode.Connection);
     }
 
     [Fact]
@@ -452,7 +452,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         {
             ChannelCacheSize = 1,
             ChannelCheckoutTimeout = 1,
-            PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED
+            PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated
         };
         var rabbitTemplate = new RabbitTemplate(ccf);
         rabbitTemplate.ConvertAndSend("foo", "bar");
@@ -481,8 +481,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var channel1 = con.CreateChannel();
 
-        Assert.Single(ccf._checkoutPermits.Values);
-        var slim = ccf._checkoutPermits.Values.Single();
+        Assert.Single(ccf.CheckoutPermits.Values);
+        var slim = ccf.CheckoutPermits.Values.Single();
         Assert.Equal(0, slim.CurrentCount);
 
         channel1.Close();
@@ -525,8 +525,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var channel1 = con.CreateChannel();
 
-        Assert.Single(ccf._checkoutPermits.Values);
-        var slim = ccf._checkoutPermits.Values.Single();
+        Assert.Single(ccf.CheckoutPermits.Values);
+        var slim = ccf.CheckoutPermits.Values.Single();
         Assert.Equal(0, slim.CurrentCount);
 
         channel1.Close();
@@ -637,8 +637,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannel1.Verify(c => c.Close(), Times.Never);
         mockChannel2.Verify(c => c.Close(), Times.Never);
 
-        Assert.Single(ccf._cachedChannelsNonTransactional);
-        Assert.Single(ccf._cachedChannelsTransactional);
+        Assert.Single(ccf.CachedChannelsNonTransactional);
+        Assert.Single(ccf.CachedChannelsTransactional);
     }
 
     [Fact]
@@ -850,10 +850,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
                 mockConnections.Add(connection);
             })
             .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
-        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
+        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection);
 
-        Assert.Empty(ccf._allocatedConnections);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Empty(ccf.AllocatedConnections);
+        Assert.Empty(ccf.IdleConnections);
 
         var createNotification = new AtomicReference<RC.IConnection>();
         var closedNotification = new AtomicReference<RC.IConnection>();
@@ -862,8 +862,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var con1 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[0].Object, con1);
-        Assert.Single(ccf._allocatedConnections);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Single(ccf.AllocatedConnections);
+        Assert.Empty(ccf.IdleConnections);
 
         Assert.NotNull(createNotification.Value);
         var val = createNotification.GetAndSet(null);
@@ -878,8 +878,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         con1.Close();
         mockConnections[0].Verify(c => c.Close(), Times.Never);
-        Assert.Single(ccf._allocatedConnections);
-        Assert.Single(ccf._idleConnections);
+        Assert.Single(ccf.AllocatedConnections);
+        Assert.Single(ccf.IdleConnections);
         Assert.Null(closedNotification.Value);
 
         // Will retrieve same connection that was just put into cache, and reuse single channel from cache as well
@@ -891,8 +891,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannels[0].Verify(c => c.Close(), Times.Never);
         con2.Close();
         mockConnections[0].Verify(c => c.Close(), Times.Never);
-        Assert.Single(ccf._allocatedConnections);
-        Assert.Single(ccf._idleConnections);
+        Assert.Single(ccf.AllocatedConnections);
+        Assert.Single(ccf.IdleConnections);
         Assert.Null(createNotification.Value);
 
         // Now check for multiple connections/channels
@@ -904,8 +904,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         VerifyChannelIs(mockChannels[0].Object, channel1);
         channel2 = con2.CreateChannel();
         VerifyChannelIs(mockChannels[1].Object, channel2);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Empty(ccf.IdleConnections);
         Assert.NotNull(createNotification.Value);
         val = createNotification.GetAndSet(null);
         Assert.Same(val, mockConnections[1].Object);
@@ -915,8 +915,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannels[1].Verify(c => c.Close(), Times.Never);
         con1.Close();
         mockConnections[0].Verify(c => c.Close(), Times.Never);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         Assert.Null(closedNotification.Value);
 
         var con3 = ccf.CreateConnection();
@@ -925,17 +925,17 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var channel3 = con3.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel3);
 
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Empty(ccf.IdleConnections);
 
         channel2.Close();
         con2.Close();
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         channel3.Close();
         con3.Close();
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Equal(2, ccf._idleConnections.Count);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Equal(2, ccf.IdleConnections.Count);
         Assert.Equal(1, ccf.CountOpenConnections());
 
         // Cache size is 1; con3 (mock1) should have been a real close.
@@ -948,7 +948,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnections[1].Verify(c => c.Close(30_000), Times.Never);
 
         // verify(mockChannels.get(1), never()).close();
-        VerifyConnectionIs(mockConnections[1].Object, ccf._idleConnections.First.Value);
+        VerifyConnectionIs(mockConnections[1].Object, ccf.IdleConnections.First.Value);
 
         // Now a closed cached connection
         mockConnections[1].Setup(c => c.IsOpen).Returns(false);
@@ -961,24 +961,24 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.NotNull(createNotification.Value);
         val = createNotification.GetAndSet(null);
         Assert.Same(mockConnections[2].Object, val);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         Assert.Equal(1, ccf.CountOpenConnections());
         channel3 = con3.CreateChannel();
         VerifyChannelIs(mockChannels[2].Object, channel3);
         channel3.Close();
         con3.Close();
         Assert.Null(closedNotification.Value);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Equal(2, ccf._idleConnections.Count);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Equal(2, ccf.IdleConnections.Count);
         Assert.Equal(1, ccf.CountOpenConnections());
 
         // Now a closed cached connection when creating a channel
         con3 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[2].Object, con3);
         Assert.Null(createNotification.Value);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         mockConnections[2].Setup(c => c.IsOpen).Returns(false);
         channel3 = con3.CreateChannel();
         val = closedNotification.GetAndSet(null);
@@ -989,8 +989,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         channel3.Close();
         con3.Close();
         Assert.Null(closedNotification.Value);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Equal(2, ccf._idleConnections.Count);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Equal(2, ccf.IdleConnections.Count);
         Assert.Equal(1, ccf.CountOpenConnections());
 
         ccf.Destroy();
@@ -1029,14 +1029,14 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             })
             .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
 
-        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection)
         {
             ConnectionCacheSize = 2,
             ChannelCacheSize = 2
         };
 
-        Assert.Empty(ccf._allocatedConnections);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Empty(ccf.AllocatedConnections);
+        Assert.Empty(ccf.IdleConnections);
 
         var createNotification = new AtomicReference<RC.IConnection>();
         var closedNotification = new AtomicReference<RC.IConnection>();
@@ -1045,8 +1045,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var con1 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[0].Object, con1);
-        Assert.Single(ccf._allocatedConnections);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Single(ccf.AllocatedConnections);
+        Assert.Empty(ccf.IdleConnections);
 
         Assert.NotNull(createNotification.Value);
         var val = createNotification.GetAndSet(null);
@@ -1061,10 +1061,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         con1.Close();
         mockConnections[0].Verify(c => c.Close(), Times.Never);
-        Assert.Single(ccf._allocatedConnections);
-        Assert.Single(ccf._idleConnections);
+        Assert.Single(ccf.AllocatedConnections);
+        Assert.Single(ccf.IdleConnections);
         var con1Proxy = con1 as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        Assert.Single(ccf._allocatedConnectionNonTransactionalChannels[con1Proxy]);
+        Assert.Single(ccf.AllocatedConnectionNonTransactionalChannels[con1Proxy]);
         Assert.Null(closedNotification.Value);
 
         // Will retrieve same connection that was just put into cache, and reuse single channel from cache as well
@@ -1076,8 +1076,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannels[0].Verify(c => c.Close(), Times.Never);
         con2.Close();
         mockConnections[0].Verify(c => c.Close(), Times.Never);
-        Assert.Single(ccf._allocatedConnections);
-        Assert.Single(ccf._idleConnections);
+        Assert.Single(ccf.AllocatedConnections);
+        Assert.Single(ccf.IdleConnections);
         Assert.Null(createNotification.Value);
 
         // Now check for multiple connections/channels
@@ -1089,8 +1089,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         VerifyChannelIs(mockChannels[0].Object, channel1);
         channel2 = con2.CreateChannel();
         VerifyChannelIs(mockChannels[1].Object, channel2);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Empty(ccf.IdleConnections);
         Assert.NotNull(createNotification.Value);
         val = createNotification.GetAndSet(null);
         Assert.Same(val, mockConnections[1].Object);
@@ -1100,8 +1100,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannels[1].Verify(c => c.Close(), Times.Never);
         con1.Close();
         mockConnections[0].Verify(c => c.Close(), Times.Never);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         Assert.Null(closedNotification.Value);
 
         var con3 = ccf.CreateConnection();
@@ -1110,21 +1110,21 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var channel3 = con3.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel3);
 
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Empty(ccf.IdleConnections);
 
         channel2.Close();
         con2.Close();
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         channel3.Close();
         con3.Close();
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Equal(2, ccf._idleConnections.Count);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Equal(2, ccf.IdleConnections.Count);
         con1Proxy = con1 as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        Assert.Single(ccf._allocatedConnectionNonTransactionalChannels[con1Proxy]);
+        Assert.Single(ccf.AllocatedConnectionNonTransactionalChannels[con1Proxy]);
         var con2Proxy = con2 as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        Assert.Single(ccf._allocatedConnectionNonTransactionalChannels[con2Proxy]);
+        Assert.Single(ccf.AllocatedConnectionNonTransactionalChannels[con2Proxy]);
 
         // Cache size is 1; con3 (mock1) should have been a real close.
         // con2 (mock2) should still be in the cache.
@@ -1134,8 +1134,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnections[1].Verify(c => c.Close(30_000), Times.Never);
 
         // verify(mockChannels.get(1), never()).close();
-        Assert.Equal(2, ccf._idleConnections.Count);
-        using var idleEnumerator = ccf._idleConnections.GetEnumerator();
+        Assert.Equal(2, ccf.IdleConnections.Count);
+        using var idleEnumerator = ccf.IdleConnections.GetEnumerator();
         Assert.True(idleEnumerator.MoveNext());
         VerifyConnectionIs(mockConnections[1].Object, idleEnumerator.Current);
         Assert.True(idleEnumerator.MoveNext());
@@ -1149,22 +1149,22 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Same(mockConnections[1].Object, val);
         VerifyConnectionIs(mockConnections[0].Object, con3);
         Assert.Null(createNotification.Value);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         channel3 = con3.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel3);
         channel3.Close();
         con3.Close();
         Assert.Null(closedNotification.Value);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Equal(2, ccf._idleConnections.Count);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Equal(2, ccf.IdleConnections.Count);
 
         // Now a closed cached connection when creating a channel
         con3 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[0].Object, con3);
         Assert.Null(createNotification.Value);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Single(ccf._idleConnections);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Single(ccf.IdleConnections);
         mockConnections[0].Setup(c => c.IsOpen).Returns(false);
         channel3 = con3.CreateChannel();
         val = closedNotification.GetAndSet(null);
@@ -1176,24 +1176,24 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         channel3.Close();
         con3.Close();
         Assert.Null(closedNotification.Value);
-        Assert.Equal(2, ccf._allocatedConnections.Count);
-        Assert.Equal(2, ccf._idleConnections.Count);
+        Assert.Equal(2, ccf.AllocatedConnections.Count);
+        Assert.Equal(2, ccf.IdleConnections.Count);
 
         var con4 = ccf.CreateConnection();
         Assert.Same(con3, con4);
-        Assert.Single(ccf._idleConnections);
+        Assert.Single(ccf.IdleConnections);
         var channelA = con4.CreateChannel();
         var channelB = con4.CreateChannel();
         var channelC = con4.CreateChannel();
         channelA.Close();
         var con4Proxy = con4 as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        Assert.Single(ccf._allocatedConnectionNonTransactionalChannels[con4Proxy]);
+        Assert.Single(ccf.AllocatedConnectionNonTransactionalChannels[con4Proxy]);
         channelB.Close();
         con4Proxy = con4 as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        Assert.Equal(2, ccf._allocatedConnectionNonTransactionalChannels[con4Proxy].Count);
+        Assert.Equal(2, ccf.AllocatedConnectionNonTransactionalChannels[con4Proxy].Count);
         channelC.Close();
         con4Proxy = con4 as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        Assert.Equal(2, ccf._allocatedConnectionNonTransactionalChannels[con4Proxy].Count);
+        Assert.Equal(2, ccf.AllocatedConnectionNonTransactionalChannels[con4Proxy].Count);
 
         ccf.Destroy();
         Assert.NotNull(closedNotification.Value);
@@ -1233,39 +1233,39 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             })
             .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
 
-        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection)
         {
             ConnectionCacheSize = 5
         };
 
-        Assert.Empty(ccf._allocatedConnections);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Empty(ccf.AllocatedConnections);
+        Assert.Empty(ccf.IdleConnections);
 
         var conn1 = ccf.CreateConnection();
         var conn2 = ccf.CreateConnection();
         var conn3 = ccf.CreateConnection();
-        Assert.Equal(3, ccf._allocatedConnections.Count);
-        Assert.Empty(ccf._idleConnections);
+        Assert.Equal(3, ccf.AllocatedConnections.Count);
+        Assert.Empty(ccf.IdleConnections);
         conn1.Close();
         conn2.Close();
         conn3.Close();
-        Assert.Equal(3, ccf._allocatedConnections.Count);
-        Assert.Equal(3, ccf._idleConnections.Count);
+        Assert.Equal(3, ccf.AllocatedConnections.Count);
+        Assert.Equal(3, ccf.IdleConnections.Count);
 
         mockConnections[0].Setup(c => c.IsOpen).Returns(false);
         mockConnections[1].Setup(c => c.IsOpen).Returns(false);
         var conn4 = ccf.CreateConnection();
-        Assert.Equal(3, ccf._allocatedConnections.Count);
-        Assert.Equal(2, ccf._idleConnections.Count);
+        Assert.Equal(3, ccf.AllocatedConnections.Count);
+        Assert.Equal(2, ccf.IdleConnections.Count);
         Assert.Same(conn4, conn3);
         conn4.Close();
-        Assert.Equal(3, ccf._allocatedConnections.Count);
-        Assert.Equal(3, ccf._idleConnections.Count);
+        Assert.Equal(3, ccf.AllocatedConnections.Count);
+        Assert.Equal(3, ccf.IdleConnections.Count);
         Assert.Equal(1, ccf.CountOpenConnections());
 
         ccf.Destroy();
-        Assert.Equal(3, ccf._allocatedConnections.Count);
-        Assert.Equal(3, ccf._idleConnections.Count);
+        Assert.Equal(3, ccf.AllocatedConnections.Count);
+        Assert.Equal(3, ccf.IdleConnections.Count);
         Assert.Equal(0, ccf.CountOpenConnections());
     }
 
@@ -1379,7 +1379,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
-            PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED
+            PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated
         };
 
         var pccMock = new Mock<IPublisherCallbackChannel>();
@@ -1422,7 +1422,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.IsOpen).Returns(true);
-        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection)
         {
             ChannelCheckoutTimeout = 60_000
         };
@@ -1444,7 +1444,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.IsOpen).Returns(true);
-        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
+        var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection);
         ccf.SetAddresses("host1:5672,host2:5672,host3:5672");
         ccf.ShuffleAddresses = true;
         for (var i = 0; i < 100; i++)
@@ -1467,13 +1467,13 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var cf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
-            PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE
+            PublisherConfirmType = CachingConnectionFactory.ConfirmType.None
         };
         Assert.False(cf.IsSimplePublisherConfirms);
-        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.SIMPLE;
+        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.Simple;
         Assert.True(cf.IsSimplePublisherConfirms);
         Assert.True(cf.PublisherConnectionFactory.IsSimplePublisherConfirms);
-        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE;
+        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.None;
         Assert.False(cf.IsSimplePublisherConfirms);
         Assert.False(cf.PublisherConnectionFactory.IsSimplePublisherConfirms);
     }
@@ -1484,13 +1484,13 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var cf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
-            PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE
+            PublisherConfirmType = CachingConnectionFactory.ConfirmType.None
         };
         Assert.False(cf.IsPublisherConfirms);
-        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
+        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated;
         Assert.True(cf.IsPublisherConfirms);
         Assert.True(cf.PublisherConnectionFactory.IsPublisherConfirms);
-        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE;
+        cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.None;
         Assert.False(cf.IsPublisherConfirms);
         Assert.False(cf.PublisherConnectionFactory.IsPublisherConfirms);
     }
@@ -1516,7 +1516,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
             if (confirms)
             {
-                ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
+                ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated;
             }
 
             var con = ccf.CreateConnection();
@@ -1578,7 +1578,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         {
             ChannelCacheSize = 1,
             ChannelCheckoutTimeout = 1,
-            PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED
+            PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated
         };
 
         var con = ccf.CreateConnection();
@@ -1671,8 +1671,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var con = ccf.CreateConnection();
         var channel1 = con.CreateChannel();
 
-        Assert.Single(ccf._checkoutPermits.Values);
-        var slim = ccf._checkoutPermits.Values.Single();
+        Assert.Single(ccf.CheckoutPermits.Values);
+        var slim = ccf.CheckoutPermits.Values.Single();
         Assert.Equal(1, slim.CurrentCount);
 
         channel1.Close();

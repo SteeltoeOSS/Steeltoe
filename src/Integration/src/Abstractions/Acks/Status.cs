@@ -12,15 +12,15 @@ public enum Status
     /// <summary>
     /// Mark message as accepted.
     /// </summary>
-    ACCEPT,
+    Accept,
 
     /// <summary>
     /// Mark message as rejected.
     /// </summary>
-    REJECT,
+    Reject,
 
     /// <summary>
     /// Reject message and requeue.
     /// </summary>
-    REQUEUE
+    Requeue
 }

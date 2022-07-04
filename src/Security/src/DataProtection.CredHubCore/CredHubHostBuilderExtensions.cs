@@ -42,7 +42,7 @@ public static class CredHubHostBuilderExtensions
                 try
                 {
                     startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-                    credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
+                    credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
                 }
                 catch (Exception e)
                 {

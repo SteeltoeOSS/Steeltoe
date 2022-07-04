@@ -319,7 +319,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
@@ -337,7 +337,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 204 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
         using var client = server.CreateClient();
@@ -370,7 +370,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = new ConfigServerClientSettings
         {
             Name = "myName",
@@ -413,7 +413,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
         TestConfigServerStartup.Label = "testlabel";
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         settings.Label = "label,testlabel";
         using var client = server.CreateClient();
@@ -449,7 +449,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
         using var client = server.CreateClient();
@@ -480,7 +480,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500, 200 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
@@ -500,7 +500,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
@@ -520,7 +520,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 404 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
         using var client = server.CreateClient();
@@ -539,7 +539,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 404 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
         settings.FailFast = true;
@@ -557,7 +557,7 @@ public class ConfigServerConfigurationProviderTest
         settings.Uri = "http://localhost:8888,http://localhost:8888";
         var envir = HostingHelpers.GetHostingEnvironment();
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
         TestConfigServerStartup.Reset();
@@ -574,7 +574,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         settings.FailFast = true;
         using var client = server.CreateClient();
@@ -590,7 +590,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500, 500, 500 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         settings.FailFast = true;
         settings.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
@@ -608,7 +608,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500, 500, 500, 500, 500, 500 };
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = new ConfigServerClientSettings
         {
@@ -648,7 +648,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
@@ -689,7 +689,7 @@ public class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
@@ -795,7 +795,7 @@ public class ConfigServerConfigurationProviderTest
             Assert.True(provider.TryGet("spring:cloud:config:discovery:enabled", out value));
             Assert.Equal("False", value);
             Assert.True(provider.TryGet("spring:cloud:config:discovery:serviceId", out value));
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID, value);
+            Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceid, value);
             Assert.True(provider.TryGet("spring:cloud:config:retry:multiplier", out value));
             Assert.Equal("1.1", value);
         }
@@ -899,11 +899,11 @@ public class ConfigServerConfigurationProviderTest
         };
         var provider = new ConfigServerConfigurationProvider(settings);
 
-        var requestURI = provider.GetConfigServerUri(settings.RawUris[0], null);
-        var request = provider.GetRequestMessage(requestURI, "user", "password");
+        var requestUri = provider.GetConfigServerUri(settings.RawUris[0], null);
+        var request = provider.GetRequestMessage(requestUri, "user", "password");
 
         Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestURI, request.RequestUri.ToString());
+        Assert.Equal(requestUri, request.RequestUri.ToString());
         Assert.NotNull(request.Headers.Authorization);
         Assert.Equal("Basic", request.Headers.Authorization.Scheme);
         Assert.Equal(provider.GetEncoded("user", "password"), request.Headers.Authorization.Parameter);
@@ -920,13 +920,13 @@ public class ConfigServerConfigurationProviderTest
         };
         var provider = new ConfigServerConfigurationProvider(settings);
 
-        var requestURI = provider.GetConfigServerUri(settings.RawUris[0], null);
-        var request = provider.GetRequestMessage(requestURI, null, null);
+        var requestUri = provider.GetConfigServerUri(settings.RawUris[0], null);
+        var request = provider.GetRequestMessage(requestUri, null, null);
 
         Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestURI, request.RequestUri.ToString());
-        Assert.True(request.Headers.Contains(ConfigServerConfigurationProvider.TOKEN_HEADER));
-        var headerValues = request.Headers.GetValues(ConfigServerConfigurationProvider.TOKEN_HEADER);
+        Assert.Equal(requestUri, request.RequestUri.ToString());
+        Assert.True(request.Headers.Contains(ConfigServerConfigurationProvider.TokenHeader));
+        var headerValues = request.Headers.GetValues(ConfigServerConfigurationProvider.TokenHeader);
         Assert.Contains("MyVaultToken", headerValues);
     }
 
@@ -1152,7 +1152,7 @@ public class ConfigServerConfigurationProviderTest
         {
         }
 
-        public HttpClient TheConfiguredClient => _httpClient;
+        public HttpClient TheConfiguredClient => httpClient;
     }
 
     private sealed class TestOptions

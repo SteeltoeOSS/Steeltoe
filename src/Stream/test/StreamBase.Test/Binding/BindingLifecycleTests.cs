@@ -29,7 +29,7 @@ public class BindingLifecycleTests
         var lifecycle = new InputBindingLifecycle(new Mock<IBindingService>().Object, bindables.Values);
         await lifecycle.Start();
 
-        Assert.Equal(5, lifecycle._inputBindings.Count);
+        Assert.Equal(5, lifecycle.InputBindings.Count);
 
         await lifecycle.Stop();
     }
@@ -50,7 +50,7 @@ public class BindingLifecycleTests
         var lifecycle = new OutputBindingLifecycle(new Mock<IBindingService>().Object, bindables.Values);
         await lifecycle.Start();
 
-        Assert.Equal(5, lifecycle._outputBindings.Count);
+        Assert.Equal(5, lifecycle.OutputBindings.Count);
 
         await lifecycle.Stop();
     }

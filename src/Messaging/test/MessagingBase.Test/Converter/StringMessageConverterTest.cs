@@ -16,7 +16,7 @@ public class StringMessageConverterTest
     public void FromByteArrayMessage()
     {
         var message = MessageBuilder.WithPayload(
-            Encoding.UTF8.GetBytes("ABC")).SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
+            Encoding.UTF8.GetBytes("ABC")).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         var converter = new StringMessageConverter();
         Assert.Equal("ABC", converter.FromMessage<string>(message));
     }
@@ -25,7 +25,7 @@ public class StringMessageConverterTest
     public void FromStringMessage()
     {
         var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
+            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         var converter = new StringMessageConverter();
         Assert.Equal("ABC", converter.FromMessage<string>(message));
     }
@@ -44,7 +44,7 @@ public class StringMessageConverterTest
         var payload = "H\u00e9llo W\u00f6rld";
         var bytes = Encoding.GetEncoding("ISO-8859-1").GetBytes(payload);
         var message = MessageBuilder.WithPayload(bytes)
-            .SetHeader(MessageHeaders.CONTENT_TYPE, new MimeType("text", "plain", Encoding.GetEncoding("ISO-8859-1"))).Build();
+            .SetHeader(MessageHeaders.ContentType, new MimeType("text", "plain", Encoding.GetEncoding("ISO-8859-1"))).Build();
         var converter = new StringMessageConverter();
         Assert.Equal(payload, converter.FromMessage<string>(message));
     }
@@ -72,7 +72,7 @@ public class StringMessageConverterTest
     {
         var map = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN }
+            { MessageHeaders.ContentType, MimeTypeUtils.TextPlain }
         };
         var headers = new MessageHeaders(map);
         var converter = new StringMessageConverter();

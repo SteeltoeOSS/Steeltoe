@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Util;
 
-public interface IIDGenerator
+public interface IIdGenerator
 {
     string GenerateId();
 }

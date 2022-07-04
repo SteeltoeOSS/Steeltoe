@@ -17,20 +17,20 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 [Trait("Category", "Integration")]
 public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 {
-    public const string TEST_RELEASE_CONSUMER_Q = "test.release.consumer";
+    public const string TestReleaseConsumerQ = "test.release.consumer";
 
     public DirectReplyToMessageListenerContainerTest()
     {
         var adminCf = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(adminCf);
-        admin.DeclareQueue(new Config.Queue(TEST_RELEASE_CONSUMER_Q));
+        admin.DeclareQueue(new Config.Queue(TestReleaseConsumerQ));
     }
 
     public void Dispose()
     {
         var adminCf = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(adminCf);
-        admin.DeleteQueue(TEST_RELEASE_CONSUMER_Q);
+        admin.DeleteQueue(TestReleaseConsumerQ);
         adminCf.Dispose();
     }
 
@@ -48,19 +48,19 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         var foobytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         var barbytes = EncodingUtils.GetDefaultEncoding().GetBytes("bar");
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         var channel1 = container.GetChannelHolder();
         var props = channel1.Channel.CreateBasicProperties();
-        props.ReplyTo = Address.AMQ_RABBITMQ_REPLY_TO;
-        RC.IModelExensions.BasicPublish(channel1.Channel, string.Empty, TEST_RELEASE_CONSUMER_Q, props, foobytes);
+        props.ReplyTo = Address.AmqRabbitmqReplyTo;
+        RC.IModelExensions.BasicPublish(channel1.Channel, string.Empty, TestReleaseConsumerQ, props, foobytes);
         var replyChannel = connectionFactory.CreateConnection().CreateChannel();
-        var request = replyChannel.BasicGet(TEST_RELEASE_CONSUMER_Q, true);
+        var request = replyChannel.BasicGet(TestReleaseConsumerQ, true);
         var n = 0;
         while (n++ < 100 && request == null)
         {
             Thread.Sleep(100);
-            request = replyChannel.BasicGet(TEST_RELEASE_CONSUMER_Q, true);
+            request = replyChannel.BasicGet(TestReleaseConsumerQ, true);
         }
 
         Assert.NotNull(request);
@@ -72,7 +72,7 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         var channel2 = container.GetChannelHolder();
         Assert.Same(channel1.Channel, channel2.Channel);
         container.ReleaseConsumerFor(channel1, false, null); // simulate race for future timeout/cancel and onMessage()
-        var inUse = container._inUseConsumerChannels;
+        var inUse = container.InUseConsumerChannels;
         Assert.Single(inUse);
         container.ReleaseConsumerFor(channel2, false, null);
         Assert.Empty(inUse);
@@ -87,8 +87,8 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 
         public MockChannelAwareMessageListener(IMessageListener messageListener, CountdownEvent latch)
         {
-            MessageListener = messageListener as IChannelAwareMessageListener;
-            Latch = latch;
+            this.MessageListener = messageListener as IChannelAwareMessageListener;
+            this.Latch = latch;
         }
 
         public AcknowledgeMode ContainerAckMode { get; set; }

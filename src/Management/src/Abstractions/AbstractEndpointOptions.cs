@@ -10,11 +10,11 @@ namespace Steeltoe.Management;
 
 public abstract class AbstractEndpointOptions : IEndpointOptions
 {
-    protected bool? _enabled;
+    protected bool? innerEnabled;
 
-    protected bool? _sensitive;
+    protected bool? sensitive;
 
-    protected string _path;
+    protected string innerPath;
 
     protected AbstractEndpointOptions()
     {
@@ -47,12 +47,12 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
     {
         get
         {
-            return _enabled;
+            return innerEnabled;
         }
 
         set
         {
-            _enabled = value;
+            innerEnabled = value;
         }
     }
 
@@ -62,9 +62,9 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
     {
         get
         {
-            if (!string.IsNullOrEmpty(_path))
+            if (!string.IsNullOrEmpty(innerPath))
             {
-                return _path;
+                return innerPath;
             }
 
             return Id;
@@ -72,11 +72,11 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
 
         set
         {
-            _path = value;
+            innerPath = value;
         }
     }
 
-    public Permissions RequiredPermissions { get; set; } = Permissions.UNDEFINED;
+    public Permissions RequiredPermissions { get; set; } = Permissions.Undefined;
 
     public IManagementOptions Global { get; set; }
 

@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class CodeFlow
 {
-    private static readonly Dictionary<Type, TypeDescriptor> _primitives = new ();
+    private static readonly Dictionary<Type, TypeDescriptor> Primitives = new ();
     private readonly CompiledExpression _compiledExpression;
     private readonly Stack<List<TypeDescriptor>> _compilationScopes;
     private readonly List<Action<ILGenerator, CodeFlow>> _initGenerators = new ();
@@ -19,21 +19,21 @@ public class CodeFlow
 
     static CodeFlow()
     {
-        _primitives.Add(typeof(void), TypeDescriptor.V);
-        _primitives.Add(typeof(int), TypeDescriptor.I);
-        _primitives.Add(typeof(long), TypeDescriptor.J);
-        _primitives.Add(typeof(float), TypeDescriptor.F);
-        _primitives.Add(typeof(double), TypeDescriptor.D);
-        _primitives.Add(typeof(byte), TypeDescriptor.B);
-        _primitives.Add(typeof(char), TypeDescriptor.C);
-        _primitives.Add(typeof(short), TypeDescriptor.S);
-        _primitives.Add(typeof(bool), TypeDescriptor.Z);
-        _primitives.Add(typeof(sbyte), TypeDescriptor.A);
-        _primitives.Add(typeof(ushort), TypeDescriptor.M);
-        _primitives.Add(typeof(uint), TypeDescriptor.N);
-        _primitives.Add(typeof(ulong), TypeDescriptor.O);
-        _primitives.Add(typeof(IntPtr), TypeDescriptor.P);
-        _primitives.Add(typeof(UIntPtr), TypeDescriptor.Q);
+        Primitives.Add(typeof(void), TypeDescriptor.V);
+        Primitives.Add(typeof(int), TypeDescriptor.I);
+        Primitives.Add(typeof(long), TypeDescriptor.J);
+        Primitives.Add(typeof(float), TypeDescriptor.F);
+        Primitives.Add(typeof(double), TypeDescriptor.D);
+        Primitives.Add(typeof(byte), TypeDescriptor.B);
+        Primitives.Add(typeof(char), TypeDescriptor.C);
+        Primitives.Add(typeof(short), TypeDescriptor.S);
+        Primitives.Add(typeof(bool), TypeDescriptor.Z);
+        Primitives.Add(typeof(sbyte), TypeDescriptor.A);
+        Primitives.Add(typeof(ushort), TypeDescriptor.M);
+        Primitives.Add(typeof(uint), TypeDescriptor.N);
+        Primitives.Add(typeof(ulong), TypeDescriptor.O);
+        Primitives.Add(typeof(IntPtr), TypeDescriptor.P);
+        Primitives.Add(typeof(UIntPtr), TypeDescriptor.Q);
     }
 
     public CodeFlow(CompiledExpression compiledExpression)
@@ -50,7 +50,7 @@ public class CodeFlow
 
     public static void InsertCastClass(ILGenerator gen, TypeDescriptor descriptor)
     {
-        if (descriptor != null && !descriptor.IsPrimitive && !descriptor.IsValueType && descriptor != TypeDescriptor.OBJECT)
+        if (descriptor != null && !descriptor.IsPrimitive && !descriptor.IsValueType && descriptor != TypeDescriptor.Object)
         {
             gen.Emit(OpCodes.Castclass, descriptor.Value);
         }
@@ -60,7 +60,7 @@ public class CodeFlow
     {
         if (IsPrimitive(type))
         {
-            return _primitives[type];
+            return Primitives[type];
         }
 
         return new TypeDescriptor(type);
@@ -70,7 +70,7 @@ public class CodeFlow
     {
         if (value == null)
         {
-            return TypeDescriptor.OBJECT;
+            return TypeDescriptor.Object;
         }
 
         var desc = ToDescriptor(value.GetType());
@@ -396,6 +396,6 @@ public class CodeFlow
 
     public void RegisterNewField(string constantFieldName, object fieldValue)
     {
-        _compiledExpression._dynamicFields.Add(constantFieldName, fieldValue);
+        _compiledExpression.DynamicFields.Add(constantFieldName, fieldValue);
     }
 }

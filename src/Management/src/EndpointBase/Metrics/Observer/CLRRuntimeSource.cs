@@ -38,9 +38,9 @@ public static class ClrRuntimeSource
         public long MaxThreadCompletionPort;
     }
 
-    public const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";
-    public const string HEAP_EVENT = "Steeltoe.ClrMetrics.Heap";
-    public const string THREADS_EVENT = "Steeltoe.ClrMetrics.Threads";
+    public const string DiagnosticName = "Steeltoe.ClrMetrics";
+    public const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
+    public const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
     public static HeapMetrics GetHeapMetrics()
     {

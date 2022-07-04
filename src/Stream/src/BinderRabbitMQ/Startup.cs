@@ -30,11 +30,11 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.ConfigureRabbitOptions(Configuration);
-        var c = Configuration.GetSection(RabbitBindingsOptions.PREFIX);
+        var c = Configuration.GetSection(RabbitBindingsOptions.Prefix);
         services.Configure<RabbitBindingsOptions>(c);
         services.Configure<RabbitBindingsOptions>(o => o.PostProcess());
 
-        services.Configure<RabbitBinderOptions>(Configuration.GetSection(RabbitBinderOptions.PREFIX));
+        services.Configure<RabbitBinderOptions>(Configuration.GetSection(RabbitBinderOptions.Prefix));
 
         services.AddSingleton<IConnectionFactory, CachingConnectionFactory>();
         services.AddSingleton<RabbitExchangeQueueProvisioner>();

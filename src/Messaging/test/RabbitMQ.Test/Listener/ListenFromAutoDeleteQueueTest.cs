@@ -54,21 +54,21 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
         _containerAdmin.DeclareExchange(directExchange);
         _containerAdmin.DeclareQueue(new Queue(Q1, true, false, true));
         _containerAdmin.DeclareQueue(new Queue(Q2, true, false, true));
-        _containerAdmin.DeclareBinding(new Binding("b1", Q1, Binding.DestinationType.QUEUE, directExchange.ExchangeName, Q1, null));
-        _containerAdmin.DeclareBinding(new Binding("b2", Q2, Binding.DestinationType.QUEUE, directExchange.ExchangeName, Q2, null));
+        _containerAdmin.DeclareBinding(new Binding("b1", Q1, Binding.DestinationType.Queue, directExchange.ExchangeName, Q1, null));
+        _containerAdmin.DeclareBinding(new Binding("b2", Q2, Binding.DestinationType.Queue, directExchange.ExchangeName, Q2, null));
 
         // Listener
         _listener = new AppendingListener();
         var adapter = new MessageListenerAdapter(null, _listener);
         _listenerContainer1.MessageListener = adapter;
         _listenerContainer1.Start();
-        _listenerContainer1._startedLatch.Wait(TimeSpan.FromSeconds(10));
+        _listenerContainer1.StartedLatch.Wait(TimeSpan.FromSeconds(10));
 
         // Conditional declarations
         var otherExchange = new DirectExchange(Exch2, true, true);
         _containerAdmin.DeclareExchange(otherExchange);
         _containerAdmin.DeclareQueue(new Queue(Q3, true, false, true));
-        _containerAdmin.DeclareBinding(new Binding("b3", Q3, Binding.DestinationType.QUEUE, otherExchange.ExchangeName, Q3, null));
+        _containerAdmin.DeclareBinding(new Binding("b3", Q3, Binding.DestinationType.Queue, otherExchange.ExchangeName, Q3, null));
 
         _listenerContainer2 = new DirectMessageListenerContainer(null, _connectionFactory, "container2");
         _listenerContainer2.IsAutoStartup = false;
@@ -102,7 +102,7 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
         Assert.NotEmpty(_listener.Queue);
         _listenerContainer1.Stop();
         _listenerContainer1.Start();
-        _listenerContainer1._startedLatch.Wait(TimeSpan.FromSeconds(10));
+        _listenerContainer1.StartedLatch.Wait(TimeSpan.FromSeconds(10));
         rabbitTemplate.ConvertAndSend(Exch1, Q1, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
@@ -113,14 +113,14 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
     {
         var rabbitTemplate = new RabbitTemplate(_connectionFactory);
         _listenerContainer2.Start();
-        _listenerContainer2._startedLatch.Wait(TimeSpan.FromSeconds(10));
+        _listenerContainer2.StartedLatch.Wait(TimeSpan.FromSeconds(10));
 
         rabbitTemplate.ConvertAndSend(Exch2, Q3, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
         _listenerContainer2.Stop();
         _listenerContainer2.Start();
-        _listenerContainer1._startedLatch.Wait(TimeSpan.FromSeconds(10));
+        _listenerContainer1.StartedLatch.Wait(TimeSpan.FromSeconds(10));
         rabbitTemplate.ConvertAndSend(Exch2, Q3, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
@@ -131,14 +131,14 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
     {
         var rabbitTemplate = new RabbitTemplate(_connectionFactory);
         _listenerContainer3.Start();
-        _listenerContainer3._startedLatch.Wait(TimeSpan.FromSeconds(10));
+        _listenerContainer3.StartedLatch.Wait(TimeSpan.FromSeconds(10));
         rabbitTemplate.ConvertAndSend(_expiringQueue.QueueName, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
 
         _listenerContainer3.Stop();
         _listenerContainer3.Start();
-        _listenerContainer3._startedLatch.Wait(TimeSpan.FromSeconds(10));
+        _listenerContainer3.StartedLatch.Wait(TimeSpan.FromSeconds(10));
 
         rabbitTemplate.ConvertAndSend(_expiringQueue.QueueName, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));

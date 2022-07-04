@@ -16,11 +16,11 @@ public class EurekaServerHealthContributorTest
     public void MakeHealthStatus_ReturnsExpected()
     {
         var contrib = new EurekaServerHealthContributor();
-        Assert.Equal(HealthStatus.DOWN, contrib.MakeHealthStatus(InstanceStatus.DOWN));
-        Assert.Equal(HealthStatus.UP, contrib.MakeHealthStatus(InstanceStatus.UP));
-        Assert.Equal(HealthStatus.UNKNOWN, contrib.MakeHealthStatus(InstanceStatus.STARTING));
-        Assert.Equal(HealthStatus.UNKNOWN, contrib.MakeHealthStatus(InstanceStatus.UNKNOWN));
-        Assert.Equal(HealthStatus.OUT_OF_SERVICE, contrib.MakeHealthStatus(InstanceStatus.OUT_OF_SERVICE));
+        Assert.Equal(HealthStatus.Down, contrib.MakeHealthStatus(InstanceStatus.Down));
+        Assert.Equal(HealthStatus.Up, contrib.MakeHealthStatus(InstanceStatus.Up));
+        Assert.Equal(HealthStatus.Unknown, contrib.MakeHealthStatus(InstanceStatus.Starting));
+        Assert.Equal(HealthStatus.Unknown, contrib.MakeHealthStatus(InstanceStatus.Unknown));
+        Assert.Equal(HealthStatus.OutOfService, contrib.MakeHealthStatus(InstanceStatus.OutOfService));
     }
 
     [Fact]

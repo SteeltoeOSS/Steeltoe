@@ -52,8 +52,8 @@ public class ConsulHeartbeatOptions
         // no sooner than 1s from now
         var interval = TimeSpan.FromMilliseconds(ttl.TotalMilliseconds * IntervalRatio);
         var max = interval > second ? interval : second;
-        var ttlMinus1sec = ttl - second;
-        var min = ttlMinus1sec < max ? ttlMinus1sec : max;
+        var ttlMinus1Sec = ttl - second;
+        var min = ttlMinus1Sec < max ? ttlMinus1Sec : max;
         return min;
     }
 }

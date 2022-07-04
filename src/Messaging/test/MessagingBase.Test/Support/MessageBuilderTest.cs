@@ -53,14 +53,14 @@ public class MessageBuilderTest
     public void TestIdHeaderValueReadOnly()
     {
         var id = Guid.NewGuid();
-        Assert.Throws<ArgumentException>(() => MessageBuilder.WithPayload("test").SetHeader(MessageHeaders.ID, id));
+        Assert.Throws<ArgumentException>(() => MessageBuilder.WithPayload("test").SetHeader(MessageHeaders.IdName, id));
     }
 
     [Fact]
     public void TestTimestampValueReadOnly()
     {
         var timestamp = 12345L;
-        Assert.Throws<ArgumentException>(() => MessageBuilder.WithPayload("test").SetHeader(MessageHeaders.TIMESTAMP, timestamp).Build());
+        Assert.Throws<ArgumentException>(() => MessageBuilder.WithPayload("test").SetHeader(MessageHeaders.TimestampName, timestamp).Build());
     }
 
     [Fact]
@@ -222,11 +222,11 @@ public class MessageBuilderTest
         Assert.Equal("bar3", message3.Headers.Get<string>("foo"));
     }
 
-    private sealed class TestIdGenerater : IIDGenerator
+    private sealed class TestIdGenerater : IIdGenerator
     {
         public string GenerateId()
         {
-            return MessageHeaders.ID_VALUE_NONE;
+            return MessageHeaders.IdValueNone;
         }
     }
 }

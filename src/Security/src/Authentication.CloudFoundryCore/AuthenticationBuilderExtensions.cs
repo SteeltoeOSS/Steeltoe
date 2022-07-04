@@ -49,7 +49,7 @@ public static class AuthenticationBuilderExtensions
     {
         builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, options =>
         {
-            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
+            var securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(options);
             options.SetEndpoints(GetAuthDomain(securitySection));
 
@@ -130,7 +130,7 @@ public static class AuthenticationBuilderExtensions
         builder.AddOpenIdConnect(authenticationScheme, displayName, options =>
         {
             var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
-            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
+            var securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(cloudFoundryOptions);
 
             var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
@@ -174,7 +174,7 @@ public static class AuthenticationBuilderExtensions
         builder.AddOpenIdConnect(authenticationScheme, displayName, options =>
         {
             var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
-            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
+            var securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(cloudFoundryOptions);
 
             var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
@@ -217,7 +217,7 @@ public static class AuthenticationBuilderExtensions
         builder.AddJwtBearer(authenticationScheme, displayName, options =>
         {
             var cloudFoundryOptions = new CloudFoundryJwtBearerOptions();
-            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
+            var securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(cloudFoundryOptions);
             cloudFoundryOptions.SetEndpoints(GetAuthDomain(securitySection));
 

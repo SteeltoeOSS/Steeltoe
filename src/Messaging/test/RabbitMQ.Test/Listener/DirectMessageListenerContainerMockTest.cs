@@ -58,7 +58,7 @@ public class DirectMessageListenerContainerMockTest
         container.MonitorInterval = 100;
         container.Initialize();
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
         Assert.Equal(2, qos.Value);
@@ -132,7 +132,7 @@ public class DirectMessageListenerContainerMockTest
         container.MessageListener = new TestListener();
         container.Initialize();
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
         Assert.Equal(10, qos.Value);
@@ -250,7 +250,7 @@ public class DirectMessageListenerContainerMockTest
         container.ShutdownTimeout = 1;
         container.Initialize();
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
         Assert.Equal(2, qos.Value);
@@ -314,7 +314,7 @@ public class DirectMessageListenerContainerMockTest
         container.MessageListener = new Mock<IMessageListener>().Object;
         container.Initialize();
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
         var props = new MockRabbitBasicProperties();
@@ -367,10 +367,10 @@ public class DirectMessageListenerContainerMockTest
         container.PrefetchCount = 2;
         container.MonitorInterval = 100;
         container.MessageListener = new TestListener2(target, rabbitChannel2.Object);
-        container.AcknowledgeMode = AcknowledgeMode.MANUAL;
+        container.AcknowledgeMode = AcknowledgeMode.Manual;
         container.Initialize();
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
         var props = new MockRabbitBasicProperties();

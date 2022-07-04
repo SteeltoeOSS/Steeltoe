@@ -13,31 +13,31 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public abstract class Operator : SpelNode
 {
-    protected static readonly MethodInfo _equalityCheck = typeof(Operator).GetMethod(
+    protected static readonly MethodInfo EqualityCheckMethod = typeof(Operator).GetMethod(
         "EqualityCheck",
         new[] { typeof(IEvaluationContext), typeof(object), typeof(object) });
 
-    protected readonly string _operatorName;
+    protected readonly string InnerOperatorName;
 
     // The descriptors of the runtime operand values are used if the discovered declared
     // descriptors are not providing enough information (for example a generic type
     // whose accessors seem to only be returning 'Object' - the actual descriptors may
     // indicate 'int')
-    protected TypeDescriptor _leftActualDescriptor;
+    protected TypeDescriptor leftActualDescriptor;
 
-    protected TypeDescriptor _rightActualDescriptor;
+    protected TypeDescriptor rightActualDescriptor;
 
     protected Operator(string payload, int startPos, int endPos, params SpelNode[] operands)
         : base(startPos, endPos, operands)
     {
-        _operatorName = payload;
+        InnerOperatorName = payload;
     }
 
-    public virtual SpelNode LeftOperand => _children[0];
+    public virtual SpelNode LeftOperand => children[0];
 
-    public virtual SpelNode RightOperand => _children[1];
+    public virtual SpelNode RightOperand => children[1];
 
-    public virtual string OperatorName => _operatorName;
+    public virtual string OperatorName => InnerOperatorName;
 
     public static bool IsNumber(object target)
     {
@@ -166,14 +166,14 @@ public abstract class Operator : SpelNode
         return false;
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sb = new StringBuilder("(");
-        sb.Append(GetChild(0).ToStringAST());
+        sb.Append(GetChild(0).ToStringAst());
         for (var i = 1; i < ChildCount; i++)
         {
             sb.Append(" ").Append(OperatorName).Append(" ");
-            sb.Append(GetChild(i).ToStringAST());
+            sb.Append(GetChild(i).ToStringAst());
         }
 
         sb.Append(")");
@@ -192,7 +192,7 @@ public abstract class Operator : SpelNode
         // Supported operand types for equals (at the moment)
         var leftDesc = left.ExitDescriptor;
         var rightDesc = right.ExitDescriptor;
-        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, _leftActualDescriptor, _rightActualDescriptor);
+        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, leftActualDescriptor, rightActualDescriptor);
         return dc.AreNumbers && dc.AreCompatible;
     }
 
@@ -345,27 +345,27 @@ public abstract class Operator : SpelNode
 
     protected class DescriptorComparison
     {
-        protected static readonly DescriptorComparison NOT_NUMBERS = new (false, false, TypeDescriptor.V);
-        protected static readonly DescriptorComparison INCOMPATIBLE_NUMBERS = new (true, false, TypeDescriptor.V);
+        protected static readonly DescriptorComparison NotNumbers = new (false, false, TypeDescriptor.V);
+        protected static readonly DescriptorComparison IncompatibleNumbers = new (true, false, TypeDescriptor.V);
 
-        protected readonly bool _areNumbers;  // Were the two compared descriptor both for numbers?
+        protected readonly bool InnerAreNumbers;  // Were the two compared descriptor both for numbers?
 
-        protected readonly bool _areCompatible;  // If they were numbers, were they compatible?
+        protected readonly bool InnerAreCompatible;  // If they were numbers, were they compatible?
 
-        protected readonly TypeDescriptor _compatibleType;  // When compatible, what is the descriptor of the common type
+        protected readonly TypeDescriptor InnerCompatibleType;  // When compatible, what is the descriptor of the common type
 
         public DescriptorComparison(bool areNumbers, bool areCompatible, TypeDescriptor compatibleType)
         {
-            _areNumbers = areNumbers;
-            _areCompatible = areCompatible;
-            _compatibleType = compatibleType;
+            this.InnerAreNumbers = areNumbers;
+            this.InnerAreCompatible = areCompatible;
+            this.InnerCompatibleType = compatibleType;
         }
 
-        public bool AreNumbers => _areNumbers;
+        public bool AreNumbers => InnerAreNumbers;
 
-        public bool AreCompatible => _areCompatible;
+        public bool AreCompatible => InnerAreCompatible;
 
-        public TypeDescriptor CompatibleType => _compatibleType;
+        public TypeDescriptor CompatibleType => InnerCompatibleType;
 
         public static DescriptorComparison CheckNumericCompatibility(TypeDescriptor leftDeclaredDescriptor, TypeDescriptor rightDeclaredDescriptor, TypeDescriptor leftActualDescriptor, TypeDescriptor rightActualDescriptor)
         {
@@ -396,12 +396,12 @@ public abstract class Operator : SpelNode
                 }
                 else
                 {
-                    return INCOMPATIBLE_NUMBERS;
+                    return IncompatibleNumbers;
                 }
             }
             else
             {
-                return NOT_NUMBERS;
+                return NotNumbers;
             }
         }
     }

@@ -8,5 +8,5 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.re
 
 public static class Reserver
 {
-    public static readonly string CONST = "Const";
+    public static readonly string Const = "Const";
 }

@@ -88,9 +88,9 @@ public static class Message
 
 public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
 {
-    protected readonly TPayload payload;
+    protected readonly TPayload InnerPayload;
 
-    protected readonly IMessageHeaders headers;
+    protected readonly IMessageHeaders InnerHeaders;
 
     protected internal Message(TPayload payload)
         : this(payload, new MessageHeaders())
@@ -104,13 +104,13 @@ public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
 
     protected internal Message(TPayload payload, IMessageHeaders headers)
     {
-        this.payload = payload ?? throw new ArgumentNullException(nameof(payload));
-        this.headers = headers ?? throw new ArgumentNullException(nameof(headers));
+        this.InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
+        this.InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
     }
 
-    public TPayload Payload => payload;
+    public TPayload Payload => InnerPayload;
 
-    public IMessageHeaders Headers => headers;
+    public IMessageHeaders Headers => InnerHeaders;
 
     object IMessage.Payload => Payload;
 
@@ -126,30 +126,30 @@ public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
             return false;
         }
 
-        return ObjectUtils.NullSafeEquals(payload, other.payload) && headers.Equals(other.headers);
+        return ObjectUtils.NullSafeEquals(InnerPayload, other.InnerPayload) && InnerHeaders.Equals(other.InnerHeaders);
     }
 
     public override int GetHashCode()
     {
         // Using nullSafeHashCode for proper array hashCode handling
-        return (ObjectUtils.NullSafeHashCode(payload) * 23) + headers.GetHashCode();
+        return (ObjectUtils.NullSafeHashCode(InnerPayload) * 23) + InnerHeaders.GetHashCode();
     }
 
     public override string ToString()
     {
         var sb = new StringBuilder(GetType().Name);
         sb.Append(" [payload=");
-        if (payload is byte[])
+        if (InnerPayload is byte[])
         {
-            var arr = (byte[])(object)payload;
+            var arr = (byte[])(object)InnerPayload;
             sb.Append("byte[").Append(arr.Length).Append(']');
         }
         else
         {
-            sb.Append(payload);
+            sb.Append(InnerPayload);
         }
 
-        sb.Append(", headers=").Append(headers).Append(']');
+        sb.Append(", headers=").Append(InnerHeaders).Append(']');
         return sb.ToString();
     }
 }

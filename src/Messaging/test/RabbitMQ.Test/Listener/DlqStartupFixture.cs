@@ -69,7 +69,7 @@ public sealed class DlqStartupFixture : IDisposable
         services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.MismatchedQueuesFatal = true;
-            f.AcknowledgeMode = Core.AcknowledgeMode.MANUAL;
+            f.AcknowledgeMode = Core.AcknowledgeMode.Manual;
         });
 
         // Add dontRequeueFactory container factory
@@ -77,7 +77,7 @@ public sealed class DlqStartupFixture : IDisposable
         {
             f.ServiceName = "dontRequeueFactory";
             f.MismatchedQueuesFatal = true;
-            f.AcknowledgeMode = Core.AcknowledgeMode.MANUAL;
+            f.AcknowledgeMode = Core.AcknowledgeMode.Manual;
             f.DefaultRequeueRejected = false;
         });
 

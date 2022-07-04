@@ -20,11 +20,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class HttpClientDesktopObserver : MetricsObserver
 {
-    internal const string DIAGNOSTIC_NAME = "System.Net.Http.Desktop";
-    internal const string OBSERVER_NAME = "HttpClientDesktopObserver";
+    internal const string DiagnosticName = "System.Net.Http.Desktop";
+    internal const string DefaultObserverName = "HttpClientDesktopObserver";
 
-    internal const string STOP_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Stop";
-    internal const string STOPEX_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
+    internal const string StopEvent = "System.Net.Http.Desktop.HttpRequestOut.Stop";
+    internal const string StopexEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
 
     private readonly string _statusTagKey = "status";
     private readonly string _uriTagKey = "uri";
@@ -34,7 +34,7 @@ public class HttpClientDesktopObserver : MetricsObserver
     private readonly Histogram<double> _clientCountMeasure;
 
     public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger, IViewRegistry viewRegistry)
-        : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
+        : base(DefaultObserverName, DiagnosticName, options, logger)
     {
         if (viewRegistry == null)
         {
@@ -81,7 +81,7 @@ public class HttpClientDesktopObserver : MetricsObserver
             return;
         }
 
-        if (evnt == STOP_EVENT)
+        if (evnt == StopEvent)
         {
             Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
@@ -93,7 +93,7 @@ public class HttpClientDesktopObserver : MetricsObserver
 
             Logger?.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
-        else if (evnt == STOPEX_EVENT)
+        else if (evnt == StopexEvent)
         {
             Logger?.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
 

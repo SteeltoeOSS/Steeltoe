@@ -16,7 +16,7 @@ namespace Steeltoe.Stream.Binder;
 
 public abstract class AbstractBinder<T> : IBinder<T>
 {
-    private const string GROUP_INDEX_DELIMITER = ".";
+    private const string GroupIndexDelimiter = ".";
 
     private readonly IApplicationContext _context;
     private readonly ILogger _logger;
@@ -40,7 +40,7 @@ public abstract class AbstractBinder<T> : IBinder<T>
         return prefix + name;
     }
 
-    public static string ConstructDLQName(string name)
+    public static string ConstructDlqName(string name)
     {
         return $"{name}.dlq";
     }
@@ -118,7 +118,7 @@ public abstract class AbstractBinder<T> : IBinder<T>
 
     protected virtual string GroupedName(string name, string group)
     {
-        return name + GROUP_INDEX_DELIMITER
+        return name + GroupIndexDelimiter
                     + (!string.IsNullOrEmpty(group) ? group : "default");
     }
 

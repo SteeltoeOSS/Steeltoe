@@ -32,7 +32,7 @@ public static class RabbitMQTypeLocator
     /// Gets IConnectionFactory from a RabbitMQ Library.
     /// </summary>
     /// <exception cref="ConnectorException">When type is not found.</exception>
-    public static Type IConnectionFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IConnectionFactory", "the RabbitMQ.Client assembly");
+    public static Type ConnectionFactoryInterface => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IConnectionFactory", "the RabbitMQ.Client assembly");
 
     /// <summary>
     /// Gets ConnectionFactory from a RabbitMQ Library.
@@ -43,7 +43,7 @@ public static class RabbitMQTypeLocator
     /// <summary>
     /// Gets IConnection from RabbitMQ Library.
     /// </summary>
-    public static Type IConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, new[] { "RabbitMQ.Client.IConnection" }, "IConnection", "the RabbitMQ.Client assembly");
+    public static Type ConnectionInterface => ReflectionHelpers.FindTypeOrThrow(Assemblies, new[] { "RabbitMQ.Client.IConnection" }, "IConnection", "the RabbitMQ.Client assembly");
 
     /// <summary>
     /// Gets the CreateConnection method of ConnectionFactory.
@@ -53,7 +53,7 @@ public static class RabbitMQTypeLocator
     /// <summary>
     /// Gets the Close method for IConnection.
     /// </summary>
-    public static MethodInfo CloseConnectionMethod => FindMethodOrThrow(IConnection, "Close", Array.Empty<Type>());
+    public static MethodInfo CloseConnectionMethod => FindMethodOrThrow(ConnectionInterface, "Close", Array.Empty<Type>());
 
     private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
     {

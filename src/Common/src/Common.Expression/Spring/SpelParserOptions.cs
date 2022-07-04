@@ -28,7 +28,7 @@ public class SpelParserOptions
 
     public SpelParserOptions(SpelCompilerMode? compilerMode, bool autoGrowNullReferences, bool autoGrowCollections, int maximumAutoGrowSize)
     {
-        CompilerMode = compilerMode ?? SpelCompilerMode.OFF;
+        CompilerMode = compilerMode ?? SpelCompilerMode.Off;
         AutoGrowNullReferences = autoGrowNullReferences;
         AutoGrowCollections = autoGrowCollections;
         MaximumAutoGrowSize = maximumAutoGrowSize;

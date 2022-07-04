@@ -12,9 +12,9 @@ namespace Steeltoe.Integration.Support;
 
 public class MutableMessage : IMessage
 {
-    protected readonly object _payload;
+    protected readonly object InnerPayload;
 
-    protected readonly MutableMessageHeaders _headers;
+    protected readonly MutableMessageHeaders InnerHeaders;
 
     public MutableMessage(object payload)
         : this(payload, (Dictionary<string, object>)null)
@@ -28,34 +28,34 @@ public class MutableMessage : IMessage
 
     public MutableMessage(object payload, MutableMessageHeaders headers)
     {
-        _payload = payload ?? throw new ArgumentNullException(nameof(payload));
-        _headers = headers ?? throw new ArgumentNullException(nameof(headers));
+        this.InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
+        this.InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
     }
 
-    public IMessageHeaders Headers => _headers;
+    public IMessageHeaders Headers => InnerHeaders;
 
-    public object Payload => _payload;
+    public object Payload => InnerPayload;
 
     public override string ToString()
     {
         var sb = new StringBuilder(GetType().Name);
         sb.Append(" [payload=");
-        if (_payload is byte[] v)
+        if (InnerPayload is byte[] v)
         {
             sb.Append("byte[").Append(v.Length).Append(']');
         }
         else
         {
-            sb.Append(_payload);
+            sb.Append(InnerPayload);
         }
 
-        sb.Append(", headers=").Append(_headers).Append(']');
+        sb.Append(", headers=").Append(InnerHeaders).Append(']');
         return sb.ToString();
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_headers, _payload);
+        return HashCode.Combine(InnerHeaders, InnerPayload);
     }
 
     public override bool Equals(object obj)
@@ -70,13 +70,13 @@ public class MutableMessage : IMessage
             return false;
         }
 
-        var thisId = _headers.Id;
-        var otherId = other._headers.Id;
+        var thisId = InnerHeaders.Id;
+        var otherId = other.InnerHeaders.Id;
 
-        return ObjectUtils.NullSafeEquals(thisId, otherId) && _headers.Equals(other._headers) && _payload.Equals(other._payload);
+        return ObjectUtils.NullSafeEquals(thisId, otherId) && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
     }
 
-    protected internal IDictionary<string, object> RawHeaders => _headers.RawHeaders;
+    protected internal IDictionary<string, object> RawHeaders => InnerHeaders.RawHeaders;
 }
 
 public class MutableMessage<T> : MutableMessage, IMessage<T>
@@ -96,7 +96,7 @@ public class MutableMessage<T> : MutableMessage, IMessage<T>
     {
     }
 
-    public new T Payload => (T)_payload;
+    public new T Payload => (T)InnerPayload;
 
     public override int GetHashCode() => base.GetHashCode();
 
@@ -112,9 +112,9 @@ public class MutableMessage<T> : MutableMessage, IMessage<T>
             return false;
         }
 
-        var thisId = _headers.Id;
-        var otherId = other._headers.Id;
+        var thisId = InnerHeaders.Id;
+        var otherId = other.InnerHeaders.Id;
 
-        return ObjectUtils.NullSafeEquals(thisId, otherId) && _headers.Equals(other._headers) && _payload.Equals(other._payload);
+        return ObjectUtils.NullSafeEquals(thisId, otherId) && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
     }
 }

@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
     where TCommand : HystrixCommand<int>
 {
-    public HystrixOptionsStrategy TEST_OPTIONS_FACTORY = new TestOptionsFactory();
+    public HystrixOptionsStrategy TestOptionsFactory = new TestOptionsFactory();
 
     protected abstract void AssertHooksOnSuccess(Func<TCommand> ctor, Action<TCommand> assertion);
 
@@ -99,23 +99,23 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
 
         foreach (var expectedEventType in expectedEventTypes)
         {
-            if (expectedEventType.Equals(HystrixEventType.EMIT))
+            if (expectedEventType.Equals(HystrixEventType.Emit))
             {
                 if (!emitExpected)
                 {
                     // first EMIT encountered, add it to condensedEmitExpectedEventTypes
-                    condensedEmitExpectedEventTypes.Add(HystrixEventType.EMIT);
+                    condensedEmitExpectedEventTypes.Add(HystrixEventType.Emit);
                 }
 
                 emitExpected = true;
                 expectedEmitCount++;
             }
-            else if (expectedEventType.Equals(HystrixEventType.FALLBACK_EMIT))
+            else if (expectedEventType.Equals(HystrixEventType.FallbackEmit))
             {
                 if (!fallbackEmitExpected)
                 {
                     // first FALLBACK_EMIT encountered, add it to condensedEmitExpectedEventTypes
-                    condensedEmitExpectedEventTypes.Add(HystrixEventType.FALLBACK_EMIT);
+                    condensedEmitExpectedEventTypes.Add(HystrixEventType.FallbackEmit);
                 }
 
                 fallbackEmitExpected = true;
@@ -135,12 +135,12 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
 
     protected TCommand GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult)
     {
-        return GetCommand(isolationStrategy, executionResult, FallbackResultTest.UNIMPLEMENTED);
+        return GetCommand(isolationStrategy, executionResult, FallbackResultTest.Unimplemented);
     }
 
     protected TCommand GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency)
     {
-        return GetCommand(isolationStrategy, executionResult, executionLatency, FallbackResultTest.UNIMPLEMENTED);
+        return GetCommand(isolationStrategy, executionResult, executionLatency, FallbackResultTest.Unimplemented);
     }
 
     protected TCommand GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, FallbackResultTest fallbackResult)
@@ -150,7 +150,7 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
 
     protected TCommand GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult)
     {
-        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, new TestCircuitBreaker(), null, (executionLatency * 2) + 200, CacheEnabledTest.NO, "foo", 10, 10);
+        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, new TestCircuitBreaker(), null, (executionLatency * 2) + 200, CacheEnabledTest.No, "foo", 10, 10);
     }
 
     protected TCommand GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, int executionSemaphoreCount, int fallbackSemaphoreCount)
@@ -175,7 +175,7 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
 
     protected TCommand GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int timeout)
     {
-        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, new TestCircuitBreaker(), null, timeout, CacheEnabledTest.NO, "foo", 10, 10);
+        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, new TestCircuitBreaker(), null, timeout, CacheEnabledTest.No, "foo", 10, 10);
     }
 
     protected abstract TCommand GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled);
@@ -184,38 +184,38 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
 
     protected TCommand GetLatentCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int timeout)
     {
-        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, new TestCircuitBreaker(), null, timeout, CacheEnabledTest.NO, "foo", 10, 10);
+        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, new TestCircuitBreaker(), null, timeout, CacheEnabledTest.No, "foo", 10, 10);
     }
 
     protected TCommand GetLatentCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout)
     {
-        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, circuitBreaker, threadPool, timeout, CacheEnabledTest.NO, "foo", 10, 10);
+        return GetCommand(isolationStrategy, executionResult, executionLatency, fallbackResult, 0, circuitBreaker, threadPool, timeout, CacheEnabledTest.No, "foo", 10, 10);
     }
 
     protected TCommand GetCircuitOpenCommand(ExecutionIsolationStrategy isolationStrategy, FallbackResultTest fallbackResult)
     {
         var openCircuit = new TestCircuitBreaker();
         openCircuit.SetForceShortCircuit(true);
-        return GetCommand(isolationStrategy, ExecutionResultTest.SUCCESS, 0, fallbackResult, 0, openCircuit, null, 500, CacheEnabledTest.NO, "foo", 10, 10, false);
+        return GetCommand(isolationStrategy, ExecutionResultTest.Success, 0, fallbackResult, 0, openCircuit, null, 500, CacheEnabledTest.No, "foo", 10, 10, false);
     }
 
     protected TCommand GetSharedCircuitBreakerCommand(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy, FallbackResultTest fallbackResult, TestCircuitBreaker circuitBreaker)
     {
-        return GetCommand(commandKey, isolationStrategy, ExecutionResultTest.FAILURE, 0, fallbackResult, 0, circuitBreaker, null, 500, CacheEnabledTest.NO, "foo", 10, 10);
+        return GetCommand(commandKey, isolationStrategy, ExecutionResultTest.Failure, 0, fallbackResult, 0, circuitBreaker, null, 500, CacheEnabledTest.No, "foo", 10, 10);
     }
 
     protected TCommand GetCircuitBreakerDisabledCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult)
     {
-        return GetCommand(isolationStrategy, executionResult, 0, FallbackResultTest.UNIMPLEMENTED, 0, new TestCircuitBreaker(), null, 500, CacheEnabledTest.NO, "foo", 10, 10, true);
+        return GetCommand(isolationStrategy, executionResult, 0, FallbackResultTest.Unimplemented, 0, new TestCircuitBreaker(), null, 500, CacheEnabledTest.No, "foo", 10, 10, true);
     }
 
     protected TCommand GetRecoverableErrorCommand(ExecutionIsolationStrategy isolationStrategy, FallbackResultTest fallbackResult)
     {
-        return GetCommand(isolationStrategy, ExecutionResultTest.RECOVERABLE_ERROR, 0, fallbackResult);
+        return GetCommand(isolationStrategy, ExecutionResultTest.RecoverableError, 0, fallbackResult);
     }
 
     protected TCommand GetUnrecoverableErrorCommand(ExecutionIsolationStrategy isolationStrategy, FallbackResultTest fallbackResult)
     {
-        return GetCommand(isolationStrategy, ExecutionResultTest.UNRECOVERABLE_ERROR, 0, fallbackResult);
+        return GetCommand(isolationStrategy, ExecutionResultTest.UnrecoverableError, 0, fallbackResult);
     }
 }

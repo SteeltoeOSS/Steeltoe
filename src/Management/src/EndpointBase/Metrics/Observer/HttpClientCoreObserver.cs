@@ -21,11 +21,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class HttpClientCoreObserver : MetricsObserver
 {
-    internal const string DIAGNOSTIC_NAME = "HttpHandlerDiagnosticListener";
-    internal const string OBSERVER_NAME = "HttpClientCoreObserver";
+    internal const string DiagnosticName = "HttpHandlerDiagnosticListener";
+    internal const string DefaultObserverName = "HttpClientCoreObserver";
 
-    internal const string STOP_EVENT = "System.Net.Http.HttpRequestOut.Stop";
-    internal const string EXCEPTION_EVENT = "System.Net.Http.Exception";
+    internal const string StopEvent = "System.Net.Http.HttpRequestOut.Stop";
+    internal const string ExceptionEvent = "System.Net.Http.Exception";
 
     private readonly string _statusTagKey = "status";
     private readonly string _uriTagKey = "uri";
@@ -35,7 +35,7 @@ public class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientCountMeasure;
 
     public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger, IViewRegistry viewRegistry)
-        : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
+        : base(DefaultObserverName, DiagnosticName, options, logger)
     {
         if (viewRegistry == null)
         {
@@ -81,7 +81,7 @@ public class HttpClientCoreObserver : MetricsObserver
             return;
         }
 
-        if (evnt == STOP_EVENT)
+        if (evnt == StopEvent)
         {
             Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
@@ -91,7 +91,7 @@ public class HttpClientCoreObserver : MetricsObserver
 
             Logger?.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
-        else if (evnt == EXCEPTION_EVENT)
+        else if (evnt == ExceptionEvent)
         {
             Logger?.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 

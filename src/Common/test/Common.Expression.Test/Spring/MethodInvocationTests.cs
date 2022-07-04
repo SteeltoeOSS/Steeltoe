@@ -33,7 +33,7 @@ public class MethodInvocationTests : AbstractExpressionTests
     public void TestNonExistentMethods()
     {
         // name is ok but madeup() does not exist
-        EvaluateAndCheckError("Name.MadeUp()", SpelMessage.METHOD_NOT_FOUND, 5);
+        EvaluateAndCheckError("Name.MadeUp()", SpelMessage.MethodNotFound, 5);
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class MethodInvocationTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
         var expr = parser.ParseExpression("ThrowException(#bar)");
 
-        _context.SetVariable("bar", 2);
-        var ex = Assert.Throws<SystemException>(() => expr.GetValue(_context));
+        Context.SetVariable("bar", 2);
+        var ex = Assert.Throws<SystemException>(() => expr.GetValue(Context));
         Assert.IsNotType<SpelEvaluationException>(ex);
     }
 
@@ -129,8 +129,8 @@ public class MethodInvocationTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
         var expr = parser.ParseExpression("ThrowException(#bar)");
 
-        _context.SetVariable("bar", 4);
-        var ex = Assert.Throws<ExpressionInvocationTargetException>(() => expr.GetValue(_context));
+        Context.SetVariable("bar", 4);
+        var ex = Assert.Throws<ExpressionInvocationTargetException>(() => expr.GetValue(Context));
         Assert.Contains("TestException", ex.InnerException.GetType().Name);
     }
 
@@ -228,13 +228,13 @@ public class MethodInvocationTests : AbstractExpressionTests
     [Fact]
     public void TestInvocationOnNullContextObject()
     {
-        EvaluateAndCheckError("null.ToString()", SpelMessage.METHOD_CALL_ON_NULL_OBJECT_NOT_ALLOWED);
+        EvaluateAndCheckError("null.ToString()", SpelMessage.MethodCallOnNullObjectNotAllowed);
     }
 
     [Fact]
     public void TestMethodOfClass()
     {
-        var expression = _parser.ParseExpression("FullName");
+        var expression = Parser.ParseExpression("FullName");
         var value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
         Assert.Equal("System.String", value);
     }
@@ -247,7 +247,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         {
             ServiceResolver = new TestServiceResolver()
         };
-        var expression = _parser.ParseExpression("@service.HandleBytes(#root)");
+        var expression = Parser.ParseExpression("@service.HandleBytes(#root)");
         var outBytes = expression.GetValue<byte[]>(context);
         Assert.Same(bytes, outBytes);
     }

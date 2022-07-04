@@ -13,20 +13,20 @@ namespace Steeltoe.Discovery.Eureka;
 
 public static class EurekaPostConfigurer
 {
-    public const string SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY = "spring:cloud:discovery:registrationMethod";
+    public const string SpringCloudDiscoveryRegistrationmethodKey = "spring:cloud:discovery:registrationMethod";
 
-    internal const string EUREKA_URI_SUFFIX = "/eureka/";
+    internal const string EurekaUriSuffix = "/eureka/";
 
-    internal const string ROUTE_REGISTRATIONMETHOD = "route";
-    internal const string DIRECT_REGISTRATIONMETHOD = "direct";
-    internal const string HOST_REGISTRATIONMETHOD = "hostname";
+    internal const string RouteRegistrationmethod = "route";
+    internal const string DirectRegistrationmethod = "direct";
+    internal const string HostRegistrationmethod = "hostname";
 
-    internal const string CF_APP_GUID = "cfAppGuid";
-    internal const string CF_INSTANCE_INDEX = "cfInstanceIndex";
-    internal const string SURGICAL_ROUTING_HEADER = "X-CF-APP-INSTANCE";
-    internal const string INSTANCE_ID = "instanceId";
-    internal const string ZONE = "zone";
-    internal const string UNKNOWN_ZONE = "unknown";
+    internal const string CFAppGuid = "cfAppGuid";
+    internal const string CFInstanceIndex = "cfInstanceIndex";
+    internal const string SurgicalRoutingHeader = "X-CF-APP-INSTANCE";
+    internal const string InstanceId = "instanceId";
+    internal const string Zone = "zone";
+    internal const string UnknownZone = "unknown";
 
     /// <summary>
     /// Update <see cref="EurekaClientOptions"/> with information from the runtime environment.
@@ -41,10 +41,10 @@ public static class EurekaPostConfigurer
         if (clientOpts.Enabled &&
             (Platform.IsContainerized || Platform.IsCloudHosted) &&
             si == null &&
-            clientOpts.EurekaServerServiceUrls.Contains(EurekaClientConfig.Default_ServerServiceUrl.TrimEnd('/')) &&
+            clientOpts.EurekaServerServiceUrls.Contains(EurekaClientConfig.DefaultServerServiceUrl.TrimEnd('/')) &&
             (clientOpts.ShouldRegisterWithEureka || clientOpts.ShouldFetchRegistry))
         {
-            throw new InvalidOperationException($"Eureka URL {EurekaClientConfig.Default_ServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
+            throw new InvalidOperationException($"Eureka URL {EurekaClientConfig.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
         }
 
         if (clientOptions == null || si == null)
@@ -54,9 +54,9 @@ public static class EurekaPostConfigurer
 
         var uri = si.Uri;
 
-        if (!uri.EndsWith(EUREKA_URI_SUFFIX))
+        if (!uri.EndsWith(EurekaUriSuffix))
         {
-            uri += EUREKA_URI_SUFFIX;
+            uri += EurekaUriSuffix;
         }
 
         clientOptions.EurekaServerServiceUrls = uri;
@@ -74,9 +74,9 @@ public static class EurekaPostConfigurer
     public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
     {
         var defaultIdEnding =
-            $":{EurekaInstanceConfig.Default_Appname}:{EurekaInstanceConfig.Default_NonSecurePort}";
+            $":{EurekaInstanceConfig.DefaultAppname}:{EurekaInstanceConfig.DefaultNonSecurePort}";
 
-        if (EurekaInstanceConfig.Default_Appname.Equals(options.AppName))
+        if (EurekaInstanceConfig.DefaultAppname.Equals(options.AppName))
         {
             var springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
 
@@ -103,14 +103,14 @@ public static class EurekaPostConfigurer
 
         if (string.IsNullOrEmpty(options.RegistrationMethod))
         {
-            var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
+            var springRegMethod = config.GetValue<string>(SpringCloudDiscoveryRegistrationmethodKey);
             if (!string.IsNullOrEmpty(springRegMethod))
             {
                 options.RegistrationMethod = springRegMethod;
             }
         }
 
-        options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+        options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
 
         if (options.InstanceId.EndsWith(defaultIdEnding))
         {
@@ -149,25 +149,25 @@ public static class EurekaPostConfigurer
             return;
         }
 
-        if (EurekaInstanceConfig.Default_Appname.Equals(instOptions.AppName))
+        if (EurekaInstanceConfig.DefaultAppname.Equals(instOptions.AppName))
         {
             instOptions.AppName = si.ApplicationInfo.ApplicationName;
         }
 
         if (string.IsNullOrEmpty(instOptions.RegistrationMethod) ||
-            ROUTE_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+            RouteRegistrationmethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
             UpdateWithDefaultsForRoute(si, instOptions);
             return;
         }
 
-        if (DIRECT_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+        if (DirectRegistrationmethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
             UpdateWithDefaultsForDirect(si, instOptions);
             return;
         }
 
-        if (HOST_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+        if (HostRegistrationmethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
             UpdateWithDefaultsForHost(si, instOptions, instOptions.HostName);
         }
@@ -186,14 +186,14 @@ public static class EurekaPostConfigurer
         instOptions.PreferIpAddress = true;
         instOptions.NonSecurePort = si.ApplicationInfo.Port;
         instOptions.SecurePort = si.ApplicationInfo.Port;
-        instOptions.InstanceId = $"{si.ApplicationInfo.InternalIP}:{si.ApplicationInfo.InstanceId}";
+        instOptions.InstanceId = $"{si.ApplicationInfo.InternalIp}:{si.ApplicationInfo.InstanceId}";
     }
 
     private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
     {
         UpdateWithDefaults(si, instOptions);
-        instOptions.NonSecurePort = EurekaInstanceOptions.DEFAULT_NONSECUREPORT;
-        instOptions.SecurePort = EurekaInstanceOptions.DEFAULT_SECUREPORT;
+        instOptions.NonSecurePort = EurekaInstanceOptions.DefaultNonsecureport;
+        instOptions.SecurePort = EurekaInstanceOptions.DefaultSecureport;
 
         if (si.ApplicationInfo.Uris.Any())
         {
@@ -208,12 +208,12 @@ public static class EurekaPostConfigurer
             instOptions.HostName = si.ApplicationInfo.Uris.First();
         }
 
-        instOptions.IpAddress = si.ApplicationInfo.InternalIP;
+        instOptions.IpAddress = si.ApplicationInfo.InternalIp;
 
         var map = instOptions.MetadataMap;
-        map[CF_APP_GUID] = si.ApplicationInfo.ApplicationId;
-        map[CF_INSTANCE_INDEX] = si.ApplicationInfo.InstanceIndex.ToString();
-        map[INSTANCE_ID] = si.ApplicationInfo.InstanceId;
-        map[ZONE] = UNKNOWN_ZONE;
+        map[CFAppGuid] = si.ApplicationInfo.ApplicationId;
+        map[CFInstanceIndex] = si.ApplicationInfo.InstanceIndex.ToString();
+        map[InstanceId] = si.ApplicationInfo.InstanceId;
+        map[Zone] = UnknownZone;
     }
 }

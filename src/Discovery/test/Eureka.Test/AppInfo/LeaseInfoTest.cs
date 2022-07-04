@@ -16,8 +16,8 @@ public class LeaseInfoTest : AbstractBaseTest
     public void Constructor_Defaults()
     {
         var info = new LeaseInfo();
-        Assert.Equal(LeaseInfo.Default_DurationInSecs, info.DurationInSecs);
-        Assert.Equal(LeaseInfo.Default_RenewalIntervalInSecs, info.RenewalIntervalInSecs);
+        Assert.Equal(LeaseInfo.DefaultDurationInSecs, info.DurationInSecs);
+        Assert.Equal(LeaseInfo.DefaultRenewalIntervalInSecs, info.RenewalIntervalInSecs);
     }
 
     [Fact]

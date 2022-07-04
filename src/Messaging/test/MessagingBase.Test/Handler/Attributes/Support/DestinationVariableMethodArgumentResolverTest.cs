@@ -33,7 +33,7 @@ public class DestinationVariableMethodArgumentResolverTest
             { "name", "value" }
         };
 
-        var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
+        var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationVariableMethodArgumentResolver.DestinationTemplateVariablesHeader, vars).Build();
 
         var param = _resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg();
         var result = _resolver.ResolveArgument(param, message);

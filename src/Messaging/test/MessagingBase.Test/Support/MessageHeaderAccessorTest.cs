@@ -305,7 +305,7 @@ public class MessageHeaderAccessorTest
         {
             IdGenerator = new TestIdGenerator
             {
-                Id = MessageHeaders.ID_VALUE_NONE
+                Id = MessageHeaders.IdValueNone
             },
             EnableTimestamp = false,
             LeaveMutable = true
@@ -333,7 +333,7 @@ public class MessageHeaderAccessorTest
         return new Dictionary<string, object> { { key, value } };
     }
 
-    private sealed class TestIdGenerator : IIDGenerator
+    private sealed class TestIdGenerator : IIdGenerator
     {
         public string Id;
 

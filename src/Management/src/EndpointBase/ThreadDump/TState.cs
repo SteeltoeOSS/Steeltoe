@@ -4,12 +4,12 @@
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public enum TState
+public enum State
 {
-    NEW,
-    RUNNABLE,
-    BLOCKED,
-    WAITING,
-    TIMED_WAITING,
-    TERMINATED
+    New,
+    Runnable,
+    Blocked,
+    Waiting,
+    TimedWaiting,
+    Terminated
 }

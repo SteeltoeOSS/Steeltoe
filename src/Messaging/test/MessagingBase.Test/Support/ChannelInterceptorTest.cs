@@ -199,11 +199,11 @@ public class ChannelInterceptorTest
     {
         public bool PreSendInvoked;
         public bool CompletionInvoked;
-        public IMessageChannel _expectedChannel;
+        public IMessageChannel ExpectedChannel;
 
         public PostSendInterceptorMessageWasNotSentInterceptor(IMessageChannel expectedChannel)
         {
-            _expectedChannel = expectedChannel;
+            this.ExpectedChannel = expectedChannel;
         }
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
@@ -222,7 +222,7 @@ public class ChannelInterceptorTest
         {
             Assert.NotNull(message);
             Assert.NotNull(channel);
-            Assert.Same(_expectedChannel, channel);
+            Assert.Same(ExpectedChannel, channel);
             Assert.False(sent);
         }
     }
@@ -231,11 +231,11 @@ public class ChannelInterceptorTest
     {
         public bool PreSendInvoked;
         public bool CompletionInvoked;
-        public IMessageChannel _expectedChannel;
+        public IMessageChannel ExpectedChannel;
 
         public PostSendInterceptorMessageWasSentChannelInterceptor(IMessageChannel expectedChannel)
         {
-            _expectedChannel = expectedChannel;
+            this.ExpectedChannel = expectedChannel;
         }
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
@@ -254,7 +254,7 @@ public class ChannelInterceptorTest
         {
             Assert.NotNull(message);
             Assert.NotNull(channel);
-            Assert.Same(_expectedChannel, channel);
+            Assert.Same(ExpectedChannel, channel);
             Assert.True(sent);
         }
     }

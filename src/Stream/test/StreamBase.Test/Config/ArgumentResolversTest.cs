@@ -58,9 +58,9 @@ public class ArgumentResolversTest
 
     private sealed class TestMessageConverter : IMessageConverter
     {
-        public const string DEFAULT_SERVICE_NAME = nameof(TestMessageConverter);
+        public const string DefaultServiceName = nameof(TestMessageConverter);
 
-        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+        public string ServiceName { get; set; } = DefaultServiceName;
 
         public object FromMessage(IMessage message, Type targetClass)
         {

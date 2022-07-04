@@ -40,11 +40,11 @@ public class SpelCompiler
     {
         if (expression.IsCompilable())
         {
-            _logger?.LogDebug("SpEL: compiling {expression}", expression.ToStringAST());
+            _logger?.LogDebug("SpEL: compiling {expression}", expression.ToStringAst());
             return CreateExpressionClass(expression);
         }
 
-        _logger?.LogDebug("SpEL: unable to compile {expression} ", expression.ToStringAST());
+        _logger?.LogDebug("SpEL: unable to compile {expression} ", expression.ToStringAst());
         return null;
     }
 

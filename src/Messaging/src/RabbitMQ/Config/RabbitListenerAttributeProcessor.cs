@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcessor, IOrdered
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerAttributeProcessor);
+    public const string DefaultServiceName = nameof(RabbitListenerAttributeProcessor);
 
     private readonly List<RabbitListenerMetadata> _rabbitListenerMetadata;
     private readonly ILoggerFactory _loggerFactory;
@@ -66,7 +66,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
     }
 
-    public int Order { get; } = AbstractOrdered.LOWEST_PRECEDENCE;
+    public int Order { get; } = AbstractOrdered.LowestPrecedence;
 
     public IServiceExpressionResolver Resolver { get; set; } = new StandardServiceExpressionResolver();
 
@@ -80,9 +80,9 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     public Encoding Charset { get; set; } = EncodingUtils.Utf8;
 
-    public string ContainerFactoryServiceName { get; set; } = DirectRabbitListenerContainerFactory.DEFAULT_SERVICE_NAME;
+    public string ContainerFactoryServiceName { get; set; } = DirectRabbitListenerContainerFactory.DefaultServiceName;
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     internal IMessageHandlerMethodFactory MessageHandlerMethodFactory { get; set; }
 

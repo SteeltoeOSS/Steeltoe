@@ -180,7 +180,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
     public class ExpressionEvalDictionaryBuilder
     {
-        private static readonly IEvaluationCallback _simpleCallback = new SimpleCallback();
+        private static readonly IEvaluationCallback SimpleCallback = new SimpleCallback();
 
         private readonly IExpressionEvalMapComponentsBuilder _evalMapComponentsBuilder;
 
@@ -213,7 +213,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
         public IExpressionEvalMapFinalBuilder UsingSimpleCallback()
         {
-            return UsingCallback(_simpleCallback);
+            return UsingCallback(SimpleCallback);
         }
 
         public IExpressionEvalMapComponentsBuilder UsingEvaluationContext(IEvaluationContext context)

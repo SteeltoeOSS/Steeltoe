@@ -20,13 +20,13 @@ public class OAuthConfigurerTest
         var configurer = new OAuthConfigurer();
         configurer.UpdateOptions(config, opts);
 
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_ClientId, opts.ClientId);
-        Assert.Equal(OAuthConnectorDefaults.Default_ClientSecret, opts.ClientSecret);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultAccessTokenUri, opts.AccessTokenUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultClientId, opts.ClientId);
+        Assert.Equal(OAuthConnectorDefaults.DefaultClientSecret, opts.ClientSecret);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultJwtTokenKey, opts.JwtKeyUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultCheckTokenUri, opts.TokenInfoUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultAuthorizationUri, opts.UserAuthorizationUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultUserInfoUri, opts.UserInfoUrl);
         Assert.False(opts.ValidateCertificates);
         Assert.NotNull(opts.Scope);
         Assert.Equal(0, opts.Scope.Count);
@@ -41,13 +41,13 @@ public class OAuthConfigurerTest
         var configurer = new OAuthConfigurer();
         configurer.UpdateOptions(si, opts);
 
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_AccessTokenUri}", opts.AccessTokenUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultAccessTokenUri}", opts.AccessTokenUrl);
         Assert.Equal("myClientId", opts.ClientId);
         Assert.Equal("myClientSecret", opts.ClientSecret);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_JwtTokenKey}", opts.JwtKeyUrl);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_CheckTokenUri}", opts.TokenInfoUrl);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_AuthorizationUri}", opts.UserAuthorizationUrl);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_UserInfoUri}", opts.UserInfoUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultJwtTokenKey}", opts.JwtKeyUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultCheckTokenUri}", opts.TokenInfoUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultAuthorizationUri}", opts.UserAuthorizationUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultUserInfoUri}", opts.UserInfoUrl);
         Assert.True(opts.ValidateCertificates);
         Assert.NotNull(opts.Scope);
         Assert.Equal(0, opts.Scope.Count);
@@ -64,13 +64,13 @@ public class OAuthConfigurerTest
         var opts = result.Value;
         Assert.NotNull(opts);
 
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_ClientId, opts.ClientId);
-        Assert.Equal(OAuthConnectorDefaults.Default_ClientSecret, opts.ClientSecret);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
-        Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultAccessTokenUri, opts.AccessTokenUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultClientId, opts.ClientId);
+        Assert.Equal(OAuthConnectorDefaults.DefaultClientSecret, opts.ClientSecret);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultJwtTokenKey, opts.JwtKeyUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultCheckTokenUri, opts.TokenInfoUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultAuthorizationUri, opts.UserAuthorizationUrl);
+        Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultUserInfoUri, opts.UserInfoUrl);
         Assert.True(opts.ValidateCertificates);
         Assert.NotNull(opts.Scope);
         Assert.Equal(0, opts.Scope.Count);
@@ -88,13 +88,13 @@ public class OAuthConfigurerTest
         var opts = result.Value;
         Assert.NotNull(opts);
 
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_AccessTokenUri}", opts.AccessTokenUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultAccessTokenUri}", opts.AccessTokenUrl);
         Assert.Equal("myClientId", opts.ClientId);
         Assert.Equal("myClientSecret", opts.ClientSecret);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_JwtTokenKey}", opts.JwtKeyUrl);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_CheckTokenUri}", opts.TokenInfoUrl);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_AuthorizationUri}", opts.UserAuthorizationUrl);
-        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.Default_UserInfoUri}", opts.UserInfoUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultJwtTokenKey}", opts.JwtKeyUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultCheckTokenUri}", opts.TokenInfoUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultAuthorizationUri}", opts.UserAuthorizationUrl);
+        Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultUserInfoUri}", opts.UserInfoUrl);
         Assert.True(opts.ValidateCertificates);
         Assert.NotNull(opts.Scope);
         Assert.Equal(0, opts.Scope.Count);

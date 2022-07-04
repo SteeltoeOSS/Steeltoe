@@ -28,9 +28,9 @@ public class UnicastingDispatcher : AbstractDispatcher
 
     public override bool Dispatch(IMessage message, CancellationToken cancellationToken = default)
     {
-        if (_executor != null)
+        if (Executor != null)
         {
-            _factory.StartNew(
+            Factory.StartNew(
                 () =>
                 {
                     var task = CreateMessageHandlingTask(message, cancellationToken);
@@ -60,7 +60,7 @@ public class UnicastingDispatcher : AbstractDispatcher
             return true;
         }
 
-        var handlers = _handlers;
+        var handlers = base.innerHandlers;
         if (handlers.Count == 0)
         {
             throw new MessageDispatchingException(message, "Dispatcher has no subscribers");

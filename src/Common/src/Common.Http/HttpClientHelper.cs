@@ -23,8 +23,8 @@ public static class HttpClientHelper
 {
     public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
 
-    private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
-    private const bool DEFAULT_VALIDATE_CERTIFICATES = true;
+    private const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
+    private const bool DefaultValidateCertificates = true;
 
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate;
 
@@ -200,8 +200,8 @@ public static class HttpClientHelper
         string accessTokenUri,
         string clientId,
         string clientSecret,
-        int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
-        bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
+        int timeout = DefaultGetAccessTokenTimeout,
+        bool validateCertificates = DefaultValidateCertificates,
         HttpClient httpClient = null,
         ILogger logger = null)
     {
@@ -218,8 +218,8 @@ public static class HttpClientHelper
         Uri accessTokenUri,
         string clientId,
         string clientSecret,
-        int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
-        bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
+        int timeout = DefaultGetAccessTokenTimeout,
+        bool validateCertificates = DefaultValidateCertificates,
         Dictionary<string, string> additionalParams = null,
         HttpClient httpClient = null,
         ILogger logger = null)

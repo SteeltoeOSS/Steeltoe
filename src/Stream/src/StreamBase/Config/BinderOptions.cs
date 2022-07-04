@@ -8,8 +8,8 @@ namespace Steeltoe.Stream.Config;
 
 public class BinderOptions : IBinderOptions
 {
-    private const bool InheritEnvironment_Default = true;
-    private const bool DefaultCandidate_Default = true;
+    private const bool InheritEnvironmentDefault = true;
+    private const bool DefaultCandidateDefault = true;
 
     public string ConfigureClass { get; set; }
 
@@ -28,7 +28,7 @@ public class BinderOptions : IBinderOptions
     internal void PostProcess()
     {
         Environment ??= new Dictionary<string, object>();
-        InheritEnvironment ??= InheritEnvironment_Default;
-        DefaultCandidate ??= DefaultCandidate_Default;
+        InheritEnvironment ??= InheritEnvironmentDefault;
+        DefaultCandidate ??= DefaultCandidateDefault;
     }
 }

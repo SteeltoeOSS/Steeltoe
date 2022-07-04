@@ -14,7 +14,7 @@ public class TraceStartup
 {
     public TraceStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

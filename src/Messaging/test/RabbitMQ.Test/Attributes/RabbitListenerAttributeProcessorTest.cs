@@ -206,11 +206,11 @@ public class RabbitListenerAttributeProcessorTest
 
         RabbitListenerDeclareAtrributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
         var exchanges = services.BuildServiceProvider().GetServices<IExchange>();
-        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.DIRECT);
-        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.TOPIC);
-        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.FANOUT);
-        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.HEADERS);
-        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.SYSTEM);
+        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Direct);
+        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Topic);
+        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Fanout);
+        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Headers);
+        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.System);
     }
 
     public static class Config
@@ -262,11 +262,11 @@ public class RabbitListenerAttributeProcessorTest
 
     public class TestTarget
     {
-        [DeclareExchange(Name ="test", Type = ExchangeType.DIRECT)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.TOPIC)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.FANOUT)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.HEADERS)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.SYSTEM)]
+        [DeclareExchange(Name ="test", Type = ExchangeType.Direct)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.Topic)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.Fanout)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.Headers)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.System)]
         public void Method()
         {
         }

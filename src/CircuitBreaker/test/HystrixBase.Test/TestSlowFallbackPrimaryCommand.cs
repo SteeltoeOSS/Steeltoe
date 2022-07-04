@@ -23,14 +23,14 @@ internal sealed class TestSlowFallbackPrimaryCommand : TestHystrixCommand<int>
     {
         try
         {
-            Time.WaitUntil(() => _token.IsCancellationRequested, 1500);
-            _token.ThrowIfCancellationRequested();
+            Time.WaitUntil(() => Token.IsCancellationRequested, 1500);
+            Token.ThrowIfCancellationRequested();
 
             return 1;
         }
         catch (Exception)
         {
-            _output?.WriteLine("Caught Interrupted Exception");
+            Output?.WriteLine("Caught Interrupted Exception");
         }
 
         return -1;

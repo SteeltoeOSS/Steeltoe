@@ -10,8 +10,8 @@ namespace Steeltoe.Connector;
 
 internal static class ServiceInfoCreatorFactory
 {
-    private static readonly object _lock = new ();
-    private static ServiceInfoCreator serviceInfoCreator;
+    private static readonly object Lock = new ();
+    private static ServiceInfoCreator _serviceInfoCreator;
 
     /// <summary>
     /// Build or return the relevant <see cref="ServiceInfoCreator"/>.
@@ -25,11 +25,11 @@ internal static class ServiceInfoCreatorFactory
             throw new ArgumentNullException(nameof(configuration));
         }
 
-        lock (_lock)
+        lock (Lock)
         {
-            if (serviceInfoCreator != null && configuration == serviceInfoCreator.Configuration && (bool)serviceInfoCreator.GetType().GetProperty("IsRelevant").GetValue(null))
+            if (_serviceInfoCreator != null && configuration == _serviceInfoCreator.Configuration && (bool)_serviceInfoCreator.GetType().GetProperty("IsRelevant").GetValue(null))
             {
-                return serviceInfoCreator;
+                return _serviceInfoCreator;
             }
 
             var alternateInfoCreators = ReflectionHelpers.FindTypeFromAssemblyAttribute<ServiceInfoCreatorAssemblyAttribute>();
@@ -37,14 +37,14 @@ internal static class ServiceInfoCreatorFactory
             {
                 if ((bool)alternateInfoCreator.GetProperty("IsRelevant").GetValue(null))
                 {
-                    serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance)).Invoke(null, new[] { configuration });
-                    return serviceInfoCreator;
+                    _serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance)).Invoke(null, new[] { configuration });
+                    return _serviceInfoCreator;
                 }
             }
 
-            serviceInfoCreator = ServiceInfoCreator.Instance(configuration);
+            _serviceInfoCreator = ServiceInfoCreator.Instance(configuration);
         }
 
-        return serviceInfoCreator;
+        return _serviceInfoCreator;
     }
 }

@@ -12,10 +12,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class InlineList : SpelNode
 {
-    private static readonly FieldInfo _fieldInfo = typeof(CompiledExpression).GetField("_dynamicFields", BindingFlags.NonPublic | BindingFlags.Instance);
-    private static readonly MethodInfo _getItemMethod = typeof(Dictionary<string, object>).GetMethod("get_Item", BindingFlags.Public | BindingFlags.Instance);
-    private static readonly MethodInfo _addMethod = typeof(IList).GetMethod(nameof(IList.Add), new[] { typeof(object) });
-    private static readonly ConstructorInfo _listConstr = typeof(List<object>).GetConstructor(Type.EmptyTypes);
+    private static readonly FieldInfo FieldInfo = typeof(CompiledExpression).GetField("DynamicFields", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly MethodInfo GetItemMethod = typeof(Dictionary<string, object>).GetMethod("get_Item", BindingFlags.Public | BindingFlags.Instance);
+    private static readonly MethodInfo AddMethod = typeof(IList).GetMethod(nameof(IList.Add), new[] { typeof(object) });
+    private static readonly ConstructorInfo ListConstr = typeof(List<object>).GetConstructor(Type.EmptyTypes);
 
     // If the list is purely literals, it is a constant value and can be computed and cached
     private ITypedValue _constant;
@@ -45,14 +45,14 @@ public class InlineList : SpelNode
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         // String ast matches input string, not the 'toString()' of the resultant collection, which would use []
         var sj = new List<string>();
         var count = ChildCount;
         for (var c = 0; c < count; c++)
         {
-            sj.Add(GetChild(c).ToStringAST());
+            sj.Add(GetChild(c).ToStringAst());
         }
 
         return $"{{{string.Join(",", sj)}}}";
@@ -97,7 +97,7 @@ public class InlineList : SpelNode
         else
         {
             // Create nested list to work with
-            gen.Emit(OpCodes.Newobj, _listConstr);
+            gen.Emit(OpCodes.Newobj, ListConstr);
             gen.Emit(OpCodes.Castclass, typeof(IList));
         }
 
@@ -116,13 +116,13 @@ public class InlineList : SpelNode
             // The children might be further lists if they are not constants. In this
             // situation do not call back into generateCode() because it will register another client adder.
             // Instead, directly build the list here:
-            if (_children[c] is InlineList list)
+            if (children[c] is InlineList list)
             {
                 list.GenerateInitCode(constantFieldName, gen, codeflow, true);
             }
             else
             {
-                _children[c].GenerateCode(gen, codeflow);
+                children[c].GenerateCode(gen, codeflow);
                 var lastDesc = codeflow.LastDescriptor();
                 if (CodeFlow.IsValueType(lastDesc))
                 {
@@ -130,7 +130,7 @@ public class InlineList : SpelNode
                 }
             }
 
-            gen.Emit(OpCodes.Callvirt, _addMethod);
+            gen.Emit(OpCodes.Callvirt, AddMethod);
 
             // Ignore int return
             gen.Emit(OpCodes.Pop);
@@ -143,11 +143,11 @@ public class InlineList : SpelNode
         gen.Emit(OpCodes.Ldarg_0);
 
         // Get Dictionary<string, object> from CompiledExpression
-        gen.Emit(OpCodes.Ldfld, _fieldInfo);
+        gen.Emit(OpCodes.Ldfld, FieldInfo);
 
         // Get registered Field out of dictionary
         gen.Emit(OpCodes.Ldstr, constantFieldName);
-        gen.Emit(OpCodes.Callvirt, _getItemMethod);
+        gen.Emit(OpCodes.Callvirt, GetItemMethod);
     }
 
     private void CheckIfConstant()

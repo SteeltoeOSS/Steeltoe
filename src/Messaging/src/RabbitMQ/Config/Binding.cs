@@ -10,7 +10,7 @@ public class Binding : AbstractDeclarable, IBinding
 {
     internal static IBinding Create(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
     {
-        if (destinationType == DestinationType.EXCHANGE)
+        if (destinationType == DestinationType.Exchange)
         {
             return new ExchangeBinding(bindingName, destination, exchange, routingKey, arguments);
         }
@@ -20,8 +20,8 @@ public class Binding : AbstractDeclarable, IBinding
 
     public enum DestinationType
     {
-        QUEUE,
-        EXCHANGE
+        Queue,
+        Exchange
     }
 
     public Binding(string bindingName)
@@ -50,7 +50,7 @@ public class Binding : AbstractDeclarable, IBinding
 
     public DestinationType Type { get; set; }
 
-    public bool IsDestinationQueue => Type == DestinationType.QUEUE;
+    public bool IsDestinationQueue => Type == DestinationType.Queue;
 
     public string BindingName { get; set; }
 

@@ -6,6 +6,6 @@ namespace Steeltoe.Messaging.Converter;
 
 public enum TypePrecedence
 {
-    INFERRED,
-    TYPE_ID
+    Inferred,
+    TypeId
 }

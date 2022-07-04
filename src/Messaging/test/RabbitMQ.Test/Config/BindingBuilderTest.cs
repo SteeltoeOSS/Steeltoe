@@ -24,7 +24,7 @@ public class BindingBuilderTest
         Assert.NotNull(binding);
         Assert.Equal(fanoutExchange.ExchangeName, binding.Exchange);
         Assert.Equal(string.Empty, binding.RoutingKey);
-        Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
+        Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
     }
 
@@ -36,7 +36,7 @@ public class BindingBuilderTest
         var binding = BindingBuilder.Bind(_queue).To(directExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(directExchange.ExchangeName, binding.Exchange);
-        Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
+        Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(routingKey, binding.RoutingKey);
     }
@@ -48,7 +48,7 @@ public class BindingBuilderTest
         var binding = BindingBuilder.Bind(_queue).To(directExchange).WithQueueName();
         Assert.NotNull(binding);
         Assert.Equal(directExchange.ExchangeName, binding.Exchange);
-        Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
+        Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(_queue.QueueName, binding.RoutingKey);
     }
@@ -61,7 +61,7 @@ public class BindingBuilderTest
         var binding = BindingBuilder.Bind(_queue).To(topicExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(topicExchange.ExchangeName, binding.Exchange);
-        Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
+        Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(routingKey, binding.RoutingKey);
     }
@@ -74,7 +74,7 @@ public class BindingBuilderTest
         var binding = BindingBuilder.Bind(_queue).To(headersExchange).Where(headerKey).Exists();
         Assert.NotNull(binding);
         Assert.Equal(headersExchange.ExchangeName, binding.Exchange);
-        Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
+        Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(string.Empty, binding.RoutingKey);
     }
@@ -93,7 +93,7 @@ public class BindingBuilderTest
         Assert.NotNull(binding);
         Assert.Equal(argumentobject, binding.Arguments["k"]);
         Assert.Equal(customExchange.ExchangeName, binding.Exchange);
-        Assert.Equal(Binding.DestinationType.QUEUE, binding.Type);
+        Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
         Assert.Equal(routingKey, binding.RoutingKey);
     }
@@ -106,7 +106,7 @@ public class BindingBuilderTest
         var binding = BindingBuilder.Bind(directExchange).To(fanoutExchange);
         Assert.NotNull(binding);
         Assert.Equal(fanoutExchange.ExchangeName, binding.Exchange);
-        Assert.Equal(Binding.DestinationType.EXCHANGE, binding.Type);
+        Assert.Equal(Binding.DestinationType.Exchange, binding.Type);
         Assert.Equal(directExchange.ExchangeName, binding.Destination);
         Assert.Equal(string.Empty, binding.RoutingKey);
     }

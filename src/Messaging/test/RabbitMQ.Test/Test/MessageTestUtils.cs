@@ -12,7 +12,7 @@ internal static class MessageTestUtils
     public static IMessage<byte[]> CreateTextMessage(string body, MessageHeaders properties)
     {
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(properties);
-        accessor.ContentType = MimeTypeUtils.TEXT_PLAIN_VALUE;
+        accessor.ContentType = MimeTypeUtils.TextPlainValue;
         return Message.Create(ToBytes(body), properties);
     }
 

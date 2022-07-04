@@ -25,8 +25,8 @@ internal sealed class EventCommand : HystrixCommand<string>
         try
         {
             // _output?.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In fallback => " + ExecutionEvents)
-            Time.WaitUntil(() => _token.IsCancellationRequested, 30000);
-            _token.ThrowIfCancellationRequested();
+            Time.WaitUntil(() => Token.IsCancellationRequested, 30000);
+            Token.ThrowIfCancellationRequested();
         }
         catch (Exception)
         {

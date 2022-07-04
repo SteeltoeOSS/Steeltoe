@@ -12,7 +12,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class RabbitMessageHandlerMethodFactory : DefaultMessageHandlerMethodFactory
 {
-    public new const string DEFAULT_SERVICE_NAME = nameof(RabbitMessageHandlerMethodFactory);
+    public new const string DefaultServiceName = nameof(RabbitMessageHandlerMethodFactory);
 
     public RabbitMessageHandlerMethodFactory()
         : base(new DefaultConversionService())
@@ -21,7 +21,7 @@ public class RabbitMessageHandlerMethodFactory : DefaultMessageHandlerMethodFact
         defService.AddConverter(new BytesToStringConverter(Charset));
     }
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     public Encoding Charset { get; set; } = EncodingUtils.Utf8;
 }

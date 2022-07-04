@@ -13,13 +13,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 public class SpelExpression : IExpression
 {
     // Number of times to interpret an expression before compiling it
-    internal const int INTERPRETED_COUNT_THRESHOLD = 100;
+    internal const int InterpretedCountThreshold = 100;
 
     // Number of times to try compiling an expression before giving up
-    internal const int FAILED_ATTEMPTS_THRESHOLD = 100;
+    internal const int FailedAttemptsThreshold = 100;
 
     // Holds the compiled form of the expression (if it has been compiled)
-    internal volatile CompiledExpression _compiledAst;
+    internal volatile CompiledExpression CompiledAst;
 
     private readonly object _lock = new ();
     private readonly SpelNode _ast;
@@ -59,25 +59,25 @@ public class SpelExpression : IExpression
 
     public object GetValue()
     {
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
                 var context = EvaluationContext;
-                return _compiledAst.GetValue(context.RootObject.Value, context);
+                return CompiledAst.GetValue(context.RootObject.Value, context);
             }
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -95,12 +95,12 @@ public class SpelExpression : IExpression
 
     public object GetValue(Type desiredResultType)
     {
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
                 var context = EvaluationContext;
-                var result = _compiledAst.GetValue(context.RootObject.Value, context);
+                var result = CompiledAst.GetValue(context.RootObject.Value, context);
                 if (desiredResultType == null)
                 {
                     return result;
@@ -113,15 +113,15 @@ public class SpelExpression : IExpression
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -134,24 +134,24 @@ public class SpelExpression : IExpression
 
     public object GetValue(object rootObject)
     {
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
-                return _compiledAst.GetValue(rootObject, EvaluationContext);
+                return CompiledAst.GetValue(rootObject, EvaluationContext);
             }
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -169,11 +169,11 @@ public class SpelExpression : IExpression
 
     public object GetValue(object rootObject, Type desiredResultType)
     {
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
-                var result = _compiledAst.GetValue(rootObject, EvaluationContext);
+                var result = CompiledAst.GetValue(rootObject, EvaluationContext);
                 if (desiredResultType == null)
                 {
                     return result;
@@ -186,15 +186,15 @@ public class SpelExpression : IExpression
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -212,24 +212,24 @@ public class SpelExpression : IExpression
             throw new ArgumentNullException(nameof(context));
         }
 
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
-                return _compiledAst.GetValue(context.RootObject.Value, context);
+                return CompiledAst.GetValue(context.RootObject.Value, context);
             }
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -252,11 +252,11 @@ public class SpelExpression : IExpression
             throw new ArgumentNullException(nameof(context));
         }
 
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
-                var result = _compiledAst.GetValue(context.RootObject.Value, context);
+                var result = CompiledAst.GetValue(context.RootObject.Value, context);
                 if (desiredResultType != null)
                 {
                     return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), desiredResultType);
@@ -269,15 +269,15 @@ public class SpelExpression : IExpression
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -295,24 +295,24 @@ public class SpelExpression : IExpression
             throw new ArgumentNullException(nameof(context));
         }
 
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
-                return _compiledAst.GetValue(rootObject, context);
+                return CompiledAst.GetValue(rootObject, context);
             }
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -335,11 +335,11 @@ public class SpelExpression : IExpression
             throw new ArgumentNullException(nameof(context));
         }
 
-        if (_compiledAst != null)
+        if (CompiledAst != null)
         {
             try
             {
-                var result = _compiledAst.GetValue(rootObject, context);
+                var result = CompiledAst.GetValue(rootObject, context);
                 if (desiredResultType != null)
                 {
                     return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), desiredResultType);
@@ -352,15 +352,15 @@ public class SpelExpression : IExpression
             catch (Exception ex)
             {
                 // If running in mixed mode, revert to interpreted
-                if (_configuration.CompilerMode == SpelCompilerMode.MIXED)
+                if (_configuration.CompilerMode == SpelCompilerMode.Mixed)
                 {
-                    _compiledAst = null;
+                    CompiledAst = null;
                     _interpretedCount.Value = 0;
                 }
                 else
                 {
                     // Running in SpelCompilerMode.immediate mode - propagate exception to caller
-                    throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_RUNNING_COMPILED_EXPRESSION);
+                    throw new SpelEvaluationException(ex, SpelMessage.ExceptionRunningCompiledExpression);
                 }
             }
         }
@@ -450,14 +450,14 @@ public class SpelExpression : IExpression
 
     public bool CompileExpression()
     {
-        var compiledAst = _compiledAst;
+        var compiledAst = this.CompiledAst;
         if (compiledAst != null)
         {
             // Previously compiled
             return true;
         }
 
-        if (_failedAttempts.Value > FAILED_ATTEMPTS_THRESHOLD)
+        if (_failedAttempts.Value > FailedAttemptsThreshold)
         {
             // Don't try again
             return false;
@@ -465,7 +465,7 @@ public class SpelExpression : IExpression
 
         lock (_lock)
         {
-            if (_compiledAst != null)
+            if (this.CompiledAst != null)
             {
                 // Compiled by another thread before this thread got into the sync block
                 return true;
@@ -476,7 +476,7 @@ public class SpelExpression : IExpression
             if (compiledAst != null)
             {
                 // Successfully compiled
-                _compiledAst = compiledAst;
+                this.CompiledAst = compiledAst;
                 return true;
             }
             else
@@ -490,25 +490,25 @@ public class SpelExpression : IExpression
 
     public void RevertToInterpreted()
     {
-        _compiledAst = null;
+        CompiledAst = null;
         _interpretedCount.Value = 0;
         _failedAttempts.Value = 0;
     }
 
-    public ISpelNode AST => _ast;
+    public ISpelNode Ast => _ast;
 
-    public string ToStringAST()
+    public string ToStringAst()
     {
-        return _ast.ToStringAST();
+        return _ast.ToStringAst();
     }
 
     private void CheckCompile(ExpressionState expressionState)
     {
         _interpretedCount.IncrementAndGet();
         var compilerMode = expressionState.Configuration.CompilerMode;
-        if (compilerMode != SpelCompilerMode.OFF)
+        if (compilerMode != SpelCompilerMode.Off)
         {
-            if (compilerMode == SpelCompilerMode.IMMEDIATE)
+            if (compilerMode == SpelCompilerMode.Immediate)
             {
                 if (_interpretedCount.Value > 1)
                 {
@@ -518,7 +518,7 @@ public class SpelExpression : IExpression
             else
             {
                 // compilerMode = SpelCompilerMode.MIXED
-                if (_interpretedCount.Value > INTERPRETED_COUNT_THRESHOLD)
+                if (_interpretedCount.Value > InterpretedCountThreshold)
                 {
                     CompileExpression();
                 }
@@ -528,6 +528,6 @@ public class SpelExpression : IExpression
 
     private TypedValue ToTypedValue(object obj)
     {
-        return obj != null ? new TypedValue(obj) : TypedValue.NULL;
+        return obj != null ? new TypedValue(obj) : TypedValue.Null;
     }
 }

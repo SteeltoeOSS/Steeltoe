@@ -22,8 +22,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabbitListenerContainerFactory<TContainer>
     where TContainer : AbstractMessageListenerContainer
 {
-    protected readonly ILogger _logger;
-    protected readonly ILoggerFactory _loggerFactory;
+    protected readonly ILogger Logger;
+    protected readonly ILoggerFactory LoggerFactory;
     private readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
 
     private ISmartMessageConverter _messageConverter;
@@ -31,20 +31,20 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
     protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
     {
         ApplicationContext = applicationContext;
-        _loggerFactory = loggerFactory;
+        LoggerFactory = loggerFactory;
     }
 
     protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
     {
         ApplicationContext = applicationContext;
-        _loggerFactory = loggerFactory;
+        LoggerFactory = loggerFactory;
         ConnectionFactory = connectionFactory;
     }
 
     protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
     {
         ApplicationContext = applicationContext;
-        _loggerFactory = loggerFactory;
+        LoggerFactory = loggerFactory;
         ConnectionFactory = connectionFactory;
         _optionsMonitor = optionsMonitor;
     }
@@ -59,7 +59,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
     {
         get
         {
-            _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>() ?? new RabbitMQ.Support.Converter.SimpleMessageConverter(_loggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
+            _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>() ?? new RabbitMQ.Support.Converter.SimpleMessageConverter(LoggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
             return _messageConverter;
         }
         set => _messageConverter = value;

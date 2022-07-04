@@ -40,7 +40,7 @@ public class RedisCacheConfigurer
             configuration.Password = si.Password;
         }
 
-        if (si.Scheme == RedisServiceInfo.REDIS_SECURE_SCHEME)
+        if (si.Scheme == RedisServiceInfo.RedisSecureScheme)
         {
             configuration.Ssl = true;
         }

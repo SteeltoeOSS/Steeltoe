@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class DictionaryAccessor : ICompilablePropertyAccessor
 {
-    private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new[] { typeof(object) });
+    private static readonly MethodInfo GetItem = typeof(IDictionary).GetMethod("get_Item", new[] { typeof(object) });
 
     public bool CanRead(IEvaluationContext context, object target, string name)
     {
@@ -79,7 +79,7 @@ public class DictionaryAccessor : ICompilablePropertyAccessor
         }
 
         gen.Emit(OpCodes.Ldstr, propertyName);
-        gen.Emit(OpCodes.Callvirt, _getItem);
+        gen.Emit(OpCodes.Callvirt, GetItem);
     }
 
     private sealed class DictionaryAccessException : AccessException

@@ -23,7 +23,7 @@ public class HttpTraceEndpoint : AbstractEndpoint<HttpTraceResult>, IHttpTraceEn
     {
         get
         {
-            return options as ITraceOptions;
+            return innerOptions as ITraceOptions;
         }
     }
 

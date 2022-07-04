@@ -13,7 +13,7 @@ namespace Steeltoe.Stream.Binder;
 
 public class DefaultBinderTypeRegistry : IBinderTypeRegistry
 {
-    private static readonly string _thisAssemblyName = typeof(DefaultBinderTypeRegistry).Assembly.GetName().Name;
+    private static readonly string ThisAssemblyName = typeof(DefaultBinderTypeRegistry).Assembly.GetName().Name;
     private readonly Dictionary<string, IBinderType> _binderTypes;
 
     public DefaultBinderTypeRegistry()
@@ -119,7 +119,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
     internal static bool ShouldCheckFile(FileInfo file)
     {
         var fileName = Path.GetFileNameWithoutExtension(file.Name);
-        if (fileName.Equals(_thisAssemblyName, StringComparison.InvariantCultureIgnoreCase))
+        if (fileName.Equals(ThisAssemblyName, StringComparison.InvariantCultureIgnoreCase))
         {
             return false;
         }

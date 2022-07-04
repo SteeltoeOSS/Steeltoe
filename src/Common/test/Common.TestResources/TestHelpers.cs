@@ -40,7 +40,7 @@ public static partial class TestHelpers
 
     public static string EntryAssemblyName => Assembly.GetEntryAssembly().GetName().Name;
 
-    public static readonly string VCAP_APPLICATION = @"
+    public static readonly string VcapApplication = @"
             {
                 ""limits"": {
                     ""fds"": 16384,
@@ -63,7 +63,7 @@ public static partial class TestHelpers
                 ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
             }";
 
-    public static readonly ImmutableDictionary<string, string> _fastTestsConfiguration = new Dictionary<string, string>
+    public static readonly ImmutableDictionary<string, string> FastTestsConfiguration = new Dictionary<string, string>
     {
         { "spring:cloud:config:enabled", "false" },
         { "eureka:client:serviceUrl", "http://127.0.0.1" },
@@ -75,7 +75,7 @@ public static partial class TestHelpers
         { "sqlserver:credentials:timeout", "1" },
     }.ToImmutableDictionary();
 
-    public static readonly ImmutableDictionary<string, string> _wavefrontConfiguration = new Dictionary<string, string>
+    public static readonly ImmutableDictionary<string, string> WavefrontConfiguration = new Dictionary<string, string>
     {
         { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
     }.ToImmutableDictionary();

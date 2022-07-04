@@ -15,9 +15,9 @@ namespace Steeltoe.Connector.MySql;
 /// </summary>
 public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 {
-    public const string Default_Server = "localhost";
-    public const int Default_Port = 3306;
-    private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
+    public const string DefaultServer = "localhost";
+    public const int DefaultPort = 3306;
+    private const string MysqlClientSectionPrefix = "mysql:client";
     private readonly bool _cloudFoundryConfigFound;
 
     public MySqlProviderConnectorOptions()
@@ -31,7 +31,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(MYSQL_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(MysqlClientSectionPrefix);
         section.Bind(this);
 
         _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
@@ -39,9 +39,9 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string ConnectionString { get; set; }
 
-    public string Server { get; set; } = Default_Server;
+    public string Server { get; set; } = DefaultServer;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string Username { get; set; }
 

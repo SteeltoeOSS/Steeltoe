@@ -154,18 +154,18 @@ public static class Serialize
         writer.WriteLongField("requestCount", healthCounts.TotalRequests);
 
         // rolling counters
-        writer.WriteLongField("rollingCountCollapsedRequests", commandMetrics.GetRollingCount(HystrixEventType.COLLAPSED));
-        writer.WriteLongField("rollingCountExceptionsThrown", commandMetrics.GetRollingCount(HystrixEventType.EXCEPTION_THROWN));
-        writer.WriteLongField("rollingCountFailure", commandMetrics.GetRollingCount(HystrixEventType.FAILURE));
-        writer.WriteLongField("rollingCountFallbackFailure", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_FAILURE));
-        writer.WriteLongField("rollingCountFallbackRejection", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_REJECTION));
-        writer.WriteLongField("rollingCountFallbackSuccess", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_SUCCESS));
-        writer.WriteLongField("rollingCountResponsesFromCache", commandMetrics.GetRollingCount(HystrixEventType.RESPONSE_FROM_CACHE));
-        writer.WriteLongField("rollingCountSemaphoreRejected", commandMetrics.GetRollingCount(HystrixEventType.SEMAPHORE_REJECTED));
-        writer.WriteLongField("rollingCountShortCircuited", commandMetrics.GetRollingCount(HystrixEventType.SHORT_CIRCUITED));
-        writer.WriteLongField("rollingCountSuccess", commandMetrics.GetRollingCount(HystrixEventType.SUCCESS));
-        writer.WriteLongField("rollingCountThreadPoolRejected", commandMetrics.GetRollingCount(HystrixEventType.THREAD_POOL_REJECTED));
-        writer.WriteLongField("rollingCountTimeout", commandMetrics.GetRollingCount(HystrixEventType.TIMEOUT));
+        writer.WriteLongField("rollingCountCollapsedRequests", commandMetrics.GetRollingCount(HystrixEventType.Collapsed));
+        writer.WriteLongField("rollingCountExceptionsThrown", commandMetrics.GetRollingCount(HystrixEventType.ExceptionThrown));
+        writer.WriteLongField("rollingCountFailure", commandMetrics.GetRollingCount(HystrixEventType.Failure));
+        writer.WriteLongField("rollingCountFallbackFailure", commandMetrics.GetRollingCount(HystrixEventType.FallbackFailure));
+        writer.WriteLongField("rollingCountFallbackRejection", commandMetrics.GetRollingCount(HystrixEventType.FallbackRejection));
+        writer.WriteLongField("rollingCountFallbackSuccess", commandMetrics.GetRollingCount(HystrixEventType.FallbackSuccess));
+        writer.WriteLongField("rollingCountResponsesFromCache", commandMetrics.GetRollingCount(HystrixEventType.ResponseFromCache));
+        writer.WriteLongField("rollingCountSemaphoreRejected", commandMetrics.GetRollingCount(HystrixEventType.SemaphoreRejected));
+        writer.WriteLongField("rollingCountShortCircuited", commandMetrics.GetRollingCount(HystrixEventType.ShortCircuited));
+        writer.WriteLongField("rollingCountSuccess", commandMetrics.GetRollingCount(HystrixEventType.Success));
+        writer.WriteLongField("rollingCountThreadPoolRejected", commandMetrics.GetRollingCount(HystrixEventType.ThreadPoolRejected));
+        writer.WriteLongField("rollingCountTimeout", commandMetrics.GetRollingCount(HystrixEventType.Timeout));
 
         writer.WriteIntegerField("currentConcurrentExecutionCount", commandMetrics.CurrentConcurrentExecutionCount);
 

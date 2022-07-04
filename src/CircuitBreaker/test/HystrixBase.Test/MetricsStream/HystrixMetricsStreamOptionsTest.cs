@@ -13,7 +13,7 @@ public class HystrixMetricsStreamOptionsTest : HystrixTestBase
     public void Constructor_InitializesDefaults()
     {
         var opts = new HystrixMetricsStreamOptions();
-        Assert.True(opts.Validate_Certificates);
+        Assert.True(opts.ValidateCertificates);
         Assert.Equal(500, opts.SendRate);
         Assert.Equal(500, opts.GatherRate);
     }

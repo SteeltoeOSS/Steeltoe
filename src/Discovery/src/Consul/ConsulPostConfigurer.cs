@@ -35,6 +35,6 @@ public static class ConsulPostConfigurer
     {
         options.NetUtils = new InetUtils(netOptions);
         options.ApplyNetUtils();
-        options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+        options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
     }
 }

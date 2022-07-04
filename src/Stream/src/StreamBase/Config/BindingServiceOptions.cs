@@ -10,31 +10,31 @@ namespace Steeltoe.Stream.Config;
 
 public class BindingServiceOptions // : IBindingServiceOptions
 {
-    public const string PREFIX = "spring:cloud:stream";
+    public const string Prefix = "spring:cloud:stream";
 
-    private const int InstanceIndex_Default = 0;
-    private const int InstanceCount_Default = 1;
-    private const int BindingRetryInterval_Default = 30;
-    private const bool OverrideCloudConnectors_Default = false;
+    private const int InstanceIndexDefault = 0;
+    private const int InstanceCountDefault = 1;
+    private const int BindingRetryIntervalDefault = 30;
+    private const bool OverrideCloudConnectorsDefault = false;
 
     internal void PostProcess()
     {
         if (InstanceIndex == int.MinValue)
         {
-            InstanceIndex = InstanceIndex_Default;
+            InstanceIndex = InstanceIndexDefault;
         }
 
         if (InstanceCount == int.MinValue)
         {
-            InstanceCount = InstanceCount_Default;
+            InstanceCount = InstanceCountDefault;
         }
 
         if (BindingRetryInterval == int.MinValue)
         {
-            BindingRetryInterval = BindingRetryInterval_Default;
+            BindingRetryInterval = BindingRetryIntervalDefault;
         }
 
-        OverrideCloudConnectors ??= OverrideCloudConnectors_Default;
+        OverrideCloudConnectors ??= OverrideCloudConnectorsDefault;
         DynamicDestinations ??= new List<string>();
         Binders ??= new Dictionary<string, BinderOptions>();
         Bindings ??= new Dictionary<string, BindingOptions>();

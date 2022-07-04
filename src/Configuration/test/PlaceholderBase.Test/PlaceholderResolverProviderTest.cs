@@ -37,7 +37,7 @@ public partial class PlaceholderResolverProviderTest
     {
         var holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build());
         Assert.NotNull(holder.Configuration);
-        Assert.Empty(holder._providers);
+        Assert.Empty(holder.InnerProviders);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public partial class PlaceholderResolverProviderTest
         var providers = new List<IConfigurationProvider>();
         var holder = new PlaceholderResolverProvider(providers);
         Assert.Null(holder.Configuration);
-        Assert.Same(providers, holder._providers);
+        Assert.Same(providers, holder.InnerProviders);
     }
 
     [Fact]
@@ -55,10 +55,10 @@ public partial class PlaceholderResolverProviderTest
         var loggerFactory = new LoggerFactory();
 
         var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(), loggerFactory);
-        Assert.NotNull(holder._logger);
+        Assert.NotNull(holder.Logger);
 
         holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build(), loggerFactory);
-        Assert.NotNull(holder._logger);
+        Assert.NotNull(holder.Logger);
     }
 
     [Fact]

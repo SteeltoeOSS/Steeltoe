@@ -14,8 +14,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class RabbitListenerMetadata
 {
-    internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new ();
-    internal static readonly HashSet<string> _groups = new ();
+    internal static readonly Dictionary<Type, RabbitListenerMetadata> TypeCache = new ();
+    internal static readonly HashSet<string> Groups = new ();
 
     internal RabbitListenerMetadata(Type targetClass, List<ListenerMethod> methods, List<MethodInfo> multiMethods, List<RabbitListenerAttribute> classLevelListeners)
     {
@@ -47,7 +47,7 @@ public class RabbitListenerMetadata
             throw new ArgumentNullException(nameof(targetClass));
         }
 
-        if (_typeCache.TryGetValue(targetClass, out _))
+        if (TypeCache.TryGetValue(targetClass, out _))
         {
             return null;
         }
@@ -95,9 +95,9 @@ public class RabbitListenerMetadata
                 throw new InvalidOperationException("RabbitListenerAttribute can have either 'Queues' or 'Bindings' set, but not both");
             }
 
-            if (!string.IsNullOrEmpty(listener.Group) && !_groups.Contains(listener.Group))
+            if (!string.IsNullOrEmpty(listener.Group) && !Groups.Contains(listener.Group))
             {
-                _groups.Add(listener.Group);
+                Groups.Add(listener.Group);
                 services.AddSingleton<IMessageListenerContainerCollection>(new MessageListenerContainerCollection(listener.Group));
             }
         }
@@ -118,6 +118,6 @@ public class RabbitListenerMetadata
 
     internal static void Reset()
     {
-        _typeCache.Clear();
+        TypeCache.Clear();
     }
 }

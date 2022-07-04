@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class DefaultParseContext : IParserContext
 {
-    public static readonly IParserContext TEMPLATE_EXPRESSION = new DefaultParseContext();
+    public static readonly IParserContext TemplateExpression = new DefaultParseContext();
 
     public bool IsTemplate => true;
 

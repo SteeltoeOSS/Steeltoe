@@ -77,18 +77,18 @@ public class IntegrationMessageBuilder<T> : IntegrationMessageBuilder, IMessageB
 
     public new IMessage<T> Build()
     {
-        if (!_modified && !_headerAccessor.IsModified && _originalMessage != null
-            && !ContainsReadOnly(_originalMessage.Headers))
+        if (!modified && !HeaderAccessor.IsModified && OriginalMessage != null
+            && !ContainsReadOnly(OriginalMessage.Headers))
         {
-            return (IMessage<T>)_originalMessage;
+            return (IMessage<T>)OriginalMessage;
         }
 
-        if (_payload is Exception exception)
+        if (InnerPayload is Exception exception)
         {
-            return (IMessage<T>)new ErrorMessage(exception, _headerAccessor.ToDictionary());
+            return (IMessage<T>)new ErrorMessage(exception, HeaderAccessor.ToDictionary());
         }
 
-        return Message.Create((T)_payload, _headerAccessor.ToDictionary());
+        return Message.Create((T)InnerPayload, HeaderAccessor.ToDictionary());
     }
 
     public new IMessageBuilder<T> SetExpirationDate(long expirationDate)
@@ -177,9 +177,9 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
     {
     }
 
-    public override object Payload => _payload;
+    public override object Payload => InnerPayload;
 
-    public override IDictionary<string, object> Headers => _headerAccessor.ToDictionary();
+    public override IDictionary<string, object> Headers => HeaderAccessor.ToDictionary();
 
     public static IntegrationMessageBuilder FromMessage(IMessage message)
     {
@@ -198,27 +198,27 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
 
     public override IMessageBuilder SetHeader(string headerName, object headerValue)
     {
-        _headerAccessor.SetHeader(headerName, headerValue);
+        HeaderAccessor.SetHeader(headerName, headerValue);
         return this;
     }
 
     public override IMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue)
     {
-        _headerAccessor.SetHeaderIfAbsent(headerName, headerValue);
+        HeaderAccessor.SetHeaderIfAbsent(headerName, headerValue);
         return this;
     }
 
     public override IMessageBuilder RemoveHeaders(params string[] headerPatterns)
     {
-        _headerAccessor.RemoveHeaders(headerPatterns);
+        HeaderAccessor.RemoveHeaders(headerPatterns);
         return this;
     }
 
     public override IMessageBuilder RemoveHeader(string headerName)
     {
-        if (!_headerAccessor.IsReadOnly(headerName))
+        if (!HeaderAccessor.IsReadOnly(headerName))
         {
-            _headerAccessor.RemoveHeader(headerName);
+            HeaderAccessor.RemoveHeader(headerName);
         }
 
         return this;
@@ -226,7 +226,7 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
 
     public override IMessageBuilder CopyHeaders(IDictionary<string, object> headersToCopy)
     {
-        _headerAccessor.CopyHeaders(headersToCopy);
+        HeaderAccessor.CopyHeaders(headersToCopy);
         return this;
     }
 
@@ -237,9 +237,9 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
             foreach (var entry in headersToCopy)
             {
                 var headerName = entry.Key;
-                if (!_headerAccessor.IsReadOnly(headerName))
+                if (!HeaderAccessor.IsReadOnly(headerName))
                 {
-                    _headerAccessor.SetHeaderIfAbsent(headerName, entry.Value);
+                    HeaderAccessor.SetHeaderIfAbsent(headerName, entry.Value);
                 }
             }
         }
@@ -247,34 +247,34 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
         return this;
     }
 
-    protected override List<List<object>> SequenceDetails => (List<List<object>>)_headerAccessor.GetHeader(IntegrationMessageHeaderAccessor.SEQUENCE_DETAILS);
+    protected override List<List<object>> SequenceDetails => (List<List<object>>)HeaderAccessor.GetHeader(IntegrationMessageHeaderAccessor.SequenceDetails);
 
-    protected override object CorrelationId => _headerAccessor.GetCorrelationId();
+    protected override object CorrelationId => HeaderAccessor.GetCorrelationId();
 
-    protected override object SequenceNumber => _headerAccessor.GetSequenceNumber();
+    protected override object SequenceNumber => HeaderAccessor.GetSequenceNumber();
 
-    protected override object SequenceSize => _headerAccessor.GetSequenceSize();
+    protected override object SequenceSize => HeaderAccessor.GetSequenceSize();
 
     public IMessageBuilder ReadOnlyHeaders(IList<string> readOnlyHeaders)
     {
-        _readOnlyHeaders = readOnlyHeaders;
-        _headerAccessor.SetReadOnlyHeaders(readOnlyHeaders);
+        base.innerReadOnlyHeaders = readOnlyHeaders;
+        HeaderAccessor.SetReadOnlyHeaders(readOnlyHeaders);
         return this;
     }
 
     public override IMessage Build()
     {
-        if (!_modified && !_headerAccessor.IsModified && _originalMessage != null
-            && !ContainsReadOnly(_originalMessage.Headers))
+        if (!modified && !HeaderAccessor.IsModified && OriginalMessage != null
+            && !ContainsReadOnly(OriginalMessage.Headers))
         {
-            return _originalMessage;
+            return OriginalMessage;
         }
 
-        if (_payload is Exception exception)
+        if (InnerPayload is Exception exception)
         {
-            return new ErrorMessage(exception, _headerAccessor.ToDictionary());
+            return new ErrorMessage(exception, HeaderAccessor.ToDictionary());
         }
 
-        return Message.Create(_payload, _headerAccessor.ToDictionary(), _payload.GetType());
+        return Message.Create(InnerPayload, HeaderAccessor.ToDictionary(), InnerPayload.GetType());
     }
 }

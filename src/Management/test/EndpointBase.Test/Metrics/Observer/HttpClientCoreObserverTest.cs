@@ -58,12 +58,12 @@ public class HttpClientCoreObserverTest : BaseTest
         var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
         obs.ProcessEvent("foobar", null);
-        obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
+        obs.ProcessEvent(HttpClientCoreObserver.StopEvent, null);
 
         var act = new Activity("Test");
         act.Start();
-        obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
-        obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, null);
+        obs.ProcessEvent(HttpClientCoreObserver.StopEvent, null);
+        obs.ProcessEvent(HttpClientCoreObserver.ExceptionEvent, null);
         act.Stop();
     }
 

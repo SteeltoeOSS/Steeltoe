@@ -23,5 +23,5 @@ public class FanoutExchange : AbstractExchange, IFanoutExchange
     {
     }
 
-    public override string Type { get; } = ExchangeType.FANOUT;
+    public override string Type { get; } = ExchangeType.Fanout;
 }

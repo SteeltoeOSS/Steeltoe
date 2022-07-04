@@ -26,9 +26,9 @@ public class ReflectiveConstructorResolver : IConstructorResolver
 
             Array.Sort(ctors, (c1, c2) =>
             {
-                var c1pl = c1.GetParameters().Length;
-                var c2pl = c2.GetParameters().Length;
-                return c1pl.CompareTo(c2pl);
+                var c1Pl = c1.GetParameters().Length;
+                var c2Pl = c2.GetParameters().Length;
+                return c1Pl.CompareTo(c2Pl);
             });
 
             ConstructorInfo closeMatch = null;

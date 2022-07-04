@@ -13,5 +13,5 @@ public class PublishSubscribeChannelWriter : AbstractSubscribableChannelWriter
     {
     }
 
-    public new PublishSubscribeChannel Channel => (PublishSubscribeChannel)channel;
+    public new PublishSubscribeChannel Channel => (PublishSubscribeChannel)innerChannel;
 }

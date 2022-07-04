@@ -18,7 +18,7 @@ public class ReadinessHealthContributorTest
 
         var result = contributor.Health();
 
-        Assert.Equal(HealthStatus.UNKNOWN, result.Status);
+        Assert.Equal(HealthStatus.Unknown, result.Status);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class ReadinessHealthContributorTest
 
         var result = contributor.Health();
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
     }
 
     [Fact]
@@ -40,6 +40,6 @@ public class ReadinessHealthContributorTest
 
         var result = contributor.Health();
 
-        Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
+        Assert.Equal(HealthStatus.OutOfService, result.Status);
     }
 }

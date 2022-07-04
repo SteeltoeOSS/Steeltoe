@@ -32,12 +32,12 @@ internal sealed class InterruptibleCommand : TestHystrixCommand<bool>
     {
         try
         {
-            Time.WaitUntil(() => _token.IsCancellationRequested, 2000);
-            _token.ThrowIfCancellationRequested();
+            Time.WaitUntil(() => Token.IsCancellationRequested, 2000);
+            Token.ThrowIfCancellationRequested();
         }
         catch (Exception)
         {
-            _output?.WriteLine("Interrupted!");
+            Output?.WriteLine("Interrupted!");
             _hasBeenInterrupted = true;
             throw;
         }

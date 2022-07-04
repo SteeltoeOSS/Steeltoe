@@ -8,7 +8,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery;
 
 public class KubernetesDiscoveryOptions
 {
-    public const string KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX = "spring:cloud:kubernetes:discovery";
+    public const string KubernetesDiscoveryConfigurationPrefix = "spring:cloud:kubernetes:discovery";
 
     /// <summary>
     /// Gets or sets a value indicating whether service discovery by Kubernetes API is enabled.
@@ -56,7 +56,7 @@ public class KubernetesDiscoveryOptions
     /// Gets or sets the time in seconds that service instance cache records should remain active.
     /// </summary>
     /// <remarks>configuration property: eureka:client:cacheTTL.</remarks>
-    public int CacheTTL { get; set; } = 15;
+    public int CacheTtl { get; set; } = 15;
 
     public override string ToString()
     {

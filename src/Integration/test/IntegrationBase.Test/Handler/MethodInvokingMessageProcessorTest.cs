@@ -265,9 +265,9 @@ public class MethodInvokingMessageProcessorTest
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, service, typeof(ServiceActivatorAttribute));
         processor.ProcessMessage(MessageBuilder.WithPayload(123).Build());
-        Assert.NotNull(service._lastArg);
-        Assert.IsType<string>(service._lastArg);
-        Assert.Equal("123", service._lastArg);
+        Assert.NotNull(service.LastArg);
+        Assert.IsType<string>(service.LastArg);
+        Assert.Equal("123", service.LastArg);
     }
 
     [Fact]
@@ -428,17 +428,17 @@ public class MethodInvokingMessageProcessorTest
 
     public class OverloadedMethodService
     {
-        public volatile object _lastArg;
+        public volatile object LastArg;
 
         public void Foo(bool b)
         {
-            _lastArg = b;
+            LastArg = b;
         }
 
         [ServiceActivator]
         public string Foo(string s)
         {
-            _lastArg = s;
+            LastArg = s;
             return s;
         }
     }

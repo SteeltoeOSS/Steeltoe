@@ -10,16 +10,16 @@ namespace Steeltoe.Common.Transaction;
 
 public abstract class AbstractPlatformTransactionManager : IPlatformTransactionManager
 {
-    public const int SYNCHRONIZATION_ALWAYS = 0;
-    public const int SYNCHRONIZATION_ON_ACTUAL_TRANSACTION = 1;
-    public const int SYNCHRONIZATION_NEVER = 2;
+    public const int SynchronizationAlways = 0;
+    public const int SynchronizationOnActualTransaction = 1;
+    public const int SynchronizationNever = 2;
 
-    protected readonly ILogger _logger;
+    protected readonly ILogger Logger;
     private int _defaultTimeout;
 
     protected AbstractPlatformTransactionManager(ILogger logger = null)
     {
-        _logger = logger;
+        this.Logger = logger;
     }
 
     public virtual int TransactionSynchronization { get; set; }
@@ -33,7 +33,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
 
         set
         {
-            if (value < AbstractTransactionDefinition.TIMEOUT_DEFAULT)
+            if (value < AbstractTransactionDefinition.TimeoutDefault)
             {
                 throw new ArgumentException(nameof(DefaultTimeout));
             }
@@ -66,26 +66,26 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         }
 
         // Check definition settings for new transaction.
-        if (def.Timeout < AbstractTransactionDefinition.TIMEOUT_DEFAULT)
+        if (def.Timeout < AbstractTransactionDefinition.TimeoutDefault)
         {
             throw new InvalidTimeoutException("Invalid transaction timeout", def.Timeout);
         }
 
         // No existing transaction found -> check propagation behavior to find out how to proceed.
-        if (def.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_MANDATORY)
+        if (def.PropagationBehavior == AbstractTransactionDefinition.PropagationMandatory)
         {
             throw new IllegalTransactionStateException(
                 "No existing transaction found for transaction marked with propagation 'mandatory'");
         }
-        else if (def.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_REQUIRED ||
-                 def.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_REQUIRES_NEW ||
-                 def.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_NESTED)
+        else if (def.PropagationBehavior == AbstractTransactionDefinition.PropagationRequired ||
+                 def.PropagationBehavior == AbstractTransactionDefinition.PropagationRequiresNew ||
+                 def.PropagationBehavior == AbstractTransactionDefinition.PropagationNested)
         {
             var suspendedResources = Suspend(null);
-            _logger?.LogDebug("Creating new transaction with name [{name}] with {def}", def.Name, def);
+            Logger?.LogDebug("Creating new transaction with name [{name}] with {def}", def.Name, def);
             try
             {
-                var newSynchronization = TransactionSynchronization != SYNCHRONIZATION_NEVER;
+                var newSynchronization = TransactionSynchronization != SynchronizationNever;
                 var status = NewTransactionStatus(def, transaction, true, newSynchronization, suspendedResources);
                 DoBegin(transaction, def);
                 PrepareSynchronization(status, def);
@@ -100,13 +100,13 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         else
         {
             // Create "empty" transaction: no actual transaction, but potentially synchronization.
-            if (def.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT)
+            if (def.IsolationLevel != AbstractTransactionDefinition.IsolationDefault)
             {
-                _logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; " +
+                Logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; " +
                                     "isolation level will effectively be ignored: " + def);
             }
 
-            var newSynchronization = TransactionSynchronization == SYNCHRONIZATION_ALWAYS;
+            var newSynchronization = TransactionSynchronization == SynchronizationAlways;
             return PrepareTransactionStatus(def, null, true, newSynchronization, null);
         }
     }
@@ -122,14 +122,14 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         var defStatus = (DefaultTransactionStatus)status;
         if (defStatus.IsLocalRollbackOnly)
         {
-            _logger?.LogDebug("Transactional code has requested rollback");
+            Logger?.LogDebug("Transactional code has requested rollback");
             ProcessRollback(defStatus, false);
             return;
         }
 
         if (!ShouldCommitOnGlobalRollbackOnly && defStatus.IsGlobalRollbackOnly)
         {
-            _logger?.LogDebug("Global transaction is marked as rollback-only but transactional code requested commit");
+            Logger?.LogDebug("Global transaction is marked as rollback-only but transactional code requested commit");
             ProcessRollback(defStatus, true);
             return;
         }
@@ -158,7 +158,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     protected virtual DefaultTransactionStatus NewTransactionStatus(ITransactionDefinition definition, object transaction, bool newTransaction, bool newSynchronization, object suspendedResources)
     {
         var actualNewSynchronization = newSynchronization && !TransactionSynchronizationManager.IsSynchronizationActive();
-        return new DefaultTransactionStatus(transaction, newTransaction, actualNewSynchronization, definition.IsReadOnly, suspendedResources, _logger);
+        return new DefaultTransactionStatus(transaction, newTransaction, actualNewSynchronization, definition.IsReadOnly, suspendedResources, Logger);
     }
 
     protected virtual void PrepareSynchronization(DefaultTransactionStatus status, ITransactionDefinition definition)
@@ -166,7 +166,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         if (status.IsNewSynchronization)
         {
             TransactionSynchronizationManager.SetActualTransactionActive(status.HasTransaction);
-            TransactionSynchronizationManager.SetCurrentTransactionIsolationLevel(definition.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT ? definition.IsolationLevel : null);
+            TransactionSynchronizationManager.SetCurrentTransactionIsolationLevel(definition.IsolationLevel != AbstractTransactionDefinition.IsolationDefault ? definition.IsolationLevel : null);
             TransactionSynchronizationManager.SetCurrentTransactionReadOnly(definition.IsReadOnly);
             TransactionSynchronizationManager.SetCurrentTransactionName(definition.Name);
             TransactionSynchronizationManager.InitSynchronization();
@@ -175,7 +175,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
 
     protected virtual int DetermineTimeout(ITransactionDefinition definition)
     {
-        if (definition.Timeout != AbstractTransactionDefinition.TIMEOUT_DEFAULT)
+        if (definition.Timeout != AbstractTransactionDefinition.TimeoutDefault)
         {
             return definition.Timeout;
         }
@@ -252,7 +252,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     {
         if (status.IsNewSynchronization)
         {
-            _logger?.LogTrace("Triggering beforeCommit synchronization");
+            Logger?.LogTrace("Triggering beforeCommit synchronization");
             TransactionSynchronizationUtils.TriggerBeforeCommit(status.IsReadOnly);
         }
     }
@@ -261,8 +261,8 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     {
         if (status.IsNewSynchronization)
         {
-            _logger?.LogTrace("Triggering beforeCompletion synchronization");
-            TransactionSynchronizationUtils.TriggerBeforeCompletion(_logger);
+            Logger?.LogTrace("Triggering beforeCompletion synchronization");
+            TransactionSynchronizationUtils.TriggerBeforeCompletion(Logger);
         }
     }
 
@@ -303,9 +303,9 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
 
     protected virtual void RegisterAfterCompletionWithExistingTransaction(object transaction, List<ITransactionSynchronization> synchronizations)
     {
-        _logger?.LogDebug("Cannot register Spring after-completion synchronization with existing transaction - " +
+        Logger?.LogDebug("Cannot register Spring after-completion synchronization with existing transaction - " +
                           "processing Spring after-completion callbacks immediately, with outcome status 'unknown'");
-        InvokeAfterCompletion(synchronizations, AbstractTransactionSynchronization.STATUS_UNKNOWN);
+        InvokeAfterCompletion(synchronizations, AbstractTransactionSynchronization.StatusUnknown);
     }
 
     protected virtual void DoCleanupAfterCompletion(object transaction)
@@ -335,7 +335,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
 
         if (status.SuspendedResources != null)
         {
-            _logger?.LogDebug("Resuming suspended transaction after completion of inner transaction");
+            Logger?.LogDebug("Resuming suspended transaction after completion of inner transaction");
             var transaction = status.HasTransaction ? status.Transaction : null;
             Resume(transaction, (SuspendedResourcesHolder)status.SuspendedResources);
         }
@@ -345,7 +345,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     {
         if (status.IsNewSynchronization)
         {
-            _logger?.LogTrace("Triggering afterCommit synchronization");
+            Logger?.LogTrace("Triggering afterCommit synchronization");
             TransactionSynchronizationUtils.TriggerAfterCommit();
         }
     }
@@ -358,7 +358,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             TransactionSynchronizationManager.ClearSynchronization();
             if (!status.HasTransaction || status.IsNewTransaction)
             {
-                _logger?.LogTrace("Triggering afterCompletion synchronization");
+                Logger?.LogTrace("Triggering afterCompletion synchronization");
 
                 // No transaction or new transaction for the current scope ->
                 // invoke the afterCompletion callbacks immediately
@@ -380,23 +380,23 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         {
             if (status.IsNewTransaction)
             {
-                _logger?.LogDebug(exception, "Initiating transaction rollback after commit exception");
+                Logger?.LogDebug(exception, "Initiating transaction rollback after commit exception");
                 DoRollback(status);
             }
             else if (status.HasTransaction && GlobalRollbackOnParticipationFailure)
             {
-                _logger?.LogDebug(exception, "Marking existing transaction as rollback-only after commit exception");
+                Logger?.LogDebug(exception, "Marking existing transaction as rollback-only after commit exception");
                 DoSetRollbackOnly(status);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Commit exception overridden by rollback exception");
-            TriggerAfterCompletion(status, AbstractTransactionSynchronization.STATUS_UNKNOWN);
+            Logger?.LogError(ex, "Commit exception overridden by rollback exception");
+            TriggerAfterCompletion(status, AbstractTransactionSynchronization.StatusUnknown);
             throw;
         }
 
-        TriggerAfterCompletion(status, AbstractTransactionSynchronization.STATUS_ROLLED_BACK);
+        TriggerAfterCompletion(status, AbstractTransactionSynchronization.StatusRolledBack);
     }
 
     private void ProcessRollback(DefaultTransactionStatus status, bool unexpected)
@@ -411,12 +411,12 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
 
                 if (status.HasSavepoint)
                 {
-                    _logger?.LogDebug("Rolling back transaction to savepoint");
+                    Logger?.LogDebug("Rolling back transaction to savepoint");
                     status.RollbackToHeldSavepoint();
                 }
                 else if (status.IsNewTransaction)
                 {
-                    _logger?.LogDebug("Initiating transaction rollback");
+                    Logger?.LogDebug("Initiating transaction rollback");
                     DoRollback(status);
                 }
                 else
@@ -426,17 +426,17 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
                     {
                         if (status.IsLocalRollbackOnly || GlobalRollbackOnParticipationFailure)
                         {
-                            _logger?.LogDebug("Participating transaction failed - marking existing transaction as rollback-only");
+                            Logger?.LogDebug("Participating transaction failed - marking existing transaction as rollback-only");
                             DoSetRollbackOnly(status);
                         }
                         else
                         {
-                            _logger?.LogDebug("Participating transaction failed - letting transaction originator decide on rollback");
+                            Logger?.LogDebug("Participating transaction failed - letting transaction originator decide on rollback");
                         }
                     }
                     else
                     {
-                        _logger?.LogDebug("Should roll back transaction but cannot - no transaction available");
+                        Logger?.LogDebug("Should roll back transaction but cannot - no transaction available");
                     }
 
                     // Unexpected rollback only matters here if we're asked to fail early
@@ -448,11 +448,11 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             }
             catch (Exception)
             {
-                TriggerAfterCompletion(status, AbstractTransactionSynchronization.STATUS_UNKNOWN);
+                TriggerAfterCompletion(status, AbstractTransactionSynchronization.StatusUnknown);
                 throw;
             }
 
-            TriggerAfterCompletion(status, AbstractTransactionSynchronization.STATUS_ROLLED_BACK);
+            TriggerAfterCompletion(status, AbstractTransactionSynchronization.StatusRolledBack);
 
             // Raise UnexpectedRollbackException if we had a global rollback-only marker
             if (unexpectedRollback)
@@ -482,13 +482,13 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
 
                 if (status.HasSavepoint)
                 {
-                    _logger?.LogDebug("Releasing transaction savepoint");
+                    Logger?.LogDebug("Releasing transaction savepoint");
                     unexpectedRollback = status.IsGlobalRollbackOnly;
                     status.ReleaseHeldSavepoint();
                 }
                 else if (status.IsNewTransaction)
                 {
-                    _logger?.LogDebug("Initiating transaction commit");
+                    Logger?.LogDebug("Initiating transaction commit");
                     unexpectedRollback = status.IsGlobalRollbackOnly;
                     DoCommit(status);
                 }
@@ -507,7 +507,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             catch (UnexpectedRollbackException)
             {
                 // can only be caused by doCommit
-                TriggerAfterCompletion(status, AbstractTransactionSynchronization.STATUS_ROLLED_BACK);
+                TriggerAfterCompletion(status, AbstractTransactionSynchronization.StatusRolledBack);
                 throw;
             }
             catch (TransactionException ex)
@@ -519,7 +519,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
                 }
                 else
                 {
-                    TriggerAfterCompletion(status, AbstractTransactionSynchronization.STATUS_UNKNOWN);
+                    TriggerAfterCompletion(status, AbstractTransactionSynchronization.StatusUnknown);
                 }
 
                 throw;
@@ -543,7 +543,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             }
             finally
             {
-                TriggerAfterCompletion(status, AbstractTransactionSynchronization.STATUS_COMMITTED);
+                TriggerAfterCompletion(status, AbstractTransactionSynchronization.StatusCommitted);
             }
         }
         finally
@@ -583,33 +583,33 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         catch (Exception)
         {
             var exMessage = "Inner transaction begin exception overridden by outer transaction resume exception";
-            _logger?.LogError(beginEx, exMessage);
+            Logger?.LogError(beginEx, exMessage);
             throw;
         }
     }
 
     private ITransactionStatus HandleExistingTransaction(ITransactionDefinition definition, object transaction)
     {
-        if (definition.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_NEVER)
+        if (definition.PropagationBehavior == AbstractTransactionDefinition.PropagationNever)
         {
             throw new IllegalTransactionStateException(
                 "Existing transaction found for transaction marked with propagation 'never'");
         }
 
-        if (definition.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_NOT_SUPPORTED)
+        if (definition.PropagationBehavior == AbstractTransactionDefinition.PropagationNotSupported)
         {
-            _logger?.LogDebug("Suspending current transaction");
+            Logger?.LogDebug("Suspending current transaction");
             var suspendedResources = Suspend(transaction);
-            return PrepareTransactionStatus(definition, null, false, TransactionSynchronization == SYNCHRONIZATION_ALWAYS, suspendedResources);
+            return PrepareTransactionStatus(definition, null, false, TransactionSynchronization == SynchronizationAlways, suspendedResources);
         }
 
-        if (definition.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_REQUIRES_NEW)
+        if (definition.PropagationBehavior == AbstractTransactionDefinition.PropagationRequiresNew)
         {
-            _logger?.LogDebug("Suspending current transaction, creating new transaction with name [{name}]", definition.Name);
+            Logger?.LogDebug("Suspending current transaction, creating new transaction with name [{name}]", definition.Name);
             var suspendedResources = Suspend(transaction);
             try
             {
-                var status = NewTransactionStatus(definition, transaction, true, TransactionSynchronization != SYNCHRONIZATION_NEVER, suspendedResources);
+                var status = NewTransactionStatus(definition, transaction, true, TransactionSynchronization != SynchronizationNever, suspendedResources);
                 DoBegin(transaction, definition);
                 PrepareSynchronization(status, definition);
                 return status;
@@ -621,7 +621,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             }
         }
 
-        if (definition.PropagationBehavior == AbstractTransactionDefinition.PROPAGATION_NESTED)
+        if (definition.PropagationBehavior == AbstractTransactionDefinition.PropagationNested)
         {
             if (!NestedTransactionAllowed)
             {
@@ -630,7 +630,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
                     "specify 'nestedTransactionAllowed' property with value 'true'");
             }
 
-            _logger?.LogDebug("Creating nested transaction with name [{name}]", definition.Name);
+            Logger?.LogDebug("Creating nested transaction with name [{name}]", definition.Name);
             if (UseSavepointForNestedTransaction)
             {
                 // Create savepoint within existing Spring-managed transaction,
@@ -645,7 +645,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
                 // Nested transaction through nested begin and commit/rollback calls.
                 // Usually only for JTA: Spring synchronization might get activated here
                 // in case of a pre-existing JTA transaction.
-                var status = NewTransactionStatus(definition, transaction, true, TransactionSynchronization != SYNCHRONIZATION_NEVER, null);
+                var status = NewTransactionStatus(definition, transaction, true, TransactionSynchronization != SynchronizationNever, null);
                 DoBegin(transaction, definition);
                 PrepareSynchronization(status, definition);
                 return status;
@@ -653,10 +653,10 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         }
 
         // Assumably PROPAGATION_SUPPORTS or PROPAGATION_REQUIRED.
-        _logger?.LogDebug("Participating in existing transaction");
+        Logger?.LogDebug("Participating in existing transaction");
         if (ValidateExistingTransaction)
         {
-            if (definition.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT)
+            if (definition.IsolationLevel != AbstractTransactionDefinition.IsolationDefault)
             {
                 var currentIsolationLevel = TransactionSynchronizationManager.GetCurrentTransactionIsolationLevel();
                 if (currentIsolationLevel == null || currentIsolationLevel != definition.IsolationLevel)
@@ -673,7 +673,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             }
         }
 
-        var newSynchronization = TransactionSynchronization != SYNCHRONIZATION_NEVER;
+        var newSynchronization = TransactionSynchronization != SynchronizationNever;
         return PrepareTransactionStatus(definition, transaction, false, newSynchronization, null);
     }
 

@@ -54,8 +54,8 @@ public class HystrixEventSourceService : IHostedService
                         errorCount: commandMetrics.Healthcounts.ErrorCount,
                         requestCount: commandMetrics.Healthcounts.TotalRequests,
                         currentConcurrentExecutionCount: commandMetrics.CurrentConcurrentExecutionCount,
-                        latencyExecute_mean: commandMetrics.ExecutionTimeMean,
-                        latencyTotal_mean: commandMetrics.TotalTimeMean,
+                        latencyExecuteMean: commandMetrics.ExecutionTimeMean,
+                        latencyTotalMean: commandMetrics.TotalTimeMean,
                         reportingHosts: 1, // this will get summed across all instances in a cluster
                         threadPool: commandMetrics.ThreadPoolKey.Name);
                 }
@@ -80,10 +80,10 @@ public class HystrixEventSourceService : IHostedService
                 {
                     HystrixMetricsEventSource.EventLogger.CollapserMetrics(
                         collapserKey: collapserMetrics.CollapserKey.Name,
-                        rollingCountRequestsBatched: collapserMetrics.GetRollingCount(CollapserEventType.ADDED_TO_BATCH),
-                        rollingCountBatches: collapserMetrics.GetRollingCount(CollapserEventType.BATCH_EXECUTED),
-                        rollingCountResponsesFromCache: collapserMetrics.GetRollingCount(CollapserEventType.RESPONSE_FROM_CACHE),
-                        batchSize_mean: collapserMetrics.BatchSizeMean,
+                        rollingCountRequestsBatched: collapserMetrics.GetRollingCount(CollapserEventType.AddedToBatch),
+                        rollingCountBatches: collapserMetrics.GetRollingCount(CollapserEventType.BatchExecuted),
+                        rollingCountResponsesFromCache: collapserMetrics.GetRollingCount(CollapserEventType.ResponseFromCache),
+                        batchSizeMean: collapserMetrics.BatchSizeMean,
                         reportingHosts: 1); // this will get summed across all instances in a cluster
                 }
             }

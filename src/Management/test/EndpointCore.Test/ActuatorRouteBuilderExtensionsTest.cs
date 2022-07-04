@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint;
 
 public partial class ActuatorRouteBuilderExtensionsTest
 {
-    public static IEnumerable<object[]> IEndpointImplementations
+    public static IEnumerable<object[]> EndpointImplementations
     {
         get
         {
@@ -38,7 +38,7 @@ public partial class ActuatorRouteBuilderExtensionsTest
         }
     }
 
-    public static IEnumerable<object[]> IEndpointImplementationsForCurrentPlatform
+    public static IEnumerable<object[]> EndpointImplementationsForCurrentPlatform
     {
         get
         {
@@ -54,7 +54,7 @@ public partial class ActuatorRouteBuilderExtensionsTest
     }
 
     [Theory]
-    [MemberData(nameof(IEndpointImplementations))]
+    [MemberData(nameof(EndpointImplementations))]
     public void LookupMiddlewareTest(Type type)
     {
         var (middleware, options) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
@@ -63,7 +63,7 @@ public partial class ActuatorRouteBuilderExtensionsTest
     }
 
     [Theory]
-    [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
+    [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
     public async Task MapTestAuthSuccess(Type type)
     {
         var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
@@ -71,7 +71,7 @@ public partial class ActuatorRouteBuilderExtensionsTest
     }
 
     [Theory]
-    [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
+    [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
     public async Task MapTestAuthFail(Type type)
     {
         var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));

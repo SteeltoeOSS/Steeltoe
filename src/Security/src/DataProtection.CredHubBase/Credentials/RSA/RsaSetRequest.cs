@@ -15,7 +15,7 @@ public class RsaSetRequest : CredentialSetRequest
     public RsaSetRequest(string credentialName, string privateKey, string publicKey)
     {
         Name = credentialName;
-        Type = CredentialType.RSA;
+        Type = CredentialType.Rsa;
         Value = new RsaCredential { PrivateKey = privateKey, PublicKey = publicKey };
     }
 }

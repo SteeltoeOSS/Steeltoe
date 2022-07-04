@@ -13,8 +13,8 @@ namespace Steeltoe.Stream.Binder.Rabbit;
 
 public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
 {
-    public const string ROUTING_KEY_HEADER = "scst_routingKey";
-    public const string DELAY_HEADER = "scst_delay";
+    public const string RoutingKeyHeader = "scst_routingKey";
+    public const string DelayHeader = "scst_delay";
 
     public int Order => 0;
 
@@ -68,12 +68,12 @@ public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
         var builder = IntegrationMessageBuilder.FromMessage(message);
         if (RoutingKeyExpression != null)
         {
-            builder.SetHeader(ROUTING_KEY_HEADER, RoutingKeyExpression.GetValue(EvaluationContext, message));
+            builder.SetHeader(RoutingKeyHeader, RoutingKeyExpression.GetValue(EvaluationContext, message));
         }
 
         if (DelayExpression != null)
         {
-            builder.SetHeader(DELAY_HEADER, DelayExpression.GetValue(EvaluationContext, message));
+            builder.SetHeader(DelayHeader, DelayExpression.GetValue(EvaluationContext, message));
         }
 
         return builder.Build();

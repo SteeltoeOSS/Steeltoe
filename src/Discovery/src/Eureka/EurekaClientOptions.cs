@@ -6,9 +6,9 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
 {
-    public const string EUREKA_CLIENT_CONFIGURATION_PREFIX = "eureka:client";
+    public const string EurekaClientConfigurationPrefix = "eureka:client";
 
-    public new const int Default_InstanceInfoReplicationIntervalSeconds = 30;
+    public new const int DefaultInstanceInfoReplicationIntervalSeconds = 30;
 
     public EurekaClientOptions()
     {
@@ -34,6 +34,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     }
 
     // Configuration property: eureka:client:validate_certificates
+    // ReSharper disable once InconsistentNaming
     public bool Validate_Certificates
     {
         get => ValidateCertificates;
@@ -45,7 +46,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     /// Gets or sets the time in seconds that service instance cache records should remain active.
     /// </summary>
     /// <remarks>configuration property: eureka:client:cacheTTL.</remarks>
-    public int CacheTTL { get; set; } = 15;
+    public int CacheTtl { get; set; } = 15;
 
     // Configuration property: eureka:client:eurekaServer
     public EurekaServerConfig EurekaServer { get; set; }

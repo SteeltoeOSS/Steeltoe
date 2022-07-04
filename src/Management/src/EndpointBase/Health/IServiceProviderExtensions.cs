@@ -9,7 +9,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public static class IServiceProviderExtensions
+public static class ServiceProviderExtensions
 {
     /// <summary>
     /// Register events to trigger initial and shutting down values for Readiness and Liveness states of <see cref="ApplicationAvailability"/>.

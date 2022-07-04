@@ -157,7 +157,7 @@ public class RoutingConnectionFactoryTest
         container.Initialize();
         await container.Start();
 
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         connectionFactory1.Verify(f => f.CreateConnection(), Times.Never);
         connectionFactory2.Verify(f => f.CreateConnection(), Times.Exactly(2));
@@ -185,7 +185,7 @@ public class RoutingConnectionFactoryTest
     }
 
     [Fact]
-    public async Task TestWithDMLCAndConnectionListener()
+    public async Task TestWithDmlcAndConnectionListener()
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connection1 = new Mock<IConnection>();
@@ -222,7 +222,7 @@ public class RoutingConnectionFactoryTest
         container.Initialize();
         await container.Start();
 
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
 
         await container.Stop();
@@ -231,7 +231,7 @@ public class RoutingConnectionFactoryTest
     }
 
     [Fact]
-    public async Task TestWithDRTDMLCAndConnectionListenerExistingRFK()
+    public async Task TestWithDrtdmlcAndConnectionListenerExistingRfk()
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connection1 = new Mock<IConnection>();
@@ -271,7 +271,7 @@ public class RoutingConnectionFactoryTest
         container.Initialize();
         await container.Start();
 
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
 
         var channelHolder = container.GetChannelHolder();
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));

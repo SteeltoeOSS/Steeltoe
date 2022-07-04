@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Steeltoe.Common;
 
-public static class IServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Try to register a default instance of <see cref="IApplicationInstanceInfo" />.

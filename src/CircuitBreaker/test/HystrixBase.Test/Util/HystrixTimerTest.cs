@@ -100,7 +100,7 @@ public sealed class HystrixTimerTest : IDisposable
         timer.AddTimerListener(l1);
 
         var l2 = new TestListener(50);
-        var l2ref = timer.AddTimerListener(l2);
+        var l2Ref = timer.AddTimerListener(l2);
 
         try
         {
@@ -118,7 +118,7 @@ public sealed class HystrixTimerTest : IDisposable
         Assert.True(l2.TickCount.Value > 5, "l2 failed to execute more than 5 ticks in a window that could fit 10");
 
         // remove l2
-        l2ref.Dispose();
+        l2Ref.Dispose();
 
         // reset counts
         l1.TickCount.Value = 0;
@@ -154,7 +154,7 @@ public sealed class HystrixTimerTest : IDisposable
         var l1 = new TestListener(50);
         var tref = timer.AddTimerListener(l1);
 
-        var ex = tref._timerTask;
+        var ex = tref.TimerTask;
 
         Assert.False(ex.IsCanceled);
 
@@ -166,13 +166,13 @@ public sealed class HystrixTimerTest : IDisposable
         Time.Wait(50);
 
         Assert.True(ex.IsCompleted);
-        Assert.Null(tref._timerTask);
+        Assert.Null(tref.TimerTask);
 
         // assert it starts up again on use
         var l2 = new TestListener(50);
         var tref2 = timer.AddTimerListener(l2);
 
-        var ex2 = tref2._timerTask;
+        var ex2 = tref2.TimerTask;
 
         Assert.False(ex2.IsCanceled);
 

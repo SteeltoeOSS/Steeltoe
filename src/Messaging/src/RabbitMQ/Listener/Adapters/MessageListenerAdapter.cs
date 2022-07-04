@@ -18,10 +18,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessageListenerAdapter : AbstractMessageListenerAdapter
 {
-    public const string ORIGINAL_DEFAULT_LISTENER_METHOD = "HandleMessage";
+    public const string OriginalDefaultListenerMethod = "HandleMessage";
     private readonly Dictionary<string, string> _queueOrTagToMethodName = new ();
 
-    public string DefaultListenerMethod { get; set; } = ORIGINAL_DEFAULT_LISTENER_METHOD;
+    public string DefaultListenerMethod { get; set; } = OriginalDefaultListenerMethod;
 
     public object Instance { get; set; }
 
@@ -106,7 +106,7 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
         }
         else
         {
-            _logger?.LogTrace("No result object given - no result to handle");
+            Logger?.LogTrace("No result object given - no result to handle");
         }
     }
 

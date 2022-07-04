@@ -68,7 +68,7 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
 
         _commandStream.Observe().Take(1).Subscribe(subscriber);
 
-        var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
+        var result = ExecutionResult.From(HystrixEventType.Success).SetExecutedInThread();
         var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
         _commandStream.Write(@event);
 
@@ -87,7 +87,7 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
         _commandStream.Observe().Take(1).Subscribe(subscriber1);
         _commandStream.Observe().Take(1).Subscribe(subscriber2);
 
-        var result = ExecutionResult.From(HystrixEventType.SUCCESS).SetExecutedInThread();
+        var result = ExecutionResult.From(HystrixEventType.Success).SetExecutedInThread();
         var @event = HystrixCommandCompletion.From(result, CommandKey, ThreadPoolKey);
         _commandStream.Write(@event);
 

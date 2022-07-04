@@ -23,10 +23,10 @@ namespace Steeltoe.Stream.Binder;
 
 public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChannel>
 {
-    protected readonly IProvisioningProvider _provisioningProvider;
-    protected readonly EmbeddedHeadersChannelInterceptor _embeddedHeadersChannelInterceptor = new ();
-    protected readonly string[] _headersToEmbed;
-    protected bool _producerBindingExist;
+    protected readonly IProvisioningProvider InnerProvisioningProvider;
+    protected readonly EmbeddedHeadersChannelInterceptor CurrentEmbeddedHeadersChannelInterceptor = new ();
+    protected readonly string[] HeadersToEmbed;
+    protected bool producerBindingExist;
     private readonly ILogger _logger;
 
     protected AbstractMessageChannelBinder(
@@ -48,8 +48,8 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         ILogger logger)
         : base(context, logger)
     {
-        _headersToEmbed = headersToEmbed ?? Array.Empty<string>();
-        _provisioningProvider = provisioningProvider;
+        HeadersToEmbed = headersToEmbed ?? Array.Empty<string>();
+        InnerProvisioningProvider = provisioningProvider;
         ListenerContainerCustomizer = containerCustomizer;
         MessageSourceCustomizer = sourceCustomizer;
         _logger = logger;
@@ -73,7 +73,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
         try
         {
-            producerDestination = _provisioningProvider.ProvisionProducerDestination(name, producerOptions);
+            producerDestination = InnerProvisioningProvider.ProvisionProducerDestination(name, producerOptions);
             var errorChannel = producerOptions.ErrorChannelEnabled ? RegisterErrorInfrastructure(producerDestination) : null;
             producerMessageHandler = CreateProducerMessageHandler(producerDestination, producerOptions, subscribableChannel, errorChannel);
         }
@@ -92,7 +92,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         }
 
         PostProcessOutputChannel(subscribableChannel, producerOptions);
-        var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), _headersToEmbed, UseNativeEncoding(producerOptions));
+        var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), HeadersToEmbed, UseNativeEncoding(producerOptions));
         sendingHandler.Initialize();
         subscribableChannel.Subscribe(sendingHandler);
 
@@ -105,7 +105,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             producerDestination,
             _logger);
 
-        _producerBindingExist = true;
+        producerBindingExist = true;
         return binding;
     }
 
@@ -135,7 +135,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         IMessageProducer consumerEndpoint = null;
         try
         {
-            var destination = _provisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
+            var destination = InnerProvisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
 
             // TODO: the function support for the inbound channel is only for Sink
             // if (ShouldWireFunctionToChannel(false))
@@ -217,7 +217,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             ? GetPolledConsumerErrorMessageHandler(destination, group, consumerOptions)
             : GetErrorMessageHandler(destination, group, consumerOptions);
 
-        var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+        var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ErrorChannelBeanName);
 
         if (handler == null && errorChannel is ILastSubscriberAwareChannel channel)
         {
@@ -390,7 +390,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             ApplicationContext.Register(errorChannelName, errorChannel);
         }
 
-        var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+        var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ErrorChannelBeanName);
 
         if (defaultErrorChannel != null)
         {
@@ -467,7 +467,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
     private void EnhanceMessageChannel(IMessageChannel inputChannel)
     {
-        ((Integration.Channel.AbstractMessageChannel)inputChannel).AddInterceptor(0, _embeddedHeadersChannelInterceptor);
+        ((Integration.Channel.AbstractMessageChannel)inputChannel).AddInterceptor(0, CurrentEmbeddedHeadersChannelInterceptor);
     }
 
     // private void doPublishEvent(ApplicationEvent event)
@@ -646,13 +646,13 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             object payload;
             if (_embedHeaders)
             {
-                transformed.TryGetValue(MessageHeaders.CONTENT_TYPE, out var contentType);
+                transformed.TryGetValue(MessageHeaders.ContentType, out var contentType);
 
                 // transform content type headers to String, so that they can be properly
                 // embedded in JSON
                 if (contentType != null)
                 {
-                    transformed[MessageHeaders.CONTENT_TYPE] = contentType.ToString();
+                    transformed[MessageHeaders.ContentType] = contentType.ToString();
                 }
 
                 payload = EmbeddedHeaderUtils.EmbedHeaders(transformed, _embeddedHeaders);
@@ -795,14 +795,14 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
     protected class EmbeddedHeadersChannelInterceptor : AbstractChannelInterceptor
     {
-        protected readonly ILogger _logger;
+        protected readonly ILogger Logger;
 
-        public EmbeddedHeadersChannelInterceptor(ILogger logger = null) => _logger = logger;
+        public EmbeddedHeadersChannelInterceptor(ILogger logger = null) => Logger = logger;
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
             if (message.Payload is byte[] payloadBytes
-                && !message.Headers.ContainsKey(BinderHeaders.NATIVE_HEADERS_PRESENT)
+                && !message.Headers.ContainsKey(BinderHeaders.NativeHeadersPresent)
                 && EmbeddedHeaderUtils.MayHaveEmbeddedHeaders(payloadBytes))
             {
                 MessageValues messageValues;
@@ -818,7 +818,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
                      * criteria in EmbeddedHeaderUtils.mayHaveEmbeddedHeaders().
                      */
 
-                    _logger?.LogDebug(e, e.Message);
+                    Logger?.LogDebug(e, e.Message);
                     messageValues = new MessageValues(message);
                 }
 

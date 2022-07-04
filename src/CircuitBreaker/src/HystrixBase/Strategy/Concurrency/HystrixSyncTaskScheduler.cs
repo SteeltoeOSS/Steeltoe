@@ -14,17 +14,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 {
     [ThreadStatic]
-    private static bool isHystrixThreadPoolThread;
+    private static bool _isHystrixThreadPoolThread;
 
     [ThreadStatic]
-    private static ThreadTaskQueue workQueue;
+    private static ThreadTaskQueue _workQueue;
 
     private ThreadTaskQueue[] _workQueues;
 
     public HystrixSyncTaskScheduler(IHystrixThreadPoolOptions options)
         : base(options)
     {
-        SetupWorkQueues(corePoolSize);
+        SetupWorkQueues(innerCorePoolSize);
     }
 
     protected override void QueueTask(Task task)
@@ -36,7 +36,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
             return;
         }
 
-        if (runningThreads < corePoolSize)
+        if (runningThreads < innerCorePoolSize)
         {
             StartThreadPoolWorker();
         }
@@ -49,7 +49,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     protected virtual void StartThreadPoolWorker()
     {
-        for (var i = 0; i < corePoolSize; i++)
+        for (var i = 0; i < innerCorePoolSize; i++)
         {
             if (!_workQueues[i].ThreadAssigned)
             {
@@ -74,19 +74,19 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
             queue =>
             {
 #pragma warning disable S2696 // Instance members should not write to "static" fields
-                isHystrixThreadPoolThread = true;
-                workQueue = queue as ThreadTaskQueue;
+                _isHystrixThreadPoolThread = true;
+                _workQueue = queue as ThreadTaskQueue;
 #pragma warning restore S2696 // Instance members should not write to "static" fields
-                workQueue.ThreadStartTime = Time.CurrentTimeMillis;
+                _workQueue.ThreadStartTime = Time.CurrentTimeMillis;
 
                 try
                 {
                     while (!shutdown)
                     {
                         Task item = null;
-                        workQueue.Signal.Wait(250);
+                        _workQueue.Signal.Wait(250);
 
-                        item = workQueue.Task;
+                        item = _workQueue.Task;
 
                         if (item != null)
                         {
@@ -105,18 +105,18 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
                                 Interlocked.Increment(ref completedTasks);
                             }
 
-                            workQueue.Signal.Reset();
-                            workQueue.Task = null;
+                            _workQueue.Signal.Reset();
+                            _workQueue.Task = null;
                         }
                     }
                 }
                 finally
                 {
-                    isHystrixThreadPoolThread = false;
-                    workQueue.Signal.Reset();
-                    workQueue.ThreadAssigned = false;
+                    _isHystrixThreadPoolThread = false;
+                    _workQueue.Signal.Reset();
+                    _workQueue.ThreadAssigned = false;
                     Interlocked.Decrement(ref runningThreads);
-                    workQueue = null;
+                    _workQueue = null;
                 }
             }, input);
     }
@@ -128,7 +128,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     protected override bool TryExecuteTaskInline(Task task, bool prevQueued)
     {
-        if (!isHystrixThreadPoolThread)
+        if (!_isHystrixThreadPoolThread)
         {
             return false;
         }

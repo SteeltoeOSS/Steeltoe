@@ -33,13 +33,13 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
         _logger = logger;
     }
 
-    public new IHealthOptions Options => options as IHealthOptions;
+    public new IHealthOptions Options => innerOptions as IHealthOptions;
 
     public override HealthEndpointResponse Invoke(ISecurityContext securityContext) => BuildHealth(securityContext);
 
     public int GetStatusCode(HealthCheckResult health)
     {
-        return health.Status == HealthStatus.DOWN || health.Status == HealthStatus.OUT_OF_SERVICE
+        return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService
             ? 503
             : 200;
     }

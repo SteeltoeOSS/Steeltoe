@@ -27,18 +27,18 @@ public static class IntegrationServicesExtensions
 {
     public static IServiceCollection AddErrorChannel(this IServiceCollection services)
     {
-        services.RegisterService(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, typeof(IMessageChannel));
+        services.RegisterService(IntegrationContextUtils.ErrorChannelBeanName, typeof(IMessageChannel));
         services.AddSingleton<IMessageChannel>(p =>
         {
             var context = p.GetService<IApplicationContext>();
-            return new PublishSubscribeChannel(context, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+            return new PublishSubscribeChannel(context, IntegrationContextUtils.ErrorChannelBeanName);
         });
 
-        services.RegisterService(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, typeof(ISubscribableChannel));
+        services.RegisterService(IntegrationContextUtils.ErrorChannelBeanName, typeof(ISubscribableChannel));
         services.AddSingleton(p =>
         {
             var context = p.GetService<IApplicationContext>();
-            return GetRequiredChannel<ISubscribableChannel>(context, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+            return GetRequiredChannel<ISubscribableChannel>(context, IntegrationContextUtils.ErrorChannelBeanName);
         });
 
         return services;
@@ -46,13 +46,13 @@ public static class IntegrationServicesExtensions
 
     public static IServiceCollection AddNullChannel(this IServiceCollection services)
     {
-        services.RegisterService(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME, typeof(IMessageChannel));
+        services.RegisterService(IntegrationContextUtils.NullChannelBeanName, typeof(IMessageChannel));
         services.AddSingleton<IMessageChannel, NullChannel>();
-        services.RegisterService(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME, typeof(IPollableChannel));
+        services.RegisterService(IntegrationContextUtils.NullChannelBeanName, typeof(IPollableChannel));
         services.AddSingleton(p =>
         {
             var context = p.GetService<IApplicationContext>();
-            return GetRequiredChannel<IPollableChannel>(context, IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME);
+            return GetRequiredChannel<IPollableChannel>(context, IntegrationContextUtils.NullChannelBeanName);
         });
 
         return services;
@@ -137,7 +137,7 @@ public static class IntegrationServicesExtensions
             var context = p.GetRequiredService<IApplicationContext>();
             var logger = p.GetRequiredService<ILogger<LoggingHandler>>();
             var handler = new LoggingHandler(context, LogLevel.Error, logger);
-            var errorChan = GetRequiredChannel<ISubscribableChannel>(context, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+            var errorChan = GetRequiredChannel<ISubscribableChannel>(context, IntegrationContextUtils.ErrorChannelBeanName);
             return new EventDrivenConsumerEndpoint(context, errorChan, handler);
         });
         return services;

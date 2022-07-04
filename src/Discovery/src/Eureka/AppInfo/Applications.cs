@@ -184,13 +184,13 @@ public class Applications
 
                 switch (instance.Actiontype)
                 {
-                    case ActionType.ADDED:
-                    case ActionType.MODIFIED:
+                    case ActionType.Added:
+                    case ActionType.Modified:
                         // logger.debug("Added instance {} to the existing apps in region {}", instance.getId(), instanceRegion);
                         existingApp.Add(instance);
                         AddInstanceToVip(instance);
                         break;
-                    case ActionType.DELETED:
+                    case ActionType.Deleted:
                         // logger.debug("Deleted instance {} to the existing apps ", instance.getId());
                         existingApp.Remove(instance);
                         RemoveInstanceFromVip(instance);
@@ -271,7 +271,7 @@ public class Applications
                 var inst = kvp.Value;
                 if (ReturnUpInstancesOnly)
                 {
-                    if (inst.Status == InstanceStatus.UP)
+                    if (inst.Status == InstanceStatus.Up)
                     {
                         result.Add(inst);
                     }

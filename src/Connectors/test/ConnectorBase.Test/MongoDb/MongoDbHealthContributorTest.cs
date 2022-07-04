@@ -32,7 +32,7 @@ public class MongoDbHealthContributorTest
         var contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
         Assert.NotNull(contrib);
         var status = contrib.Health();
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class MongoDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Equal("Failed to open MongoDb connection!", status.Description);
     }
 
@@ -61,6 +61,6 @@ public class MongoDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 }

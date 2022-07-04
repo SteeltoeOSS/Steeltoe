@@ -12,8 +12,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class MapPayloadConfiguration
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public Dictionary<object, object> Echo(IMessage<Dictionary<object, object>> value)
     {
         return value.Payload;

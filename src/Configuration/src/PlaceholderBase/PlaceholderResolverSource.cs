@@ -17,11 +17,11 @@ namespace Steeltoe.Extensions.Configuration.Placeholder;
 /// </summary>
 public class PlaceholderResolverSource : IConfigurationSource
 {
-    internal IConfigurationRoot _configuration;
-    internal ConfigurationView _configurationView;
-    internal ILoggerFactory _loggerFactory;
+    internal IConfigurationRoot Configuration;
+    internal ConfigurationView ConfigurationView;
+    internal ILoggerFactory LoggerFactory;
 
-    internal IList<IConfigurationSource> _sources;
+    internal IList<IConfigurationSource> Sources;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaceholderResolverSource"/> class.
@@ -35,14 +35,14 @@ public class PlaceholderResolverSource : IConfigurationSource
             throw new ArgumentNullException(nameof(sources));
         }
 
-        _sources = new List<IConfigurationSource>(sources);
-        _loggerFactory = logFactory ?? new NullLoggerFactory();
+        this.Sources = new List<IConfigurationSource>(sources);
+        LoggerFactory = logFactory ?? new NullLoggerFactory();
     }
 
     public PlaceholderResolverSource(IConfigurationRoot configuration, ILoggerFactory loggerFactory = null)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _loggerFactory = loggerFactory ?? new NullLoggerFactory();
+        this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        this.LoggerFactory = loggerFactory ?? new NullLoggerFactory();
     }
 
     /// <summary>
@@ -52,18 +52,18 @@ public class PlaceholderResolverSource : IConfigurationSource
     /// <returns>the placeholder resolver provider.</returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        if (_configuration != null)
+        if (Configuration != null)
         {
-            return new PlaceholderResolverProvider(new ConfigurationView(_configuration.Providers.ToList()), _loggerFactory);
+            return new PlaceholderResolverProvider(new ConfigurationView(Configuration.Providers.ToList()), LoggerFactory);
         }
 
         var providers = new List<IConfigurationProvider>();
-        foreach (var source in _sources)
+        foreach (var source in Sources)
         {
             var provider = source.Build(builder);
             providers.Add(provider);
         }
 
-        return new PlaceholderResolverProvider(providers, _loggerFactory);
+        return new PlaceholderResolverProvider(providers, LoggerFactory);
     }
 }

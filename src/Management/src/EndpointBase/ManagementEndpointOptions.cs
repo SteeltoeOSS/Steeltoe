@@ -12,12 +12,12 @@ namespace Steeltoe.Management.Endpoint;
 
 public class ManagementEndpointOptions : IManagementOptions
 {
-    private const string DEFAULT_PATH = "/actuator";
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
+    private const string DefaultPath = "/actuator";
+    private const string ManagementInfoPrefix = "management:endpoints";
 
     public ManagementEndpointOptions()
     {
-        Path = DEFAULT_PATH;
+        Path = DefaultPath;
         EndpointOptions = new List<IEndpointOptions>();
     }
 
@@ -29,7 +29,7 @@ public class ManagementEndpointOptions : IManagementOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(MANAGEMENT_INFO_PREFIX);
+        var section = config.GetSection(ManagementInfoPrefix);
         if (section != null)
         {
             section.Bind(this);

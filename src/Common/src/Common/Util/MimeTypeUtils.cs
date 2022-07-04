@@ -11,38 +11,38 @@ namespace Steeltoe.Common.Util;
 
 public static class MimeTypeUtils
 {
-    public static readonly IComparer<MimeType> SPECIFICITY_COMPARATOR = new MimeType.SpecificityComparator<MimeType>();
-    public static readonly MimeType ALL = new ("*", "*");
-    public static readonly string ALL_VALUE = "*/*";
-    public static readonly MimeType APPLICATION_JSON = new ("application", "json");
-    public static readonly string APPLICATION_JSON_VALUE = "application/json";
-    public static readonly MimeType APPLICATION_OCTET_STREAM = new ("application", "octet-stream");
-    public static readonly string APPLICATION_OCTET_STREAM_VALUE = "application/octet-stream";
-    public static readonly MimeType APPLICATION_XML = new ("application", "xml");
-    public static readonly string APPLICATION_XML_VALUE = "application/xml";
-    public static readonly MimeType IMAGE_GIF = new ("image", "gif");
-    public static readonly string IMAGE_GIF_VALUE = "image/gif";
-    public static readonly MimeType IMAGE_JPEG = new ("image", "jpeg");
-    public static readonly string IMAGE_JPEG_VALUE = "image/jpeg";
-    public static readonly MimeType IMAGE_PNG = new ("image", "png");
-    public static readonly string IMAGE_PNG_VALUE = "image/png";
-    public static readonly MimeType TEXT_HTML = new ("text", "html");
-    public static readonly string TEXT_HTML_VALUE = "text/html";
-    public static readonly MimeType TEXT_PLAIN = new ("text", "plain");
-    public static readonly string TEXT_PLAIN_VALUE = "text/plain";
-    public static readonly MimeType TEXT_XML = new ("text", "xml");
-    public static readonly string TEXT_XML_VALUE = "text/xml";
-    private static readonly ConcurrentDictionary<string, MimeType> _cachedMimeTypes = new ();
+    public static readonly IComparer<MimeType> SpecificityComparator = new MimeType.SpecificityComparator<MimeType>();
+    public static readonly MimeType All = new ("*", "*");
+    public static readonly string AllValue = "*/*";
+    public static readonly MimeType ApplicationJson = new ("application", "json");
+    public static readonly string ApplicationJsonValue = "application/json";
+    public static readonly MimeType ApplicationOctetStream = new ("application", "octet-stream");
+    public static readonly string ApplicationOctetStreamValue = "application/octet-stream";
+    public static readonly MimeType ApplicationXml = new ("application", "xml");
+    public static readonly string ApplicationXmlValue = "application/xml";
+    public static readonly MimeType ImageGif = new ("image", "gif");
+    public static readonly string ImageGifValue = "image/gif";
+    public static readonly MimeType ImageJpeg = new ("image", "jpeg");
+    public static readonly string ImageJpegValue = "image/jpeg";
+    public static readonly MimeType ImagePng = new ("image", "png");
+    public static readonly string ImagePngValue = "image/png";
+    public static readonly MimeType TextHtml = new ("text", "html");
+    public static readonly string TextHtmlValue = "text/html";
+    public static readonly MimeType TextPlain = new ("text", "plain");
+    public static readonly string TextPlainValue = "text/plain";
+    public static readonly MimeType TextXml = new ("text", "xml");
+    public static readonly string TextXmlValue = "text/xml";
+    private static readonly ConcurrentDictionary<string, MimeType> CachedMimeTypes = new ();
 
-    private static readonly char[] BOUNDARY_CHARS = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+    private static readonly char[] BoundaryChars = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
-    private static readonly object _lock = new ();
+    private static readonly object Lock = new ();
 
     private static volatile Random _random;
 
     public static MimeType ParseMimeType(string mimeType)
     {
-        return _cachedMimeTypes.GetOrAdd(mimeType, ParseMimeTypeInternal(mimeType));
+        return CachedMimeTypes.GetOrAdd(mimeType, ParseMimeTypeInternal(mimeType));
     }
 
     public static List<MimeType> ParseMimeTypes(string mimeTypes)
@@ -127,7 +127,7 @@ public static class MimeTypeUtils
 
         if (mimeTypes.Count > 1)
         {
-            mimeTypes.Sort(SPECIFICITY_COMPARATOR);
+            mimeTypes.Sort(SpecificityComparator);
         }
     }
 
@@ -138,7 +138,7 @@ public static class MimeTypeUtils
         var boundary = new char[size];
         for (var i = 0; i < boundary.Length; i++)
         {
-            boundary[i] = BOUNDARY_CHARS[randomToUse.Next(BOUNDARY_CHARS.Length)];
+            boundary[i] = BoundaryChars[randomToUse.Next(BoundaryChars.Length)];
         }
 
         return boundary;
@@ -163,7 +163,7 @@ public static class MimeTypeUtils
             throw new ArgumentException(mimeType, "'mimeType' must not be empty");
         }
 
-        if (MimeType.WILDCARD_TYPE.Equals(fullType))
+        if (MimeType.WildcardType.Equals(fullType))
         {
             fullType = "*/*";
         }
@@ -181,7 +181,7 @@ public static class MimeTypeUtils
 
         var type = fullType.Substring(0, subIndex);
         var subtype = fullType.Substring(subIndex + 1, fullType.Length - type.Length - 1);
-        if (MimeType.WILDCARD_TYPE.Equals(type) && !MimeType.WILDCARD_TYPE.Equals(subtype))
+        if (MimeType.WildcardType.Equals(type) && !MimeType.WildcardType.Equals(subtype))
         {
             throw new ArgumentException($"{mimeType} wildcard type is legal only in '*/*' (all mime types)");
         }
@@ -242,7 +242,7 @@ public static class MimeTypeUtils
         var randomToUse = _random;
         if (randomToUse == null)
         {
-            lock (_lock)
+            lock (Lock)
             {
                 randomToUse = _random;
                 if (randomToUse == null)

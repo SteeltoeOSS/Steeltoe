@@ -206,7 +206,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void StringLiteral()
     {
-        _expression = _parser.ParseExpression("'abcde'");
+        _expression = Parser.ParseExpression("'abcde'");
         Assert.Equal("abcde", _expression.GetValue<string>(new TestClass1()));
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<string>(new TestClass1());
@@ -214,7 +214,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("abcde", _expression.GetValue<string>());
         Assert.Equal("abcde", _expression.GetValue());
         Assert.Equal("abcde", _expression.GetValue(new StandardEvaluationContext()));
-        _expression = _parser.ParseExpression("\"abcde\"");
+        _expression = Parser.ParseExpression("\"abcde\"");
         AssertCanCompile(_expression);
         Assert.Equal("abcde", _expression.GetValue<string>());
     }
@@ -222,7 +222,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void NullLiteral()
     {
-        _expression = _parser.ParseExpression("null");
+        _expression = Parser.ParseExpression("null");
         var resultI = _expression.GetValue<object>(new TestClass1());
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<object>(new TestClass1());
@@ -233,7 +233,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void RealLiteral()
     {
-        _expression = _parser.ParseExpression("3.4d");
+        _expression = Parser.ParseExpression("3.4d");
         var resultI = _expression.GetValue<double>(new TestClass1());
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<double>(new TestClass1());
@@ -244,14 +244,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void InlineList()
     {
-        _expression = _parser.ParseExpression("'abcde'.Substring({1,3,4}[0])");
+        _expression = Parser.ParseExpression("'abcde'.Substring({1,3,4}[0])");
         var o = _expression.GetValue();
         Assert.Equal("bcde", o);
         AssertCanCompile(_expression);
         o = _expression.GetValue();
         Assert.Equal("bcde", o);
 
-        _expression = _parser.ParseExpression("{'abc','def'}");
+        _expression = Parser.ParseExpression("{'abc','def'}");
         var l = _expression.GetValue<IList>();
         Assert.Equal(2, l.Count);
         Assert.Equal("abc", l[0]);
@@ -262,21 +262,21 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("abc", l[0]);
         Assert.Equal("def", l[1]);
 
-        _expression = _parser.ParseExpression("{'abc','def'}[0]");
+        _expression = Parser.ParseExpression("{'abc','def'}[0]");
         o = _expression.GetValue();
         Assert.Equal("abc", o);
         AssertCanCompile(_expression);
         o = _expression.GetValue();
         Assert.Equal("abc", o);
 
-        _expression = _parser.ParseExpression("{'abcde','ijklm'}[0].Substring({1,3,4}[0])");
+        _expression = Parser.ParseExpression("{'abcde','ijklm'}[0].Substring({1,3,4}[0])");
         o = _expression.GetValue();
         Assert.Equal("bcde", o);
         AssertCanCompile(_expression);
         o = _expression.GetValue();
         Assert.Equal("bcde", o);
 
-        _expression = _parser.ParseExpression("{'abcde','ijklm'}[0].Substring({1,3,4}[0],{1,3,4}[1])");
+        _expression = Parser.ParseExpression("{'abcde','ijklm'}[0].Substring({1,3,4}[0],{1,3,4}[1])");
         o = _expression.GetValue();
         Assert.Equal("bcd", o);
         AssertCanCompile(_expression);
@@ -287,7 +287,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void NestedInlineLists()
     {
-        _expression = _parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}");
+        _expression = Parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}");
         var o = _expression.GetValue<IList>();
         Assert.Equal(3, o.Count);
 
@@ -319,56 +319,56 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(3, o3.Count);
         Assert.Equal(9, o3[2]);
 
-        _expression = _parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}.Count");
+        _expression = Parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}.Count");
         var c = _expression.GetValue<int>();
         Assert.Equal(3, c);
         AssertCanCompile(_expression);
         Assert.Equal(3, c);
 
-        _expression = _parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}[1][0]");
+        _expression = Parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}[1][0]");
         var n = _expression.GetValue<int>();
         Assert.Equal(4, n);
         AssertCanCompile(_expression);
         Assert.Equal(4, n);
 
-        _expression = _parser.ParseExpression("{{1,2,3},'abc',{7,8,9}}[1]");
+        _expression = Parser.ParseExpression("{{1,2,3},'abc',{7,8,9}}[1]");
         var obj = _expression.GetValue();
         Assert.Equal("abc", obj);
         AssertCanCompile(_expression);
         Assert.Equal("abc", obj);
 
-        _expression = _parser.ParseExpression("'abcde'.Substring({{1,3},1,3,4}[0][1])");
+        _expression = Parser.ParseExpression("'abcde'.Substring({{1,3},1,3,4}[0][1])");
         obj = _expression.GetValue();
         Assert.Equal("de", obj);
         AssertCanCompile(_expression);
         Assert.Equal("de", obj);
 
-        _expression = _parser.ParseExpression("'abcde'.Substring({{1,3},1,3,4}[1])");
+        _expression = Parser.ParseExpression("'abcde'.Substring({{1,3},1,3,4}[1])");
         obj = _expression.GetValue();
         Assert.Equal("bcde", obj);
         AssertCanCompile(_expression);
         Assert.Equal("bcde", obj);
 
-        _expression = _parser.ParseExpression("{'abc',{'def','ghi'}}");
+        _expression = Parser.ParseExpression("{'abc',{'def','ghi'}}");
         var l = _expression.GetValue<IList>();
         Assert.Equal(2, l.Count);
         AssertCanCompile(_expression);
         l = _expression.GetValue<IList>();
         Assert.Equal(2, l.Count);
 
-        _expression = _parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[0].Substring({1,3,4}[0])");
+        _expression = Parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[0].Substring({1,3,4}[0])");
         obj = _expression.GetValue();
         Assert.Equal("bcde", obj);
         AssertCanCompile(_expression);
         Assert.Equal("bcde", obj);
 
-        _expression = _parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0])");
+        _expression = Parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0])");
         obj = _expression.GetValue();
         Assert.Equal("jklm", obj);
         AssertCanCompile(_expression);
         Assert.Equal("jklm", obj);
 
-        _expression = _parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[1][1].Substring({1,3,4}[0],{1,3,4}[1])");
+        _expression = Parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[1][1].Substring({1,3,4}[0],{1,3,4}[1])");
         obj = _expression.GetValue();
         Assert.Equal("opq", obj);
         AssertCanCompile(_expression);
@@ -378,20 +378,20 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void IntLiteral()
     {
-        _expression = _parser.ParseExpression("42");
+        _expression = Parser.ParseExpression("42");
         var resultI = _expression.GetValue<int>(new TestClass1());
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<int>(new TestClass1());
         Assert.Equal(42, resultI);
         Assert.Equal(42, resultC);
 
-        _expression = _parser.ParseExpression("0");
+        _expression = Parser.ParseExpression("0");
         AssertCanCompile(_expression);
         Assert.Equal(0, _expression.GetValue<int>());
-        _expression = _parser.ParseExpression("2");
+        _expression = Parser.ParseExpression("2");
         AssertCanCompile(_expression);
         Assert.Equal(2, _expression.GetValue<int>());
-        _expression = _parser.ParseExpression("7");
+        _expression = Parser.ParseExpression("7");
         AssertCanCompile(_expression);
         Assert.Equal(7, _expression.GetValue<int>());
     }
@@ -399,7 +399,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void LongLiteral()
     {
-        _expression = _parser.ParseExpression("99L");
+        _expression = Parser.ParseExpression("99L");
         var resultI = _expression.GetValue<long>(new TestClass1());
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<long>(new TestClass1());
@@ -410,14 +410,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void BooleanLiteral()
     {
-        _expression = _parser.ParseExpression("True");
+        _expression = Parser.ParseExpression("True");
         var resultI = _expression.GetValue<bool>(new TestClass1());
         Assert.True(resultI);
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<bool>(new TestClass1());
         Assert.True(resultC);
 
-        _expression = _parser.ParseExpression("False");
+        _expression = Parser.ParseExpression("False");
         resultI = _expression.GetValue<bool>(new TestClass1());
         Assert.False(resultI);
         AssertCanCompile(_expression);
@@ -428,7 +428,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void FloatLiteral()
     {
-        _expression = _parser.ParseExpression("3.4f");
+        _expression = Parser.ParseExpression("3.4f");
         var resultI = _expression.GetValue<double>(new TestClass1());
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<double>(new TestClass1());
@@ -439,28 +439,28 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpOr()
     {
-        var expression = _parser.ParseExpression("False or False");
+        var expression = Parser.ParseExpression("False or False");
         var resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         var resultC = expression.GetValue<bool>(1);
         Assert.False(resultI);
         Assert.False(resultC);
 
-        expression = _parser.ParseExpression("False or True");
+        expression = Parser.ParseExpression("False or True");
         resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         resultC = expression.GetValue<bool>(1);
         Assert.True(resultI);
         Assert.True(resultC);
 
-        expression = _parser.ParseExpression("True or False");
+        expression = Parser.ParseExpression("True or False");
         resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         resultC = expression.GetValue<bool>(1);
         Assert.True(resultI);
         Assert.True(resultC);
 
-        expression = _parser.ParseExpression("True or True");
+        expression = Parser.ParseExpression("True or True");
         resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         resultC = expression.GetValue<bool>(1);
@@ -468,7 +468,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.True(resultC);
 
         var tc = new TestClass4();
-        expression = _parser.ParseExpression("GetFalse() or GetTrue()");
+        expression = Parser.ParseExpression("GetFalse() or GetTrue()");
         resultI = expression.GetValue<bool>(tc);
         SpelCompiler.Compile(expression);
         resultC = expression.GetValue<bool>(tc);
@@ -476,12 +476,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.True(resultC);
 
         // Can't compile this as we aren't going down the getfalse() branch in our evaluation
-        expression = _parser.ParseExpression("GetTrue() or GetFalse()");
+        expression = Parser.ParseExpression("GetTrue() or GetFalse()");
         resultI = expression.GetValue<bool>(tc);
         Assert.True(resultI);
         AssertCantCompile(expression);
 
-        expression = _parser.ParseExpression("A or B");
+        expression = Parser.ParseExpression("A or B");
         tc.A = true;
         tc.B = true;
         resultI = expression.GetValue<bool>(tc);
@@ -504,28 +504,28 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpAnd()
     {
-        var expression = _parser.ParseExpression("False and False");
+        var expression = Parser.ParseExpression("False and False");
         var resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         var resultC = expression.GetValue<bool>(1);
         Assert.False(resultI);
         Assert.False(resultC);
 
-        expression = _parser.ParseExpression("False and True");
+        expression = Parser.ParseExpression("False and True");
         resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         resultC = expression.GetValue<bool>(1);
         Assert.False(resultI);
         Assert.False(resultC);
 
-        expression = _parser.ParseExpression("True and False");
+        expression = Parser.ParseExpression("True and False");
         resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         resultC = expression.GetValue<bool>(1);
         Assert.False(resultI);
         Assert.False(resultC);
 
-        expression = _parser.ParseExpression("True and True");
+        expression = Parser.ParseExpression("True and True");
         resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
         resultC = expression.GetValue<bool>(1);
@@ -535,12 +535,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var tc = new TestClass4();
 
         // Can't compile this as we aren't going down the gettrue() branch in our evaluation
-        expression = _parser.ParseExpression("GetFalse() and GetTrue()");
+        expression = Parser.ParseExpression("GetFalse() and GetTrue()");
         resultI = expression.GetValue<bool>(tc);
         AssertCantCompile(expression);
         Assert.False(resultI);
 
-        expression = _parser.ParseExpression("A and B");
+        expression = Parser.ParseExpression("A and B");
         tc.A = false;
         tc.B = false;
         resultI = expression.GetValue<bool>(tc);
@@ -567,24 +567,24 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OperatorNot()
     {
-        _expression = _parser.ParseExpression("!True");
+        _expression = Parser.ParseExpression("!True");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = _parser.ParseExpression("!False");
+        _expression = Parser.ParseExpression("!False");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
         var b = true;
-        _expression = _parser.ParseExpression("!#root");
+        _expression = Parser.ParseExpression("!#root");
         Assert.False(_expression.GetValue<bool>(b));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(b));
 
         b = false;
-        _expression = _parser.ParseExpression("!#root");
+        _expression = Parser.ParseExpression("!#root");
         Assert.True(_expression.GetValue<bool>(b));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(b));
@@ -593,26 +593,26 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void Ternary()
     {
-        var expression = _parser.ParseExpression("True?'a':'b'");
+        var expression = Parser.ParseExpression("True?'a':'b'");
         var resultI = expression.GetValue<string>();
         AssertCanCompile(expression);
         var resultC = expression.GetValue<string>();
         Assert.Equal("a", resultI);
         Assert.Equal("a", resultC);
 
-        expression = _parser.ParseExpression("False?'a':'b'");
+        expression = Parser.ParseExpression("False?'a':'b'");
         resultI = expression.GetValue<string>();
         AssertCanCompile(expression);
         resultC = expression.GetValue<string>();
         Assert.Equal("b", resultI);
         Assert.Equal("b", resultC);
 
-        expression = _parser.ParseExpression("False?1:'b'");
+        expression = Parser.ParseExpression("False?1:'b'");
         AssertCanCompile(expression);
         Assert.Equal("b", expression.GetValue<string>());
 
         var root = true;
-        expression = _parser.ParseExpression("(#root and True)?T(int).Parse('1'):T(long).Parse('3')");
+        expression = Parser.ParseExpression("(#root and True)?T(int).Parse('1'):T(long).Parse('3')");
         Assert.Equal(1, expression.GetValue(root));
         AssertCantCompile(expression); // Have not gone down false branch
         root = false;
@@ -626,12 +626,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void TernaryWithBooleanReturn_SPR12271()
     {
-        var expression = _parser.ParseExpression("T(Boolean).Parse('True')?'abc':'def'");
+        var expression = Parser.ParseExpression("T(Boolean).Parse('True')?'abc':'def'");
         Assert.Equal("abc", expression.GetValue<string>());
         AssertCanCompile(expression);
         Assert.Equal("abc", expression.GetValue<string>());
 
-        expression = _parser.ParseExpression("T(Boolean).Parse('False')?'abc':'def'");
+        expression = Parser.ParseExpression("T(Boolean).Parse('False')?'abc':'def'");
         Assert.Equal("def", expression.GetValue<string>());
         AssertCanCompile(expression);
         Assert.Equal("def", expression.GetValue<string>());
@@ -643,7 +643,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var foh = new FooObjectHolder();
         var context = new StandardEvaluationContext(foh);
 
-        var expression = (SpelExpression)_parser.ParseExpression("Foo?.Object");
+        var expression = (SpelExpression)Parser.ParseExpression("Foo?.Object");
         Assert.Equal("hello", expression.GetValue(context));
         foh.Foo = null;
         Assert.Null(expression.GetValue(context));
@@ -656,7 +656,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue(context));
 
         // Static references
-        expression = (SpelExpression)_parser.ParseExpression("#var?.PropertyA");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.PropertyA");
         context.SetVariable("var", typeof(StaticsHelper));
         Assert.Equal("sh", expression.GetValue(context).ToString());
         context.SetVariable("var", null);
@@ -668,7 +668,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Single size primitive (boolean)
-        expression = (SpelExpression)_parser.ParseExpression("#var?.A");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.A");
         context.SetVariable("var", new TestClass4());
         Assert.False(expression.GetValue<bool>(context));
         context.SetVariable("var", null);
@@ -680,7 +680,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Double slot primitives
-        expression = (SpelExpression)_parser.ParseExpression("#var?.Four");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.Four");
         context.SetVariable("var", new Three());
         Assert.Equal(0.04d, expression.GetValue<double>(context));
         context.SetVariable("var", null);
@@ -691,7 +691,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         context.SetVariable("var", null);
         Assert.Null(expression.GetValue());
 
-        expression = (SpelExpression)_parser.ParseExpression("#var?.Day");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.Day");
         context.SetVariable("var", DateTime.Now);
         Assert.InRange(expression.GetValue<int>(context), 1, 31);
         context.SetVariable("var", null);
@@ -710,7 +710,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var context = new StandardEvaluationContext(foh);
 
         // First non compiled:
-        var expression = (SpelExpression)_parser.ParseExpression("Foo?.GetObject()");
+        var expression = (SpelExpression)Parser.ParseExpression("Foo?.GetObject()");
         Assert.Equal("hello", expression.GetValue(context));
         foh.Foo = null;
         Assert.Null(expression.GetValue(context));
@@ -721,7 +721,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue(context));
 
         // Static method references
-        expression = (SpelExpression)_parser.ParseExpression("#var?.MethodA()");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.MethodA()");
         context.SetVariable("var", typeof(StaticsHelper));
         Assert.Equal("sh", expression.GetValue(context).ToString());
         context.SetVariable("var", null);
@@ -733,7 +733,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Nullsafe guard on expression element evaluating to primitive/null
-        expression = (SpelExpression)_parser.ParseExpression("#var?.ToString()");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.ToString()");
         context.SetVariable("var", 4);
         Assert.Equal("4", expression.GetValue(context));
         context.SetVariable("var", null);
@@ -745,7 +745,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Nullsafe guard on expression element evaluating to primitive/null
-        expression = (SpelExpression)_parser.ParseExpression("#var?.ToString()");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.ToString()");
         context.SetVariable("var", false);
         Assert.Equal("False", expression.GetValue(context));
         context.SetVariable("var", null);
@@ -757,7 +757,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Nullsafe guard on expression element evaluating to primitive/null
-        expression = (SpelExpression)_parser.ParseExpression("#var?.ToString()");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.ToString()");
         context.SetVariable("var", 5L);
         Assert.Equal("5", expression.GetValue(context));
         context.SetVariable("var", null);
@@ -769,7 +769,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Nullsafe guard on expression element evaluating to primitive/null
-        expression = (SpelExpression)_parser.ParseExpression("#var?.ToString()");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.ToString()");
         context.SetVariable("var", (short)10);
         Assert.Equal("10", expression.GetValue(context));
         context.SetVariable("var", null);
@@ -781,7 +781,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Nullsafe guard on expression element evaluating to primitive/null
-        expression = (SpelExpression)_parser.ParseExpression("#var?.ToString()");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.ToString()");
         context.SetVariable("var", 10.0f);
         Assert.Equal("10", expression.GetValue(context));
         context.SetVariable("var", null);
@@ -793,7 +793,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         // Nullsafe guard on expression element evaluating to primitive/null
-        expression = (SpelExpression)_parser.ParseExpression("#var?.ToString()");
+        expression = (SpelExpression)Parser.ParseExpression("#var?.ToString()");
         context.SetVariable("var", 10.0d);
         Assert.Equal("10", expression.GetValue(context));
         context.SetVariable("var", null);
@@ -808,14 +808,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void Elvis()
     {
-        var expression = _parser.ParseExpression("'a'?:'b'");
+        var expression = Parser.ParseExpression("'a'?:'b'");
         var resultI = expression.GetValue<string>();
         AssertCanCompile(expression);
         var resultC = expression.GetValue<string>();
         Assert.Equal("a", resultI);
         Assert.Equal("a", resultC);
 
-        expression = _parser.ParseExpression("null?:'a'");
+        expression = Parser.ParseExpression("null?:'a'");
         resultI = expression.GetValue<string>();
         AssertCanCompile(expression);
         resultC = expression.GetValue<string>();
@@ -823,7 +823,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("a", resultC);
 
         var s = "abc";
-        expression = _parser.ParseExpression("#root?:'b'");
+        expression = Parser.ParseExpression("#root?:'b'");
         AssertCantCompile(expression);
         resultI = expression.GetValue<string>(s);
         Assert.Equal("abc", resultI);
@@ -836,14 +836,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void VariableReference_Root()
     {
         var s = "hello";
-        var expression = _parser.ParseExpression("#root");
+        var expression = Parser.ParseExpression("#root");
         var resultI = expression.GetValue<string>(s);
         AssertCanCompile(expression);
         var resultC = expression.GetValue<string>(s);
         Assert.Equal("hello", resultI);
         Assert.Equal("hello", resultC);
 
-        expression = _parser.ParseExpression("#root");
+        expression = Parser.ParseExpression("#root");
         var i = expression.GetValue<int>(42);
         Assert.Equal(42, i);
         AssertCanCompile(expression);
@@ -857,34 +857,34 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         StandardEvaluationContext context = null;
 
         // Here the target method takes Object... and we are passing a string
-        _expression = _parser.ParseExpression("#DoFormat('hey {0}', 'there')");
+        _expression = Parser.ParseExpression("#DoFormat('hey {0}', 'there')");
         context = new StandardEvaluationContext();
         context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("hey there", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression("#DoFormat([0], 'there')");
+        _expression = Parser.ParseExpression("#DoFormat([0], 'there')");
         context = new StandardEvaluationContext(new object[] { "hey {0}" });
         context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("hey there", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression("#DoFormat([0], #arg)");
+        _expression = Parser.ParseExpression("#DoFormat([0], #arg)");
         context = new StandardEvaluationContext(new object[] { "hey {0}" });
         context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
         context.SetVariable("arg", "there");
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("hey there", _expression.GetValue<string>());
     }
@@ -896,17 +896,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var m = GetType().GetMethod(nameof(Concat), new[] { typeof(string), typeof(string) });
         ctx.SetVariable("Concat", m);
 
-        _expression = _parser.ParseExpression("#Concat('a','b')");
+        _expression = Parser.ParseExpression("#Concat('a','b')");
         Assert.Equal("ab", _expression.GetValue(ctx));
         AssertCanCompile(_expression);
         Assert.Equal("ab", _expression.GetValue(ctx));
 
-        _expression = _parser.ParseExpression("#Concat(#Concat('a','b'),'c').get_Chars(1)");
+        _expression = Parser.ParseExpression("#Concat(#Concat('a','b'),'c').get_Chars(1)");
         Assert.Equal('b', _expression.GetValue(ctx));
         AssertCanCompile(_expression);
         Assert.Equal('b', _expression.GetValue(ctx));
 
-        _expression = _parser.ParseExpression("#Concat(#a,#b)");
+        _expression = Parser.ParseExpression("#Concat(#a,#b)");
         ctx.SetVariable("a", "foo");
         ctx.SetVariable("b", "bar");
         Assert.Equal("foobar", _expression.GetValue(ctx));
@@ -917,7 +917,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         m = typeof(Math).GetMethod(nameof(Math.Pow), new[] { typeof(double), typeof(double) });
         ctx.SetVariable("kapow", m);
-        _expression = _parser.ParseExpression("#kapow(2.0d,2.0d)");
+        _expression = Parser.ParseExpression("#kapow(2.0d,2.0d)");
         Assert.Equal(4.0d, _expression.GetValue(ctx));
         AssertCanCompile(_expression);
         Assert.Equal(4.0d, _expression.GetValue(ctx));
@@ -933,7 +933,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         context.SetVariable("arg", "2");
 
         // type nor method are public
-        _expression = _parser.ParseExpression("#doCompare([0],#arg)");
+        _expression = Parser.ParseExpression("#doCompare([0],#arg)");
         Assert.Equal("-1", _expression.GetValue(context).ToString());
         AssertCantCompile(_expression);
 
@@ -942,7 +942,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         m = typeof(SomeCompareMethod).GetMethod(nameof(SomeCompareMethod.PublicCompare), BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(object), typeof(object) }, null);
         context.RegisterFunction("doCompare", m);
         context.SetVariable("arg", "2");
-        _expression = _parser.ParseExpression("#doCompare([0],#arg)");
+        _expression = Parser.ParseExpression("#doCompare([0],#arg)");
         Assert.Equal("-1", _expression.GetValue(context).ToString());
         AssertCantCompile(_expression);
     }
@@ -958,11 +958,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var ints = new[] { 1, 2, 3 };
         context.SetVariable("ints", ints);
 
-        _expression = _parser.ParseExpression("#negate(#ints.?[#this<2][0])");
+        _expression = Parser.ParseExpression("#negate(#ints.?[#this<2][0])");
         Assert.Equal("-1", _expression.GetValue(context).ToString());
 
         // Selection isn't compilable.
-        Assert.False(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.False(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
     }
 
     [Fact]
@@ -983,172 +983,172 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         context.SetVariable("doubleArray", new[] { 5.0d, 6.0d, 9.0d });
         context.SetVariable("floatArray", new[] { 5.0f, 6.0f, 9.0f });
 
-        _expression = _parser.ParseExpression("#append('a','b','c')");
+        _expression = Parser.ParseExpression("#append('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("abc", _expression.GetValue(context).ToString());
 
-        _expression = _parser.ParseExpression("#append('a')");
+        _expression = Parser.ParseExpression("#append('a')");
         Assert.Equal("a", _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("a", _expression.GetValue(context).ToString());
 
-        _expression = _parser.ParseExpression("#append()");
+        _expression = Parser.ParseExpression("#append()");
         Assert.Equal(string.Empty, _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(string.Empty, _expression.GetValue(context).ToString());
 
-        _expression = _parser.ParseExpression("#append(#stringArray)");
+        _expression = Parser.ParseExpression("#append(#stringArray)");
         Assert.Equal("xyz", _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("xyz", _expression.GetValue(context).ToString());
 
         // This is a methodreference invocation, to compare with functionreference
-        _expression = _parser.ParseExpression("Append(#stringArray)");
+        _expression = Parser.ParseExpression("Append(#stringArray)");
         Assert.Equal("xyz", _expression.GetValue(context, new SomeCompareMethod2()).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("xyz", _expression.GetValue(context, new SomeCompareMethod2()).ToString());
 
-        _expression = _parser.ParseExpression("#append2('a','b','c')");
+        _expression = Parser.ParseExpression("#append2('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("abc", _expression.GetValue(context).ToString());
 
-        _expression = _parser.ParseExpression("#append2('a','b','c')");
+        _expression = Parser.ParseExpression("#append2('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("abc", _expression.GetValue(context).ToString());
 
-        _expression = _parser.ParseExpression("Append2('a','b')");
+        _expression = Parser.ParseExpression("Append2('a','b')");
         Assert.Equal("ab", _expression.GetValue(context, new SomeCompareMethod2()).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("ab", _expression.GetValue(context, new SomeCompareMethod2()).ToString());
 
-        _expression = _parser.ParseExpression("#append2('a','b')");
+        _expression = Parser.ParseExpression("#append2('a','b')");
         Assert.Equal("ab", _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("ab", _expression.GetValue(context).ToString());
 
-        _expression = _parser.ParseExpression("#append2()");
+        _expression = Parser.ParseExpression("#append2()");
         Assert.Equal(string.Empty, _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(string.Empty, _expression.GetValue(context).ToString());
 
-        _expression = _parser.ParseExpression("#append3(#stringArray)");
+        _expression = Parser.ParseExpression("#append3(#stringArray)");
         Assert.Equal("xyz", _expression.GetValue(context, new SomeCompareMethod2()).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("xyz", _expression.GetValue(context, new SomeCompareMethod2()).ToString());
 
-        _expression = _parser.ParseExpression("#sum(1,2,3)");
+        _expression = Parser.ParseExpression("#sum(1,2,3)");
         Assert.Equal(6, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
-        AssertCanCompile(_expression);
-        Assert.Equal(6, _expression.GetValue(context));
-
-        _expression = _parser.ParseExpression("#sum(2)");
-        Assert.Equal(2, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
-        AssertCanCompile(_expression);
-        Assert.Equal(2, _expression.GetValue(context));
-
-        _expression = _parser.ParseExpression("#sum()");
-        Assert.Equal(0, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
-        AssertCanCompile(_expression);
-        Assert.Equal(0, _expression.GetValue(context));
-
-        _expression = _parser.ParseExpression("#sum(#intArray)");
-        Assert.Equal(20, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
-        AssertCanCompile(_expression);
-        Assert.Equal(20, _expression.GetValue(context));
-
-        _expression = _parser.ParseExpression("#sumDouble(1.0d,2.0d,3.0d)");
-        Assert.Equal(6, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(6, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#sumDouble(2.0d)");
+        _expression = Parser.ParseExpression("#sum(2)");
         Assert.Equal(2, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(2, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#sumDouble()");
+        _expression = Parser.ParseExpression("#sum()");
         Assert.Equal(0, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(0, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#sumDouble(#doubleArray)");
+        _expression = Parser.ParseExpression("#sum(#intArray)");
         Assert.Equal(20, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#sumFloat(1.0f,2.0f,3.0f)");
+        _expression = Parser.ParseExpression("#sumDouble(1.0d,2.0d,3.0d)");
         Assert.Equal(6, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(6, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#sumFloat(2.0f)");
+        _expression = Parser.ParseExpression("#sumDouble(2.0d)");
         Assert.Equal(2, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(2, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#sumFloat()");
+        _expression = Parser.ParseExpression("#sumDouble()");
         Assert.Equal(0, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(0, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#sumFloat(#floatArray)");
+        _expression = Parser.ParseExpression("#sumDouble(#doubleArray)");
         Assert.Equal(20, _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#appendChar('abc'.get_Chars(0),'abc'.get_Chars(1))");
+        _expression = Parser.ParseExpression("#sumFloat(1.0f,2.0f,3.0f)");
+        Assert.Equal(6, _expression.GetValue(context));
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
+        AssertCanCompile(_expression);
+        Assert.Equal(6, _expression.GetValue(context));
+
+        _expression = Parser.ParseExpression("#sumFloat(2.0f)");
+        Assert.Equal(2, _expression.GetValue(context));
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
+        AssertCanCompile(_expression);
+        Assert.Equal(2, _expression.GetValue(context));
+
+        _expression = Parser.ParseExpression("#sumFloat()");
+        Assert.Equal(0, _expression.GetValue(context));
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
+        AssertCanCompile(_expression);
+        Assert.Equal(0, _expression.GetValue(context));
+
+        _expression = Parser.ParseExpression("#sumFloat(#floatArray)");
+        Assert.Equal(20, _expression.GetValue(context));
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
+        AssertCanCompile(_expression);
+        Assert.Equal(20, _expression.GetValue(context));
+
+        _expression = Parser.ParseExpression("#appendChar('abc'.get_Chars(0),'abc'.get_Chars(1))");
         Assert.Equal("ab", _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("ab", _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#append4('a','b','c')");
+        _expression = Parser.ParseExpression("#append4('a','b','c')");
         Assert.Equal("a::bc", _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("a::bc", _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#append4('a','b')");
+        _expression = Parser.ParseExpression("#append4('a','b')");
         Assert.Equal("a::b", _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("a::b", _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#append4('a')");
+        _expression = Parser.ParseExpression("#append4('a')");
         Assert.Equal("a::", _expression.GetValue(context));
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("a::", _expression.GetValue(context));
 
-        _expression = _parser.ParseExpression("#append4('a',#stringArray)");
+        _expression = Parser.ParseExpression("#append4('a',#stringArray)");
         Assert.Equal("a::xyz", _expression.GetValue(context).ToString());
-        Assert.True(((SpelNode)((SpelExpression)_expression).AST).IsCompilable());
+        Assert.True(((SpelNode)((SpelExpression)_expression).Ast).IsCompilable());
         AssertCanCompile(_expression);
         Assert.Equal("a::xyz", _expression.GetValue(context).ToString());
     }
@@ -1159,7 +1159,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
         var m = GetType().GetMethod(nameof(Join), new[] { typeof(string[]) });
         ctx.SetVariable("join", m);
-        _expression = _parser.ParseExpression("#join('a','b','c')");
+        _expression = Parser.ParseExpression("#join('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(ctx));
         AssertCanCompile(_expression);
         Assert.Equal("abc", _expression.GetValue(ctx));
@@ -1170,7 +1170,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var ctx = new StandardEvaluationContext();
         ctx.SetVariable("target", "abc");
-        _expression = _parser.ParseExpression("#target");
+        _expression = Parser.ParseExpression("#target");
         Assert.Equal("abc", _expression.GetValue(ctx));
         AssertCanCompile(_expression);
         Assert.Equal("abc", _expression.GetValue(ctx));
@@ -1181,7 +1181,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.IsType<InvalidCastException>(ex.InnerException);
 
         ctx.SetVariable("target", "abc");
-        _expression = _parser.ParseExpression("#target.get_Chars(0)");
+        _expression = Parser.ParseExpression("#target.get_Chars(0)");
         Assert.Equal('a', _expression.GetValue(ctx));
         AssertCanCompile(_expression);
         Assert.Equal('a', _expression.GetValue(ctx));
@@ -2063,7 +2063,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpNe_SPR14863()
     {
-        var configuration = new SpelParserOptions(SpelCompilerMode.MIXED);
+        var configuration = new SpelParserOptions(SpelCompilerMode.Mixed);
         var parser = new SpelExpressionParser(configuration);
         var expression = parser.ParseExpression("Data['my-key'] != 'my-value'");
         var data = new Dictionary<string, string>
@@ -2095,7 +2095,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         // Exercise the comparator invocation code that runs in
         // equalityCheck() (called from interpreted and compiled code)
-        _expression = _parser.ParseExpression("#aa==#bb");
+        _expression = Parser.ParseExpression("#aa==#bb");
         var sec = new StandardEvaluationContext();
         var aa = new Apple(1);
         var bb = new Apple(2);
@@ -3489,7 +3489,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void FailsWhenSettingContextForExpression_SPR12326()
     {
-        var parser = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.OFF));
+        var parser = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.Off));
         var person = new Person3("foo", 1);
         var expression = parser.ParseRaw("#it?.Age?.Equals([0])") as SpelExpression;
         var context = new StandardEvaluationContext(new object[] { 1 });
@@ -3517,31 +3517,31 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void ConstructorReference_SPR13781()
     {
         // Static const field access on a T() referenced type
-        _expression = _parser.ParseExpression("T(Int32).MaxValue");
+        _expression = Parser.ParseExpression("T(Int32).MaxValue");
         Assert.Equal(2_147_483_647, _expression.GetValue<int>());
         AssertCanCompile(_expression);
         Assert.Equal(2_147_483_647, _expression.GetValue<int>());
 
         // Static field access on a T() referenced type
-        _expression = _parser.ParseExpression("T(String).Empty");
+        _expression = Parser.ParseExpression("T(String).Empty");
         Assert.Equal(string.Empty, _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal(string.Empty, _expression.GetValue<string>());
 
         // Property access on an instance of System.Type object
-        _expression = _parser.ParseExpression("T(String).Name");
+        _expression = Parser.ParseExpression("T(String).Name");
         Assert.Equal("String", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("String", _expression.GetValue<string>());
 
         // Now the type reference isn't on the stack, and needs loading
         var context = new StandardEvaluationContext(typeof(string));
-        _expression = _parser.ParseExpression("Name");
+        _expression = Parser.ParseExpression("Name");
         Assert.Equal("String", _expression.GetValue<string>(context));
         AssertCanCompile(_expression);
         Assert.Equal("String", _expression.GetValue<string>(context));
 
-        _expression = _parser.ParseExpression("T(String).get_Name()");
+        _expression = Parser.ParseExpression("T(String).get_Name()");
         Assert.Equal("String", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("String", _expression.GetValue<string>());
@@ -3551,42 +3551,42 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Here the consuming code is the String.valueOf() function.  If the wrong thing were on
         // the stack (for example if the compiled code for static methods wasn't popping the
         // previous thing off the stack) the valueOf() would operate on the wrong value.
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', T(String).Name.Format('Format:{0}', 1))");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(String).Name.Format('Format:{0}', 1))");
         Assert.Equal("Format:Format:1", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:Format:1", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).MethodA().MethodA().MethodB())");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).MethodA().MethodA().MethodB())");
         Assert.Equal("Format:mb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:mb", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.Fielda.Fieldb)");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.Fielda.Fieldb)");
         Assert.Equal("Format:fb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:fb", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).PropertyA.PropertyA.PropertyB)");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).PropertyA.PropertyA.PropertyB)");
         Assert.Equal("Format:pb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:pb", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.MethodA().PropertyA.Fieldb)");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.MethodA().PropertyA.Fieldb)");
         Assert.Equal("Format:fb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:fb", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', Fielda.Fieldb)");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', Fielda.Fieldb)");
         Assert.Equal("Format:fb", _expression.GetValue<string>(StaticsHelper.sh));
         AssertCanCompile(_expression);
         Assert.Equal("Format:fb", _expression.GetValue<string>(StaticsHelper.sh));
 
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', PropertyA.PropertyB)");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', PropertyA.PropertyB)");
         Assert.Equal("Format:pb", _expression.GetValue<string>(StaticsHelper.sh));
         AssertCanCompile(_expression);
         Assert.Equal("Format:pb", _expression.GetValue<string>(StaticsHelper.sh));
 
-        _expression = _parser.ParseExpression("T(String).Format('Format:{0}', MethodA().MethodB())");
+        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', MethodA().MethodB())");
         Assert.Equal("Format:mb", _expression.GetValue<string>(StaticsHelper.sh));
         AssertCanCompile(_expression);
         Assert.Equal("Format:mb", _expression.GetValue<string>(StaticsHelper.sh));
@@ -3598,57 +3598,57 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var type = GetType().FullName;
         var prefix = $"new {type}$Obj";
 
-        _expression = _parser.ParseExpression($"{prefix}([0])");
+        _expression = Parser.ParseExpression($"{prefix}([0])");
         Assert.Equal("test", ((Obj)_expression.GetValue(new object[] { "test" })).Param1);
         AssertCanCompile(_expression);
         Assert.Equal("test", ((Obj)_expression.GetValue(new object[] { "test" })).Param1);
 
-        _expression = _parser.ParseExpression($"{prefix}2('foo','bar').Output");
+        _expression = Parser.ParseExpression($"{prefix}2('foo','bar').Output");
         Assert.Equal("foobar", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("foobar", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}2('foo').Output");
+        _expression = Parser.ParseExpression($"{prefix}2('foo').Output");
         Assert.Equal("foo", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("foo", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}2().Output");
+        _expression = Parser.ParseExpression($"{prefix}2().Output");
         Assert.Equal(string.Empty, _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal(string.Empty, _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}3(1,2,3).Output");
+        _expression = Parser.ParseExpression($"{prefix}3(1,2,3).Output");
         Assert.Equal("123", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("123", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}3(1).Output");
+        _expression = Parser.ParseExpression($"{prefix}3(1).Output");
         Assert.Equal("1", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("1", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}3().Output");
+        _expression = Parser.ParseExpression($"{prefix}3().Output");
         Assert.Equal(string.Empty, _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal(string.Empty, _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}3('abc',5.0f,1,2,3).Output");
+        _expression = Parser.ParseExpression($"{prefix}3('abc',5.0f,1,2,3).Output");
         Assert.Equal("abc:5:123", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("abc:5:123", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}3('abc',5.0f,1).Output");
+        _expression = Parser.ParseExpression($"{prefix}3('abc',5.0f,1).Output");
         Assert.Equal("abc:5:1", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("abc:5:1", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}3('abc',5.0f).Output");
+        _expression = Parser.ParseExpression($"{prefix}3('abc',5.0f).Output");
         Assert.Equal("abc:5:", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("abc:5:", _expression.GetValue<string>());
 
-        _expression = _parser.ParseExpression($"{prefix}4(#root).Output");
+        _expression = Parser.ParseExpression($"{prefix}4(#root).Output");
         Assert.Equal("123", _expression.GetValue<string>(new[] { 1, 2, 3 }));
         AssertCanCompile(_expression);
         Assert.Equal("123", _expression.GetValue<string>(new[] { 1, 2, 3 }));
@@ -3658,12 +3658,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void MethodReferenceMissingCastAndRootObjectAccessing_SPR12326()
     {
         // Need boxing code on the 1 so that toString() can be called
-        _expression = _parser.ParseExpression("1.ToString()");
+        _expression = Parser.ParseExpression("1.ToString()");
         Assert.Equal("1", _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal("1", _expression.GetValue());
 
-        _expression = _parser.ParseExpression("#it?.Age.Equals([0])");
+        _expression = Parser.ParseExpression("#it?.Age.Equals([0])");
         var person = new Person(1);
         var context = new StandardEvaluationContext(new object[] { person.Age });
         context.SetVariable("it", person);
@@ -3671,7 +3671,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(context));
 
-        var parser2 = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.IMMEDIATE));
+        var parser2 = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.Immediate));
         var ex = parser2.ParseExpression("#it?.Age.Equals([0])");
         context = new StandardEvaluationContext(new object[] { person.Age });
         context.SetVariable("it", person);
@@ -3703,7 +3703,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var testclass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
 
         // multi arg ctor that includes primitives
-        _expression = _parser.ParseExpression($"new {testclass8}(42,'123',4.0d,True)");
+        _expression = Parser.ParseExpression($"new {testclass8}(42,'123',4.0d,True)");
         Assert.IsType<TestClass8>(_expression.GetValue());
         AssertCanCompile(_expression);
         var o = _expression.GetValue();
@@ -3715,7 +3715,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.True(tc8.Z);
 
         // pass primitive to reference type ctor
-        _expression = _parser.ParseExpression($"new {testclass8}(42)");
+        _expression = Parser.ParseExpression($"new {testclass8}(42)");
         Assert.IsType<TestClass8>(_expression.GetValue());
         AssertCanCompile(_expression);
         o = _expression.GetValue();
@@ -3725,7 +3725,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // private class, can't compile it
         var testclass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
-        _expression = _parser.ParseExpression($"new {testclass9}(42)");
+        _expression = Parser.ParseExpression($"new {testclass9}(42)");
         Assert.IsType<TestClass9>(_expression.GetValue());
         AssertCantCompile(_expression);
     }
@@ -3737,7 +3737,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // Should call the non varargs version of Concat1
         // (which causes the '::' prefix in test output)
-        _expression = _parser.ParseExpression("Concat1('test')");
+        _expression = Parser.ParseExpression("Concat1('test')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("::test", tc.S);
@@ -3748,7 +3748,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // This will call the varargs Concat1 with an empty array
-        _expression = _parser.ParseExpression("Concat1()");
+        _expression = Parser.ParseExpression("Concat1()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(string.Empty, tc.S);
@@ -3760,7 +3760,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // Should call the non varargs version of Concat2
         // (which causes the '::' prefix in test output)
-        _expression = _parser.ParseExpression("Concat2('test')");
+        _expression = Parser.ParseExpression("Concat2('test')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("::test", tc.S);
@@ -3771,7 +3771,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // This will call the varargs Concat2 with an empty array
-        _expression = _parser.ParseExpression("Concat2()");
+        _expression = Parser.ParseExpression("Concat2()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(string.Empty, tc.S);
@@ -3788,7 +3788,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var tc = new TestClass5();
 
         // varargs string
-        _expression = _parser.ParseExpression("Eleven()");
+        _expression = Parser.ParseExpression("Eleven()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(string.Empty, tc.S);
@@ -3799,7 +3799,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // varargs string
-        _expression = _parser.ParseExpression("Eleven('aaa')");
+        _expression = Parser.ParseExpression("Eleven('aaa')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaa", tc.S);
@@ -3810,7 +3810,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // varargs string
-        _expression = _parser.ParseExpression("Eleven(StringArray)");
+        _expression = Parser.ParseExpression("Eleven(StringArray)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaabbbccc", tc.S);
@@ -3821,7 +3821,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // varargs string
-        _expression = _parser.ParseExpression("Eleven('aaa','bbb','ccc')");
+        _expression = Parser.ParseExpression("Eleven('aaa','bbb','ccc')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaabbbccc", tc.S);
@@ -3831,7 +3831,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("aaabbbccc", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Sixteen('aaa','bbb','ccc')");
+        _expression = Parser.ParseExpression("Sixteen('aaa','bbb','ccc')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaabbbccc", tc.S);
@@ -3841,7 +3841,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("aaabbbccc", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Twelve(1,2,3)");
+        _expression = Parser.ParseExpression("Twelve(1,2,3)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(6, tc.I);
@@ -3851,7 +3851,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(6, tc.I);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Twelve(1)");
+        _expression = Parser.ParseExpression("Twelve(1)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(1, tc.I);
@@ -3861,7 +3861,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(1, tc.I);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Thirteen('aaa','bbb','ccc')");
+        _expression = Parser.ParseExpression("Thirteen('aaa','bbb','ccc')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaa::bbbccc", tc.S);
@@ -3871,7 +3871,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("aaa::bbbccc", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Thirteen('aaa')");
+        _expression = Parser.ParseExpression("Thirteen('aaa')");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaa::", tc.S);
@@ -3881,7 +3881,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("aaa::", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Fourteen('aaa',StringArray,StringArray)");
+        _expression = Parser.ParseExpression("Fourteen('aaa',StringArray,StringArray)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaa::{aaabbbccc}{aaabbbccc}", tc.S);
@@ -3891,7 +3891,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("aaa::{aaabbbccc}{aaabbbccc}", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Fifteen('aaa',IntArray,IntArray)");
+        _expression = Parser.ParseExpression("Fifteen('aaa',IntArray,IntArray)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("aaa::{112233}{112233}", tc.S);
@@ -3901,7 +3901,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("aaa::{112233}{112233}", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayz(True,True,False)");
+        _expression = Parser.ParseExpression("Arrayz(True,True,False)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("TrueTrueFalse", tc.S);
@@ -3911,7 +3911,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("TrueTrueFalse", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayz(True)");
+        _expression = Parser.ParseExpression("Arrayz(True)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("True", tc.S);
@@ -3921,7 +3921,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("True", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrays(S1,S2,S3)");
+        _expression = Parser.ParseExpression("Arrays(S1,S2,S3)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("123", tc.S);
@@ -3931,7 +3931,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("123", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrays(S1)");
+        _expression = Parser.ParseExpression("Arrays(S1)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("1", tc.S);
@@ -3941,27 +3941,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("1", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayd(1.0d,2.0d,3.0d)");
-        AssertCantCompile(_expression);
-        _expression.GetValue(tc);
-        Assert.Equal("123", tc.S);
-        AssertCanCompile(_expression);
-        tc.Reset();
-        _expression.GetValue(tc);
-        Assert.Equal("123", tc.S);
-        tc.Reset();
-
-        _expression = _parser.ParseExpression("Arrayd(1.0d)");
-        AssertCantCompile(_expression);
-        _expression.GetValue(tc);
-        Assert.Equal("1", tc.S);
-        AssertCanCompile(_expression);
-        tc.Reset();
-        _expression.GetValue(tc);
-        Assert.Equal("1", tc.S);
-        tc.Reset();
-
-        _expression = _parser.ParseExpression("Arrayj(L1,L2,L3)");
+        _expression = Parser.ParseExpression("Arrayd(1.0d,2.0d,3.0d)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("123", tc.S);
@@ -3971,7 +3951,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("123", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayj(L1)");
+        _expression = Parser.ParseExpression("Arrayd(1.0d)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("1", tc.S);
@@ -3981,7 +3961,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("1", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayc(C1,C2,C3)");
+        _expression = Parser.ParseExpression("Arrayj(L1,L2,L3)");
+        AssertCantCompile(_expression);
+        _expression.GetValue(tc);
+        Assert.Equal("123", tc.S);
+        AssertCanCompile(_expression);
+        tc.Reset();
+        _expression.GetValue(tc);
+        Assert.Equal("123", tc.S);
+        tc.Reset();
+
+        _expression = Parser.ParseExpression("Arrayj(L1)");
+        AssertCantCompile(_expression);
+        _expression.GetValue(tc);
+        Assert.Equal("1", tc.S);
+        AssertCanCompile(_expression);
+        tc.Reset();
+        _expression.GetValue(tc);
+        Assert.Equal("1", tc.S);
+        tc.Reset();
+
+        _expression = Parser.ParseExpression("Arrayc(C1,C2,C3)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("abc", tc.S);
@@ -3991,7 +3991,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("abc", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayc(C1)");
+        _expression = Parser.ParseExpression("Arrayc(C1)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("a", tc.S);
@@ -4001,7 +4001,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("a", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayb(B1,B2,B3)");
+        _expression = Parser.ParseExpression("Arrayb(B1,B2,B3)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("656667", tc.S);
@@ -4011,7 +4011,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("656667", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayb(B1)");
+        _expression = Parser.ParseExpression("Arrayb(B1)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("65", tc.S);
@@ -4021,7 +4021,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("65", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayf(F1,F2,F3)");
+        _expression = Parser.ParseExpression("Arrayf(F1,F2,F3)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("123", tc.S);
@@ -4031,7 +4031,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("123", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Arrayf(F1)");
+        _expression = Parser.ParseExpression("Arrayf(F1)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("1", tc.S);
@@ -4047,7 +4047,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var tc = new TestClass5();
 
-        _expression = _parser.ParseExpression("One()");
+        _expression = Parser.ParseExpression("One()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(1, tc.I);
@@ -4057,7 +4057,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(1, tc.I);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Two()");
+        _expression = Parser.ParseExpression("Two()");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(1, TestClass5._I);
@@ -4067,7 +4067,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(1, TestClass5._I);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Three()");
+        _expression = Parser.ParseExpression("Three()");
         AssertCantCompile(_expression);
         Assert.Equal("hello", _expression.GetValue(tc));
         AssertCanCompile(_expression);
@@ -4075,7 +4075,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("hello", _expression.GetValue(tc));
         tc.Reset();
 
-        _expression = _parser.ParseExpression("Four()");
+        _expression = Parser.ParseExpression("Four()");
         AssertCantCompile(_expression);
         Assert.Equal(3_277_700L, _expression.GetValue(tc));
         AssertCanCompile(_expression);
@@ -4084,7 +4084,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // static method, reference type return
-        _expression = _parser.ParseExpression("Five()");
+        _expression = Parser.ParseExpression("Five()");
         AssertCantCompile(_expression);
         Assert.Equal("hello", _expression.GetValue(tc));
         AssertCanCompile(_expression);
@@ -4093,7 +4093,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // static method, primitive type return
-        _expression = _parser.ParseExpression("Six()");
+        _expression = Parser.ParseExpression("Six()");
         AssertCantCompile(_expression);
         Assert.Equal(3_277_700L, _expression.GetValue(tc));
         AssertCanCompile(_expression);
@@ -4102,7 +4102,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // non-static method, one parameter of reference type
-        _expression = _parser.ParseExpression("Seven(\"foo\")");
+        _expression = Parser.ParseExpression("Seven(\"foo\")");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("foo", tc.S);
@@ -4113,7 +4113,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // static method, one parameter of reference type
-        _expression = _parser.ParseExpression("Eight(\"bar\")");
+        _expression = Parser.ParseExpression("Eight(\"bar\")");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("bar", TestClass5._S);
@@ -4124,7 +4124,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // non-static method, one parameter of primitive type
-        _expression = _parser.ParseExpression("Nine(231)");
+        _expression = Parser.ParseExpression("Nine(231)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(231, tc.I);
@@ -4135,7 +4135,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // static method, one parameter of reference type
-        _expression = _parser.ParseExpression("Ten(111)");
+        _expression = Parser.ParseExpression("Ten(111)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal(111, TestClass5._I);
@@ -4148,14 +4148,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // method that gets type converted parameters
 
         // Converting from an int to a string
-        _expression = _parser.ParseExpression("Seven(123)");
+        _expression = Parser.ParseExpression("Seven(123)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("123", tc.S);
         AssertCantCompile(_expression); // Uncompilable as argument conversion is occurring
         tc.Reset();
 
-        var expression = _parser.ParseExpression("'abcd'.Substring(Index1,Index2)");
+        var expression = Parser.ParseExpression("'abcd'.Substring(Index1,Index2)");
         var resultI = expression.GetValue<string>(new TestClass1());
         AssertCanCompile(expression);
         var resultC = expression.GetValue<string>(new TestClass1());
@@ -4163,7 +4163,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("bcd", resultC);
 
         // Converting from an int to a Number
-        _expression = _parser.ParseExpression("TakeNumber(123)");
+        _expression = Parser.ParseExpression("TakeNumber(123)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("123", tc.S);
@@ -4174,7 +4174,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         tc.Reset();
 
         // Passing a subtype
-        _expression = _parser.ParseExpression("TakeNumber(T(int).Parse('42'))");
+        _expression = Parser.ParseExpression("TakeNumber(T(int).Parse('42'))");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("42", tc.S);
@@ -4184,7 +4184,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("42", tc.S);
         tc.Reset();
 
-        _expression = _parser.ParseExpression("TakeString(T(int).Parse('42'))");
+        _expression = Parser.ParseExpression("TakeString(T(int).Parse('42'))");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("42", tc.S);
@@ -4202,7 +4202,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // from primitive array to reference type array
         var intss = new[] { 1, 2, 3 };
         var strings = new[] { "a", "b", "c" };
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal(2, _expression.GetValue(intss));
         AssertCanCompile(_expression);
         Assert.Throws<SpelEvaluationException>(() => _expression.GetValue(strings));
@@ -4212,7 +4212,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("b", _expression.GetValue(strings));
 
         tc.Field = "foo";
-        _expression = _parser.ParseExpression("Seven(Field)");
+        _expression = Parser.ParseExpression("Seven(Field)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("foo", tc.S);
@@ -4223,7 +4223,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // method with changing parameter types (change reference type)
         tc.Obj = "foo";
-        _expression = _parser.ParseExpression("Seven(Obj)");
+        _expression = Parser.ParseExpression("Seven(Obj)");
         AssertCantCompile(_expression);
         _expression.GetValue(tc);
         Assert.Equal("foo", tc.S);
@@ -4233,7 +4233,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Throws<SpelEvaluationException>(() => _expression.GetValue(tc));
 
         // method with changing target
-        _expression = _parser.ParseExpression("#root.get_Chars(0)");
+        _expression = Parser.ParseExpression("#root.get_Chars(0)");
         Assert.Equal('a', _expression.GetValue("abc"));
         AssertCanCompile(_expression);
         Assert.Throws<SpelEvaluationException>(() => _expression.GetValue(42));
@@ -4242,7 +4242,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_StaticMethod()
     {
-        var expression = _parser.ParseExpression("T(int).Parse('42')");
+        var expression = Parser.ParseExpression("T(int).Parse('42')");
         var resultI = expression.GetValue<int>(new TestClass1());
         AssertCanCompile(expression);
         var resultC = expression.GetValue<int>(new TestClass1());
@@ -4253,7 +4253,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_LiteralArguments_int()
     {
-        var expression = _parser.ParseExpression("'abcd'.Substring(1,3)");
+        var expression = Parser.ParseExpression("'abcd'.Substring(1,3)");
         var resultI = expression.GetValue<string>(new TestClass1());
         AssertCanCompile(expression);
         var resultC = expression.GetValue<string>(new TestClass1());
@@ -4264,7 +4264,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_SimpleInstanceMethodNoArg()
     {
-        var expression = _parser.ParseExpression("ToString()");
+        var expression = Parser.ParseExpression("ToString()");
         var resultI = expression.GetValue<string>(42);
         AssertCanCompile(expression);
         var resultC = expression.GetValue<string>(42);
@@ -4275,7 +4275,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_SimpleInstanceMethodNoArgReturnPrimitive()
     {
-        var expression = _parser.ParseExpression("GetHashCode()");
+        var expression = Parser.ParseExpression("GetHashCode()");
         var resultI = expression.GetValue<int>(42);
         AssertCanCompile(expression);
         var resultC = expression.GetValue<int>(42);
@@ -4285,7 +4285,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_SimpleInstanceMethodOneArgReturnPrimitive1()
     {
-        var expression = _parser.ParseExpression("IndexOf('b')");
+        var expression = Parser.ParseExpression("IndexOf('b')");
         var resultI = expression.GetValue<int>("abc");
         AssertCanCompile(expression);
         var resultC = expression.GetValue<int>("abc");
@@ -4296,7 +4296,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_SimpleInstanceMethodOneArgReturnPrimitive2()
     {
-        var expression = _parser.ParseExpression("get_Chars(2)");
+        var expression = Parser.ParseExpression("get_Chars(2)");
         var resultI = expression.GetValue<char>("abc");
         AssertCanCompile(expression);
         var resultC = expression.GetValue<char>("abc");
@@ -4308,27 +4308,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void CompoundExpression()
     {
         var payload = new Payload();
-        _expression = _parser.ParseExpression("DR[0]");
+        _expression = Parser.ParseExpression("DR[0]");
         Assert.Equal("instanceof Two", _expression.GetValue(payload).ToString());
         AssertCanCompile(_expression);
         Assert.Equal("instanceof Two", _expression.GetValue(payload).ToString());
 
-        _expression = _parser.ParseExpression("Holder.Threeee");
+        _expression = Parser.ParseExpression("Holder.Threeee");
         Assert.IsType<Three>(_expression.GetValue(payload));
         AssertCanCompile(_expression);
         Assert.IsType<Three>(_expression.GetValue(payload));
 
-        _expression = _parser.ParseExpression("DR[0]");
+        _expression = Parser.ParseExpression("DR[0]");
         Assert.IsType<Two>(_expression.GetValue(payload));
         AssertCanCompile(_expression);
         Assert.IsType<Two>(_expression.GetValue(payload));
 
-        _expression = _parser.ParseExpression("DR[0].Threeee");
+        _expression = Parser.ParseExpression("DR[0].Threeee");
         Assert.IsType<Three>(_expression.GetValue(payload));
         AssertCanCompile(_expression);
         Assert.IsType<Three>(_expression.GetValue(payload));
 
-        _expression = _parser.ParseExpression("DR[0].Threeee.Four");
+        _expression = Parser.ParseExpression("DR[0].Threeee.Four");
         Assert.Equal(.04d, _expression.GetValue(payload));
         AssertCanCompile(_expression);
         Assert.Equal(.04d, _expression.GetValue(payload));
@@ -4356,28 +4356,28 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var tc = new TestClass6();
 
         // non static field
-        _expression = _parser.ParseExpression("Orange");
+        _expression = Parser.ParseExpression("Orange");
         AssertCantCompile(_expression);
         Assert.Equal("value1", _expression.GetValue(tc));
         AssertCanCompile(_expression);
         Assert.Equal("value1", _expression.GetValue(tc));
 
         // static field
-        _expression = _parser.ParseExpression("Apple");
+        _expression = Parser.ParseExpression("Apple");
         AssertCantCompile(_expression);
         Assert.Equal("value2", _expression.GetValue(tc));
         AssertCanCompile(_expression);
         Assert.Equal("value2", _expression.GetValue(tc));
 
         // non static getter
-        _expression = _parser.ParseExpression("Banana");
+        _expression = Parser.ParseExpression("Banana");
         AssertCantCompile(_expression);
         Assert.Equal("value3", _expression.GetValue(tc));
         AssertCanCompile(_expression);
         Assert.Equal("value3", _expression.GetValue(tc));
 
         // static getter
-        _expression = _parser.ParseExpression("Plum");
+        _expression = Parser.ParseExpression("Plum");
         AssertCantCompile(_expression);
         Assert.Equal("value4", _expression.GetValue(tc));
         AssertCanCompile(_expression);
@@ -4396,42 +4396,42 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var bs = new[] { (byte)2, (byte)3, (byte)4 };
         var cs = new[] { 'a', 'b', 'c' };
 
-        _expression = _parser.ParseExpression("[0]");
+        _expression = Parser.ParseExpression("[0]");
         Assert.Equal("a", _expression.GetValue(sss));
         AssertCanCompile(_expression);
         Assert.Equal("a", _expression.GetValue(sss));
 
-        _expression = _parser.ParseExpression("[2]");
+        _expression = Parser.ParseExpression("[2]");
         Assert.Equal(10, _expression.GetValue(iss));
         AssertCanCompile(_expression);
         Assert.Equal(10, _expression.GetValue(iss));
 
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal(4.0d, _expression.GetValue(ds));
         AssertCanCompile(_expression);
         Assert.Equal(4.0d, _expression.GetValue(ds));
 
-        _expression = _parser.ParseExpression("[0]");
+        _expression = Parser.ParseExpression("[0]");
         Assert.Equal(2L, _expression.GetValue(ls));
         AssertCanCompile(_expression);
         Assert.Equal(2L, _expression.GetValue(ls));
 
-        _expression = _parser.ParseExpression("[2]");
+        _expression = Parser.ParseExpression("[2]");
         Assert.Equal((short)55, _expression.GetValue(ss));
         AssertCanCompile(_expression);
         Assert.Equal((short)55, _expression.GetValue(ss));
 
-        _expression = _parser.ParseExpression("[0]");
+        _expression = Parser.ParseExpression("[0]");
         Assert.Equal(6.0f, _expression.GetValue(fs));
         AssertCanCompile(_expression);
         Assert.Equal(6.0f, _expression.GetValue(fs));
 
-        _expression = _parser.ParseExpression("[2]");
+        _expression = Parser.ParseExpression("[2]");
         Assert.Equal((byte)4, _expression.GetValue(bs));
         AssertCanCompile(_expression);
         Assert.Equal((byte)4, _expression.GetValue(bs));
 
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal('b', _expression.GetValue(cs));
         AssertCanCompile(_expression);
         Assert.Equal('b', _expression.GetValue(cs));
@@ -4443,7 +4443,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             "bbb",
             "ccc"
         };
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal("bbb", _expression.GetValue(strings));
         AssertCanCompile(_expression);
         Assert.Equal("bbb", _expression.GetValue(strings));
@@ -4454,7 +4454,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             456,
             789
         };
-        _expression = _parser.ParseExpression("[2]");
+        _expression = Parser.ParseExpression("[2]");
         Assert.Equal(789, _expression.GetValue(ints));
         AssertCanCompile(_expression);
         Assert.Equal(789, _expression.GetValue(ints));
@@ -4465,24 +4465,24 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             { "bbb", 222 },
             { "ccc", 333 }
         };
-        _expression = _parser.ParseExpression("['aaa']");
+        _expression = Parser.ParseExpression("['aaa']");
         Assert.Equal(111, _expression.GetValue(map1));
         AssertCanCompile(_expression);
         Assert.Equal(111, _expression.GetValue(map1));
 
         // Object TODO: Fix
         var tc = new TestClass6();
-        _expression = _parser.ParseExpression("['Orange']");
+        _expression = Parser.ParseExpression("['Orange']");
         Assert.Equal("value1", _expression.GetValue(tc));
         AssertCanCompile(_expression);
         Assert.Equal("value1", _expression.GetValue(tc));
 
-        _expression = _parser.ParseExpression("['Peach']");
+        _expression = Parser.ParseExpression("['Peach']");
         Assert.Equal(34L, _expression.GetValue(tc));
         AssertCanCompile(_expression);
         Assert.Equal(34L, _expression.GetValue(tc));
 
-        _expression = _parser.ParseExpression("['Banana']");
+        _expression = Parser.ParseExpression("['Banana']");
         Assert.Equal("value3", _expression.GetValue(tc));
         AssertCanCompile(_expression);
         Assert.Equal("value3", _expression.GetValue(tc));
@@ -4493,12 +4493,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             new[] { "a", "b", "c" },
             new[] { "d", "e", "f" }
         };
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal("d e f", Stringify(_expression.GetValue(listOfStringArrays)));
         AssertCanCompile(_expression);
         Assert.Equal("d e f", Stringify(_expression.GetValue(listOfStringArrays)));
 
-        _expression = _parser.ParseExpression("[1][0]");
+        _expression = Parser.ParseExpression("[1][0]");
         Assert.Equal("d", Stringify(_expression.GetValue(listOfStringArrays)));
         AssertCanCompile(_expression);
         Assert.Equal("d", Stringify(_expression.GetValue(listOfStringArrays)));
@@ -4508,12 +4508,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             new[] { 1, 2, 3 },
             new[] { 4, 5, 6 }
         };
-        _expression = _parser.ParseExpression("[0]");
+        _expression = Parser.ParseExpression("[0]");
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(listOfIntegerArrays)));
         AssertCanCompile(_expression);
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(listOfIntegerArrays)));
 
-        _expression = _parser.ParseExpression("[0][1]");
+        _expression = Parser.ParseExpression("[0][1]");
         Assert.Equal(2, _expression.GetValue(listOfIntegerArrays));
         AssertCanCompile(_expression);
         Assert.Equal(2, _expression.GetValue(listOfIntegerArrays));
@@ -4533,35 +4533,35 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             "f"
         };
 
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal("d e f", Stringify(_expression.GetValue(stringArrayOfLists)));
         AssertCanCompile(_expression);
         Assert.Equal("d e f", Stringify(_expression.GetValue(stringArrayOfLists)));
 
-        _expression = _parser.ParseExpression("[1][2]");
+        _expression = Parser.ParseExpression("[1][2]");
         Assert.Equal("f", Stringify(_expression.GetValue(stringArrayOfLists)));
         AssertCanCompile(_expression);
         Assert.Equal("f", Stringify(_expression.GetValue(stringArrayOfLists)));
 
         // array of arrays
         var referenceTypeArrayOfArrays = new[] { new[] { "a", "b", "c" }, new[] { "d", "e", "f" } };
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal("d e f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
         AssertCanCompile(_expression);
         Assert.Equal("d e f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
 
-        _expression = _parser.ParseExpression("[1][2]");
+        _expression = Parser.ParseExpression("[1][2]");
         Assert.Equal("f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
         AssertCanCompile(_expression);
         Assert.Equal("f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
 
         var primitiveTypeArrayOfArrays = new[] { new[] { 1, 2, 3 }, new[] { 4, 5, 6 } };
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal("4 5 6", Stringify(_expression.GetValue(primitiveTypeArrayOfArrays)));
         AssertCanCompile(_expression);
         Assert.Equal("4 5 6", Stringify(_expression.GetValue(primitiveTypeArrayOfArrays)));
 
-        _expression = _parser.ParseExpression("[1][2]");
+        _expression = Parser.ParseExpression("[1][2]");
         Assert.Equal("6", Stringify(_expression.GetValue(primitiveTypeArrayOfArrays)));
         AssertCanCompile(_expression);
         Assert.Equal("6", Stringify(_expression.GetValue(primitiveTypeArrayOfArrays)));
@@ -4582,12 +4582,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             "f"
         };
         listOfListOfStrings.Add(list);
-        _expression = _parser.ParseExpression("[1]");
+        _expression = Parser.ParseExpression("[1]");
         Assert.Equal("d e f", Stringify(_expression.GetValue(listOfListOfStrings)));
         AssertCanCompile(_expression);
         Assert.Equal("d e f", Stringify(_expression.GetValue(listOfListOfStrings)));
 
-        _expression = _parser.ParseExpression("[1][2]");
+        _expression = Parser.ParseExpression("[1][2]");
         Assert.Equal("f", Stringify(_expression.GetValue(listOfListOfStrings)));
         AssertCanCompile(_expression);
         Assert.Equal("f", Stringify(_expression.GetValue(listOfListOfStrings)));
@@ -4602,12 +4602,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         };
         mapToLists.Add("foo", list);
 
-        _expression = _parser.ParseExpression("['foo']");
+        _expression = Parser.ParseExpression("['foo']");
         Assert.Equal("a b c", Stringify(_expression.GetValue(mapToLists)));
         AssertCanCompile(_expression);
         Assert.Equal("a b c", Stringify(_expression.GetValue(mapToLists)));
 
-        _expression = _parser.ParseExpression("['foo'][2]");
+        _expression = Parser.ParseExpression("['foo'][2]");
         Assert.Equal("c", Stringify(_expression.GetValue(mapToLists)));
         AssertCanCompile(_expression);
         Assert.Equal("c", Stringify(_expression.GetValue(mapToLists)));
@@ -4618,27 +4618,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         ctx.AddPropertyAccessor(new CompilableMapAccessor());
         mapToIntArray.Add("foo", new[] { 1, 2, 3 });
 
-        _expression = _parser.ParseExpression("['foo']");
+        _expression = Parser.ParseExpression("['foo']");
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(mapToIntArray)));
         AssertCanCompile(_expression);
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(mapToIntArray)));
 
-        _expression = _parser.ParseExpression("['foo'][1]");
+        _expression = Parser.ParseExpression("['foo'][1]");
         Assert.Equal(2, _expression.GetValue(mapToIntArray));
         AssertCanCompile(_expression);
         Assert.Equal(2, _expression.GetValue(mapToIntArray));
 
-        _expression = _parser.ParseExpression("foo");
+        _expression = Parser.ParseExpression("foo");
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(ctx, mapToIntArray)));
         AssertCanCompile(_expression);
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(ctx, mapToIntArray)));
 
-        _expression = _parser.ParseExpression("foo[1]");
+        _expression = Parser.ParseExpression("foo[1]");
         Assert.Equal(2, _expression.GetValue(ctx, mapToIntArray));
         AssertCanCompile(_expression);
         Assert.Equal(2, _expression.GetValue(ctx, mapToIntArray));
 
-        _expression = _parser.ParseExpression("['foo'][2]");
+        _expression = Parser.ParseExpression("['foo'][2]");
         Assert.Equal("3", Stringify(_expression.GetValue(ctx, mapToIntArray)));
         AssertCanCompile(_expression);
         Assert.Equal("3", Stringify(_expression.GetValue(ctx, mapToIntArray)));
@@ -4650,12 +4650,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             { "key", "value1" }
         };
 
-        _expression = _parser.ParseExpression("[0]");
+        _expression = Parser.ParseExpression("[0]");
         Assert.Equal("{key=value1}", Stringify(_expression.GetValue(mapArray)));
         AssertCanCompile(_expression);
         Assert.Equal("{key=value1}", Stringify(_expression.GetValue(mapArray)));
 
-        _expression = _parser.ParseExpression("[0]['key']");
+        _expression = Parser.ParseExpression("[0]['key']");
         Assert.Equal("value1", Stringify(_expression.GetValue(mapArray)));
         AssertCanCompile(_expression);
         Assert.Equal("value1", Stringify(_expression.GetValue(mapArray)));
@@ -4664,13 +4664,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void PlusNeedingCheckcast_SPR12426()
     {
-        _expression = _parser.ParseExpression("Object + ' world'");
+        _expression = Parser.ParseExpression("Object + ' world'");
         var v = _expression.GetValue(new FooObject());
         Assert.Equal("hello world", v);
         AssertCanCompile(_expression);
         Assert.Equal("hello world", v);
 
-        _expression = _parser.ParseExpression("Object + ' world'");
+        _expression = Parser.ParseExpression("Object + ' world'");
         v = _expression.GetValue(new FooString());
         Assert.Equal("hello world", v);
         AssertCanCompile(_expression);
@@ -4681,10 +4681,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void MixingItUp_PropertyAccessIndexerOpLtTernaryRootNull()
     {
         var payload = new Payload();
-        _expression = _parser.ParseExpression("DR[0].Threeee");
+        _expression = Parser.ParseExpression("DR[0].Threeee");
         _expression.GetValue(payload);
 
-        var expression = _parser.ParseExpression("DR[0].Threeee.Four lt 0.1d?#root:null");
+        var expression = Parser.ParseExpression("DR[0].Threeee.Four lt 0.1d?#root:null");
         var v = expression.GetValue(payload);
 
         AssertCanCompile(expression);
@@ -4702,7 +4702,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var holder = new Payload2Holder();
         var ctx = new StandardEvaluationContext();
         ctx.AddPropertyAccessor(new MyAccessor());
-        _expression = _parser.ParseExpression("Payload2.Var1");
+        _expression = Parser.ParseExpression("Payload2.Var1");
         var v = _expression.GetValue(ctx, holder);
         Assert.Equal("abc", v);
 
@@ -4714,107 +4714,107 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void CompilerWithGenerics_12040()
     {
-        _expression = _parser.ParseExpression("Payload!=2");
+        _expression = Parser.ParseExpression("Payload!=2");
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(2)));
 
-        _expression = _parser.ParseExpression("2!=Payload");
+        _expression = Parser.ParseExpression("2!=Payload");
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(2)));
 
-        _expression = _parser.ParseExpression("Payload!=6L");
+        _expression = Parser.ParseExpression("Payload!=6L");
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<long>(4L)));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<long>(6L)));
 
-        _expression = _parser.ParseExpression("Payload==2");
+        _expression = Parser.ParseExpression("Payload==2");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(2)));
 
-        _expression = _parser.ParseExpression("2==Payload");
+        _expression = Parser.ParseExpression("2==Payload");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(2)));
 
-        _expression = _parser.ParseExpression("Payload==6L");
+        _expression = Parser.ParseExpression("Payload==6L");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<long>(4L)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<long>(6L)));
 
-        _expression = _parser.ParseExpression("2==Payload");
+        _expression = Parser.ParseExpression("2==Payload");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(2)));
 
-        _expression = _parser.ParseExpression("Payload/2");
+        _expression = Parser.ParseExpression("Payload/2");
         Assert.Equal(2, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(3, _expression.GetValue<int>(new GenericMessageTestHelper<int>(6)));
 
-        _expression = _parser.ParseExpression("100/Payload");
+        _expression = Parser.ParseExpression("100/Payload");
         Assert.Equal(25, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(10, _expression.GetValue<int>(new GenericMessageTestHelper<int>(10)));
 
-        _expression = _parser.ParseExpression("Payload+2");
+        _expression = Parser.ParseExpression("Payload+2");
         Assert.Equal(6, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(8, _expression.GetValue<int>(new GenericMessageTestHelper<int>(6)));
 
-        _expression = _parser.ParseExpression("100+Payload");
+        _expression = Parser.ParseExpression("100+Payload");
         Assert.Equal(104, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(110, _expression.GetValue<int>(new GenericMessageTestHelper<int>(10)));
 
-        _expression = _parser.ParseExpression("Payload-2");
+        _expression = Parser.ParseExpression("Payload-2");
         Assert.Equal(2, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(4, _expression.GetValue<int>(new GenericMessageTestHelper<int>(6)));
 
-        _expression = _parser.ParseExpression("100-Payload");
+        _expression = Parser.ParseExpression("100-Payload");
         Assert.Equal(96, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(90, _expression.GetValue<int>(new GenericMessageTestHelper<int>(10)));
 
-        _expression = _parser.ParseExpression("Payload*2");
+        _expression = Parser.ParseExpression("Payload*2");
         Assert.Equal(8, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(12, _expression.GetValue<int>(new GenericMessageTestHelper<int>(6)));
 
-        _expression = _parser.ParseExpression("100*Payload");
+        _expression = Parser.ParseExpression("100*Payload");
         Assert.Equal(400, _expression.GetValue<int>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(1000, _expression.GetValue<int>(new GenericMessageTestHelper<int>(10)));
 
-        _expression = _parser.ParseExpression("Payload/2L");
+        _expression = Parser.ParseExpression("Payload/2L");
         Assert.Equal(2L, _expression.GetValue<long>(new GenericMessageTestHelper<long>(4L)));
         AssertCanCompile(_expression);
         Assert.Equal(3L, _expression.GetValue<long>(new GenericMessageTestHelper<long>(6L)));
 
-        _expression = _parser.ParseExpression("100L/Payload");
+        _expression = Parser.ParseExpression("100L/Payload");
         Assert.Equal(25L, _expression.GetValue<long>(new GenericMessageTestHelper<long>(4L)));
         AssertCanCompile(_expression);
         Assert.Equal(10L, _expression.GetValue<long>(new GenericMessageTestHelper<long>(10L)));
 
-        _expression = _parser.ParseExpression("Payload/2f");
+        _expression = Parser.ParseExpression("Payload/2f");
         Assert.Equal(2f, _expression.GetValue<float>(new GenericMessageTestHelper<float>(4f)));
         AssertCanCompile(_expression);
         Assert.Equal(3f, _expression.GetValue<float>(new GenericMessageTestHelper<float>(6f)));
 
-        _expression = _parser.ParseExpression("100f/Payload");
+        _expression = Parser.ParseExpression("100f/Payload");
         Assert.Equal(25f, _expression.GetValue<float>(new GenericMessageTestHelper<float>(4f)));
         AssertCanCompile(_expression);
         Assert.Equal(10f, _expression.GetValue<float>(new GenericMessageTestHelper<float>(10f)));
 
-        _expression = _parser.ParseExpression("Payload/2d");
+        _expression = Parser.ParseExpression("Payload/2d");
         Assert.Equal(2d, _expression.GetValue<double>(new GenericMessageTestHelper<double>(4d)));
         AssertCanCompile(_expression);
         Assert.Equal(3d, _expression.GetValue<double>(new GenericMessageTestHelper<double>(6d)));
 
-        _expression = _parser.ParseExpression("100d/Payload");
+        _expression = Parser.ParseExpression("100d/Payload");
         Assert.Equal(25d, _expression.GetValue<double>(new GenericMessageTestHelper<double>(4d)));
         AssertCanCompile(_expression);
         Assert.Equal(10d, _expression.GetValue<double>(new GenericMessageTestHelper<double>(10d)));
@@ -4823,42 +4823,42 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void CompilerWithGenerics_12040_2()
     {
-        _expression = _parser.ParseExpression("Payload/2");
+        _expression = Parser.ParseExpression("Payload/2");
         Assert.Equal(2, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(3, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(6)));
 
-        _expression = _parser.ParseExpression("9/Payload");
+        _expression = Parser.ParseExpression("9/Payload");
         Assert.Equal(1, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(9)));
         AssertCanCompile(_expression);
         Assert.Equal(3, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(3)));
 
-        _expression = _parser.ParseExpression("Payload+2");
+        _expression = Parser.ParseExpression("Payload+2");
         Assert.Equal(6, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(8, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(6)));
 
-        _expression = _parser.ParseExpression("100+Payload");
+        _expression = Parser.ParseExpression("100+Payload");
         Assert.Equal(104, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(110, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(10)));
 
-        _expression = _parser.ParseExpression("Payload-2");
+        _expression = Parser.ParseExpression("Payload-2");
         Assert.Equal(2, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(4, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(6)));
 
-        _expression = _parser.ParseExpression("100-Payload");
+        _expression = Parser.ParseExpression("100-Payload");
         Assert.Equal(96, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(90, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(10)));
 
-        _expression = _parser.ParseExpression("Payload*2");
+        _expression = Parser.ParseExpression("Payload*2");
         Assert.Equal(8, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(12, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(6)));
 
-        _expression = _parser.ParseExpression("100*Payload");
+        _expression = Parser.ParseExpression("100*Payload");
         Assert.Equal(400, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(4)));
         AssertCanCompile(_expression);
         Assert.Equal(1000, _expression.GetValue<int>(new GenericMessageTestHelper2<int>(10)));
@@ -4867,42 +4867,42 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void CompilerWithGenerics_12040_3()
     {
-        _expression = _parser.ParseExpression("Payload >= 2");
+        _expression = Parser.ParseExpression("Payload >= 2");
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
 
-        _expression = _parser.ParseExpression("2 >= Payload");
+        _expression = Parser.ParseExpression("2 >= Payload");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(5)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
 
-        _expression = _parser.ParseExpression("Payload > 2");
+        _expression = Parser.ParseExpression("Payload > 2");
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(4)));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
 
-        _expression = _parser.ParseExpression("2 > Payload");
+        _expression = Parser.ParseExpression("2 > Payload");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(5)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
 
-        _expression = _parser.ParseExpression("Payload <=2");
+        _expression = Parser.ParseExpression("Payload <=2");
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(6)));
 
-        _expression = _parser.ParseExpression("2 <= Payload");
+        _expression = Parser.ParseExpression("2 <= Payload");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(6)));
 
-        _expression = _parser.ParseExpression("Payload < 2");
+        _expression = Parser.ParseExpression("Payload < 2");
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(6)));
 
-        _expression = _parser.ParseExpression("2 < Payload");
+        _expression = Parser.ParseExpression("2 < Payload");
         Assert.False(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(1)));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(new GenericMessageTestHelper<int>(6)));
@@ -4911,7 +4911,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void IndexerMapAccessor_12045()
     {
-        var spc = new SpelParserOptions(SpelCompilerMode.IMMEDIATE);
+        var spc = new SpelParserOptions(SpelCompilerMode.Immediate);
         var sep = new SpelExpressionParser(spc);
         _expression = sep.ParseExpression("Headers[command]");
         var root = new MyMessage();
@@ -4939,7 +4939,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void ElvisOperator_SPR15192()
     {
-        var configuration = new SpelParserOptions(SpelCompilerMode.IMMEDIATE);
+        var configuration = new SpelParserOptions(SpelCompilerMode.Immediate);
         var exp = new SpelExpressionParser(configuration).ParseExpression("Bar()") as SpelExpression;
         Assert.Equal("BAR", exp.GetValue<string>(new Foo()));
         AssertCanCompile(exp);
@@ -5022,7 +5022,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void ElvisOperator_SPR17214()
     {
-        var configuration = new SpelParserOptions(SpelCompilerMode.IMMEDIATE);
+        var configuration = new SpelParserOptions(SpelCompilerMode.Immediate);
         var sep = new SpelExpressionParser(configuration);
 
         _expression = sep.ParseExpression("Record['abc']?:Record.Add('abc',Expression.SomeLong)");
@@ -5056,7 +5056,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void TestNullComparison_SPR22358()
     {
-        var configuration = new SpelParserOptions(SpelCompilerMode.OFF);
+        var configuration = new SpelParserOptions(SpelCompilerMode.Off);
         var parser = new SpelExpressionParser(configuration);
         var ctx = new StandardEvaluationContext();
         ctx.SetRootObject(new Reg(1));
@@ -5104,7 +5104,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void TernaryOperator_SPR15192()
     {
-        var configuration = new SpelParserOptions(SpelCompilerMode.IMMEDIATE);
+        var configuration = new SpelParserOptions(SpelCompilerMode.Immediate);
         var context = new StandardEvaluationContext();
         context.SetVariable("map", new Dictionary<string, string> { { "foo", "qux" } });
 
@@ -5180,7 +5180,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         for (var i = 0; i < 1500; i++)
         {
-            var expression = _parser.ParseExpression("4 + 5") as SpelExpression;
+            var expression = Parser.ParseExpression("4 + 5") as SpelExpression;
             Assert.Equal(9, expression.GetValue<int>());
             AssertCanCompile(expression);
             Assert.Equal(9, expression.GetValue<int>());
@@ -5191,12 +5191,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void CompilationKicksInAfterThreshold()
     {
-        var parser = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.MIXED));
+        var parser = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.Mixed));
         var expression = parser.ParseExpression("4 + 5") as SpelExpression;
         for (var i = 0; i < 200; i++)
         {
             Assert.Equal(9, expression.GetValue<int>());
-            if (i < SpelExpression.INTERPRETED_COUNT_THRESHOLD)
+            if (i < SpelExpression.InterpretedCountThreshold)
             {
                 AssertNotCompiled(expression);
             }
@@ -5211,116 +5211,116 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void PropertyReferenceValueType()
     {
         // static property on value type
-        _expression = _parser.ParseExpression("T(DateTime).Now");
+        _expression = Parser.ParseExpression("T(DateTime).Now");
         var start = DateTime.Now.Ticks;
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
         AssertCanCompile(_expression);
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
 
         // instance property on value type
-        _expression = _parser.ParseExpression("T(DateTime).Now.Second");
+        _expression = Parser.ParseExpression("T(DateTime).Now.Second");
         Assert.InRange(_expression.GetValue<int>(), 0, 60);
         AssertCanCompile(_expression);
         Assert.InRange(_expression.GetValue<int>(), 0, 60);
 
         // instance property on boxed value type
-        _expression = _parser.ParseExpression("#a.ValueProperty");
-        _context.SetVariable("a", new A(10));
-        Assert.Equal(10, _expression.GetValue(_context));
+        _expression = Parser.ParseExpression("#a.ValueProperty");
+        Context.SetVariable("a", new A(10));
+        Assert.Equal(10, _expression.GetValue(Context));
         AssertCanCompile(_expression);
-        Assert.Equal(10, _expression.GetValue(_context));
+        Assert.Equal(10, _expression.GetValue(Context));
 
         // static property on boxed value type
-        _expression = _parser.ParseExpression("#a.ValuePropertyStatic");
-        _context.SetVariable("a", new A(10));
-        Assert.Equal(30, _expression.GetValue(_context));
+        _expression = Parser.ParseExpression("#a.ValuePropertyStatic");
+        Context.SetVariable("a", new A(10));
+        Assert.Equal(30, _expression.GetValue(Context));
         AssertCanCompile(_expression);
-        Assert.Equal(30, _expression.GetValue(_context));
+        Assert.Equal(30, _expression.GetValue(Context));
     }
 
     [Fact]
     public void FieldReferenceValueType()
     {
         // static field on unboxed value type
-        _expression = _parser.ParseExpression("T(DateTime).MaxValue");
+        _expression = Parser.ParseExpression("T(DateTime).MaxValue");
         var resultI = _expression.GetValue<DateTime>();
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<DateTime>();
         Assert.Equal(resultI, resultC);
 
         // instance field on unboxed value type
-        _expression = _parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Value");
+        _expression = Parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Value");
         Assert.Equal(20, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue());
 
         // instance field on boxed value type
-        _expression = _parser.ParseExpression("#a.Value");
-        _context.SetVariable("a", new A(10));
-        Assert.Equal(10, _expression.GetValue(_context));
+        _expression = Parser.ParseExpression("#a.Value");
+        Context.SetVariable("a", new A(10));
+        Assert.Equal(10, _expression.GetValue(Context));
         AssertCanCompile(_expression);
-        Assert.Equal(10, _expression.GetValue(_context));
+        Assert.Equal(10, _expression.GetValue(Context));
 
         // static field on boxed value type
-        _expression = _parser.ParseExpression("#a.ValueFieldStatic");
-        _context.SetVariable("a", new A(10));
-        Assert.Equal(40, _expression.GetValue(_context));
+        _expression = Parser.ParseExpression("#a.ValueFieldStatic");
+        Context.SetVariable("a", new A(10));
+        Assert.Equal(40, _expression.GetValue(Context));
         AssertCanCompile(_expression);
-        Assert.Equal(40, _expression.GetValue(_context));
+        Assert.Equal(40, _expression.GetValue(Context));
     }
 
     [Fact]
     public void MethodReferenceValueType()
     {
         // static method on unboxed value type
-        _expression = _parser.ParseExpression("T(DateTime).Parse('2/16/2008 12:15:12 PM')");
+        _expression = Parser.ParseExpression("T(DateTime).Parse('2/16/2008 12:15:12 PM')");
         var resultI = _expression.GetValue<DateTime>();
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<DateTime>();
         Assert.Equal(resultI, resultC);
 
         // instance method on unboxed value type
-        _expression = _parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Method()");
+        _expression = Parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Method()");
         Assert.Equal(20, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue());
 
         // instance method on boxed value type
-        _expression = _parser.ParseExpression("#a.Method()");
-        _context.SetVariable("a", new A(20));
-        Assert.Equal(20, _expression.GetValue(_context));
+        _expression = Parser.ParseExpression("#a.Method()");
+        Context.SetVariable("a", new A(20));
+        Assert.Equal(20, _expression.GetValue(Context));
         AssertCanCompile(_expression);
-        Assert.Equal(20, _expression.GetValue(_context));
+        Assert.Equal(20, _expression.GetValue(Context));
 
         // static method on boxed value type
-        _expression = _parser.ParseExpression("#a.StaticMethod()");
-        _context.SetVariable("a", new A(10));
-        Assert.Equal(40, _expression.GetValue(_context));
+        _expression = Parser.ParseExpression("#a.StaticMethod()");
+        Context.SetVariable("a", new A(10));
+        Assert.Equal(40, _expression.GetValue(Context));
         AssertCanCompile(_expression);
-        Assert.Equal(40, _expression.GetValue(_context));
+        Assert.Equal(40, _expression.GetValue(Context));
     }
 
     [Fact]
     public void MethodArgumentsValueTypes()
     {
         var testArgs = new TestAArguments();
-        _expression = _parser.ParseExpression("TestUnboxed(#a)");
-        _context.SetVariable("a", new A(10));
-        Assert.Null(_expression.GetValue(_context, testArgs));
+        _expression = Parser.ParseExpression("TestUnboxed(#a)");
+        Context.SetVariable("a", new A(10));
+        Assert.Null(_expression.GetValue(Context, testArgs));
         Assert.Equal(10, testArgs.Value);
         AssertCanCompile(_expression);
         testArgs.Value = 0;
-        Assert.Null(_expression.GetValue(_context, testArgs));
+        Assert.Null(_expression.GetValue(Context, testArgs));
         Assert.Equal(10, testArgs.Value);
 
         testArgs = new TestAArguments();
-        _expression = _parser.ParseExpression("TestBoxed(#a)");
-        _context.SetVariable("a", new A(20));
-        Assert.Null(_expression.GetValue(_context, testArgs));
+        _expression = Parser.ParseExpression("TestBoxed(#a)");
+        Context.SetVariable("a", new A(20));
+        Assert.Null(_expression.GetValue(Context, testArgs));
         Assert.Equal(20, testArgs.Value);
         AssertCanCompile(_expression);
         testArgs.Value = 0;
-        Assert.Null(_expression.GetValue(_context, testArgs));
+        Assert.Null(_expression.GetValue(Context, testArgs));
         Assert.Equal(20, testArgs.Value);
     }
 
@@ -5366,12 +5366,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private void AssertNotCompiled(SpelExpression expression)
     {
-        Assert.Null(expression._compiledAst);
+        Assert.Null(expression.CompiledAst);
     }
 
     private void AssertIsCompiled(SpelExpression expression)
     {
-        Assert.NotNull(expression._compiledAst);
+        Assert.NotNull(expression.CompiledAst);
     }
 
     private void AssertCanCompile(IExpression expression)
@@ -5391,7 +5391,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private IExpression Parse(string expression)
     {
-        return _parser.ParseExpression(expression);
+        return Parser.ParseExpression(expression);
     }
 
     private string Stringify(object obj)

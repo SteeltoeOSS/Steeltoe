@@ -86,25 +86,25 @@ public class SteeltoeExporter : MetricsExporter
                     var sum = metricPoint.GetHistogramSum();
                     if (metric.Unit == "s")
                     {
-                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TOTAL_TIME, sum, tags));
-                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.MAX, sum, tags));
+                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, tags));
+                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.Max, sum, tags));
                     }
                     else
                     {
-                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TOTAL, sum, tags));
+                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.Total, sum, tags));
                     }
                 }
                 else if (((int)metric.MetricType & 0b_0000_1111) == 0x0a /* I8 */)
                 {
                     metricSamples[metric.Name].Add(metric.MetricType.IsSum()
-                        ? new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumLong(), tags)
-                        : new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueLong(), tags));
+                        ? new MetricSample(MetricStatistic.Total, metricPoint.GetSumLong(), tags)
+                        : new MetricSample(MetricStatistic.Value, metricPoint.GetGaugeLastValueLong(), tags));
                 }
                 else
                 {
                     metricSamples[metric.Name].Add(metric.MetricType.IsSum()
-                        ? new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumDouble(), tags)
-                        : new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueDouble(), tags));
+                        ? new MetricSample(MetricStatistic.Total, metricPoint.GetSumDouble(), tags)
+                        : new MetricSample(MetricStatistic.Value, metricPoint.GetGaugeLastValueDouble(), tags));
                 }
             }
         }

@@ -17,19 +17,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> : HystrixCollapserBase, IHystrixExecutable<TRequestResponse>
 {
-    protected internal CancellationToken _token;
+    protected internal CancellationToken Token;
 
     private readonly RequestCollapserFactory _collapserFactory;
     private readonly HystrixRequestCache _requestCache;
     private readonly HystrixCollapserMetrics _metrics;
 
     protected HystrixCollapser()
-        : this(null, RequestCollapserScope.REQUEST)
+        : this(null, RequestCollapserScope.Request)
     {
     }
 
     protected HystrixCollapser(IHystrixCollapserKey collapserKey)
-        : this(collapserKey, RequestCollapserScope.REQUEST)
+        : this(collapserKey, RequestCollapserScope.Request)
     {
     }
 
@@ -93,7 +93,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
 
     public Task<TRequestResponse> ExecuteAsync(CancellationToken token)
     {
-        _token = token;
+        this.Token = token;
         var toStart = ToTask();
         return toStart;
     }
@@ -108,7 +108,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
             _metrics.MarkResponseFromCache();
             var origTask = entry.CachedTask;
             request = entry.CachedTask.AsyncState as CollapsedRequest<TRequestResponse, TRequestArgument>;
-            request.AddLinkedToken(_token);
+            request.AddLinkedToken(Token);
             var continued = origTask.ContinueWith(
                 parent =>
                 {
@@ -126,7 +126,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
                         throw new InvalidOperationException("Missing AsyncState from parent task");
                     }
                 },
-                _token,
+                Token,
                 TaskContinuationOptions.ExecuteSynchronously,
                 TaskScheduler.Current);
             return continued;
@@ -134,7 +134,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
 
         try
         {
-            request = requestCollapser.SubmitRequest(RequestArgument, _token);
+            request = requestCollapser.SubmitRequest(RequestArgument, Token);
             entry.CachedTask = request.CompletionSource.Task;
             return entry.CachedTask;
         }
@@ -164,7 +164,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     {
         var observable = Observable.FromAsync(ct =>
         {
-            _token = ct;
+            Token = ct;
             var toStart = ToTask();
             return toStart;
         });
@@ -231,18 +231,18 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
         var message = $"{GetType()} HystrixCollapser failed while executing.";
 
         // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
-        return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, GetType(), message, e, null);
+        return new HystrixRuntimeException(FailureType.CommandException, GetType(), message, e, null);
     }
 
     private static string GetDefaultNameFromClass(Type cls)
     {
-        if (_defaultNameCache.TryGetValue(cls, out var fromCache))
+        if (DefaultNameCache.TryGetValue(cls, out var fromCache))
         {
             return fromCache;
         }
 
         var name = cls.Name;
-        _defaultNameCache.TryAdd(cls, name);
+        DefaultNameCache.TryAdd(cls, name);
         return name;
     }
 }

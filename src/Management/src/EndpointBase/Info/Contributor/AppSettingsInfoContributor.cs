@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
 public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInfoContributor
 {
-    private const string APPSETTINGS_PREFIX = "info";
+    private const string AppsettingsPrefix = "info";
 
     public AppSettingsInfoContributor(IConfiguration config)
         : base(config)
@@ -18,6 +18,6 @@ public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInf
 
     public void Contribute(IInfoBuilder builder)
     {
-        Contribute(builder, APPSETTINGS_PREFIX, false);
+        Contribute(builder, AppsettingsPrefix, false);
     }
 }

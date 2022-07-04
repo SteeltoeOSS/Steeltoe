@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration;
 
-public static class IServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// If an instance of <see cref="IServicesInfo"/> is found, it is returned.

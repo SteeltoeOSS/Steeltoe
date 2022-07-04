@@ -27,7 +27,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound;
 public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMessageHandler, ILifecycle
 {
     private readonly object _lock = new ();
-    private readonly string _no_id = Guid.Empty.ToString();
+    private readonly string _noId = Guid.Empty.ToString();
     private readonly ILogger _logger;
 
     protected AbstractRabbitOutboundEndpoint(IApplicationContext context, ILogger logger)
@@ -244,7 +244,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
     {
         CorrelationData correlationData = null;
 
-        var messageId = requestMessage.Headers.Id ?? _no_id;
+        var messageId = requestMessage.Headers.Id ?? _noId;
 
         if (CorrelationDataGenerator != null)
         {
@@ -262,7 +262,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
         if (correlationData == null)
         {
-            var correlation = requestMessage.Headers[RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION];
+            var correlation = requestMessage.Headers[RabbitMessageHeaders.PublishConfirmCorrelation];
 
             if (correlation is CorrelationData cdata)
             {
@@ -328,10 +328,10 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         if (ErrorMessageStrategy == null)
         {
             builder.CopyHeadersIfAbsent(message.Headers)
-                .SetHeader(RabbitMessageHeaders.RETURN_REPLY_CODE, replyCode)
-                .SetHeader(RabbitMessageHeaders.RETURN_REPLY_TEXT, replyText)
-                .SetHeader(RabbitMessageHeaders.RETURN_EXCHANGE, exchange)
-                .SetHeader(RabbitMessageHeaders.RETURN_ROUTING_KEY, returnedRoutingKey);
+                .SetHeader(RabbitMessageHeaders.ReturnReplyCode, replyCode)
+                .SetHeader(RabbitMessageHeaders.ReturnReplyText, replyText)
+                .SetHeader(RabbitMessageHeaders.ReturnExchange, exchange)
+                .SetHeader(RabbitMessageHeaders.ReturnRoutingKey, returnedRoutingKey);
         }
 
         var returnedMessage = builder.Build();
@@ -377,11 +377,11 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         {
             var headers = new Dictionary<string, object>
             {
-                { RabbitMessageHeaders.PUBLISH_CONFIRM, ack }
+                { RabbitMessageHeaders.PublishConfirm, ack }
             };
             if (!ack && !string.IsNullOrEmpty(cause))
             {
-                headers.Add(RabbitMessageHeaders.PUBLISH_CONFIRM_NACK_CAUSE, cause);
+                headers.Add(RabbitMessageHeaders.PublishConfirmNackCause, cause);
             }
 
             return PrepareMessageBuilder(userCorrelationData)

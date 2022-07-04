@@ -25,8 +25,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class BlockingQueueConsumer
 {
-    private const int DEFAULT_DECLARATION_RETRIES = 3;
-    private const int DEFAULT_RETRY_DECLARATION_INTERVAL = 60000;
+    private const int DefaultDeclarationRetries = 3;
+    private const int DefaultRetryDeclarationInterval = 60000;
 
     public BlockingQueueConsumer(
         IConnectionFactory connectionFactory,
@@ -167,11 +167,11 @@ public class BlockingQueueConsumer
 
     public int ShutdownTimeout { get; set; }
 
-    public int DeclarationRetries { get; set; } = DEFAULT_DECLARATION_RETRIES;
+    public int DeclarationRetries { get; set; } = DefaultDeclarationRetries;
 
-    public int FailedDeclarationRetryInterval { get; set; } = AbstractMessageListenerContainer.DEFAULT_FAILED_DECLARATION_RETRY_INTERVAL;
+    public int FailedDeclarationRetryInterval { get; set; } = AbstractMessageListenerContainer.DefaultFailedDeclarationRetryInterval;
 
-    public int RetryDeclarationInterval { get; set; } = DEFAULT_RETRY_DECLARATION_INTERVAL;
+    public int RetryDeclarationInterval { get; set; } = DefaultRetryDeclarationInterval;
 
     public IConsumerTagStrategy TagStrategy { get; set; }
 

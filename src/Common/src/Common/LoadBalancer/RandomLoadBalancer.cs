@@ -12,7 +12,7 @@ namespace Steeltoe.Common.LoadBalancer;
 
 public class RandomLoadBalancer : ILoadBalancer
 {
-    private static readonly Random _random = new ();
+    private static readonly Random Random = new ();
     private readonly IServiceInstanceProvider _serviceInstanceProvider;
     private readonly IDistributedCache _distributedCache;
     private readonly DistributedCacheEntryOptions _cacheOptions;
@@ -41,7 +41,7 @@ public class RandomLoadBalancer : ILoadBalancer
         if (availableServiceInstances.Count > 0)
         {
             // load balancer instance selection predictability is not likely to be a security concern
-            var resolvedUri = availableServiceInstances[_random.Next(availableServiceInstances.Count)].Uri;
+            var resolvedUri = availableServiceInstances[Random.Next(availableServiceInstances.Count)].Uri;
             _logger?.LogDebug("Resolved {url} to {service}", request.Host, resolvedUri.Host);
             return new Uri(resolvedUri, request.PathAndQuery);
         }

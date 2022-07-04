@@ -9,28 +9,26 @@ namespace Steeltoe.Common.Retry;
 
 public class RetryContext : AbstractAttributeAccessor, IRetryContext
 {
-    private const string LAST_EXCEPTION = "RetryContext.LastException";
-
-    private const string RETRY_COUNT = "RetryContext.RetryCount";
-
-    private const string RETRY_PARENT = "RetryContext.RetryParent";
+    private const string LastExceptionName = "RetryContext.LastException";
+    private const string RetryCountName = "RetryContext.RetryCount";
+    private const string RetryParentName = "RetryContext.RetryParent";
 
     public Exception LastException
     {
         get
         {
-            return (Exception)GetAttribute(LAST_EXCEPTION);
+            return (Exception)GetAttribute(LastExceptionName);
         }
 
         set
         {
-            if (value == null && HasAttribute(LAST_EXCEPTION))
+            if (value == null && HasAttribute(LastExceptionName))
             {
-                RemoveAttribute(LAST_EXCEPTION);
+                RemoveAttribute(LastExceptionName);
             }
             else
             {
-                SetAttribute(LAST_EXCEPTION, value);
+                SetAttribute(LastExceptionName, value);
             }
         }
     }
@@ -39,7 +37,7 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
     {
         get
         {
-            var result = (int?)GetAttribute(RETRY_COUNT);
+            var result = (int?)GetAttribute(RetryCountName);
             if (result == null)
             {
                 return 0;
@@ -50,7 +48,7 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
 
         set
         {
-            SetAttribute(RETRY_COUNT, value);
+            SetAttribute(RetryCountName, value);
         }
     }
 
@@ -58,18 +56,18 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
     {
         get
         {
-            return (IRetryContext)GetAttribute(RETRY_PARENT);
+            return (IRetryContext)GetAttribute(RetryParentName);
         }
 
         set
         {
-            if (value == null && HasAttribute(RETRY_PARENT))
+            if (value == null && HasAttribute(RetryParentName))
             {
-                RemoveAttribute(RETRY_PARENT);
+                RemoveAttribute(RetryParentName);
             }
             else
             {
-                SetAttribute(RETRY_PARENT, value);
+                SetAttribute(RetryParentName, value);
             }
         }
     }

@@ -13,9 +13,9 @@ namespace Steeltoe.Messaging.Core;
 
 public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTemplate<IMessageChannel>
 {
-    public const string DEFAULT_SEND_TIMEOUT_HEADER = "sendTimeout";
+    public const string DefaultSendTimeoutHeader = "sendTimeout";
 
-    public const string DEFAULT_RECEIVE_TIMEOUT_HEADER = "receiveTimeout";
+    public const string DefaultReceiveTimeoutHeader = "receiveTimeout";
 
     private readonly ILogger _logger;
 
@@ -23,9 +23,9 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     private volatile int _receiveTimeout = -1;
 
-    private string _sendTimeoutHeader = DEFAULT_SEND_TIMEOUT_HEADER;
+    private string _sendTimeoutHeader = DefaultSendTimeoutHeader;
 
-    private string _receiveTimeoutHeader = DEFAULT_RECEIVE_TIMEOUT_HEADER;
+    private string _receiveTimeoutHeader = DefaultReceiveTimeoutHeader;
 
     private volatile bool _throwExceptionOnLateReply;
 
@@ -288,8 +288,8 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         if (replyMessage != null)
         {
             replyMessage = MessageBuilder.FromMessage(replyMessage)
-                .SetHeader(MessageHeaders.REPLY_CHANNEL, originalReplyChannelHeader)
-                .SetHeader(MessageHeaders.ERROR_CHANNEL, originalErrorChannelHeader)
+                .SetHeader(MessageHeaders.ReplyChannelName, originalReplyChannelHeader)
+                .SetHeader(MessageHeaders.ErrorChannelName, originalErrorChannelHeader)
                 .Build();
         }
 
@@ -329,8 +329,8 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         if (replyMessage != null)
         {
             replyMessage = MessageBuilder.FromMessage(replyMessage)
-                .SetHeader(MessageHeaders.REPLY_CHANNEL, originalReplyChannelHeader)
-                .SetHeader(MessageHeaders.ERROR_CHANNEL, originalErrorChannelHeader)
+                .SetHeader(MessageHeaders.ReplyChannelName, originalReplyChannelHeader)
+                .SetHeader(MessageHeaders.ErrorChannelName, originalErrorChannelHeader)
                 .Build();
         }
 

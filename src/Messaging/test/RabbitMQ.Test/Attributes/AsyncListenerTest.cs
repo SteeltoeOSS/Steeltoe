@@ -67,7 +67,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void TestRouteToDLQ()
+    public void TestRouteToDlq()
     {
         var template = _provider.GetRabbitTemplate();
         var context = _provider.GetApplicationContext();
@@ -154,8 +154,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
                 t.SetAfterReceivePostProcessors(new TemplateAfterRecvPostProcessor());
             });
 
-            var queue5DLQ = new AnonymousQueue("queue5DLQ");
-            var queue6DLQ = new AnonymousQueue("queue6DLQ");
+            var queue5Dlq = new AnonymousQueue("queue5DLQ");
+            var queue6Dlq = new AnonymousQueue("queue6DLQ");
             var queue1 = new AnonymousQueue("queue1");
             var queue2 = new AnonymousQueue("queue2");
             var queue3 = new AnonymousQueue("queue3");
@@ -163,18 +163,18 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             var queue5 = new AnonymousQueue("queue5");
             var queueAsyncErrorHandler = new AnonymousQueue("queueAsyncErrorHandler");
             queue5.Arguments.Add("x-dead-letter-exchange", string.Empty);
-            queue5.Arguments.Add("x-dead-letter-routing-key", queue5DLQ.QueueName);
+            queue5.Arguments.Add("x-dead-letter-routing-key", queue5Dlq.QueueName);
             var queue6 = new AnonymousQueue("queue6");
             queue6.Arguments.Add("x-dead-letter-exchange", string.Empty);
-            queue6.Arguments.Add("x-dead-letter-routing-key", queue6DLQ.QueueName);
+            queue6.Arguments.Add("x-dead-letter-routing-key", queue6Dlq.QueueName);
             var queue7 = new AnonymousQueue("queue7");
-            services.AddRabbitQueues(queue1, queue2, queue3, queue4, queue5, queue6, queue5DLQ, queue6DLQ, queue7, queueAsyncErrorHandler);
+            services.AddRabbitQueues(queue1, queue2, queue3, queue4, queue5, queue6, queue5Dlq, queue6Dlq, queue7, queueAsyncErrorHandler);
 
             // Add default container factory
             services.AddRabbitListenerContainerFactory((_, f) =>
             {
                 f.MismatchedQueuesFatal = true;
-                f.AcknowledgeMode = AcknowledgeMode.MANUAL;
+                f.AcknowledgeMode = AcknowledgeMode.Manual;
             });
 
             // Add dontRequeueFactory container factory
@@ -182,7 +182,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             {
                 f.ServiceName = "dontRequeueFactory";
                 f.MismatchedQueuesFatal = true;
-                f.AcknowledgeMode = AcknowledgeMode.MANUAL;
+                f.AcknowledgeMode = AcknowledgeMode.Manual;
                 f.DefaultRequeueRejected = false;
             });
 
@@ -259,7 +259,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("queue5DLQ", Id = "buz")]
-        public void Listen5DLQ(string foo)
+        public void Listen5Dlq(string foo)
         {
             Latch5.Signal();
         }
@@ -271,7 +271,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("queue6DLQ", Id = "fox")]
-        public void Listen6DLQ(string foo)
+        public void Listen6Dlq(string foo)
         {
             Latch6.Signal();
         }

@@ -41,7 +41,7 @@ public class EndpointMiddlewareTest : BaseTest
         var mgmtOptions = new ActuatorManagementOptions();
         mgmtOptions.EndpointOptions.Add(opts);
 
-        var obs = new ThreadDumperEP(opts);
+        var obs = new ThreadDumperEp(opts);
         var ep = new ThreadDumpEndpoint(opts, obs);
         var middle = new ThreadDumpEndpointMiddleware(null, ep, mgmtOptions);
         var context = CreateRequest("GET", "/dump");

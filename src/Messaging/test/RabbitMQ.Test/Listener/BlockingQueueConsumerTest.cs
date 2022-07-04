@@ -105,7 +105,7 @@ public class BlockingQueueConsumerTest
             connectionFactory.Object,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             true,
             20,
             null,
@@ -138,7 +138,7 @@ public class BlockingQueueConsumerTest
             connectionFactory.Object,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             true,
             1,
             true,
@@ -148,7 +148,7 @@ public class BlockingQueueConsumerTest
             null,
             queue);
         blockingQueueConsumer.Start();
-        channel.Verify(c => c.BasicConsume("testQ", AcknowledgeMode.AUTO.IsAutoAck(), string.Empty, noLocal, false, It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()));
+        channel.Verify(c => c.BasicConsume("testQ", AcknowledgeMode.Auto.IsAutoAck(), string.Empty, noLocal, false, It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()));
         blockingQueueConsumer.Stop();
     }
 
@@ -178,7 +178,7 @@ public class BlockingQueueConsumerTest
             connectionFactory.Object,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             false,
             1,
             null,
@@ -223,7 +223,7 @@ public class BlockingQueueConsumerTest
             connectionFactory.Object,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             true,
             1,
             null,
@@ -239,7 +239,7 @@ public class BlockingQueueConsumerTest
             connectionFactory.Object,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             true,
             1,
             false,

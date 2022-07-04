@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Connector.Services.Test;
 
-public class DB2ServiceInfoFactoryTest
+public class Db2ServiceInfoFactoryTest
 {
     [Fact]
     public void Accept_AcceptsValidServiceBinding()
@@ -29,7 +29,7 @@ public class DB2ServiceInfoFactoryTest
                 { "jdbcUrl", new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
             }
         };
-        var factory = new DB2ServiceInfoFactory();
+        var factory = new Db2ServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
 
@@ -53,7 +53,7 @@ public class DB2ServiceInfoFactoryTest
                 { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
             }
         };
-        var factory = new DB2ServiceInfoFactory();
+        var factory = new Db2ServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
 
@@ -77,8 +77,8 @@ public class DB2ServiceInfoFactoryTest
                 { "jdbcUrl", new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
             }
         };
-        var factory = new DB2ServiceInfoFactory();
-        var info = factory.Create(s) as DB2ServiceInfo;
+        var factory = new Db2ServiceInfoFactory();
+        var info = factory.Create(s) as Db2ServiceInfo;
         Assert.NotNull(info);
         Assert.Equal("db2Service", info.Id);
         Assert.Equal("7E1LxXnlH2hhlPVt", info.Password);

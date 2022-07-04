@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binder;
 
-[assembly: Binder(Steeltoe.Stream.StubBinder2.StubBinder2.BINDER_NAME, typeof(Steeltoe.Stream.StubBinder2.Startup))]
+[assembly: Binder(Steeltoe.Stream.StubBinder2.StubBinder2.BinderName, typeof(Steeltoe.Stream.StubBinder2.Startup))]
 
 namespace Steeltoe.Stream.StubBinder2;
 

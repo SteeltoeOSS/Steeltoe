@@ -9,11 +9,11 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
 public class WavefrontApplicationOptions
 {
-    internal const string WAVEFRONT_PREFIX = "wavefront:application";
+    internal const string WavefrontPrefix = "wavefront:application";
 
     public WavefrontApplicationOptions(IConfiguration config)
     {
-        var section = config?.GetSection(WAVEFRONT_PREFIX) ?? throw new ArgumentNullException(nameof(config));
+        var section = config?.GetSection(WavefrontPrefix) ?? throw new ArgumentNullException(nameof(config));
         section.Bind(this);
     }
 

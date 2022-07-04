@@ -35,10 +35,10 @@ public class MessageHeaderTest
         var delay = 100;
         properties.Delay = delay;
         var headers = properties.ToMessageHeaders();
-        Assert.Equal(delay, headers.Get<int>(RabbitHeaderAccessor.X_DELAY));
+        Assert.Equal(delay, headers.Get<int>(RabbitHeaderAccessor.XDelay));
         properties.Delay = null;
         headers = properties.ToMessageHeaders();
-        Assert.False(headers.ContainsKey(RabbitHeaderAccessor.X_DELAY));
+        Assert.False(headers.ContainsKey(RabbitHeaderAccessor.XDelay));
     }
 
     [Fact]

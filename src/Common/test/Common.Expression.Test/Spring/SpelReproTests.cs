@@ -129,8 +129,8 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void NPE_SPR5673()
     {
-        var hashes = TemplateExpressionParsingTests.HASH_DELIMITED_PARSER_CONTEXT;
-        var dollars = TemplateExpressionParsingTests.DEFAULT_TEMPLATE_PARSER_CONTEXT;
+        var hashes = TemplateExpressionParsingTests.HashDelimitedParserContextSingleton;
+        var dollars = TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton;
 
         CheckTemplateParsing("abc${'def'} ghi", "abcdef ghi");
 
@@ -330,7 +330,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
         catch (SpelEvaluationException see)
         {
-            Assert.Equal(SpelMessage.NO_SERVICE_RESOLVER_REGISTERED, see.MessageCode);
+            Assert.Equal(SpelMessage.NoServiceResolverRegistered, see.MessageCode);
             Assert.Equal("foo", see.Inserts[0]);
         }
 
@@ -352,7 +352,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
         catch (SpelEvaluationException see)
         {
-            Assert.Equal(SpelMessage.EXCEPTION_DURING_SERVICE_RESOLUTION, see.MessageCode);
+            Assert.Equal(SpelMessage.ExceptionDuringServiceResolution, see.MessageCode);
             Assert.Equal("goo", see.Inserts[0]);
             Assert.True(see.InnerException is AccessException);
             Assert.StartsWith("DONT", see.InnerException.Message);
@@ -370,7 +370,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
         catch (SpelParseException spe)
         {
-            Assert.Equal(SpelMessage.INVALID_SERVICE_REFERENCE, spe.MessageCode);
+            Assert.Equal(SpelMessage.InvalidServiceReference, spe.MessageCode);
         }
     }
 
@@ -390,13 +390,13 @@ public class SpelReproTests : AbstractExpressionTests
 
         // Different parts of ternary expression are null
         var ex = Assert.Throws<SpelEvaluationException>(() => new SpelExpressionParser().ParseRaw("(?'abc':'default')").GetValue(context));
-        Assert.Equal(SpelMessage.TYPE_CONVERSION_ERROR, ex.MessageCode);
+        Assert.Equal(SpelMessage.TypeConversionError, ex.MessageCode);
         expr = new SpelExpressionParser().ParseRaw("(false?'abc':null)");
         Assert.Null(expr.GetValue());
 
         // Assignment
         ex = Assert.Throws<SpelEvaluationException>(() => new SpelExpressionParser().ParseRaw("(='default')").GetValue(context));
-        Assert.Equal(SpelMessage.SETVALUE_NOT_SUPPORTED, ex.MessageCode);
+        Assert.Equal(SpelMessage.SetvalueNotSupported, ex.MessageCode);
     }
 
     [Fact]
@@ -684,9 +684,9 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext();
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).CONST");
+        var expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).Const");
         var value = expression.GetValue(context);
-        Assert.Equal(TestResources.le.div.mod.reserved.Reserver.CONST, value);
+        Assert.Equal(TestResources.le.div.mod.reserved.Reserver.Const, value);
     }
 
     [Fact]
@@ -739,7 +739,7 @@ public class SpelReproTests : AbstractExpressionTests
         expression = parser.ParseExpression("T(System.String[][][])");
         result = expression.GetValue(context, string.Empty);
         Assert.Equal("System.String[][][]", result.ToString());
-        Assert.Equal("T(System.String[][][])", ((SpelExpression)expression).ToStringAST());
+        Assert.Equal("T(System.String[][][])", ((SpelExpression)expression).ToStringAst());
 
         expression = parser.ParseExpression("new Int32[0].GetType()");
         result = expression.GetValue(context, string.Empty);
@@ -1119,14 +1119,14 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext();
         context.SetVariable("bridgeExample", new SPR10210.D());
-        var parseExpression = _parser.ParseExpression("#bridgeExample.BridgeMethod()");
+        var parseExpression = Parser.ParseExpression("#bridgeExample.BridgeMethod()");
         parseExpression.GetValue(context);
     }
 
     [Fact]
     public void SPR10328()
     {
-        var ex = Assert.Throws<SpelParseException>(() => _parser.ParseExpression("$[]"));
+        var ex = Assert.Throws<SpelParseException>(() => Parser.ParseExpression("$[]"));
         Assert.Contains("EL1071E: A required selection expression has not been specified", ex.Message);
     }
 
@@ -1378,11 +1378,11 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Equal("foo factory", expr.GetValue(context));
 
         var ex = Assert.Throws<SpelParseException>(() => new SpelExpressionParser().ParseRaw("&@foo"));
-        Assert.Equal(SpelMessage.INVALID_SERVICE_REFERENCE, ex.MessageCode);
+        Assert.Equal(SpelMessage.InvalidServiceReference, ex.MessageCode);
         Assert.Equal(0, ex.Position);
 
         ex = Assert.Throws<SpelParseException>(() => new SpelExpressionParser().ParseRaw("@&foo"));
-        Assert.Equal(SpelMessage.INVALID_SERVICE_REFERENCE, ex.MessageCode);
+        Assert.Equal(SpelMessage.InvalidServiceReference, ex.MessageCode);
         Assert.Equal(0, ex.Position);
     }
 
@@ -1424,12 +1424,12 @@ public class SpelReproTests : AbstractExpressionTests
         context.SetVariable("list2", list2);
 
         // #this should be the element from list1
-        var ex = _parser.ParseExpression("#list1.?[#list2.Contains(#this)]");
+        var ex = Parser.ParseExpression("#list1.?[#list2.Contains(#this)]");
         var result = ex.GetValue<IEnumerable<string>>(context);
         Assert.Equal("x", string.Join(",", result));
 
         // toString() should be called on the element from list1
-        ex = _parser.ParseExpression("#list1.?[#list2.Contains(ToString())]");
+        ex = Parser.ParseExpression("#list1.?[#list2.Contains(ToString())]");
         result = ex.GetValue<IEnumerable<string>>(context);
         Assert.Equal("x", string.Join(",", result));
 
@@ -1437,11 +1437,11 @@ public class SpelReproTests : AbstractExpressionTests
 
         context = new StandardEvaluationContext();
         context.SetVariable("list3", list3);
-        ex = _parser.ParseExpression("#list3.?[#this > 2]");
+        ex = Parser.ParseExpression("#list3.?[#this > 2]");
         result = ex.GetValue<IEnumerable<string>>(context);
         Assert.Equal("3,4", string.Join(",", result));
 
-        ex = _parser.ParseExpression("#list3.?[#this >= T(Math).Abs(T(Math).Abs(#this))]");
+        ex = Parser.ParseExpression("#list3.?[#this >= T(Math).Abs(T(Math).Abs(#this))]");
         result = ex.GetValue<IEnumerable<string>>(context);
         Assert.Equal("1,2,3,4", string.Join(",", result));
     }
@@ -1457,12 +1457,12 @@ public class SpelReproTests : AbstractExpressionTests
         context.SetVariable("map2", map2);
 
         // #this should be the element from list1
-        var ex = _parser.ParseExpression("#map1.?[#map2.ContainsKey(#this.Key)]");
+        var ex = Parser.ParseExpression("#map1.?[#map2.ContainsKey(#this.Key)]");
         var result = ex.GetValue<IDictionary>(context);
         Assert.Single(result);
         Assert.Equal(66, result["X"]);
 
-        ex = _parser.ParseExpression("#map1.?[#map2.ContainsKey(Key)]");
+        ex = Parser.ParseExpression("#map1.?[#map2.ContainsKey(Key)]");
         result = ex.GetValue<IDictionary>(context);
         Assert.Single(result);
         Assert.Equal(66, result["X"]);
@@ -1474,7 +1474,7 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         context.SetVariable("encoding", "UTF-8");
 
-        var ex = _parser.ParseExpression("T(System.Text.Encoding).GetEncoding(#encoding)");
+        var ex = Parser.ParseExpression("T(System.Text.Encoding).GetEncoding(#encoding)");
         var result = ex.GetValue(context);
         Assert.Equal(Encoding.UTF8, result);
     }
@@ -1485,7 +1485,7 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         context.SetVariable("str", "a\0b");
 
-        var ex = _parser.ParseExpression("#str?.Split('\0')");
+        var ex = Parser.ParseExpression("#str?.Split('\0')");
         var result = ex.GetValue(context);
         Assert.True(ObjectUtils.NullSafeEquals(result, new[] { "a", "b" }));
     }
@@ -1496,7 +1496,7 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Contains(expectedMessage, ex.Message);
     }
 
-    private void CheckTemplateParsing(string expression, string expectedValue) => CheckTemplateParsing(expression, TemplateExpressionParsingTests.DEFAULT_TEMPLATE_PARSER_CONTEXT, expectedValue);
+    private void CheckTemplateParsing(string expression, string expectedValue) => CheckTemplateParsing(expression, TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton, expectedValue);
 
     private void CheckTemplateParsing(string expression, IParserContext context, string expectedValue)
     {
@@ -1505,7 +1505,7 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Equal(expectedValue, expr.GetValue(TestScenarioCreator.GetTestEvaluationContext()));
     }
 
-    private void CheckTemplateParsingError(string expression, string expectedMessage) => CheckTemplateParsingError(expression, TemplateExpressionParsingTests.DEFAULT_TEMPLATE_PARSER_CONTEXT, expectedMessage);
+    private void CheckTemplateParsingError(string expression, string expectedMessage) => CheckTemplateParsingError(expression, TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton, expectedMessage);
 
     private void CheckTemplateParsingError(string expression, IParserContext context, string expectedMessage)
     {

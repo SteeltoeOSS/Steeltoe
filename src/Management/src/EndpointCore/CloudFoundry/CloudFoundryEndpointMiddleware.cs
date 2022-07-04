@@ -29,9 +29,9 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
     public Task Invoke(HttpContext context)
     {
-        _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
+        logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleCloudFoundryRequestAsync(context);
         }
@@ -42,8 +42,8 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest(GetRequestUri(context.Request));
-        _logger?.LogDebug("Returning: {0}", serialInfo);
-        context.HandleContentNegotiation(_logger);
+        logger?.LogDebug("Returning: {0}", serialInfo);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 

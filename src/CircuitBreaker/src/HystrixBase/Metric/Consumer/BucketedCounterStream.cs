@@ -13,17 +13,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 public abstract class BucketedCounterStream<TEvent, TBucket, TOutput>
     where TEvent : IHystrixEvent
 {
-    protected readonly int numBuckets;
-    protected readonly int bucketSizeInMs;
-    protected readonly IObservable<TBucket> bucketedStream;
-    protected readonly AtomicReference<IDisposable> subscription = new (null);
+    protected readonly int NumBuckets;
+    protected readonly int BucketSizeInMs;
+    protected readonly IObservable<TBucket> BucketedStream;
+    protected readonly AtomicReference<IDisposable> Subscription = new (null);
 
     private readonly Func<IObservable<TEvent>, IObservable<TBucket>> _reduceBucketToSummary;
 
     protected BucketedCounterStream(IHystrixEventStream<TEvent> inputEventStream, int numBuckets, int bucketSizeInMs, Func<TBucket, TEvent, TBucket> appendRawEventToBucket)
     {
-        this.numBuckets = numBuckets;
-        this.bucketSizeInMs = bucketSizeInMs;
+        this.NumBuckets = numBuckets;
+        this.BucketSizeInMs = bucketSizeInMs;
         _reduceBucketToSummary = eventsObservable =>
         {
             var result = eventsObservable.Aggregate(EmptyBucketSummary, appendRawEventToBucket).Select(n => n);
@@ -36,7 +36,7 @@ public abstract class BucketedCounterStream<TEvent, TBucket, TOutput>
             emptyEventCountsToStart.Add(EmptyBucketSummary);
         }
 
-        bucketedStream = Observable.Defer(() =>
+        BucketedStream = Observable.Defer(() =>
         {
             return inputEventStream
                 .Observe()
@@ -54,11 +54,11 @@ public abstract class BucketedCounterStream<TEvent, TBucket, TOutput>
 
     public void Unsubscribe()
     {
-        var s = subscription.Value;
+        var s = Subscription.Value;
         if (s != null)
         {
             s.Dispose();
-            subscription.CompareAndSet(s, null);
+            Subscription.CompareAndSet(s, null);
         }
     }
 }

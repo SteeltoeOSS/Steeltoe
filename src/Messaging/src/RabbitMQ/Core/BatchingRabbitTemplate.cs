@@ -82,7 +82,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
             _count++;
             if (correlationData != null)
             {
-                _logger?.LogDebug("Cannot use batching with correlation data");
+                Logger?.LogDebug("Cannot use batching with correlation data");
                 base.Send(exchange, routingKey, message, correlationData);
             }
             else

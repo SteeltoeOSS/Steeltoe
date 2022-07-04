@@ -29,11 +29,11 @@ public class PlaceholderResolverSourceTest
         var factory = new LoggerFactory();
 
         var source = new PlaceholderResolverSource(sources, factory);
-        Assert.Equal(factory, source._loggerFactory);
-        Assert.NotNull(source._sources);
-        Assert.Single(source._sources);
-        Assert.NotSame(sources, source._sources);
-        Assert.Contains(memSource, source._sources);
+        Assert.Equal(factory, source.LoggerFactory);
+        Assert.NotNull(source.Sources);
+        Assert.Single(source.Sources);
+        Assert.NotSame(sources, source.Sources);
+        Assert.Contains(memSource, source.Sources);
     }
 
     [Fact]

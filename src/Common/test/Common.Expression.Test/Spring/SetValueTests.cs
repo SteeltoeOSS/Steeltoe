@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SetValueTests : AbstractExpressionTests
 {
-    private static readonly bool DEBUG = bool.Parse(bool.FalseString);
+    private static readonly bool IsDebug = bool.Parse(bool.FalseString);
 
     [Fact]
     public void TestSetProperty()
@@ -40,7 +40,7 @@ public class SetValueTests : AbstractExpressionTests
     [Fact]
     public void TestSetElementOfNull()
     {
-        SetValueExpectError("new Steeltoe.Common.Expression.Spring.TestResources.Inventor().Inventions[1]", SpelMessage.CANNOT_INDEX_INTO_NULL_VALUE);
+        SetValueExpectError("new Steeltoe.Common.Expression.Spring.TestResources.Inventor().Inventions[1]", SpelMessage.CannotIndexIntoNullValue);
     }
 
     [Fact]
@@ -63,29 +63,29 @@ public class SetValueTests : AbstractExpressionTests
 
         // PROPERTYORFIELDREFERENCE
         // Non existent field (or property):
-        var e1 = _parser.ParseExpression("ArrayContainer.wibble");
+        var e1 = Parser.ParseExpression("ArrayContainer.wibble");
         Assert.False(e1.IsWritable(lContext));
 
-        var e2 = _parser.ParseExpression("ArrayContainer.wibble.foo");
+        var e2 = Parser.ParseExpression("ArrayContainer.wibble.foo");
         Assert.Throws<SpelEvaluationException>(() => e2.IsWritable(lContext));
 
         // org.springframework.expression.spel.SpelEvaluationException: EL1008E:(pos 15): Property or field 'wibble' cannot be found on object of type 'org.springframework.expression.spel.Testresources.ArrayContainer' - maybe not public?
         // at org.springframework.expression.spel.ast.PropertyOrFieldReference.readProperty(PropertyOrFieldReference.java:225)
         // VARIABLE
         // the variable does not exist (but that is OK, we should be writable)
-        var e3 = _parser.ParseExpression("#madeup1");
+        var e3 = Parser.ParseExpression("#madeup1");
         Assert.True(e3.IsWritable(lContext));
 
-        var e4 = _parser.ParseExpression("#madeup2.bar"); // compound expression
+        var e4 = Parser.ParseExpression("#madeup2.bar"); // compound expression
         Assert.False(e4.IsWritable(lContext));
 
         // INDEXER
         // non existent indexer (wibble made up)
-        var e5 = _parser.ParseExpression("ArrayContainer.wibble[99]");
+        var e5 = Parser.ParseExpression("ArrayContainer.wibble[99]");
         Assert.Throws<SpelEvaluationException>(() => e5.IsWritable(lContext));
 
         // non existent indexer (index via a string)
-        var e6 = _parser.ParseExpression("ArrayContainer.ints['abc']");
+        var e6 = Parser.ParseExpression("ArrayContainer.ints['abc']");
         Assert.Throws<SpelEvaluationException>(() => e6.IsWritable(lContext));
     }
 
@@ -125,7 +125,7 @@ public class SetValueTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void TestSetGenericListElementValueTypeCoersionOK()
+    public void TestSetGenericListElementValueTypeCoersionOk()
     {
         SetValue("BoolList[0]", "true", true);
     }
@@ -210,9 +210,9 @@ public class SetValueTests : AbstractExpressionTests
 
     protected void SetValueExpectError(string expression, object value)
     {
-        var e = _parser.ParseExpression(expression);
+        var e = Parser.ParseExpression(expression);
         Assert.NotNull(e);
-        if (DEBUG)
+        if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
         }
@@ -225,9 +225,9 @@ public class SetValueTests : AbstractExpressionTests
     {
         try
         {
-            var e = _parser.ParseExpression(expression);
+            var e = Parser.ParseExpression(expression);
             Assert.NotNull(e);
-            if (DEBUG)
+            if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
             }
@@ -251,9 +251,9 @@ public class SetValueTests : AbstractExpressionTests
     {
         try
         {
-            var e = _parser.ParseExpression(expression);
+            var e = Parser.ParseExpression(expression);
             Assert.NotNull(e);
-            if (DEBUG)
+            if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
             }
@@ -277,6 +277,6 @@ public class SetValueTests : AbstractExpressionTests
 
     private IExpression Parse(string expressionstring)
     {
-        return _parser.ParseExpression(expressionstring);
+        return Parser.ParseExpression(expressionstring);
     }
 }

@@ -69,6 +69,6 @@ public class StandardTypeLocator : ITypeLocator
             }
         }
 
-        throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
+        throw new SpelEvaluationException(SpelMessage.TypeNotFound, typeName);
     }
 }

@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public class HypermediaEndpointOptions : AbstractEndpointOptions, IActuatorHypermediaOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:actuator";
+    private const string ManagementInfoPrefix = "management:endpoints:actuator";
 
     public HypermediaEndpointOptions()
     {
@@ -16,7 +16,7 @@ public class HypermediaEndpointOptions : AbstractEndpointOptions, IActuatorHyper
     }
 
     public HypermediaEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
     }
 }

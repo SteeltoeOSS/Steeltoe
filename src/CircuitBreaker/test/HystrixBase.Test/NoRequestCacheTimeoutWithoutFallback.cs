@@ -20,12 +20,12 @@ internal sealed class NoRequestCacheTimeoutWithoutFallback : TestHystrixCommand<
     {
         try
         {
-            Time.WaitUntil(() => _token.IsCancellationRequested, 500);
-            _token.ThrowIfCancellationRequested();
+            Time.WaitUntil(() => Token.IsCancellationRequested, 500);
+            Token.ThrowIfCancellationRequested();
         }
         catch (Exception e)
         {
-            _output?.WriteLine(">>>> Sleep Interrupted: " + e.Message);
+            Output?.WriteLine(">>>> Sleep Interrupted: " + e.Message);
             throw;
         }
 

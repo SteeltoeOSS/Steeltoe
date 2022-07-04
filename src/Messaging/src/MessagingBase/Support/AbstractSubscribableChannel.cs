@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.Support;
 
 public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISubscribableChannel
 {
-    internal HashSet<IMessageHandler> _handlers = new ();
+    internal HashSet<IMessageHandler> Handlers = new ();
     private readonly object _lock = new ();
 
     protected AbstractSubscribableChannel(ILogger logger = null)
@@ -21,7 +21,7 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
     {
         get
         {
-            return _handlers.Count;
+            return Handlers.Count;
         }
     }
 
@@ -31,7 +31,7 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
         {
             lock (_lock)
             {
-                return new HashSet<IMessageHandler>(_handlers);
+                return new HashSet<IMessageHandler>(Handlers);
             }
         }
     }
@@ -40,7 +40,7 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
     {
         lock (_lock)
         {
-            return _handlers.Contains(handler);
+            return Handlers.Contains(handler);
         }
     }
 
@@ -48,12 +48,12 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
     {
         lock (_lock)
         {
-            var handlers = new HashSet<IMessageHandler>(_handlers);
+            var handlers = new HashSet<IMessageHandler>(Handlers);
             var result = handlers.Add(handler);
             if (result)
             {
                 Logger?.LogDebug("{serviceName} added to {handler} ", ServiceName, handler);
-                _handlers = handlers;
+                Handlers = handlers;
             }
 
             return result;
@@ -64,12 +64,12 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
     {
         lock (_lock)
         {
-            var handlers = new HashSet<IMessageHandler>(_handlers);
+            var handlers = new HashSet<IMessageHandler>(Handlers);
             var result = handlers.Remove(handler);
             if (result)
             {
                 Logger?.LogDebug("{serviceName} removed from {handler} ", ServiceName, handler);
-                _handlers = handlers;
+                Handlers = handlers;
             }
 
             return result;

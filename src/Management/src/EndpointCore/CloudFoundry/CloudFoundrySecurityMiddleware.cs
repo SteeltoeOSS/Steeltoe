@@ -43,20 +43,20 @@ public class CloudFoundrySecurityMiddleware
             if (string.IsNullOrEmpty(_options.ApplicationId))
             {
                 _logger?.LogCritical("The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE)).ConfigureAwait(false);
+                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ApplicationIdMissingMessage)).ConfigureAwait(false);
                 return;
             }
 
             if (string.IsNullOrEmpty(_options.CloudFoundryApi))
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE)).ConfigureAwait(false);
+                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CloudfoundryApiMissingMessage)).ConfigureAwait(false);
                 return;
             }
 
             var target = FindTargetEndpoint(context.Request.Path);
             if (target == null)
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE)).ConfigureAwait(false);
+                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.EndpointNotConfiguredMessage)).ConfigureAwait(false);
                 return;
             }
 
@@ -70,7 +70,7 @@ public class CloudFoundrySecurityMiddleware
             var permissions = sr.Permissions;
             if (!target.IsAccessAllowed(permissions))
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE)).ConfigureAwait(false);
+                await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.AccessDeniedMessage)).ConfigureAwait(false);
                 return;
             }
         }
@@ -80,12 +80,12 @@ public class CloudFoundrySecurityMiddleware
 
     internal string GetAccessToken(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out var headerVal))
+        if (request.Headers.TryGetValue(_base.AuthorizationHeader, out var headerVal))
         {
             var header = headerVal.ToString();
-            if (header.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase))
+            if (header.StartsWith(_base.Bearer, StringComparison.OrdinalIgnoreCase))
             {
-                return header.Substring(_base.BEARER.Length + 1);
+                return header.Substring(_base.Bearer.Length + 1);
             }
         }
 

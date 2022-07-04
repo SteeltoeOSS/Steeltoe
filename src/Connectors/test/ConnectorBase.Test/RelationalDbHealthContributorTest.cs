@@ -37,7 +37,7 @@ public class RelationalDbHealthContributorTest
         var contrib = RelationalDbHealthContributor.GetMySqlContributor(config);
         Assert.NotNull(contrib);
         var status = contrib.Health();
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class RelationalDbHealthContributorTest
         var contrib = RelationalDbHealthContributor.GetPostgreSqlContributor(config);
         Assert.NotNull(contrib);
         var status = contrib.Health();
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class RelationalDbHealthContributorTest
         var contrib = RelationalDbHealthContributor.GetSqlServerContributor(config);
         Assert.NotNull(contrib);
         var status = contrib.Health();
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class RelationalDbHealthContributorTest
         var contrib = RelationalDbHealthContributor.GetOracleContributor(config);
         Assert.NotNull(contrib);
         var status = contrib.Health();
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Contains(status.Details.Keys, k => k == "error");
     }
 
@@ -132,7 +132,7 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Contains(status.Details.Keys, k => k == "error");
     }
 
@@ -163,7 +163,7 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Contains(status.Details.Keys, k => k == "error");
     }
 
@@ -194,7 +194,7 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Contains(status.Details.Keys, k => k == "error");
     }
 
@@ -225,6 +225,6 @@ public class RelationalDbHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 }

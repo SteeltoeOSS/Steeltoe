@@ -45,7 +45,7 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
 
         var opts = new ThreadDumpEndpointOptions(config);
         var cloudOpts = new CloudFoundryEndpointOptions(config);
-        var ep = new ThreadDumpEndpoint(opts, new ThreadDumperEP(opts));
+        var ep = new ThreadDumpEndpoint(opts, new ThreadDumperEp(opts));
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

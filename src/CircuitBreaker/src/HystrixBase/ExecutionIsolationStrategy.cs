@@ -6,6 +6,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public enum ExecutionIsolationStrategy
 {
-    THREAD,
-    SEMAPHORE
+    Thread,
+    Semaphore
 }

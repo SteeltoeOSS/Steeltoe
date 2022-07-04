@@ -18,10 +18,10 @@ namespace Steeltoe.Common.Configuration;
 /// </summary>
 public static class PropertyPlaceholderHelper
 {
-    private const string PREFIX = "${";
-    private const string SUFFIX = "}";
-    private const string SIMPLE_PREFIX = "{";
-    private const string SEPARATOR = "?";
+    private const string Prefix = "${";
+    private const string Suffix = "}";
+    private const string SimplePrefix = "{";
+    private const string Separator = "?";
 
     /// <summary>
     /// Replaces all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code>
@@ -51,7 +51,7 @@ public static class PropertyPlaceholderHelper
         var visitedPlaceholders = new HashSet<string>();
 
         // iterate all config entries where the value isn't null and contains both the prefix and suffix that identify placeholders
-        foreach (var entry in config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(PREFIX) && e.Value.Contains(SUFFIX)))
+        foreach (var entry in config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(Prefix) && e.Value.Contains(Suffix)))
         {
             logger?.LogTrace("Found a property placeholder '{placeholder}' to resolve for key '{key}", entry.Value, entry.Key);
             resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, useEmptyStringIfNotFound));
@@ -72,7 +72,7 @@ public static class PropertyPlaceholderHelper
             return property;
         }
 
-        var startIndex = property.IndexOf(PREFIX);
+        var startIndex = property.IndexOf(Prefix);
         if (startIndex == -1)
         {
             return property;
@@ -85,7 +85,7 @@ public static class PropertyPlaceholderHelper
             var endIndex = FindEndIndex(result, startIndex);
             if (endIndex != -1)
             {
-                var placeholder = result.Substring(startIndex + PREFIX.Length, endIndex);
+                var placeholder = result.Substring(startIndex + Prefix.Length, endIndex);
 
                 var originalPlaceholder = placeholder;
 
@@ -104,11 +104,11 @@ public static class PropertyPlaceholderHelper
                 var propVal = config[lookup];
                 if (propVal == null)
                 {
-                    var separatorIndex = placeholder.IndexOf(SEPARATOR);
+                    var separatorIndex = placeholder.IndexOf(Separator);
                     if (separatorIndex != -1)
                     {
                         var actualPlaceholder = placeholder.Substring(0, separatorIndex);
-                        var defaultValue = placeholder.Substring(separatorIndex + SEPARATOR.Length);
+                        var defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
                         propVal = config[actualPlaceholder] ?? defaultValue;
                     }
                     else if (useEmptyStringIfNotFound)
@@ -130,14 +130,14 @@ public static class PropertyPlaceholderHelper
                     // Recursive invocation, parsing placeholders contained in these
                     // previously resolved placeholder value.
                     propVal = ParseStringValue(propVal, config, visitedPlaceHolders);
-                    result.Replace(startIndex, endIndex + SUFFIX.Length, propVal);
+                    result.Replace(startIndex, endIndex + Suffix.Length, propVal);
                     logger?.LogDebug("Resolved placeholder '{placeholder}'", placeholder);
-                    startIndex = result.IndexOf(PREFIX, startIndex + propVal.Length);
+                    startIndex = result.IndexOf(Prefix, startIndex + propVal.Length);
                 }
                 else
                 {
                     // Proceed with unprocessed value.
-                    startIndex = result.IndexOf(PREFIX, endIndex + PREFIX.Length);
+                    startIndex = result.IndexOf(Prefix, endIndex + Prefix.Length);
                 }
 
                 visitedPlaceHolders.Remove(originalPlaceholder);
@@ -153,26 +153,26 @@ public static class PropertyPlaceholderHelper
 
     private static int FindEndIndex(StringBuilder property, int startIndex)
     {
-        var index = startIndex + PREFIX.Length;
+        var index = startIndex + Prefix.Length;
         var withinNestedPlaceholder = 0;
         while (index < property.Length)
         {
-            if (SubstringMatch(property, index, SUFFIX))
+            if (SubstringMatch(property, index, Suffix))
             {
                 if (withinNestedPlaceholder > 0)
                 {
                     withinNestedPlaceholder--;
-                    index += SUFFIX.Length;
+                    index += Suffix.Length;
                 }
                 else
                 {
                     return index;
                 }
             }
-            else if (SubstringMatch(property, index, SIMPLE_PREFIX))
+            else if (SubstringMatch(property, index, SimplePrefix))
             {
                 withinNestedPlaceholder++;
-                index += PREFIX.Length;
+                index += Prefix.Length;
             }
             else
             {

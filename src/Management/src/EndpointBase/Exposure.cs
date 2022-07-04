@@ -10,33 +10,33 @@ namespace Steeltoe.Management.Endpoint;
 
 public class Exposure
 {
-    private const string EXPOSURE_PREFIX = "management:endpoints:actuator:exposure";
-    private const string EXPOSURE_SECONDCHANCE_PREFIX = "management:endpoints:web:exposure";
-    private static readonly List<string> DEFAULT_INCLUDE = new () { "health", "info" };
+    private const string ExposurePrefix = "management:endpoints:actuator:exposure";
+    private const string ExposureSecondchancePrefix = "management:endpoints:web:exposure";
+    private static readonly List<string> DefaultInclude = new () { "health", "info" };
 
     public Exposure()
     {
-        Include = DEFAULT_INCLUDE;
+        Include = DefaultInclude;
     }
 
     public Exposure(IConfiguration config)
     {
-        var section = config.GetSection(EXPOSURE_PREFIX);
+        var section = config.GetSection(ExposurePrefix);
         if (section != null)
         {
             section.Bind(this);
         }
 
-        var secondSection = config.GetSection(EXPOSURE_SECONDCHANCE_PREFIX);
+        var secondSection = config.GetSection(ExposureSecondchancePrefix);
         if (secondSection.Exists())
         {
-            Include = GetListFromConfigCSVString(secondSection, "include");
-            Exclude = GetListFromConfigCSVString(secondSection, "exclude");
+            Include = GetListFromConfigCsvString(secondSection, "include");
+            Exclude = GetListFromConfigCsvString(secondSection, "exclude");
         }
 
         if (Include == null && Exclude == null)
         {
-            Include = DEFAULT_INCLUDE;
+            Include = DefaultInclude;
         }
     }
 
@@ -44,6 +44,6 @@ public class Exposure
 
     public List<string> Exclude { get; set; }
 
-    private List<string> GetListFromConfigCSVString(IConfigurationSection configSection, string key)
+    private List<string> GetListFromConfigCsvString(IConfigurationSection configSection, string key)
         => configSection.GetValue<string>(key)?.Split(',').ToList();
 }

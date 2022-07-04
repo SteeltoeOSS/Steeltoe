@@ -28,11 +28,11 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
         var exception = new AtomicReference<Exception>();
         var latch = new CountdownEvent(1);
         rabbitTemplate.ReplyErrorHandler = new TestErrorHandler(exception, latch);
-        var reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
+        var reply = rabbitTemplate.ConvertSendAndReceive<object>(Route, "foo");
         Assert.Null(reply);
-        var directReplyToContainers = rabbitTemplate._directReplyToContainers;
+        var directReplyToContainers = rabbitTemplate.DirectReplyToContainers;
         var container = rabbitTemplate.UsePublisherConnection ? directReplyToContainers[connectionFactory.PublisherConnectionFactory] : directReplyToContainers[connectionFactory];
-        Assert.Empty(container._inUseConsumerChannels);
+        Assert.Empty(container.InUseConsumerChannels);
         Assert.Same(rabbitTemplate.ReplyErrorHandler, container.ErrorHandler);
         var replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
 
@@ -47,25 +47,25 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
 
         _ = Task.Run(() =>
         {
-            var message = rabbitTemplate.Receive(ROUTE, 10000);
+            var message = rabbitTemplate.Receive(Route, 10000);
             Assert.NotNull(message);
             rabbitTemplate.Send(message.Headers.ReplyTo(), replyMessage);
             return message;
         });
 
-        while (rabbitTemplate.Receive(ROUTE, 100) != null)
+        while (rabbitTemplate.Receive(Route, 100) != null)
         {
             // Intentionally left empty.
         }
 
-        reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
+        reply = rabbitTemplate.ConvertSendAndReceive<object>(Route, "foo");
         Assert.Null(reply);
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
         Assert.IsType<ListenerExecutionFailedException>(exception.Value);
         var listException = exception.Value as ListenerExecutionFailedException;
         Assert.Contains("Reply received after timeout", exception.Value.InnerException.Message);
         Assert.Equal(replyMessage.Payload, listException.FailedMessage.Payload);
-        Assert.Empty(container._inUseConsumerChannels);
+        Assert.Empty(container.InUseConsumerChannels);
         rabbitTemplate.Stop().Wait();
         connectionFactory.Destroy();
     }

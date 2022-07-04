@@ -37,7 +37,7 @@ namespace Steeltoe.Bootstrap.Autoconfig;
 
 public static class WebApplicationBuilderExtensions
 {
-    private const string _loggerName = "Steeltoe.Autoconfig";
+    private const string LoggerName = "Steeltoe.Autoconfig";
     private static ILoggerFactory _loggerFactory;
     private static ILogger _logger;
 
@@ -58,22 +58,22 @@ public static class WebApplicationBuilderExtensions
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
         _loggerFactory = loggerFactory;
-        _logger = loggerFactory?.CreateLogger(_loggerName) ?? NullLogger.Instance;
+        _logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
 
-        if (!webApplicationBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerCore))
+        if (!webApplicationBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore))
         {
-            webApplicationBuilder.WireIfAnyLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore);
+            webApplicationBuilder.WireIfAnyLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesCore))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesCore))
         {
             WireKubernetesConfiguration(webApplicationBuilder);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_RandomValueBase);
-        webApplicationBuilder.WireIfAnyLoaded(WirePlaceholderResolver, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderCore);
+        webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValueBase);
+        webApplicationBuilder.WireIfAnyLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderCore);
 
-        if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore))
+        if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectorConnectorCore))
         {
 #pragma warning disable CS0436 // Type conflicts with imported type
             webApplicationBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
@@ -87,26 +87,26 @@ public static class WebApplicationBuilderExtensions
 #pragma warning restore CS0436 // Type conflicts with imported type
         }
 
-        webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore);
-        webApplicationBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientBase, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
+        webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilogCore);
+        webApplicationBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClientBase, SteeltoeAssemblies.SteeltoeDiscoveryClientCore);
 
-        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_KubernetesCore))
+        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetesCore))
         {
-            webApplicationBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.Steeltoe_Management_KubernetesCore);
+            webApplicationBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.SteeltoeManagementKubernetesCore);
         }
         else
         {
-            webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
+            webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpointCore);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
+        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpointCore);
 
-        if (!webApplicationBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
+        if (!webApplicationBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.SteeltoeManagementTracingCore))
         {
-            webApplicationBuilder.WireIfLoaded(WireDistributedTracingBase, SteeltoeAssemblies.Steeltoe_Management_TracingBase);
+            webApplicationBuilder.WireIfLoaded(WireDistributedTracingBase, SteeltoeAssemblies.SteeltoeManagementTracingBase);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.Steeltoe_Security_Authentication_CloudFoundryCore);
+        webApplicationBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundryCore);
         return webApplicationBuilder;
     }
 

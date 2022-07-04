@@ -11,12 +11,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
 {
-    public const int RESULT_SUCCESS = 1;
-    public const int RESULT_FAILURE = 2;
-    public const int RESULT_BAD_REQUEST_EXCEPTION = 3;
-    public const int FALLBACK_SUCCESS = 10;
-    public const int FALLBACK_NOT_IMPLEMENTED = 11;
-    public const int FALLBACK_FAILURE = 12;
+    public const int ResultSuccess = 1;
+    public const int ResultFailure = 2;
+    public const int ResultBadRequestException = 3;
+    public const int FallbackSuccess = 10;
+    public const int FallbackNotImplemented = 11;
+    public const int FallbackFailure = 12;
 
     public readonly int ResultBehavior;
     public readonly int FallbackBehavior;
@@ -27,8 +27,8 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), executionSemaphoreCount)))
     {
         _executionSleep = executionSleep;
-        ResultBehavior = resultBehavior;
-        FallbackBehavior = fallbackBehavior;
+        this.ResultBehavior = resultBehavior;
+        this.FallbackBehavior = fallbackBehavior;
     }
 
     public TestSemaphoreCommand(TestCircuitBreaker circuitBreaker, SemaphoreSlim semaphore, int executionSleep, int resultBehavior, int fallbackBehavior)
@@ -37,23 +37,23 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
     {
         _executionSleep = executionSleep;
-        ResultBehavior = resultBehavior;
-        FallbackBehavior = fallbackBehavior;
+        this.ResultBehavior = resultBehavior;
+        this.FallbackBehavior = fallbackBehavior;
     }
 
     protected override bool Run()
     {
         Time.Wait(_executionSleep);
 
-        if (ResultBehavior == RESULT_SUCCESS)
+        if (ResultBehavior == ResultSuccess)
         {
             return true;
         }
-        else if (ResultBehavior == RESULT_FAILURE)
+        else if (ResultBehavior == ResultFailure)
         {
             throw new Exception("TestSemaphoreCommand failure");
         }
-        else if (ResultBehavior == RESULT_BAD_REQUEST_EXCEPTION)
+        else if (ResultBehavior == ResultBadRequestException)
         {
             throw new HystrixBadRequestException("TestSemaphoreCommand BadRequestException");
         }
@@ -65,11 +65,11 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
 
     protected override bool RunFallback()
     {
-        if (FallbackBehavior == FALLBACK_SUCCESS)
+        if (FallbackBehavior == FallbackSuccess)
         {
             return false;
         }
-        else if (FallbackBehavior == FALLBACK_FAILURE)
+        else if (FallbackBehavior == FallbackFailure)
         {
             throw new Exception("fallback failure");
         }
@@ -82,14 +82,14 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, int executionSemaphoreCount)
     {
-        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.SEMAPHORE;
+        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.Semaphore;
         hystrixCommandOptions.ExecutionIsolationSemaphoreMaxConcurrentRequests = executionSemaphoreCount;
         return hystrixCommandOptions;
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions)
     {
-        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.SEMAPHORE;
+        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.Semaphore;
         return hystrixCommandOptions;
     }
 }

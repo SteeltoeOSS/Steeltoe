@@ -19,7 +19,7 @@ public class EurekaDiscoveryManager : DiscoveryManager
         EurekaDiscoveryClient client,
         ILoggerFactory logFactory = null)
     {
-        _logger = logFactory?.CreateLogger<DiscoveryManager>();
+        logger = logFactory?.CreateLogger<DiscoveryManager>();
         _clientConfig = clientConfig;
         _instConfig = instConfig;
         Client = client;

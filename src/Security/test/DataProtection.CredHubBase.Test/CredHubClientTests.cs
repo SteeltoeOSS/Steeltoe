@@ -43,7 +43,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.Value, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example", response.Name);
         Assert.Equal("sample", response.Value.ToString());
@@ -63,8 +63,8 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.JSON, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Json, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("b84cd415-2218-41c9-9455-b3e4c6a5ec0f"), response.Id);
         Assert.Equal("/example-json", response.Name);
         Assert.Equal(jsonObject.ToString(), response.Value.ToString());
@@ -84,7 +84,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.Password, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("73ef170e-12b7-4f91-94a0-e3a1686cbe2b"), response.Id);
         Assert.Equal("/example-password", response.Name);
         Assert.Equal("sample", response.Value.ToString());
@@ -106,7 +106,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.User, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 22, 21, 49, 09, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 22, 21, 49, 09, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("b6dffbd6-ccca-4703-a4fd-8d39ca7b564a"), response.Id);
         Assert.Equal("/example-user", response.Name);
         Assert.Equal("testUser", response.Value.Username);
@@ -130,7 +130,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.Certificate, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("657dd2f0-c2e4-4e28-b84a-171a730916b2"), response.Id);
         Assert.Equal("/example-certificate", response.Name);
         Assert.Null(response.Value.CertificateAuthority);
@@ -155,7 +155,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.Certificate, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("657dd2f0-c2e4-4e28-b84a-171a730916b2"), response.Id);
         Assert.Equal("/example-certificate", response.Name);
         Assert.Equal("-----BEGIN PUBLIC KEY-----\nFakeCAKeyTextEAAQ==\n-----END PUBLIC KEY-----\n", response.Value.CertificateAuthority);
@@ -178,8 +178,8 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.RSA, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-rsa", response.Name);
         Assert.Equal("-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n", response.Value.PublicKey);
@@ -201,8 +201,8 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.SSH, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Ssh, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-ssh", response.Name);
         Assert.Equal("-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n", response.Value.PublicKey);
@@ -222,8 +222,8 @@ public class CredHubClientTests
         var response = await client.GetByIdAsync<SshCredential>(credId);
 
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.SSH, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 20, 17, 37, 57, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Ssh, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 20, 17, 37, 57, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(credId, response.Id);
         Assert.Equal("/example-ssh", response.Name);
         Assert.Equal("ssh-rsa FakePublicKeyText", response.Value.PublicKey);
@@ -244,8 +244,8 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.RSA, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-rsa", response.Name);
         Assert.Equal("-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n", response.Value.PublicKey);
@@ -301,7 +301,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.Password, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
         Assert.Equal("/generated-password", response.Name);
         Assert.Equal("W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO", response.Value.ToString());
@@ -323,7 +323,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.User, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
         Assert.Equal("/generated-user", response.Name);
         Assert.Equal("HzFFMbHuRbtImAWdGmML", response.Value.Username);
@@ -348,7 +348,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.Certificate, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 20, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 20, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("0d698309-cca6-4626-aae3-a72ed664304a"), response.Id);
         Assert.Equal("/example-ca", response.Name);
         Assert.Null(response.Value.CertificateAuthority);
@@ -371,8 +371,8 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.RSA, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-rsa", response.Name);
         Assert.Equal("-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n", response.Value.PublicKey);
@@ -394,8 +394,8 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.SSH, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Ssh, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-ssh", response.Name);
         Assert.Equal("ssh-rsa FakePublicKeyText asdf", response.Value.PublicKey);
@@ -418,7 +418,7 @@ public class CredHubClientTests
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.Password, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
         Assert.Equal("/generated-password", response.Name);
         Assert.Equal("W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO", response.Value.ToString());
@@ -438,8 +438,8 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.RSA, response.Type);
-        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.Version_Created_At);
+        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
         Assert.Equal("/regenerated-rsa", response.Name);
         Assert.Equal("-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n", response.Value.PublicKey);
@@ -741,7 +741,7 @@ public class CredHubClientTests
 
     private Task<CredHubClient> InitializeClientAsync(MockHttpMessageHandler mockHttpMessageHandler)
     {
-        return CredHubClient.CreateUAAClientAsync(new CredHubOptions { CredHubUrl = _credHubBase, ClientId = "credHubUser", ClientSecret = "credHubPassword" }, httpClient: new HttpClient(mockHttpMessageHandler));
+        return CredHubClient.CreateUaaClientAsync(new CredHubOptions { CredHubUrl = _credHubBase, ClientId = "credHubUser", ClientSecret = "credHubPassword" }, httpClient: new HttpClient(mockHttpMessageHandler));
     }
 
     private MockHttpMessageHandler InitializedHandlerWithLogin(MockedRequest authRequest = null)

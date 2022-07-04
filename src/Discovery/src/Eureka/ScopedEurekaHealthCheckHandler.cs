@@ -12,20 +12,20 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class ScopedEurekaHealthCheckHandler : EurekaHealthCheckHandler
 {
-    internal IServiceScopeFactory _scopeFactory;
+    internal IServiceScopeFactory ScopeFactory;
 
     public ScopedEurekaHealthCheckHandler(IServiceScopeFactory scopeFactory, ILogger<ScopedEurekaHealthCheckHandler> logger = null)
         : base(logger)
     {
-        _scopeFactory = scopeFactory;
+        this.ScopeFactory = scopeFactory;
     }
 
     public override InstanceStatus GetStatus(InstanceStatus currentStatus)
     {
-        using var scope = _scopeFactory.CreateScope();
-        _contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
+        using var scope = ScopeFactory.CreateScope();
+        Contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
         var result = base.GetStatus(currentStatus);
-        _contributors = null;
+        Contributors = null;
         return result;
     }
 }

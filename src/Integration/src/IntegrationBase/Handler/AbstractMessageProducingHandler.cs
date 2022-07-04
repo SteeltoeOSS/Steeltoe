@@ -265,7 +265,7 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
             }
             else if (reply is IMessageBuilder replyAsBuilder)
             {
-                replyAsBuilder.Headers.TryGetValue(MessageHeaders.REPLY_CHANNEL, out replyChannel);
+                replyAsBuilder.Headers.TryGetValue(MessageHeaders.ReplyChannelName, out replyChannel);
             }
         }
 

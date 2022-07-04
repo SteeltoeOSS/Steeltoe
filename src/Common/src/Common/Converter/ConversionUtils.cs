@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Converter;
 
 public static class ConversionUtils
 {
-    private const string DELIMITER = ",";
+    private const string Delimiter = ",";
 
     public static bool CanConvertElements(Type sourceElementType, Type targetElementType, IConversionService conversionService)
     {
@@ -67,7 +67,7 @@ public static class ConversionUtils
         {
             var targetElement = conversionService.Convert(sourceElement, sourceElement.GetType(), targetType);
             sj.Append(targetElement);
-            sj.Append(DELIMITER);
+            sj.Append(Delimiter);
         }
 
         return sj.ToString(0, sj.Length - 1);

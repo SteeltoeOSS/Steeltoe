@@ -9,7 +9,7 @@ namespace Steeltoe.Connector.Services;
 public class SqlServerServiceInfoFactory : ServiceInfoFactory
 {
     public SqlServerServiceInfoFactory()
-        : base(new Tags("sqlserver"), SqlServerServiceInfo.SQLSERVER_SCHEME)
+        : base(new Tags("sqlserver"), SqlServerServiceInfo.SqlServerScheme)
     {
     }
 

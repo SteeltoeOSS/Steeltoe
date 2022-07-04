@@ -9,11 +9,11 @@ namespace Steeltoe.Messaging.Support;
 
 public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
 {
-    protected readonly ILogger _logger;
+    protected readonly ILogger Logger;
 
     protected AbstractHeaderMapper(ILogger logger = null)
     {
-        _logger = logger;
+        Logger = logger;
     }
 
     private string _inboundPrefix = string.Empty;
@@ -84,7 +84,7 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
 
         if (!type.IsInstanceOfType(value))
         {
-            _logger?.LogDebug("Skipping header '{headerName}': expected type [{type}], but got [{valueType}]", name, type, value.GetType());
+            Logger?.LogDebug("Skipping header '{headerName}': expected type [{type}], but got [{valueType}]", name, type, value.GetType());
             return default;
         }
         else

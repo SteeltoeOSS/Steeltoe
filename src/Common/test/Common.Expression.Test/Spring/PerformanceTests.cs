@@ -11,10 +11,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 #pragma warning disable xUnit1004 // Test methods should not be skipped
 public class PerformanceTests
 {
-    private static readonly int _iterations = 10000;
-    private static readonly bool _debug = bool.Parse(bool.FalseString);
-    private static readonly IExpressionParser _parser = new SpelExpressionParser();
-    private static readonly IEvaluationContext _eContext = TestScenarioCreator.GetTestEvaluationContext();
+    private static readonly int Iterations = 10000;
+    private static readonly bool IsDebug = bool.Parse(bool.FalseString);
+    private static readonly IExpressionParser Parser = new SpelExpressionParser();
+    private static readonly IEvaluationContext EContext = TestScenarioCreator.GetTestEvaluationContext();
     private readonly ITestOutputHelper _output;
 
     public PerformanceTests(ITestOutputHelper output)
@@ -30,39 +30,39 @@ public class PerformanceTests
         IExpression expr;
 
         // warmup
-        for (var i = 0; i < _iterations; i++)
+        for (var i = 0; i < Iterations; i++)
         {
-            expr = _parser.ParseExpression("PlaceOfBirth.City");
+            expr = Parser.ParseExpression("PlaceOfBirth.City");
             Assert.NotNull(expr);
-            expr.GetValue(_eContext);
+            expr.GetValue(EContext);
         }
 
         starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        for (var i = 0; i < _iterations; i++)
+        for (var i = 0; i < Iterations; i++)
         {
-            expr = _parser.ParseExpression("PlaceOfBirth.City");
+            expr = Parser.ParseExpression("PlaceOfBirth.City");
             Assert.NotNull(expr);
-            expr.GetValue(_eContext);
+            expr.GetValue(EContext);
         }
 
         endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var freshParseTime = endtime - starttime;
-        if (_debug)
+        if (IsDebug)
         {
             _output.WriteLine("PropertyAccess: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
         }
 
-        expr = _parser.ParseExpression("PlaceOfBirth.City");
+        expr = Parser.ParseExpression("PlaceOfBirth.City");
         Assert.NotNull(expr);
         starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        for (var i = 0; i < _iterations; i++)
+        for (var i = 0; i < Iterations; i++)
         {
-            expr.GetValue(_eContext);
+            expr.GetValue(EContext);
         }
 
         endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var reuseTime = endtime - starttime;
-        if (_debug)
+        if (IsDebug)
         {
             _output.WriteLine("PropertyAccess: Time for just evaluation x 10000: " + reuseTime + "ms");
         }
@@ -83,39 +83,39 @@ public class PerformanceTests
         IExpression expr;
 
         // warmup
-        for (var i = 0; i < _iterations; i++)
+        for (var i = 0; i < Iterations; i++)
         {
-            expr = _parser.ParseExpression("get_PlaceOfBirth().get_City()");
+            expr = Parser.ParseExpression("get_PlaceOfBirth().get_City()");
             Assert.NotNull(expr);
-            expr.GetValue(_eContext);
+            expr.GetValue(EContext);
         }
 
         starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        for (var i = 0; i < _iterations; i++)
+        for (var i = 0; i < Iterations; i++)
         {
-            expr = _parser.ParseExpression("get_PlaceOfBirth().get_City()");
+            expr = Parser.ParseExpression("get_PlaceOfBirth().get_City()");
             Assert.NotNull(expr);
-            expr.GetValue(_eContext);
+            expr.GetValue(EContext);
         }
 
         endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var freshParseTime = endtime - starttime;
-        if (_debug)
+        if (IsDebug)
         {
             _output.WriteLine("MethodExpression: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
         }
 
-        expr = _parser.ParseExpression("get_PlaceOfBirth().get_City()");
+        expr = Parser.ParseExpression("get_PlaceOfBirth().get_City()");
         Assert.NotNull(expr);
         starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        for (var i = 0; i < _iterations; i++)
+        for (var i = 0; i < Iterations; i++)
         {
-            expr.GetValue(_eContext);
+            expr.GetValue(EContext);
         }
 
         endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var reuseTime = endtime - starttime;
-        if (_debug)
+        if (IsDebug)
         {
             _output.WriteLine("MethodExpression: Time for just evaluation x 10000: " + reuseTime + "ms");
         }

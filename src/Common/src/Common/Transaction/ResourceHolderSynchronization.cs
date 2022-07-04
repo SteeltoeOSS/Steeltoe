@@ -94,7 +94,7 @@ public class ResourceHolderSynchronization<THolder, TKey> : ITransactionSynchron
         else
         {
             // Probably a pre-bound resource...
-            CleanupResource(_resourceHolder, _resourceKey, status == AbstractTransactionSynchronization.STATUS_COMMITTED);
+            CleanupResource(_resourceHolder, _resourceKey, status == AbstractTransactionSynchronization.StatusCommitted);
         }
 
         _resourceHolder.Reset();

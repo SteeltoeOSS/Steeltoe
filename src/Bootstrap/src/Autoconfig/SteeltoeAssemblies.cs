@@ -8,35 +8,35 @@ namespace Steeltoe.Bootstrap.Autoconfig;
 
 public static class SteeltoeAssemblies
 {
-    public const string Steeltoe_CircuitBreaker_Hystrix_MetricsEventsCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore";
-    public const string Steeltoe_CircuitBreaker_Hystrix_MetricsStreamCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore";
-    public const string Steeltoe_CircuitBreaker_HystrixCore = "Steeltoe.CircuitBreaker.HystrixCore";
-    public const string Steeltoe_Extensions_Configuration_CloudFoundryBase = "Steeltoe.Extensions.Configuration.CloudFoundryBase";
-    public const string Steeltoe_Extensions_Configuration_CloudFoundryCore = "Steeltoe.Extensions.Configuration.CloudFoundryCore";
-    public const string Steeltoe_Extensions_Configuration_ConfigServerBase = "Steeltoe.Extensions.Configuration.ConfigServerBase";
-    public const string Steeltoe_Extensions_Configuration_ConfigServerCore = "Steeltoe.Extensions.Configuration.ConfigServerCore";
-    public const string Steeltoe_Extensions_Configuration_KubernetesBase = "Steeltoe.Extensions.Configuration.KubernetesBase";
-    public const string Steeltoe_Extensions_Configuration_KubernetesCore = "Steeltoe.Extensions.Configuration.KubernetesCore";
-    public const string Steeltoe_Extensions_Configuration_RandomValueBase = "Steeltoe.Extensions.Configuration.RandomValueBase";
-    public const string Steeltoe_Extensions_Configuration_PlaceholderBase = "Steeltoe.Extensions.Configuration.PlaceholderBase";
-    public const string Steeltoe_Extensions_Configuration_PlaceholderCore = "Steeltoe.Extensions.Configuration.PlaceholderCore";
-    public const string Steeltoe_Connector_EF6Core = "Steeltoe.Connector.EF6Core";
-    public const string Steeltoe_Connector_EFCore = "Steeltoe.Connector.EFCore";
-    public const string Steeltoe_Connector_ConnectorCore = "Steeltoe.Connector.ConnectorCore";
-    public const string Steeltoe_Discovery_ClientBase = "Steeltoe.Discovery.ClientBase";
-    public const string Steeltoe_Discovery_ClientCore = "Steeltoe.Discovery.ClientCore";
-    public const string Steeltoe_Extensions_Logging_DynamicSerilogCore = "Steeltoe.Extensions.Logging.DynamicSerilogCore";
-    public const string Steeltoe_Extensions_Logging_DynamicLogger = "Steeltoe.Extensions.Logging.DynamicLogger";
-    public const string Steeltoe_Management_CloudFoundryCore = "Steeltoe.Management.CloudFoundryCore";
-    public const string Steeltoe_Management_EndpointCore = "Steeltoe.Management.EndpointCore";
-    public const string Steeltoe_Management_KubernetesCore = "Steeltoe.Management.KubernetesCore";
-    public const string Steeltoe_Management_TaskCore = "Steeltoe.Management.TaskCore";
-    public const string Steeltoe_Management_TracingBase = "Steeltoe.Management.TracingBase";
-    public const string Steeltoe_Management_TracingCore = "Steeltoe.Management.TracingCore";
-    public const string Steeltoe_Security_Authentication_CloudFoundryCore = "Steeltoe.Security.Authentication.CloudFoundryCore";
-    public const string Steeltoe_Security_Authentication_MtlsCore = "Steeltoe.Security.Authentication.MtlsCore";
-    public const string Steeltoe_Security_DataProtection_CredHubCore = "Steeltoe.Security.DataProtection.CredHubCore";
-    public const string Steeltoe_Security_DataProtection_RedisCore = "Steeltoe.Security.DataProtection.RedisCore";
+    public const string SteeltoeCircuitBreakerHystrixMetricsEventsCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore";
+    public const string SteeltoeCircuitBreakerHystrixMetricsStreamCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore";
+    public const string SteeltoeCircuitBreakerHystrixCore = "Steeltoe.CircuitBreaker.HystrixCore";
+    public const string SteeltoeExtensionsConfigurationCloudFoundryBase = "Steeltoe.Extensions.Configuration.CloudFoundryBase";
+    public const string SteeltoeExtensionsConfigurationCloudFoundryCore = "Steeltoe.Extensions.Configuration.CloudFoundryCore";
+    public const string SteeltoeExtensionsConfigurationConfigServerBase = "Steeltoe.Extensions.Configuration.ConfigServerBase";
+    public const string SteeltoeExtensionsConfigurationConfigServerCore = "Steeltoe.Extensions.Configuration.ConfigServerCore";
+    public const string SteeltoeExtensionsConfigurationKubernetesBase = "Steeltoe.Extensions.Configuration.KubernetesBase";
+    public const string SteeltoeExtensionsConfigurationKubernetesCore = "Steeltoe.Extensions.Configuration.KubernetesCore";
+    public const string SteeltoeExtensionsConfigurationRandomValueBase = "Steeltoe.Extensions.Configuration.RandomValueBase";
+    public const string SteeltoeExtensionsConfigurationPlaceholderBase = "Steeltoe.Extensions.Configuration.PlaceholderBase";
+    public const string SteeltoeExtensionsConfigurationPlaceholderCore = "Steeltoe.Extensions.Configuration.PlaceholderCore";
+    public const string SteeltoeConnectorEf6Core = "Steeltoe.Connector.EF6Core";
+    public const string SteeltoeConnectorEfCore = "Steeltoe.Connector.EFCore";
+    public const string SteeltoeConnectorConnectorCore = "Steeltoe.Connector.ConnectorCore";
+    public const string SteeltoeDiscoveryClientBase = "Steeltoe.Discovery.ClientBase";
+    public const string SteeltoeDiscoveryClientCore = "Steeltoe.Discovery.ClientCore";
+    public const string SteeltoeExtensionsLoggingDynamicSerilogCore = "Steeltoe.Extensions.Logging.DynamicSerilogCore";
+    public const string SteeltoeExtensionsLoggingDynamicLogger = "Steeltoe.Extensions.Logging.DynamicLogger";
+    public const string SteeltoeManagementCloudFoundryCore = "Steeltoe.Management.CloudFoundryCore";
+    public const string SteeltoeManagementEndpointCore = "Steeltoe.Management.EndpointCore";
+    public const string SteeltoeManagementKubernetesCore = "Steeltoe.Management.KubernetesCore";
+    public const string SteeltoeManagementTaskCore = "Steeltoe.Management.TaskCore";
+    public const string SteeltoeManagementTracingBase = "Steeltoe.Management.TracingBase";
+    public const string SteeltoeManagementTracingCore = "Steeltoe.Management.TracingCore";
+    public const string SteeltoeSecurityAuthenticationCloudFoundryCore = "Steeltoe.Security.Authentication.CloudFoundryCore";
+    public const string SteeltoeSecurityAuthenticationMtlsCore = "Steeltoe.Security.Authentication.MtlsCore";
+    public const string SteeltoeSecurityDataProtectionCredHubCore = "Steeltoe.Security.DataProtection.CredHubCore";
+    public const string SteeltoeSecurityDataProtectionRedisCore = "Steeltoe.Security.DataProtection.RedisCore";
 
     internal static readonly string[] AllAssemblies = typeof(SteeltoeAssemblies).GetFields()
         .Where(x => x.FieldType == typeof(string))

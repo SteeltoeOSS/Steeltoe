@@ -14,7 +14,7 @@ public class QueueBinding : Binding, IQueueBinding
     }
 
     public QueueBinding(string name, string queueDestination, string exchange, string routingKey, Dictionary<string, object> arguments)
-        : base(name, queueDestination, DestinationType.QUEUE, exchange, routingKey, arguments)
+        : base(name, queueDestination, DestinationType.Queue, exchange, routingKey, arguments)
     {
     }
 }

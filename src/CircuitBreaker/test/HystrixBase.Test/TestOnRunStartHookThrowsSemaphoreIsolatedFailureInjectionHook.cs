@@ -21,7 +21,7 @@ internal sealed class TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionH
 
     public override void OnExecutionStart(IHystrixInvokable commandInstance)
     {
-        throw new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, commandInstance.GetType(), "Injected Failure", null, null);
+        throw new HystrixRuntimeException(FailureType.CommandException, commandInstance.GetType(), "Injected Failure", null, null);
     }
 
     public override void OnThreadStart(IHystrixInvokable commandInstance)

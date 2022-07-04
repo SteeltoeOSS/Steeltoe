@@ -10,8 +10,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public class LeaseInfo
 {
-    public const int Default_RenewalIntervalInSecs = 30;
-    public const int Default_DurationInSecs = 90;
+    public const int DefaultRenewalIntervalInSecs = 30;
+    public const int DefaultDurationInSecs = 90;
 
     public int RenewalIntervalInSecs { get; internal set; }
 
@@ -56,8 +56,8 @@ public class LeaseInfo
 
     internal LeaseInfo()
     {
-        RenewalIntervalInSecs = Default_RenewalIntervalInSecs;
-        DurationInSecs = Default_DurationInSecs;
+        RenewalIntervalInSecs = DefaultRenewalIntervalInSecs;
+        DurationInSecs = DefaultDurationInSecs;
     }
 
     internal JsonLeaseInfo ToJson()

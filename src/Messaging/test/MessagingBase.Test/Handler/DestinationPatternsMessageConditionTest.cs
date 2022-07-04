@@ -134,6 +134,6 @@ public class DestinationPatternsMessageConditionTest
     private IMessage MessageTo(string destination)
     {
         return MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(
-            DestinationPatternsMessageCondition.LOOKUP_DESTINATION_HEADER, destination).Build();
+            DestinationPatternsMessageCondition.LookupDestinationHeader, destination).Build();
     }
 }

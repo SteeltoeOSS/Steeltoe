@@ -13,9 +13,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public abstract class SpelNode : ISpelNode
 {
-    protected SpelNode[] _children = NO_CHILDREN;
-    protected volatile TypeDescriptor _exitTypeDescriptor;
-    private static readonly SpelNode[] NO_CHILDREN = Array.Empty<SpelNode>();
+    protected SpelNode[] children = NoChildren;
+    protected volatile TypeDescriptor exitTypeDescriptor;
+    private static readonly SpelNode[] NoChildren = Array.Empty<SpelNode>();
     private SpelNode _parent;
 
     protected SpelNode(int startPos, int endPos, params SpelNode[] operands)
@@ -24,7 +24,7 @@ public abstract class SpelNode : ISpelNode
         EndPosition = endPos;
         if (!ObjectUtils.IsNullOrEmpty(operands))
         {
-            _children = operands;
+            children = operands;
             foreach (var operand in operands)
             {
                 if (operand == null)
@@ -37,13 +37,13 @@ public abstract class SpelNode : ISpelNode
         }
     }
 
-    public virtual TypeDescriptor ExitDescriptor => _exitTypeDescriptor;
+    public virtual TypeDescriptor ExitDescriptor => exitTypeDescriptor;
 
     public virtual int StartPosition { get; }
 
     public virtual int EndPosition { get; }
 
-    public virtual int ChildCount => _children.Length;
+    public virtual int ChildCount => children.Length;
 
     public virtual bool IsCompilable() => false;
 
@@ -64,12 +64,12 @@ public abstract class SpelNode : ISpelNode
 
     public virtual void SetValue(ExpressionState state, object newValue)
     {
-        throw new SpelEvaluationException(StartPosition, SpelMessage.SETVALUE_NOT_SUPPORTED, GetType());
+        throw new SpelEvaluationException(StartPosition, SpelMessage.SetvalueNotSupported, GetType());
     }
 
     public virtual ISpelNode GetChild(int index)
     {
-        return _children[index];
+        return children[index];
     }
 
     public virtual Type GetObjectType(object obj)
@@ -89,13 +89,13 @@ public abstract class SpelNode : ISpelNode
 
     public abstract ITypedValue GetValueInternal(ExpressionState state);
 
-    public abstract string ToStringAST();
+    public abstract string ToStringAst();
 
     protected internal virtual bool NextChildIs(params Type[] classes)
     {
         if (_parent != null)
         {
-            var peers = _parent._children;
+            var peers = _parent.children;
             for (int i = 0, max = peers.Length; i < max; i++)
             {
                 if (this == peers[i])
@@ -134,7 +134,7 @@ public abstract class SpelNode : ISpelNode
 
     protected internal virtual IValueRef GetValueRef(ExpressionState state)
     {
-        throw new SpelEvaluationException(StartPosition, SpelMessage.NOT_ASSIGNABLE, ToStringAST());
+        throw new SpelEvaluationException(StartPosition, SpelMessage.NotAssignable, ToStringAst());
     }
 
     protected static void GenerateCodeForArguments(ILGenerator gen, CodeFlow cf, MethodBase member, SpelNode[] arguments)

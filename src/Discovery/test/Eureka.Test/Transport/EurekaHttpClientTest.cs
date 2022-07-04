@@ -140,7 +140,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var config = new EurekaClientConfig();
         var client = new EurekaHttpClient(config);
-        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.SendHeartBeatAsync(null, "bar", new InstanceInfo(), InstanceStatus.DOWN));
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.SendHeartBeatAsync(null, "bar", new InstanceInfo(), InstanceStatus.Down));
         Assert.Contains("appName", ex.Message);
     }
 
@@ -149,7 +149,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var config = new EurekaClientConfig();
         var client = new EurekaHttpClient(config);
-        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.SendHeartBeatAsync("foo", null, new InstanceInfo(), InstanceStatus.DOWN));
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.SendHeartBeatAsync("foo", null, new InstanceInfo(), InstanceStatus.Down));
         Assert.Contains("id", ex.Message);
     }
 
@@ -158,7 +158,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var config = new EurekaClientConfig();
         var client = new EurekaHttpClient(config);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.SendHeartBeatAsync("foo", "bar", null, InstanceStatus.DOWN));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.SendHeartBeatAsync("foo", "bar", null, InstanceStatus.Down));
         Assert.Contains("info", ex.Message);
     }
 
@@ -185,7 +185,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             EurekaServerServiceUrls = uri
         };
         var client = new EurekaHttpClient(cconfig, server.CreateClient());
-        var resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.UNKNOWN);
+        var resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.Unknown);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -270,7 +270,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
             Assert.Equal("192.168.56.1", instance.IpAddr);
-            Assert.Equal(InstanceStatus.UP, instance.Status);
+            Assert.Equal(InstanceStatus.Up, instance.Status);
         }
     }
 
@@ -365,10 +365,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
             Assert.Equal("192.168.56.1", instance.IpAddr);
-            Assert.Equal(InstanceStatus.UP, instance.Status);
+            Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
-        Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -436,10 +436,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
             Assert.Equal("192.168.56.1", instance.IpAddr);
-            Assert.Equal(InstanceStatus.UP, instance.Status);
+            Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
-        Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -528,9 +528,9 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT:80", resp.Response.VipAddress);
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
         Assert.Equal("192.168.0.147", resp.Response.IpAddr);
-        Assert.Equal(InstanceStatus.UP, resp.Response.Status);
+        Assert.Equal(InstanceStatus.Up, resp.Response.Status);
 
-        Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -593,9 +593,9 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT:80", resp.Response.VipAddress);
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
         Assert.Equal("192.168.0.147", resp.Response.IpAddr);
-        Assert.Equal(InstanceStatus.UP, resp.Response.Status);
+        Assert.Equal(InstanceStatus.Up, resp.Response.Status);
 
-        Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -641,7 +641,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
         Assert.Equal("/apps/foo/bar", TestConfigServerStartup.LastRequest.Path.Value);
 
-        Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -649,7 +649,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var config = new EurekaClientConfig();
         var client = new EurekaHttpClient(config);
-        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.StatusUpdateAsync(null, "id", InstanceStatus.UP, null));
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.StatusUpdateAsync(null, "id", InstanceStatus.Up, null));
         Assert.Contains("appName", ex.Message);
     }
 
@@ -658,7 +658,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var config = new EurekaClientConfig();
         var client = new EurekaHttpClient(config);
-        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.StatusUpdateAsync("appName", null, InstanceStatus.UP, null));
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.StatusUpdateAsync("appName", null, InstanceStatus.Up, null));
         Assert.Contains("id", ex.Message);
     }
 
@@ -667,7 +667,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var config = new EurekaClientConfig();
         var client = new EurekaHttpClient(config);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.StatusUpdateAsync("appName", "bar", InstanceStatus.UP, null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.StatusUpdateAsync("appName", "bar", InstanceStatus.Up, null));
         Assert.Contains("info", ex.Message);
     }
 
@@ -690,7 +690,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         var client = new EurekaHttpClient(cconfig, server.CreateClient());
         var now = DateTime.UtcNow.Ticks;
         var javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
-        var resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.DOWN, new InstanceInfo { LastDirtyTimestamp = now });
+        var resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.Down, new InstanceInfo { LastDirtyTimestamp = now });
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -699,7 +699,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal($"?value=DOWN&lastDirtyTimestamp={javaTime}", TestConfigServerStartup.LastRequest.QueryString.Value);
 
-        Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -756,7 +756,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal($"?lastDirtyTimestamp={javaTime}", TestConfigServerStartup.LastRequest.QueryString.Value);
 
-        Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]

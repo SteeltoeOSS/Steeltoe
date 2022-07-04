@@ -10,7 +10,7 @@ public class CloudFoundryServicesOptions : ServicesOptions
 {
     public static string ServicesConfigRoot => "vcap";
 
-    public override string CONFIGURATION_PREFIX { get; protected set; } = ServicesConfigRoot;
+    public override string ConfigurationPrefix { get; protected set; } = ServicesConfigRoot;
 
     // This constructor is for use with IOptions
     public CloudFoundryServicesOptions()

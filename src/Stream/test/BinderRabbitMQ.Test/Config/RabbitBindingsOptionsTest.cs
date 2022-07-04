@@ -198,7 +198,7 @@ public class RabbitBindingsOptionsTest
 
         builder.AddInMemoryCollection(dict);
 
-        var config = builder.Build().GetSection(RabbitBindingsOptions.PREFIX);
+        var config = builder.Build().GetSection(RabbitBindingsOptions.Prefix);
         var options = new RabbitBindingsOptions(config);
         options.PostProcess();
         Assert.NotNull(options.Default);

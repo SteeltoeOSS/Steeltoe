@@ -9,29 +9,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixCommandOptions : HystrixBaseOptions, IHystrixCommandOptions
 {
-    internal const int Default_MetricsRollingStatisticalWindow = 10000; // default => statisticalWindow: 10000 = 10 seconds (and default of 10 buckets so each bucket is 1 second)
-    internal const int Default_MetricsRollingStatisticalWindowBuckets = 10; // default => statisticalWindowBuckets: 10 = 10 buckets in a 10 second window so each bucket is 1 second
-    internal const int Default_CircuitBreakerRequestVolumeThreshold = 20; // default => statisticalWindowVolumeThreshold: 20 requests in 10 seconds must occur before statistics matter
-    internal const int Default_CircuitBreakerSleepWindowInMilliseconds = 5000; // default => sleepWindow: 5000 = 5 seconds that we will sleep before trying again after tripping the circuit
-    internal const int Default_CircuitBreakerErrorThresholdPercentage = 50; // default => errorThresholdPercentage = 50 = if 50%+ of requests in 10 seconds are failures or latent then we will trip the circuit
-    internal const bool Default_CircuitBreakerForceOpen = false; // default => forceCircuitOpen = false (we want to allow traffic)
-    internal const bool Default_CircuitBreakerForceClosed = false; // default => ignoreErrors = false
-    internal const int Default_ExecutionTimeoutInMilliseconds = 1000; // default => executionTimeoutInMilliseconds: 1000 = 1 second
-    internal const bool Default_ExecutionTimeoutEnabled = true;
-    internal const ExecutionIsolationStrategy Default_IsolationStrategy = ExecutionIsolationStrategy.THREAD;
-    internal const bool Default_MetricsRollingPercentileEnabled = true;
-    internal const bool Default_RequestCacheEnabled = true;
-    internal const int Default_FallbackIsolationSemaphoreMaxConcurrentRequests = 10;
-    internal const bool Default_FallbackEnabled = true;
-    internal const int Default_ExecutionIsolationSemaphoreMaxConcurrentRequests = 10;
-    internal const bool Default_RequestLogEnabled = true;
-    internal const bool Default_CircuitBreakerEnabled = true;
-    internal const int Default_MetricsRollingPercentileWindow = 60000; // default to 1 minute for RollingPercentile
-    internal const int Default_MetricsRollingPercentileWindowBuckets = 6; // default to 6 buckets (10 seconds each in 60 second window)
-    internal const int Default_MetricsRollingPercentileBucketSize = 100; // default to 100 values max per bucket
-    internal const int Default_MetricsHealthSnapshotIntervalInMilliseconds = 500; // default to 500ms as max frequency between allowing snapshots of health (error percentage etc)
+    internal const int DefaultMetricsRollingStatisticalWindow = 10000; // default => statisticalWindow: 10000 = 10 seconds (and default of 10 buckets so each bucket is 1 second)
+    internal const int DefaultMetricsRollingStatisticalWindowBuckets = 10; // default => statisticalWindowBuckets: 10 = 10 buckets in a 10 second window so each bucket is 1 second
+    internal const int DefaultCircuitBreakerRequestVolumeThreshold = 20; // default => statisticalWindowVolumeThreshold: 20 requests in 10 seconds must occur before statistics matter
+    internal const int DefaultCircuitBreakerSleepWindowInMilliseconds = 5000; // default => sleepWindow: 5000 = 5 seconds that we will sleep before trying again after tripping the circuit
+    internal const int DefaultCircuitBreakerErrorThresholdPercentage = 50; // default => errorThresholdPercentage = 50 = if 50%+ of requests in 10 seconds are failures or latent then we will trip the circuit
+    internal const bool DefaultCircuitBreakerForceOpen = false; // default => forceCircuitOpen = false (we want to allow traffic)
+    internal const bool DefaultCircuitBreakerForceClosed = false; // default => ignoreErrors = false
+    internal const int DefaultExecutionTimeoutInMilliseconds = 1000; // default => executionTimeoutInMilliseconds: 1000 = 1 second
+    internal const bool DefaultExecutionTimeoutEnabled = true;
+    internal const ExecutionIsolationStrategy DefaultIsolationStrategy = ExecutionIsolationStrategy.Thread;
+    internal const bool DefaultMetricsRollingPercentileEnabled = true;
+    internal const bool DefaultRequestCacheEnabled = true;
+    internal const int DefaultFallbackIsolationSemaphoreMaxConcurrentRequests = 10;
+    internal const bool DefaultFallbackEnabled = true;
+    internal const int DefaultExecutionIsolationSemaphoreMaxConcurrentRequests = 10;
+    internal const bool DefaultRequestLogEnabled = true;
+    internal const bool DefaultCircuitBreakerEnabled = true;
+    internal const int DefaultMetricsRollingPercentileWindow = 60000; // default to 1 minute for RollingPercentile
+    internal const int DefaultMetricsRollingPercentileWindowBuckets = 6; // default to 6 buckets (10 seconds each in 60 second window)
+    internal const int DefaultMetricsRollingPercentileBucketSize = 100; // default to 100 values max per bucket
+    internal const int DefaultMetricsHealthSnapshotIntervalInMilliseconds = 500; // default to 500ms as max frequency between allowing snapshots of health (error percentage etc)
 
-    protected const string HYSTRIX_COMMAND_PREFIX = "hystrix:command";
+    protected const string HystrixCommandPrefix = "hystrix:command";
 
     protected IHystrixCommandOptions defaults;
 
@@ -52,31 +52,31 @@ public class HystrixCommandOptions : HystrixBaseOptions, IHystrixCommandOptions
         : this(defaults, dynamic)
     {
         CommandKey = key;
-        CircuitBreakerEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:enabled", Default_CircuitBreakerEnabled, defaults?.CircuitBreakerEnabled);
-        CircuitBreakerRequestVolumeThreshold = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:requestVolumeThreshold", Default_CircuitBreakerRequestVolumeThreshold, defaults?.CircuitBreakerRequestVolumeThreshold);
-        CircuitBreakerSleepWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:sleepWindowInMilliseconds", Default_CircuitBreakerSleepWindowInMilliseconds, defaults?.CircuitBreakerSleepWindowInMilliseconds);
-        CircuitBreakerErrorThresholdPercentage = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:errorThresholdPercentage", Default_CircuitBreakerErrorThresholdPercentage, defaults?.CircuitBreakerErrorThresholdPercentage);
-        CircuitBreakerForceOpen = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:forceOpen", Default_CircuitBreakerForceOpen, defaults?.CircuitBreakerForceOpen);
-        CircuitBreakerForceClosed = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:forceClosed", Default_CircuitBreakerForceClosed, defaults?.CircuitBreakerForceClosed);
+        CircuitBreakerEnabled = GetBoolean(HystrixCommandPrefix, key.Name, "circuitBreaker:enabled", DefaultCircuitBreakerEnabled, defaults?.CircuitBreakerEnabled);
+        CircuitBreakerRequestVolumeThreshold = GetInteger(HystrixCommandPrefix, key.Name, "circuitBreaker:requestVolumeThreshold", DefaultCircuitBreakerRequestVolumeThreshold, defaults?.CircuitBreakerRequestVolumeThreshold);
+        CircuitBreakerSleepWindowInMilliseconds = GetInteger(HystrixCommandPrefix, key.Name, "circuitBreaker:sleepWindowInMilliseconds", DefaultCircuitBreakerSleepWindowInMilliseconds, defaults?.CircuitBreakerSleepWindowInMilliseconds);
+        CircuitBreakerErrorThresholdPercentage = GetInteger(HystrixCommandPrefix, key.Name, "circuitBreaker:errorThresholdPercentage", DefaultCircuitBreakerErrorThresholdPercentage, defaults?.CircuitBreakerErrorThresholdPercentage);
+        CircuitBreakerForceOpen = GetBoolean(HystrixCommandPrefix, key.Name, "circuitBreaker:forceOpen", DefaultCircuitBreakerForceOpen, defaults?.CircuitBreakerForceOpen);
+        CircuitBreakerForceClosed = GetBoolean(HystrixCommandPrefix, key.Name, "circuitBreaker:forceClosed", DefaultCircuitBreakerForceClosed, defaults?.CircuitBreakerForceClosed);
         ExecutionIsolationStrategy = GetIsolationStrategy(key);
-        ExecutionTimeoutInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "execution:isolation:thread:timeoutInMilliseconds", Default_ExecutionTimeoutInMilliseconds, defaults?.ExecutionTimeoutInMilliseconds);
-        ExecutionTimeoutEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "execution:timeout:enabled", Default_ExecutionTimeoutEnabled, defaults?.ExecutionTimeoutEnabled);
-        ExecutionIsolationSemaphoreMaxConcurrentRequests = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "execution:isolation:semaphore:maxConcurrentRequests", Default_ExecutionIsolationSemaphoreMaxConcurrentRequests, defaults?.ExecutionIsolationSemaphoreMaxConcurrentRequests);
-        FallbackIsolationSemaphoreMaxConcurrentRequests = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "fallback:isolation:semaphore:maxConcurrentRequests", Default_FallbackIsolationSemaphoreMaxConcurrentRequests, defaults?.FallbackIsolationSemaphoreMaxConcurrentRequests);
-        FallbackEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "fallback:enabled", Default_FallbackEnabled, defaults?.FallbackEnabled);
+        ExecutionTimeoutInMilliseconds = GetInteger(HystrixCommandPrefix, key.Name, "execution:isolation:thread:timeoutInMilliseconds", DefaultExecutionTimeoutInMilliseconds, defaults?.ExecutionTimeoutInMilliseconds);
+        ExecutionTimeoutEnabled = GetBoolean(HystrixCommandPrefix, key.Name, "execution:timeout:enabled", DefaultExecutionTimeoutEnabled, defaults?.ExecutionTimeoutEnabled);
+        ExecutionIsolationSemaphoreMaxConcurrentRequests = GetInteger(HystrixCommandPrefix, key.Name, "execution:isolation:semaphore:maxConcurrentRequests", DefaultExecutionIsolationSemaphoreMaxConcurrentRequests, defaults?.ExecutionIsolationSemaphoreMaxConcurrentRequests);
+        FallbackIsolationSemaphoreMaxConcurrentRequests = GetInteger(HystrixCommandPrefix, key.Name, "fallback:isolation:semaphore:maxConcurrentRequests", DefaultFallbackIsolationSemaphoreMaxConcurrentRequests, defaults?.FallbackIsolationSemaphoreMaxConcurrentRequests);
+        FallbackEnabled = GetBoolean(HystrixCommandPrefix, key.Name, "fallback:enabled", DefaultFallbackEnabled, defaults?.FallbackEnabled);
 
-        MetricsRollingStatisticalWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingStats:timeInMilliseconds", Default_MetricsRollingStatisticalWindow, defaults?.MetricsRollingStatisticalWindowInMilliseconds);
-        MetricsRollingStatisticalWindowBuckets = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingStats:numBuckets", Default_MetricsRollingStatisticalWindowBuckets, defaults?.MetricsRollingStatisticalWindowBuckets);
-        MetricsRollingPercentileEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:enabled", Default_MetricsRollingPercentileEnabled, defaults?.MetricsRollingPercentileEnabled);
-        MetricsRollingPercentileWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:timeInMilliseconds", Default_MetricsRollingPercentileWindow, defaults?.MetricsRollingPercentileWindowInMilliseconds);
-        MetricsRollingPercentileWindowBuckets = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:numBuckets", Default_MetricsRollingPercentileWindowBuckets, defaults?.MetricsRollingPercentileWindowBuckets);
-        MetricsRollingPercentileBucketSize = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:bucketSize", Default_MetricsRollingPercentileBucketSize, defaults?.MetricsRollingPercentileBucketSize);
-        MetricsHealthSnapshotIntervalInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:healthSnapshot:intervalInMilliseconds", Default_MetricsHealthSnapshotIntervalInMilliseconds, defaults?.MetricsHealthSnapshotIntervalInMilliseconds);
+        MetricsRollingStatisticalWindowInMilliseconds = GetInteger(HystrixCommandPrefix, key.Name, "metrics:rollingStats:timeInMilliseconds", DefaultMetricsRollingStatisticalWindow, defaults?.MetricsRollingStatisticalWindowInMilliseconds);
+        MetricsRollingStatisticalWindowBuckets = GetInteger(HystrixCommandPrefix, key.Name, "metrics:rollingStats:numBuckets", DefaultMetricsRollingStatisticalWindowBuckets, defaults?.MetricsRollingStatisticalWindowBuckets);
+        MetricsRollingPercentileEnabled = GetBoolean(HystrixCommandPrefix, key.Name, "metrics:rollingPercentile:enabled", DefaultMetricsRollingPercentileEnabled, defaults?.MetricsRollingPercentileEnabled);
+        MetricsRollingPercentileWindowInMilliseconds = GetInteger(HystrixCommandPrefix, key.Name, "metrics:rollingPercentile:timeInMilliseconds", DefaultMetricsRollingPercentileWindow, defaults?.MetricsRollingPercentileWindowInMilliseconds);
+        MetricsRollingPercentileWindowBuckets = GetInteger(HystrixCommandPrefix, key.Name, "metrics:rollingPercentile:numBuckets", DefaultMetricsRollingPercentileWindowBuckets, defaults?.MetricsRollingPercentileWindowBuckets);
+        MetricsRollingPercentileBucketSize = GetInteger(HystrixCommandPrefix, key.Name, "metrics:rollingPercentile:bucketSize", DefaultMetricsRollingPercentileBucketSize, defaults?.MetricsRollingPercentileBucketSize);
+        MetricsHealthSnapshotIntervalInMilliseconds = GetInteger(HystrixCommandPrefix, key.Name, "metrics:healthSnapshot:intervalInMilliseconds", DefaultMetricsHealthSnapshotIntervalInMilliseconds, defaults?.MetricsHealthSnapshotIntervalInMilliseconds);
 
-        RequestCacheEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "requestCache:enabled", Default_RequestCacheEnabled, defaults?.RequestCacheEnabled);
-        RequestLogEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "requestLog:enabled", Default_RequestLogEnabled, defaults?.RequestLogEnabled);
+        RequestCacheEnabled = GetBoolean(HystrixCommandPrefix, key.Name, "requestCache:enabled", DefaultRequestCacheEnabled, defaults?.RequestCacheEnabled);
+        RequestLogEnabled = GetBoolean(HystrixCommandPrefix, key.Name, "requestLog:enabled", DefaultRequestLogEnabled, defaults?.RequestLogEnabled);
 
-        ExecutionIsolationThreadPoolKeyOverride = GetThreadPoolKeyOverride(HYSTRIX_COMMAND_PREFIX, key.Name, "threadPoolKeyOverride", null, defaults?.ExecutionIsolationThreadPoolKeyOverride);
+        ExecutionIsolationThreadPoolKeyOverride = GetThreadPoolKeyOverride(HystrixCommandPrefix, key.Name, "threadPoolKeyOverride", null, defaults?.ExecutionIsolationThreadPoolKeyOverride);
     }
 
     internal HystrixCommandOptions(IHystrixCommandOptions defaults = null, IHystrixDynamicOptions dynamic = null)
@@ -84,28 +84,28 @@ public class HystrixCommandOptions : HystrixBaseOptions, IHystrixCommandOptions
     {
         this.defaults = defaults;
         CommandKey = null;
-        CircuitBreakerEnabled = Default_CircuitBreakerEnabled;
-        CircuitBreakerRequestVolumeThreshold = Default_CircuitBreakerRequestVolumeThreshold;
-        CircuitBreakerSleepWindowInMilliseconds = Default_CircuitBreakerSleepWindowInMilliseconds;
-        CircuitBreakerErrorThresholdPercentage = Default_CircuitBreakerErrorThresholdPercentage;
-        CircuitBreakerForceOpen = Default_CircuitBreakerForceOpen;
-        CircuitBreakerForceClosed = Default_CircuitBreakerForceClosed;
-        ExecutionIsolationStrategy = Default_IsolationStrategy;
+        CircuitBreakerEnabled = DefaultCircuitBreakerEnabled;
+        CircuitBreakerRequestVolumeThreshold = DefaultCircuitBreakerRequestVolumeThreshold;
+        CircuitBreakerSleepWindowInMilliseconds = DefaultCircuitBreakerSleepWindowInMilliseconds;
+        CircuitBreakerErrorThresholdPercentage = DefaultCircuitBreakerErrorThresholdPercentage;
+        CircuitBreakerForceOpen = DefaultCircuitBreakerForceOpen;
+        CircuitBreakerForceClosed = DefaultCircuitBreakerForceClosed;
+        ExecutionIsolationStrategy = DefaultIsolationStrategy;
 
-        ExecutionTimeoutInMilliseconds = Default_ExecutionTimeoutInMilliseconds;
-        ExecutionTimeoutEnabled = Default_ExecutionTimeoutEnabled;
-        ExecutionIsolationSemaphoreMaxConcurrentRequests = Default_ExecutionIsolationSemaphoreMaxConcurrentRequests;
-        FallbackIsolationSemaphoreMaxConcurrentRequests = Default_FallbackIsolationSemaphoreMaxConcurrentRequests;
-        FallbackEnabled = Default_FallbackEnabled;
-        MetricsRollingStatisticalWindowInMilliseconds = Default_MetricsRollingStatisticalWindow;
-        MetricsRollingStatisticalWindowBuckets = Default_MetricsRollingStatisticalWindowBuckets;
-        MetricsRollingPercentileEnabled = Default_MetricsRollingPercentileEnabled;
-        MetricsRollingPercentileWindowInMilliseconds = Default_MetricsRollingPercentileWindow;
-        MetricsRollingPercentileWindowBuckets = Default_MetricsRollingPercentileWindowBuckets;
-        MetricsRollingPercentileBucketSize = Default_MetricsRollingPercentileBucketSize;
-        MetricsHealthSnapshotIntervalInMilliseconds = Default_MetricsHealthSnapshotIntervalInMilliseconds;
-        RequestCacheEnabled = Default_RequestCacheEnabled;
-        RequestLogEnabled = Default_RequestLogEnabled;
+        ExecutionTimeoutInMilliseconds = DefaultExecutionTimeoutInMilliseconds;
+        ExecutionTimeoutEnabled = DefaultExecutionTimeoutEnabled;
+        ExecutionIsolationSemaphoreMaxConcurrentRequests = DefaultExecutionIsolationSemaphoreMaxConcurrentRequests;
+        FallbackIsolationSemaphoreMaxConcurrentRequests = DefaultFallbackIsolationSemaphoreMaxConcurrentRequests;
+        FallbackEnabled = DefaultFallbackEnabled;
+        MetricsRollingStatisticalWindowInMilliseconds = DefaultMetricsRollingStatisticalWindow;
+        MetricsRollingStatisticalWindowBuckets = DefaultMetricsRollingStatisticalWindowBuckets;
+        MetricsRollingPercentileEnabled = DefaultMetricsRollingPercentileEnabled;
+        MetricsRollingPercentileWindowInMilliseconds = DefaultMetricsRollingPercentileWindow;
+        MetricsRollingPercentileWindowBuckets = DefaultMetricsRollingPercentileWindowBuckets;
+        MetricsRollingPercentileBucketSize = DefaultMetricsRollingPercentileBucketSize;
+        MetricsHealthSnapshotIntervalInMilliseconds = DefaultMetricsHealthSnapshotIntervalInMilliseconds;
+        RequestCacheEnabled = DefaultRequestCacheEnabled;
+        RequestLogEnabled = DefaultRequestLogEnabled;
     }
 
     public IHystrixCommandGroupKey GroupKey { get; set; }
@@ -164,15 +164,15 @@ public class HystrixCommandOptions : HystrixBaseOptions, IHystrixCommandOptions
 
     private ExecutionIsolationStrategy GetIsolationStrategy(IHystrixCommandKey key)
     {
-        var isolation = GetString(HYSTRIX_COMMAND_PREFIX, key.Name, "execution.isolation.strategy", Default_IsolationStrategy.ToString(), defaults?.ExecutionIsolationStrategy.ToString());
-        if (ExecutionIsolationStrategy.THREAD.ToString().Equals(isolation, StringComparison.OrdinalIgnoreCase))
+        var isolation = GetString(HystrixCommandPrefix, key.Name, "execution.isolation.strategy", DefaultIsolationStrategy.ToString(), defaults?.ExecutionIsolationStrategy.ToString());
+        if (ExecutionIsolationStrategy.Thread.ToString().Equals(isolation, StringComparison.OrdinalIgnoreCase))
         {
-            return ExecutionIsolationStrategy.THREAD;
+            return ExecutionIsolationStrategy.Thread;
         }
 
-        if (ExecutionIsolationStrategy.SEMAPHORE.ToString().Equals(isolation, StringComparison.OrdinalIgnoreCase))
+        if (ExecutionIsolationStrategy.Semaphore.ToString().Equals(isolation, StringComparison.OrdinalIgnoreCase))
         {
-            return ExecutionIsolationStrategy.SEMAPHORE;
+            return ExecutionIsolationStrategy.Semaphore;
         }
 
         throw new ArgumentOutOfRangeException("execution.isolation.strategy");
@@ -182,7 +182,7 @@ public class HystrixCommandOptions : HystrixBaseOptions, IHystrixCommandOptions
     {
         var result = globalDefault;
         result = instanceDefaultFromCode ?? result; // instance default from code
-        result = _dynamic != null ? _dynamic.GetString($"{prefix}:{key}:{property}", result) : result; // dynamic instance value
+        result = Dynamic != null ? Dynamic.GetString($"{prefix}:{key}:{property}", result) : result; // dynamic instance value
         return result;
     }
 }

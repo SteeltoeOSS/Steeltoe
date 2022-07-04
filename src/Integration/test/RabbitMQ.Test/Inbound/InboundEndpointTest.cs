@@ -47,7 +47,7 @@ public class InboundEndpointTest
         connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
         var container = new DirectMessageListenerContainer();
         container.ConnectionFactory = connectionFactory.Object;
-        container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.MANUAL;
+        container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.Manual;
         var adapter = new RabbitInboundChannelAdapter(context, container) { MessageConverter = new JsonMessageConverter() };
         var qchannel = new QueueChannel(context);
         adapter.OutputChannel = qchannel;
@@ -63,9 +63,9 @@ public class InboundEndpointTest
         listener.OnMessage(jsonMessage, rabbitChannel.Object);
         var result = qchannel.Receive(1000);
         Assert.Equal(payload, result.Payload);
-        Assert.Same(rabbitChannel.Object, result.Headers.Get<RC.IModel>(RabbitMessageHeaders.CHANNEL));
+        Assert.Same(rabbitChannel.Object, result.Headers.Get<RC.IModel>(RabbitMessageHeaders.Channel));
         Assert.Equal(123ul, result.Headers.DeliveryTag());
-        var sourceData = result.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
+        var sourceData = result.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SourceData);
         Assert.Same(jsonMessage, sourceData);
     }
 
@@ -97,7 +97,7 @@ public class InboundEndpointTest
         var result = new JsonToObjectTransformer(context).Transform(receive);
         Assert.NotNull(result);
         Assert.Equal(payload, result.Payload);
-        var sourceData = result.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
+        var sourceData = result.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SourceData);
         Assert.Null(sourceData);
     }
 
@@ -132,15 +132,15 @@ public class InboundEndpointTest
         listener.OnMessage(message, null);
         Assert.Null(outputChannel.Receive(0));
         var received = errorChannel.Receive(0);
-        Assert.NotNull(received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE));
+        Assert.NotNull(received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage));
         Assert.IsType<ListenerExecutionFailedException>(received.Payload);
 
-        container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.MANUAL;
+        container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.Manual;
         var channel2 = new Mock<RC.IModel>();
         listener.OnMessage(message, channel2.Object);
         Assert.Null(outputChannel.Receive(0));
         received = errorChannel.Receive(0);
-        Assert.NotNull(received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE));
+        Assert.NotNull(received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage));
         Assert.IsType<ManualAckListenerExecutionFailedException>(received.Payload);
         var ex = (ManualAckListenerExecutionFailedException)received.Payload;
         Assert.Same(channel2.Object, ex.Channel);
@@ -171,10 +171,10 @@ public class InboundEndpointTest
         var payload = errorMessage.Payload as MessagingException;
         Assert.NotNull(payload);
         Assert.Contains("Dispatcher has no", payload.Message);
-        var deliveryAttempts = payload.FailedMessage.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
+        var deliveryAttempts = payload.FailedMessage.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DeliveryAttempt);
         Assert.NotNull(deliveryAttempts);
         Assert.Equal(3, deliveryAttempts.Value);
-        var amqpMessage = errorMessage.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE);
+        var amqpMessage = errorMessage.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage);
         Assert.NotNull(amqpMessage);
         Assert.Null(errors.Receive(0));
     }

@@ -79,7 +79,7 @@ public static class MongoDbProviderServiceCollectionExtensions
         var mongoClient = MongoDbTypeLocator.MongoClient;
         var mongoOptions = new MongoDbConnectorOptions(config);
         var clientFactory = new MongoDbConnectorFactory(info, mongoOptions, mongoClient);
-        services.Add(new ServiceDescriptor(MongoDbTypeLocator.IMongoClient, clientFactory.Create, contextLifetime));
+        services.Add(new ServiceDescriptor(MongoDbTypeLocator.MongoClientInterface, clientFactory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(mongoClient, clientFactory.Create, contextLifetime));
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {

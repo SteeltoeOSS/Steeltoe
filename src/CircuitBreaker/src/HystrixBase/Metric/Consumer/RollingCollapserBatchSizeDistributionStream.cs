@@ -17,7 +17,7 @@ public class RollingCollapserBatchSizeDistributionStream : RollingDistributionSt
     {
         switch (@event.EventType)
         {
-            case CollapserEventType.ADDED_TO_BATCH:
+            case CollapserEventType.AddedToBatch:
                 if (@event.Count > -1)
                 {
                     initialDistribution.RecordValue(@event.Count);

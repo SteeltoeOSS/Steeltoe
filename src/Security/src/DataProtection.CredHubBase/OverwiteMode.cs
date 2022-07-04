@@ -5,6 +5,7 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
+// ReSharper disable InconsistentNaming
 #pragma warning disable SA1300 // ElementMustBeginWithUpperCaseLetter
 
 namespace Steeltoe.Security.DataProtection.CredHub;

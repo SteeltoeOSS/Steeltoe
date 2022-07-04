@@ -24,8 +24,8 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 {
-    public const string EUREKA_PREFIX = "eureka";
-    private const string _springDiscoveryEnabled = "spring:cloud:discovery:enabled";
+    public const string EurekaPrefix = "eureka";
+    private const string SpringDiscoveryEnabled = "spring:cloud:discovery:enabled";
 
     public string ServiceInfoName { get; private set; }
 
@@ -48,7 +48,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
     {
-        return configuration.GetSection(EUREKA_PREFIX).GetChildren().Any() || serviceInfo is EurekaServiceInfo;
+        return configuration.GetSection(EurekaPrefix).GetChildren().Any() || serviceInfo is EurekaServiceInfo;
     }
 
     internal void ConfigureEurekaServices(IServiceCollection services)
@@ -57,12 +57,12 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
             .AddOptions<EurekaClientOptions>()
             .Configure<IConfiguration>((options, config) =>
             {
-                config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX).Bind(options);
+                config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix).Bind(options);
 
                 // Eureka is enabled by default. If eureka:client:enabled was not set then check spring:cloud:discovery:enabled
                 if (options.Enabled &&
-                    config.GetValue<bool?>($"{EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX}:enabled") is null &&
-                    config.GetValue<bool?>(_springDiscoveryEnabled) == false)
+                    config.GetValue<bool?>($"{EurekaClientOptions.EurekaClientConfigurationPrefix}:enabled") is null &&
+                    config.GetValue<bool?>(SpringDiscoveryEnabled) == false)
                 {
                     options.Enabled = false;
                 }
@@ -75,12 +75,12 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
         services
             .AddOptions<EurekaInstanceOptions>()
-            .Configure<IConfiguration>((options, config) => config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(options))
+            .Configure<IConfiguration>((options, config) => config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(options))
             .PostConfigure<IServiceProvider>((options, serviceProvider) =>
             {
                 var config = serviceProvider.GetRequiredService<IConfiguration>();
                 var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
-                var inetOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
+                var inetOptions = config.GetSection(InetOptions.Prefix).Get<InetOptions>();
                 options.NetUtils = new InetUtils(inetOptions);
                 options.ApplyNetUtils();
                 const string endpointAssembly = "Steeltoe.Management.EndpointBase";
@@ -92,7 +92,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                     if (mgmtOptions != null)
                     {
                         var basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(mgmtOptions)}/";
-                        if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX}:HealthCheckUrlPath")))
+                        if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
                         {
                             var healthOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Health.IHealthOptions" });
                             var healthOptions = serviceProvider.GetService(healthOptionsType);
@@ -102,7 +102,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                             }
                         }
 
-                        if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX}:StatusPageUrlPath")))
+                        if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))
                         {
                             var infoOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Info.IInfoOptions" });
                             var infoOptions = serviceProvider.GetService(infoOptionsType);
@@ -121,7 +121,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         services.TryAddSingleton(serviceProvider =>
         {
             var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
-            return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
+            return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTtl) };
         });
     }
 

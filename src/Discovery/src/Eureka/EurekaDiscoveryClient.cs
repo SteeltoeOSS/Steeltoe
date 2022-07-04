@@ -25,11 +25,11 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
         public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
         {
-            _config = null;
+            base.innerConfig = null;
             _configOptions = config ?? throw new ArgumentNullException(nameof(config));
-            _handlerProvider = handlerProvider;
+            base.handlerProvider = handlerProvider;
             Initialize(new Dictionary<string, string>(), logFactory);
-            _httpClient = httpClient;
+            base.httpClient = httpClient;
         }
     }
 
@@ -50,7 +50,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     {
         _thisInstance = new ThisServiceInstance(instConfig);
         _configOptions = clientConfig;
-        _httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
+        base.innerHttpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
 
         Initialize();
     }
@@ -88,7 +88,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         var instances = new List<IServiceInstance>();
         foreach (var info in infos)
         {
-            _logger?.LogDebug($"GetInstances returning: {info}");
+            logger?.LogDebug($"GetInstances returning: {info}");
             instances.Add(new EurekaServiceInstance(info));
         }
 
@@ -99,7 +99,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
     public override T.Task ShutdownAsync()
     {
-        _appInfoManager.InstanceStatus = InstanceStatus.DOWN;
+        appInfoManager.InstanceStatus = InstanceStatus.Down;
         return base.ShutdownAsync();
     }
 }

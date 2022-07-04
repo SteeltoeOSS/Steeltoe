@@ -15,7 +15,7 @@ public class HealthCheckResult
     /// Gets or sets the status of the check.
     /// </summary>
     /// <remarks>Used by HealthMiddleware to determine HTTP Status code.</remarks>
-    public HealthStatus Status { get; set; } = HealthStatus.UNKNOWN;
+    public HealthStatus Status { get; set; } = HealthStatus.Unknown;
 
     /// <summary>
     /// Gets or sets a description of the health check result.

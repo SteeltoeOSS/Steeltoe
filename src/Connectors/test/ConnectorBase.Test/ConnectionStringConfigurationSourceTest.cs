@@ -26,10 +26,10 @@ public class ConnectionStringConfigurationSourceTest
         IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
 
         var source = new ConnectionStringConfigurationSource(sources);
-        Assert.NotNull(source._sources);
-        Assert.Single(source._sources);
-        Assert.NotSame(sources, source._sources);
-        Assert.Contains(memSource, source._sources);
+        Assert.NotNull(source.Sources);
+        Assert.Single(source.Sources);
+        Assert.NotSame(sources, source.Sources);
+        Assert.Contains(memSource, source.Sources);
     }
 
     [Fact]

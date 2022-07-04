@@ -17,7 +17,7 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
     protected BlockingCollection<Task> workQueue;
 
     [ThreadStatic]
-    private static bool isHystrixThreadPoolThread;
+    private static bool _isHystrixThreadPoolThread;
 
     private readonly object _lock = new ();
 
@@ -67,22 +67,22 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
             return;
         }
 
-        if (runningThreads < corePoolSize)
+        if (runningThreads < innerCorePoolSize)
         {
             lock (_lock)
             {
-                if (runningThreads < corePoolSize)
+                if (runningThreads < innerCorePoolSize)
                 {
                     Interlocked.Increment(ref runningThreads);
                     StartThreadPoolWorker();
                 }
             }
         }
-        else if (allowMaxToDivergeFromCore && runningThreads < maximumPoolSize)
+        else if (allowMaxToDivergeFromCore && runningThreads < innerMaximumPoolSize)
         {
             lock (_lock)
             {
-                if (runningThreads < maximumPoolSize)
+                if (runningThreads < innerMaximumPoolSize)
                 {
                     Interlocked.Increment(ref runningThreads);
                     StartThreadPoolWorker();
@@ -107,7 +107,7 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
             _ =>
             {
 #pragma warning disable S2696 // Instance members should not write to "static" fields
-                isHystrixThreadPoolThread = true;
+                _isHystrixThreadPoolThread = true;
 #pragma warning restore S2696 // Instance members should not write to "static" fields
                 try
                 {
@@ -137,14 +137,14 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
                 finally
                 {
                     Interlocked.Decrement(ref runningThreads);
-                    isHystrixThreadPoolThread = false;
+                    _isHystrixThreadPoolThread = false;
                 }
             }, null);
     }
 
     protected override bool TryExecuteTaskInline(Task task, bool prevQueued)
     {
-        if (!isHystrixThreadPoolThread)
+        if (!_isHystrixThreadPoolThread)
         {
             return false;
         }

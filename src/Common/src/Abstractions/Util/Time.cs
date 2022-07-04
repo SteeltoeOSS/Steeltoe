@@ -9,9 +9,9 @@ namespace Steeltoe.Common.Util;
 
 public static class Time
 {
-    private const int SPIN_WAIT_ITERATIONS = 5;
-    private const long YIELD_THRESHOLD = 1000;
-    private const long SLEEP_THRESHOLD = TimeSpan.TicksPerMillisecond;
+    private const int SpinWaitIterations = 5;
+    private const long YieldThreshold = 1000;
+    private const long SleepThreshold = TimeSpan.TicksPerMillisecond;
 
     public static long CurrentTimeMillis
     {
@@ -98,17 +98,17 @@ public static class Time
 
     private static void DoWait(long ticksLeft)
     {
-        if (ticksLeft > SLEEP_THRESHOLD)
+        if (ticksLeft > SleepThreshold)
         {
             Thread.Sleep(1);
         }
-        else if (ticksLeft > YIELD_THRESHOLD)
+        else if (ticksLeft > YieldThreshold)
         {
             Thread.Yield();
         }
         else
         {
-            Thread.SpinWait(SPIN_WAIT_ITERATIONS);
+            Thread.SpinWait(SpinWaitIterations);
         }
     }
 }

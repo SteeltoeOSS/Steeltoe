@@ -22,9 +22,9 @@ public class AlwaysStringMessageConverter : AbstractMessageConverter
     {
     }
 
-    public const string DEFAULT_SERVICE_NAME = nameof(AlwaysStringMessageConverter);
+    public const string DefaultServiceName = nameof(AlwaysStringMessageConverter);
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     protected override bool Supports(Type clazz)
     {

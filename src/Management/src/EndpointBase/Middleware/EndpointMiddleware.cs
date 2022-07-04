@@ -13,15 +13,15 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public class EndpointMiddleware<TResult>
 {
-    protected IEndpoint<TResult> _endpoint;
-    protected ILogger _logger;
-    protected IManagementOptions _mgmtOptions;
+    protected IEndpoint<TResult> innerEndpoint;
+    protected ILogger logger;
+    protected IManagementOptions mgmtOptions;
 
     public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
     {
-        _logger = logger;
-        _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
-        if (_mgmtOptions is ManagementEndpointOptions mgmt)
+        this.logger = logger;
+        this.mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
+        if (this.mgmtOptions is ManagementEndpointOptions mgmt)
         {
             mgmt.SerializerOptions = GetSerializerOptions(mgmt.SerializerOptions);
         }
@@ -30,19 +30,19 @@ public class EndpointMiddleware<TResult>
     public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
         : this(mgmtOptions, logger)
     {
-        _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        innerEndpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
     public IEndpoint<TResult> Endpoint
     {
-        get => _endpoint;
+        get => innerEndpoint;
 
-        set => _endpoint = value;
+        set => innerEndpoint = value;
     }
 
     public virtual string HandleRequest()
     {
-        var result = _endpoint.Invoke();
+        var result = innerEndpoint.Invoke();
         return Serialize(result);
     }
 
@@ -51,7 +51,7 @@ public class EndpointMiddleware<TResult>
         try
         {
             JsonSerializerOptions options;
-            if (_mgmtOptions is ManagementEndpointOptions mgmt)
+            if (mgmtOptions is ManagementEndpointOptions mgmt)
             {
                 options = mgmt.SerializerOptions;
             }
@@ -64,7 +64,7 @@ public class EndpointMiddleware<TResult>
         }
         catch (Exception e)
         {
-            _logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+            logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
         }
 
         return string.Empty;
@@ -92,19 +92,19 @@ public class EndpointMiddleware<TResult>
 
 public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
-    protected new IEndpoint<TResult, TRequest> _endpoint;
+    protected new IEndpoint<TResult, TRequest> innerEndpoint;
 
     internal new IEndpoint<TResult, TRequest> Endpoint
     {
-        get => _endpoint;
+        get => innerEndpoint;
 
-        set => _endpoint = value;
+        set => innerEndpoint = value;
     }
 
     public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
         : base(mgmtOptions, logger)
     {
-        _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        innerEndpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
     public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
@@ -114,7 +114,7 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 
     public virtual string HandleRequest(TRequest arg)
     {
-        var result = _endpoint.Invoke(arg);
+        var result = innerEndpoint.Invoke(arg);
         return Serialize(result);
     }
 }

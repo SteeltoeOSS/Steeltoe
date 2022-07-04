@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// </summary>
 public class ConsulDiscoveryOptions
 {
-    public const string CONSUL_DISCOVERY_CONFIGURATION_PREFIX = "consul:discovery";
+    public const string ConsulDiscoveryConfigurationPrefix = "consul:discovery";
 
     private string _hostName;
     private string _scheme = "http";
@@ -208,7 +208,7 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets the time in seconds that service instance cache records should remain active.
     /// </summary>
-    public int CacheTTL { get; set; } = 15;
+    public int CacheTtl { get; set; } = 15;
 
     /// <summary>
     /// Gets or sets a value indicating whether to register a Url from ASP.NET Core configuration.
@@ -223,8 +223,8 @@ public class ConsulDiscoveryOptions
     /// Set properties from addresses found in configuration.
     /// </summary>
     /// <param name="addresses">A list of addresses the application is listening on.</param>
-    /// <param name="wildcard_hostname">String representation of a wildcard hostname.</param>
-    public void ApplyConfigUrls(List<Uri> addresses, string wildcard_hostname)
+    /// <param name="wildcardHostname">String representation of a wildcard hostname.</param>
+    public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)
     {
         // try to pull some values out of server config to override defaults, but only if not using NetUtils
         // if NetUtils are configured, the user probably wants to define their own behavior
@@ -240,7 +240,7 @@ public class ConsulDiscoveryOptions
             Port = configAddress.Port;
 
             // only set the host if it isn't a wildcard
-            if (!configAddress.Host.Equals(wildcard_hostname) && !configAddress.Host.Equals("0.0.0.0"))
+            if (!configAddress.Host.Equals(wildcardHostname) && !configAddress.Host.Equals("0.0.0.0"))
             {
                 HostName = configAddress.Host;
             }

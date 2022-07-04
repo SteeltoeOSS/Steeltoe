@@ -27,12 +27,12 @@ public class OperatorInstanceof : Operator
         BooleanTypedValue result;
         if (rightValue is not Type rightClass)
         {
-            throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.INSTANCEOF_OPERATOR_NEEDS_CLASS_OPERAND, rightValue == null ? "null" : rightValue.GetType().FullName);
+            throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.InstanceofOperatorNeedsClassOperand, rightValue == null ? "null" : rightValue.GetType().FullName);
         }
 
         if (leftValue == null)
         {
-            result = BooleanTypedValue.FALSE;  // null is not an instance of anything
+            result = BooleanTypedValue.False;  // null is not an instance of anything
         }
         else
         {
@@ -44,7 +44,7 @@ public class OperatorInstanceof : Operator
         {
             // Can only generate bytecode where the right operand is a direct type reference,
             // not if it is indirect (for example when right operand is a variable reference)
-            _exitTypeDescriptor = TypeDescriptor.Z;
+            exitTypeDescriptor = TypeDescriptor.Z;
         }
 
         return result;
@@ -52,7 +52,7 @@ public class OperatorInstanceof : Operator
 
     public override bool IsCompilable()
     {
-        return _exitTypeDescriptor != null && LeftOperand.IsCompilable();
+        return exitTypeDescriptor != null && LeftOperand.IsCompilable();
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
@@ -71,6 +71,6 @@ public class OperatorInstanceof : Operator
         gen.Emit(OpCodes.Stloc, convert);
         gen.Emit(OpCodes.Ldloc, convert);
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

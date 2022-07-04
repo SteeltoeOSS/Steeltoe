@@ -12,9 +12,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class OpPlus : Operator
 {
-    private static readonly MethodInfo _appendString = typeof(StringBuilder).GetMethod(nameof(StringBuilder.Append), new[] { typeof(string) });
-    private static readonly MethodInfo _toString = typeof(StringBuilder).GetMethod(nameof(StringBuilder.ToString), Type.EmptyTypes);
-    private static readonly ConstructorInfo _sbConstructor = typeof(StringBuilder).GetConstructor(Type.EmptyTypes);
+    private static readonly MethodInfo AppendStringMethod = typeof(StringBuilder).GetMethod(nameof(StringBuilder.Append), new[] { typeof(string) });
+    private static readonly MethodInfo ToStringMethod = typeof(StringBuilder).GetMethod(nameof(StringBuilder.ToString), Type.EmptyTypes);
+    private static readonly ConstructorInfo StringBuilderConstructor = typeof(StringBuilder).GetConstructor(Type.EmptyTypes);
 
     public OpPlus(int startPos, int endPos, params SpelNode[] operands)
         : base("+", startPos, endPos, operands)
@@ -29,7 +29,7 @@ public class OpPlus : Operator
     {
         var leftOp = LeftOperand;
 
-        if (_children.Length < 2)
+        if (children.Length < 2)
         {
             // if only one operand, then this is unary plus
             var operandOne = leftOp.GetValueInternal(state).Value;
@@ -37,25 +37,25 @@ public class OpPlus : Operator
             {
                 if (operandOne is double)
                 {
-                    _exitTypeDescriptor = TypeDescriptor.D;
+                    exitTypeDescriptor = TypeDescriptor.D;
                 }
                 else if (operandOne is float)
                 {
-                    _exitTypeDescriptor = TypeDescriptor.F;
+                    exitTypeDescriptor = TypeDescriptor.F;
                 }
                 else if (operandOne is long)
                 {
-                    _exitTypeDescriptor = TypeDescriptor.J;
+                    exitTypeDescriptor = TypeDescriptor.J;
                 }
                 else if (operandOne is int)
                 {
-                    _exitTypeDescriptor = TypeDescriptor.I;
+                    exitTypeDescriptor = TypeDescriptor.I;
                 }
 
                 return new TypedValue(operandOne);
             }
 
-            return state.Operate(Operation.ADD, operandOne, null);
+            return state.Operate(Operation.Add, operandOne, null);
         }
 
         var operandOneValue = leftOp.GetValueInternal(state);
@@ -76,28 +76,28 @@ public class OpPlus : Operator
             }
             else if (leftNumber is double || rightNumber is double)
             {
-                _exitTypeDescriptor = TypeDescriptor.D;
+                exitTypeDescriptor = TypeDescriptor.D;
                 var leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
             else if (leftNumber is float || rightNumber is float)
             {
-                _exitTypeDescriptor = TypeDescriptor.F;
+                exitTypeDescriptor = TypeDescriptor.F;
                 var leftVal = leftNumber.ToSingle(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToSingle(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
             else if (leftNumber is long || rightNumber is long)
             {
-                _exitTypeDescriptor = TypeDescriptor.J;
+                exitTypeDescriptor = TypeDescriptor.J;
                 var leftVal = leftNumber.ToInt64(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToInt64(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
             else if (CodeFlow.IsIntegerForNumericOp(leftNumber) || CodeFlow.IsIntegerForNumericOp(rightNumber))
             {
-                _exitTypeDescriptor = TypeDescriptor.I;
+                exitTypeDescriptor = TypeDescriptor.I;
                 var leftVal = leftNumber.ToInt32(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToInt32(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
@@ -113,7 +113,7 @@ public class OpPlus : Operator
 
         if (leftOperand is string strLeft && rightOperand is string strRight)
         {
-            _exitTypeDescriptor = TypeDescriptor.STRING;
+            exitTypeDescriptor = TypeDescriptor.String;
             return new TypedValue(strLeft + strRight);
         }
 
@@ -127,30 +127,30 @@ public class OpPlus : Operator
             return new TypedValue((leftOperand == null ? "null" : ConvertTypedValueToString(operandOneValue, state)) + rightOperand);
         }
 
-        return state.Operate(Operation.ADD, leftOperand, rightOperand);
+        return state.Operate(Operation.Add, leftOperand, rightOperand);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        if (_children.Length < 2)
+        if (children.Length < 2)
         {
             // unary plus
-            return $"+{LeftOperand.ToStringAST()}";
+            return $"+{LeftOperand.ToStringAst()}";
         }
 
-        return base.ToStringAST();
+        return base.ToStringAst();
     }
 
     public override SpelNode RightOperand
     {
         get
         {
-            if (_children.Length < 2)
+            if (children.Length < 2)
             {
                 throw new InvalidOperationException("No right operand");
             }
 
-            return _children[1];
+            return children[1];
         }
     }
 
@@ -161,46 +161,46 @@ public class OpPlus : Operator
             return false;
         }
 
-        if (_children.Length > 1 && !RightOperand.IsCompilable())
+        if (children.Length > 1 && !RightOperand.IsCompilable())
         {
             return false;
         }
 
-        return _exitTypeDescriptor != null;
+        return exitTypeDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        if (_exitTypeDescriptor == TypeDescriptor.STRING)
+        if (exitTypeDescriptor == TypeDescriptor.String)
         {
-            gen.Emit(OpCodes.Newobj, _sbConstructor);
+            gen.Emit(OpCodes.Newobj, StringBuilderConstructor);
             Walk(gen, cf, LeftOperand);
             Walk(gen, cf, RightOperand);
-            gen.Emit(OpCodes.Callvirt, _toString);
+            gen.Emit(OpCodes.Callvirt, ToStringMethod);
         }
         else
         {
-            _children[0].GenerateCode(gen, cf);
-            var leftDesc = _children[0].ExitDescriptor;
-            var exitDesc = _exitTypeDescriptor;
+            children[0].GenerateCode(gen, cf);
+            var leftDesc = children[0].ExitDescriptor;
+            var exitDesc = exitTypeDescriptor;
             if (exitDesc == null)
             {
                 throw new InvalidOperationException("No exit type descriptor");
             }
 
             CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
-            if (_children.Length > 1)
+            if (children.Length > 1)
             {
                 cf.EnterCompilationScope();
-                _children[1].GenerateCode(gen, cf);
-                var rightDesc = _children[1].ExitDescriptor;
+                children[1].GenerateCode(gen, cf);
+                var rightDesc = children[1].ExitDescriptor;
                 cf.ExitCompilationScope();
                 CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
                 gen.Emit(OpCodes.Add);
             }
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     private static string ConvertTypedValueToString(ITypedValue value, ExpressionState state)
@@ -227,13 +227,13 @@ public class OpPlus : Operator
         {
             cf.EnterCompilationScope();
             operand.GenerateCode(gen, cf);
-            if (cf.LastDescriptor() != TypeDescriptor.STRING)
+            if (cf.LastDescriptor() != TypeDescriptor.String)
             {
                 gen.Emit(OpCodes.Castclass, typeof(string));
             }
 
             cf.ExitCompilationScope();
-            gen.Emit(OpCodes.Callvirt, _appendString);
+            gen.Emit(OpCodes.Callvirt, AppendStringMethod);
         }
     }
 }

@@ -31,7 +31,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
     {
         var result = new HealthCheckResult
         {
-            Status = HealthStatus.UP,
+            Status = HealthStatus.Up,
             Description = "No monitored applications"
         };
 
@@ -43,7 +43,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             AddApplicationHealthStatus(appName, app, result);
         }
 
-        result.Description = result.Status != HealthStatus.UP
+        result.Description = result.Status != HealthStatus.Up
             ? "At least one monitored application has no instances UP"
             : "All monitored applications have at least one instance UP";
 
@@ -56,17 +56,17 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
     {
         if (app != null && app.Name == appName)
         {
-            var upCount = app.Instances.Count(x => x.Status == InstanceStatus.UP);
+            var upCount = app.Instances.Count(x => x.Status == InstanceStatus.Up);
             if (upCount <= 0)
             {
-                result.Status = HealthStatus.DOWN;
+                result.Status = HealthStatus.Down;
             }
 
             result.Details[appName] = $"{upCount} instances with UP status";
         }
         else
         {
-            result.Status = HealthStatus.DOWN;
+            result.Status = HealthStatus.Down;
             result.Details[appName] = "No instances found";
         }
     }

@@ -23,7 +23,7 @@ public class MessageTest
     {
         var message = Message.Create(EncodingUtils.Utf16.GetBytes("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"), new MessageHeaders());
         var acccessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        acccessor.ContentType = MessageHeaders.CONTENT_TYPE_JSON;
+        acccessor.ContentType = MessageHeaders.ContentTypeJson;
         acccessor.ContentEncoding = "UTF-16";
         Assert.Contains("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP", message.ToString());
     }

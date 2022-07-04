@@ -207,7 +207,7 @@ public class HystrixProviderServiceCollectionExtensionsTest
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();
@@ -283,7 +283,7 @@ public class HystrixProviderServiceCollectionExtensionsTest
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();

@@ -48,8 +48,8 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
         var added = Dispatcher.AddHandler(handler);
         if (added)
         {
-            logger?.LogTrace("Channel '" + ServiceName + "' has " + handler.ServiceName + " subscriber(s).");
-            logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
+            Logger?.LogTrace("Channel '" + ServiceName + "' has " + handler.ServiceName + " subscriber(s).");
+            Logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
         }
 
         return added;
@@ -60,7 +60,7 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
         var removed = Dispatcher.RemoveHandler(handler);
         if (removed)
         {
-            logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
+            Logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
         }
 
         return removed;

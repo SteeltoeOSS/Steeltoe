@@ -13,5 +13,5 @@ public class TaskSchedulerChannelWriter : AbstractSubscribableChannelWriter
     {
     }
 
-    public new TaskSchedulerChannel Channel => (TaskSchedulerChannel)channel;
+    public new TaskSchedulerChannel Channel => (TaskSchedulerChannel)innerChannel;
 }

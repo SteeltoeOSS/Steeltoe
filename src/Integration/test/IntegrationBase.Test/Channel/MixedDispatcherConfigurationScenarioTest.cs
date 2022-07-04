@@ -25,7 +25,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class MixedDispatcherConfigurationScenarioTest
 {
-    private const int TOTAL_EXECUTIONS = 40;
+    private const int TotalExecutions = 40;
     private readonly IMessage _message = Message.Create("test");
     private readonly CountdownEvent _allDone;
     private readonly CountdownEvent _start;
@@ -50,7 +50,7 @@ public class MixedDispatcherConfigurationScenarioTest
         _handlerA = new Mock<IMessageHandler>();
         _handlerB = new Mock<IMessageHandler>();
         _handlerC = new Mock<IMessageHandler>();
-        _allDone = new CountdownEvent(TOTAL_EXECUTIONS);
+        _allDone = new CountdownEvent(TotalExecutions);
         _start = new CountdownEvent(1);
         _failed = 0;
         _exceptionRegistry = new Mock<IList<Exception>>();
@@ -121,7 +121,7 @@ public class MixedDispatcherConfigurationScenarioTest
             _allDone.Signal();
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -130,10 +130,10 @@ public class MixedDispatcherConfigurationScenarioTest
         Assert.True(_allDone.Wait(10000));
 
         Assert.Equal(1, _failed);
-        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TotalExecutions));
         _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
 
-        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
+        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TotalExecutions));
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -171,10 +171,10 @@ public class MixedDispatcherConfigurationScenarioTest
         Assert.True(_allDone.Wait(10000));
 
         Assert.Equal(1, _failed);
-        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TotalExecutions));
         _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
 
-        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TOTAL_EXECUTIONS));
+        _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Exactly(TotalExecutions));
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public class MixedDispatcherConfigurationScenarioTest
         dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
-        var allDone1 = new CountdownEvent(TOTAL_EXECUTIONS);
+        var allDone1 = new CountdownEvent(TotalExecutions);
         var message2 = _message;
         var failed1 = 0;
         void MessageSenderTask()
@@ -264,7 +264,7 @@ public class MixedDispatcherConfigurationScenarioTest
             allDone1.Signal();
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -293,7 +293,7 @@ public class MixedDispatcherConfigurationScenarioTest
         dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
-        var allDone1 = new CountdownEvent(TOTAL_EXECUTIONS);
+        var allDone1 = new CountdownEvent(TotalExecutions);
         var message2 = _message;
         var failed1 = 0;
         _handlerA.Setup(h => h.HandleMessage(_message)).Callback(() =>
@@ -320,7 +320,7 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -383,7 +383,7 @@ public class MixedDispatcherConfigurationScenarioTest
         dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
-        var allDone1 = new CountdownEvent(TOTAL_EXECUTIONS);
+        var allDone1 = new CountdownEvent(TotalExecutions);
         var message2 = _message;
         var failed1 = 0;
 
@@ -409,7 +409,7 @@ public class MixedDispatcherConfigurationScenarioTest
             allDone1.Signal();
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -417,8 +417,8 @@ public class MixedDispatcherConfigurationScenarioTest
         start1.Signal();
         Assert.True(allDone1.Wait(10000));
         Assert.Equal(0, failed1);
-        _handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
-        _handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerA.Verify(h => h.HandleMessage(message2), Times.Exactly(TotalExecutions));
+        _handlerB.Verify(h => h.HandleMessage(message2), Times.Exactly(TotalExecutions));
         _handlerC.Verify(h => h.HandleMessage(message2), Times.Never());
         _exceptionRegistry.Verify(list => list.Add(It.IsAny<Exception>()), Times.Never());
     }
@@ -454,15 +454,15 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
 
         _start.Signal();
         Assert.True(_allDone.Wait(10000));
-        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
-        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(TotalExecutions));
+        _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(TotalExecutions));
         _handlerC.Verify(h => h.HandleMessage(_message), Times.Never());
     }
 }

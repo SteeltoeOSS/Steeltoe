@@ -18,7 +18,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// </summary>
 public class ConsulRegistration : IConsulRegistration
 {
-    private const char SEPARATOR = '-';
+    private const char Separator = '-';
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
 
@@ -132,7 +132,7 @@ public class ConsulRegistration : IConsulRegistration
             service.Address = options.HostName;
         }
 
-        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:serviceName");
+        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
         service.Name = NormalizeForConsul(appName);
         service.Tags = CreateTags(options);
         if (options.Port != 0)
@@ -180,7 +180,7 @@ public class ConsulRegistration : IConsulRegistration
 
     internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
     {
-        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:serviceName");
+        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
         var instanceId = applicationInfo.InstanceId;
         if (string.IsNullOrEmpty(instanceId))
         {
@@ -207,9 +207,9 @@ public class ConsulRegistration : IConsulRegistration
             {
                 toAppend = curr;
             }
-            else if (prev == default(char) || prev != SEPARATOR)
+            else if (prev == default(char) || prev != Separator)
             {
-                toAppend = SEPARATOR;
+                toAppend = Separator;
             }
 
             if (toAppend != default(char))

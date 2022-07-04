@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class RabbitListenerContainerTestFactory : IRabbitListenerContainerFactory<MessageListenerTestContainer>
 {
-    private static int counter = 1;
+    private static int _counter = 1;
 
     public RabbitListenerContainerTestFactory(string name = null)
     {
@@ -32,7 +32,7 @@ public class RabbitListenerContainerTestFactory : IRabbitListenerContainerFactor
         var container = new MessageListenerTestContainer(endpoint);
         if (endpoint.Id == null && endpoint is AbstractRabbitListenerEndpoint)
         {
-            var id = Interlocked.Increment(ref counter);
+            var id = Interlocked.Increment(ref _counter);
             endpoint.Id = $"endpoint#{id}";
         }
 

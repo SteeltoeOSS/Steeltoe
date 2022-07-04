@@ -6,12 +6,12 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics;
 
 public enum MetricStatistic
 {
-    TOTAL,
-    TOTAL_TIME,
-    COUNT,
-    MAX,
-    VALUE,
-    UNKNOWN,
-    ACTIVETASKS,
-    DURATION,
+    Total,
+    TotalTime,
+    Count,
+    Max,
+    Value,
+    Unknown,
+    Activetasks,
+    Duration,
 }

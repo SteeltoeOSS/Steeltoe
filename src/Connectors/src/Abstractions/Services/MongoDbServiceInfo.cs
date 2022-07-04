@@ -6,10 +6,10 @@ namespace Steeltoe.Connector.Services;
 
 public class MongoDbServiceInfo : UriServiceInfo
 {
-    public const string MONGODB_SCHEME = "mongodb";
+    public const string MongodbScheme = "mongodb";
 
     public MongoDbServiceInfo(string id, string host, int port, string username, string password, string db)
-        : base(id, MONGODB_SCHEME, host, port, username, password, db)
+        : base(id, MongodbScheme, host, port, username, password, db)
     {
     }
 

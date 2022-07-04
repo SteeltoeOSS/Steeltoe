@@ -15,9 +15,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 public class ConfigServerConfigurationSource : IConfigurationSource
 {
-    protected internal IList<IConfigurationSource> _sources = new List<IConfigurationSource>();
+    protected internal IList<IConfigurationSource> Sources = new List<IConfigurationSource>();
 
-    protected internal IDictionary<string, object> _properties = new Dictionary<string, object>();
+    protected internal IDictionary<string, object> Properties = new Dictionary<string, object>();
 
     /// <summary>
     /// Gets the default settings the Config Server client uses to contact the Config Server.
@@ -85,11 +85,11 @@ public class ConfigServerConfigurationSource : IConfigurationSource
             throw new ArgumentNullException(nameof(sources));
         }
 
-        _sources = new List<IConfigurationSource>(sources);
+        this.Sources = new List<IConfigurationSource>(sources);
 
         if (properties != null)
         {
-            _properties = new Dictionary<string, object>(properties);
+            this.Properties = new Dictionary<string, object>(properties);
         }
 
         DefaultSettings = defaultSettings ?? throw new ArgumentNullException(nameof(defaultSettings));
@@ -107,13 +107,13 @@ public class ConfigServerConfigurationSource : IConfigurationSource
         {
             // Create our own builder to build sources
             var configBuilder = new ConfigurationBuilder();
-            foreach (var s in _sources)
+            foreach (var s in Sources)
             {
                 configBuilder.Add(s);
             }
 
             // Use properties provided
-            foreach (var p in _properties)
+            foreach (var p in Properties)
             {
                 configBuilder.Properties.Add(p);
             }
@@ -122,7 +122,7 @@ public class ConfigServerConfigurationSource : IConfigurationSource
             Configuration = configBuilder.Build();
         }
 
-        var certificateSource = _sources.FirstOrDefault(cSource => cSource is ICertificateSource);
+        var certificateSource = Sources.FirstOrDefault(cSource => cSource is ICertificateSource);
         if (certificateSource != null && DefaultSettings.ClientCertificate == null)
         {
             var certConfigurer = Activator.CreateInstance((certificateSource as ICertificateSource).OptionsConfigurer, Configuration) as IConfigureNamedOptions<CertificateOptions>;

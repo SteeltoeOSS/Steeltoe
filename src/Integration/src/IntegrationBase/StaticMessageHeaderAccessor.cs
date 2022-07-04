@@ -13,7 +13,7 @@ public static class StaticMessageHeaderAccessor
 {
     public static Guid? GetId(IMessage message)
     {
-        message.Headers.TryGetValue(MessageHeaders.ID, out var value);
+        message.Headers.TryGetValue(MessageHeaders.IdName, out var value);
         if (value == null)
         {
             return null;
@@ -24,7 +24,7 @@ public static class StaticMessageHeaderAccessor
 
     public static long? GetTimestamp(IMessage message)
     {
-        message.Headers.TryGetValue(MessageHeaders.TIMESTAMP, out var value);
+        message.Headers.TryGetValue(MessageHeaders.TimestampName, out var value);
         if (value == null)
         {
             return null;
@@ -35,7 +35,7 @@ public static class StaticMessageHeaderAccessor
 
     public static MimeType GetContentType(IMessage message)
     {
-        message.Headers.TryGetValue(MessageHeaders.CONTENT_TYPE, out var value);
+        message.Headers.TryGetValue(MessageHeaders.ContentType, out var value);
         if (value == null)
         {
             return null;
@@ -46,7 +46,7 @@ public static class StaticMessageHeaderAccessor
 
     public static long? GetExpirationDate(IMessage message)
     {
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.EXPIRATION_DATE, out var value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.ExpirationDate, out var value);
         if (value == null)
         {
             return null;
@@ -57,25 +57,25 @@ public static class StaticMessageHeaderAccessor
 
     public static int? GetSequenceNumber(IMessage message)
     {
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out var value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var value);
         return value != null ? int.Parse(value.ToString()) : null;
     }
 
     public static int? GetSequenceSize(IMessage message)
     {
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out var value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out var value);
         return value != null ? int.Parse(value.ToString()) : null;
     }
 
     public static int? GetPriority(IMessage message)
     {
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.PRIORITY, out var value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.Priority, out var value);
         return value != null ? int.Parse(value.ToString()) : null;
     }
 
     public static IAcknowledgmentCallback GetAcknowledgmentCallback(IMessage message)
     {
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK, out var value);
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.AcknowledgmentCallback, out var value);
         return value as IAcknowledgmentCallback;
     }
 }

@@ -43,7 +43,7 @@ public class HystrixProviderConfigurationTest
         Assert.Equal("username", sconfig.Username);
         Assert.Null(sconfig.Uri);
         Assert.True(sconfig.SslEnabled);
-        Assert.Equal(HystrixProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
+        Assert.Equal(HystrixProviderConnectorOptions.DefaultSslPort, sconfig.SslPort);
     }
 
     [Fact]

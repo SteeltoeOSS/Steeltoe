@@ -10,7 +10,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
 public class RabbitBindingsOptions
 {
-    public const string PREFIX = "spring:cloud:stream:rabbit";
+    public const string Prefix = "spring:cloud:stream:rabbit";
 
     // spring.cloud.stream.rabbit.bindings.<channelName>.consumer
     // spring.cloud.stream.rabbit.bindings.<channelName>.producer

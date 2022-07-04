@@ -15,8 +15,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public static class RabbitListenerDeclareAtrributeProcessor
 {
-    private static readonly Dictionary<string, Queue> _queueDeclss = new ();
-    private static readonly Dictionary<string, QueueBinding> _bindingDecls = new ();
+    private static readonly Dictionary<string, Queue> QueueDeclss = new ();
+    private static readonly Dictionary<string, QueueBinding> BindingDecls = new ();
 
     internal static void ProcessDeclareAttributes(IServiceCollection services, IConfiguration configuration, Type targetClass)
     {
@@ -120,7 +120,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
     {
         foreach (var binding in bindings)
         {
-            _bindingDecls.TryAdd(binding.ServiceName, binding);
+            BindingDecls.TryAdd(binding.ServiceName, binding);
         }
     }
 
@@ -128,7 +128,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
     {
         foreach (var queue in queues)
         {
-            _queueDeclss.TryAdd(queue.ServiceName, queue);
+            QueueDeclss.TryAdd(queue.ServiceName, queue);
         }
     }
 
@@ -147,7 +147,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
                 }
             }
 
-            if (_queueDeclss.TryGetValue(reference, out var queueRef))
+            if (QueueDeclss.TryGetValue(reference, out var queueRef))
             {
                 reference = queueRef.QueueName;
             }
@@ -182,29 +182,29 @@ public static class RabbitListenerDeclareAtrributeProcessor
 
     private static IExchange CreateExchange(string name, string type)
     {
-        if (type == ExchangeType.DIRECT)
+        if (type == ExchangeType.Direct)
         {
             return new DirectExchange(name);
         }
 
-        if (type == ExchangeType.FANOUT)
+        if (type == ExchangeType.Fanout)
         {
             return new FanoutExchange(name);
         }
 
-        if (type == ExchangeType.HEADERS)
+        if (type == ExchangeType.Headers)
         {
             return new HeadersExchange(name);
         }
 
-        if (type == ExchangeType.TOPIC)
+        if (type == ExchangeType.Topic)
         {
             return new TopicExchange(name);
         }
 
-        if (type == ExchangeType.SYSTEM)
+        if (type == ExchangeType.System)
         {
-            return new CustomExchange(name, ExchangeType.SYSTEM);
+            return new CustomExchange(name, ExchangeType.System);
         }
 
         throw new InvalidOperationException($"Unable to determine exchange type {type}");

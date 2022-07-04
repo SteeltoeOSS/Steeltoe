@@ -16,18 +16,18 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 {
-    internal ConcurrentQueue<TraceResult> _queue = new ();
+    internal ConcurrentQueue<TraceResult> Queue = new ();
 
-    private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
-    private const string OBSERVER_NAME = "TraceDiagnosticObserver";
-    private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    private const string DiagnosticName = "Microsoft.AspNetCore";
+    private const string DefaultObserverName = "TraceDiagnosticObserver";
+    private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     private readonly ITraceOptions _options;
 
     public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
-        : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
+        : base(DefaultObserverName, DiagnosticName, logger)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
@@ -35,13 +35,13 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     public List<TraceResult> GetTraces()
     {
-        var traces = _queue.ToArray();
+        var traces = Queue.ToArray();
         return new List<TraceResult>(traces);
     }
 
     public override void ProcessEvent(string key, object value)
     {
-        if (!STOP_EVENT.Equals(key))
+        if (!StopEvent.Equals(key))
         {
             return;
         }
@@ -62,9 +62,9 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         if (context != null)
         {
             var trace = MakeTrace(context, current.Duration);
-            _queue.Enqueue(trace);
+            Queue.Enqueue(trace);
 
-            if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
+            if (Queue.Count > _options.Capacity && !Queue.TryDequeue(out _))
             {
                 _logger?.LogDebug("Stop - Dequeue failed");
             }

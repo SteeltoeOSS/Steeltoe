@@ -38,7 +38,7 @@ public static class MongoDbTypeLocator
     /// Gets IMongoClient from MongoDB Library.
     /// </summary>
     /// <exception cref="ConnectorException">When type is not found.</exception>
-    public static Type IMongoClient => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IMongoClient", "a MongoDB driver");
+    public static Type MongoClientInterface => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IMongoClient", "a MongoDB driver");
 
     /// <summary>
     /// Gets MongoClient from MongoDB Library.

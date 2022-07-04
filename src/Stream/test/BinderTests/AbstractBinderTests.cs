@@ -99,7 +99,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
         var producerBinding = binder.BindProducer($"foo{delimiter}0", moduleOutputChannel, producerOptions);
         var consumerBinding = binder.BindConsumer($"foo{delimiter}0", "testSendAndReceive", moduleInputChannel, consumerProperties);
-        var message = MessageBuilder.WithPayload("foo").SetHeader(MessageHeaders.CONTENT_TYPE, MimeType.ToMimeType("text/plain")).Build();
+        var message = MessageBuilder.WithPayload("foo").SetHeader(MessageHeaders.ContentType, MimeType.ToMimeType("text/plain")).Build();
 
         var latch = new CountdownEvent(1);
         var inboundMessageRef = new AtomicReference<IMessage>();
@@ -143,9 +143,9 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         var consumerBinding2 = binder.BindConsumer($"foo{delimiter}yz", "testSendAndReceiveMultipleTopics", moduleInputChannel, consumerProperties);
 
         var testPayload1 = $"foo{Guid.NewGuid()}";
-        var message1 = MessageBuilder.WithPayload(testPayload1.GetBytes()).SetHeader("contentType", MimeTypeUtils.APPLICATION_OCTET_STREAM).Build();
+        var message1 = MessageBuilder.WithPayload(testPayload1.GetBytes()).SetHeader("contentType", MimeTypeUtils.ApplicationOctetStream).Build();
         var testPayload2 = $"foo{Guid.NewGuid()}";
-        var message2 = MessageBuilder.WithPayload(testPayload2.GetBytes()).SetHeader("contentType", MimeTypeUtils.APPLICATION_OCTET_STREAM).Build();
+        var message2 = MessageBuilder.WithPayload(testPayload2.GetBytes()).SetHeader("contentType", MimeTypeUtils.ApplicationOctetStream).Build();
 
         BinderBindUnbindLatency();
         moduleOutputChannel1.Send(message1);
@@ -183,7 +183,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         var producerBinding = binder.BindProducer($"bar{delimiter}0", moduleOutputChannel, producerBindingProperties.Producer);
         var consumerBinding = binder.BindConsumer($"bar{delimiter}0", "testSendAndReceiveNoOriginalContentType", moduleInputChannel, consumerProperties);
         BinderBindUnbindLatency();
-        var message = MessageBuilder.WithPayload("foo").SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).Build();
+        var message = MessageBuilder.WithPayload("foo").SetHeader("contentType", MimeTypeUtils.TextPlain).Build();
 
         moduleOutputChannel.Send(message);
         var latch = new CountdownEvent(1);
@@ -259,7 +259,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         var consumerBinding = binder.BindConsumer($"bad{delimiter}0d", "test-4", moduleInputChannel, consumerBindingProperties.Consumer);
 
         var value = "{\"readings\":[{\"stationid\":\"fgh\",\"customerid\":\"12345\",\"timestamp\":null},{\"stationid\":\"hjk\",\"customerid\":\"222\",\"timestamp\":null}]}";
-        var message = MessageBuilder.WithPayload(value).SetHeader("contentType", MimeTypeUtils.APPLICATION_JSON).Build();
+        var message = MessageBuilder.WithPayload(value).SetHeader("contentType", MimeTypeUtils.ApplicationJson).Build();
         moduleInputChannel.Subscribe(handler);
         moduleOutputChannel.Send(message);
         var channel = (QueueChannel)handler.OutputChannel;
@@ -290,7 +290,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         var producerBinding = binder.BindProducer($"bad{delimiter}0e", moduleOutputChannel, producerBindingProperties.Producer);
         var consumerBinding = binder.BindConsumer($"bad{delimiter}0e", "test-5", moduleInputChannel, consumerBindingProperties.Consumer);
         var value = "{\"readings\":[{\"stationid\":\"fgh\",\"customerid\":\"12345\",\"timestamp\":null},{\"stationid\":\"hjk\",\"customerid\":\"222\",\"timestamp\":null}]}";
-        var message = MessageBuilder.WithPayload(value).SetHeader("contentType", MimeTypeUtils.APPLICATION_JSON).Build();
+        var message = MessageBuilder.WithPayload(value).SetHeader("contentType", MimeTypeUtils.ApplicationJson).Build();
 
         moduleInputChannel.Subscribe(handler);
         moduleOutputChannel.Send(message);
@@ -338,7 +338,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
             ReadingsList = new List<Station.Readings> { r1, r2 }
         };
 
-        var message = MessageBuilder.WithPayload(station).SetHeader("contentType", MimeTypeUtils.APPLICATION_JSON).Build();
+        var message = MessageBuilder.WithPayload(station).SetHeader("contentType", MimeTypeUtils.ApplicationJson).Build();
         moduleInputChannel.Subscribe(handler);
         moduleOutputChannel.Send(message);
         var channel = (QueueChannel)handler.OutputChannel;
@@ -366,7 +366,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
     {
         return new BindingOptions
         {
-            ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString(),
+            ContentType = BindingOptions.DefaultContentType.ToString(),
             Consumer = consumerOptions
         };
     }
@@ -375,7 +375,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
     {
         return new BindingOptions
         {
-            ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString(),
+            ContentType = BindingOptions.DefaultContentType.ToString(),
             Producer = producerOptions
         };
     }
@@ -460,7 +460,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
     protected BindingOptions GetDefaultBindingOptions()
     {
-        return new BindingOptions { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
+        return new BindingOptions { ContentType = BindingOptions.DefaultContentType.ToString() };
     }
 
     protected class TestMessageHandler : IMessageHandler

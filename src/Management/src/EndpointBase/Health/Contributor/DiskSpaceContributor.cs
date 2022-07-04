@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
 public class DiskSpaceContributor : IHealthContributor
 {
-    private const string ID = "diskSpace";
+    private const string DefaultId = "diskSpace";
     private readonly DiskSpaceContributorOptions _options;
 
     public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
@@ -17,7 +17,7 @@ public class DiskSpaceContributor : IHealthContributor
         _options = options ?? new DiskSpaceContributorOptions();
     }
 
-    public string Id { get; } = ID;
+    public string Id { get; } = DefaultId;
 
     public HealthCheckResult Health()
     {
@@ -30,7 +30,7 @@ public class DiskSpaceContributor : IHealthContributor
             var rootName = dirInfo.Root.Name;
             var d = new DriveInfo(rootName);
             var freeSpace = d.TotalFreeSpace;
-            result.Status = freeSpace >= _options.Threshold ? HealthStatus.UP : HealthStatus.DOWN;
+            result.Status = freeSpace >= _options.Threshold ? HealthStatus.Up : HealthStatus.Down;
 
             result.Details.Add("total", d.TotalSize);
             result.Details.Add("free", freeSpace);

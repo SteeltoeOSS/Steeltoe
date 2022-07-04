@@ -14,7 +14,7 @@ public class OutOfSserviceContributor : IHealthContributor
     {
         return new HealthCheckResult
         {
-            Status = HealthStatus.OUT_OF_SERVICE
+            Status = HealthStatus.OutOfService
         };
     }
 }

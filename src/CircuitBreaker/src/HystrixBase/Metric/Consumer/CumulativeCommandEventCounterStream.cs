@@ -12,7 +12,7 @@ public class CumulativeCommandEventCounterStream : BucketedCumulativeCounterStre
 {
     private static readonly ConcurrentDictionary<string, CumulativeCommandEventCounterStream> Streams = new ();
 
-    private static readonly int NUM_EVENT_TYPES = HystrixEventTypeHelper.Values.Count;
+    private static readonly int NumEventTypes = HystrixEventTypeHelper.Values.Count;
 
     public static CumulativeCommandEventCounterStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
     {
@@ -53,12 +53,12 @@ public class CumulativeCommandEventCounterStream : BucketedCumulativeCounterStre
 
     public override long[] EmptyBucketSummary
     {
-        get { return new long[NUM_EVENT_TYPES]; }
+        get { return new long[NumEventTypes]; }
     }
 
     public override long[] EmptyOutputValue
     {
-        get { return new long[NUM_EVENT_TYPES]; }
+        get { return new long[NumEventTypes]; }
     }
 
     public long GetLatest(HystrixEventType eventType)

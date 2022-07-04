@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
 public class DestinationVariableMethodArgumentResolver : AbstractNamedValueMethodArgumentResolver
 {
-    public const string DESTINATION_TEMPLATE_VARIABLES_HEADER = $"{nameof(DestinationVariableMethodArgumentResolver)}.templateVariables";
+    public const string DestinationTemplateVariablesHeader = $"{nameof(DestinationVariableMethodArgumentResolver)}.templateVariables";
 
     public DestinationVariableMethodArgumentResolver(IConversionService conversionService)
         : base(conversionService, null)
@@ -37,7 +37,7 @@ public class DestinationVariableMethodArgumentResolver : AbstractNamedValueMetho
     protected override object ResolveArgumentInternal(ParameterInfo parameter, IMessage message, string name)
     {
         var headers = message.Headers;
-        headers.TryGetValue(DESTINATION_TEMPLATE_VARIABLES_HEADER, out var obj);
+        headers.TryGetValue(DestinationTemplateVariablesHeader, out var obj);
         object result = null;
         if (obj is IDictionary<string, object> vars)
         {

@@ -12,7 +12,7 @@ namespace Steeltoe.Messaging.Support;
 
 public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 {
-    protected List<ITaskSchedulerChannelInterceptor> _schedulerInterceptors = new ();
+    protected List<ITaskSchedulerChannelInterceptor> schedulerInterceptors = new ();
     private readonly object _lock = new ();
 
     public TaskSchedulerSubscribableChannel(ILogger logger = null)
@@ -42,16 +42,16 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         base.SetInterceptors(interceptors);
         lock (_lock)
         {
-            var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>();
+            var newInterceptors = new List<ITaskSchedulerChannelInterceptor>();
             foreach (var interceptor in interceptors)
             {
                 if (interceptor is ITaskSchedulerChannelInterceptor interceptor1)
                 {
-                    schedulerInterceptors.Add(interceptor1);
+                    newInterceptors.Add(interceptor1);
                 }
             }
 
-            _schedulerInterceptors = schedulerInterceptors;
+            this.schedulerInterceptors = newInterceptors;
         }
     }
 
@@ -69,8 +69,8 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 
     protected override bool DoSendInternal(IMessage message, CancellationToken cancellationToken)
     {
-        var interceptors = _schedulerInterceptors;
-        var handlers = _handlers;
+        var interceptors = schedulerInterceptors;
+        var handlers = Handlers;
 
         foreach (var handler in handlers)
         {
@@ -129,11 +129,11 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         {
             lock (_lock)
             {
-                var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>(_schedulerInterceptors)
+                var interceptors = new List<ITaskSchedulerChannelInterceptor>(this.schedulerInterceptors)
                 {
                     interceptor1
                 };
-                _schedulerInterceptors = schedulerInterceptors;
+                this.schedulerInterceptors = interceptors;
             }
         }
     }
@@ -219,7 +219,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 
             for (var i = _interceptorIndex; i >= 0; i--)
             {
-                var interceptor = _channel._schedulerInterceptors[i];
+                var interceptor = _channel.schedulerInterceptors[i];
                 try
                 {
                     interceptor.AfterMessageHandled(message, _channel, MessageHandler, ex);

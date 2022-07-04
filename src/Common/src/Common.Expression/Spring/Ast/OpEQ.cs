@@ -7,20 +7,20 @@ using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
-public class OpEQ : Operator
+public class OpEq : Operator
 {
-    public OpEQ(int startPos, int endPos, params SpelNode[] operands)
+    public OpEq(int startPos, int endPos, params SpelNode[] operands)
         : base("==", startPos, endPos, operands)
     {
-        _exitTypeDescriptor = TypeDescriptor.Z;
+        exitTypeDescriptor = TypeDescriptor.Z;
     }
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
         var left = LeftOperand.GetValueInternal(state).Value;
         var right = RightOperand.GetValueInternal(state).Value;
-        _leftActualDescriptor = CodeFlow.ToDescriptorFromObject(left);
-        _rightActualDescriptor = CodeFlow.ToDescriptorFromObject(right);
+        leftActualDescriptor = CodeFlow.ToDescriptorFromObject(left);
+        rightActualDescriptor = CodeFlow.ToDescriptorFromObject(right);
         return BooleanTypedValue.ForValue(EqualityCheck(state.EvaluationContext, left, right));
     }
 
@@ -37,7 +37,7 @@ public class OpEQ : Operator
 
         var leftDesc = left.ExitDescriptor;
         var rightDesc = right.ExitDescriptor;
-        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, _leftActualDescriptor, _rightActualDescriptor);
+        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, leftActualDescriptor, rightActualDescriptor);
         return !dc.AreNumbers || dc.AreCompatible;
     }
 
@@ -65,7 +65,7 @@ public class OpEQ : Operator
             CodeFlow.InsertBoxIfNecessary(gen, rightDesc);
         }
 
-        gen.Emit(OpCodes.Call, _equalityCheck);
+        gen.Emit(OpCodes.Call, EqualityCheckMethod);
         cf.PushDescriptor(TypeDescriptor.Z);
     }
 }

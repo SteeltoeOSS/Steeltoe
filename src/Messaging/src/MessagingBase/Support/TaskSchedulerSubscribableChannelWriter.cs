@@ -16,7 +16,7 @@ public class TaskSchedulerSubscribableChannelWriter : AbstractMessageChannelWrit
     {
     }
 
-    public virtual TaskSchedulerSubscribableChannel Channel => (TaskSchedulerSubscribableChannel)channel;
+    public virtual TaskSchedulerSubscribableChannel Channel => (TaskSchedulerSubscribableChannel)innerChannel;
 
     public override bool TryComplete(Exception error = null)
     {
@@ -25,7 +25,7 @@ public class TaskSchedulerSubscribableChannelWriter : AbstractMessageChannelWrit
 
     public override bool TryWrite(IMessage message)
     {
-        return channel.Send(message, 0);
+        return innerChannel.Send(message, 0);
     }
 
     public override ValueTask<bool> WaitToWriteAsync(CancellationToken cancellationToken = default)

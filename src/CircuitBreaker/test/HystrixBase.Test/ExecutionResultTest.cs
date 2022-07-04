@@ -6,18 +6,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public enum ExecutionResultTest
 {
-    SUCCESS,
-    FAILURE,
-    ASYNC_FAILURE,
-    HYSTRIX_FAILURE,
-    ASYNC_HYSTRIX_FAILURE,
-    RECOVERABLE_ERROR,
-    ASYNC_RECOVERABLE_ERROR,
-    UNRECOVERABLE_ERROR,
-    ASYNC_UNRECOVERABLE_ERROR,
-    BAD_REQUEST,
-    ASYNC_BAD_REQUEST,
-    MULTIPLE_EMITS_THEN_SUCCESS,
-    MULTIPLE_EMITS_THEN_FAILURE,
-    NO_EMITS_THEN_SUCCESS
+    Success,
+    Failure,
+    AsyncFailure,
+    HystrixFailure,
+    AsyncHystrixFailure,
+    RecoverableError,
+    AsyncRecoverableError,
+    UnrecoverableError,
+    AsyncUnrecoverableError,
+    BadRequest,
+    AsyncBadRequest,
+    MultipleEmitsThenSuccess,
+    MultipleEmitsThenFailure,
+    NoEmitsThenSuccess
 }

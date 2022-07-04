@@ -111,8 +111,8 @@ public class MethodInvokingMessageProcessorAnnotationTest
             .Build();
         var result = (IDictionary<object, object>)processor.ProcessMessage(message);
         Assert.Equal(5, result.Count);
-        Assert.True(result.ContainsKey(MessageHeaders.ID));
-        Assert.True(result.ContainsKey(MessageHeaders.TIMESTAMP));
+        Assert.True(result.ContainsKey(MessageHeaders.IdName));
+        Assert.True(result.ContainsKey(MessageHeaders.TimestampName));
         Assert.Equal("foo", result["prop1"]);
         Assert.Equal("bar", result["prop2"]);
         Assert.Equal("test", result["payload"]);
@@ -302,7 +302,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
     public class TestService
     {
-        public ISet<string> _ids = new HashSet<string>();
+        public ISet<string> Ids = new HashSet<string>();
 
         public System.Collections.IDictionary MapOnly(System.Collections.IDictionary map) => map;
 
@@ -366,12 +366,12 @@ public class MethodInvokingMessageProcessorAnnotationTest
         public string HeaderId(string payload, [Header("id")] string id)
         {
             // logger.debug(id);
-            if (_ids.Contains(id))
+            if (Ids.Contains(id))
             {
                 _concurrencyFailures++;
             }
 
-            _ids.Add(id);
+            Ids.Add(id);
             return "foo";
         }
     }

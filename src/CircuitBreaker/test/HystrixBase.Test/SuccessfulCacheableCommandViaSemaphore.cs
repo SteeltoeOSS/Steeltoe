@@ -20,14 +20,14 @@ internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixComman
 
     public bool IsCommandRunningInThread
     {
-        get { return CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.THREAD); }
+        get { return CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.Thread); }
     }
 
     protected override string Run()
     {
         Executed = true;
 
-        _output?.WriteLine("successfully executed");
+        Output?.WriteLine("successfully executed");
         return _value;
     }
 
@@ -48,7 +48,7 @@ internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixComman
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions)
     {
-        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.SEMAPHORE;
+        hystrixCommandOptions.ExecutionIsolationStrategy = ExecutionIsolationStrategy.Semaphore;
         hystrixCommandOptions.CircuitBreakerEnabled = false;
         return hystrixCommandOptions;
     }

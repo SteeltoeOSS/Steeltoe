@@ -168,7 +168,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         var value = expr.GetValue(ctx);
         Assert.Equal(Color.Orange, value);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.SetValue(ctx, Color.Blue));
-        Assert.Equal(SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, ex.MessageCode);
+        Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
     }
 
     [Fact]
@@ -185,18 +185,18 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         var value = expr.GetValue(ctx);
         Assert.Equal(Color.Green, value);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.SetValue(ctx, Color.Blue));
-        Assert.Equal(SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, ex.MessageCode);
+        Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
     }
 
     public class FruitColourAccessor : IPropertyAccessor
     {
-        private static readonly Dictionary<string, Color> _propertyMap = new ();
+        private static readonly Dictionary<string, Color> PropertyMap = new ();
 
         static FruitColourAccessor()
         {
-            _propertyMap.Add("Banana", Color.Yellow);
-            _propertyMap.Add("Apple", Color.Red);
-            _propertyMap.Add("Orange", Color.Orange);
+            PropertyMap.Add("Banana", Color.Yellow);
+            PropertyMap.Add("Apple", Color.Red);
+            PropertyMap.Add("Orange", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -206,12 +206,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return _propertyMap.ContainsKey(name);
+            return PropertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            _propertyMap.TryGetValue(name, out var value);
+            PropertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 
@@ -227,12 +227,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
     public class VegetableColourAccessor : IPropertyAccessor
     {
-        private static readonly Dictionary<string, Color> _propertyMap = new ();
+        private static readonly Dictionary<string, Color> PropertyMap = new ();
 
         static VegetableColourAccessor()
         {
-            _propertyMap.Add("Pea", Color.Green);
-            _propertyMap.Add("Carrot", Color.Orange);
+            PropertyMap.Add("Pea", Color.Green);
+            PropertyMap.Add("Carrot", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -242,12 +242,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return _propertyMap.ContainsKey(name);
+            return PropertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            _propertyMap.TryGetValue(name, out var value);
+            PropertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 

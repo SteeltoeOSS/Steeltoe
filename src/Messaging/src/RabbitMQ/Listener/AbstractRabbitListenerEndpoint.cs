@@ -19,15 +19,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public abstract class AbstractRabbitListenerEndpoint : IRabbitListenerEndpoint
 {
-    protected readonly ILogger _logger;
-    protected readonly ILoggerFactory _loggerFactory;
+    protected readonly ILogger Logger;
+    protected readonly ILoggerFactory LoggerFactory;
     private IApplicationContext _applicationContext;
 
     protected AbstractRabbitListenerEndpoint(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
     {
         ApplicationContext = applicationContext;
-        _loggerFactory = loggerFactory;
-        _logger = loggerFactory?.CreateLogger(GetType());
+        LoggerFactory = loggerFactory;
+        Logger = loggerFactory?.CreateLogger(GetType());
         if (applicationContext != null)
         {
             Resolver = applicationContext.ServiceExpressionResolver;

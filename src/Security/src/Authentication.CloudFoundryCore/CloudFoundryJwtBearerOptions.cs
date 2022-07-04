@@ -21,6 +21,7 @@ public class CloudFoundryJwtBearerOptions : JwtBearerOptions
 
     public string JwtKeyUrl { get; set; }
 
+    // ReSharper disable once InconsistentNaming
     public bool Validate_Certificates { get; set; } = true;
 
     /// <summary>

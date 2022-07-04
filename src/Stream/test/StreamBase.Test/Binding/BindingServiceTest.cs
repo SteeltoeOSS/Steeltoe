@@ -364,7 +364,7 @@ public class BindingServiceTest : AbstractTest
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var service = provider.GetService<BindingService>();
-        var bindings = service._consumerBindings;
+        var bindings = service.ConsumerBindings;
         bindings.TryGetValue("input", out var inputBindings);
         Assert.Single(inputBindings);
         var binding = inputBindings[0];

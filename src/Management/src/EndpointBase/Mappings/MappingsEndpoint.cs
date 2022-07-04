@@ -20,7 +20,7 @@ public class MappingsEndpoint : AbstractEndpoint<ApplicationMappings>
     {
         get
         {
-            return options as IMappingsOptions;
+            return innerOptions as IMappingsOptions;
         }
     }
 

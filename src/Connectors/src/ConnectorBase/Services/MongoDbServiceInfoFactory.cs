@@ -9,7 +9,7 @@ namespace Steeltoe.Connector.Services;
 public class MongoDbServiceInfoFactory : ServiceInfoFactory
 {
     public MongoDbServiceInfoFactory()
-        : base(new Tags("mongodb"), MongoDbServiceInfo.MONGODB_SCHEME)
+        : base(new Tags("mongodb"), MongoDbServiceInfo.MongodbScheme)
     {
         // add the uri property used by the Microsoft Azure Service Broker with CosmosDb
         UriKeys.Add("cosmosdb_connection_string");

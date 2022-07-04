@@ -24,8 +24,8 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 
     public Task Invoke(HttpContext context, HealthEndpointCore endpoint)
     {
-        _endpoint = endpoint;
-        if (_endpoint.ShouldInvoke(_mgmtOptions))
+        innerEndpoint = endpoint;
+        if (innerEndpoint.ShouldInvoke(mgmtOptions))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -36,18 +36,18 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     protected internal Task HandleHealthRequestAsync(HttpContext context)
     {
         var serialInfo = DoRequest(context);
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 
     protected internal string DoRequest(HttpContext context)
     {
-        var result = _endpoint.Invoke(new CoreSecurityContext(context));
-        if (_mgmtOptions.UseStatusCodeFromResponse)
+        var result = innerEndpoint.Invoke(new CoreSecurityContext(context));
+        if (mgmtOptions.UseStatusCodeFromResponse)
         {
-            context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+            context.Response.StatusCode = ((HealthEndpoint)innerEndpoint).GetStatusCode(result);
         }
 
         return Serialize(result);

@@ -26,12 +26,12 @@ public static class RabbitServicesExtensions
 {
     public static IServiceCollection AddRabbitTemplate(this IServiceCollection services)
     {
-        return services.AddRabbitTemplate(RabbitTemplate.DEFAULT_SERVICE_NAME);
+        return services.AddRabbitTemplate(RabbitTemplate.DefaultServiceName);
     }
 
     public static IServiceCollection AddRabbitTemplate(this IServiceCollection services, Action<IServiceProvider, RabbitTemplate> configure)
     {
-        return services.AddRabbitTemplate(RabbitTemplate.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitTemplate(RabbitTemplate.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitTemplate(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitTemplate> configure = null)
@@ -63,12 +63,12 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitAdmin(this IServiceCollection services)
     {
-        return services.AddRabbitAdmin(RabbitAdmin.DEFAULT_SERVICE_NAME);
+        return services.AddRabbitAdmin(RabbitAdmin.DefaultServiceName);
     }
 
     public static IServiceCollection AddRabbitAdmin(this IServiceCollection services, Action<IServiceProvider, RabbitAdmin> configure)
     {
-        return services.AddRabbitAdmin(RabbitAdmin.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitAdmin(RabbitAdmin.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitAdmin(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitAdmin> configure = null)
@@ -232,7 +232,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection ConfigureRabbitOptions(this IServiceCollection services, IConfiguration config)
     {
         services.AddOptions<RabbitOptions>()
-            .Bind(config.GetSection(RabbitOptions.PREFIX))
+            .Bind(config.GetSection(RabbitOptions.Prefix))
             .Configure<IServiceProvider>((options, provider) =>
             {
                 using var scope = provider.CreateScope();
@@ -295,7 +295,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitListenerAttributeProcessor(this IServiceCollection services, Action<IServiceProvider, RabbitListenerAttributeProcessor> configure = null)
     {
-        return services.AddRabbitListenerAttributeProcessor<RabbitListenerAttributeProcessor>(RabbitListenerAttributeProcessor.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitListenerAttributeProcessor<RabbitListenerAttributeProcessor>(RabbitListenerAttributeProcessor.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitListenerAttributeProcessor(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitListenerAttributeProcessor> configure = null)
@@ -339,7 +339,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitListenerEndpointRegistrar(this IServiceCollection services, Action<IServiceProvider, RabbitListenerEndpointRegistrar> configure = null)
     {
-        services.AddRabbitListenerEndpointRegistrar<RabbitListenerEndpointRegistrar>(RabbitListenerEndpointRegistrar.DEFAULT_SERVICE_NAME, configure);
+        services.AddRabbitListenerEndpointRegistrar<RabbitListenerEndpointRegistrar>(RabbitListenerEndpointRegistrar.DefaultServiceName, configure);
         return services;
     }
 
@@ -384,7 +384,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitListenerEndpointRegistry(this IServiceCollection services, Action<IServiceProvider, RabbitListenerEndpointRegistry> configure = null)
     {
-        services.AddRabbitListenerEndpointRegistry<RabbitListenerEndpointRegistry>(RabbitListenerEndpointRegistry.DEFAULT_SERVICE_NAME, configure);
+        services.AddRabbitListenerEndpointRegistry<RabbitListenerEndpointRegistry>(RabbitListenerEndpointRegistry.DefaultServiceName, configure);
         return services;
     }
 
@@ -435,7 +435,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitListenerContainerFactory(this IServiceCollection services, Action<IServiceProvider, DirectRabbitListenerContainerFactory> configure = null)
     {
-        return services.AddRabbitListenerContainerFactory<DirectRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitListenerContainerFactory<DirectRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitListenerContainerFactory(this IServiceCollection services, string serviceName, Action<IServiceProvider, DirectRabbitListenerContainerFactory> configure = null)
@@ -482,7 +482,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitConnectionFactory(this IServiceCollection services, Action<IServiceProvider, CachingConnectionFactory> configure = null)
     {
-        return services.AddRabbitConnectionFactory<CachingConnectionFactory>(CachingConnectionFactory.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitConnectionFactory<CachingConnectionFactory>(CachingConnectionFactory.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitConnectionFactory(this IServiceCollection services, string serviceName, Action<IServiceProvider, CachingConnectionFactory> configure = null)
@@ -532,7 +532,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, Action<IServiceProvider, Support.Converter.JsonMessageConverter> configure = null)
     {
-        return services.AddRabbitMessageConverter(Support.Converter.JsonMessageConverter.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitMessageConverter(Support.Converter.JsonMessageConverter.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, string serviceName, Action<IServiceProvider, Support.Converter.JsonMessageConverter> configure = null)
@@ -547,7 +547,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, Action<IServiceProvider, Support.Converter.SimpleMessageConverter> configure = null)
     {
-        return services.AddRabbitMessageConverter(SimpleMessageConverter.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitMessageConverter(SimpleMessageConverter.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, string serviceName, Action<IServiceProvider, Support.Converter.SimpleMessageConverter> configure = null)
@@ -590,7 +590,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitMessageHandlerMethodFactory(this IServiceCollection services, Action<IServiceProvider, RabbitMessageHandlerMethodFactory> configure = null)
     {
-        return services.AddRabbitMessageHandlerMethodFactory<RabbitMessageHandlerMethodFactory>(RabbitMessageHandlerMethodFactory.DEFAULT_SERVICE_NAME, configure);
+        return services.AddRabbitMessageHandlerMethodFactory<RabbitMessageHandlerMethodFactory>(RabbitMessageHandlerMethodFactory.DefaultServiceName, configure);
     }
 
     public static IServiceCollection AddRabbitMessageHandlerMethodFactory(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitMessageHandlerMethodFactory> configure = null)

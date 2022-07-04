@@ -119,12 +119,12 @@ public class HystrixServiceCollectionExtensionsTest
         var expectedCommandKey = HystrixCommandKeyDefault.AsKey(nameof(DummyCommand));
         Assert.Equal(expectedCommandKey, command.CommandKey);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         var expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         var threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
@@ -138,12 +138,12 @@ public class HystrixServiceCollectionExtensionsTest
         Assert.Equal(_groupKey, command.CommandGroup);
         Assert.Equal(expectedCommandKey, command.CommandKey);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
@@ -155,12 +155,12 @@ public class HystrixServiceCollectionExtensionsTest
         expectedCommandKey = HystrixCommandKeyDefault.AsKey(nameof(DummyCommand));
         Assert.Equal(expectedCommandKey, command.CommandKey);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
@@ -174,12 +174,12 @@ public class HystrixServiceCollectionExtensionsTest
         Assert.Equal("GroupKey", command.CommandGroup.Name);
         Assert.Equal(expectedCommandKey, command.CommandKey);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
@@ -191,12 +191,12 @@ public class HystrixServiceCollectionExtensionsTest
         Assert.Equal(_groupKey, command.CommandGroup);
         Assert.Equal(_commandKey, command.CommandKey);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
@@ -210,12 +210,12 @@ public class HystrixServiceCollectionExtensionsTest
         Assert.Equal(_groupKey, command.CommandGroup);
         Assert.Equal(_commandKey, command.CommandKey);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
@@ -226,12 +226,12 @@ public class HystrixServiceCollectionExtensionsTest
         Assert.Equal("GroupKey", command.CommandGroup.Name);
         Assert.Equal("CommandKey", command.CommandKey.Name);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
@@ -245,12 +245,12 @@ public class HystrixServiceCollectionExtensionsTest
         Assert.Equal("GroupKey", command.CommandGroup.Name);
         Assert.Equal("CommandKey", command.CommandKey.Name);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
     }
 
@@ -281,12 +281,12 @@ public class HystrixServiceCollectionExtensionsTest
         var expectedCommandKey = HystrixCommandKeyDefault.AsKey(nameof(DummyCommand));
         Assert.Equal(expectedCommandKey, command.CommandKey);
         Assert.NotNull(command.Options);
-        Assert.NotNull(command.Options._dynamic);
+        Assert.NotNull(command.Options.Dynamic);
         var expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         var threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
-        Assert.NotNull(threadOptions._dynamic);
+        Assert.NotNull(threadOptions.Dynamic);
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         Assert.Equal(55, threadOptions.MaximumSize);

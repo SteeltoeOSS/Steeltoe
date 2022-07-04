@@ -52,7 +52,7 @@ public static class EurekaClientService
 
     internal static EurekaClientOptions ConfigureClientOptions(IConfiguration configuration)
     {
-        var clientConfigsection = configuration.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+        var clientConfigsection = configuration.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
 
         var clientOptions = new EurekaClientOptions();
         clientConfigsection.Bind(clientOptions);
@@ -66,10 +66,10 @@ public static class EurekaClientService
         public LookupClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
             : base(clientConfig, httpClient, logFactory)
         {
-            if (_cacheRefreshTimer != null)
+            if (innerCacheRefreshTimer != null)
             {
-                _cacheRefreshTimer.Dispose();
-                _cacheRefreshTimer = null;
+                innerCacheRefreshTimer.Dispose();
+                innerCacheRefreshTimer = null;
             }
         }
 
@@ -79,7 +79,7 @@ public static class EurekaClientService
             var instances = new List<IServiceInstance>();
             foreach (var info in infos)
             {
-                _logger?.LogDebug($"GetInstances returning: {info}");
+                logger?.LogDebug($"GetInstances returning: {info}");
                 instances.Add(new EurekaServiceInstance(info));
             }
 

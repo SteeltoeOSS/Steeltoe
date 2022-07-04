@@ -42,7 +42,7 @@ public static class SerialHystrixRequestEvents
         var eventCounts = executionSignature.Eventcounts;
         foreach (var eventType in HystrixEventTypeHelper.Values)
         {
-            if (!eventType.Equals(HystrixEventType.COLLAPSED) && eventCounts.Contains(eventType))
+            if (!eventType.Equals(HystrixEventType.Collapsed) && eventCounts.Contains(eventType))
             {
                 var eventCount = eventCounts.GetCount(eventType);
                 if (eventCount > 1)
@@ -72,7 +72,7 @@ public static class SerialHystrixRequestEvents
             json.WriteIntegerField("cached", executionSignature.CachedCount);
         }
 
-        if (executionSignature.Eventcounts.Contains(HystrixEventType.COLLAPSED))
+        if (executionSignature.Eventcounts.Contains(HystrixEventType.Collapsed))
         {
             json.WriteObjectFieldStart("collapsed");
             json.WriteStringField("name", executionSignature.CollapserKey.Name);

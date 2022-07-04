@@ -88,8 +88,8 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     {
         // Arrange an environment where multiple sql server services have been provisioned
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -104,8 +104,8 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -128,8 +128,8 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPIgnoreName);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapIgnoreName);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -149,8 +149,8 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     public void AddSqlServerConnection_WithAzureBrokerVCAPs_AddsSqlServerConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVcap);
         var appsettings = new Dictionary<string, string>();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

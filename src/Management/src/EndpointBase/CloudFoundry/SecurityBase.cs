@@ -17,16 +17,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class SecurityBase
 {
-    public readonly int DEFAULT_GETPERMISSIONS_TIMEOUT = 5000;   // Milliseconds
-    public readonly string APPLICATION_ID_MISSING_MESSAGE = "Application id is not available";
-    public readonly string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
-    public readonly string AUTHORIZATION_HEADER_INVALID = "Authorization header is missing or invalid";
-    public readonly string CLOUDFOUNDRY_API_MISSING_MESSAGE = "Cloud controller URL is not available";
-    public readonly string CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE = "Cloud controller not reachable";
-    public readonly string ACCESS_DENIED_MESSAGE = "Access denied";
-    public readonly string AUTHORIZATION_HEADER = "Authorization";
-    public readonly string BEARER = "bearer";
-    public readonly string READ_SENSITIVE_DATA = "read_sensitive_data";
+    public readonly int DefaultGetpermissionsTimeout = 5000;   // Milliseconds
+    public readonly string ApplicationIdMissingMessage = "Application id is not available";
+    public readonly string EndpointNotConfiguredMessage = "Endpoint is not available";
+    public readonly string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
+    public readonly string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
+    public readonly string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
+    public readonly string AccessDeniedMessage = "Access denied";
+    public readonly string AuthorizationHeader = "Authorization";
+    public readonly string Bearer = "bearer";
+    public readonly string ReadSensitiveData = "read_sensitive_data";
     private readonly ICloudFoundryOptions _options;
     private readonly IManagementOptions _mgmtOptions;
     private readonly ILogger _logger;
@@ -64,7 +64,7 @@ public class SecurityBase
     {
         if (string.IsNullOrEmpty(token))
         {
-            return new SecurityResult(HttpStatusCode.Unauthorized, AUTHORIZATION_HEADER_INVALID);
+            return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
         }
 
         var checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
@@ -80,7 +80,7 @@ public class SecurityBase
         try
         {
             _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
-            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT);
+            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetpermissionsTimeout);
             using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -90,8 +90,8 @@ public class SecurityBase
                     checkPermissionsUri);
 
                 return response.StatusCode == HttpStatusCode.Forbidden
-                    ? new SecurityResult(HttpStatusCode.Forbidden, ACCESS_DENIED_MESSAGE)
-                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
+                    ? new SecurityResult(HttpStatusCode.Forbidden, AccessDeniedMessage)
+                    : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
             }
 
             return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
@@ -99,7 +99,7 @@ public class SecurityBase
         catch (Exception e)
         {
             _logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e, checkPermissionsUri);
-            return new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
+            return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
         }
         finally
         {
@@ -110,7 +110,7 @@ public class SecurityBase
     public async Task<Permissions> GetPermissions(HttpResponseMessage response)
     {
         var json = string.Empty;
-        var permissions = Permissions.NONE;
+        var permissions = Permissions.None;
 
         try
         {
@@ -120,10 +120,10 @@ public class SecurityBase
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-            if (result.TryGetValue(READ_SENSITIVE_DATA, out var perm))
+            if (result.TryGetValue(ReadSensitiveData, out var perm))
             {
                 var boolResult = JsonSerializer.Deserialize<bool>(perm.GetRawText());
-                permissions = boolResult ? Permissions.FULL : Permissions.RESTRICTED;
+                permissions = boolResult ? Permissions.Full : Permissions.Restricted;
             }
         }
         catch (Exception e)

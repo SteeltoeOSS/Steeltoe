@@ -14,7 +14,7 @@ public class EnvStartup
 {
     public EnvStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

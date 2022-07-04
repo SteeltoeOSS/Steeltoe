@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContainerFactory<DirectMessageListenerContainer>
 {
-    public const string DEFAULT_SERVICE_NAME = "rabbitListenerContainerFactory";
+    public const string DefaultServiceName = "rabbitListenerContainerFactory";
 
     public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
         : base(applicationContext, loggerFactory)
@@ -42,7 +42,7 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
 
     protected override DirectMessageListenerContainer CreateContainerInstance()
     {
-        return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, _loggerFactory);
+        return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, LoggerFactory);
     }
 
     protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpoint)

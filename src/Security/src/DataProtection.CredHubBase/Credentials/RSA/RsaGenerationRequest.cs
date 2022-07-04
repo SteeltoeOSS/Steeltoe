@@ -13,10 +13,10 @@ public class RsaGenerationRequest : CredHubGenerateRequest
     /// <param name="credentialName">Name of credential.</param>
     /// <param name="keyLength">Optional Key Length (default: 2048).</param>
     /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
-    public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length_2048, OverwiteMode overwriteMode = OverwiteMode.converge)
+    public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length2048, OverwiteMode overwriteMode = OverwiteMode.converge)
     {
         Name = credentialName;
-        Type = CredentialType.RSA;
+        Type = CredentialType.Rsa;
         Parameters = new KeyParameters { KeyLength = keyLength };
         Mode = overwriteMode;
     }

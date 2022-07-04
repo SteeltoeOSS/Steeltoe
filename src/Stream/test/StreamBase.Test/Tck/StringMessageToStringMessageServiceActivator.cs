@@ -15,7 +15,7 @@ namespace Steeltoe.Stream.Tck;
 
 public class StringMessageToStringMessageServiceActivator
 {
-    [ServiceActivator(InputChannel = ISink.INPUT, OutputChannel = ISource.OUTPUT)]
+    [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public IMessage<string> Echo(IMessage<string> value)
     {
         var settings = new JsonSerializerSettings
@@ -31,7 +31,7 @@ public class StringMessageToStringMessageServiceActivator
         var person = (Person)serializer.Deserialize(textReader, typeof(Person));
 
         return (IMessage<string>)MessageBuilder.WithPayload(person.ToString())
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build();
     }
 }

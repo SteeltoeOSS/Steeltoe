@@ -12,13 +12,13 @@ namespace Steeltoe.Common.Util;
 
 public class AntPathMatcher : IPathMatcher
 {
-    public const string DEFAULT_PATH_SEPARATOR = "/";
+    public const string DefaultPathSeparator = "/";
 
-    private const int CACHE_TURNOFF_THRESHOLD = 65536;
+    private const int CacheTurnoffThreshold = 65536;
 
-    private static readonly Regex VARIABLE_PATTERN = new ("\\{[^/]+?\\}", RegexOptions.Compiled);
+    private static readonly Regex VariablePattern = new ("\\{[^/]+?\\}", RegexOptions.Compiled);
 
-    private static readonly char[] WILDCARD_CHARS = { '*', '?', '{' };
+    private static readonly char[] WildcardChars = { '*', '?', '{' };
 
     private readonly ConcurrentDictionary<string, string[]> _tokenizedPatternCache = new ();
 
@@ -30,8 +30,8 @@ public class AntPathMatcher : IPathMatcher
 
     public AntPathMatcher()
     {
-        _pathSeparator = DEFAULT_PATH_SEPARATOR;
-        _pathSeparatorPatternCache = new PathSeparatorPatternCache(DEFAULT_PATH_SEPARATOR);
+        _pathSeparator = DefaultPathSeparator;
+        _pathSeparatorPatternCache = new PathSeparatorPatternCache(DefaultPathSeparator);
     }
 
     public AntPathMatcher(string pathSeparator)
@@ -54,7 +54,7 @@ public class AntPathMatcher : IPathMatcher
 
         set
         {
-            _pathSeparator = value ?? DEFAULT_PATH_SEPARATOR;
+            _pathSeparator = value ?? DefaultPathSeparator;
             _pathSeparatorPatternCache = new PathSeparatorPatternCache(_pathSeparator);
         }
     }
@@ -395,7 +395,7 @@ public class AntPathMatcher : IPathMatcher
         if (tokenized == null)
         {
             tokenized = TokenizePath(pattern);
-            if (CachePatterns == null && _tokenizedPatternCache.Count >= CACHE_TURNOFF_THRESHOLD)
+            if (CachePatterns == null && _tokenizedPatternCache.Count >= CacheTurnoffThreshold)
             {
                 // Try to adapt to the runtime situation that we're encountering:
                 // There are obviously too many different patterns coming in here...
@@ -443,7 +443,7 @@ public class AntPathMatcher : IPathMatcher
         if (matcher == null)
         {
             matcher = new AntPathStringMatcher(pattern, CaseSensitive);
-            if (CachePatterns == null && _stringMatcherCache.Count >= CACHE_TURNOFF_THRESHOLD)
+            if (CachePatterns == null && _stringMatcherCache.Count >= CacheTurnoffThreshold)
             {
                 // Try to adapt to the runtime situation that we're encountering:
                 // There are obviously too many different patterns coming in here...
@@ -547,7 +547,7 @@ public class AntPathMatcher : IPathMatcher
 
     private bool IsWildcardChar(char c)
     {
-        foreach (var candidate in WILDCARD_CHARS)
+        foreach (var candidate in WildcardChars)
         {
             if (c == candidate)
             {
@@ -722,7 +722,7 @@ public class AntPathMatcher : IPathMatcher
             {
                 get
                 {
-                    _length ??= _pattern != null ? VARIABLE_PATTERN.Replace(_pattern, "#").Length : 0;
+                    _length ??= _pattern != null ? VariablePattern.Replace(_pattern, "#").Length : 0;
 
                     return _length.Value;
                 }
@@ -732,8 +732,8 @@ public class AntPathMatcher : IPathMatcher
 
     protected class AntPathStringMatcher
     {
-        private const string DEFAULT_VARIABLE_PATTERN = "(.*)";
-        private static readonly Regex GLOB_PATTERN = new ("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
+        private const string DefaultVariablePattern = "(.*)";
+        private static readonly Regex GlobPattern = new ("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
         private readonly List<string> _variableNames = new ();
         private readonly Regex _pattern;
 
@@ -745,7 +745,7 @@ public class AntPathMatcher : IPathMatcher
         public AntPathStringMatcher(string pattern, bool caseSensitive)
         {
             var patternBuilder = new StringBuilder();
-            var matcher = GLOB_PATTERN.Match(pattern);
+            var matcher = GlobPattern.Match(pattern);
             var end = 0;
             while (matcher.Success)
             {
@@ -764,7 +764,7 @@ public class AntPathMatcher : IPathMatcher
                     var colonIdx = match.IndexOf(':');
                     if (colonIdx == -1)
                     {
-                        patternBuilder.Append(DEFAULT_VARIABLE_PATTERN);
+                        patternBuilder.Append(DefaultVariablePattern);
                         var group = matcher.Groups[1];
                         _variableNames.Add(group.Value);
                     }

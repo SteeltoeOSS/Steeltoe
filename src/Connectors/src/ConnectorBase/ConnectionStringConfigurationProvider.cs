@@ -14,7 +14,7 @@ internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvi
 {
     internal Lazy<IConfiguration> Configuration { get; private set; }
 
-    internal IList<IConfigurationProvider> _providers;
+    internal IList<IConfigurationProvider> Providers;
 
     internal Lazy<ConnectionStringManager> ConnectionStringManager { get; set; }
 
@@ -27,8 +27,8 @@ internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvi
             throw new ArgumentNullException(nameof(providers));
         }
 
-        _providers = providers.ToList();
-        Configuration = new Lazy<IConfiguration>(() => new ConfigurationRoot(_providers));
+        this.Providers = providers.ToList();
+        Configuration = new Lazy<IConfiguration>(() => new ConfigurationRoot(this.Providers));
         ConnectionStringManager = new Lazy<ConnectionStringManager>(() => new ConnectionStringManager(Configuration.Value));
     }
 

@@ -27,8 +27,8 @@ public class ApplicationInstanceInfoTest
         Assert.Equal(-1, options.InstanceIndex);
         Assert.Null(options.Uris);
         Assert.Null(options.Version);
-        Assert.Null(options.InstanceIP);
-        Assert.Null(options.InternalIP);
+        Assert.Null(options.InstanceIp);
+        Assert.Null(options.InternalIp);
         Assert.Equal(-1, options.DiskLimit);
         Assert.Equal(-1, options.FileDescriptorLimit);
         Assert.Equal(-1, options.InstanceIndex);

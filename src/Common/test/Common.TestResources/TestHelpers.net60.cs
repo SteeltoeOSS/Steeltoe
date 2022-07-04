@@ -25,7 +25,7 @@ public static partial class TestHelpers
     public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
     {
         var webAppBuilder = WebApplication.CreateBuilder(args);
-        webAppBuilder.Configuration.AddInMemoryCollection(_fastTestsConfiguration);
+        webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
         webAppBuilder.WebHost.UseTestServer();
         return webAppBuilder;
     }

@@ -9,9 +9,9 @@ namespace Steeltoe.Messaging.Support;
 
 public class NativeMessageHeaderAccessor : MessageHeaderAccessor
 {
-    public const string NATIVE_HEADERS = "nativeHeaders";
+    public const string NativeHeaders = "nativeHeaders";
 
-    private static readonly Dictionary<string, List<string>> _empty = new ();
+    private static readonly Dictionary<string, List<string>> Empty = new ();
 
     protected internal NativeMessageHeaderAccessor()
         : this((IDictionary<string, List<string>>)null)
@@ -22,7 +22,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
     {
         if (nativeHeaders != null && nativeHeaders.Count > 0)
         {
-            SetHeader(NATIVE_HEADERS, new Dictionary<string, List<string>>(nativeHeaders));
+            SetHeader(NativeHeaders, new Dictionary<string, List<string>>(nativeHeaders));
         }
     }
 
@@ -31,19 +31,19 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
     {
         if (message != null)
         {
-            var map = (IDictionary<string, List<string>>)GetHeader(NATIVE_HEADERS);
+            var map = (IDictionary<string, List<string>>)GetHeader(NativeHeaders);
             if (map != null)
             {
                 // Force removal since setHeader checks for equality
-                RemoveHeader(NATIVE_HEADERS);
-                SetHeader(NATIVE_HEADERS, new Dictionary<string, List<string>>(map));
+                RemoveHeader(NativeHeaders);
+                SetHeader(NativeHeaders, new Dictionary<string, List<string>>(map));
             }
         }
     }
 
     public static string GetFirstNativeHeader(string headerName, IDictionary<string, object> headers)
     {
-        headers.TryGetValue(NATIVE_HEADERS, out var obj);
+        headers.TryGetValue(NativeHeaders, out var obj);
         if (obj is IDictionary<string, List<string>> map)
         {
             map.TryGetValue(headerName, out var values);
@@ -74,7 +74,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
     public virtual IDictionary<string, List<string>> ToNativeHeaderDictionary()
     {
         var map = GetNativeHeaders();
-        return map != null ? new Dictionary<string, List<string>>(map) : _empty;
+        return map != null ? new Dictionary<string, List<string>>(map) : Empty;
     }
 
     public override void SetImmutable()
@@ -85,8 +85,8 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
             if (map != null)
             {
                 // Force removal since setHeader checks for equality
-                RemoveHeader(NATIVE_HEADERS);
-                SetHeader(NATIVE_HEADERS, new Dictionary<string, List<string>>(map));
+                RemoveHeader(NativeHeaders);
+                SetHeader(NativeHeaders, new Dictionary<string, List<string>>(map));
             }
 
             base.SetImmutable();
@@ -134,7 +134,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
         if (map == null)
         {
             map = new Dictionary<string, List<string>>();
-            SetHeader(NATIVE_HEADERS, map);
+            SetHeader(NativeHeaders, map);
         }
 
         var values = new List<string> { value };
@@ -161,7 +161,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
         if (nativeHeaders == null)
         {
             nativeHeaders = new Dictionary<string, List<string>>();
-            SetHeader(NATIVE_HEADERS, nativeHeaders);
+            SetHeader(NativeHeaders, nativeHeaders);
         }
 
         if (!nativeHeaders.TryGetValue(name, out var values))
@@ -215,6 +215,6 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
 
     protected virtual IDictionary<string, List<string>> GetNativeHeaders()
     {
-        return (IDictionary<string, List<string>>)GetHeader(NATIVE_HEADERS);
+        return (IDictionary<string, List<string>>)GetHeader(NativeHeaders);
     }
 }

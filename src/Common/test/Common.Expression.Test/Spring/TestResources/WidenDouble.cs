@@ -10,6 +10,6 @@ public class WidenDouble
 
     public WidenDouble(double d)
     {
-        D = d;
+        this.D = d;
     }
 }

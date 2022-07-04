@@ -16,29 +16,29 @@ namespace Steeltoe.Integration;
 
 public class IntegrationServices : IIntegrationServices
 {
-    protected IMessageBuilderFactory _messageBuilderFactory;
-    protected IConversionService _conversionService;
-    protected IIDGenerator _idGenerator;
-    protected IDestinationResolver<IMessageChannel> _channelResolver;
-    protected IApplicationContext _context;
-    protected IExpressionParser _expressionParser;
+    protected IMessageBuilderFactory innerMessageBuilderFactory;
+    protected IConversionService innerConversionService;
+    protected IIdGenerator innerIdGenerator;
+    protected IDestinationResolver<IMessageChannel> innerChannelResolver;
+    protected IApplicationContext context;
+    protected IExpressionParser innerExpressionParser;
 
     public IntegrationServices(IApplicationContext context)
     {
-        _context = context;
+        this.context = context;
     }
 
     public virtual IMessageBuilderFactory MessageBuilderFactory
     {
         get
         {
-            _messageBuilderFactory ??= _context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
-            return _messageBuilderFactory;
+            innerMessageBuilderFactory ??= context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
+            return innerMessageBuilderFactory;
         }
 
         set
         {
-            _messageBuilderFactory = value;
+            innerMessageBuilderFactory = value;
         }
     }
 
@@ -46,13 +46,13 @@ public class IntegrationServices : IIntegrationServices
     {
         get
         {
-            _expressionParser ??= _context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
-            return _expressionParser;
+            innerExpressionParser ??= context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
+            return innerExpressionParser;
         }
 
         set
         {
-            _expressionParser = value;
+            innerExpressionParser = value;
         }
     }
 
@@ -60,13 +60,13 @@ public class IntegrationServices : IIntegrationServices
     {
         get
         {
-            _channelResolver ??= _context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(_context);
-            return _channelResolver;
+            innerChannelResolver ??= context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(context);
+            return innerChannelResolver;
         }
 
         set
         {
-            _channelResolver = value;
+            innerChannelResolver = value;
         }
     }
 
@@ -74,27 +74,27 @@ public class IntegrationServices : IIntegrationServices
     {
         get
         {
-            _conversionService ??= _context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
-            return _conversionService;
+            innerConversionService ??= context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
+            return innerConversionService;
         }
 
         set
         {
-            _conversionService = value;
+            innerConversionService = value;
         }
     }
 
-    public virtual IIDGenerator IdGenerator
+    public virtual IIdGenerator IdGenerator
     {
         get
         {
-            _idGenerator ??= _context?.GetService<IIDGenerator>() ?? new DefaultIdGenerator();
-            return _idGenerator;
+            innerIdGenerator ??= context?.GetService<IIdGenerator>() ?? new DefaultIdGenerator();
+            return innerIdGenerator;
         }
 
         set
         {
-            _idGenerator = value;
+            innerIdGenerator = value;
         }
     }
 }

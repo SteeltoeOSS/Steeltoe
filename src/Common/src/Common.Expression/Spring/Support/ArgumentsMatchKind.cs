@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public enum ArgumentsMatchKind
 {
-    EXACT,
-    CLOSE,
-    REQUIRES_CONVERSION
+    Exact,
+    Close,
+    RequiresConversion
 }

@@ -91,7 +91,7 @@ public class ExpressionState
     public ITypedValue LookupVariable(string name)
     {
         var value = EvaluationContext.LookupVariable(name);
-        return value != null ? new TypedValue(value) : TypedValue.NULL;
+        return value != null ? new TypedValue(value) : TypedValue.Null;
     }
 
     public Type FindType(string type)
@@ -170,7 +170,7 @@ public class ExpressionState
         {
             var leftType = left == null ? "null" : left.GetType().FullName;
             var rightType = right == null ? "null" : right.GetType().FullName;
-            throw new SpelEvaluationException(SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES, op, leftType, rightType);
+            throw new SpelEvaluationException(SpelMessage.OperatorNotSupportedBetweenTypes, op, leftType, rightType);
         }
     }
 

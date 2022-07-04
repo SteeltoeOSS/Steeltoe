@@ -6,9 +6,9 @@ namespace Steeltoe.Common.Util;
 
 public class FixedBackOff : IBackOff
 {
-    public const int STOP = -1;
-    public const int DEFAULT_INTERVAL = 5000;
-    public const int UNLIMITED_ATTEMPTS = int.MaxValue;
+    public const int Stop = -1;
+    public const int DefaultInterval = 5000;
+    public const int UnlimitedAttempts = int.MaxValue;
 
     public FixedBackOff()
     {
@@ -20,9 +20,9 @@ public class FixedBackOff : IBackOff
         MaxAttempts = maxAttempts;
     }
 
-    public int Interval { get; set; } = DEFAULT_INTERVAL;
+    public int Interval { get; set; } = DefaultInterval;
 
-    public int MaxAttempts { get; set; } = UNLIMITED_ATTEMPTS;
+    public int MaxAttempts { get; set; } = UnlimitedAttempts;
 
     public IBackOffExecution Start()
     {
@@ -48,7 +48,7 @@ public class FixedBackOff : IBackOff
             }
             else
             {
-                return STOP;
+                return Stop;
             }
         }
 

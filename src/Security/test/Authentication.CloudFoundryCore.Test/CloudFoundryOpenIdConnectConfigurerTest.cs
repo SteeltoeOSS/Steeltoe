@@ -33,14 +33,14 @@ public class CloudFoundryOpenIdConnectConfigurerTest
     [Fact]
     public void Configure_WithServiceInfo_ReturnsExpected()
     {
-        var authURL = "https://domain";
+        var authUrl = "https://domain";
         var oidcOptions = new OpenIdConnectOptions();
-        var info = new SsoServiceInfo("foobar", "clientId", "secret", authURL);
+        var info = new SsoServiceInfo("foobar", "clientId", "secret", authUrl);
 
         CloudFoundryOpenIdConnectConfigurer.Configure(info, oidcOptions, new CloudFoundryOpenIdConnectOptions());
 
         Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
-        Assert.Equal(authURL, oidcOptions.Authority);
+        Assert.Equal(authUrl, oidcOptions.Authority);
         Assert.Equal("clientId", oidcOptions.ClientId);
         Assert.Equal("secret", oidcOptions.ClientSecret);
         Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), oidcOptions.CallbackPath);

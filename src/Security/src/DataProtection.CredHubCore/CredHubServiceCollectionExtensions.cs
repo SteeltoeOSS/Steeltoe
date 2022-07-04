@@ -36,7 +36,7 @@ public static class CredHubServiceCollectionExtensions
         try
         {
             startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-            credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
+            credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
 
             services.AddSingleton<ICredHubClient>(credHubClient);
         }

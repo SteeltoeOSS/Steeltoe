@@ -125,7 +125,7 @@ public class ConsulRegistrationTest
 
         // bind to options
         var options = new ConsulDiscoveryOptions();
-        config.Bind(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX, options);
+        config.Bind(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix, options);
         var tags = ConsulRegistration.CreateTags(options);
 
         // act - get metadata from tags

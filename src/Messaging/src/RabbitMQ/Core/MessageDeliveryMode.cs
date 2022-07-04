@@ -6,7 +6,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public enum MessageDeliveryMode
 {
-    NON_PERSISTENT = 1,
+    NonPersistent = 1,
 
-    PERSISTENT = 2
+    Persistent = 2
 }

@@ -11,10 +11,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal abstract class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<int>
 {
-    protected readonly ExecutionResultTest result;
-    protected readonly int executionLatency;
-    protected readonly CacheEnabledTest cacheEnabled;
-    protected readonly object value;
+    protected readonly ExecutionResultTest Result;
+    protected readonly int ExecutionLatency;
+    protected readonly CacheEnabledTest CacheEnabled;
+    protected readonly object Value;
 
     protected AbstractFlexibleTestHystrixCommand(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         : base(TestPropsBuilder(circuitBreaker)
@@ -26,42 +26,42 @@ internal abstract class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<
             .SetExecutionSemaphore(executionSemaphore)
             .SetFallbackSemaphore(fallbackSemaphore))
     {
-        result = executionResult;
-        this.executionLatency = executionLatency;
-        this.cacheEnabled = cacheEnabled;
-        this.value = value;
+        Result = executionResult;
+        this.ExecutionLatency = executionLatency;
+        this.CacheEnabled = cacheEnabled;
+        this.Value = value;
     }
 
     protected override int Run()
     {
-        AddLatency(executionLatency);
-        if (result == ExecutionResultTest.SUCCESS)
+        AddLatency(ExecutionLatency);
+        if (Result == ExecutionResultTest.Success)
         {
-            return FlexibleTestHystrixCommand.EXECUTE_VALUE;
+            return FlexibleTestHystrixCommand.ExecuteValue;
         }
-        else if (result == ExecutionResultTest.FAILURE)
+        else if (Result == ExecutionResultTest.Failure)
         {
             throw new Exception("Execution Failure for TestHystrixCommand");
         }
-        else if (result == ExecutionResultTest.HYSTRIX_FAILURE)
+        else if (Result == ExecutionResultTest.HystrixFailure)
         {
-            throw new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, typeof(AbstractFlexibleTestHystrixCommand), "Execution Hystrix Failure for TestHystrixCommand", new Exception("Execution Failure for TestHystrixCommand"), new Exception("Fallback Failure for TestHystrixCommand"));
+            throw new HystrixRuntimeException(FailureType.CommandException, typeof(AbstractFlexibleTestHystrixCommand), "Execution Hystrix Failure for TestHystrixCommand", new Exception("Execution Failure for TestHystrixCommand"), new Exception("Fallback Failure for TestHystrixCommand"));
         }
-        else if (result == ExecutionResultTest.RECOVERABLE_ERROR)
+        else if (Result == ExecutionResultTest.RecoverableError)
         {
             throw new Exception("Execution ERROR for TestHystrixCommand");
         }
-        else if (result == ExecutionResultTest.UNRECOVERABLE_ERROR)
+        else if (Result == ExecutionResultTest.UnrecoverableError)
         {
             throw new OutOfMemoryException("Unrecoverable Error for TestHystrixCommand");
         }
-        else if (result == ExecutionResultTest.BAD_REQUEST)
+        else if (Result == ExecutionResultTest.BadRequest)
         {
             throw new HystrixBadRequestException("Execution BadRequestException for TestHystrixCommand");
         }
         else
         {
-            throw new Exception($"You passed in a executionResult enum that can't be represented in HystrixCommand: {result}");
+            throw new Exception($"You passed in a executionResult enum that can't be represented in HystrixCommand: {Result}");
         }
     }
 
@@ -69,9 +69,9 @@ internal abstract class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<
     {
         get
         {
-            if (cacheEnabled == CacheEnabledTest.YES)
+            if (CacheEnabled == CacheEnabledTest.Yes)
             {
-                return value.ToString();
+                return Value.ToString();
             }
             else
             {
@@ -86,15 +86,15 @@ internal abstract class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<
         {
             try
             {
-                _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " About to sleep for : " + latency);
-                Time.WaitUntil(() => _token.IsCancellationRequested, latency);
-                _token.ThrowIfCancellationRequested();
+                Output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " About to sleep for : " + latency);
+                Time.WaitUntil(() => Token.IsCancellationRequested, latency);
+                Token.ThrowIfCancellationRequested();
 
-                _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Woke up from sleep!");
+                Output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Woke up from sleep!");
             }
             catch (Exception e)
             {
-                _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + e);
+                Output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + e);
 
                 // ignore and sleep some more to simulate a dependency that doesn't obey interrupts
                 try
@@ -106,7 +106,7 @@ internal abstract class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<
                     // ignore
                 }
 
-                _output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + "after interruption with extra sleep");
+                Output?.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + "after interruption with extra sleep");
                 throw;
             }
         }

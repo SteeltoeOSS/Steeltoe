@@ -10,7 +10,7 @@ namespace Steeltoe.Stream.Tck;
 
 public class InternalPipeLine
 {
-    [StreamListener(ISink.INPUT)]
+    [StreamListener(ISink.InputName)]
     [SendTo("internalchannel")]
     public string HandleA(Person value)
     {
@@ -18,7 +18,7 @@ public class InternalPipeLine
     }
 
     [StreamListener("internalchannel")]
-    [SendTo(ISource.OUTPUT)]
+    [SendTo(ISource.OutputName)]
     public string HandleB(Person value)
     {
         return value.ToString();

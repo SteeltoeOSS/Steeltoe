@@ -14,13 +14,13 @@ namespace Steeltoe.Connector;
 /// </summary>
 public class ConnectionStringManager
 {
-    internal List<IConnectionInfo> _connectionInfos;
+    internal List<IConnectionInfo> ConnectionInfos;
     private readonly IConfiguration _configuration;
 
     public ConnectionStringManager(IConfiguration configuration)
     {
         _configuration = configuration;
-        _connectionInfos = GetIConnectionTypes();
+        ConnectionInfos = GetIConnectionTypes();
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class ConnectionStringManager
 
     internal Connection GetByTypeName(string typeName)
     {
-        foreach (var t in _connectionInfos)
+        foreach (var t in ConnectionInfos)
         {
             if (t.IsSameType(typeName))
             {
@@ -50,7 +50,7 @@ public class ConnectionStringManager
 
     internal Connection GetFromServiceInfo(IServiceInfo serviceInfo)
     {
-        foreach (var connectionInfo in _connectionInfos)
+        foreach (var connectionInfo in ConnectionInfos)
         {
             if (connectionInfo.IsSameType(serviceInfo))
             {

@@ -109,7 +109,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.NotNull(resp.Measurements);
         Assert.Single(resp.Measurements);
 
-        var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.TOTAL);
+        var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Total);
         Assert.NotNull(sample);
         Assert.Equal(allKeyssum, sample.Value);
 
@@ -171,7 +171,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.Single(measurements.Values);
         var sample = measurements.Values.FirstOrDefault()[0];
         Assert.Equal(100, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
     }
 
     // [Fact]
@@ -381,7 +381,7 @@ public class MetricsEndpointTest : BaseTest
 
         var sample = measurement[0];
         Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
         var atags = new List<KeyValuePair<string, string>>
         {
@@ -394,7 +394,7 @@ public class MetricsEndpointTest : BaseTest
 
         sample = result[0];
         Assert.Equal(allKeyssum + asum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
         var btags = new List<KeyValuePair<string, string>>
         {
@@ -409,7 +409,7 @@ public class MetricsEndpointTest : BaseTest
         sample = result[0];
 
         Assert.Equal(allKeyssum + bsum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
         var ctags = new List<KeyValuePair<string, string>>
         {
@@ -422,7 +422,7 @@ public class MetricsEndpointTest : BaseTest
 
         sample = result[0];
         Assert.Equal(allKeyssum + csum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
         var abtags = new List<KeyValuePair<string, string>>
         {
@@ -437,7 +437,7 @@ public class MetricsEndpointTest : BaseTest
 
         sample = result[0];
         Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
         var actags = new List<KeyValuePair<string, string>>
         {
@@ -452,7 +452,7 @@ public class MetricsEndpointTest : BaseTest
         sample = result[0];
 
         Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
         var bctags = new List<KeyValuePair<string, string>>
         {
@@ -467,7 +467,7 @@ public class MetricsEndpointTest : BaseTest
         sample = result[0];
 
         Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
     }
 
     [Fact]
@@ -502,7 +502,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.NotNull(resp.Measurements);
         Assert.Single(resp.Measurements);
         var sample = resp.Measurements[0];
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
         Assert.Equal(allKeyssum, sample.Value);
 
         Assert.NotNull(resp.AvailableTags);

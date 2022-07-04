@@ -26,8 +26,8 @@ internal sealed class AsyncCacheableCommand : HystrixCommand<object>
     {
         try
         {
-            Time.WaitUntil(() => _token.IsCancellationRequested, 500);
-            _token.ThrowIfCancellationRequested();
+            Time.WaitUntil(() => Token.IsCancellationRequested, 500);
+            Token.ThrowIfCancellationRequested();
             return true;
         }
         catch (Exception)

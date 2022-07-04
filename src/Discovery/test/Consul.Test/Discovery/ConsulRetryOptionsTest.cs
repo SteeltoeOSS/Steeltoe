@@ -13,9 +13,9 @@ public class ConsulRetryOptionsTest
     {
         var opts = new ConsulRetryOptions();
         Assert.False(opts.Enabled);
-        Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_ATTEMPTS, opts.MaxAttempts);
-        Assert.Equal(ConsulRetryOptions.DEFAULT_INITIAL_RETRY_INTERVAL, opts.InitialInterval);
-        Assert.Equal(ConsulRetryOptions.DEFAULT_RETRY_MULTIPLIER, opts.Multiplier);
-        Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_INTERVAL, opts.MaxInterval);
+        Assert.Equal(ConsulRetryOptions.DefaultMaxRetryAttempts, opts.MaxAttempts);
+        Assert.Equal(ConsulRetryOptions.DefaultInitialRetryInterval, opts.InitialInterval);
+        Assert.Equal(ConsulRetryOptions.DefaultRetryMultiplier, opts.Multiplier);
+        Assert.Equal(ConsulRetryOptions.DefaultMaxRetryInterval, opts.MaxInterval);
     }
 }

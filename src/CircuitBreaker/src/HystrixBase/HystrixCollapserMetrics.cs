@@ -32,7 +32,7 @@ public class HystrixCollapserMetrics : HystrixMetrics
         return collapserMetrics.AsReadOnly();
     }
 
-    private static readonly IList<CollapserEventType> ALL_EVENT_TYPES = CollapserEventTypeHelper.Values;
+    private static readonly IList<CollapserEventType> AllEventTypes = CollapserEventTypeHelper.Values;
 
     public static Func<long[], HystrixCollapserEvent, long[]> AppendEventToBucket { get; } = (initialCountArray, collapserEvent) =>
     {
@@ -44,7 +44,7 @@ public class HystrixCollapserMetrics : HystrixMetrics
 
     public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
     {
-        foreach (var eventType in ALL_EVENT_TYPES)
+        foreach (var eventType in AllEventTypes)
         {
             cumulativeEvents[(int)eventType] += bucketEventCounts[(int)eventType];
         }

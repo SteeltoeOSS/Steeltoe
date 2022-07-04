@@ -13,13 +13,13 @@ public class Assign : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var newValue = _children[1].GetValueInternal(state);
+        var newValue = children[1].GetValueInternal(state);
         GetChild(0).SetValue(state, newValue.Value);
         return newValue;
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        return $"{GetChild(0).ToStringAST()}={GetChild(1).ToStringAST()}";
+        return $"{GetChild(0).ToStringAst()}={GetChild(1).ToStringAst()}";
     }
 }

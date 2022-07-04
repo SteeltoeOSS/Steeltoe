@@ -11,9 +11,9 @@ namespace Steeltoe.Integration.Support;
 
 public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 {
-    protected MutableMessage _mutableMessage;
+    protected MutableMessage mutableMessage;
 
-    protected IDictionary<string, object> _headers;
+    protected IDictionary<string, object> innerHeaders;
 
     protected MutableIntegrationMessageBuilder()
     {
@@ -26,14 +26,14 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
             throw new ArgumentNullException(nameof(message));
         }
 
-        _mutableMessage = message as MutableMessage ?? new MutableMessage(message.Payload, message.Headers);
+        mutableMessage = message as MutableMessage ?? new MutableMessage(message.Payload, message.Headers);
 
-        _headers = _mutableMessage.RawHeaders;
+        innerHeaders = mutableMessage.RawHeaders;
     }
 
-    public override object Payload => _mutableMessage.Payload;
+    public override object Payload => mutableMessage.Payload;
 
-    public override IDictionary<string, object> Headers => _headers;
+    public override IDictionary<string, object> Headers => innerHeaders;
 
     public static MutableIntegrationMessageBuilder WithPayload(object payload) => WithPayload(payload, true);
 
@@ -41,7 +41,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         var message = generateHeaders
             ? new MutableMessage(payload)
-            : new MutableMessage(payload, new MutableMessageHeaders(null, MessageHeaders.ID_VALUE_NONE, -1L));
+            : new MutableMessage(payload, new MutableMessageHeaders(null, MessageHeaders.IdValueNone, -1L));
 
         return FromMessage(message);
     }
@@ -69,7 +69,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         }
         else
         {
-            _headers[headerName] = headerValue;
+            innerHeaders[headerName] = headerValue;
         }
 
         return this;
@@ -77,9 +77,9 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 
     public override IMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue)
     {
-        if (!_headers.ContainsKey(headerName))
+        if (!innerHeaders.ContainsKey(headerName))
         {
-            _headers.Add(headerName, headerValue);
+            innerHeaders.Add(headerName, headerValue);
         }
 
         return this;
@@ -94,7 +94,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
             {
                 if (pattern.Contains('*'))
                 {
-                    headersToRemove.AddRange(GetMatchingHeaderNames(pattern, _headers));
+                    headersToRemove.AddRange(GetMatchingHeaderNames(pattern, innerHeaders));
                 }
                 else
                 {
@@ -115,7 +115,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         if (!string.IsNullOrEmpty(headerName))
         {
-            _headers.Remove(headerName);
+            innerHeaders.Remove(headerName);
         }
 
         return this;
@@ -127,7 +127,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         {
             foreach (var header in headersToCopy)
             {
-                _headers.Add(header);
+                innerHeaders.Add(header);
             }
         }
 
@@ -151,7 +151,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (_headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_DETAILS, out var result))
+            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.SequenceDetails, out var result))
             {
                 return (List<List<object>>)result;
             }
@@ -164,7 +164,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (_headers.TryGetValue(IntegrationMessageHeaderAccessor.CORRELATION_ID, out var result))
+            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out var result))
             {
                 return result;
             }
@@ -177,7 +177,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (_headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out var result))
+            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var result))
             {
                 return result;
             }
@@ -190,7 +190,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (_headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out var result))
+            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out var result))
             {
                 return result;
             }
@@ -199,7 +199,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         }
     }
 
-    public override IMessage Build() => _mutableMessage;
+    public override IMessage Build() => mutableMessage;
 
     protected List<string> GetMatchingHeaderNames(string pattern, IDictionary<string, object> headers)
     {
@@ -228,12 +228,12 @@ public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuil
             throw new ArgumentNullException(nameof(message));
         }
 
-        _mutableMessage = message as MutableMessage<T> ?? new MutableMessage<T>(message.Payload, message.Headers);
+        mutableMessage = message as MutableMessage<T> ?? new MutableMessage<T>(message.Payload, message.Headers);
 
-        _headers = _mutableMessage.RawHeaders;
+        innerHeaders = mutableMessage.RawHeaders;
     }
 
-    public new T Payload => (T)_mutableMessage.Payload;
+    public new T Payload => (T)mutableMessage.Payload;
 
     public static MutableIntegrationMessageBuilder<T> WithPayload(T payload) => WithPayload(payload, true);
 
@@ -241,7 +241,7 @@ public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuil
     {
         var message = generateHeaders
             ? new MutableMessage<T>(payload)
-            : new MutableMessage<T>(payload, new MutableMessageHeaders(null, MessageHeaders.ID_VALUE_NONE, -1L));
+            : new MutableMessage<T>(payload, new MutableMessageHeaders(null, MessageHeaders.IdValueNone, -1L));
 
         return FromMessage(message);
     }
@@ -294,7 +294,7 @@ public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuil
 
     public new IMessage<T> Build()
     {
-        return (IMessage<T>)_mutableMessage;
+        return (IMessage<T>)mutableMessage;
     }
 
     public new IMessageBuilder<T> SetExpirationDate(long expirationDate)

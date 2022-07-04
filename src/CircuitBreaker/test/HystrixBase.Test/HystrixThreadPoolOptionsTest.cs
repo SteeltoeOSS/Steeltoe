@@ -28,8 +28,8 @@ public class HystrixThreadPoolOptionsTest
     {
         var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"));
 
-        Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
-        Assert.Equal(HystrixThreadPoolOptions.Default_MaximumSize, properties.MaximumSize);
+        Assert.Equal(HystrixThreadPoolOptions.DefaultCoreSize, properties.CoreSize);
+        Assert.Equal(HystrixThreadPoolOptions.DefaultMaximumSize, properties.MaximumSize);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class HystrixThreadPoolOptionsTest
         var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { CoreSize = 14 });
 
         Assert.Equal(14, properties.CoreSize);
-        Assert.Equal(HystrixThreadPoolOptions.Default_MaximumSize, properties.MaximumSize);
+        Assert.Equal(HystrixThreadPoolOptions.DefaultMaximumSize, properties.MaximumSize);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class HystrixThreadPoolOptionsTest
     public void TestSetMaximumSizeOnlyLowerThanDefaultCoreSize()
     {
         var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { MaximumSize = 3 });
-        Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
+        Assert.Equal(HystrixThreadPoolOptions.DefaultCoreSize, properties.CoreSize);
         Assert.Equal(3, properties.MaximumSize);
     }
 
@@ -56,7 +56,7 @@ public class HystrixThreadPoolOptionsTest
     public void TestSetMaximumSizeOnlyGreaterThanDefaultCoreSize()
     {
         var properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions { MaximumSize = 21 });
-        Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
+        Assert.Equal(HystrixThreadPoolOptions.DefaultCoreSize, properties.CoreSize);
         Assert.Equal(21, properties.MaximumSize);
     }
 

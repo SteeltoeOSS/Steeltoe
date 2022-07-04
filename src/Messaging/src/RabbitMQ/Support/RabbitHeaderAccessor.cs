@@ -12,16 +12,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 
 public class RabbitHeaderAccessor : MessageHeaderAccessor
 {
-    public const int INT_MASK = 32;
-    public const int DEFAULT_PRIORITY = 0;
+    public const int IntMask = 32;
+    public const int DefaultPriority = 0;
 
-    public const string SPRING_BATCH_FORMAT = "springBatchFormat";
-    public const string BATCH_FORMAT_LENGTH_HEADER4 = "lengthHeader4";
-    public const string SPRING_AUTO_DECOMPRESS = "springAutoDecompress";
-    public const string X_DELAY = "x-delay";
-    public const string DEFAULT_CONTENT_TYPE = Steeltoe.Messaging.MessageHeaders.CONTENT_TYPE_BYTES;
+    public const string SpringBatchFormat = "springBatchFormat";
+    public const string BatchFormatLengthHeader4 = "lengthHeader4";
+    public const string SpringAutoDecompress = "springAutoDecompress";
+    public const string XDelay = "x-delay";
+    public const string DefaultContentType = Steeltoe.Messaging.MessageHeaders.ContentTypeBytes;
 
-    public const MessageDeliveryMode DEFAULT_DELIVERY_MODE = MessageDeliveryMode.PERSISTENT;
+    public const MessageDeliveryMode DefaultDeliveryMode = MessageDeliveryMode.Persistent;
 
     public static RabbitHeaderAccessor GetAccessor(IMessage message)
     {
@@ -84,155 +84,155 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
 
     public string AppId
     {
-        get => GetHeader(RabbitMessageHeaders.APP_ID) as string;
-        set => SetHeader(RabbitMessageHeaders.APP_ID, value);
+        get => GetHeader(RabbitMessageHeaders.AppId) as string;
+        set => SetHeader(RabbitMessageHeaders.AppId, value);
     }
 
     public string ClusterId
     {
-        get => GetHeader(RabbitMessageHeaders.CLUSTER_ID) as string;
-        set => SetHeader(RabbitMessageHeaders.CLUSTER_ID, value);
+        get => GetHeader(RabbitMessageHeaders.ClusterId) as string;
+        set => SetHeader(RabbitMessageHeaders.ClusterId, value);
     }
 
     public string ConsumerQueue
     {
-        get => GetHeader(RabbitMessageHeaders.CONSUMER_QUEUE) as string;
-        set => SetHeader(RabbitMessageHeaders.CONSUMER_QUEUE, value);
+        get => GetHeader(RabbitMessageHeaders.ConsumerQueue) as string;
+        set => SetHeader(RabbitMessageHeaders.ConsumerQueue, value);
     }
 
     public string ConsumerTag
     {
-        get => GetHeader(RabbitMessageHeaders.CONSUMER_TAG) as string;
-        set => SetHeader(RabbitMessageHeaders.CONSUMER_TAG, value);
+        get => GetHeader(RabbitMessageHeaders.ConsumerTag) as string;
+        set => SetHeader(RabbitMessageHeaders.ConsumerTag, value);
     }
 
     public string ContentEncoding
     {
-        get => GetHeader(RabbitMessageHeaders.CONTENT_ENCODING) as string;
-        set => SetHeader(RabbitMessageHeaders.CONTENT_ENCODING, value);
+        get => GetHeader(RabbitMessageHeaders.ContentEncoding) as string;
+        set => SetHeader(RabbitMessageHeaders.ContentEncoding, value);
     }
 
     public long? ContentLength
     {
-        get => GetHeader(RabbitMessageHeaders.CONTENT_LENGTH) as long?;
-        set => SetHeader(RabbitMessageHeaders.CONTENT_LENGTH, value);
+        get => GetHeader(RabbitMessageHeaders.ContentLength) as long?;
+        set => SetHeader(RabbitMessageHeaders.ContentLength, value);
     }
 
     public bool IsContentLengthSet => ContentLength.HasValue;
 
     public string CorrelationId
     {
-        get => GetHeader(RabbitMessageHeaders.CORRELATION_ID) as string;
-        set => SetHeader(RabbitMessageHeaders.CORRELATION_ID, value);
+        get => GetHeader(RabbitMessageHeaders.CorrelationId) as string;
+        set => SetHeader(RabbitMessageHeaders.CorrelationId, value);
     }
 
     public int? Delay
     {
-        get => GetHeader(X_DELAY) as int?;
+        get => GetHeader(XDelay) as int?;
 
         set
         {
             if (value == null || value.Value < 0)
             {
-                SetHeader(X_DELAY, null);
+                SetHeader(XDelay, null);
             }
             else
             {
-                SetHeader(X_DELAY, value);
+                SetHeader(XDelay, value);
             }
         }
     }
 
     public MessageDeliveryMode? DeliveryMode
     {
-        get => GetHeader(RabbitMessageHeaders.DELIVERY_MODE) as MessageDeliveryMode?;
-        set => SetHeader(RabbitMessageHeaders.DELIVERY_MODE, value);
+        get => GetHeader(RabbitMessageHeaders.DeliveryMode) as MessageDeliveryMode?;
+        set => SetHeader(RabbitMessageHeaders.DeliveryMode, value);
     }
 
     public ulong? DeliveryTag
     {
-        get => GetHeader(RabbitMessageHeaders.DELIVERY_TAG) as ulong?;
-        set => SetHeader(RabbitMessageHeaders.DELIVERY_TAG, value);
+        get => GetHeader(RabbitMessageHeaders.DeliveryTag) as ulong?;
+        set => SetHeader(RabbitMessageHeaders.DeliveryTag, value);
     }
 
     public bool IsDeliveryTagSet => DeliveryTag.HasValue;
 
     public string Expiration
     {
-        get => GetHeader(RabbitMessageHeaders.EXPIRATION) as string;
-        set => SetHeader(RabbitMessageHeaders.EXPIRATION, value);
+        get => GetHeader(RabbitMessageHeaders.Expiration) as string;
+        set => SetHeader(RabbitMessageHeaders.Expiration, value);
     }
 
     public Type InferredArgumentType
     {
-        get => GetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE) as Type;
-        set => SetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE, value);
+        get => GetHeader(Messaging.MessageHeaders.InferredArgumentType) as Type;
+        set => SetHeader(Messaging.MessageHeaders.InferredArgumentType, value);
     }
 
     public uint? MessageCount
     {
-        get => GetHeader(RabbitMessageHeaders.MESSAGE_COUNT) as uint?;
-        set => SetHeader(RabbitMessageHeaders.MESSAGE_COUNT, value);
+        get => GetHeader(RabbitMessageHeaders.MessageCount) as uint?;
+        set => SetHeader(RabbitMessageHeaders.MessageCount, value);
     }
 
     public string MessageId
     {
-        get => GetHeader(Messaging.MessageHeaders.ID) as string;
-        set => SetHeader(Messaging.MessageHeaders.ID, value);
+        get => GetHeader(Messaging.MessageHeaders.IdName) as string;
+        set => SetHeader(Messaging.MessageHeaders.IdName, value);
     }
 
     public int? Priority
     {
-        get => GetHeader(RabbitMessageHeaders.PRIORITY) as int?;
-        set => SetHeader(RabbitMessageHeaders.PRIORITY, value);
+        get => GetHeader(RabbitMessageHeaders.Priority) as int?;
+        set => SetHeader(RabbitMessageHeaders.Priority, value);
     }
 
     public ulong? PublishSequenceNumber
     {
-        get => GetHeader(RabbitMessageHeaders.PUBLISH_SEQUENCE_NUMBER) as ulong?;
-        set => SetHeader(RabbitMessageHeaders.PUBLISH_SEQUENCE_NUMBER, value);
+        get => GetHeader(RabbitMessageHeaders.PublishSequenceNumber) as ulong?;
+        set => SetHeader(RabbitMessageHeaders.PublishSequenceNumber, value);
     }
 
     public int? ReceivedDelay
     {
-        get => GetHeader(RabbitMessageHeaders.RECEIVED_DELAY) as int?;
-        set => SetHeader(RabbitMessageHeaders.RECEIVED_DELAY, value);
+        get => GetHeader(RabbitMessageHeaders.ReceivedDelay) as int?;
+        set => SetHeader(RabbitMessageHeaders.ReceivedDelay, value);
     }
 
     public MessageDeliveryMode? ReceivedDeliveryMode
     {
-        get => GetHeader(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE) as MessageDeliveryMode?;
-        set => SetHeader(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE, value);
+        get => GetHeader(RabbitMessageHeaders.ReceivedDeliveryMode) as MessageDeliveryMode?;
+        set => SetHeader(RabbitMessageHeaders.ReceivedDeliveryMode, value);
     }
 
     public string ReceivedExchange
     {
-        get => GetHeader(RabbitMessageHeaders.RECEIVED_EXCHANGE) as string;
-        set => SetHeader(RabbitMessageHeaders.RECEIVED_EXCHANGE, value);
+        get => GetHeader(RabbitMessageHeaders.ReceivedExchange) as string;
+        set => SetHeader(RabbitMessageHeaders.ReceivedExchange, value);
     }
 
     public string ReceivedRoutingKey
     {
-        get => GetHeader(RabbitMessageHeaders.RECEIVED_ROUTING_KEY) as string;
-        set => SetHeader(RabbitMessageHeaders.RECEIVED_ROUTING_KEY, value);
+        get => GetHeader(RabbitMessageHeaders.ReceivedRoutingKey) as string;
+        set => SetHeader(RabbitMessageHeaders.ReceivedRoutingKey, value);
     }
 
     public string ReceivedUserId
     {
-        get => GetHeader(RabbitMessageHeaders.RECEIVED_USER_ID) as string;
-        set => SetHeader(RabbitMessageHeaders.RECEIVED_USER_ID, value);
+        get => GetHeader(RabbitMessageHeaders.ReceivedUserId) as string;
+        set => SetHeader(RabbitMessageHeaders.ReceivedUserId, value);
     }
 
     public bool? Redelivered
     {
-        get => GetHeader(RabbitMessageHeaders.REDELIVERED) as bool?;
-        set => SetHeader(RabbitMessageHeaders.REDELIVERED, value);
+        get => GetHeader(RabbitMessageHeaders.Redelivered) as bool?;
+        set => SetHeader(RabbitMessageHeaders.Redelivered, value);
     }
 
     public string ReplyTo
     {
-        get => GetHeader(RabbitMessageHeaders.REPLY_TO) as string;
-        set => SetHeader(RabbitMessageHeaders.REPLY_TO, value);
+        get => GetHeader(RabbitMessageHeaders.ReplyTo) as string;
+        set => SetHeader(RabbitMessageHeaders.ReplyTo, value);
     }
 
     public Address ReplyToAddress
@@ -253,49 +253,49 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
 
     public object Target
     {
-        get => GetHeader(RabbitMessageHeaders.TARGET);
-        set => SetHeader(RabbitMessageHeaders.TARGET, value);
+        get => GetHeader(RabbitMessageHeaders.Target);
+        set => SetHeader(RabbitMessageHeaders.Target, value);
     }
 
     public MethodInfo TargetMethod
     {
-        get => GetHeader(RabbitMessageHeaders.TARGET_METHOD) as MethodInfo;
-        set => SetHeader(RabbitMessageHeaders.TARGET_METHOD, value);
+        get => GetHeader(RabbitMessageHeaders.TargetMethod) as MethodInfo;
+        set => SetHeader(RabbitMessageHeaders.TargetMethod, value);
     }
 
     public new long? Timestamp
     {
         get => base.Timestamp;
-        set => SetHeader(Messaging.MessageHeaders.TIMESTAMP, value);
+        set => SetHeader(Messaging.MessageHeaders.TimestampName, value);
     }
 
     public string Type
     {
-        get => GetHeader(RabbitMessageHeaders.TYPE) as string;
-        set => SetHeader(RabbitMessageHeaders.TYPE, value);
+        get => GetHeader(RabbitMessageHeaders.Type) as string;
+        set => SetHeader(RabbitMessageHeaders.Type, value);
     }
 
     public string UserId
     {
-        get => GetHeader(RabbitMessageHeaders.USER_ID) as string;
-        set => SetHeader(RabbitMessageHeaders.USER_ID, value);
+        get => GetHeader(RabbitMessageHeaders.UserId) as string;
+        set => SetHeader(RabbitMessageHeaders.UserId, value);
     }
 
     public bool? FinalRetryForMessageWithNoId
     {
-        get => GetHeader(RabbitMessageHeaders.FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID) as bool?;
-        set => SetHeader(RabbitMessageHeaders.FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID, value);
+        get => GetHeader(RabbitMessageHeaders.FinalRetryForMessageWithNoId) as bool?;
+        set => SetHeader(RabbitMessageHeaders.FinalRetryForMessageWithNoId, value);
     }
 
     public bool IsFinalRetryForMessageWithNoId => FinalRetryForMessageWithNoId.HasValue;
 
     public bool? LastInBatch
     {
-        get => GetHeader(RabbitMessageHeaders.LAST_IN_BATCH) as bool?;
-        set => SetHeader(RabbitMessageHeaders.LAST_IN_BATCH, value);
+        get => GetHeader(RabbitMessageHeaders.LastInBatch) as bool?;
+        set => SetHeader(RabbitMessageHeaders.LastInBatch, value);
     }
 
-    public List<Dictionary<string, object>> GetXDeathHeader() => GetHeader(RabbitMessageHeaders.X_DEATH) as List<Dictionary<string, object>>;
+    public List<Dictionary<string, object>> GetXDeathHeader() => GetHeader(RabbitMessageHeaders.XDeath) as List<Dictionary<string, object>>;
 
     public override IMessageHeaders ToMessageHeaders() => Messaging.MessageHeaders.From(headers);
 
@@ -316,7 +316,7 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     protected override void VerifyType(string headerName, object headerValue)
     {
         base.VerifyType(headerName, headerValue);
-        if (RabbitMessageHeaders.PRIORITY.Equals(headerName) && headerValue is not int)
+        if (RabbitMessageHeaders.Priority.Equals(headerName) && headerValue is not int)
         {
             throw new ArgumentException($"The '{headerName}' header value must be an Integer.");
         }
@@ -334,6 +334,6 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
         {
         }
 
-        public new RabbitHeaderAccessor Accessor => accessor as RabbitHeaderAccessor;
+        public new RabbitHeaderAccessor Accessor => innerAccessor as RabbitHeaderAccessor;
     }
 }

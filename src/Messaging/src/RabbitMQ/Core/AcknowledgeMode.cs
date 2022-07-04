@@ -9,16 +9,16 @@ public enum AcknowledgeMode
     /// <summary>
     /// No acks.
     /// </summary>
-    NONE,
+    None,
 
     /// <summary>
     /// Manual acks - user must ack/nack via a channel aware listener.
     /// </summary>
-    MANUAL,
+    Manual,
 
     /// <summary>
     /// The container will issue the ack/nack based on whether
     /// the listener returns normally, or throws an exception.
     /// </summary>
-    AUTO
+    Auto
 }

@@ -10,11 +10,11 @@ namespace Steeltoe.Stream.Binding;
 
 internal abstract class AbstractContentTypeInterceptor : AbstractChannelInterceptor
 {
-    protected readonly MimeType _mimeType;
+    protected readonly MimeType MimeType;
 
     protected AbstractContentTypeInterceptor(string contentType)
     {
-        _mimeType = MimeTypeUtils.ParseMimeType(contentType);
+        MimeType = MimeTypeUtils.ParseMimeType(contentType);
     }
 
     public override IMessage PreSend(IMessage message, IMessageChannel channel)

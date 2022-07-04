@@ -10,21 +10,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class ExecutionResult
 {
-    private static readonly IList<HystrixEventType> ALL_EVENT_TYPES = HystrixEventTypeHelper.Values;
-    private static readonly int NUM_EVENT_TYPES = ALL_EVENT_TYPES.Count;
-    private static readonly BitArray EXCEPTION_PRODUCING_EVENTS = new (NUM_EVENT_TYPES);
-    private static readonly BitArray TERMINAL_EVENTS = new (NUM_EVENT_TYPES);
+    private static readonly IList<HystrixEventType> AllEventTypes = HystrixEventTypeHelper.Values;
+    private static readonly int NumEventTypes = AllEventTypes.Count;
+    private static readonly BitArray ExceptionProducingEvents = new (NumEventTypes);
+    private static readonly BitArray TerminalEvents = new (NumEventTypes);
 
     static ExecutionResult()
     {
         foreach (var eventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
         {
-            EXCEPTION_PRODUCING_EVENTS.Set((int)eventType, true);
+            ExceptionProducingEvents.Set((int)eventType, true);
         }
 
         foreach (var eventType in HystrixEventTypeHelper.TerminalEventTypes)
         {
-            TERMINAL_EVENTS.Set((int)eventType, true);
+            TerminalEvents.Set((int)eventType, true);
         }
     }
 
@@ -59,7 +59,7 @@ public class ExecutionResult
 
         internal EventCounts()
         {
-            _events = new BitArray(NUM_EVENT_TYPES);
+            _events = new BitArray(NumEventTypes);
             _numEmissions = 0;
             _numFallbackEmissions = 0;
             _numCollapsed = 0;
@@ -75,7 +75,7 @@ public class ExecutionResult
 
         internal EventCounts(HystrixEventType[] eventTypes)
         {
-            var newBitSet = new BitArray(NUM_EVENT_TYPES);
+            var newBitSet = new BitArray(NumEventTypes);
             var localNumEmits = 0;
             var localNumFallbackEmits = 0;
             var localNumCollapsed = 0;
@@ -83,16 +83,16 @@ public class ExecutionResult
             {
                 switch (eventType)
                 {
-                    case HystrixEventType.EMIT:
-                        newBitSet.Set((int)HystrixEventType.EMIT, true);
+                    case HystrixEventType.Emit:
+                        newBitSet.Set((int)HystrixEventType.Emit, true);
                         localNumEmits++;
                         break;
-                    case HystrixEventType.FALLBACK_EMIT:
-                        newBitSet.Set((int)HystrixEventType.FALLBACK_EMIT, true);
+                    case HystrixEventType.FallbackEmit:
+                        newBitSet.Set((int)HystrixEventType.FallbackEmit, true);
                         localNumFallbackEmits++;
                         break;
-                    case HystrixEventType.COLLAPSED:
-                        newBitSet.Set((int)HystrixEventType.COLLAPSED, true);
+                    case HystrixEventType.Collapsed:
+                        newBitSet.Set((int)HystrixEventType.Collapsed, true);
                         localNumCollapsed++;
                         break;
                     default:
@@ -139,10 +139,10 @@ public class ExecutionResult
         {
             return eventType switch
             {
-                HystrixEventType.EMIT => _numEmissions,
-                HystrixEventType.FALLBACK_EMIT => _numFallbackEmissions,
-                HystrixEventType.EXCEPTION_THROWN => ContainsAnyOf(EXCEPTION_PRODUCING_EVENTS) ? 1 : 0,
-                HystrixEventType.COLLAPSED => _numCollapsed,
+                HystrixEventType.Emit => _numEmissions,
+                HystrixEventType.FallbackEmit => _numFallbackEmissions,
+                HystrixEventType.ExceptionThrown => ContainsAnyOf(ExceptionProducingEvents) ? 1 : 0,
+                HystrixEventType.Collapsed => _numCollapsed,
                 _ => Contains(eventType) ? 1 : 0,
             };
         }
@@ -187,16 +187,16 @@ public class ExecutionResult
             var localNumCollapsed = _numCollapsed;
             switch (eventType)
             {
-                case HystrixEventType.EMIT:
-                    newBitSet.Set((int)HystrixEventType.EMIT, true);
+                case HystrixEventType.Emit:
+                    newBitSet.Set((int)HystrixEventType.Emit, true);
                     localNumEmits += count;
                     break;
-                case HystrixEventType.FALLBACK_EMIT:
-                    newBitSet.Set((int)HystrixEventType.FALLBACK_EMIT, true);
+                case HystrixEventType.FallbackEmit:
+                    newBitSet.Set((int)HystrixEventType.FallbackEmit, true);
                     localNumFallbackEmits += count;
                     break;
-                case HystrixEventType.COLLAPSED:
-                    newBitSet.Set((int)HystrixEventType.COLLAPSED, true);
+                case HystrixEventType.Collapsed:
+                    newBitSet.Set((int)HystrixEventType.Collapsed, true);
                     localNumCollapsed += count;
                     break;
                 default:
@@ -355,7 +355,7 @@ public class ExecutionResult
     public ExecutionResult MarkCollapsed(IHystrixCollapserKey collapserKey, int sizeOfBatch)
     {
         return new ExecutionResult(
-            Eventcounts.Plus(HystrixEventType.COLLAPSED, sizeOfBatch),
+            Eventcounts.Plus(HystrixEventType.Collapsed, sizeOfBatch),
             StartTimestamp,
             ExecutionLatency,
             UserThreadLatency,
@@ -445,9 +445,9 @@ public class ExecutionResult
 
     public IHystrixCollapserKey CollapserKey { get; }
 
-    public bool IsResponseSemaphoreRejected => Eventcounts.Contains(HystrixEventType.SEMAPHORE_REJECTED);
+    public bool IsResponseSemaphoreRejected => Eventcounts.Contains(HystrixEventType.SemaphoreRejected);
 
-    public bool IsResponseThreadPoolRejected => Eventcounts.Contains(HystrixEventType.THREAD_POOL_REJECTED);
+    public bool IsResponseThreadPoolRejected => Eventcounts.Contains(HystrixEventType.ThreadPoolRejected);
 
     public bool IsResponseRejected => IsResponseThreadPoolRejected || IsResponseSemaphoreRejected;
 
@@ -456,7 +456,7 @@ public class ExecutionResult
         get
         {
             var eventList = new List<HystrixEventType>();
-            foreach (var eventType in ALL_EVENT_TYPES)
+            foreach (var eventType in AllEventTypes)
             {
                 if (Eventcounts.Contains(eventType))
                 {
@@ -472,7 +472,7 @@ public class ExecutionResult
 
     public bool ExecutionOccurred { get; }
 
-    public bool ContainsTerminalEvent => Eventcounts.ContainsAnyOf(TERMINAL_EVENTS);
+    public bool ContainsTerminalEvent => Eventcounts.ContainsAnyOf(TerminalEvents);
 
     public override string ToString()
     {
@@ -484,11 +484,11 @@ public class ExecutionResult
     {
         return eventType switch
         {
-            HystrixEventType.SUCCESS => true,
-            HystrixEventType.FAILURE => true,
-            HystrixEventType.BAD_REQUEST => true,
-            HystrixEventType.TIMEOUT => true,
-            HystrixEventType.CANCELLED => true,
+            HystrixEventType.Success => true,
+            HystrixEventType.Failure => true,
+            HystrixEventType.BadRequest => true,
+            HystrixEventType.Timeout => true,
+            HystrixEventType.Cancelled => true,
             _ => false,
         };
     }

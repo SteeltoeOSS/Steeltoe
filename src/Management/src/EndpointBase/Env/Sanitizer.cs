@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class Sanitizer
 {
-    private readonly string[] _regex_parts = { "*", "$", "^", "+" };
+    private readonly string[] _regexParts = { "*", "$", "^", "+" };
     private readonly string[] _keysToSanitize;
     private readonly List<Regex> _matchers = new ();
 
@@ -38,7 +38,7 @@ public class Sanitizer
 
     private bool IsRegex(string value)
     {
-        foreach (var part in _regex_parts)
+        foreach (var part in _regexParts)
         {
             if (value.Contains(part))
             {

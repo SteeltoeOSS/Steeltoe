@@ -22,10 +22,10 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     public CloudFoundryApplicationOptions(IConfiguration config)
         : base(config, PlatformConfigRoot)
     {
-        SetIdPropertiesFromVCAP(config);
+        SetIdPropertiesFromVcap(config);
     }
 
-    private void SetIdPropertiesFromVCAP(IConfiguration config = null)
+    private void SetIdPropertiesFromVcap(IConfiguration config = null)
     {
         if (config != null)
         {
@@ -43,39 +43,47 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
         }
     }
 
+    // ReSharper disable once InconsistentNaming
     public string CF_Api { get; set; }
 
     public override string ApplicationName => Name;
 
     public string Start { get; set; }
 
+    // ReSharper disable once InconsistentNaming
     public IEnumerable<string> Application_Uris { get; set; }
 
     public IEnumerable<string> ApplicationUris => Application_Uris;
 
+    // ReSharper disable once InconsistentNaming
     public string Application_Version { get; set; }
 
     public override string ApplicationVersion => Application_Version;
 
+    // ReSharper disable once InconsistentNaming
     public int Instance_Index { get; set; } = -1;
 
     public override int InstanceIndex => Instance_Index;
 
+    // ReSharper disable once InconsistentNaming
     public string Space_Id { get; set; }
 
     public string SpaceId => Space_Id;
 
+    // ReSharper disable once InconsistentNaming
     public string Space_Name { get; set; }
 
     public string SpaceName => Space_Name;
 
+    // ReSharper disable once InconsistentNaming
     public string Instance_IP { get; set; }
 
-    public override string InstanceIP => Instance_IP;
+    public override string InstanceIp => Instance_IP;
 
+    // ReSharper disable once InconsistentNaming
     public string Internal_IP { get; set; }
 
-    public override string InternalIP => Internal_IP;
+    public override string InternalIp => Internal_IP;
 
     public Limits Limits { get; set; }
 

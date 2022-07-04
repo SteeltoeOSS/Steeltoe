@@ -27,8 +27,8 @@ public class StandardComponentsTests
     public void TestStandardOperatorOverloader()
     {
         var oo = new StandardOperatorOverloader();
-        Assert.False(oo.OverridesOperation(Operation.ADD, null, null));
-        Assert.Throws<EvaluationException>(() => oo.Operate(Operation.ADD, 2, 3));
+        Assert.False(oo.OverridesOperation(Operation.Add, null, null));
+        Assert.Throws<EvaluationException>(() => oo.Operate(Operation.Add, 2, 3));
     }
 
     [Fact]

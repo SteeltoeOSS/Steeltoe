@@ -22,7 +22,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleHeapDumpRequestAsync(context);
         }
@@ -32,8 +32,8 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
-        var filename = _endpoint.Invoke();
-        _logger?.LogDebug("Returning: {0}", filename);
+        var filename = innerEndpoint.Invoke();
+        logger?.LogDebug("Returning: {0}", filename);
         context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
         if (!File.Exists(filename))

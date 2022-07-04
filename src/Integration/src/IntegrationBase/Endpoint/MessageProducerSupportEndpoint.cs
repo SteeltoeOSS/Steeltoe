@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Endpoint;
 
 public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessageProducer
 {
-    protected object _lock = new ();
+    protected object @lock = new ();
 
     private readonly MessagingTemplate _messagingTemplate;
 
@@ -42,7 +42,7 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
         {
             if (_outputChannelName != null)
             {
-                lock (_lock)
+                lock (@lock)
                 {
                     if (_outputChannelName != null)
                     {
@@ -86,7 +86,7 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
         {
             if (_errorChannelName != null)
             {
-                lock (_lock)
+                lock (@lock)
                 {
                     if (_errorChannelName != null)
                     {

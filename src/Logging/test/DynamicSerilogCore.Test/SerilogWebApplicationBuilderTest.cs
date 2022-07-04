@@ -33,8 +33,8 @@ public class SerilogWebApplicationBuilderTest
         var dynamicLoggerField = loggersvaluearrayItem.GetType().GetProperty("Logger");
         var dynamiclogger = dynamicLoggerField.GetValue(loggersvaluearrayItem) as MessageProcessingLogger;
 
-        var logger3field = dynamiclogger.Delegate.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
-        var serilogger = logger3field.GetValue(dynamiclogger.Delegate);
+        var logger3Field = dynamiclogger.Delegate.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
+        var serilogger = logger3Field.GetValue(dynamiclogger.Delegate);
 
         var loggerSinksField = serilogger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
         var serilogger2 = loggerSinksField.GetValue(serilogger);

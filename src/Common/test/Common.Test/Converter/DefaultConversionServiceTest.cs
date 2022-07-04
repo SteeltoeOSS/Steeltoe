@@ -18,8 +18,8 @@ public class DefaultConversionServiceTest
 {
     private enum Foo
     {
-        BAR,
-        BAZ
+        Bar,
+        Baz
     }
 
     // Static so only one is created for this battery of tests.. ensures internal cache is filled by all of the tests
@@ -226,10 +226,10 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestStringToEnum()
     {
-        Assert.Equal(Foo.BAR, ConversionService.Convert<Foo>("BAR"));
-        Assert.Equal(Foo.BAR, ConversionService.Convert<Foo?>("BAR"));
-        Assert.Equal(Foo.BAR, ConversionService.Convert<Foo>("bar"));
-        Assert.Equal(Foo.BAR, ConversionService.Convert<Foo?>("bar"));
+        Assert.Equal(Foo.Bar, ConversionService.Convert<Foo>("BAR"));
+        Assert.Equal(Foo.Bar, ConversionService.Convert<Foo?>("BAR"));
+        Assert.Equal(Foo.Bar, ConversionService.Convert<Foo>("bar"));
+        Assert.Equal(Foo.Bar, ConversionService.Convert<Foo?>("bar"));
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestEnumToString()
     {
-        Assert.Equal("BAR", ConversionService.Convert<string>(Foo.BAR));
+        Assert.Equal("BAR", ConversionService.Convert<string>(Foo.Bar));
     }
 
     [Fact]
@@ -256,8 +256,8 @@ public class DefaultConversionServiceTest
     {
         var uuid = Guid.NewGuid();
         var convertToString = ConversionService.Convert<string>(uuid);
-        var convertToUUID = ConversionService.Convert<Guid>(convertToString);
-        Assert.Equal(uuid, convertToUUID);
+        var convertToUuid = ConversionService.Convert<Guid>(convertToString);
+        Assert.Equal(uuid, convertToUuid);
     }
 
     [Fact]
@@ -760,8 +760,8 @@ public class DefaultConversionServiceTest
         var foo = new Dictionary<string, string> { { "1", "BAR" }, { "2", "BAZ" } };
 
         var map = ConversionService.Convert<Dictionary<int, Foo>>(foo);
-        Assert.Equal(Foo.BAR, map[1]);
-        Assert.Equal(Foo.BAZ, map[2]);
+        Assert.Equal(Foo.Bar, map[1]);
+        Assert.Equal(Foo.Baz, map[2]);
     }
 
     [Fact]

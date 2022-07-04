@@ -20,6 +20,7 @@ public class Links
     /// Gets or sets the list of links contained in this collection.
     /// </summary>
 #pragma warning disable SA1300 // Element should begin with upper-case letter
+    // ReSharper disable once InconsistentNaming
     public Dictionary<string, Link> _links { get; set; } = new ();
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 }

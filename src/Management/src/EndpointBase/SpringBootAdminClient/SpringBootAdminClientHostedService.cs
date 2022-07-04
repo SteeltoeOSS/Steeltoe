@@ -31,7 +31,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         _options = options;
         _mgmtOptions = mgmtOptions;
         _healthOptions = healthOptions;
-        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMS);
+        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
         _logger = logger ?? NullLogger.Instance;
     }
 
@@ -49,7 +49,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         };
         app.Metadata.Merge(_options.Metadata);
 
-        _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMS);
+        _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMs);
         var result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app);
         if (result.IsSuccessStatusCode)
         {

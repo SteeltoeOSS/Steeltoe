@@ -88,11 +88,11 @@ public class ApplicationsTest : AbstractBaseTest
 
         var apps = new Applications(new List<Application> { app1, app2 });
 
-        var app1updated = new Application("app1");
-        app1updated.Add(new InstanceInfo { InstanceId = "id3" });
-        app1updated.Add(new InstanceInfo { InstanceId = "id4" });
+        var app1Updated = new Application("app1");
+        app1Updated.Add(new InstanceInfo { InstanceId = "id3" });
+        app1Updated.Add(new InstanceInfo { InstanceId = "id4" });
 
-        apps.Add(app1updated);
+        apps.Add(app1Updated);
 
         Assert.NotNull(apps.ApplicationMap);
         Assert.Equal(2, apps.ApplicationMap.Count);
@@ -381,7 +381,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var app3 = new Application("app3");
-        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.ADDED });
+        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.Added });
         delta.Add(app3);
         apps.UpdateFromDelta(delta);
 
@@ -443,7 +443,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id3", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.ADDED });
+        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id3", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.Added });
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
@@ -486,8 +486,8 @@ public class ApplicationsTest : AbstractBaseTest
         app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.DOWN });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Down });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -495,7 +495,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP, Actiontype = ActionType.MODIFIED });
+        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up, Actiontype = ActionType.Modified });
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
@@ -512,7 +512,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal(2, registered.Instances.Count);
         foreach (var inst in registered.Instances)
         {
-            Assert.Equal(InstanceStatus.UP, inst.Status);
+            Assert.Equal(InstanceStatus.Up, inst.Status);
         }
 
         var result = apps.GetInstancesByVirtualHostName("vapp1");
@@ -541,8 +541,8 @@ public class ApplicationsTest : AbstractBaseTest
         app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.DOWN });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Down });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -550,7 +550,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.DELETED });
+        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.Deleted });
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
@@ -567,7 +567,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal(1, registered.Instances.Count);
         foreach (var inst in registered.Instances)
         {
-            Assert.Equal(InstanceStatus.UP, inst.Status);
+            Assert.Equal(InstanceStatus.Up, inst.Status);
         }
 
         var result = apps.GetInstancesByVirtualHostName("vapp1");
@@ -592,12 +592,12 @@ public class ApplicationsTest : AbstractBaseTest
     public void ComputeHashCode_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -605,7 +605,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var app3 = new Application("app3");
-        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.ADDED, Status = InstanceStatus.STARTING });
+        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.Added, Status = InstanceStatus.Starting });
         delta.Add(app3);
         apps.UpdateFromDelta(delta);
 
@@ -634,8 +634,8 @@ public class ApplicationsTest : AbstractBaseTest
             CountryId = 1,
             DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
             HostName = "HostName",
-            Status = InstanceStatus.DOWN,
-            OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
+            Status = InstanceStatus.Down,
+            OverriddenStatus = InstanceStatus.OutOfService,
             LeaseInfo = new JsonLeaseInfo
             {
                 RenewalIntervalInSecs = 1,
@@ -650,7 +650,7 @@ public class ApplicationsTest : AbstractBaseTest
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
-            Actiontype = ActionType.ADDED,
+            Actiontype = ActionType.Added,
             AsgName = "AsgName"
         };
         var japp = new JsonApplication
@@ -702,8 +702,8 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal(1, info.CountryId);
         Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
         Assert.Equal("HostName", info.HostName);
-        Assert.Equal(InstanceStatus.DOWN, info.Status);
-        Assert.Equal(InstanceStatus.OUT_OF_SERVICE, info.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Down, info.Status);
+        Assert.Equal(InstanceStatus.OutOfService, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
         Assert.Equal(1, info.LeaseInfo.RenewalIntervalInSecs);
         Assert.Equal(2, info.LeaseInfo.DurationInSecs);
@@ -717,7 +717,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Empty(info.Metadata);
         Assert.Equal(635_935_705_417_080_000L, info.LastUpdatedTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LastDirtyTimestamp);
-        Assert.Equal(ActionType.ADDED, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.Actiontype);
         Assert.Equal("AsgName", info.AsgName);
     }
 
@@ -742,8 +742,8 @@ public class ApplicationsTest : AbstractBaseTest
             CountryId = 1,
             DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
             HostName = "HostName",
-            Status = InstanceStatus.DOWN,
-            OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
+            Status = InstanceStatus.Down,
+            OverriddenStatus = InstanceStatus.OutOfService,
             LeaseInfo = new JsonLeaseInfo
             {
                 RenewalIntervalInSecs = 1,
@@ -758,7 +758,7 @@ public class ApplicationsTest : AbstractBaseTest
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
-            Actiontype = ActionType.ADDED,
+            Actiontype = ActionType.Added,
             AsgName = "AsgName"
         };
         var japp = new JsonApplication

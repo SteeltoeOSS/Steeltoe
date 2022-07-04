@@ -12,11 +12,11 @@ namespace Steeltoe.Integration.Mapping;
 
 public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 {
-    public const string STANDARD_REQUEST_HEADER_NAME_PATTERN = "STANDARD_REQUEST_HEADERS";
-    public const string STANDARD_REPLY_HEADER_NAME_PATTERN = "STANDARD_REPLY_HEADERS";
-    public const string NON_STANDARD_HEADER_NAME_PATTERN = "NON_STANDARD_HEADERS";
+    public const string StandardRequestHeaderNamePattern = "STANDARD_REQUEST_HEADERS";
+    public const string StandardReplyHeaderNamePattern = "STANDARD_REPLY_HEADERS";
+    public const string NonStandardHeaderNamePattern = "NON_STANDARD_HEADERS";
 
-    private readonly List<string> _transient_header_names = new () { MessageHeaders.ID, MessageHeaders.TIMESTAMP };
+    private readonly List<string> _transientHeaderNames = new () { MessageHeaders.IdName, MessageHeaders.TimestampName };
 
     private readonly ILogger _logger;
 
@@ -93,15 +93,15 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         var matchers = new List<IHeaderMatcher>();
         foreach (var pattern in patterns)
         {
-            if (STANDARD_REQUEST_HEADER_NAME_PATTERN.Equals(pattern))
+            if (StandardRequestHeaderNamePattern.Equals(pattern))
             {
                 matchers.Add(new ContentBasedHeaderMatcher(true, RequestHeaderNames));
             }
-            else if (STANDARD_REPLY_HEADER_NAME_PATTERN.Equals(pattern))
+            else if (StandardReplyHeaderNamePattern.Equals(pattern))
             {
                 matchers.Add(new ContentBasedHeaderMatcher(true, ReplyHeaderNames));
             }
-            else if (NON_STANDARD_HEADER_NAME_PATTERN.Equals(pattern))
+            else if (NonStandardHeaderNamePattern.Equals(pattern))
             {
                 matchers.Add(new PrefixBasedMatcher(false, StandardHeaderPrefix));
             }
@@ -159,7 +159,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     protected virtual List<string> GetTransientHeaderNames()
     {
-        return _transient_header_names;
+        return _transientHeaderNames;
     }
 
     protected abstract IDictionary<string, object> ExtractStandardHeaders(T source);

@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class HystrixThreadEventStream
 {
-    private static ThreadLocal<HystrixThreadEventStream> threadLocalStreams = new (
+    private static ThreadLocal<HystrixThreadEventStream> _threadLocalStreams = new (
         () => new HystrixThreadEventStream(Thread.CurrentThread.ManagedThreadId), true);
 
     private readonly long _threadId;
@@ -75,7 +75,7 @@ public class HystrixThreadEventStream
 
     public static HystrixThreadEventStream GetInstance()
     {
-        return threadLocalStreams.Value;
+        return _threadLocalStreams.Value;
     }
 
     public void Shutdown()
@@ -99,14 +99,14 @@ public class HystrixThreadEventStream
 
     public void CollapserResponseFromCache(IHystrixCollapserKey collapserKey)
     {
-        var collapserEvent = HystrixCollapserEvent.From(collapserKey, CollapserEventType.RESPONSE_FROM_CACHE, 1);
+        var collapserEvent = HystrixCollapserEvent.From(collapserKey, CollapserEventType.ResponseFromCache, 1);
         _writeOnlyCollapserSubject.OnNext(collapserEvent);
     }
 
     public void CollapserBatchExecuted(IHystrixCollapserKey collapserKey, int batchSize)
     {
-        var batchExecution = HystrixCollapserEvent.From(collapserKey, CollapserEventType.BATCH_EXECUTED, 1);
-        var batchAdditions = HystrixCollapserEvent.From(collapserKey, CollapserEventType.ADDED_TO_BATCH, batchSize);
+        var batchExecution = HystrixCollapserEvent.From(collapserKey, CollapserEventType.BatchExecuted, 1);
+        var batchAdditions = HystrixCollapserEvent.From(collapserKey, CollapserEventType.AddedToBatch, batchSize);
         _writeOnlyCollapserSubject.OnNext(batchExecution);
         _writeOnlyCollapserSubject.OnNext(batchAdditions);
     }
@@ -118,14 +118,14 @@ public class HystrixThreadEventStream
 
     internal static void Reset()
     {
-        foreach (var stream in threadLocalStreams.Values)
+        foreach (var stream in _threadLocalStreams.Values)
         {
             stream.Shutdown();
         }
 
-        threadLocalStreams.Dispose();
+        _threadLocalStreams.Dispose();
 
-        threadLocalStreams = new ThreadLocal<HystrixThreadEventStream>(
+        _threadLocalStreams = new ThreadLocal<HystrixThreadEventStream>(
             () => new HystrixThreadEventStream(Thread.CurrentThread.ManagedThreadId), true);
     }
 }

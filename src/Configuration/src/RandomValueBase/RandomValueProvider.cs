@@ -16,9 +16,9 @@ namespace Steeltoe.Extensions.Configuration.RandomValue;
 /// </summary>
 public class RandomValueProvider : ConfigurationProvider
 {
-    internal ILogger<RandomValueProvider> _logger;
-    internal Random _random;
-    internal string _prefix;
+    internal ILogger<RandomValueProvider> Logger;
+    internal Random Random;
+    internal string Prefix;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueProvider"/> class.
@@ -28,9 +28,9 @@ public class RandomValueProvider : ConfigurationProvider
     /// <param name="logFactory">the logger factory to use.</param>
     public RandomValueProvider(string prefix, ILoggerFactory logFactory = null)
     {
-        _prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
-        _logger = logFactory?.CreateLogger<RandomValueProvider>();
-        _random = new Random();
+        this.Prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
+        Logger = logFactory?.CreateLogger<RandomValueProvider>();
+        Random = new Random();
     }
 
     /// <summary>
@@ -44,13 +44,13 @@ public class RandomValueProvider : ConfigurationProvider
     public override bool TryGet(string key, out string value)
     {
         value = null;
-        if (!key.StartsWith(_prefix))
+        if (!key.StartsWith(Prefix))
         {
             return false;
         }
 
-        value = GetRandomValue(key.Substring(_prefix.Length));
-        _logger?.LogDebug("Generated random value {value} for '{key}'", value, key);
+        value = GetRandomValue(key.Substring(Prefix.Length));
+        Logger?.LogDebug("Generated random value {value} for '{key}'", value, key);
         return true;
     }
 
@@ -69,7 +69,7 @@ public class RandomValueProvider : ConfigurationProvider
     /// </summary>
     public override void Load()
     {
-        _random = new Random();
+        Random = new Random();
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public class RandomValueProvider : ConfigurationProvider
     {
         if (string.IsNullOrEmpty(parentPath))
         {
-            var list = new List<string> { _prefix.Substring(0, _prefix.Length - 1) };
+            var list = new List<string> { Prefix.Substring(0, Prefix.Length - 1) };
             return list.Concat(earlierKeys)
                 .OrderBy(k => k, ConfigurationKeyComparer.Instance);
         }
@@ -96,7 +96,7 @@ public class RandomValueProvider : ConfigurationProvider
         // random:int
         if (type.Equals("int"))
         {
-            return _random.Next().ToString();
+            return Random.Next().ToString();
         }
 
         // random:long
@@ -130,7 +130,7 @@ public class RandomValueProvider : ConfigurationProvider
 
     internal long GetLong()
     {
-        return ((long)_random.Next() << 32) + _random.Next();
+        return ((long)Random.Next() << 32) + Random.Next();
     }
 
     internal string GetRange(string type, string prefix)
@@ -153,11 +153,11 @@ public class RandomValueProvider : ConfigurationProvider
         int.TryParse(tokens[0], out var start);
         if (tokens.Length == 1)
         {
-            return _random.Next(start);
+            return Random.Next(start);
         }
 
         int.TryParse(tokens[1], out var max);
-        return _random.Next(start, max);
+        return Random.Next(start, max);
     }
 
     internal long GetNextLongInRange(string range)
@@ -178,7 +178,7 @@ public class RandomValueProvider : ConfigurationProvider
     internal string GetRandomBytes()
     {
         var bytes = new byte[16];
-        _random.NextBytes(bytes);
+        Random.NextBytes(bytes);
         return BitConverter.ToString(bytes).Replace("-", string.Empty);
     }
 }

@@ -11,7 +11,7 @@ namespace Steeltoe.Extensions.Configuration;
 
 public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
 {
-    public virtual string CONFIGURATION_PREFIX { get; protected set; } = "services";
+    public virtual string ConfigurationPrefix { get; protected set; } = "services";
 
     // This constructor is for use with IOptions
     protected AbstractServiceOptions()
@@ -82,7 +82,7 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
             throw new ArgumentException(nameof(serviceName));
         }
 
-        var services = configuration.GetSection(CONFIGURATION_PREFIX);
+        var services = configuration.GetSection(ConfigurationPrefix);
         var section = FindServiceSection(services, serviceName);
 
         if (section != null)

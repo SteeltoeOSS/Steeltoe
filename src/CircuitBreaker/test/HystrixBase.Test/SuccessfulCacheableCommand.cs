@@ -21,13 +21,13 @@ internal sealed class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
     {
         Executed = true;
 
-        _output?.WriteLine("successfully executed");
+        Output?.WriteLine("successfully executed");
         return _value;
     }
 
     public bool IsCommandRunningInThread
     {
-        get { return CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.THREAD); }
+        get { return CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.Thread); }
     }
 
     protected override string CacheKey

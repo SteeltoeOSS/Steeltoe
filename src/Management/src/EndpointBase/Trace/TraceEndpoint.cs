@@ -24,7 +24,7 @@ public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
     {
         get
         {
-            return options as ITraceOptions;
+            return innerOptions as ITraceOptions;
         }
     }
 

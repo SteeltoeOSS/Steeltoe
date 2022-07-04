@@ -10,9 +10,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class TestCommandRejection : TestHystrixCommand<bool>
 {
-    public const int FALLBACK_NOT_IMPLEMENTED = 1;
-    public const int FALLBACK_SUCCESS = 2;
-    public const int FALLBACK_FAILURE = 3;
+    public const int FallbackNotImplemented = 1;
+    public const int FallbackSuccess = 2;
+    public const int FallbackFailure = 3;
 
     private readonly int _fallbackBehavior;
 
@@ -43,8 +43,8 @@ internal sealed class TestCommandRejection : TestHystrixCommand<bool>
         _outputHelper?.WriteLine(">>> TestCommandRejection running " + _sleepTime);
         try
         {
-            Time.WaitUntil(() => _token.IsCancellationRequested, _sleepTime);
-            _token.ThrowIfCancellationRequested();
+            Time.WaitUntil(() => Token.IsCancellationRequested, _sleepTime);
+            Token.ThrowIfCancellationRequested();
             _outputHelper?.WriteLine(">>> TestCommandRejection finished " + (Time.CurrentTimeMillis - start));
         }
         catch (Exception e)
@@ -58,11 +58,11 @@ internal sealed class TestCommandRejection : TestHystrixCommand<bool>
 
     protected override bool RunFallback()
     {
-        if (_fallbackBehavior == FALLBACK_SUCCESS)
+        if (_fallbackBehavior == FallbackSuccess)
         {
             return false;
         }
-        else if (_fallbackBehavior == FALLBACK_FAILURE)
+        else if (_fallbackBehavior == FallbackFailure)
         {
             throw new Exception("failed on fallback");
         }

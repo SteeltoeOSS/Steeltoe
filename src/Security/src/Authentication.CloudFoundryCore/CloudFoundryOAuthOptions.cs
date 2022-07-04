@@ -17,6 +17,7 @@ public class CloudFoundryOAuthOptions : OAuthOptions
     /// <summary>
     /// Gets or sets a value indicating whether to validate auth server certificate.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public bool Validate_Certificates { get; set; } = true;
 
     /// <summary>

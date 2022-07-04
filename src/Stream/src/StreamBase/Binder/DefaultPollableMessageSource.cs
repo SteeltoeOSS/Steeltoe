@@ -22,7 +22,7 @@ namespace Steeltoe.Stream.Binder;
 
 public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandler>, IPollableMessageSource, ILifecycle, IRetryListener
 {
-    private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
+    private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new ();
 
     private readonly DirectChannel _dummyChannel;
     private readonly MessagingTemplate _messagingTemplate;
@@ -137,7 +137,7 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
         {
             if (RetryTemplate == null && !ShouldRequeue(e))
             {
-                _messagingTemplate.Send(ErrorChannel, ErrorMessageStrategy.BuildErrorMessage(e, _attributesHolder.Value));
+                _messagingTemplate.Send(ErrorChannel, ErrorMessageStrategy.BuildErrorMessage(e, AttributesHolder.Value));
                 return true;
             }
             else if (!ackCallback.IsAcknowledged && ShouldRequeue(e))
@@ -178,7 +178,7 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
     {
         if (_recoveryCallback != null)
         {
-            _attributesHolder.Value = context;
+            AttributesHolder.Value = context;
         }
 
         return true;
@@ -186,7 +186,7 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
     public void Close(IRetryContext context, Exception exception)
     {
-        _attributesHolder.Value = null;
+        AttributesHolder.Value = null;
     }
 
     public void OnError(IRetryContext context, Exception exception)
@@ -267,15 +267,15 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
         var needAttributes = needHolder || RetryTemplate != null;
         if (needHolder)
         {
-            _attributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
+            AttributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
         }
 
         if (needAttributes)
         {
-            var attributes = _attributesHolder.Value;
+            var attributes = AttributesHolder.Value;
             if (attributes != null)
             {
-                attributes.SetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY, message);
+                attributes.SetAttribute(ErrorMessageUtils.InputMessageContextKey, message);
                 if (AttributeProvider != null)
                 {
                     AttributeProvider.Invoke(attributes, message);

@@ -14,7 +14,7 @@ public class InfoStartup
 {
     public InfoStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

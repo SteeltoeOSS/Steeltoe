@@ -22,17 +22,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 {
-    public const string DEFAULT_SERVICE_NAME = "rabbitAdmin";
+    public const string DefaultServiceName = "rabbitAdmin";
 
-    public const string QUEUE_NAME = "QUEUE_NAME";
-    public const string QUEUE_MESSAGE_COUNT = "QUEUE_MESSAGE_COUNT";
-    public const string QUEUE_CONSUMER_COUNT = "QUEUE_CONSUMER_COUNT";
+    public const string QueueName = "QUEUE_NAME";
+    public const string QueueMessageCount = "QUEUE_MESSAGE_COUNT";
+    public const string QueueConsumerCount = "QUEUE_CONSUMER_COUNT";
 
-    private const int DECLARE_MAX_ATTEMPTS = 5;
-    private const int DECLARE_INITIAL_RETRY_INTERVAL = 1000;
-    private const int DECLARE_MAX_RETRY_INTERVAL = 5000;
-    private const double DECLARE_RETRY_MULTIPLIER = 2.0d;
-    private const string DELAYED_MESSAGE_EXCHANGE = "x-delayed-message";
+    private const int DeclareMaxAttempts = 5;
+    private const int DeclareInitialRetryInterval = 1000;
+    private const int DeclareMaxRetryInterval = 5000;
+    private const double DeclareRetryMultiplier = 2.0d;
+    private const string DelayedMessageExchange = "x-delayed-message";
 
     private readonly object _lifecycleMonitor = new ();
     private readonly ILogger _logger;
@@ -63,7 +63,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public IApplicationContext ApplicationContext { get; set; }
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public IConnectionFactory ConnectionFactory { get; set; }
 
@@ -255,9 +255,9 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
         {
             var props = new Dictionary<string, object>
             {
-                { QUEUE_NAME, queueInfo.Name },
-                { QUEUE_MESSAGE_COUNT, queueInfo.MessageCount },
-                { QUEUE_CONSUMER_COUNT, queueInfo.ConsumerCount }
+                { QueueName, queueInfo.Name },
+                { QueueMessageCount, queueInfo.MessageCount },
+                { QueueConsumerCount, queueInfo.ConsumerCount }
             };
             return props;
         }
@@ -511,7 +511,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
                         arguments["x-delayed-type"] = exchange.Type;
 
                         // TODO: exchange.IsInternal .. appears .NET client doesn't expose
-                        channel.ExchangeDeclare(exchange.ExchangeName, DELAYED_MESSAGE_EXCHANGE, exchange.IsDurable, exchange.IsAutoDelete, arguments);
+                        channel.ExchangeDeclare(exchange.ExchangeName, DelayedMessageExchange, exchange.IsDurable, exchange.IsAutoDelete, arguments);
                     }
                     else
                     {
@@ -717,10 +717,10 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
             if (RetryTemplate == null && !RetryDisabled)
             {
-                RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DECLARE_MAX_ATTEMPTS, true, DECLARE_INITIAL_RETRY_INTERVAL, DECLARE_MAX_RETRY_INTERVAL, DECLARE_RETRY_MULTIPLIER, _logger);
+                RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DeclareMaxAttempts, true, DeclareInitialRetryInterval, DeclareMaxRetryInterval, DeclareRetryMultiplier, _logger);
             }
 
-            if (ConnectionFactory is CachingConnectionFactory factory && factory.CacheMode == CachingMode.CONNECTION)
+            if (ConnectionFactory is CachingConnectionFactory factory && factory.CacheMode == CachingMode.Connection)
             {
                 _logger?.LogWarning("RabbitAdmin auto declaration is not supported with CacheMode.CONNECTION");
                 return;

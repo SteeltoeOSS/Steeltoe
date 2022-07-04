@@ -18,10 +18,10 @@ public static class HealthCheckExtensions
     {
         return status switch
         {
-            MicrosoftHealthStatus.Healthy => HealthStatus.UP,
-            MicrosoftHealthStatus.Degraded => HealthStatus.WARNING,
-            MicrosoftHealthStatus.Unhealthy => HealthStatus.DOWN,
-            _ => HealthStatus.UNKNOWN,
+            MicrosoftHealthStatus.Healthy => HealthStatus.Up,
+            MicrosoftHealthStatus.Degraded => HealthStatus.Warning,
+            MicrosoftHealthStatus.Unhealthy => HealthStatus.Down,
+            _ => HealthStatus.Unknown,
         };
     }
 

@@ -23,5 +23,5 @@ public class HeadersExchange : AbstractExchange, IHeadersExchange
     {
     }
 
-    public override string Type { get; } = ExchangeType.HEADERS;
+    public override string Type { get; } = ExchangeType.Headers;
 }

@@ -22,7 +22,7 @@ public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleTraceRequestAsync(context);
         }
@@ -33,9 +33,9 @@ public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
     protected internal Task HandleTraceRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

@@ -40,7 +40,7 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
     {
         get
         {
-            return options as ILoggersOptions;
+            return innerOptions as ILoggersOptions;
         }
     }
 

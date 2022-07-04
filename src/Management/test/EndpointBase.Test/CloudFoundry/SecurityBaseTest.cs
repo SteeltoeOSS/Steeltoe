@@ -48,6 +48,6 @@ public class SecurityBaseTest : BaseTest
 
         response.Content = JsonContent.Create(perms);
         var result = await securityBase.GetPermissions(response);
-        Assert.Equal(Permissions.FULL, result);
+        Assert.Equal(Permissions.Full, result);
     }
 }

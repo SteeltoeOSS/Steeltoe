@@ -14,7 +14,7 @@ public class HealthStartup
 {
     public HealthStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;

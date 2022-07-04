@@ -134,7 +134,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
         public BoostrapLoggerInst(ILogger logger, string name)
         {
             Name = name;
-            Logger = logger;
+            this.Logger = logger;
         }
 
         public IDisposable BeginScope<TState>(TState state) => Logger.BeginScope(state);

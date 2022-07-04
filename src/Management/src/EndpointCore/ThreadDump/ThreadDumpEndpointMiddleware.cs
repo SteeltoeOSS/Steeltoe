@@ -23,7 +23,7 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
         {
             return HandleThreadDumpRequestAsync(context);
         }
@@ -34,9 +34,9 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

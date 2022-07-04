@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Support;
 
 public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChannel, IInterceptableChannel
 {
-    public const int INDEFINITE_TIMEOUT = -1;
+    public const int IndefiniteTimeout = -1;
 
     private readonly object _lock = new ();
     private List<IChannelInterceptor> _interceptors = new ();
@@ -90,7 +90,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     public virtual bool Send(IMessage message)
     {
-        return Send(message, INDEFINITE_TIMEOUT);
+        return Send(message, IndefiniteTimeout);
     }
 
     public virtual bool Send(IMessage message, int timeout)

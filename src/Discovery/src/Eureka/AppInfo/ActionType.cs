@@ -6,7 +6,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public enum ActionType
 {
-    ADDED,
-    MODIFIED,
-    DELETED
+    Added,
+    Modified,
+    Deleted
 }

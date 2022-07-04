@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class Queue : AbstractDeclarable, IQueue, ICloneable
 {
-    public const string X_QUEUE_MASTER_LOCATOR = "x-queue-master-locator";
+    public const string XQueueMasterLocator = "x-queue-master-locator";
 
     public Queue(string queueName)
         : this(queueName, true, false, false)
@@ -33,7 +33,7 @@ public class Queue : AbstractDeclarable, IQueue, ICloneable
     {
         QueueName = queueName ?? throw new ArgumentNullException(nameof(queueName));
         ServiceName = !string.IsNullOrEmpty(queueName) ? queueName : $"queue@{RuntimeHelpers.GetHashCode(this)}";
-        ActualName = !string.IsNullOrEmpty(queueName) ? queueName : Base64UrlNamingStrategy.DEFAULT.GenerateName() + "_awaiting_declaration";
+        ActualName = !string.IsNullOrEmpty(queueName) ? queueName : Base64UrlNamingStrategy.Default.GenerateName() + "_awaiting_declaration";
         IsDurable = durable;
         IsExclusive = exclusive;
         IsAutoDelete = autoDelete;
@@ -55,7 +55,7 @@ public class Queue : AbstractDeclarable, IQueue, ICloneable
     {
         get
         {
-            Arguments.TryGetValue(X_QUEUE_MASTER_LOCATOR, out var result);
+            Arguments.TryGetValue(XQueueMasterLocator, out var result);
             return result as string;
         }
 
@@ -63,11 +63,11 @@ public class Queue : AbstractDeclarable, IQueue, ICloneable
         {
             if (value == null)
             {
-                RemoveArgument(X_QUEUE_MASTER_LOCATOR);
+                RemoveArgument(XQueueMasterLocator);
             }
             else
             {
-                AddArgument(X_QUEUE_MASTER_LOCATOR, value);
+                AddArgument(XQueueMasterLocator, value);
             }
         }
     }

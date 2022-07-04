@@ -12,9 +12,9 @@ namespace Steeltoe.Connector.Services;
 [ServiceInfoFactory]
 public abstract class ServiceInfoFactory : IServiceInfoFactory
 {
-    private static readonly List<string> _userList = new () { "user", "username", "uid" };
-    private static readonly List<string> _passwordList = new () { "password", "pw" };
-    private static readonly List<string> _hostList = new () { "hostname", "host" };
+    private static readonly List<string> UserList = new () { "user", "username", "uid" };
+    private static readonly List<string> PasswordList = new () { "password", "pw" };
+    private static readonly List<string> HostList = new () { "hostname", "host" };
 
     protected ServiceInfoFactory(Tags tags, string scheme)
         : this(tags, new List<string> { scheme })
@@ -112,10 +112,10 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
     }
 
     protected internal virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, _userList);
+        => GetStringFromCredentials(credentials, UserList);
 
     protected internal virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, _passwordList);
+        => GetStringFromCredentials(credentials, PasswordList);
 
     protected internal virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
         => GetIntFromCredentials(credentials, "port");
@@ -124,7 +124,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         => GetIntFromCredentials(credentials, "tls_port");
 
     protected internal virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, _hostList);
+        => GetStringFromCredentials(credentials, HostList);
 
     protected internal virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
         => GetStringFromCredentials(credentials, UriKeys);

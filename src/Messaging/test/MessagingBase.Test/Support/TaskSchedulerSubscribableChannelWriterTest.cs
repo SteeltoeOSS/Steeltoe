@@ -12,17 +12,17 @@ namespace Steeltoe.Messaging.Support.Test;
 
 public class TaskSchedulerSubscribableChannelWriterTest
 {
-    internal readonly TaskSchedulerSubscribableChannel _channel;
-    internal readonly object _payload;
-    internal readonly IMessage _message;
+    internal readonly TaskSchedulerSubscribableChannel Channel;
+    internal readonly object Payload;
+    internal readonly IMessage Message;
 
-    internal IMessageHandler _handler;
+    internal IMessageHandler Handler;
 
     public TaskSchedulerSubscribableChannelWriterTest()
     {
-        _channel = new TaskSchedulerSubscribableChannel();
-        _payload = new object();
-        _message = MessageBuilder.WithPayload(_payload).Build();
+        Channel = new TaskSchedulerSubscribableChannel();
+        Payload = new object();
+        Message = MessageBuilder.WithPayload(Payload).Build();
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class TaskSchedulerSubscribableChannelWriterTest
         Exception exception = null;
         try
         {
-            await _channel.Writer.WriteAsync(null);
+            await Channel.Writer.WriteAsync(null);
         }
         catch (Exception ex)
         {
@@ -46,22 +46,22 @@ public class TaskSchedulerSubscribableChannelWriterTest
     public async ValueTask WriteAsyncNoInterceptors()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
-        _channel.Subscribe(_handler);
-        await _channel.Writer.WriteAsync(_message);
-        mock.Verify(h => h.HandleMessage(_message));
+        Handler = mock.Object;
+        Channel.Subscribe(Handler);
+        await Channel.Writer.WriteAsync(Message);
+        mock.Verify(h => h.HandleMessage(Message));
     }
 
     [Fact]
     public async ValueTask WriteAsyncWithoutScheduler()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
+        Handler = mock.Object;
         var interceptor = new BeforeHandleInterceptor();
-        _channel.AddInterceptor(interceptor);
-        _channel.Subscribe(_handler);
-        await _channel.Writer.WriteAsync(_message);
-        mock.Verify(h => h.HandleMessage(_message));
+        Channel.AddInterceptor(interceptor);
+        Channel.Subscribe(Handler);
+        await Channel.Writer.WriteAsync(Message);
+        mock.Verify(h => h.HandleMessage(Message));
         Assert.Equal(1, interceptor.Counter);
         Assert.True(interceptor.WasAfterHandledInvoked);
     }
@@ -70,15 +70,15 @@ public class TaskSchedulerSubscribableChannelWriterTest
     public async ValueTask WriteAsyncWithScheduler()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
+        Handler = mock.Object;
         var interceptor = new BeforeHandleInterceptor();
         var scheduler = new TestScheduler();
         var testChannel = new TaskSchedulerSubscribableChannel(scheduler);
         testChannel.AddInterceptor(interceptor);
-        testChannel.Subscribe(_handler);
-        await testChannel.Writer.WriteAsync(_message);
+        testChannel.Subscribe(Handler);
+        await testChannel.Writer.WriteAsync(Message);
         Assert.True(scheduler.WasTaskScheduled);
-        mock.Verify(h => h.HandleMessage(_message));
+        mock.Verify(h => h.HandleMessage(Message));
         Assert.Equal(1, interceptor.Counter);
         Assert.True(interceptor.WasAfterHandledInvoked);
     }
@@ -87,23 +87,23 @@ public class TaskSchedulerSubscribableChannelWriterTest
     public async ValueTask SubscribeTwice()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
-        Assert.True(_channel.Subscribe(_handler));
-        Assert.False(_channel.Subscribe(_handler));
-        await _channel.Writer.WriteAsync(_message);
-        mock.Verify(h => h.HandleMessage(_message), Times.Once);
+        Handler = mock.Object;
+        Assert.True(Channel.Subscribe(Handler));
+        Assert.False(Channel.Subscribe(Handler));
+        await Channel.Writer.WriteAsync(Message);
+        mock.Verify(h => h.HandleMessage(Message), Times.Once);
     }
 
     [Fact]
     public async Task UnsubscribeTwice()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
-        _channel.Subscribe(_handler);
-        Assert.True(_channel.Unsubscribe(_handler));
-        Assert.False(_channel.Unsubscribe(_handler));
-        await _channel.Writer.WriteAsync(_message);
-        mock.Verify(h => h.HandleMessage(_message), Times.Never);
+        Handler = mock.Object;
+        Channel.Subscribe(Handler);
+        Assert.True(Channel.Unsubscribe(Handler));
+        Assert.False(Channel.Unsubscribe(Handler));
+        await Channel.Writer.WriteAsync(Message);
+        mock.Verify(h => h.HandleMessage(Message), Times.Never);
     }
 
     [Fact]
@@ -111,18 +111,18 @@ public class TaskSchedulerSubscribableChannelWriterTest
     {
         var ex = new Exception("My exception");
         var mock = new Mock<IMessageHandler>();
-        mock.Setup(h => h.HandleMessage(_message)).Throws(ex);
-        _handler = mock.Object;
+        mock.Setup(h => h.HandleMessage(Message)).Throws(ex);
+        Handler = mock.Object;
 
         var mock2 = new Mock<IMessageHandler>();
         var secondHandler = mock2.Object;
 
-        _channel.Subscribe(_handler);
-        _channel.Subscribe(secondHandler);
+        Channel.Subscribe(Handler);
+        Channel.Subscribe(secondHandler);
         var exceptionThrown = false;
         try
         {
-            await _channel.Writer.WriteAsync(_message);
+            await Channel.Writer.WriteAsync(Message);
         }
         catch (MessageDeliveryException actualException)
         {
@@ -132,26 +132,26 @@ public class TaskSchedulerSubscribableChannelWriterTest
         }
 
         Assert.True(exceptionThrown);
-        mock2.Verify(h => h.HandleMessage(_message), Times.Never);
+        mock2.Verify(h => h.HandleMessage(Message), Times.Never);
     }
 
     [Fact]
     public async ValueTask ConcurrentModification()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
+        Handler = mock.Object;
         var unsubscribeHandler = new UnsubscribeHandler(this);
-        _channel.Subscribe(unsubscribeHandler);
-        _channel.Subscribe(_handler);
-        await _channel.Writer.WriteAsync(_message);
-        mock.Verify(h => h.HandleMessage(_message), Times.Once);
+        Channel.Subscribe(unsubscribeHandler);
+        Channel.Subscribe(Handler);
+        await Channel.Writer.WriteAsync(Message);
+        mock.Verify(h => h.HandleMessage(Message), Times.Once);
     }
 
     [Fact]
     public async ValueTask InterceptorWithModifiedMessage()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
+        Handler = mock.Object;
         var mock2 = new Mock<IMessage>();
         var expected = mock2.Object;
 
@@ -159,9 +159,9 @@ public class TaskSchedulerSubscribableChannelWriterTest
         {
             MessageToReturn = expected
         };
-        _channel.AddInterceptor(interceptor);
-        _channel.Subscribe(_handler);
-        await _channel.Writer.WriteAsync(_message);
+        Channel.AddInterceptor(interceptor);
+        Channel.Subscribe(Handler);
+        await Channel.Writer.WriteAsync(Message);
         mock.Verify(h => h.HandleMessage(expected), Times.Once);
 
         Assert.Equal(1, interceptor.Counter);
@@ -172,14 +172,14 @@ public class TaskSchedulerSubscribableChannelWriterTest
     public async ValueTask InterceptorWithNull()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
+        Handler = mock.Object;
         var interceptor1 = new BeforeHandleInterceptor();
         var interceptor2 = new NullReturningBeforeHandleInterceptor();
-        _channel.AddInterceptor(interceptor1);
-        _channel.AddInterceptor(interceptor2);
-        _channel.Subscribe(_handler);
-        await _channel.Writer.WriteAsync(_message);
-        mock.Verify(h => h.HandleMessage(_message), Times.Never);
+        Channel.AddInterceptor(interceptor1);
+        Channel.AddInterceptor(interceptor2);
+        Channel.Subscribe(Handler);
+        await Channel.Writer.WriteAsync(Message);
+        mock.Verify(h => h.HandleMessage(Message), Times.Never);
         Assert.Equal(1, interceptor1.Counter);
         Assert.Equal(1, interceptor2.Counter);
         Assert.True(interceptor1.WasAfterHandledInvoked);
@@ -190,16 +190,16 @@ public class TaskSchedulerSubscribableChannelWriterTest
     {
         var expected = new Exception("Fake exception");
         var mock = new Mock<IMessageHandler>();
-        mock.Setup(h => h.HandleMessage(_message)).Throws(expected);
-        _handler = mock.Object;
+        mock.Setup(h => h.HandleMessage(Message)).Throws(expected);
+        Handler = mock.Object;
 
         var interceptor = new BeforeHandleInterceptor();
-        _channel.AddInterceptor(interceptor);
-        _channel.Subscribe(_handler);
+        Channel.AddInterceptor(interceptor);
+        Channel.Subscribe(Handler);
         var exceptionThrown = false;
         try
         {
-            await _channel.Writer.WriteAsync(_message);
+            await Channel.Writer.WriteAsync(Message);
         }
         catch (MessageDeliveryException actual)
         {
@@ -208,7 +208,7 @@ public class TaskSchedulerSubscribableChannelWriterTest
         }
 
         Assert.True(exceptionThrown);
-        mock.Verify(h => h.HandleMessage(_message), Times.Once);
+        mock.Verify(h => h.HandleMessage(Message), Times.Once);
         Assert.Equal(1, interceptor.Counter);
         Assert.True(interceptor.WasAfterHandledInvoked);
     }
@@ -217,42 +217,42 @@ public class TaskSchedulerSubscribableChannelWriterTest
     public async ValueTask TestWaitToWriteAsync()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
-        _channel.Subscribe(_handler);
-        Assert.True(await _channel.Writer.WaitToWriteAsync());
-        _channel.Unsubscribe(_handler);
-        Assert.False(await _channel.Writer.WaitToWriteAsync());
+        Handler = mock.Object;
+        Channel.Subscribe(Handler);
+        Assert.True(await Channel.Writer.WaitToWriteAsync());
+        Channel.Unsubscribe(Handler);
+        Assert.False(await Channel.Writer.WaitToWriteAsync());
     }
 
     [Fact]
     public void TestTryComplete()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
-        _channel.Subscribe(_handler);
-        Assert.False(_channel.Writer.TryComplete());
+        Handler = mock.Object;
+        Channel.Subscribe(Handler);
+        Assert.False(Channel.Writer.TryComplete());
     }
 
     [Fact]
     public void TryWriteNoInterceptors()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
-        _channel.Subscribe(_handler);
-        Assert.True(_channel.Writer.TryWrite(_message));
-        mock.Verify(h => h.HandleMessage(_message));
+        Handler = mock.Object;
+        Channel.Subscribe(Handler);
+        Assert.True(Channel.Writer.TryWrite(Message));
+        mock.Verify(h => h.HandleMessage(Message));
     }
 
     [Fact]
     public void TryWriteWithInterceptors()
     {
         var mock = new Mock<IMessageHandler>();
-        _handler = mock.Object;
+        Handler = mock.Object;
         var interceptor = new BeforeHandleInterceptor();
-        _channel.AddInterceptor(interceptor);
-        _channel.Subscribe(_handler);
-        Assert.True(_channel.Writer.TryWrite(_message));
-        mock.Verify(h => h.HandleMessage(_message));
+        Channel.AddInterceptor(interceptor);
+        Channel.Subscribe(Handler);
+        Assert.True(Channel.Writer.TryWrite(Message));
+        mock.Verify(h => h.HandleMessage(Message));
         Assert.Equal(1, interceptor.Counter);
         Assert.True(interceptor.WasAfterHandledInvoked);
     }

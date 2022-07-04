@@ -27,7 +27,7 @@ public abstract class BucketedRollingCounterStream<TEvent, TBucket, TOutput> : B
             return result;
         };
         counterSubject = new BehaviorSubject<TOutput>(EmptyOutputValue);
-        _sourceStream = bucketedStream // stream broken up into buckets
+        _sourceStream = BucketedStream // stream broken up into buckets
 
             .Window(numBuckets, 1) // emit overlapping windows of buckets
 
@@ -60,11 +60,11 @@ public abstract class BucketedRollingCounterStream<TEvent, TBucket, TOutput> : B
 
     public void StartCachingStreamValuesIfUnstarted()
     {
-        if (subscription.Value == null)
+        if (Subscription.Value == null)
         {
             // the stream is not yet started
             var candidateSubscription = Observe().Subscribe(counterSubject);
-            if (!subscription.CompareAndSet(null, candidateSubscription))
+            if (!Subscription.CompareAndSet(null, candidateSubscription))
             {
                 // lost the race to set the subscription, so we need to cancel this one
                 candidateSubscription.Dispose();

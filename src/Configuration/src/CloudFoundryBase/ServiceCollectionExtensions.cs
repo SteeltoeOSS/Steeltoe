@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-public static class IServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Removes any existing <see cref="IApplicationInstanceInfo"/> if found. Registers a <see cref="CloudFoundryApplicationOptions" />.

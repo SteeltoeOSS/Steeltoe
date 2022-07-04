@@ -48,7 +48,7 @@ public class RabbitReconnectProblemTest
             // The available permits should always be == 2.
             Thread.Sleep(2000);
             CheckIt(template, i++, myQueue.ActualName);
-            using var values = ccf._checkoutPermits.Values.GetEnumerator();
+            using var values = ccf.CheckoutPermits.Values.GetEnumerator();
             values.MoveNext();
             var availablePermits = values.Current.CurrentCount;
             _output.WriteLine("Permits after test: " + availablePermits);

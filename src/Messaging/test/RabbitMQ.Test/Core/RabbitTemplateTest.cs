@@ -149,7 +149,7 @@ public class RabbitTemplateTest
             .Throws(new RabbitConnectException(null));
         var template = new RabbitTemplate(mockConnectionFactory.Object);
         Assert.Throws<RabbitConnectException>(() => template.ConvertSendAndReceive<object>("foo"));
-        Assert.False(template._evaluatedFastReplyTo);
+        Assert.False(template.EvaluatedFastReplyTo);
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public class RabbitTemplateTest
             .Throws(new RabbitIOException(null));
         var template = new RabbitTemplate(mockConnectionFactory.Object);
         Assert.Throws<RabbitIOException>(() => template.ConvertSendAndReceive<object>("foo"));
-        Assert.False(template._evaluatedFastReplyTo);
+        Assert.False(template.EvaluatedFastReplyTo);
     }
 
     [Fact]
@@ -177,19 +177,19 @@ public class RabbitTemplateTest
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
         mockChannel.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
-        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO)).Throws(new ShutdownSignalException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.Queue_ClassId, RabbitUtils.Declare_MethodId)));
+        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitmqReplyTo)).Throws(new ShutdownSignalException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.QueueClassId, RabbitUtils.DeclareMethodId)));
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
         var template = new RabbitTemplate(connectionFactory)
         {
             ReplyTimeout = 1
         };
         template.ConvertSendAndReceive<object>("foo");
-        Assert.True(template._evaluatedFastReplyTo);
-        Assert.False(template._usingFastReplyTo);
+        Assert.True(template.EvaluatedFastReplyTo);
+        Assert.False(template.UsingFastReplyTo);
     }
 
     [Fact]
-    public void TestEvaluateDirectReplyToOK()
+    public void TestEvaluateDirectReplyToOk()
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
@@ -200,16 +200,16 @@ public class RabbitTemplateTest
 
         mockChannel.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO))
-            .Returns(() => new RC.QueueDeclareOk(Address.AMQ_RABBITMQ_REPLY_TO, 0, 0));
+        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitmqReplyTo))
+            .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitmqReplyTo, 0, 0));
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
         var template = new RabbitTemplate(connectionFactory)
         {
             ReplyTimeout = 1
         };
         template.ConvertSendAndReceive<object>("foo");
-        Assert.True(template._evaluatedFastReplyTo);
-        Assert.True(template._usingFastReplyTo);
+        Assert.True(template.EvaluatedFastReplyTo);
+        Assert.True(template.UsingFastReplyTo);
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class RabbitTemplateTest
     {
         var template = new RabbitTemplate
         {
-            ReplyAddress = Address.AMQ_RABBITMQ_REPLY_TO
+            ReplyAddress = Address.AmqRabbitmqReplyTo
         };
         Assert.Throws<InvalidOperationException>(() => template.GetExpectedQueueNames());
     }

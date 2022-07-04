@@ -13,18 +13,18 @@ namespace Steeltoe.Connector.Redis;
 
 public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 {
-    private const string Default_Host = "localhost";
-    private const int Default_Port = 6379;
+    private const string DefaultHost = "localhost";
+    private const int DefaultPort = 6379;
     private const string RedisClientSectionPrefix = "redis:client";
     private readonly bool _cloudFoundryConfigFound;
 
     public RedisCacheConnectorOptions()
-        : base(',', Default_Separator)
+        : base(',', DefaultSeparator)
     {
     }
 
     public RedisCacheConnectorOptions(IConfiguration config)
-        : base(',', Default_Separator)
+        : base(',', DefaultSeparator)
     {
         if (config == null)
         {
@@ -39,9 +39,9 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
     // Configure either a single Host/Port or optionally provide
     // a list of endpoints (ie. host1:port1,host2:port2)
-    public string Host { get; set; } = Default_Host;
+    public string Host { get; set; } = DefaultHost;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string EndPoints { get; set; }
 

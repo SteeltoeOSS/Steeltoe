@@ -81,7 +81,7 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
 
     private IDictionary<string, List<string>> GetNativeHeaders(IMessage message)
     {
-        message.Headers.TryGetValue(NativeMessageHeaderAccessor.NATIVE_HEADERS, out var result);
+        message.Headers.TryGetValue(NativeMessageHeaderAccessor.NativeHeaders, out var result);
         return (IDictionary<string, List<string>>)result;
     }
 

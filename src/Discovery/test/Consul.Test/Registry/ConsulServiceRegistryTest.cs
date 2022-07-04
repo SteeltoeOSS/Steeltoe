@@ -62,8 +62,8 @@ public class ConsulServiceRegistryTest
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
-        Assert.Single(sch._serviceHeartbeats);
-        Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
+        Assert.Single(sch.ServiceHeartbeats);
+        Assert.Contains(registration.InstanceId, sch.ServiceHeartbeats.Keys);
         sch.Remove(registration.InstanceId);
     }
 
@@ -105,12 +105,12 @@ public class ConsulServiceRegistryTest
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
-        Assert.Single(sch._serviceHeartbeats);
-        Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
+        Assert.Single(sch.ServiceHeartbeats);
+        Assert.Contains(registration.InstanceId, sch.ServiceHeartbeats.Keys);
 
         await reg.DeregisterAsync(registration);
         agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default), Times.Once);
-        Assert.Empty(sch._serviceHeartbeats);
+        Assert.Empty(sch.ServiceHeartbeats);
     }
 
     [Fact]

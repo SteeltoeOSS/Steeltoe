@@ -19,7 +19,7 @@ public class HystrixCommandOptionsTest
         {
             ExecutionTimeoutInMilliseconds = 1000, // when an execution will be timed out
             ExecutionTimeoutEnabled = true,
-            ExecutionIsolationStrategy = ExecutionIsolationStrategy.THREAD, // we want thread execution by default in tests
+            ExecutionIsolationStrategy = ExecutionIsolationStrategy.Thread, // we want thread execution by default in tests
             CircuitBreakerForceOpen = false, // we don't want short-circuiting by default
             CircuitBreakerErrorThresholdPercentage = 40, // % of 'marks' that must be failed to trip the circuit
             MetricsRollingStatisticalWindowInMilliseconds = 5000, // milliseconds back that will be tracked
@@ -67,7 +67,7 @@ public class HystrixCommandOptionsTest
     public void TestBooleanCodeDefault()
     {
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions());
-        Assert.Equal(HystrixCommandOptions.Default_CircuitBreakerForceClosed, properties.CircuitBreakerForceClosed);
+        Assert.Equal(HystrixCommandOptions.DefaultCircuitBreakerForceClosed, properties.CircuitBreakerForceClosed);
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class HystrixCommandOptionsTest
         var properties = new HystrixCommandOptions(
             HystrixCommandKeyDefault.AsKey("TEST"),
             new HystrixCommandOptions());
-        Assert.Equal(HystrixCommandOptions.Default_MetricsRollingStatisticalWindow, properties.MetricsRollingStatisticalWindowInMilliseconds);
+        Assert.Equal(HystrixCommandOptions.DefaultMetricsRollingStatisticalWindow, properties.MetricsRollingStatisticalWindowInMilliseconds);
     }
 
     [Fact]

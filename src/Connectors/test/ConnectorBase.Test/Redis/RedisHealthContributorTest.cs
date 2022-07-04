@@ -29,7 +29,7 @@ public class RedisHealthContributorTest
         var contrib = RedisHealthContributor.GetRedisContributor(config);
         Assert.NotNull(contrib);
         var status = contrib.Health();
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class RedisHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Equal("Redis health check failed", status.Description);
     }
 
@@ -58,7 +58,7 @@ public class RedisHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class RedisHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Equal("Redis health check failed", status.Description);
     }
 
@@ -87,6 +87,6 @@ public class RedisHealthContributorTest
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 }

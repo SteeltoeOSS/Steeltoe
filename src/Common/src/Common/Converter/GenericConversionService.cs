@@ -11,8 +11,8 @@ namespace Steeltoe.Common.Converter;
 
 public class GenericConversionService : IConversionService, IConverterRegistry
 {
-    private static readonly IGenericConverter NO_OP_CONVERTER = new NoOpConverter("NO_OP");
-    private static readonly IGenericConverter NO_MATCH = new NoOpConverter("NO_MATCH");
+    private static readonly IGenericConverter NoOpConverterSingleton = new NoOpConverter("NO_OP");
+    private static readonly IGenericConverter NoMatchSingleton = new NoOpConverter("NO_MATCH");
     private readonly Converters _converters = new ();
 
     private readonly ConcurrentDictionary<ConverterCacheKey, IGenericConverter> _converterCache = new ();
@@ -92,7 +92,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         }
 
         var converter = GetConverter(sourceType, targetType);
-        return converter == NO_OP_CONVERTER;
+        return converter == NoOpConverterSingleton;
     }
 
     public void AddConverter(IGenericConverter converter)
@@ -106,7 +106,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         var key = new ConverterCacheKey(sourceType, targetType);
         if (_converterCache.TryGetValue(key, out var converter))
         {
-            return converter != NO_MATCH ? converter : null;
+            return converter != NoMatchSingleton ? converter : null;
         }
 
         converter = _converters.Find(sourceType, targetType) ?? GetDefaultConverter(sourceType, targetType);
@@ -121,11 +121,11 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return converter;
         }
 
-        _converterCache.TryAdd(key, NO_MATCH);
+        _converterCache.TryAdd(key, NoMatchSingleton);
         return null;
     }
 
-    protected virtual IGenericConverter GetDefaultConverter(Type sourceType, Type targetType) => targetType.IsAssignableFrom(sourceType) ? NO_OP_CONVERTER : null;
+    protected virtual IGenericConverter GetDefaultConverter(Type sourceType, Type targetType) => targetType.IsAssignableFrom(sourceType) ? NoOpConverterSingleton : null;
 
     private object HandleResult(Type sourceType, Type targetType, object result)
     {

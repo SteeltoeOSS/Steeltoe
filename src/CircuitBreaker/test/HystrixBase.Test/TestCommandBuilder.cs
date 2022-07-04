@@ -8,7 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestCommandBuilder
 {
-    public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OWNER_ONE;
+    public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OwnerOne;
     public IHystrixCommandKey DependencyKey;
     public IHystrixThreadPoolKey ThreadPoolKey;
     public ICircuitBreaker CircuitBreaker;
@@ -27,25 +27,25 @@ public class TestCommandBuilder
 
     public TestCommandBuilder SetOwner(IHystrixCommandGroupKey owner)
     {
-        Owner = owner;
+        this.Owner = owner;
         return this;
     }
 
     public TestCommandBuilder SetCommandKey(IHystrixCommandKey dependencyKey)
     {
-        DependencyKey = dependencyKey;
+        this.DependencyKey = dependencyKey;
         return this;
     }
 
     public TestCommandBuilder SetThreadPoolKey(IHystrixThreadPoolKey threadPoolKey)
     {
-        ThreadPoolKey = threadPoolKey;
+        this.ThreadPoolKey = threadPoolKey;
         return this;
     }
 
     public TestCommandBuilder SetCircuitBreaker(TestCircuitBreaker circuitBreaker)
     {
-        CircuitBreaker = circuitBreaker;
+        this.CircuitBreaker = circuitBreaker;
         if (circuitBreaker != null)
         {
             Metrics = circuitBreaker.Metrics;
@@ -56,43 +56,43 @@ public class TestCommandBuilder
 
     public TestCommandBuilder SetThreadPool(IHystrixThreadPool threadPool)
     {
-        ThreadPool = threadPool;
+        this.ThreadPool = threadPool;
         return this;
     }
 
     public TestCommandBuilder SetCommandOptionDefaults(IHystrixCommandOptions commandPropertiesDefaults)
     {
-        CommandPropertiesDefaults = commandPropertiesDefaults;
+        this.CommandPropertiesDefaults = commandPropertiesDefaults;
         return this;
     }
 
     public TestCommandBuilder SetThreadPoolPropertiesDefaults(IHystrixThreadPoolOptions threadPoolPropertiesDefaults)
     {
-        ThreadPoolPropertiesDefaults = threadPoolPropertiesDefaults;
+        this.ThreadPoolPropertiesDefaults = threadPoolPropertiesDefaults;
         return this;
     }
 
     public TestCommandBuilder SetMetrics(HystrixCommandMetrics metrics)
     {
-        Metrics = metrics;
+        this.Metrics = metrics;
         return this;
     }
 
     public TestCommandBuilder SetFallbackSemaphore(SemaphoreSlim fallbackSemaphore)
     {
-        FallbackSemaphore = fallbackSemaphore;
+        this.FallbackSemaphore = fallbackSemaphore;
         return this;
     }
 
     public TestCommandBuilder SetExecutionSemaphore(SemaphoreSlim executionSemaphore)
     {
-        ExecutionSemaphore = executionSemaphore;
+        this.ExecutionSemaphore = executionSemaphore;
         return this;
     }
 
     public TestCommandBuilder SetExecutionHook(TestableExecutionHook executionHook)
     {
-        ExecutionHook = executionHook;
+        this.ExecutionHook = executionHook;
         return this;
     }
 }

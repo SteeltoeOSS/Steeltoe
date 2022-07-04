@@ -52,7 +52,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
 
         var testPayload1 = $"foo-{Guid.NewGuid()}";
         output.Send(MessageBuilder.WithPayload(testPayload1)
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
 
         var receivedMessage1 = (Message<byte[]>)Receive(input1);
@@ -68,13 +68,13 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         var testPayload2 = $"foo-{Guid.NewGuid()}";
 
         output.Send(MessageBuilder.WithPayload(testPayload2)
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
 
         binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
         var testPayload3 = $"foo-{Guid.NewGuid()}";
         output.Send(MessageBuilder.WithPayload(testPayload3)
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
 
         receivedMessage1 = (Message<byte[]>)Receive(input1);
@@ -109,7 +109,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         var producerBinding = binder.BindProducer(testDestination, output, producerOptions);
         var testPayload = $"foo-{Guid.NewGuid()}";
 
-        output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).Build());
+        output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
         var inbound1 = new QueueChannel();
         var consumerBinding = binder.BindConsumer(testDestination, "test1", inbound1, consumerOptions);
         var receivedMessage1 = (Message<byte[]>)Receive(inbound1);
@@ -137,7 +137,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
 
         var testPayload = $"foo-{Guid.NewGuid()}";
 
-        output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).Build());
+        output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
         var inbound1 = new QueueChannel();
 
         var consumerOptions = GetConsumerOptions("output", bindingsOptions);
@@ -161,7 +161,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
     }
 
     [Fact]
-    public void TestPartitionedModuleSpEL()
+    public void TestPartitionedModuleSpel()
     {
         var bindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(bindingsOptions);
@@ -202,17 +202,17 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         try
         {
             var endpoint = ExtractEndpoint(outputBinding);
-            CheckRkExpressionForPartitionedModuleSpEL(endpoint);
+            CheckRkExpressionForPartitionedModuleSpel(endpoint);
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, ex.Message);
         }
 
-        var message2 = MessageBuilder.WithPayload("2").SetHeader("correlationId", "foo").SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).SetHeader("sequenceNumber", 42).SetHeader("sequenceSize", 43).Build();
+        var message2 = MessageBuilder.WithPayload("2").SetHeader("correlationId", "foo").SetHeader("contentType", MimeTypeUtils.TextPlain).SetHeader("sequenceNumber", 42).SetHeader("sequenceSize", 43).Build();
         output.Send(message2);
-        output.Send(MessageBuilder.WithPayload("1").SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).Build());
-        output.Send(MessageBuilder.WithPayload("0").SetHeader("contentType", MimeTypeUtils.TEXT_PLAIN).Build());
+        output.Send(MessageBuilder.WithPayload("1").SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
+        output.Send(MessageBuilder.WithPayload("0").SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
 
         var receive0 = Receive(input0);
         Assert.NotNull(receive0);
@@ -275,7 +275,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         return (TValue)pi.GetValue(current);
     }
 
-    protected virtual void CheckRkExpressionForPartitionedModuleSpEL(object endpoint)
+    protected virtual void CheckRkExpressionForPartitionedModuleSpel(object endpoint)
     {
         var routingExpression = GetEndpointRouting(endpoint);
         var delimiter = GetDestinationNameDelimiter();

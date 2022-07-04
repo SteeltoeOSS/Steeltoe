@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistrar);
+    public const string DefaultServiceName = nameof(RabbitListenerEndpointRegistrar);
 
     private readonly List<RabbitListenerEndpointDescriptor> _endpointDescriptors = new ();
 
@@ -32,7 +32,7 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
 
     public bool StartImmediately { get; set; }
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public void Initialize()
     {

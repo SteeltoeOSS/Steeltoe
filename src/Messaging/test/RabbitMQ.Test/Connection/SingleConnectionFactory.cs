@@ -12,7 +12,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class SingleConnectionFactory : AbstractConnectionFactory
 {
-    public const string DEFAULT_SERVICE_NAME = "scFactory";
+    public const string DefaultServiceName = "scFactory";
 
     private readonly object _connectionMonitor = new ();
 
@@ -27,7 +27,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
     }
 
     public SingleConnectionFactory(string hostname, ILoggerFactory loggerFactory = null)
-        : this(hostname, RabbitOptions.DEFAULT_PORT, loggerFactory)
+        : this(hostname, RabbitOptions.DefaultPort, loggerFactory)
     {
     }
 
@@ -41,20 +41,20 @@ public class SingleConnectionFactory : AbstractConnectionFactory
 
         Host = hostname;
         Port = port;
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     public SingleConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
         : base(new RC.ConnectionFactory(), loggerFactory)
     {
         Uri = uri;
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     public SingleConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
         : base(rabbitConnectionFactory, loggerFactory)
     {
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     public SharedConnectionProxy Connection { get; private set; }

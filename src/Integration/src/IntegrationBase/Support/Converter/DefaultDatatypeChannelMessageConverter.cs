@@ -11,7 +11,7 @@ namespace Steeltoe.Integration.Support.Converter;
 
 public class DefaultDatatypeChannelMessageConverter : IMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(DefaultDatatypeChannelMessageConverter);
+    public const string DefaultServiceName = nameof(DefaultDatatypeChannelMessageConverter);
 
     private readonly IConversionService _conversionService;
 
@@ -20,7 +20,7 @@ public class DefaultDatatypeChannelMessageConverter : IMessageConverter
         _conversionService = conversionService ?? DefaultConversionService.Singleton;
     }
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public object FromMessage(IMessage message, Type targetClass)
     {

@@ -13,5 +13,5 @@ public class DirectChannelWriter : AbstractSubscribableChannelWriter
     {
     }
 
-    public new DirectChannel Channel => (DirectChannel)channel;
+    public new DirectChannel Channel => (DirectChannel)innerChannel;
 }

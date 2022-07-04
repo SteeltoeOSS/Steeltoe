@@ -15,11 +15,11 @@ public interface ISource
     /// <summary>
     /// Default name of the output channel.
     /// </summary>
-    const string OUTPUT = "output";
+    const string OutputName = "output";
 
     /// <summary>
     /// Gets the output channel.
     /// </summary>
-    [Output(OUTPUT)]
+    [Output(OutputName)]
     IMessageChannel Output { get; }
 }

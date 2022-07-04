@@ -73,7 +73,7 @@ public class CachePropertiesTest
         {
             ChannelCacheSize = 10,
             ConnectionCacheSize = 5,
-            CacheMode = CachingMode.CONNECTION,
+            CacheMode = CachingMode.Connection,
             ServiceName = "testConnectionCache"
         };
         var c1 = connectionCf.CreateConnection();

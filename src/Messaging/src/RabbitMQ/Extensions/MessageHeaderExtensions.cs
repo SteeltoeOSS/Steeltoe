@@ -12,32 +12,32 @@ public static class MessageHeaderExtensions
 {
     public static string AppId(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.APP_ID);
+        return headers.Get<string>(RabbitMessageHeaders.AppId);
     }
 
     public static string ClusterId(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.CLUSTER_ID);
+        return headers.Get<string>(RabbitMessageHeaders.ClusterId);
     }
 
     public static string ConsumerQueue(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.CONSUMER_QUEUE);
+        return headers.Get<string>(RabbitMessageHeaders.ConsumerQueue);
     }
 
     public static string ConsumerTag(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.CONSUMER_TAG);
+        return headers.Get<string>(RabbitMessageHeaders.ConsumerTag);
     }
 
     public static string ContentEncoding(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.CONTENT_ENCODING);
+        return headers.Get<string>(RabbitMessageHeaders.ContentEncoding);
     }
 
     public static long? ContentLength(this IMessageHeaders headers)
     {
-        return headers.Get<long?>(RabbitMessageHeaders.CONTENT_LENGTH);
+        return headers.Get<long?>(RabbitMessageHeaders.ContentLength);
     }
 
     public static bool IsContentLengthSet(this IMessageHeaders headers)
@@ -53,28 +53,28 @@ public static class MessageHeaderExtensions
 
     public static string ContentType(this IMessageHeaders headers)
     {
-        var contentType = headers.Get<object>(RabbitMessageHeaders.CONTENT_TYPE);
+        var contentType = headers.Get<object>(RabbitMessageHeaders.ContentType);
         return contentType?.ToString();
     }
 
     public static string CorrelationId(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.CORRELATION_ID);
+        return headers.Get<string>(RabbitMessageHeaders.CorrelationId);
     }
 
     public static int? Delay(this IMessageHeaders headers)
     {
-        return headers.Get<int?>(RabbitMessageHeaders.X_DELAY);
+        return headers.Get<int?>(RabbitMessageHeaders.XDelay);
     }
 
     public static MessageDeliveryMode? DeliveryMode(this IMessageHeaders headers)
     {
-        return headers.Get<MessageDeliveryMode?>(RabbitMessageHeaders.DELIVERY_MODE);
+        return headers.Get<MessageDeliveryMode?>(RabbitMessageHeaders.DeliveryMode);
     }
 
     public static ulong? DeliveryTag(this IMessageHeaders headers)
     {
-        return headers.Get<ulong?>(RabbitMessageHeaders.DELIVERY_TAG);
+        return headers.Get<ulong?>(RabbitMessageHeaders.DeliveryTag);
     }
 
     public static bool IsDeliveryTagSet(this IMessageHeaders headers)
@@ -90,67 +90,67 @@ public static class MessageHeaderExtensions
 
     public static string Expiration(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.EXPIRATION);
+        return headers.Get<string>(RabbitMessageHeaders.Expiration);
     }
 
     public static Type InferredArgumentType(this IMessageHeaders headers)
     {
-        return headers.Get<Type>(MessageHeaders.INFERRED_ARGUMENT_TYPE);
+        return headers.Get<Type>(MessageHeaders.InferredArgumentType);
     }
 
     public static uint? MessageCount(this IMessageHeaders headers)
     {
-        return headers.Get<uint?>(RabbitMessageHeaders.MESSAGE_COUNT);
+        return headers.Get<uint?>(RabbitMessageHeaders.MessageCount);
     }
 
     public static string MessageId(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.MESSAGE_ID);
+        return headers.Get<string>(RabbitMessageHeaders.MessageId);
     }
 
     public static int? Priority(this IMessageHeaders headers)
     {
-        return headers.Get<int?>(RabbitMessageHeaders.PRIORITY);
+        return headers.Get<int?>(RabbitMessageHeaders.Priority);
     }
 
     public static ulong? PublishSequenceNumber(this IMessageHeaders headers)
     {
-        return headers.Get<ulong?>(RabbitMessageHeaders.PUBLISH_SEQUENCE_NUMBER);
+        return headers.Get<ulong?>(RabbitMessageHeaders.PublishSequenceNumber);
     }
 
     public static int? ReceivedDelay(this IMessageHeaders headers)
     {
-        return headers.Get<int?>(RabbitMessageHeaders.RECEIVED_DELAY);
+        return headers.Get<int?>(RabbitMessageHeaders.ReceivedDelay);
     }
 
     public static MessageDeliveryMode? ReceivedDeliveryMode(this IMessageHeaders headers)
     {
-        return headers.Get<MessageDeliveryMode?>(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE);
+        return headers.Get<MessageDeliveryMode?>(RabbitMessageHeaders.ReceivedDeliveryMode);
     }
 
     public static string ReceivedExchange(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.RECEIVED_EXCHANGE);
+        return headers.Get<string>(RabbitMessageHeaders.ReceivedExchange);
     }
 
     public static string ReceivedRoutingKey(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.RECEIVED_ROUTING_KEY);
+        return headers.Get<string>(RabbitMessageHeaders.ReceivedRoutingKey);
     }
 
     public static string ReceivedUserId(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.RECEIVED_USER_ID);
+        return headers.Get<string>(RabbitMessageHeaders.ReceivedUserId);
     }
 
     public static bool? Redelivered(this IMessageHeaders headers)
     {
-        return headers.Get<bool?>(RabbitMessageHeaders.REDELIVERED);
+        return headers.Get<bool?>(RabbitMessageHeaders.Redelivered);
     }
 
     public static string ReplyTo(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.REPLY_TO);
+        return headers.Get<string>(RabbitMessageHeaders.ReplyTo);
     }
 
     public static Address ReplyToAddress(this IMessageHeaders headers)
@@ -166,32 +166,32 @@ public static class MessageHeaderExtensions
 
     public static object Target(this IMessageHeaders headers)
     {
-        return headers.Get<object>(RabbitMessageHeaders.TARGET);
+        return headers.Get<object>(RabbitMessageHeaders.Target);
     }
 
     public static MethodInfo TargetMethod(this IMessageHeaders headers)
     {
-        return headers.Get<MethodInfo>(RabbitMessageHeaders.TARGET_METHOD);
+        return headers.Get<MethodInfo>(RabbitMessageHeaders.TargetMethod);
     }
 
     public static long? Timestamp(this IMessageHeaders headers)
     {
-        return headers.Get<long?>(MessageHeaders.TIMESTAMP);
+        return headers.Get<long?>(MessageHeaders.TimestampName);
     }
 
     public static string Type(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.TYPE);
+        return headers.Get<string>(RabbitMessageHeaders.Type);
     }
 
     public static string UserId(this IMessageHeaders headers)
     {
-        return headers.Get<string>(RabbitMessageHeaders.USER_ID);
+        return headers.Get<string>(RabbitMessageHeaders.UserId);
     }
 
     public static bool? FinalRetryForMessageWithNoId(this IMessageHeaders headers)
     {
-        return headers.Get<bool?>(RabbitMessageHeaders.FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID);
+        return headers.Get<bool?>(RabbitMessageHeaders.FinalRetryForMessageWithNoId);
     }
 
     public static bool IsFinalRetryForMessageWithNoId(this IMessageHeaders headers)
@@ -207,6 +207,6 @@ public static class MessageHeaderExtensions
 
     public static bool? LastInBatch(this IMessageHeaders headers)
     {
-        return headers.Get<bool?>(RabbitMessageHeaders.LAST_IN_BATCH);
+        return headers.Get<bool?>(RabbitMessageHeaders.LastInBatch);
     }
 }

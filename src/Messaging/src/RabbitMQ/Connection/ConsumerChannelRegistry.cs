@@ -10,23 +10,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public static class ConsumerChannelRegistry
 {
-    private static readonly AsyncLocal<ChannelHolder> _consumerChannel = new ();
+    private static readonly AsyncLocal<ChannelHolder> ConsumerChannel = new ();
 
     public static void RegisterConsumerChannel(RC.IModel channel, IConnectionFactory connectionFactory, ILogger logger = null)
     {
         logger?.LogDebug("Registering consumer channel {channel} from factory {factory}", channel, connectionFactory);
-        _consumerChannel.Value = new ChannelHolder(channel, connectionFactory);
+        ConsumerChannel.Value = new ChannelHolder(channel, connectionFactory);
     }
 
     public static void UnRegisterConsumerChannel(ILogger logger = null)
     {
-        logger?.LogDebug("Unregistering consumer channel {channel}", _consumerChannel.Value);
-        _consumerChannel.Value = null;
+        logger?.LogDebug("Unregistering consumer channel {channel}", ConsumerChannel.Value);
+        ConsumerChannel.Value = null;
     }
 
     public static RC.IModel GetConsumerChannel()
     {
-        var channelHolder = _consumerChannel.Value;
+        var channelHolder = ConsumerChannel.Value;
         RC.IModel channel = null;
         if (channelHolder != null)
         {
@@ -38,7 +38,7 @@ public static class ConsumerChannelRegistry
 
     public static RC.IModel GetConsumerChannel(IConnectionFactory connectionFactory)
     {
-        var channelHolder = _consumerChannel.Value;
+        var channelHolder = ConsumerChannel.Value;
         RC.IModel channel = null;
         if (channelHolder != null && channelHolder.ConnectionFactory == connectionFactory)
         {

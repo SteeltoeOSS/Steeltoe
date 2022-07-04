@@ -33,7 +33,7 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
         {
             logger?.LogInformation("Hystrix Metrics using TLS");
             sslOption.Version = SslProtocols.Tls12 | SslProtocols.Tls13;
-            if (!this.options.Validate_Certificates)
+            if (!this.options.ValidateCertificates)
             {
                 logger?.LogInformation("Hystrix Metrics disabling certificate validation");
                 sslOption.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateChainErrors |
@@ -78,7 +78,7 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
                     var body = Encoding.UTF8.GetBytes(sampleDataAsString);
                     var props = Channel.CreateBasicProperties();
                     props.ContentType = "application/json";
-                    Channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, string.Empty, props, body);
+                    Channel.BasicPublish(SpringCloudHystrixStreamExchange, string.Empty, props, body);
                 }
             }
         }

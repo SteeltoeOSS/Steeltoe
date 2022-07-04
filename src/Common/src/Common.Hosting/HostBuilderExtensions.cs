@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Hosting;
 
 public static partial class HostBuilderExtensions
 {
-    public const string DEFAULT_URL = "http://*:8080";
+    public const string DefaultUrl = "http://*:8080";
 
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
@@ -84,8 +84,8 @@ public static partial class HostBuilderExtensions
         }
         else
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DEFAULT_URL);
-            webHostBuilder.UseUrls(DEFAULT_URL);
+            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DefaultUrl);
+            webHostBuilder.UseUrls(DefaultUrl);
         }
 
         return webHostBuilder;

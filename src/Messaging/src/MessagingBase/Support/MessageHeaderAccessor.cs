@@ -11,14 +11,14 @@ namespace Steeltoe.Messaging.Support;
 
 public class MessageHeaderAccessor : IMessageHeaderAccessor
 {
-    public static readonly Encoding DEFAULT_CHARSET = Encoding.UTF8;
+    public static readonly Encoding DefaultCharset = Encoding.UTF8;
 
     protected AccessorMessageHeaders headers;
 
-    private static readonly MimeType[] READABLE_MIME_TYPES =
+    private static readonly MimeType[] ReadableMimeTypes =
     {
-        MimeTypeUtils.APPLICATION_JSON,
-        MimeTypeUtils.APPLICATION_XML,
+        MimeTypeUtils.ApplicationJson,
+        MimeTypeUtils.ApplicationXml,
         new ("text", "*"),
         new ("application", "*+json"),
         new ("application", "*+xml")
@@ -107,7 +107,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
     public virtual bool EnableTimestamp { get; set; }
 
-    public virtual IIDGenerator IdGenerator { get; set; }
+    public virtual IIdGenerator IdGenerator { get; set; }
 
     public virtual bool LeaveMutable
     {
@@ -145,12 +145,12 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         get
         {
-            if (GetHeader(Messaging.MessageHeaders.ID) == null)
+            if (GetHeader(Messaging.MessageHeaders.IdName) == null)
             {
                 return null;
             }
 
-            return GetHeader(Messaging.MessageHeaders.ID).ToString();
+            return GetHeader(Messaging.MessageHeaders.IdName).ToString();
         }
     }
 
@@ -158,7 +158,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         get
         {
-            var value = GetHeader(Messaging.MessageHeaders.TIMESTAMP);
+            var value = GetHeader(Messaging.MessageHeaders.TimestampName);
             if (value == null)
             {
                 return null;
@@ -172,7 +172,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         get
         {
-            var value = GetHeader(Messaging.MessageHeaders.CONTENT_TYPE);
+            var value = GetHeader(Messaging.MessageHeaders.ContentType);
             if (value == null)
             {
                 return null;
@@ -181,31 +181,31 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
             return value.ToString();
         }
 
-        set => SetHeader(Messaging.MessageHeaders.CONTENT_TYPE, value);
+        set => SetHeader(Messaging.MessageHeaders.ContentType, value);
     }
 
     public virtual string ReplyChannelName
     {
-        get => GetHeader(Messaging.MessageHeaders.REPLY_CHANNEL) as string;
-        set => SetHeader(Messaging.MessageHeaders.REPLY_CHANNEL, value);
+        get => GetHeader(Messaging.MessageHeaders.ReplyChannelName) as string;
+        set => SetHeader(Messaging.MessageHeaders.ReplyChannelName, value);
     }
 
     public virtual object ReplyChannel
     {
-        get => GetHeader(Messaging.MessageHeaders.REPLY_CHANNEL);
-        set => SetHeader(Messaging.MessageHeaders.REPLY_CHANNEL, value);
+        get => GetHeader(Messaging.MessageHeaders.ReplyChannelName);
+        set => SetHeader(Messaging.MessageHeaders.ReplyChannelName, value);
     }
 
     public virtual string ErrorChannelName
     {
-        get => GetHeader(Messaging.MessageHeaders.ERROR_CHANNEL) as string;
-        set => SetHeader(Messaging.MessageHeaders.ERROR_CHANNEL, value);
+        get => GetHeader(Messaging.MessageHeaders.ErrorChannelName) as string;
+        set => SetHeader(Messaging.MessageHeaders.ErrorChannelName, value);
     }
 
     public virtual object ErrorChannel
     {
-        get => GetHeader(Messaging.MessageHeaders.ERROR_CHANNEL);
-        set => SetHeader(Messaging.MessageHeaders.ERROR_CHANNEL, value);
+        get => GetHeader(Messaging.MessageHeaders.ErrorChannelName);
+        set => SetHeader(Messaging.MessageHeaders.ErrorChannelName, value);
     }
 
     public virtual void SetImmutable() => headers.SetImmutable();
@@ -333,12 +333,12 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         return new MessageHeaderAccessor(asHeaders);
     }
 
-    protected virtual bool IsReadOnly(string headerName) => Messaging.MessageHeaders.ID.Equals(headerName) || Messaging.MessageHeaders.TIMESTAMP.Equals(headerName);
+    protected virtual bool IsReadOnly(string headerName) => Messaging.MessageHeaders.IdName.Equals(headerName) || Messaging.MessageHeaders.TimestampName.Equals(headerName);
 
     protected virtual void VerifyType(string headerName, object headerValue)
     {
-        if (headerName != null && headerValue != null && (Messaging.MessageHeaders.ERROR_CHANNEL.Equals(headerName) ||
-                                                          Messaging.MessageHeaders.REPLY_CHANNEL.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
+        if (headerName != null && headerValue != null && (Messaging.MessageHeaders.ErrorChannelName.Equals(headerName) ||
+                                                          Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
         {
             throw new ArgumentException(
                 $"'{headerName}' header value must be a MessageChannel or string");
@@ -405,7 +405,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     protected virtual bool IsReadableContentType()
     {
         var contentType = MimeType.ToMimeType(ContentType);
-        foreach (var mimeType in READABLE_MIME_TYPES)
+        foreach (var mimeType in ReadableMimeTypes)
         {
             if (mimeType.Includes(contentType))
             {
@@ -441,25 +441,25 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         {
             var contentType = MimeType.ToMimeType(ContentType);
             var charset = contentType?.Encoding;
-            return charset ?? DEFAULT_CHARSET;
+            return charset ?? DefaultCharset;
         }
     }
 
     protected class AccessorMessageHeaders : MessageHeaders
     {
-        protected MessageHeaderAccessor accessor;
+        protected MessageHeaderAccessor innerAccessor;
         private bool _mutable = true;
 
         public AccessorMessageHeaders(MessageHeaderAccessor accessor, IDictionary<string, object> headers)
-            : base(headers, ID_VALUE_NONE, -1L)
+            : base(headers, IdValueNone, -1L)
         {
-            this.accessor = accessor;
+            this.innerAccessor = accessor;
         }
 
         public AccessorMessageHeaders(MessageHeaderAccessor accessor, MessageHeaders other)
             : base(other)
         {
-            this.accessor = accessor;
+            this.innerAccessor = accessor;
         }
 
         public new IDictionary<string, object> RawHeaders
@@ -486,22 +486,22 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
             if (Id == null)
             {
-                var idGenerator = accessor.IdGenerator ?? IdGenerator;
+                var idGenerator = innerAccessor.IdGenerator ?? IdGenerator;
                 var id = idGenerator.GenerateId();
-                if (id != ID_VALUE_NONE)
+                if (id != IdValueNone)
                 {
-                    RawHeaders[ID] = id;
+                    RawHeaders[IdName] = id;
                 }
             }
 
-            if (Timestamp == null && accessor.EnableTimestamp)
+            if (Timestamp == null && innerAccessor.EnableTimestamp)
             {
-                RawHeaders[TIMESTAMP] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                RawHeaders[TimestampName] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             }
 
             _mutable = false;
         }
 
-        public virtual MessageHeaderAccessor Accessor => accessor;
+        public virtual MessageHeaderAccessor Accessor => innerAccessor;
     }
 }

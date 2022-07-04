@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Steeltoe.Common.Kubernetes;
 
-public static class IServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Removes any existing <see cref="IApplicationInstanceInfo"/> if found. Registers a <see cref="KubernetesApplicationOptions" />.

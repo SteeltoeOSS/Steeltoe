@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 
 public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, IOrdered
 {
-    protected readonly ILogger _logger;
+    protected readonly ILogger Logger;
 
     protected AbstractCompressingPostProcessor(ILogger logger = null)
         : this(true, logger)
@@ -23,7 +23,7 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 
     protected AbstractCompressingPostProcessor(bool autoDecompress, ILogger logger = null)
     {
-        _logger = logger;
+        Logger = logger;
         AutoDecompress = autoDecompress;
     }
 
@@ -45,7 +45,7 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 
             var compressed = zipped.ToArray();
 
-            _logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
+            Logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
 
             return CreateMessage(message, compressed);
         }
@@ -70,7 +70,7 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 
         if (AutoDecompress)
         {
-            headers.SetHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS, true);
+            headers.SetHeader(RabbitMessageHeaders.SpringAutoDecompress, true);
         }
 
         headers.ContentEncoding = message.Headers.ContentEncoding() == null

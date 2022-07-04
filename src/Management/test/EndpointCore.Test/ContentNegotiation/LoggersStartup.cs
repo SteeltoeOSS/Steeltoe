@@ -14,7 +14,7 @@ public class LoggersStartup
 {
     public LoggersStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
     }
 
     public IConfiguration Configuration;
