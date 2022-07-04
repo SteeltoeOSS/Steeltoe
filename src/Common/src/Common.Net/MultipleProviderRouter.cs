@@ -8,12 +8,9 @@ using static Steeltoe.Common.Net.WindowsNetworkFileShare;
 
 namespace Steeltoe.Common.Net;
 
-// TODO: [BREAKING] Rename type to MultipleProviderRouter and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-internal sealed class MPR : IMPR
-#pragma warning restore S101 // Types should be named in PascalCase
+internal sealed class MultipleProviderRouter : IMultipleProviderRouter
 {
-    public MPR()
+    public MultipleProviderRouter()
     {
         if (!Platform.IsWindows)
         {

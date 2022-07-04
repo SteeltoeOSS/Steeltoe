@@ -16,7 +16,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
     private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
 
-    public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
+    public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<MetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
         : base(options)
     {
         _exporter = exporters?.OfType<SteeltoeExporter>().SingleOrDefault() ?? throw new ArgumentNullException(nameof(exporters));

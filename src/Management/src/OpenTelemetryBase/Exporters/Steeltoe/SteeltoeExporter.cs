@@ -15,7 +15,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 /// Exporter of OpenTelemetry metrics to Steeltoe Format.
 /// </summary>
 [ExportModes(ExportModes.Pull)]
-public class SteeltoeExporter : IMetricsExporter
+public class SteeltoeExporter : MetricsExporter
 {
     internal PullmetricsCollectionManager CollectionManager { get; }
 

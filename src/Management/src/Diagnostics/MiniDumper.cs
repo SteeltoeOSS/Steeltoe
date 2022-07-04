@@ -139,10 +139,7 @@ internal sealed class MiniDumper
         MiniDumpFilterTriage = 0x00100000,
     }
 
-// TODO: [BREAKING] Rename type and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-    internal struct MINIDUMP_CALLBACK_OUTPUT
-#pragma warning restore S101 // Types should be named in PascalCase
+    internal struct MinidumpCallbackOutput
     {
         public int Status; // HRESULT
     }
@@ -160,7 +157,7 @@ internal sealed class MiniDumper
         {
             if (Marshal.ReadByte(input + sizeof(int) + IntPtr.Size) == (int)MiniDumpCallbackType.IsProcessSnapshotCallback)
             {
-                var o = (MINIDUMP_CALLBACK_OUTPUT*)output;
+                var o = (MinidumpCallbackOutput*)output;
 
                 // removed null check on o because sonar analyzer indicates that o will never be null... TH - 7/2/2019
                 o->Status = 1;

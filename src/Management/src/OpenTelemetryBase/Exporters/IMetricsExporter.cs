@@ -8,10 +8,7 @@ using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
-// TODO: [BREAKING] Rename type or change to interface and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-public abstract class IMetricsExporter : BaseExporter<Metric>, IPullMetricExporter
-#pragma warning restore S101 // Types should be named in PascalCase
+public abstract class MetricsExporter : BaseExporter<Metric>, IPullMetricExporter
 {
     public abstract Func<int, bool> Collect { get; set; }
 

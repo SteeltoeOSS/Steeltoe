@@ -43,7 +43,7 @@ public static class EndpointServiceCollectionExtensions
         }
         else
         {
-            services.AddActuatorEndpointMapping<ThreadDumpEndpoint_v2>();
+            services.AddActuatorEndpointMapping<ThreadDumpEndpointV2>();
         }
     }
 }

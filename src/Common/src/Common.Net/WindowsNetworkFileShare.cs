@@ -69,17 +69,17 @@ public class WindowsNetworkFileShare : IDisposable
     };
 
     private readonly string _networkName;
-    private readonly IMPR _mpr;
+    private readonly IMultipleProviderRouter _multipleProviderRouter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowsNetworkFileShare"/> class.
     /// </summary>
     /// <param name="networkName">Address of the file share.</param>
     /// <param name="credentials">Username and password for accessing the file share.</param>
-    /// <param name="mpr">A class that handles calls to mpr.dll or performs same operations.</param>
-    public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMPR mpr = null)
+    /// <param name="multipleProviderRouter">A class that handles calls to mpr.dll or performs same operations.</param>
+    public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMultipleProviderRouter multipleProviderRouter = null)
     {
-        _mpr = mpr ?? new MPR();
+        _multipleProviderRouter = multipleProviderRouter ?? new MultipleProviderRouter();
 
         _networkName = networkName;
 
@@ -95,7 +95,7 @@ public class WindowsNetworkFileShare : IDisposable
             ? credentials.UserName
             : $@"{credentials.Domain}\{credentials.UserName}";
 
-        var result = _mpr.UseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
+        var result = _multipleProviderRouter.UseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
 
         if (result != 0)
         {
@@ -162,7 +162,7 @@ public class WindowsNetworkFileShare : IDisposable
         out StringBuilder nameBuf,
         int nameBufSize)
     {
-        return _mpr.GetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
+        return _multipleProviderRouter.GetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
     }
 
     /// <inheritdoc />
@@ -199,7 +199,7 @@ public class WindowsNetworkFileShare : IDisposable
         // because the _mpr instance may have already been garbage-collected.
         if (disposing)
         {
-            _mpr.CancelConnection(_networkName, 0, true);
+            _multipleProviderRouter.CancelConnection(_networkName, 0, true);
         }
     }
 

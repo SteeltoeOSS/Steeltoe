@@ -47,7 +47,7 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(options);
         var repo = serviceProvider.GetService<IThreadDumper>();
         Assert.NotNull(repo);
-        var ep = serviceProvider.GetService<ThreadDumpEndpoint_v2>();
+        var ep = serviceProvider.GetService<ThreadDumpEndpointV2>();
         Assert.NotNull(ep);
     }
 }

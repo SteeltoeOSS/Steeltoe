@@ -9,14 +9,11 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-// TODO: [BREAKING] Rename type and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-public class ThreadDumpEndpointMiddleware_v2 : EndpointMiddleware<ThreadDumpResult>
-#pragma warning restore S101 // Types should be named in PascalCase
+public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
 {
     private readonly RequestDelegate _next;
 
-    public ThreadDumpEndpointMiddleware_v2(RequestDelegate next, ThreadDumpEndpoint_v2 endpoint, IManagementOptions mgmtOptions, ILogger<ThreadDumpEndpointMiddleware_v2> logger = null)
+    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IManagementOptions mgmtOptions, ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
         : base(endpoint, mgmtOptions, logger: logger)
     {
         _next = next;

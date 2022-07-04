@@ -44,7 +44,7 @@ public class CloudFoundryHostBuilderExtensionsTest
 
         Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
-        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
 
         Assert.NotNull(filters);
         Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
@@ -64,7 +64,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var filters = host.Services.GetServices<IStartupFilter>();
 
         Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
 
         Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
@@ -140,7 +140,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var filters = host.Services.GetServices<IStartupFilter>();
 
         Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
 
         Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 

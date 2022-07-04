@@ -45,7 +45,7 @@ public static partial class ServiceCollectionExtensions
 
         services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoeExporter>(provider =>
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
             var exporterOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
@@ -78,7 +78,7 @@ public static partial class ServiceCollectionExtensions
         services.TryAddSingleton<IPrometheusEndpointOptions>(options);
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<PrometheusScraperEndpoint>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IMetricsExporter, SteeltoePrometheusExporter>(provider =>
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoePrometheusExporter>(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
             var exporterOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
@@ -132,7 +132,7 @@ public static partial class ServiceCollectionExtensions
         builder.Configure((provider, deferredBuilder) =>
         {
             var views = provider.GetService<IViewRegistry>();
-            var exporters = provider.GetServices(typeof(IMetricsExporter)) as System.Collections.Generic.IEnumerable<IMetricsExporter>;
+            var exporters = provider.GetServices(typeof(MetricsExporter)) as System.Collections.Generic.IEnumerable<MetricsExporter>;
 
             deferredBuilder
                 .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)

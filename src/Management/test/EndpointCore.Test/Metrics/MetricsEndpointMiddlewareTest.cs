@@ -27,7 +27,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var opts = new MetricsEndpointOptions();
         var mopts = new ActuatorManagementOptions();
         mopts.EndpointOptions.Add(opts);
-        var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
+        var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
         var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
         Assert.Null(middle.ParseTag("foobar"));
@@ -43,7 +43,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var mopts = new ActuatorManagementOptions();
         mopts.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
+        var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
         var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
         var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
@@ -77,7 +77,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var mopts = new CloudFoundryManagementOptions();
         mopts.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
+        var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
         var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
         var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -98,7 +98,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         mopts.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { new SteeltoeExporter(_scraperOptions) });
+        var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
         var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
         var context1 = CreateRequest("GET", "/metrics");
@@ -121,7 +121,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var exporter = new SteeltoeExporter(_scraperOptions);
 
         using var meterProvider = GetTestMetrics(null, exporter, null);
-        var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { exporter });
+        var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { exporter });
         var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
         var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -140,7 +140,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var mopts = new CloudFoundryManagementOptions();
         mopts.EndpointOptions.Add(opts);
         var exporter = new SteeltoeExporter(_scraperOptions);
-        var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { exporter });
+        var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { exporter });
 
         using var meterProvider = GetTestMetrics(null, exporter, null);
         var middle = new MetricsEndpointMiddleware(null, ep, mopts);
@@ -160,7 +160,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var exporter = new SteeltoeExporter(_scraperOptions);
         using var meterProvider = GetTestMetrics(null, exporter, null);
 
-        var ep = new MetricsEndpoint(opts, new List<IMetricsExporter> { exporter });
+        var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { exporter });
         var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
         SetupTestView(exporter);

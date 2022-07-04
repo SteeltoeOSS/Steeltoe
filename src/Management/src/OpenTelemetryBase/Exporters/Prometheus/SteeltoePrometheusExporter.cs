@@ -9,7 +9,7 @@ using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
-public class SteeltoePrometheusExporter : IMetricsExporter
+public class SteeltoePrometheusExporter : MetricsExporter
 {
     internal PullmetricsCollectionManager CollectionManager { get; }
 

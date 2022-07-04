@@ -139,7 +139,7 @@ public static class EndpointServiceCollectionExtensions
 
         if (observerOptions.GCEvents || observerOptions.ThreadPoolEvents)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, CLRRuntimeObserver>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, ClrRuntimeObserver>());
         }
 
         if (observerOptions.EventCounterEvents)

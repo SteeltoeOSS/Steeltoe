@@ -399,7 +399,7 @@ public class ManagementWebHostBuilderExtensionsTest
             var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
             var host = hostBuilder.AddThreadDumpActuator().Build();
-            var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint_v2>();
+            var managementEndpoint = host.Services.GetServices<ThreadDumpEndpointV2>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(managementEndpoint);

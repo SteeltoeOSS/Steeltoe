@@ -13,10 +13,7 @@ using System.Diagnostics.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-// TODO: [BREAKING] Rename type and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-public class CLRRuntimeObserver : IRuntimeDiagnosticSource
-#pragma warning restore S101 // Types should be named in PascalCase
+public class ClrRuntimeObserver : IRuntimeDiagnosticSource
 {
     internal const string OBSERVER_NAME = "CLRRuntimeObserver";
     internal const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";
@@ -37,9 +34,9 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
     private readonly ObservableGauge<long> _availThreadsMeasure;
     private readonly ObservableGauge<double> _processUptimeMeasure;
 
-    private CLRRuntimeSource.HeapMetrics _previous = default;
+    private ClrRuntimeSource.HeapMetrics _previous = default;
 
-    public CLRRuntimeObserver(IViewRegistry viewRegistry, ILogger<CLRRuntimeObserver> logger)
+    public ClrRuntimeObserver(IViewRegistry viewRegistry, ILogger<ClrRuntimeObserver> logger)
     {
         var meter = OpenTelemetryMetrics.Meter;
         _memoryUsedMeasure = meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
@@ -91,7 +88,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetCollectionCount()
     {
-        var metrics = CLRRuntimeSource.GetHeapMetrics();
+        var metrics = ClrRuntimeSource.GetHeapMetrics();
 
         for (int i = 0; i < metrics.CollectionCounts.Count; i++)
         {
@@ -109,7 +106,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private Measurement<double> GetMemoryUsed()
     {
-        var metrics = CLRRuntimeSource.GetHeapMetrics();
+        var metrics = ClrRuntimeSource.GetHeapMetrics();
         return new Measurement<double>(metrics.TotalMemory, _heapTags.AsReadonlySpan());
     }
 
@@ -121,7 +118,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetActiveThreadPoolWorkers()
     {
-        var metrics = CLRRuntimeSource.GetThreadMetrics();
+        var metrics = ClrRuntimeSource.GetThreadMetrics();
         var active = metrics.MaxThreadPoolWorkers - metrics.AvailableThreadPoolWorkers;
         var activeCompPort = metrics.MaxThreadCompletionPort - metrics.AvailableThreadCompletionPort;
 
@@ -131,7 +128,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetAvailableThreadPoolWorkers()
     {
-        var metrics = CLRRuntimeSource.GetThreadMetrics();
+        var metrics = ClrRuntimeSource.GetThreadMetrics();
         yield return new Measurement<long>(metrics.AvailableThreadPoolWorkers, _workerTags.AsReadonlySpan());
         yield return new Measurement<long>(metrics.AvailableThreadCompletionPort, _comPortTags.AsReadonlySpan());
     }

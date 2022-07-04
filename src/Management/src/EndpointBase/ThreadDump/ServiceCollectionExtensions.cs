@@ -48,8 +48,8 @@ public static partial class ServiceCollectionExtensions
                 options.Id = "threaddump";
             }
 
-            services.TryAddSingleton<ThreadDumpEndpoint_v2>();
-            services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpoint_v2>());
+            services.TryAddSingleton<ThreadDumpEndpointV2>();
+            services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
         }
 
         services.TryAddSingleton<IThreadDumpOptions>(options);
