@@ -937,47 +937,31 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the DoGetApplicationsAsync request");
     }
 
-    protected virtual HttpClient GetHttpClient(IEurekaClientConfig config)
+    protected virtual HttpClient GetHttpClient(IEurekaClientConfig config) =>
+        _httpClient ??
+        HttpClientHelper.GetHttpClient(
+            config.ValidateCertificates,
+            ConfigureEurekaHttpClientHandler(config, _handlerProvider?.GetHttpClientHandler()),
+            config.EurekaServerConnectTimeoutSeconds * 1000);
+
+    internal static HttpClientHandler ConfigureEurekaHttpClientHandler(IEurekaClientConfig config, HttpClientHandler handler)
     {
-        if (_httpClient != null)
-        {
-            return _httpClient;
-        }
-
-        if (_handlerProvider != null)
-        {
-            return HttpClientHelper.GetHttpClient(config.ValidateCertificates, _handlerProvider.GetHttpClientHandler(), config.EurekaServerConnectTimeoutSeconds * 1000);
-        }
-
+        handler ??= new HttpClientHandler();
         if (!string.IsNullOrEmpty(config.ProxyHost))
         {
-            var proxyHandler = new HttpClientHandler
-            {
-                Proxy = new WebProxy(config.ProxyHost, config.ProxyPort)
-            };
+            handler.Proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
             if (!string.IsNullOrEmpty(config.ProxyPassword))
             {
-                proxyHandler.Proxy.Credentials = new NetworkCredential(config.ProxyUserName, config.ProxyPassword);
+                handler.Proxy.Credentials = new NetworkCredential(config.ProxyUserName, config.ProxyPassword);
             }
-
-            if (config.ShouldGZipContent)
-            {
-                proxyHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            }
-
-            return HttpClientHelper.GetHttpClient(config.ValidateCertificates, proxyHandler, config.EurekaServerConnectTimeoutSeconds * 1000);
         }
 
         if (config.ShouldGZipContent)
         {
-            var gzipHandler = new HttpClientHandler
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
-            return HttpClientHelper.GetHttpClient(config.ValidateCertificates, gzipHandler, config.EurekaServerConnectTimeoutSeconds * 1000);
+            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
         }
 
-        return HttpClientHelper.GetHttpClient(config.ValidateCertificates, config.EurekaServerConnectTimeoutSeconds * 1000);
+        return handler;
     }
 
     protected virtual HttpContent GetRequestContent(object toSerialize)
