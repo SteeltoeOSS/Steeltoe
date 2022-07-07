@@ -15,6 +15,8 @@ namespace Steeltoe.Management.Endpoint.Health
 
         string Role { get; set; }
 
+        MediaTypeVersion DefaultVersion { get; set; }
+
         public Dictionary<string, HealthGroupOptions> Groups { get; set; }
     }
 }

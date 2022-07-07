@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         private readonly RequestDelegate _next;
 
-        public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions mgmtOptions, ILogger<HealthEndpointMiddleware> logger = null)
             : base(mgmtOptions: mgmtOptions, logger: logger)
         {
             _next = next;

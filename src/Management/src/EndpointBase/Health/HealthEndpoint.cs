@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Health
         private readonly ILogger<HealthEndpoint> _logger;
 
         public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
-           : base(options)
+            : base(options)
         {
             if (contributors == null)
             {
@@ -57,15 +57,35 @@ namespace Steeltoe.Management.Endpoint.Health
                 filteredContributors = _contributors;
             }
 
-            var result = new HealthEndpointResponse(_aggregator.Aggregate(filteredContributors));
+            var healthCheckResult = _aggregator.Aggregate(filteredContributors);
 
-            var showDetails = Options.ShowDetails;
-            if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(Options.Claim)))
+            return GetHealthEndpointResponse(healthCheckResult, securityContext);
+        }
+
+        protected HealthEndpointResponse GetHealthEndpointResponse(HealthCheckResult healthCheckResult, ISecurityContext securityContext)
+        {
+            var hideDetails = Options.ShowDetails == ShowDetails.Never ||
+                              (Options.ShowDetails == ShowDetails.WhenAuthorized &&
+                               !securityContext.HasClaim(Options.Claim));
+            var result = new HealthEndpointResponse(healthCheckResult);
+
+            if (hideDetails)
             {
-                result.Details = new Dictionary<string, object>();
+                result.Details = null;
+                result.Components = null;
             }
             else
             {
+                switch (securityContext?.GetMediaType() ?? Options.DefaultVersion)
+                {
+                    case MediaTypeVersion.V3:
+                        result.Details = null;
+                        break;
+                    default:
+                        result.Components = null;
+                        break;
+                }
+
                 result.Groups = Options.Groups.Select(g => g.Key);
             }
 

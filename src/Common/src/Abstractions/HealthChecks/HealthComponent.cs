@@ -10,30 +10,27 @@ namespace Steeltoe.Common.HealthChecks
     /// <summary>
     /// The result of a health check
     /// </summary>
-    public class HealthCheckResult
+    public class HealthComponent
     {
         /// <summary>
-        /// Gets or sets the status of the check
+        /// Gets or sets the name of the component
         /// </summary>
         /// <remarks>Used by HealthMiddleware to determine HTTP Status code</remarks>
-        [JsonPropertyOrder(1)]
-        public HealthStatus Status { get; set; } = HealthStatus.UNKNOWN;
+        [JsonIgnore]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a description of the health check result
         /// </summary>
         /// <remarks>Currently only used on check failures</remarks>
-        [JsonPropertyOrder(2)]
-        public string Description { get; set; }
+        [JsonPropertyOrder(1)]
+        public HealthStatus Status { get; set; } = HealthStatus.UNKNOWN;
 
         /// <summary>
         /// Gets or sets details of the checked item
         /// </summary>
         /// <remarks>For parity with Spring Boot, repeat status [with a call to .ToString()] here</remarks>
-        [JsonPropertyOrder(3)]
-        public Dictionary<string, object> Details { get; set; } = new ();
-
-        [JsonIgnore]
-        public Dictionary<string, HealthCheckResult> HealthCheckResults { get; set; } = new ();
+        [JsonPropertyOrder(2)]
+        public Dictionary<string, object> Details { get; set; } = new Dictionary<string, object>();
     }
 }

@@ -57,19 +57,8 @@ namespace Steeltoe.Management.Endpoint.Health
             var result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
                                 ? _aggregator.Aggregate(filteredContributors)
                                 : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider);
-            var response = new HealthEndpointResponse(result);
 
-            var showDetails = Options.ShowDetails;
-            if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(Options.Claim)))
-            {
-                response.Details = new Dictionary<string, object>();
-            }
-            else
-            {
-                response.Groups = Options.Groups.Select(g => g.Key);
-            }
-
-            return response;
+            return GetHealthEndpointResponse(result, securityContext);
         }
 
         private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup, IOptionsMonitor<HealthCheckServiceOptions> svcOptions)

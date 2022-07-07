@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.HealthChecks;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Health
@@ -15,13 +16,21 @@ namespace Steeltoe.Management.Endpoint.Health
             result ??= new HealthCheckResult();
             Description = result.Description;
             Details = result.Details;
+            Components = result.HealthCheckResults.Select(healthResult => new HealthComponent()
+            {
+                Details = healthResult.Value.Details, Status = healthResult.Value.Status, Name = healthResult.Key
+            }).ToDictionary(component => component.Name, component => component);
+
             Status = result.Status;
         }
+
+        [JsonPropertyOrder(4)]
+        public Dictionary<string, HealthComponent> Components { get; set; }
 
         /// <summary>
         /// Gets or sets the list of available health groups
         /// </summary>
-        [JsonPropertyOrder(4)]
+        [JsonPropertyOrder(5)]
         public IEnumerable<string> Groups { get; set; }
     }
 }

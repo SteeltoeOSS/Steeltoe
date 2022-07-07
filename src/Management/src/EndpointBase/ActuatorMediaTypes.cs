@@ -13,6 +13,8 @@ namespace Steeltoe.Management.Endpoint
 
         public static readonly string V2_JSON = "application/vnd.spring-boot.actuator.v2+json";
 
+        public static readonly string V3_JSON = "application/vnd.spring-boot.actuator.v3+json";
+
         public static readonly string APP_JSON = "application/json";
 
         public static readonly string ANY = "*/*";

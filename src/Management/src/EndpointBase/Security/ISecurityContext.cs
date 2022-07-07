@@ -9,5 +9,7 @@ namespace Steeltoe.Management.Endpoint.Security
         string[] GetRequestComponents();
 
         bool HasClaim(EndpointClaim claim);
+
+        MediaTypeVersion? GetMediaType();
     }
 }

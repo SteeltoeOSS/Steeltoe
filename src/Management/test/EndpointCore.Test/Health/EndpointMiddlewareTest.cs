@@ -150,6 +150,84 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
+        public async Task HealthActuator_ReturnsComponents_WhenConfigured()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+            settings.Add("management:endpoints:health:defaultVersion", "V3");
+
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+
+            // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            Assert.NotNull(health);
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.True(health.ContainsKey("components"), "Health should contain key: components");
+            Assert.False(health.ContainsKey("details"), "Health should contain key: components");
+            Assert.Contains("diskSpace", health["components"].ToString());
+        }
+
+        [Fact]
+        public async Task HealthActuator_ReturnsComponents_WhenRequested()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            client.DefaultRequestHeaders.Add("Accept", ActuatorMediaTypes.V3_JSON);
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            Assert.NotNull(health);
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.True(health.ContainsKey("components"), "Health should contain key: components");
+            Assert.False(health.ContainsKey("details"), "Health should not contain key: details");
+            Assert.Contains("diskSpace", health["components"].ToString());
+        }
+
+        [Fact]
+        public async Task HealthActuator_ReturnsDetails_WhenConfiguredAndOverridden()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+            settings.Add("management:endpoints:health:defaultVersion", "V3");
+
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            client.DefaultRequestHeaders.Add("Accept", ActuatorMediaTypes.V2_JSON);
+
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+
+            // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            Assert.NotNull(health);
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.True(health.ContainsKey("details"), "Health should contain key: details");
+            Assert.Contains("diskSpace", health["details"].ToString());
+        }
+
+        [Fact]
         public async Task HealthActuator_ReturnsMicrosoftHealthDetails()
         {
             var settings = new Dictionary<string, string>(appSettings);

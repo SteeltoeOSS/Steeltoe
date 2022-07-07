@@ -72,6 +72,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 }
 
                 result.Details.Add(healthCheck.Key, healthCheck.Value.Details);
+                result.HealthCheckResults.Add(healthCheck.Key, healthCheck.Value);
             }
 
             return result;
