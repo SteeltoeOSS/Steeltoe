@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,136 +10,129 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public class HystrixCollapserMetrics : HystrixMetrics
 {
-    public class HystrixCollapserMetrics : HystrixMetrics
+    private static readonly ConcurrentDictionary<string, HystrixCollapserMetrics> Metrics = new ();
+
+    public static HystrixCollapserMetrics GetInstance(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
     {
-        private static readonly ConcurrentDictionary<string, HystrixCollapserMetrics> Metrics = new ();
+        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCollapserMetrics(key, properties));
+    }
 
-        public static HystrixCollapserMetrics GetInstance(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
+    public static ICollection<HystrixCollapserMetrics> GetInstances()
+    {
+        var collapserMetrics = new List<HystrixCollapserMetrics>();
+        foreach (var tpm in Metrics.Values)
         {
-            return Metrics.GetOrAddEx(key.Name, (k) => new HystrixCollapserMetrics(key, properties));
+            collapserMetrics.Add(tpm);
         }
 
-        public static ICollection<HystrixCollapserMetrics> GetInstances()
-        {
-            var collapserMetrics = new List<HystrixCollapserMetrics>();
-            foreach (var tpm in Metrics.Values)
-            {
-                collapserMetrics.Add(tpm);
-            }
+        return collapserMetrics.AsReadOnly();
+    }
 
-            return collapserMetrics.AsReadOnly();
+    private static readonly IList<CollapserEventType> ALL_EVENT_TYPES = CollapserEventTypeHelper.Values;
+
+    public static Func<long[], HystrixCollapserEvent, long[]> AppendEventToBucket { get; } = (initialCountArray, collapserEvent) =>
+    {
+        var eventType = collapserEvent.EventType;
+        var count = collapserEvent.Count;
+        initialCountArray[(int)eventType] += count;
+        return initialCountArray;
+    };
+
+    public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
+    {
+        foreach (var eventType in ALL_EVENT_TYPES)
+        {
+            cumulativeEvents[(int)eventType] += bucketEventCounts[(int)eventType];
         }
 
-        private static readonly IList<CollapserEventType> ALL_EVENT_TYPES = CollapserEventTypeHelper.Values;
+        return cumulativeEvents;
+    };
 
-#pragma warning disable S1199 // Nested code blocks should not be used
-        public static Func<long[], HystrixCollapserEvent, long[]> AppendEventToBucket { get; } = (initialCountArray, collapserEvent) =>
-        {
-            {
-                var eventType = collapserEvent.EventType;
-                var count = collapserEvent.Count;
-                initialCountArray[(int)eventType] += count;
-                return initialCountArray;
-            }
-        };
+    internal static void Reset()
+    {
+        RollingCollapserEventCounterStream.Reset();
+        CumulativeCollapserEventCounterStream.Reset();
+        RollingCollapserBatchSizeDistributionStream.Reset();
+        Metrics.Clear();
+    }
 
-        public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
-        {
-            {
-                foreach (var eventType in ALL_EVENT_TYPES)
-                {
-                    cumulativeEvents[(int)eventType] += bucketEventCounts[(int)eventType];
-                }
+    private readonly RollingCollapserEventCounterStream _rollingCollapserEventCounterStream;
+    private readonly CumulativeCollapserEventCounterStream _cumulativeCollapserEventCounterStream;
+    private readonly RollingCollapserBatchSizeDistributionStream _rollingCollapserBatchSizeDistributionStream;
 
-                return cumulativeEvents;
-            }
-        };
-#pragma warning restore S1199 // Nested code blocks should not be used
+    internal HystrixCollapserMetrics(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
+        : base(null)
+    {
+        CollapserKey = key;
+        Properties = properties;
 
-        internal static void Reset()
-        {
-            RollingCollapserEventCounterStream.Reset();
-            CumulativeCollapserEventCounterStream.Reset();
-            RollingCollapserBatchSizeDistributionStream.Reset();
-            Metrics.Clear();
-        }
+        _rollingCollapserEventCounterStream = RollingCollapserEventCounterStream.GetInstance(key, properties);
+        _cumulativeCollapserEventCounterStream = CumulativeCollapserEventCounterStream.GetInstance(key, properties);
+        _rollingCollapserBatchSizeDistributionStream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, properties);
+    }
 
-        private readonly RollingCollapserEventCounterStream _rollingCollapserEventCounterStream;
-        private readonly CumulativeCollapserEventCounterStream _cumulativeCollapserEventCounterStream;
-        private readonly RollingCollapserBatchSizeDistributionStream _rollingCollapserBatchSizeDistributionStream;
+    public IHystrixCollapserKey CollapserKey { get; }
 
-        internal HystrixCollapserMetrics(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
-            : base(null)
-        {
-            CollapserKey = key;
-            Properties = properties;
+    public IHystrixCollapserOptions Properties { get; }
 
-            _rollingCollapserEventCounterStream = RollingCollapserEventCounterStream.GetInstance(key, properties);
-            _cumulativeCollapserEventCounterStream = CumulativeCollapserEventCounterStream.GetInstance(key, properties);
-            _rollingCollapserBatchSizeDistributionStream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, properties);
-        }
+    public long GetRollingCount(CollapserEventType collapserEventType)
+    {
+        return _rollingCollapserEventCounterStream.GetLatest(collapserEventType);
+    }
 
-        public IHystrixCollapserKey CollapserKey { get; }
+    public override long GetRollingCount(HystrixRollingNumberEvent @event)
+    {
+        return GetRollingCount(CollapserEventTypeHelper.From(@event));
+    }
 
-        public IHystrixCollapserOptions Properties { get; }
+    public long GetCumulativeCount(CollapserEventType collapserEventType)
+    {
+        return _cumulativeCollapserEventCounterStream.GetLatest(collapserEventType);
+    }
 
-        public long GetRollingCount(CollapserEventType collapserEventType)
-        {
-            return _rollingCollapserEventCounterStream.GetLatest(collapserEventType);
-        }
+    public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
+    {
+        return GetCumulativeCount(CollapserEventTypeHelper.From(@event));
+    }
 
-        public override long GetRollingCount(HystrixRollingNumberEvent @event)
-        {
-            return GetRollingCount(CollapserEventTypeHelper.From(@event));
-        }
+    public int GetBatchSizePercentile(double percentile)
+    {
+        return _rollingCollapserBatchSizeDistributionStream.GetLatestPercentile(percentile);
+    }
 
-        public long GetCumulativeCount(CollapserEventType collapserEventType)
-        {
-            return _cumulativeCollapserEventCounterStream.GetLatest(collapserEventType);
-        }
+    public int BatchSizeMean
+    {
+        get { return _rollingCollapserBatchSizeDistributionStream.LatestMean; }
+    }
 
-        public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
-        {
-            return GetCumulativeCount(CollapserEventTypeHelper.From(@event));
-        }
+    public int GetShardSizePercentile(double percentile)
+    {
+        return 0;
+    }
 
-        public int GetBatchSizePercentile(double percentile)
-        {
-            return _rollingCollapserBatchSizeDistributionStream.GetLatestPercentile(percentile);
-        }
+    public int ShardSizeMean => 0;
 
-        public int BatchSizeMean
-        {
-            get { return _rollingCollapserBatchSizeDistributionStream.LatestMean; }
-        }
+    public void MarkRequestBatched()
+    {
+        // for future use
+    }
 
-        public int GetShardSizePercentile(double percentile)
-        {
-            return 0;
-        }
+    public void MarkResponseFromCache()
+    {
+        HystrixThreadEventStream.GetInstance().CollapserResponseFromCache(CollapserKey);
+    }
 
-        public int ShardSizeMean => 0;
+    public void MarkBatch(int batchSize)
+    {
+        HystrixThreadEventStream.GetInstance().CollapserBatchExecuted(CollapserKey, batchSize);
+    }
 
-        public void MarkRequestBatched()
-        {
-            // for future use
-        }
-
-        public void MarkResponseFromCache()
-        {
-            HystrixThreadEventStream.GetInstance().CollapserResponseFromCache(CollapserKey);
-        }
-
-        public void MarkBatch(int batchSize)
-        {
-            HystrixThreadEventStream.GetInstance().CollapserBatchExecuted(CollapserKey, batchSize);
-        }
-
-        public void MarkShards(int numShards)
-        {
-            // for future use
-        }
+    public void MarkShards(int numShards)
+    {
+        // for future use
     }
 }

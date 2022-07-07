@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,11 +12,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class CloudFoundryExtensionsTest
 {
-    public class CloudFoundryExtensionsTest
-    {
-        private readonly string vcap_application = @"
+    private readonly string _vcap_application = @"
             {
                 ""cf_api"": ""https://api.system.testcloud.com"",
                 ""limits"": { ""fds"": 16384, ""mem"": 512, ""disk"": 1024 },
@@ -32,7 +32,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 ""application_version"": ""d2911a1c-c81a-47aa-be81-d820a6700d2b""
             }";
 
-        private readonly string vcap_services = @"
+    private readonly string _vcap_services = @"
             {
                 ""user-provided"": [{
                     ""credentials"": {
@@ -48,7 +48,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 }]
             }";
 
-        private readonly string openIdConfigResponse = @"
+    private readonly string _openIdConfigResponse = @"
                 {
                     ""issuer"":""https://default_oauthserviceurl/oauth/token"",
                     ""authorization_endpoint"":""https://default_oauthserviceurl/oauth/authorize"",
@@ -69,7 +69,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                     ""ui_locales_supported"":[""en-US""]
                 }";
 
-        private readonly string jwksResponse = @"
+    private readonly string _jwksResponse = @"
             {
                 ""keys"":[{
                     ""kty"":""RSA"",
@@ -82,101 +82,99 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 }]
             }";
 
-        [Fact]
-        public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
+    [Fact]
+    public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
+    {
+        var builder = GetHostBuilder<TestServerStartup>();
+        using var server = new TestServer(builder);
+        var client = server.CreateClient();
+        var result = await client.GetAsync("http://localhost/");
+        Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
+        var location = result.Headers.Location.ToString();
+        Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location);
+    }
+
+    [Fact]
+    public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcap_application);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcap_services);
+
+        var builder = GetHostBuilder<TestServerStartup>();
+        using (var server = new TestServer(builder))
         {
-            var builder = GetHostBuilder<TestServerStartup>();
-            using var server = new TestServer(builder);
             var client = server.CreateClient();
             var result = await client.GetAsync("http://localhost/");
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
             var location = result.Headers.Location.ToString();
-            Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location);
+            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
         }
 
-        [Fact]
-        public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+    }
+
+    [Fact]
+    public async Task AddCloudFoundryJwtBearerAuthentication_AddsIntoPipeline()
+    {
+        var builder = GetHostBuilder<TestServerJwtStartup>();
+        using var server = new TestServer(builder);
+        var client = server.CreateClient();
+        var result = await client.GetAsync("http://localhost/");
+        Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task AddCloudFoundryOpenId_AddsIntoPipeline()
+    {
+        Environment.SetEnvironmentVariable("openIdConfigResponse", _openIdConfigResponse);
+        Environment.SetEnvironmentVariable("jwksResponse", _jwksResponse);
+
+        var builder = GetHostBuilder<TestServerOpenIdStartup>(new Dictionary<string, string> { { "security:oauth2:client:Timeout", "9999" } });
+        using var server = new TestServer(builder);
+        var client = server.CreateClient();
+        var result = await client.GetAsync("http://localhost/");
+        Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
+        var location = result.Headers.Location.ToString();
+        Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location);
+    }
+
+    [Fact]
+    public async Task AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcap_application);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcap_services);
+        Environment.SetEnvironmentVariable("openIdConfigResponse", _openIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
+        Environment.SetEnvironmentVariable("jwksResponse", _jwksResponse);
+
+        var builder = GetHostBuilder<TestServerOpenIdStartup>();
+        using (var server = new TestServer(builder))
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
-
-            var builder = GetHostBuilder<TestServerStartup>();
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/");
-                Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-                var location = result.Headers.Location.ToString();
-                Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
-            }
-
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
-
-        [Fact]
-        public async Task AddCloudFoundryJwtBearerAuthentication_AddsIntoPipeline()
-        {
-            var builder = GetHostBuilder<TestServerJwtStartup>();
-            using var server = new TestServer(builder);
             var client = server.CreateClient();
             var result = await client.GetAsync("http://localhost/");
-            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
-        }
-
-        [Fact]
-        public async Task AddCloudFoundryOpenId_AddsIntoPipeline()
-        {
-            Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse);
-            Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
-
-            var builder = GetHostBuilder<TestServerOpenIdStartup>(new Dictionary<string, string> { { "security:oauth2:client:Timeout", "9999" } });
-            using var server = new TestServer(builder);
-            var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/");
-            var body = await result.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
             var location = result.Headers.Location.ToString();
-            Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location);
+            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
         }
 
-        [Fact]
-        public async Task AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
-            Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
-            Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+    }
 
-            var builder = GetHostBuilder<TestServerOpenIdStartup>();
-            using (var server = new TestServer(builder))
+    private IWebHostBuilder GetHostBuilder<T>(Dictionary<string, string> appsettings = null)
+        where T : class
+    {
+        return new WebHostBuilder()
+            .UseStartup<T>()
+            .ConfigureAppConfiguration((_, builder) =>
             {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/");
-                Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-                var location = result.Headers.Location.ToString();
-                Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
-            }
-
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
-
-        private IWebHostBuilder GetHostBuilder<T>(Dictionary<string, string> appsettings = null)
-            where T : class
-        {
-            return new WebHostBuilder()
-                .UseStartup<T>()
-                .ConfigureAppConfiguration((context, builder) =>
+                if (appsettings is not null)
                 {
-                    if (appsettings is not null)
-                    {
-                        builder.AddInMemoryCollection(appsettings);
-                    }
+                    builder.AddInMemoryCollection(appsettings);
+                }
 
-                    builder.AddCloudFoundry();
-                })
-                .UseEnvironment("development");
-        }
+                builder.AddCloudFoundry();
+            })
+            .UseEnvironment("development");
     }
 }

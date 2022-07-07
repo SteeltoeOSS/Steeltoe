@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,119 +11,118 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 {
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+    public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistry);
+
+    private readonly ILogger _logger;
+    private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ();
+    private bool _isDisposed;
+
+    public RabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)
     {
-        public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistry);
+        _logger = logger;
+        ApplicationContext = applicationContext;
+    }
 
-        private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ();
-        private bool _isDisposed;
+    public IApplicationContext ApplicationContext { get; set; }
 
-        public RabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)
+    public int Phase { get; set; } = int.MaxValue;
+
+    public bool IsAutoStartup => true;
+
+    public bool IsRunning => GetListenerContainers().Any(listener => listener.IsRunning);
+
+    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
+    public IMessageListenerContainer GetListenerContainer(string id)
+    {
+        if (string.IsNullOrEmpty(id))
         {
-            _logger = logger;
-            ApplicationContext = applicationContext;
+            throw new ArgumentException(nameof(id));
         }
 
-        public IApplicationContext ApplicationContext { get; set; }
+        _listenerContainers.TryGetValue(id, out var messageListenerContainer);
+        return messageListenerContainer;
+    }
 
-        public int Phase { get; set; } = int.MaxValue;
+    public ISet<string> GetListenerContainerIds()
+    {
+        return new HashSet<string>(_listenerContainers.Keys);
+    }
 
-        public bool IsAutoStartup => true;
+    public ICollection<IMessageListenerContainer> GetListenerContainers()
+    {
+        return new List<IMessageListenerContainer>(_listenerContainers.Values);
+    }
 
-        public bool IsRunning => GetListenerContainers().Any(listener => listener.IsRunning);
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
+    {
+        RegisterListenerContainer(endpoint, factory, false);
+    }
 
-        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
-
-        public IMessageListenerContainer GetListenerContainer(string id)
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately)
+    {
+        if (endpoint == null)
         {
-            if (string.IsNullOrEmpty(id))
+            throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        if (factory == null)
+        {
+            throw new ArgumentNullException(nameof(factory));
+        }
+
+        var id = endpoint.Id;
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new ArgumentException("Endpoint id must not be empty");
+        }
+
+        lock (_listenerContainers)
+        {
+            if (_listenerContainers.ContainsKey(id))
             {
-                throw new ArgumentException(nameof(id));
+                throw new InvalidOperationException($"Another endpoint is already registered with id '{id}'");
             }
 
-            _listenerContainers.TryGetValue(id, out var messageListenerContainer);
-            return messageListenerContainer;
-        }
+            var container = CreateListenerContainer(endpoint, factory);
+            _listenerContainers.TryAdd(id, container);
 
-        public ISet<string> GetListenerContainerIds()
-        {
-            return new HashSet<string>(_listenerContainers.Keys);
-        }
-
-        public ICollection<IMessageListenerContainer> GetListenerContainers()
-        {
-            return new List<IMessageListenerContainer>(_listenerContainers.Values);
-        }
-
-        public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
-        {
-            RegisterListenerContainer(endpoint, factory, false);
-        }
-
-        public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately)
-        {
-            if (endpoint == null)
+            if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null && ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
             {
-                throw new ArgumentNullException(nameof(endpoint));
+                containerCollection.AddContainer(container);
             }
 
-            if (factory == null)
+            // if (this.contextRefreshed)
+            // {
+            //    container.lazyLoad();
+            // }
+            if (startImmediately && container.IsAutoStartup)
             {
-                throw new ArgumentNullException(nameof(factory));
-            }
-
-            var id = endpoint.Id;
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Endpoint id must not be empty");
-            }
-
-            lock (_listenerContainers)
-            {
-                if (_listenerContainers.ContainsKey(id))
-                {
-                    throw new InvalidOperationException("Another endpoint is already registered with id '" + id + "'");
-                }
-
-                var container = CreateListenerContainer(endpoint, factory);
-                _listenerContainers.TryAdd(id, container);
-
-                if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null && ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
-                {
-                    containerCollection.AddContainer(container);
-                }
-
-                // if (this.contextRefreshed)
-                // {
-                //    container.lazyLoad();
-                // }
-                if (startImmediately && container.IsAutoStartup)
-                {
-                    container.Start();
-                }
+                container.Start();
             }
         }
+    }
 
-        public IMessageListenerContainer UnregisterListenerContainer(string id)
+    public IMessageListenerContainer UnregisterListenerContainer(string id)
+    {
+        _listenerContainers.TryRemove(id, out var removed);
+        return removed;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing && !_isDisposed)
         {
-            _listenerContainers.TryRemove(id, out var removed);
-            return removed;
-        }
-
-        public void Dispose()
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            _isDisposed = true;
-
             foreach (var listenerContainer in _listenerContainers.Values)
             {
                 if (listenerContainer is IDisposable disposable)
@@ -138,48 +137,31 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     }
                 }
             }
+
+            _isDisposed = true;
         }
+    }
 
-        public async Task Stop(Action callback)
+    public async Task Stop(Action callback)
+    {
+        var containers = _listenerContainers.Values;
+        if (containers.Count > 0)
         {
-            var containers = _listenerContainers.Values;
-            if (containers.Count > 0)
+            var count = containers.Count;
+            Action aggCallback = () =>
             {
-                var count = containers.Count;
-                Action aggCallback = () =>
+                var result = Interlocked.Decrement(ref count);
+                if (result == 0)
                 {
-                    var result = Interlocked.Decrement(ref count);
-                    if (result == 0)
-                    {
-                        callback();
-                    }
-                };
-
-                foreach (var listenerContainer in containers)
-                {
-                    try
-                    {
-                        await listenerContainer.Stop(aggCallback);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger?.LogWarning("Failed to stop listener container [" + listenerContainer + "]", e);
-                    }
+                    callback();
                 }
-            }
-            else
-            {
-                callback();
-            }
-        }
+            };
 
-        public async Task Stop()
-        {
-            foreach (var listenerContainer in _listenerContainers.Values)
+            foreach (var listenerContainer in containers)
             {
                 try
                 {
-                    await listenerContainer.Stop();
+                    await listenerContainer.Stop(aggCallback);
                 }
                 catch (Exception e)
                 {
@@ -187,44 +169,63 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 }
             }
         }
-
-        public async Task Start()
+        else
         {
-            foreach (var listenerContainer in _listenerContainers.Values)
-            {
-                if (listenerContainer.IsAutoStartup)
-                {
-                    await listenerContainer.Start();
-                }
-            }
+            callback();
         }
+    }
 
-        protected IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
+    public async Task Stop()
+    {
+        foreach (var listenerContainer in _listenerContainers.Values)
         {
-            var listenerContainer = factory.CreateListenerContainer(endpoint);
-
             try
             {
-                listenerContainer.Initialize();
+                await listenerContainer.Stop();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                throw new TypeInitializationException("Failed to initialize message listener container", ex);
+                _logger?.LogWarning("Failed to stop listener container [" + listenerContainer + "]", e);
             }
-
-            var containerPhase = listenerContainer.Phase;
-            if (containerPhase < int.MaxValue)
-            {
-                // a custom phase value
-                if (Phase < int.MaxValue && Phase != containerPhase)
-                {
-                    throw new InvalidOperationException("Encountered phase mismatch between container factory definitions: " + Phase + " vs " + containerPhase);
-                }
-
-                Phase = listenerContainer.Phase;
-            }
-
-            return listenerContainer;
         }
+    }
+
+    public async Task Start()
+    {
+        foreach (var listenerContainer in _listenerContainers.Values)
+        {
+            if (listenerContainer.IsAutoStartup)
+            {
+                await listenerContainer.Start();
+            }
+        }
+    }
+
+    protected IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
+    {
+        var listenerContainer = factory.CreateListenerContainer(endpoint);
+
+        try
+        {
+            listenerContainer.Initialize();
+        }
+        catch (Exception ex)
+        {
+            throw new TypeInitializationException("Failed to initialize message listener container", ex);
+        }
+
+        var containerPhase = listenerContainer.Phase;
+        if (containerPhase < int.MaxValue)
+        {
+            // a custom phase value
+            if (Phase < int.MaxValue && Phase != containerPhase)
+            {
+                throw new InvalidOperationException($"Encountered phase mismatch between container factory definitions: {Phase} vs {containerPhase}");
+            }
+
+            Phase = listenerContainer.Phase;
+        }
+
+        return listenerContainer;
     }
 }

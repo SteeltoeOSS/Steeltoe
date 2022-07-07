@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,112 +10,111 @@ using System.Reflection;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
+namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
+
+public class PayloadMethodArgumentResolverTest
 {
-    public class PayloadMethodArgumentResolverTest
+    private readonly PayloadMethodArgumentResolver _resolver;
+
+    private readonly ParameterInfo _paramAnnotated;
+
+    private readonly ParameterInfo _paramAnnotatedNotRequired;
+
+    private readonly ParameterInfo _paramAnnotatedRequired;
+
+    private readonly ParameterInfo _paramWithSpelExpression;
+
+    private readonly ParameterInfo _paramNotAnnotated;
+
+    public PayloadMethodArgumentResolverTest()
     {
-        private readonly PayloadMethodArgumentResolver resolver;
+        _resolver = new PayloadMethodArgumentResolver(new StringMessageConverter());
 
-        private readonly ParameterInfo paramAnnotated;
+        var payloadMethod = typeof(PayloadMethodArgumentResolverTest).GetMethod(nameof(HandleMessage), BindingFlags.NonPublic | BindingFlags.Instance);
 
-        private readonly ParameterInfo paramAnnotatedNotRequired;
+        _paramAnnotated = payloadMethod.GetParameters()[0];
+        _paramAnnotatedNotRequired = payloadMethod.GetParameters()[1];
+        _paramAnnotatedRequired = payloadMethod.GetParameters()[2];
+        _paramWithSpelExpression = payloadMethod.GetParameters()[3];
+        _paramNotAnnotated = payloadMethod.GetParameters()[4];
+    }
 
-        private readonly ParameterInfo paramAnnotatedRequired;
+    [Fact]
+    public void SupportsParameter()
+    {
+        Assert.True(_resolver.SupportsParameter(_paramAnnotated));
+        Assert.True(_resolver.SupportsParameter(_paramNotAnnotated));
 
-        private readonly ParameterInfo paramWithSpelExpression;
+        var strictResolver = new PayloadMethodArgumentResolver(
+            new StringMessageConverter(), false);
 
-        private readonly ParameterInfo paramNotAnnotated;
+        Assert.True(strictResolver.SupportsParameter(_paramAnnotated));
+        Assert.False(strictResolver.SupportsParameter(_paramNotAnnotated));
+    }
 
-        public PayloadMethodArgumentResolverTest()
-        {
-            resolver = new PayloadMethodArgumentResolver(new StringMessageConverter());
+    [Fact]
+    public void ResolveRequired()
+    {
+        var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+        var actual = _resolver.ResolveArgument(_paramAnnotated, message);
+        Assert.Equal("ABC", actual);
+    }
 
-            var payloadMethod = typeof(PayloadMethodArgumentResolverTest).GetMethod("HandleMessage", BindingFlags.NonPublic | BindingFlags.Instance);
+    [Fact]
+    public void ResolveRequiredEmpty()
+    {
+        var message = MessageBuilder.WithPayload(string.Empty).Build();
+        Assert.Throws<MethodArgumentNotValidException>(() => _resolver.ResolveArgument(_paramAnnotated, message));
+    }
 
-            paramAnnotated = payloadMethod.GetParameters()[0];
-            paramAnnotatedNotRequired = payloadMethod.GetParameters()[1];
-            paramAnnotatedRequired = payloadMethod.GetParameters()[2];
-            paramWithSpelExpression = payloadMethod.GetParameters()[3];
-            paramNotAnnotated = payloadMethod.GetParameters()[4];
-        }
+    [Fact]
+    public void ResolveRequiredEmptyNonAnnotatedParameter()
+    {
+        var message = MessageBuilder.WithPayload(string.Empty).Build();
+        Assert.Throws<MethodArgumentNotValidException>(() => _resolver.ResolveArgument(_paramNotAnnotated, message));
+    }
 
-        [Fact]
-        public void SupportsParameter()
-        {
-            Assert.True(resolver.SupportsParameter(paramAnnotated));
-            Assert.True(resolver.SupportsParameter(paramNotAnnotated));
+    [Fact]
+    public void ResolveNotRequired()
+    {
+        var emptyByteArrayMessage = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
+        Assert.Null(_resolver.ResolveArgument(_paramAnnotatedNotRequired, emptyByteArrayMessage));
 
-            var strictResolver = new PayloadMethodArgumentResolver(
-                    new StringMessageConverter(), false);
+        var emptyStringMessage = MessageBuilder.WithPayload(string.Empty).Build();
+        Assert.Null(_resolver.ResolveArgument(_paramAnnotatedNotRequired, emptyStringMessage));
 
-            Assert.True(strictResolver.SupportsParameter(paramAnnotated));
-            Assert.False(strictResolver.SupportsParameter(paramNotAnnotated));
-        }
+        var notEmptyMessage = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+        Assert.Equal("ABC", _resolver.ResolveArgument(_paramAnnotatedNotRequired, notEmptyMessage));
+    }
 
-        [Fact]
-        public void ResolveRequired()
-        {
-            var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
-            var actual = resolver.ResolveArgument(paramAnnotated, message);
-            Assert.Equal("ABC", actual);
-        }
+    [Fact]
+    public void ResolveNonConvertibleParam()
+    {
+        var notEmptyMessage = MessageBuilder.WithPayload(123).Build();
+        var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(_paramAnnotatedRequired, notEmptyMessage));
+        Assert.Contains("Cannot convert", ex.Message);
+    }
 
-        [Fact]
-        public void ResolveRequiredEmpty()
-        {
-            var message = MessageBuilder.WithPayload(string.Empty).Build();
-            Assert.Throws<MethodArgumentNotValidException>(() => resolver.ResolveArgument(paramAnnotated, message));
-        }
+    [Fact]
+    public void ResolveSpelExpressionNotSupported()
+    {
+        var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+        Assert.Throws<InvalidOperationException>(() => _resolver.ResolveArgument(_paramWithSpelExpression, message));
+    }
 
-        [Fact]
-        public void ResolveRequiredEmptyNonAnnotatedParameter()
-        {
-            var message = MessageBuilder.WithPayload(string.Empty).Build();
-            Assert.Throws<MethodArgumentNotValidException>(() => resolver.ResolveArgument(paramNotAnnotated, message));
-        }
+    [Fact]
+    public void ResolveNonAnnotatedParameter()
+    {
+        var notEmptyMessage = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+        Assert.Equal("ABC", _resolver.ResolveArgument(_paramNotAnnotated, notEmptyMessage));
+    }
 
-        [Fact]
-        public void ResolveNotRequired()
-        {
-            var emptyByteArrayMessage = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
-            Assert.Null(resolver.ResolveArgument(paramAnnotatedNotRequired, emptyByteArrayMessage));
-
-            var emptyStringMessage = MessageBuilder.WithPayload(string.Empty).Build();
-            Assert.Null(resolver.ResolveArgument(paramAnnotatedNotRequired, emptyStringMessage));
-
-            var notEmptyMessage = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
-            Assert.Equal("ABC", resolver.ResolveArgument(paramAnnotatedNotRequired, notEmptyMessage));
-        }
-
-        [Fact]
-        public void ResolveNonConvertibleParam()
-        {
-            var notEmptyMessage = MessageBuilder.WithPayload(123).Build();
-            var ex = Assert.Throws<MessageConversionException>(() => resolver.ResolveArgument(paramAnnotatedRequired, notEmptyMessage));
-            Assert.Contains("Cannot convert", ex.Message);
-        }
-
-        [Fact]
-        public void ResolveSpelExpressionNotSupported()
-        {
-            var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
-            Assert.Throws<InvalidOperationException>(() => resolver.ResolveArgument(paramWithSpelExpression, message));
-        }
-
-        [Fact]
-        public void ResolveNonAnnotatedParameter()
-        {
-            var notEmptyMessage = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
-            Assert.Equal("ABC", resolver.ResolveArgument(paramNotAnnotated, notEmptyMessage));
-        }
-
-        internal void HandleMessage(
-                    [Payload] string param,
-                    [Payload(Required = false)] string paramNotRequired,
-                    [Payload(Required = true)] CultureInfo nonConvertibleRequiredParam,
-                    [Payload("foo.bar")] string paramWithExpression,
-                    string paramNotAnnotated)
-        {
-        }
+    internal void HandleMessage(
+        [Payload] string param,
+        [Payload(Required = false)] string paramNotRequired,
+        [Payload(Required = true)] CultureInfo nonConvertibleRequiredParam,
+        [Payload("foo.bar")] string paramWithExpression,
+        string paramNotAnnotated)
+    {
     }
 }

@@ -1,40 +1,39 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Config
+namespace Steeltoe.Stream.Config;
+
+/// <summary>
+/// Common producer configuration options
+/// </summary>
+public interface IProducerOptions
 {
-    /// <summary>
-    /// Common producer configuration options
-    /// </summary>
-    public interface IProducerOptions
-    {
-        string BindingName { get; }
+    string BindingName { get; }
 
-        bool AutoStartup { get; }
+    bool AutoStartup { get; }
 
-        string PartitionKeyExpression { get; }
+    string PartitionKeyExpression { get; }
 
-        string PartitionKeyExtractorName { get; }
+    string PartitionKeyExtractorName { get; }
 
-        string PartitionSelectorName { get; }
+    string PartitionSelectorName { get; }
 
-        string PartitionSelectorExpression { get; }
+    string PartitionSelectorExpression { get; }
 
-        int PartitionCount { get; }
+    int PartitionCount { get; }
 
-        List<string> RequiredGroups { get; }
+    List<string> RequiredGroups { get; }
 
-        HeaderMode HeaderMode { get; }
+    HeaderMode HeaderMode { get; }
 
-        bool UseNativeEncoding { get; }
+    bool UseNativeEncoding { get; }
 
-        bool ErrorChannelEnabled { get; }
+    bool ErrorChannelEnabled { get; }
 
-        bool IsPartitioned { get; }
+    bool IsPartitioned { get; }
 
-        IProducerOptions Clone();
-    }
+    IProducerOptions Clone();
 }

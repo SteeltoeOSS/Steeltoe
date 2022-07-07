@@ -7,25 +7,23 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Test;
+
+public class HystrixApplicationBuilderExtensionsTest
 {
-    public class HystrixApplicationBuilderExtensionsTest
+    private readonly ITestOutputHelper _output;
+
+    public HystrixApplicationBuilderExtensionsTest(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper output;
+        _output = output;
+    }
 
-        public HystrixApplicationBuilderExtensionsTest(ITestOutputHelper output)
-            : base()
-        {
-            this.output = output;
-        }
+    [Fact]
+    public void UseHystrixRequestContext_ThrowsIfBuilderNull()
+    {
+        const IApplicationBuilder builder = null;
 
-        [Fact]
-        public void UseHystrixRequestContext_ThrowsIfBuilderNull()
-        {
-            IApplicationBuilder builder = null;
-
-            var ex = Assert.Throws<ArgumentNullException>(() => HystrixApplicationBuilderExtensions.UseHystrixRequestContext(builder));
-            Assert.Contains(nameof(builder), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixRequestContext());
+        Assert.Contains(nameof(builder), ex.Message);
     }
 }

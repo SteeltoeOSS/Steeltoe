@@ -5,7 +5,6 @@
 #pragma warning disable
 using FastSerialization;
 using Graphs;
-using Microsoft.Diagnostics.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,8 +21,8 @@ using Address = System.UInt64;
 /// Represents a .GCDump file.  You can open it for reading with the construtor
 /// and you can write one with WriteMemoryGraph 
 /// </summary>
-[ExcludeFromCodeCoverageAttribute()]
-internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
+[ExcludeFromCodeCoverage]
+internal sealed class GCHeapDump : IFastSerializable, IFastSerializableVersion
 {
     public GCHeapDump(string inputFileName) :
         this(new Deserializer(inputFileName))
@@ -118,7 +117,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
         var ret = new Dictionary<int, ProcessInfo>();
 
         // Do the 64 bit processes first, then do us   
-        if (System.Environment.Is64BitOperatingSystem && !System.Environment.Is64BitProcess)
+        if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
         {
             GetProcessesWithGCHeapsFromHeapDump(ret);
         }
@@ -218,13 +217,13 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
 
     private GCHeapDump(Deserializer deserializer)
     {
-        deserializer.RegisterFactory(typeof(MemoryGraph), delegate () { return new MemoryGraph(1); });
-        deserializer.RegisterFactory(typeof(Graphs.Module), delegate () { return new Graphs.Module(0); });
-        deserializer.RegisterFactory(typeof(InteropInfo), delegate () { return new InteropInfo(); });
-        deserializer.RegisterFactory(typeof(GCHeapDump), delegate () { return this; });
-        deserializer.RegisterFactory(typeof(GCHeapDumpSegment), delegate () { return new GCHeapDumpSegment(); });
-        deserializer.RegisterFactory(typeof(JSHeapInfo), delegate () { return new JSHeapInfo(); });
-        deserializer.RegisterFactory(typeof(DotNetHeapInfo), delegate () { return new DotNetHeapInfo(); });
+        deserializer.RegisterFactory(typeof(MemoryGraph), () => new MemoryGraph(1));
+        deserializer.RegisterFactory(typeof(Module), () => new Module(0));
+        deserializer.RegisterFactory(typeof(InteropInfo), () => new InteropInfo());
+        deserializer.RegisterFactory(typeof(GCHeapDump), () => this);
+        deserializer.RegisterFactory(typeof(GCHeapDumpSegment), () => new GCHeapDumpSegment());
+        deserializer.RegisterFactory(typeof(JSHeapInfo), () => new JSHeapInfo());
+        deserializer.RegisterFactory(typeof(DotNetHeapInfo), () => new DotNetHeapInfo());
 
         try
         {
@@ -233,7 +232,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
         }
         catch (Exception e)
         {
-            throw new ApplicationException("Error opening file " + deserializer.Name + " Message: " + e.Message);
+            throw new ApplicationException($"Error opening file {deserializer.Name} Message: {e.Message}");
         }
     }
 
@@ -349,7 +348,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
 
         // Things after version 8 go here. Always add the the end, and it should always work
         // and use the tagged variation.  
-        deserializer.TryReadTagged<InteropInfo>(ref m_interop);
+        deserializer.TryReadTagged(ref m_interop);
         string creationTool = null;
         deserializer.TryReadTagged(ref creationTool);
         CreationTool = creationTool;
@@ -420,7 +419,7 @@ internal class GCHeapDump : IFastSerializable, IFastSerializableVersion
     #endregion
 }
 
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 public class JSHeapInfo : IFastSerializable
 {
     #region private
@@ -433,7 +432,7 @@ public class JSHeapInfo : IFastSerializable
     #endregion
 }
 
-[ExcludeFromCodeCoverageAttribute()]
+[ExcludeFromCodeCoverage]
 public class InteropInfo : IFastSerializable
 {
     public class RCWInfo
@@ -560,7 +559,7 @@ public class InteropInfo : IFastSerializable
 
     public bool InteropInfoExists()
     {
-        return ((currentRCWCount != 0) || (currentCCWCount != 0));
+        return currentRCWCount != 0 || currentCCWCount != 0;
     }
 
     // The format we are writing out is:
@@ -677,7 +676,7 @@ public class InteropInfo : IFastSerializable
         for (int i = 0; i < m_countInterfaces; i++)
         {
             ComInterfaceInfo infoInterface = new ComInterfaceInfo();
-            infoInterface.fRCW = ((deserializer.ReadByte() == 1) ? true : false);
+            infoInterface.fRCW = deserializer.ReadByte() == 1;
             infoInterface.owner = deserializer.ReadInt();
             infoInterface.typeID = (NodeTypeIndex)deserializer.ReadInt();
             infoInterface.addrInterface = (Address)deserializer.ReadInt64();
@@ -720,17 +719,15 @@ public class InteropInfo : IFastSerializable
 /// </graph>
 /// 
 /// </summary>
-[ExcludeFromCodeCoverageAttribute()]
-internal class XmlGcHeapDump
+[ExcludeFromCodeCoverage]
+internal sealed class XmlGcHeapDump
 {
     public static GCHeapDump ReadGCHeapDumpFromXml(string fileName)
     {
-        XmlReaderSettings settings = new XmlReaderSettings() { IgnoreWhitespace = true, IgnoreComments = true };
-        using (XmlReader reader = XmlReader.Create(fileName, settings))
-        {
-            reader.ReadToDescendant("GCHeapDump");
-            return ReadGCHeapDumpFromXml(reader);
-        }
+        XmlReaderSettings settings = new XmlReaderSettings { IgnoreWhitespace = true, IgnoreComments = true };
+        using XmlReader reader = XmlReader.Create(fileName, settings);
+        reader.ReadToDescendant("GCHeapDump");
+        return ReadGCHeapDumpFromXml(reader);
     }
 
     public static GCHeapDump ReadGCHeapDumpFromXml(XmlReader reader)
@@ -793,7 +790,7 @@ internal class XmlGcHeapDump
         }
         if (ret.MemoryGraph == null)
         {
-            throw new ApplicationException(elementName + " does not have MemoryGraph field.");
+            throw new ApplicationException($"{elementName} does not have MemoryGraph field.");
         }
 
         return ret;

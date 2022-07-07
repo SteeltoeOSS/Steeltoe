@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,181 +11,168 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using System;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+public class ErrorMessagePublisher
 {
-    public class ErrorMessagePublisher
+    protected readonly MessagingTemplate _messagingTemplate;
+    protected readonly ILogger _logger;
+
+    private readonly IApplicationContext _context;
+    private IIntegrationServices _integrationServices;
+    private IDestinationResolver<IMessageChannel> _channelResolver;
+    private IMessageChannel _channel;
+    private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
+
+    public ErrorMessagePublisher(IApplicationContext context, ILogger logger = null)
     {
-        protected readonly MessagingTemplate _messagingTemplate;
-        protected readonly ILogger _logger;
+        _context = context;
+        _logger = logger;
+        _messagingTemplate = new MessagingTemplate(context);
+    }
 
-        private readonly IApplicationContext _context;
-        private IIntegrationServices _integrationServices;
-        private IDestinationResolver<IMessageChannel> _channelResolver;
-        private IMessageChannel _channel;
-        private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
-
-        public ErrorMessagePublisher(IApplicationContext context, ILogger logger = null)
+    public IIntegrationServices IntegrationServices
+    {
+        get
         {
-            _context = context;
-            _logger = logger;
-            _messagingTemplate = new MessagingTemplate(context);
+            _integrationServices ??= IntegrationServicesUtils.GetIntegrationServices(_context);
+            return _integrationServices;
+        }
+    }
+
+    public virtual IErrorMessageStrategy ErrorMessageStrategy
+    {
+        get
+        {
+            return _errorMessageStrategy;
         }
 
-        public IIntegrationServices IntegrationServices
+        set
         {
-            get
-            {
-                if (_integrationServices == null)
-                {
-                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(_context);
-                }
-
-                return _integrationServices;
-            }
+            _errorMessageStrategy = value ?? throw new ArgumentNullException("errorMessageStrategy must not be null");
         }
+    }
 
-        public virtual IErrorMessageStrategy ErrorMessageStrategy
-        {
-            get
-            {
-                return _errorMessageStrategy;
-            }
-
-            set
-            {
-                _errorMessageStrategy = value ?? throw new ArgumentNullException("errorMessageStrategy must not be null");
-            }
-        }
-
-        public virtual IMessageChannel Channel
-        {
-            get
-            {
-                PopulateChannel();
-
-                return _channel;
-            }
-
-            set
-            {
-                _channel = value;
-            }
-        }
-
-        public virtual string ChannelName { get; set; }
-
-        public virtual int SendTimeout
-        {
-            get
-            {
-                return _messagingTemplate.SendTimeout;
-            }
-
-            set
-            {
-                _messagingTemplate.SendTimeout = value;
-            }
-        }
-
-        public virtual IDestinationResolver<IMessageChannel> ChannelResolver
-        {
-            get
-            {
-                if (_channelResolver == null)
-                {
-                    _channelResolver = IntegrationServices.ChannelResolver;
-                }
-
-                return _channelResolver;
-            }
-
-            set
-            {
-                _channelResolver = value ?? throw new ArgumentNullException("channelResolver must not be null");
-            }
-        }
-
-        protected virtual MessagingTemplate MessagingTemplate
-        {
-            get { return _messagingTemplate; }
-        }
-
-        public virtual void Publish(MessagingException exception)
-        {
-            Publish(null, exception.FailedMessage, exception);
-        }
-
-        public virtual void Publish(IMessage failedMessage, Exception throwable)
-        {
-            Publish(null, failedMessage, throwable);
-        }
-
-        public virtual void Publish(IMessage inputMessage, MessagingException exception)
-        {
-            Publish(inputMessage, exception.FailedMessage, exception);
-        }
-
-        public virtual void Publish(IMessage inputMessage, IMessage failedMessage, Exception exception)
-        {
-            Publish(exception, ErrorMessageUtils.GetAttributeAccessor(inputMessage, failedMessage));
-        }
-
-        public virtual void Publish(Exception exception, IAttributeAccessor context)
+    public virtual IMessageChannel Channel
+    {
+        get
         {
             PopulateChannel();
 
-            var payload = DeterminePayload(exception, context);
-            var errorMessage = _errorMessageStrategy.BuildErrorMessage(payload, context);
-
-            _messagingTemplate.Send(errorMessage);
+            return _channel;
         }
 
-        protected virtual Exception DeterminePayload(Exception exception, IAttributeAccessor context)
+        set
         {
-            var lastThrowable = exception;
-            if (lastThrowable == null)
-            {
-                lastThrowable = PayloadWhenNull(context);
-            }
-            else if (lastThrowable is not MessagingException)
-            {
-                var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FAILED_MESSAGE_CONTEXT_KEY);
-                lastThrowable = message == null
-                    ? new MessagingException(lastThrowable.Message, lastThrowable)
-                    : new MessagingException(message, lastThrowable.Message, lastThrowable);
-            }
+            _channel = value;
+        }
+    }
 
-            return lastThrowable;
+    public virtual string ChannelName { get; set; }
+
+    public virtual int SendTimeout
+    {
+        get
+        {
+            return _messagingTemplate.SendTimeout;
         }
 
-        protected virtual Exception PayloadWhenNull(IAttributeAccessor context)
+        set
+        {
+            _messagingTemplate.SendTimeout = value;
+        }
+    }
+
+    public virtual IDestinationResolver<IMessageChannel> ChannelResolver
+    {
+        get
+        {
+            _channelResolver ??= IntegrationServices.ChannelResolver;
+            return _channelResolver;
+        }
+
+        set
+        {
+            _channelResolver = value ?? throw new ArgumentNullException("channelResolver must not be null");
+        }
+    }
+
+    protected virtual MessagingTemplate MessagingTemplate
+    {
+        get { return _messagingTemplate; }
+    }
+
+    public virtual void Publish(MessagingException exception)
+    {
+        Publish(null, exception.FailedMessage, exception);
+    }
+
+    public virtual void Publish(IMessage failedMessage, Exception throwable)
+    {
+        Publish(null, failedMessage, throwable);
+    }
+
+    public virtual void Publish(IMessage inputMessage, MessagingException exception)
+    {
+        Publish(inputMessage, exception.FailedMessage, exception);
+    }
+
+    public virtual void Publish(IMessage inputMessage, IMessage failedMessage, Exception exception)
+    {
+        Publish(exception, ErrorMessageUtils.GetAttributeAccessor(inputMessage, failedMessage));
+    }
+
+    public virtual void Publish(Exception exception, IAttributeAccessor context)
+    {
+        PopulateChannel();
+
+        var payload = DeterminePayload(exception, context);
+        var errorMessage = _errorMessageStrategy.BuildErrorMessage(payload, context);
+
+        _messagingTemplate.Send(errorMessage);
+    }
+
+    protected virtual Exception DeterminePayload(Exception exception, IAttributeAccessor context)
+    {
+        var lastThrowable = exception;
+        if (lastThrowable == null)
+        {
+            lastThrowable = PayloadWhenNull(context);
+        }
+        else if (lastThrowable is not MessagingException)
         {
             var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FAILED_MESSAGE_CONTEXT_KEY);
-            return message == null
-                    ? new MessagingException("No root cause exception available")
-                    : new MessagingException(message, "No root cause exception available");
+            lastThrowable = message == null
+                ? new MessagingException(lastThrowable.Message, lastThrowable)
+                : new MessagingException(message, lastThrowable.Message, lastThrowable);
         }
 
-        private void PopulateChannel()
+        return lastThrowable;
+    }
+
+    protected virtual Exception PayloadWhenNull(IAttributeAccessor context)
+    {
+        var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FAILED_MESSAGE_CONTEXT_KEY);
+        return message == null
+            ? new MessagingException("No root cause exception available")
+            : new MessagingException(message, "No root cause exception available");
+    }
+
+    private void PopulateChannel()
+    {
+        if (_messagingTemplate.DefaultDestination == null)
         {
-            if (_messagingTemplate.DefaultDestination == null)
+            if (_channel == null)
             {
-                if (_channel == null)
+                var recoveryChannelName = ChannelName ?? IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME;
+
+                if (_channelResolver != null)
                 {
-                    var recoveryChannelName = ChannelName;
-                    if (recoveryChannelName == null)
-                    {
-                        recoveryChannelName = IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME;
-                    }
-
-                    if (_channelResolver != null)
-                    {
-                        _channel = _channelResolver.ResolveDestination(recoveryChannelName);
-                    }
+                    _channel = _channelResolver.ResolveDestination(recoveryChannelName);
                 }
-
-                _messagingTemplate.DefaultDestination = _channel;
             }
+
+            _messagingTemplate.DefaultDestination = _channel;
         }
     }
 }

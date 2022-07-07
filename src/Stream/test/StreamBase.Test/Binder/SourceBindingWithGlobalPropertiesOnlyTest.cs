@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,34 +9,33 @@ using Steeltoe.Stream.Config;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class SourceBindingWithGlobalPropertiesOnlyTest : AbstractTest
 {
-    public class SourceBindingWithGlobalPropertiesOnlyTest : AbstractTest
+    [Fact]
+    public async Task TestGlobalPropertiesSet()
     {
-        [Fact]
-        public async Task TestGlobalPropertiesSet()
-        {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            var provider = CreateStreamsContainerWithISourceBinding(
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        var provider = CreateStreamsContainerWithISourceBinding(
                 searchDirectories,
                 "spring.cloud.stream.default.contentType=application/json",
                 "spring.cloud.stream.default.producer.partitionKeyExpression=key")
-                        .BuildServiceProvider();
+            .BuildServiceProvider();
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-            var factory = provider.GetService<IBinderFactory>();
-            Assert.NotNull(factory);
-            var binder = factory.GetBinder(null);
-            Assert.NotNull(binder);
+        var factory = provider.GetService<IBinderFactory>();
+        Assert.NotNull(factory);
+        var binder = factory.GetBinder(null);
+        Assert.NotNull(binder);
 
-            var bindingServiceProperties = provider.GetService<IOptions<BindingServiceOptions>>();
-            Assert.NotNull(bindingServiceProperties.Value);
-            var bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
-            Assert.NotNull(bindingProperties);
-            Assert.Equal("application/json", bindingProperties.ContentType.ToString());
-            Assert.NotNull(bindingProperties.Producer);
-            Assert.Equal("key", bindingProperties.Producer.PartitionKeyExpression);
-        }
+        var bindingServiceProperties = provider.GetService<IOptions<BindingServiceOptions>>();
+        Assert.NotNull(bindingServiceProperties.Value);
+        var bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
+        Assert.NotNull(bindingProperties);
+        Assert.Equal("application/json", bindingProperties.ContentType);
+        Assert.NotNull(bindingProperties.Producer);
+        Assert.Equal("key", bindingProperties.Producer.PartitionKeyExpression);
     }
 }

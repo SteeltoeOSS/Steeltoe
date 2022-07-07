@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Steeltoe Debug" Description="Code quality rules for Steeltoe debug builds" ToolsVersion="17.0">
+  <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
+    <Rule Id="S1075" Action="None" />
+    <Rule Id="S110" Action="Warning" />
+    <Rule Id="S1104" Action="None" />
+    <Rule Id="S1135" Action="None" />
+    <Rule Id="S1144" Action="Warning" />
+    <Rule Id="S1151" Action="Warning" />
+    <Rule Id="S1168" Action="None" />
+    <Rule Id="S1172" Action="None" />
+    <Rule Id="S1186" Action="None" />
+    <Rule Id="S1244" Action="Warning" />
+    <Rule Id="S125" Action="None" />
+    <Rule Id="S1479" Action="Warning" />
+    <Rule Id="S1659" Action="Warning" />
+    <Rule Id="S1698" Action="Warning" />
+    <Rule Id="S1821" Action="Warning" />
+    <Rule Id="S1858" Action="Warning" />
+    <Rule Id="S1994" Action="Warning" />
+    <Rule Id="S2148" Action="Warning" />
+    <Rule Id="S2156" Action="Warning" />
+    <Rule Id="S2187" Action="None" />
+    <Rule Id="S2292" Action="None" />
+    <Rule Id="S2327" Action="Warning" />
+    <Rule Id="S2342" Action="Warning" />
+    <Rule Id="S2387" Action="Warning" />
+    <Rule Id="S2437" Action="Warning" />
+    <Rule Id="S2674" Action="Warning" />
+    <Rule Id="S3011" Action="None" />
+    <Rule Id="S3052" Action="Warning" />
+    <Rule Id="S3253" Action="Warning" />
+    <Rule Id="S3267" Action="None" />
+    <Rule Id="S3433" Action="None" />
+    <Rule Id="S3597" Action="None" />
+    <Rule Id="S3598" Action="None" />
+    <Rule Id="S3884" Action="None" />
+    <Rule Id="S3889" Action="None" />
+    <Rule Id="S3908" Action="Warning" />
+    <Rule Id="S3925" Action="None" />
+    <Rule Id="S3926" Action="None" />
+    <Rule Id="S3927" Action="None" />
+    <Rule Id="S3928" Action="None" />
+    <Rule Id="S3937" Action="Warning" />
+    <Rule Id="S3998" Action="None" />
+    <Rule Id="S4022" Action="Warning" />
+    <Rule Id="S4061" Action="None" />
+    <Rule Id="S4159" Action="None" />
+    <Rule Id="S4210" Action="None" />
+    <Rule Id="S4211" Action="None" />
+    <Rule Id="S4225" Action="Warning" />
+    <Rule Id="S4260" Action="None" />
+    <Rule Id="S4277" Action="None" />
+    <Rule Id="S4428" Action="None" />
+    <Rule Id="S4433" Action="None" />
+    <Rule Id="S4487" Action="None" />
+    <Rule Id="S4583" Action="None" />
+    <Rule Id="S5773" Action="None" />
+    <Rule Id="S881" Action="Warning" />
+    <Rule Id="S927" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SX1309" Action="Warning" />
+  </Rules>
+</RuleSet>

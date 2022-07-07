@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,37 +12,36 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer;
+
+/// <summary>
+/// Replace bootstrapped components used by ConfigServerConfigurationProvider with objects provided by Dependency Injection
+/// </summary>
+public class ConfigServerHostedService : IHostedService
 {
-    /// <summary>
-    /// Replace bootstrapped components used by ConfigServerConfigurationProvider with objects provided by Dependency Injection
-    /// </summary>
-    public class ConfigServerHostedService : IHostedService
+    private readonly ConfigServerConfigurationProvider _configuration;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IDiscoveryClient _discoveryClient;
+
+    public ConfigServerHostedService(IConfigurationRoot configuration, ILoggerFactory loggerFactory, IDiscoveryClient discoveryClient = null)
     {
-        private readonly ConfigServerConfigurationProvider _configuration;
-        private readonly ILoggerFactory _loggerFactory;
-        private readonly IDiscoveryClient _discoveryClient;
-
-        public ConfigServerHostedService(IConfigurationRoot configuration, ILoggerFactory loggerFactory, IDiscoveryClient discoveryClient = null)
+        if (configuration is null)
         {
-            if (configuration is null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            _configuration = configuration.Providers.First(provider => provider is ConfigServerConfigurationProvider) as ConfigServerConfigurationProvider;
-            _loggerFactory = loggerFactory ?? BootstrapLoggerFactory.Instance;
-            _discoveryClient = discoveryClient;
+            throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await _configuration.ProvideRuntimeReplacementsAsync(_discoveryClient, _loggerFactory);
-        }
+        _configuration = configuration.Providers.First(provider => provider is ConfigServerConfigurationProvider) as ConfigServerConfigurationProvider;
+        _loggerFactory = loggerFactory ?? BootstrapLoggerFactory.Instance;
+        _discoveryClient = discoveryClient;
+    }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await _configuration.ShutdownAsync();
-        }
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await _configuration.ProvideRuntimeReplacementsAsync(_discoveryClient, _loggerFactory);
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await _configuration.ShutdownAsync();
     }
 }

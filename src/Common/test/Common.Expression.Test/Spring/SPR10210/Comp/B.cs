@@ -1,16 +1,14 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.SPR10210.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Comp
+namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Comp;
+
+#pragma warning disable S2326 // Unused type parameters should be removed
+public class B<T>
+#pragma warning restore S2326 // Unused type parameters should be removed
+    where T : IC
 {
-    public class B<T>
-        where T : IC
-    {
-    }
 }

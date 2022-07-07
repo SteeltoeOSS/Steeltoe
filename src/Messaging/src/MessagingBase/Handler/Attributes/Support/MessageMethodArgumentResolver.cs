@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,105 +8,104 @@ using Steeltoe.Messaging.Support;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support
+namespace Steeltoe.Messaging.Handler.Attributes.Support;
+
+public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
 {
-    public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
+    protected readonly IMessageConverter _converter;
+
+    public MessageMethodArgumentResolver()
+        : this(null)
     {
-        protected readonly IMessageConverter _converter;
+    }
 
-        public MessageMethodArgumentResolver()
-            : this(null)
+    public MessageMethodArgumentResolver(IMessageConverter converter) => _converter = converter;
+
+    public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
+    {
+        var targetPayloadType = GetPayloadType(parameter, message);
+
+        var payload = message.Payload;
+        if (targetPayloadType.IsInstanceOfType(payload))
         {
+            return message;
         }
 
-        public MessageMethodArgumentResolver(IMessageConverter converter) => _converter = converter;
-
-        public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
+        if (IsEmptyPayload(payload))
         {
-            var targetPayloadType = GetPayloadType(parameter, message);
+            var payloadType = payload != null ? payload.GetType().ToString() : "null";
 
-            var payload = message.Payload;
-            if (targetPayloadType.IsInstanceOfType(payload))
-            {
-                return message;
-            }
-
-            if (IsEmptyPayload(payload))
-            {
-                var payloadType = payload != null ? payload.GetType().ToString() : "null";
-
-                throw new MessageConversionException(
-                    message,
-                    "Cannot convert from actual payload type '" + payloadType + "' to expected payload type '" + targetPayloadType.ToString() + "' when payload is empty");
-            }
-
-            payload = ConvertPayload(message, parameter, targetPayloadType);
-            return MessageBuilder.CreateMessage(payload, message.Headers, targetPayloadType);
+            throw new MessageConversionException(
+                message,
+                $"Cannot convert from actual payload type '{payloadType}' to expected payload type '{targetPayloadType}' when payload is empty");
         }
 
-        public virtual bool SupportsParameter(ParameterInfo parameter) => typeof(IMessage).IsAssignableFrom(parameter.ParameterType);
+        payload = ConvertPayload(message, parameter, targetPayloadType);
+        return MessageBuilder.CreateMessage(payload, message.Headers, targetPayloadType);
+    }
 
-        protected virtual Type GetPayloadType(ParameterInfo parameter, IMessage message)
+    public virtual bool SupportsParameter(ParameterInfo parameter) => typeof(IMessage).IsAssignableFrom(parameter.ParameterType);
+
+    protected virtual Type GetPayloadType(ParameterInfo parameter, IMessage message)
+    {
+        if (parameter.ParameterType.IsGenericType)
         {
-            if (parameter.ParameterType.IsGenericType)
+            if (parameter.ParameterType.IsConstructedGenericType)
             {
-                if (parameter.ParameterType.IsConstructedGenericType)
-                {
-                    return parameter.ParameterType.GenericTypeArguments[0];
-                }
-
-                var method = parameter.Member as MethodInfo;
-                Type[] methodArgs = null;
-                Type[] typeArgs = null;
-                if (method.IsGenericMethod)
-                {
-                    methodArgs = method.GetGenericArguments();
-                }
-
-                var type = method.DeclaringType;
-                if (type.IsGenericType)
-                {
-                    typeArgs = type.GetGenericArguments();
-                }
-
-                return type.Module.ResolveType(parameter.ParameterType.MetadataToken, typeArgs, methodArgs);
+                return parameter.ParameterType.GenericTypeArguments[0];
             }
 
-            return typeof(object);
+            var method = parameter.Member as MethodInfo;
+            Type[] methodArgs = null;
+            Type[] typeArgs = null;
+            if (method.IsGenericMethod)
+            {
+                methodArgs = method.GetGenericArguments();
+            }
+
+            var type = method.DeclaringType;
+            if (type.IsGenericType)
+            {
+                typeArgs = type.GetGenericArguments();
+            }
+
+            return type.Module.ResolveType(parameter.ParameterType.MetadataToken, typeArgs, methodArgs);
         }
 
-        protected virtual bool IsEmptyPayload(object payload)
+        return typeof(object);
+    }
+
+    protected virtual bool IsEmptyPayload(object payload)
+    {
+        return payload switch
         {
-            return payload switch
-            {
-                null => true,
-                byte[] => ((byte[])payload).Length == 0,
-                string sPayload => string.IsNullOrEmpty(sPayload),
-                _ => false
-            };
+            null => true,
+            byte[] bytes => bytes.Length == 0,
+            string sPayload => string.IsNullOrEmpty(sPayload),
+            _ => false
+        };
+    }
+
+    private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
+    {
+        object result = null;
+        if (_converter is ISmartMessageConverter smartConverter)
+        {
+            result = smartConverter.FromMessage(message, targetPayloadType, parameter);
+        }
+        else if (_converter != null)
+        {
+            result = _converter.FromMessage(message, targetPayloadType);
         }
 
-        private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
+        if (result == null)
         {
-            object result = null;
-            if (_converter is ISmartMessageConverter smartConverter)
-            {
-                result = smartConverter.FromMessage(message, targetPayloadType, parameter);
-            }
-            else if (_converter != null)
-            {
-                result = _converter.FromMessage(message, targetPayloadType);
-            }
-
-            if (result == null)
-            {
-                var payloadType = message.Payload != null ? message.Payload.GetType().ToString() : "null";
-                throw new MessageConversionException(
-                    message,
-                    "No converter found from actual payload type '" + payloadType + "' to expected payload type '" + targetPayloadType.ToString() + "'");
-            }
-
-            return result;
+            var payloadType = message.Payload != null ? message.Payload.GetType().ToString() : "null";
+            throw new MessageConversionException(
+                message,
+                $"No converter found from actual payload type '{payloadType}' to expected payload type '{targetPayloadType}'");
         }
+
+        return result;
     }
 }

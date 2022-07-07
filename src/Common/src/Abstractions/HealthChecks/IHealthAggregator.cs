@@ -1,13 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.HealthChecks
+namespace Steeltoe.Common.HealthChecks;
+
+public interface IHealthAggregator
 {
-    public interface IHealthAggregator
-    {
-        HealthCheckResult Aggregate(IList<IHealthContributor> contributors);
-    }
+    HealthCheckResult Aggregate(IList<IHealthContributor> contributors);
 }

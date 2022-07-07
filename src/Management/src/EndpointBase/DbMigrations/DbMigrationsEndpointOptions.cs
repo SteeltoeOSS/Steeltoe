@@ -5,32 +5,31 @@
 using Microsoft.Extensions.Configuration;
 using System;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations
-{
-    public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigrationsOptions
-    {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dbmigrations";
+namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-        public DbMigrationsEndpointOptions()
+public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigrationsOptions
+{
+    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dbmigrations";
+
+    public DbMigrationsEndpointOptions()
+    {
+        Id = "dbmigrations";
+        RequiredPermissions = Permissions.RESTRICTED;
+    }
+
+    public DbMigrationsEndpointOptions(IConfiguration config)
+        : base(MANAGEMENT_INFO_PREFIX, config)
+    {
+        if (string.IsNullOrEmpty(Id))
         {
             Id = "dbmigrations";
+        }
+
+        if (RequiredPermissions == Permissions.UNDEFINED)
+        {
             RequiredPermissions = Permissions.RESTRICTED;
         }
-
-        public DbMigrationsEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "dbmigrations";
-            }
-
-            if (RequiredPermissions == Permissions.UNDEFINED)
-            {
-                RequiredPermissions = Permissions.RESTRICTED;
-            }
-        }
-
-        public string[] KeysToSanitize => Array.Empty<string>();
     }
+
+    public string[] KeysToSanitize => Array.Empty<string>();
 }

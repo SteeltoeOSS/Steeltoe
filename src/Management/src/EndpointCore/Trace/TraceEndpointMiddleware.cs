@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,35 +9,34 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.Endpoint.Trace;
+
+public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 {
-    public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
+    private readonly RequestDelegate _next;
+
+    public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+    public Task Invoke(HttpContext context)
+    {
+        if (_endpoint.ShouldInvoke(_mgmtOptions))
         {
-            _next = next;
+            return HandleTraceRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            if (_endpoint.ShouldInvoke(_mgmtOptions))
-            {
-                return HandleTraceRequestAsync(context);
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    protected internal Task HandleTraceRequestAsync(HttpContext context)
+    {
+        var serialInfo = HandleRequest();
+        _logger?.LogDebug("Returning: {0}", serialInfo);
 
-        protected internal Task HandleTraceRequestAsync(HttpContext context)
-        {
-            var serialInfo = HandleRequest();
-            _logger?.LogDebug("Returning: {0}", serialInfo);
-
-            context.HandleContentNegotiation(_logger);
-            return context.Response.WriteAsync(serialInfo);
-        }
+        context.HandleContentNegotiation(_logger);
+        return context.Response.WriteAsync(serialInfo);
     }
 }

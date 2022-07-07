@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -6,74 +6,72 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Invocation
+namespace Steeltoe.Messaging.Handler.Invocation;
+
+public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodReturnValueHandler
 {
-    public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodReturnValueHandler
+    private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new ();
+
+    public IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
     {
-        private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new ();
+        get { return new List<IHandlerMethodReturnValueHandler>(_returnValueHandlers); }
+    }
 
-        public IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
+    public void Clear()
+    {
+        _returnValueHandlers.Clear();
+    }
+
+    public HandlerMethodReturnValueHandlerComposite AddHandler(IHandlerMethodReturnValueHandler returnValueHandler)
+    {
+        _returnValueHandlers.Add(returnValueHandler);
+        return this;
+    }
+
+    public HandlerMethodReturnValueHandlerComposite AddHandlers(IList<IHandlerMethodReturnValueHandler> handlers)
+    {
+        if (handlers != null)
         {
-            get { return new List<IHandlerMethodReturnValueHandler>(_returnValueHandlers); }
+            _returnValueHandlers.AddRange(handlers);
         }
 
-        public void Clear()
+        return this;
+    }
+
+    public bool SupportsReturnType(ParameterInfo returnType)
+    {
+        return GetReturnValueHandler(returnType) != null;
+    }
+
+    public void HandleReturnValue(object returnValue, ParameterInfo returnType, IMessage message)
+    {
+        var handler = GetReturnValueHandler(returnType);
+        if (handler == null)
         {
-            _returnValueHandlers.Clear();
+            throw new InvalidOperationException($"No handler for return value type: {returnType.ParameterType}");
         }
 
-        public HandlerMethodReturnValueHandlerComposite AddHandler(IHandlerMethodReturnValueHandler returnValueHandler)
-        {
-            _returnValueHandlers.Add(returnValueHandler);
-            return this;
-        }
+        // if (logger.isTraceEnabled())
+        // {
+        //    logger.trace("Processing return value with " + handler);
+        // }
+        handler.HandleReturnValue(returnValue, returnType, message);
+    }
 
-        public HandlerMethodReturnValueHandlerComposite AddHandlers(IList<IHandlerMethodReturnValueHandler> handlers)
+    public bool IsAsyncReturnValue(object returnValue, ParameterInfo returnType)
+        => GetReturnValueHandler(returnType) is IAsyncHandlerMethodReturnValueHandler handler1 &&
+           handler1.IsAsyncReturnValue(returnValue, returnType);
+
+    private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
+    {
+        foreach (var handler in _returnValueHandlers)
         {
-            if (handlers != null)
+            if (handler.SupportsReturnType(returnType))
             {
-                _returnValueHandlers.AddRange(handlers);
+                return handler;
             }
-
-            return this;
         }
 
-        public bool SupportsReturnType(ParameterInfo returnType)
-        {
-            return GetReturnValueHandler(returnType) != null;
-        }
-
-        public void HandleReturnValue(object returnValue, ParameterInfo returnType, IMessage message)
-        {
-            var handler = GetReturnValueHandler(returnType);
-            if (handler == null)
-            {
-                throw new InvalidOperationException("No handler for return value type: " + returnType.ParameterType);
-            }
-
-            // if (logger.isTraceEnabled())
-            // {
-            //    logger.trace("Processing return value with " + handler);
-            // }
-            handler.HandleReturnValue(returnValue, returnType, message);
-        }
-
-        public bool IsAsyncReturnValue(object returnValue, ParameterInfo returnType)
-            => GetReturnValueHandler(returnType) is IAsyncHandlerMethodReturnValueHandler handler1 &&
-                    handler1.IsAsyncReturnValue(returnValue, returnType);
-
-        private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
-        {
-            for (var i = 0; i < _returnValueHandlers.Count; i++)
-            {
-                var handler = _returnValueHandlers[i];
-                if (handler.SupportsReturnType(returnType))
-                {
-                    return handler;
-                }
-            }
-
-            return null;
-        }
+        return null;
     }
 }

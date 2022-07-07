@@ -9,35 +9,34 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations;
+
+public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
 {
-    public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
+    private readonly RequestDelegate _next;
+
+    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+    public Task Invoke(HttpContext context)
+    {
+        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
         {
-            _next = next;
+            return HandleEntityFrameworkRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
-            {
-                return HandleEntityFrameworkRequestAsync(context);
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
+    {
+        var serialInfo = HandleRequest();
+        _logger?.LogDebug("Returning: {0}", serialInfo);
 
-        protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
-        {
-            var serialInfo = HandleRequest();
-            _logger?.LogDebug("Returning: {0}", serialInfo);
-
-            context.HandleContentNegotiation(_logger);
-            return context.Response.WriteAsync(serialInfo);
-        }
+        context.HandleContentNegotiation(_logger);
+        return context.Response.WriteAsync(serialInfo);
     }
 }

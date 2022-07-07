@@ -1,31 +1,30 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.TestBinder
+namespace Steeltoe.Stream.TestBinder;
+
+public class AbstractDestination
 {
-    public class AbstractDestination
+    private ISubscribableChannel _channel;
+
+    internal ISubscribableChannel Channel
     {
-        private ISubscribableChannel _channel;
-
-        internal ISubscribableChannel Channel
+        get
         {
-            get
-            {
-                return _channel;
-            }
-
-            set
-            {
-                _channel = value;
-                AfterChannelIsSet();
-            }
+            return _channel;
         }
 
-        protected internal virtual void AfterChannelIsSet()
+        set
         {
+            _channel = value;
+            AfterChannelIsSet();
         }
+    }
+
+    protected internal virtual void AfterChannelIsSet()
+    {
     }
 }

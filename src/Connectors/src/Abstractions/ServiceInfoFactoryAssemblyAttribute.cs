@@ -1,20 +1,19 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Attributes;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector
+namespace Steeltoe.Connector;
+
+/// <summary>
+/// Identifies an assembly that contains one or more <see cref="IServiceInfoFactory" />
+/// </summary>
+public sealed class ServiceInfoFactoryAssemblyAttribute : AssemblyContainsTypeAttribute
 {
-    /// <summary>
-    /// Identifies an assembly that contains one or more <see cref="IServiceInfoFactory" />
-    /// </summary>
-    public sealed class ServiceInfoFactoryAssemblyAttribute : AssemblyContainsTypeAttribute
+    public ServiceInfoFactoryAssemblyAttribute()
+        : base(typeof(IServiceInfoFactory))
     {
-        public ServiceInfoFactoryAssemblyAttribute()
-            : base(typeof(IServiceInfoFactory))
-        {
-        }
     }
 }

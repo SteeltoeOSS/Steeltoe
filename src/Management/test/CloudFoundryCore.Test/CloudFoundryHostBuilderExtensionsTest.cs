@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -21,163 +20,131 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Management.CloudFoundry.Test
+namespace Steeltoe.Management.CloudFoundry.Test;
+
+[Obsolete("To be removed in the next major version.")]
+public class CloudFoundryHostBuilderExtensionsTest
 {
-    [Obsolete]
-    public class CloudFoundryHostBuilderExtensionsTest
+    private static readonly Dictionary<string, string> ManagementSettings = new ()
     {
-        private static readonly Dictionary<string, string> ManagementSettings = new ()
-        {
-            ["management:endpoints:path"] = "/testing",
-        };
+        ["management:endpoints:path"] = "/testing",
+    };
 
-        private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
 
-        [Fact]
-        public void AddCloudFoundryActuators_IWebHostBuilder()
-        {
-            var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(configureApp => { });
+    [Fact]
+    public void AddCloudFoundryActuators_IWebHostBuilder()
+    {
+        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(_ => { });
 
-            var host = hostBuilder.AddCloudFoundryActuators().Build();
-            var managementOptions = host.Services.GetServices<IManagementOptions>();
+        var host = hostBuilder.AddCloudFoundryActuators().Build();
+        var managementOptions = host.Services.GetServices<IManagementOptions>();
 
-            var filters = host.Services.GetServices<IStartupFilter>();
+        var filters = host.Services.GetServices<IStartupFilter>();
 
-            Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
+        Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
 
-            Assert.NotNull(filters);
-            Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
-        }
+        Assert.NotNull(filters);
+        Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
+    }
 
-        [Fact]
-        public void AddCloudFoundryActuators_IWebHostBuilder_Serilog()
-        {
-            var hostBuilder = WebHost.CreateDefaultBuilder()
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
-                .Configure(configureApp => { })
-                .ConfigureLogging(logging => logging.AddDynamicSerilog());
+    [Fact]
+    public void AddCloudFoundryActuators_IWebHostBuilder_Serilog()
+    {
+        var hostBuilder = WebHost.CreateDefaultBuilder()
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
+            .Configure(_ => { })
+            .ConfigureLogging(logging => logging.AddDynamicSerilog());
 
-            var host = hostBuilder.AddCloudFoundryActuators().Build();
-            var managementOptions = host.Services.GetServices<IManagementOptions>();
+        var host = hostBuilder.AddCloudFoundryActuators().Build();
+        var managementOptions = host.Services.GetServices<IManagementOptions>();
 
-            var filters = host.Services.GetServices<IStartupFilter>();
+        var filters = host.Services.GetServices<IStartupFilter>();
 
-            Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
+        Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
 
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
+        Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
-            Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+        Assert.NotNull(filters);
+        Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
+    }
 
-            Assert.NotNull(filters);
-            Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
-        }
+    [Fact]
+    public void AddCloudFoundryActuators_IHostBuilder()
+    {
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-        [Fact]
-        public void AddCloudFoundryActuators_IHostBuilder()
-        {
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
+        var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).Build();
+        var managementOptions = host.Services.GetServices<IManagementOptions>();
 
-            var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).Build();
-            var managementOptions = host.Services.GetServices<IManagementOptions>();
+        var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
 
-            Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
+        Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
-            }
+        Assert.NotNull(filter);
+        Assert.IsType<CloudFoundryActuatorsStartupFilter>(filter);
+    }
 
-            Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+    [Fact]
+    public async Task AddCloudFoundryActuators_IHostBuilder_IStartupFilterFires()
+    {
+        var hostBuilder = new HostBuilder()
+            .ConfigureWebHost(_testServerWithRouting)
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-            Assert.NotNull(filter);
-            Assert.IsType<CloudFoundryActuatorsStartupFilter>(filter);
-        }
+        var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
 
-        [Fact]
-        public async Task AddCloudFoundryActuators_IHostBuilder_IStartupFilterFires()
-        {
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(testServerWithRouting)
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
+        var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+        response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+        response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/httptrace");
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+    }
 
-            var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
+    [Fact]
+    public async Task AddCloudFoundryActuatorsV1_IHostBuilder_IStartupFilterFires()
+    {
+        var hostBuilder = new HostBuilder()
+            .ConfigureWebHost(_testServerWithRouting)
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-            var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/httptrace");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
-        }
+        var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
 
-        [Fact]
-        public async Task AddCloudFoundryActuatorsV1_IHostBuilder_IStartupFilterFires()
-        {
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(testServerWithRouting)
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
+        var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+        response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+        response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/trace");
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+    }
 
-            var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
+    [Fact]
+    public void AddCloudFoundryActuators_IHostBuilder_Serilog()
+    {
+        var hostBuilder = Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging => logging.AddDynamicSerilog())
+            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
+            .ConfigureWebHost(_testServerWithRouting)
+            .AddCloudFoundryActuators();
 
-            var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/trace");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
-        }
+        var host = hostBuilder.Build();
+        var managementOptions = host.Services.GetServices<IManagementOptions>();
 
-        [Fact]
-        public void AddCloudFoundryActuators_IHostBuilder_Serilog()
-        {
-            var hostBuilder = Host.CreateDefaultBuilder()
-                .ConfigureLogging(logging => logging.AddDynamicSerilog())
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
-                .ConfigureWebHost(testServerWithRouting)
-                .AddCloudFoundryActuators();
+        var filters = host.Services.GetServices<IStartupFilter>();
 
-            var host = hostBuilder.Build();
-            var managementOptions = host.Services.GetServices<IManagementOptions>();
+        Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
 
-            var filters = host.Services.GetServices<IStartupFilter>();
+        Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
-            Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-
-            if (Platform.IsWindows)
-            {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
-            else
-            {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-            }
-
-            Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
-
-            Assert.NotNull(filters);
-            Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
-        }
+        Assert.NotNull(filters);
+        Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
     }
 }

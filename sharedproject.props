@@ -4,7 +4,7 @@
     <VersionPrefix>$(VersionPrefix)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-	  <PackageIcon>icon.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -19,36 +19,36 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <NoWarn>SA1101;SA1124;S1128;SA1201;SA1309;SA1310;SA1314;SA1401;SA1402;SA1413;SA1600;SA1629;SA1652;1591;S101;S1075;S1854;S4792;S3011;IDE1006;IDE0017;IDE0130;IDE0150;IDE0090;CA2252</NoWarn>
-    <CodeAnalysisRuleSet>..\..\..\..\Steeltoe.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>$(NoWarn);SA1101;SA1124;SA1201;SA1202;SA1309;SA1310;SA1314;SA1401;SA1402;SA1413;SA1600;SA1629;SA1652;1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
-    <EnablePreviewFeatures>false</EnablePreviewFeatures>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.Debug.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.Release.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BUILD_PACKAGES)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
   <ItemGroup Condition="'$(BUILD_PACKAGES)' == 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="$(SonarAnalyzerVersion)">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="$(SonarAnalyzerVersion)" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\build\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="$(MSBuildThisFileDirectory)\build\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

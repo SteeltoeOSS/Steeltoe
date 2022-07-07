@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,27 +9,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Steeltoe.Management.Endpoint.Metrics
+namespace Steeltoe.Management.Endpoint.Metrics;
+
+public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
 {
-    public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
+    private readonly SteeltoePrometheusExporter _exporter;
+    private readonly ILogger<PrometheusScraperEndpoint> _logger;
+
+    public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<PrometheusScraperEndpoint> logger = null)
+        : base(options)
     {
-        private readonly SteeltoePrometheusExporter _exporter;
-        private readonly ILogger<PrometheusScraperEndpoint> _logger;
+        _exporter = exporters?.OfType<SteeltoePrometheusExporter>().FirstOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
+        _logger = logger;
+    }
 
-        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<PrometheusScraperEndpoint> logger = null)
-            : base(options)
+    public override string Invoke()
+    {
+        var result = string.Empty;
+        try
         {
-            _exporter = exporters?.OfType<SteeltoePrometheusExporter>().FirstOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
-            _logger = logger;
-        }
-
-        public override string Invoke()
-        {
-            var result = string.Empty;
-            try
+            var response = _exporter.CollectionManager.EnterCollect().Result;
+            if (response is PrometheusCollectionResponse collectionResponse)
             {
-                var response = _exporter.CollectionManager.EnterCollect().Result;
-                if (response is PrometheusCollectionResponse collectionResponse)
+                try
                 {
                     try
                     {
@@ -52,13 +54,17 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _logger?.LogError(ex.Message);
+                _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
             }
-
-            _exporter.OnExport = null;
-            return result;
         }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex.Message);
+        }
+
+        _exporter.OnExport = null;
+        return result;
     }
 }

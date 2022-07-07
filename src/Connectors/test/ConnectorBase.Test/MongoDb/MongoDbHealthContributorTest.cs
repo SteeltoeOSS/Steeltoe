@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,58 +10,57 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test;
+
+public class MongoDbHealthContributorTest
 {
-    public class MongoDbHealthContributorTest
+    private readonly Type _mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
+
+    [Fact]
+    public void GetMongoDbContributor_ReturnsContributor()
     {
-        private readonly Type mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
-
-        [Fact]
-        public void GetMongoDbContributor_ReturnsContributor()
+        var appsettings = new Dictionary<string, string>
         {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["mongodb:client:server"] = "localhost",
-                ["mongodb:client:port"] = "27018",
-                ["mongodb:client:options:connecttimeoutms"] = "1"
-            };
+            ["mongodb:client:server"] = "localhost",
+            ["mongodb:client:port"] = "27018",
+            ["mongodb:client:options:connecttimeoutms"] = "1"
+        };
 
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
-            var contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
-            Assert.NotNull(contrib);
-            var status = contrib.Health();
-            Assert.Equal(HealthStatus.DOWN, status.Status);
-        }
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appsettings);
+        var config = configurationBuilder.Build();
+        var contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
+        Assert.NotNull(contrib);
+        var status = contrib.Health();
+        Assert.Equal(HealthStatus.DOWN, status.Status);
+    }
 
-        [Fact]
-        public void Not_Connected_Returns_Down_Status()
-        {
-            var mongoDbConfig = new MongoDbConnectorOptions();
-            var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
-            var logrFactory = new LoggerFactory();
-            var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
-            var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>(), 1);
+    [Fact]
+    public void Not_Connected_Returns_Down_Status()
+    {
+        var mongoDbConfig = new MongoDbConnectorOptions();
+        var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
+        var logrFactory = new LoggerFactory();
+        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
+        var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
-            var status = h.Health();
+        var status = h.Health();
 
-            Assert.Equal(HealthStatus.DOWN, status.Status);
-            Assert.Equal("Failed to open MongoDb connection!", status.Description);
-        }
+        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal("Failed to open MongoDb connection!", status.Description);
+    }
 
-        [Fact(Skip = "Integration test - Requires local MongoDb server")]
-        public void Is_Connected_Returns_Up_Status()
-        {
-            var mongoDbConfig = new MongoDbConnectorOptions();
-            var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
-            var logrFactory = new LoggerFactory();
-            var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
-            var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>());
+    [Fact(Skip = "Integration test - Requires local MongoDb server")]
+    public void Is_Connected_Returns_Up_Status()
+    {
+        var mongoDbConfig = new MongoDbConnectorOptions();
+        var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
+        var logrFactory = new LoggerFactory();
+        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
+        var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>());
 
-            var status = h.Health();
+        var status = h.Health();
 
-            Assert.Equal(HealthStatus.UP, status.Status);
-        }
+        Assert.Equal(HealthStatus.UP, status.Status);
     }
 }

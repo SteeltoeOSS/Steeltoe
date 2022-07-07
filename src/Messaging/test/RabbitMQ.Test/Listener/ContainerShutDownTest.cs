@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -14,91 +14,84 @@ using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+[Trait("Category", "Integration")]
+public class ContainerShutDownTest : AbstractTest
 {
-    [Trait("Category", "Integration")]
-    public class ContainerShutDownTest : AbstractTest
+    [Fact]
+    public void TestUninterruptibleListenerDMLC()
     {
-        [Fact]
-        public void TestUninterruptibleListenerDMLC()
+        var cf = new CachingConnectionFactory("localhost");
+        var admin = new RabbitAdmin(cf);
+        admin.DeclareQueue(new Config.Queue("test.shutdown"));
+
+        var container = new DirectMessageListenerContainer(null, cf)
         {
-            var cf = new CachingConnectionFactory("localhost");
-            var admin = new RabbitAdmin(cf);
-            admin.DeclareQueue(new Config.Queue("test.shutdown"));
+            ShutdownTimeout = 500
+        };
+        container.SetQueueNames("test.shutdown");
+        var latch = new CountdownEvent(1);
+        var testEnded = new CountdownEvent(1);
+        var listener = new TestListener(latch, testEnded);
+        container.MessageListener = listener;
+        var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
 
-            var container = new DirectMessageListenerContainer(null, cf)
+        // var channels = TestUtils.getPropertyValue(connection, "target.delegate._channelManager._channelMap");
+        var field = typeof(RC.Framing.Impl.Connection)
+            .GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(field);
+        var channels = (SessionManager)field.GetValue(connection.Target.Connection);
+        Assert.NotNull(channels);
+
+        container.Start();
+        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+
+        try
+        {
+            var template = new RabbitTemplate(cf);
+            template.Execute(c =>
             {
-                ShutdownTimeout = 500
-            };
-            container.SetQueueNames("test.shutdown");
-            var latch = new CountdownEvent(1);
-            var testEnded = new CountdownEvent(1);
-            var listener = new TestListener(latch, testEnded);
-            container.MessageListener = listener;
-            var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
+                var properties = c.CreateBasicProperties();
+                var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+                c.BasicPublish(string.Empty, "test.shutdown", false, properties, bytes);
+                RabbitUtils.SetPhysicalCloseRequired(c, false);
+            });
+            Assert.True(latch.Wait(TimeSpan.FromSeconds(30)));
+            Assert.Equal(2, channels.Count);
+        }
+        finally
+        {
+            container.Stop();
+            Assert.Equal(1, channels.Count);
 
-            // var channels = TestUtils.getPropertyValue(connection, "target.delegate._channelManager._channelMap");
-            var field = typeof(RC.Framing.Impl.Connection)
-                .GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(field);
-            var channels = (SessionManager)field.GetValue(connection.Target.Connection);
-            Assert.NotNull(channels);
+            cf.Destroy();
+            testEnded.Signal();
+            admin.DeleteQueue("test.shutdown");
+        }
+    }
 
-            container.Start();
-            Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+    private sealed class TestListener : IMessageListener
+    {
+        private readonly CountdownEvent _latch;
+        private readonly CountdownEvent _testEnded;
 
-            try
-            {
-                var template = new RabbitTemplate(cf);
-                template.Execute(c =>
-                {
-                    var properties = c.CreateBasicProperties();
-                    var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-                    c.BasicPublish(string.Empty, "test.shutdown", false, properties, bytes);
-                    RabbitUtils.SetPhysicalCloseRequired(c, false);
-                });
-                Assert.True(latch.Wait(TimeSpan.FromSeconds(30)));
-                Assert.Equal(2, channels.Count);
-            }
-            finally
-            {
-                container.Stop();
-                Assert.Equal(1, channels.Count);
-
-                cf.Destroy();
-                testEnded.Signal();
-                admin.DeleteQueue("test.shutdown");
-            }
+        public TestListener(CountdownEvent latch, CountdownEvent testEnded)
+        {
+            _latch = latch;
+            _testEnded = testEnded;
         }
 
-        private class TestListener : IMessageListener
+        public AcknowledgeMode ContainerAckMode { get; set; }
+
+        public void OnMessage(IMessage message)
         {
-            private readonly CountdownEvent latch;
-            private readonly CountdownEvent testEnded;
+            _latch.Signal();
+            _testEnded.Wait(TimeSpan.FromSeconds(30));
+        }
 
-            public TestListener(CountdownEvent latch, CountdownEvent testEnded)
-            {
-                this.latch = latch;
-                this.testEnded = testEnded;
-            }
-
-            public AcknowledgeMode ContainerAckMode { get; set; }
-
-            public void OnMessage(IMessage message)
-            {
-                try
-                {
-                    latch.Signal();
-                    testEnded.Wait(TimeSpan.FromSeconds(30));
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            public void OnMessageBatch(List<IMessage> messages)
-            {
-            }
+        public void OnMessageBatch(List<IMessage> messages)
+        {
         }
     }
 }

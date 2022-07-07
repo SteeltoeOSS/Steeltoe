@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,52 +7,51 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support
+namespace Steeltoe.Messaging.Handler.Attributes.Support;
+
+public class AttributeExceptionHandlerMethodResolver : AbstractExceptionHandlerMethodResolver
 {
-    public class AttributeExceptionHandlerMethodResolver : AbstractExceptionHandlerMethodResolver
-    {
-        public AttributeExceptionHandlerMethodResolver(Type handlerType)
+    public AttributeExceptionHandlerMethodResolver(Type handlerType)
         : base(InitExceptionMappings(handlerType))
+    {
+    }
+
+    private static Dictionary<Type, MethodInfo> InitExceptionMappings(Type handlerType)
+    {
+        var methods = new Dictionary<MethodInfo, MessageExceptionHandlerAttribute>();
+        var targets = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+        foreach (var method in targets)
         {
+            var attribute = method.GetCustomAttribute<MessageExceptionHandlerAttribute>();
+            if (attribute != null)
+            {
+                methods.Add(method, attribute);
+            }
         }
 
-        private static Dictionary<Type, MethodInfo> InitExceptionMappings(Type handlerType)
+        var result = new Dictionary<Type, MethodInfo>();
+        foreach (var entry in methods)
         {
-            var methods = new Dictionary<MethodInfo, MessageExceptionHandlerAttribute>();
-            var targets = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-            foreach (var method in targets)
+            var method = entry.Key;
+            var exceptionTypes = new List<Type>(entry.Value.Exceptions);
+            if (exceptionTypes.Count == 0)
             {
-                var attribute = method.GetCustomAttribute<MessageExceptionHandlerAttribute>();
-                if (attribute != null)
-                {
-                    methods.Add(method, attribute);
-                }
+                exceptionTypes.AddRange(GetExceptionsFromMethodSignature(method));
             }
 
-            var result = new Dictionary<Type, MethodInfo>();
-            foreach (var entry in methods)
+            foreach (var exceptionType in exceptionTypes)
             {
-                var method = entry.Key;
-                var exceptionTypes = new List<Type>(entry.Value.Exceptions);
-                if (exceptionTypes.Count == 0)
-                {
-                    exceptionTypes.AddRange(GetExceptionsFromMethodSignature(method));
-                }
+                result.TryGetValue(exceptionType, out var oldMethod);
+                result[exceptionType] = method;
 
-                foreach (var exceptionType in exceptionTypes)
+                if (oldMethod != null && !oldMethod.Equals(method))
                 {
-                    result.TryGetValue(exceptionType, out var oldMethod);
-                    result[exceptionType] = method;
-
-                    if (oldMethod != null && !oldMethod.Equals(method))
-                    {
-                        throw new InvalidOperationException("Ambiguous @ExceptionHandler method mapped for [" +
-                                exceptionType + "]: {" + oldMethod + ", " + method + "}");
-                    }
+                    throw new InvalidOperationException(
+                        $"Ambiguous @ExceptionHandler method mapped for [{exceptionType}]: {{{oldMethod}, {method}}}");
                 }
             }
-
-            return result;
         }
+
+        return result;
     }
 }

@@ -7,26 +7,25 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Hosting
+namespace Steeltoe.Common.Hosting;
+
+public class BootstrapLoggerHostedService : IHostedService
 {
-    public class BootstrapLoggerHostedService : IHostedService
+    private readonly ILoggerFactory _loggerFactory;
+
+    public BootstrapLoggerHostedService(ILoggerFactory loggerFactory)
     {
-        private readonly ILoggerFactory _loggerFactory;
+        _loggerFactory = loggerFactory;
+    }
 
-        public BootstrapLoggerHostedService(ILoggerFactory loggerFactory)
-        {
-            _loggerFactory = loggerFactory;
-        }
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        Logging.BootstrapLoggerFactory.Instance.Update(_loggerFactory);
+        return Task.CompletedTask;
+    }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            Logging.BootstrapLoggerFactory.Instance.Update(_loggerFactory);
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }

@@ -1,50 +1,49 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+
+public class RollingThreadPoolMaxConcurrencyStream : RollingConcurrencyStream
 {
-    public class RollingThreadPoolMaxConcurrencyStream : RollingConcurrencyStream
+    private static readonly ConcurrentDictionary<string, RollingThreadPoolMaxConcurrencyStream> Streams = new ();
+
+    public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
     {
-        private static readonly ConcurrentDictionary<string, RollingThreadPoolMaxConcurrencyStream> Streams = new ();
+        var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
+        var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
+        var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
 
-        public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
+        return GetInstance(threadPoolKey, numCounterBuckets, counterBucketSizeInMs);
+    }
+
+    public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
+    {
+        return Streams.GetOrAddEx(threadPoolKey.Name, _ =>
         {
-            var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
-            var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
-            var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
+            var stream = new RollingThreadPoolMaxConcurrencyStream(threadPoolKey, numBuckets, bucketSizeInMs);
+            stream.StartCachingStreamValuesIfUnstarted();
+            return stream;
+        });
+    }
 
-            return GetInstance(threadPoolKey, numCounterBuckets, counterBucketSizeInMs);
+    public static void Reset()
+    {
+        foreach (var stream in Streams.Values)
+        {
+            stream.Unsubscribe();
         }
 
-        public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
-        {
-            return Streams.GetOrAddEx(threadPoolKey.Name, (k) =>
-            {
-                var stream = new RollingThreadPoolMaxConcurrencyStream(threadPoolKey, numBuckets, bucketSizeInMs);
-                stream.StartCachingStreamValuesIfUnstarted();
-                return stream;
-            });
-        }
+        HystrixThreadPoolStartStream.Reset();
 
-        public static void Reset()
-        {
-            foreach (var stream in Streams.Values)
-            {
-                stream.Unsubscribe();
-            }
+        Streams.Clear();
+    }
 
-            HystrixThreadPoolStartStream.Reset();
-
-            Streams.Clear();
-        }
-
-        public RollingThreadPoolMaxConcurrencyStream(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
+    public RollingThreadPoolMaxConcurrencyStream(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
         : base(HystrixThreadPoolStartStream.GetInstance(threadPoolKey), numBuckets, bucketSizeInMs)
-        {
-        }
+    {
     }
 }

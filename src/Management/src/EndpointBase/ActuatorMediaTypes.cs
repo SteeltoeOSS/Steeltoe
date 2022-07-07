@@ -5,36 +5,34 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint;
+public static class ActuatorMediaTypes
 {
-    public static class ActuatorMediaTypes
+    public static readonly string V1_JSON = "application/vnd.spring-boot.actuator.v1+json";
+
+    public static readonly string V2_JSON = "application/vnd.spring-boot.actuator.v2+json";
+
+    public static readonly string V3_JSON = "application/vnd.spring-boot.actuator.v3+json";
+
+    public static readonly string APP_JSON = "application/json";
+
+    public static readonly string ANY = "*/*";
+
+    public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
     {
-        public static readonly string V1_JSON = "application/vnd.spring-boot.actuator.v1+json";
+        var contentHeader = APP_JSON;
+        var versionContentHeader = GetContentTypeHeaderForVersion(version);
 
-        public static readonly string V2_JSON = "application/vnd.spring-boot.actuator.v2+json";
-
-        public static readonly string V3_JSON = "application/vnd.spring-boot.actuator.v3+json";
-
-        public static readonly string APP_JSON = "application/json";
-
-        public static readonly string ANY = "*/*";
-
-        public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
+        if (acceptHeaders != null && acceptHeaders.Any(x => x == ANY || x == versionContentHeader))
         {
-            var contentHeader = APP_JSON;
-            var versionContentHeader = GetContentTypeHeaderForVersion(version);
-
-            if (acceptHeaders != null && acceptHeaders.Any(x => x == ANY || x == versionContentHeader))
-            {
-                contentHeader = versionContentHeader;
-            }
-
-            return contentHeader += ";charset=UTF-8";
+            contentHeader = versionContentHeader;
         }
 
-        private static string GetContentTypeHeaderForVersion(MediaTypeVersion version = MediaTypeVersion.V2)
-        {
-            return version == MediaTypeVersion.V2 ? V2_JSON : V1_JSON;
-        }
+        return $"{contentHeader};charset=UTF-8";
+    }
+
+    private static string GetContentTypeHeaderForVersion(MediaTypeVersion version = MediaTypeVersion.V2)
+    {
+        return version == MediaTypeVersion.V2 ? V2_JSON : V1_JSON;
     }
 }

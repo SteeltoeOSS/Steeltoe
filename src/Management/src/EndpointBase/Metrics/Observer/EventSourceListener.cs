@@ -13,153 +13,152 @@ using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Linq;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Observer
+namespace Steeltoe.Management.Endpoint.Metrics.Observer;
+
+public class EventSourceListener : EventListener
 {
-    public class EventSourceListener : EventListener
+    protected ConcurrentDictionary<string, Counter<long>> LongCounters { get; set; }
+
+    protected ConcurrentDictionary<string, Counter<double>> DoubleCounters { get; set; }
+
+    private readonly ILogger<EventSourceListener> _logger;
+
+    internal EventSourceListener(ILogger<EventSourceListener> logger = null)
     {
-        protected ConcurrentDictionary<string, Counter<long>> LongCounters { get; set; }
+        _logger = logger;
+        LongCounters = new ConcurrentDictionary<string, Counter<long>>();
+        DoubleCounters = new ConcurrentDictionary<string, Counter<double>>();
+    }
 
-        protected ConcurrentDictionary<string, Counter<double>> DoubleCounters { get; set; }
-
-        private readonly ILogger<EventSourceListener> _logger;
-
-        internal EventSourceListener(ILogger<EventSourceListener> logger = null)
+    public override void Dispose()
+    {
+        try
         {
-            _logger = logger;
-            LongCounters = new ConcurrentDictionary<string, Counter<long>>();
-            DoubleCounters = new ConcurrentDictionary<string, Counter<double>>();
+            base.Dispose();
+        }
+        catch (Exception)
+        {
+            // Catch and ignore exceptions
+        }
+    }
+
+    protected virtual void ExtractAndRecordMetric(
+        string eventSourceName,
+        EventWrittenEventArgs eventData,
+        IDictionary<string, object> labels,
+        string[] ignorePayloadNames = null,
+        string[] counterNames = null)
+    {
+        var payloadNames = eventData.PayloadNames;
+        var payload = eventData.Payload;
+
+        var names = payloadNames.Where(name => ignorePayloadNames == null || !ignorePayloadNames.Contains(name)).ToList();
+
+        var currentLabels = GetLabels(payload, names, labels);
+
+        using var payloadEnumerator = payload.GetEnumerator();
+        using var nameEnumerator = names.GetEnumerator();
+        while (nameEnumerator.MoveNext())
+        {
+            payloadEnumerator.MoveNext();
+            var metricName = $"{eventSourceName}.{eventData.EventName}.{nameEnumerator.Current}";
+            RecordMetricsWithLabels(
+                metricName,
+                nameEnumerator.Current,
+                payloadEnumerator.Current,
+                currentLabels,
+                counterNames);
+        }
+    }
+
+    protected void SafelyEnableEvents(EventSource eventSource, EventLevel level, EventKeywords matchAnyKeyword)
+    {
+        try
+        {
+            EnableEvents(eventSource, level, matchAnyKeyword);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex.Message, ex);
+        }
+    }
+
+    private IDictionary<string, object> GetLabels(
+        IEnumerable<object> payload,
+        IList<string> names,
+        IDictionary<string, object> labels)
+    {
+        using var nameEnumerator = names.GetEnumerator();
+        using var payloadEnumerator = payload.GetEnumerator();
+
+        while (nameEnumerator.MoveNext())
+        {
+            payloadEnumerator.MoveNext();
+
+            switch (payloadEnumerator.Current)
+            {
+                case string strValue:
+                    if (!labels.ContainsKey(nameEnumerator.Current))
+                    {
+                        labels.Add(nameEnumerator.Current, strValue);
+                    }
+
+                    break;
+            }
         }
 
-        public override void Dispose()
+        return labels;
+    }
+
+    private void RecordMetricsWithLabels(
+        string metricName,
+        string payLoadName,
+        object payloadValue,
+        IDictionary<string, object> labels,
+        string[] counterNames)
+    {
+        long? longValue = null;
+        double? doubleValue = null;
+
+        switch (payloadValue)
         {
-            try
-            {
-                base.Dispose();
-            }
-            catch (Exception)
-            {
-                // Catch and ignore exceptions
-            }
+            case string:
+                break;
+            case short shortValue:
+                longValue = shortValue;
+                break;
+            case int intValue:
+                longValue = intValue;
+                break;
+            case uint unsignedInt:
+                longValue = unsignedInt;
+                break;
+            case long lValue:
+                longValue = lValue;
+                break;
+            case ulong ulValue:
+                longValue = (long)ulValue;
+                break;
+            case double dValue:
+                doubleValue = dValue;
+                break;
+            case bool boolValue:
+                longValue = Convert.ToInt64(boolValue);
+                break;
+            default:
+                _logger?.LogDebug($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");
+                break;
         }
 
-        protected virtual void ExtractAndRecordMetric(
-            string eventSourceName,
-            EventWrittenEventArgs eventData,
-            IDictionary<string, object> labels,
-            string[] ignorePayloadNames = null,
-            string[] counterNames = null)
+        if (longValue.HasValue)
         {
-            var payloadNames = eventData.PayloadNames;
-            var payload = eventData.Payload;
-
-            var names = payloadNames.Where(name => ignorePayloadNames == null || !ignorePayloadNames.Contains(name)).ToList();
-
-            var currentLabels = GetLabels(payload, names, labels);
-
-            using var payloadEnumerator = payload.GetEnumerator();
-            using var nameEnumerator = names.GetEnumerator();
-            while (nameEnumerator.MoveNext())
-            {
-                payloadEnumerator.MoveNext();
-                var metricName = $"{eventSourceName}.{eventData.EventName}.{nameEnumerator.Current}";
-                RecordMetricsWithLabels(
-                     metricName,
-                     nameEnumerator.Current,
-                     payloadEnumerator.Current,
-                     currentLabels,
-                     counterNames);
-            }
+            var currentMetric = LongCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<long>(name));
+            currentMetric.Add(longValue.Value, labels.AsReadonlySpan());
         }
-
-        protected void SafelyEnableEvents(EventSource eventSource, EventLevel level, EventKeywords matchAnyKeyword)
+        else if (doubleValue.HasValue)
         {
-            try
-            {
-                EnableEvents(eventSource, level, matchAnyKeyword);
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex.Message, ex);
-            }
-        }
-
-        private IDictionary<string, object> GetLabels(
-            IEnumerable<object> payload,
-            IList<string> names,
-            IDictionary<string, object> labels)
-        {
-            var nameEnumerator = names.GetEnumerator();
-            var payloadEnumerator = payload.GetEnumerator();
-
-            while (nameEnumerator.MoveNext())
-            {
-                payloadEnumerator.MoveNext();
-
-                switch (payloadEnumerator.Current)
-                {
-                    case string strValue:
-                        if (!labels.ContainsKey(nameEnumerator.Current))
-                        {
-                            labels.Add(nameEnumerator.Current, strValue);
-                        }
-
-                        break;
-                }
-            }
-
-            return labels;
-        }
-
-        private void RecordMetricsWithLabels(
-            string metricName,
-            string payLoadName,
-            object payloadValue,
-            IDictionary<string, object> labels,
-            string[] counterNames)
-        {
-            long? longValue = null;
-            double? doubleValue = null;
-
-            switch (payloadValue)
-            {
-                case string stringValue:
-                    break;
-                case short shortValue:
-                    longValue = shortValue;
-                    break;
-                case int intValue:
-                    longValue = intValue;
-                    break;
-                case uint unsignedInt:
-                    longValue = unsignedInt;
-                    break;
-                case long lValue:
-                    longValue = lValue;
-                    break;
-                case ulong ulValue:
-                    longValue = (long)ulValue;
-                    break;
-                case double dValue:
-                    doubleValue = dValue;
-                    break;
-                case bool boolValue:
-                    longValue = Convert.ToInt64(boolValue);
-                    break;
-                default:
-                    _logger?.LogDebug($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");
-                    break;
-            }
-
-            if (longValue.HasValue)
-            {
-                var currentMetric = LongCounters.GetOrAddEx(metricName, (name) => OpenTelemetryMetrics.Meter.CreateCounter<long>(name));
-                currentMetric.Add(longValue.Value, labels.AsReadonlySpan());
-            }
-            else if (doubleValue.HasValue)
-            {
-                var currentMetric = DoubleCounters.GetOrAddEx(metricName, (name) => OpenTelemetryMetrics.Meter.CreateCounter<double>(name));
-                currentMetric.Add(doubleValue.Value, labels.AsReadonlySpan());
-            }
+            var currentMetric = DoubleCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<double>(name));
+            currentMetric.Add(doubleValue.Value, labels.AsReadonlySpan());
         }
     }
 }

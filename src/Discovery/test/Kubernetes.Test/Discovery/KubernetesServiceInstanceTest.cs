@@ -7,34 +7,32 @@ using Steeltoe.Discovery.Kubernetes.Discovery;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;
+
+public class KubernetesServiceInstanceTest
 {
-    public class KubernetesServiceInstanceTest
+    [Fact]
+    public void SchemeIsHttp()
     {
-        [Fact]
-        public void SchemeIsHttp()
-        {
-            AssertServiceInstance(false);
-        }
+        AssertServiceInstance(false);
+    }
 
-        [Fact]
-        public void SchemeIsHttps()
-        {
-            AssertServiceInstance(true);
-        }
+    [Fact]
+    public void SchemeIsHttps()
+    {
+        AssertServiceInstance(true);
+    }
 
-        private KubernetesServiceInstance AssertServiceInstance(bool secure)
-        {
-            var address = new V1EndpointAddress { Ip = "1.2.3.4" };
-            var port = new Corev1EndpointPort { Port = 8080 };
-            var instance = new KubernetesServiceInstance("123", "myString", address, port, new Dictionary<string, string>(), secure);
-            Assert.Equal(expected: "123", actual: instance.InstanceId);
-            Assert.Equal(expected: "myString", actual: instance.ServiceId);
-            Assert.Equal(expected: "1.2.3.4", actual: instance.Host);
-            Assert.Equal(expected: 8080, actual: instance.Port);
-            Assert.Equal(expected: secure, actual: instance.IsSecure);
-            Assert.Equal(expected: secure ? "https" : "http", actual: instance.GetScheme());
-            return instance;
-        }
+    private void AssertServiceInstance(bool secure)
+    {
+        var address = new V1EndpointAddress { Ip = "1.2.3.4" };
+        var port = new Corev1EndpointPort { Port = 8080 };
+        var instance = new KubernetesServiceInstance("123", "myString", address, port, new Dictionary<string, string>(), secure);
+        Assert.Equal(expected: "123", actual: instance.InstanceId);
+        Assert.Equal(expected: "myString", actual: instance.ServiceId);
+        Assert.Equal(expected: "1.2.3.4", actual: instance.Host);
+        Assert.Equal(expected: 8080, actual: instance.Port);
+        Assert.Equal(expected: secure, actual: instance.IsSecure);
+        Assert.Equal(expected: secure ? "https" : "http", actual: instance.GetScheme());
     }
 }

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -8,29 +8,28 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 
-namespace Steeltoe.Management.Kubernetes
+namespace Steeltoe.Management.Kubernetes;
+
+[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+public class KubernetesActuatorsStartupFilter : IStartupFilter
 {
-    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
-    public class KubernetesActuatorsStartupFilter : IStartupFilter
+    private readonly MediaTypeVersion _mediaTypeVersion;
+
+    public KubernetesActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
     {
-        private readonly MediaTypeVersion _mediaTypeVersion;
+        _mediaTypeVersion = mediaTypeVersion;
+    }
 
-        public KubernetesActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
         {
-            _mediaTypeVersion = mediaTypeVersion;
-        }
-
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return app =>
+            next(app);
+            app.UseEndpoints(endpoints =>
             {
-                next(app);
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapAllActuators(_mediaTypeVersion);
-                });
-                app.ApplicationServices.InitializeAvailability();
-            };
-        }
+                endpoints.MapAllActuators(_mediaTypeVersion);
+            });
+            app.ApplicationServices.InitializeAvailability();
+        };
     }
 }

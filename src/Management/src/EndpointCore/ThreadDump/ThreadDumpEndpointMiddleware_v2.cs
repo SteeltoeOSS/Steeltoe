@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,34 +7,36 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+// TODO: [BREAKING] Rename type and remove suppression
+#pragma warning disable S101 // Types should be named in PascalCase
+public class ThreadDumpEndpointMiddleware_v2 : EndpointMiddleware<ThreadDumpResult>
+#pragma warning restore S101 // Types should be named in PascalCase
 {
-    public class ThreadDumpEndpointMiddleware_v2 : EndpointMiddleware<ThreadDumpResult>
+    private readonly RequestDelegate _next;
+
+    public ThreadDumpEndpointMiddleware_v2(RequestDelegate next, ThreadDumpEndpoint_v2 endpoint, IManagementOptions mgmtOptions, ILogger<ThreadDumpEndpointMiddleware_v2> logger = null)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public ThreadDumpEndpointMiddleware_v2(RequestDelegate next, ThreadDumpEndpoint_v2 endpoint, IManagementOptions mgmtOptions, ILogger<ThreadDumpEndpointMiddleware_v2> logger = null)
-           : base(endpoint, mgmtOptions, logger: logger)
+    public Task Invoke(HttpContext context)
+    {
+        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
         {
-            _next = next;
+            return HandleThreadDumpRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
-            {
-                return HandleThreadDumpRequestAsync(context);
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
-
-        protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
-        {
-            var serialInfo = HandleRequest();
-            _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            return context.Response.WriteAsync(serialInfo);
-        }
+    protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
+    {
+        var serialInfo = HandleRequest();
+        _logger?.LogDebug("Returning: {0}", serialInfo);
+        context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
+        return context.Response.WriteAsync(serialInfo);
     }
 }

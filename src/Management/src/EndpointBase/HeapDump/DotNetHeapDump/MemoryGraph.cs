@@ -16,8 +16,8 @@ using Address = System.UInt64;
 
 namespace Graphs
 {
-    [ExcludeFromCodeCoverageAttribute()]
-    internal class MemoryGraph : Graph, IFastSerializable
+    [ExcludeFromCodeCoverage]
+    internal sealed class MemoryGraph : Graph, IFastSerializable
     {
         public MemoryGraph(int expectedSize)
             : base(expectedSize)
@@ -34,9 +34,9 @@ namespace Graphs
         public static MemoryGraph ReadFromBinaryFile(string inputFileName)
         {
             Deserializer deserializer = new Deserializer(inputFileName);
-            deserializer.TypeResolver = typeName => System.Type.GetType(typeName);  // resolve types in this assembly (and mscorlib)
-            deserializer.RegisterFactory(typeof(MemoryGraph), delegate () { return new MemoryGraph(1); });
-            deserializer.RegisterFactory(typeof(Graphs.Module), delegate () { return new Graphs.Module(0); });
+            deserializer.TypeResolver = System.Type.GetType;  // resolve types in this assembly (and mscorlib)
+            deserializer.RegisterFactory(typeof(MemoryGraph), () => new MemoryGraph(1));
+            deserializer.RegisterFactory(typeof(Module), () => new Module(0));
             return (MemoryGraph)deserializer.GetEntryObject();
         }
 
@@ -57,7 +57,7 @@ namespace Graphs
         }
         public void SetAddress(NodeIndex nodeIndex, Address nodeAddress)
         {
-            Debug.Assert(m_nodeAddresses[(int)nodeIndex] == 0, "Calling SetAddress twice for node index " + nodeIndex);
+            Debug.Assert(m_nodeAddresses[(int)nodeIndex] == 0, $"Calling SetAddress twice for node index {nodeIndex}");
             m_nodeAddresses[(int)nodeIndex] = nodeAddress;
         }
         public override NodeIndex CreateNode()
@@ -166,8 +166,8 @@ namespace Graphs
     /// <summary>
     /// Support class for code:MemoryGraph
     /// </summary>
-    [ExcludeFromCodeCoverageAttribute()]
-    internal class MemoryNode : Node
+    [ExcludeFromCodeCoverage]
+    internal sealed class MemoryNode : Node
     {
         public Address Address { get { return m_memoryGraph.GetAddress(Index); } }
         #region private
@@ -181,9 +181,7 @@ namespace Graphs
         {
             Address end = Address + (uint)Size;
             // base.WriteXml(writer, prefix, storage, typeStorage, additinalAttribs + " Address=\"0x" + Address.ToString("x") + "\"");
-            base.WriteXml(writer, includeChildren, prefix, typeStorage,
-                additinalAttribs + " Address=\"0x" + Address.ToString("x") + "\""
-                                 + " End=\"0x" + end.ToString("x") + "\"");
+            base.WriteXml(writer, includeChildren, prefix, typeStorage, $"{additinalAttribs} Address=\"0x{Address:x}\" End=\"0x{end:x}\"");
         }
 
         private MemoryGraph m_memoryGraph;
@@ -196,8 +194,8 @@ namespace Graphs
     /// you create the node.  Instead you can keep adding children to it incrementally
     /// and when you are done you call Build() which finalizes it (and all its children)
     /// </summary>
-    [ExcludeFromCodeCoverageAttribute()]
-    internal class MemoryNodeBuilder
+    [ExcludeFromCodeCoverage]
+    internal sealed class MemoryNodeBuilder
     {
         public MemoryNodeBuilder(MemoryGraph graph, string typeName, string moduleName = null, NodeIndex nodeIndex = NodeIndex.Invalid)
         {

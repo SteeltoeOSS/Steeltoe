@@ -1,31 +1,23 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
+namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
+
+public class Person
 {
-    public class Person
+    public Person(string name)
     {
-        private string privateName;
-        private Company company;
-
-        public Person(string name)
-        {
-            privateName = name;
-        }
-
-        public Person(string name, Company company)
-        {
-            privateName = name;
-            this.company = company;
-        }
-
-        public string Name
-        {
-            get => privateName;
-            set => privateName = value;
-        }
-
-        public Company Company => company;
+        Name = name;
     }
+
+    public Person(string name, Company company)
+    {
+        Name = name;
+        Company = company;
+    }
+
+    public string Name { get; set; }
+
+    public Company Company { get; }
 }

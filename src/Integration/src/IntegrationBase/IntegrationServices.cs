@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -12,110 +12,89 @@ using Steeltoe.Integration.Support.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+public class IntegrationServices : IIntegrationServices
 {
-    public class IntegrationServices : IIntegrationServices
+    protected IMessageBuilderFactory _messageBuilderFactory;
+    protected IConversionService _conversionService;
+    protected IIDGenerator _idGenerator;
+    protected IDestinationResolver<IMessageChannel> _channelResolver;
+    protected IApplicationContext _context;
+    protected IExpressionParser _expressionParser;
+
+    public IntegrationServices(IApplicationContext context)
     {
-        protected IMessageBuilderFactory _messageBuilderFactory;
-        protected IConversionService _conversionService;
-        protected IIDGenerator _idGenerator;
-        protected IDestinationResolver<IMessageChannel> _channelResolver;
-        protected IApplicationContext _context;
-        protected IExpressionParser _expressionParser;
+        _context = context;
+    }
 
-        public IntegrationServices(IApplicationContext context)
+    public virtual IMessageBuilderFactory MessageBuilderFactory
+    {
+        get
         {
-            _context = context;
+            _messageBuilderFactory ??= _context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
+            return _messageBuilderFactory;
         }
 
-        public virtual IMessageBuilderFactory MessageBuilderFactory
+        set
         {
-            get
-            {
-                if (_messageBuilderFactory == null)
-                {
-                    _messageBuilderFactory = _context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
-                }
+            _messageBuilderFactory = value;
+        }
+    }
 
-                return _messageBuilderFactory;
-            }
-
-            set
-            {
-                _messageBuilderFactory = value;
-            }
+    public virtual IExpressionParser ExpressionParser
+    {
+        get
+        {
+            _expressionParser ??= _context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
+            return _expressionParser;
         }
 
-        public virtual IExpressionParser ExpressionParser
+        set
         {
-            get
-            {
-                if (_expressionParser == null)
-                {
-                    _expressionParser = _context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
-                }
+            _expressionParser = value;
+        }
+    }
 
-                return _expressionParser;
-            }
-
-            set
-            {
-                _expressionParser = value;
-            }
+    public virtual IDestinationResolver<IMessageChannel> ChannelResolver
+    {
+        get
+        {
+            _channelResolver ??= _context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(_context);
+            return _channelResolver;
         }
 
-        public virtual IDestinationResolver<IMessageChannel> ChannelResolver
+        set
         {
-            get
-            {
-                if (_channelResolver == null)
-                {
-                    _channelResolver = _context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(_context);
-                }
+            _channelResolver = value;
+        }
+    }
 
-                return _channelResolver;
-            }
-
-            set
-            {
-                _channelResolver = value;
-            }
+    public virtual IConversionService ConversionService
+    {
+        get
+        {
+            _conversionService ??= _context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
+            return _conversionService;
         }
 
-        public virtual IConversionService ConversionService
+        set
         {
-            get
-            {
-                if (_conversionService == null)
-                {
-                    _conversionService = _context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
-                }
+            _conversionService = value;
+        }
+    }
 
-                return _conversionService;
-            }
-
-            set
-            {
-                _conversionService = value;
-            }
+    public virtual IIDGenerator IdGenerator
+    {
+        get
+        {
+            _idGenerator ??= _context?.GetService<IIDGenerator>() ?? new DefaultIdGenerator();
+            return _idGenerator;
         }
 
-        public virtual IIDGenerator IdGenerator
+        set
         {
-            get
-            {
-                if (_idGenerator == null)
-                {
-                    _idGenerator = _context?.GetService<IIDGenerator>() ?? new DefaultIdGenerator();
-                }
-
-                return _idGenerator;
-            }
-
-            set
-            {
-                _idGenerator = value;
-            }
+            _idGenerator = value;
         }
     }
 }

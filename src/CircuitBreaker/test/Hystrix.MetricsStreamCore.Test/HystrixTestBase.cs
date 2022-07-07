@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,36 +10,41 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
+
+public abstract class HystrixTestBase : IDisposable
 {
-    public class HystrixTestBase : IDisposable
+    protected HystrixRequestContext context;
+
+    protected HystrixTestBase()
     {
-        protected HystrixRequestContext context;
+        context = HystrixRequestContext.InitializeContext();
 
-        public HystrixTestBase()
+        HystrixCommandMetrics.Reset();
+        HystrixThreadPoolMetrics.Reset();
+        HystrixCollapserMetrics.Reset();
+
+        // clear collapsers
+        RequestCollapserFactory.Reset();
+
+        // clear circuit breakers
+        HystrixCircuitBreakerFactory.Reset();
+        HystrixPlugins.Reset();
+        HystrixOptionsFactory.Reset();
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            context = HystrixRequestContext.InitializeContext();
-
-            HystrixCommandMetrics.Reset();
-            HystrixThreadPoolMetrics.Reset();
-            HystrixCollapserMetrics.Reset();
-
-            // clear collapsers
-            RequestCollapserFactory.Reset();
-
-            // clear circuit breakers
-            HystrixCircuitBreakerFactory.Reset();
-            HystrixPlugins.Reset();
-            HystrixOptionsFactory.Reset();
-        }
-
-        public virtual void Dispose()
-        {
-            if (context != null)
-            {
-                context.Dispose();
-                context = null;
-            }
+            context?.Dispose();
+            context = null;
 
             HystrixThreadPoolFactory.Shutdown();
         }

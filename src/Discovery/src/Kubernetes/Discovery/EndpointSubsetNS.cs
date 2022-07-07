@@ -5,12 +5,11 @@
 using k8s.Models;
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.Kubernetes.Discovery
-{
-    public class EndpointSubsetNs
-    {
-        public string Namespace { get; set; }
+namespace Steeltoe.Discovery.Kubernetes.Discovery;
 
-        public IList<V1EndpointSubset> EndpointSubsets { get; set; } = new List<V1EndpointSubset>();
-    }
+public class EndpointSubsetNs
+{
+    public string Namespace { get; set; }
+
+    public IList<V1EndpointSubset> EndpointSubsets { get; set; } = new List<V1EndpointSubset>();
 }

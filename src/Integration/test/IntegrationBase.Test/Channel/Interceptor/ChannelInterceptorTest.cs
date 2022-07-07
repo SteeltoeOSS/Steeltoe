@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -14,357 +14,332 @@ using System;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.Integration.Channel.Interceptor.Test
+namespace Steeltoe.Integration.Channel.Interceptor.Test;
+
+public class ChannelInterceptorTest
 {
-    public class ChannelInterceptorTest
+    private readonly QueueChannel _channel;
+    private readonly IServiceProvider _provider;
+
+    public ChannelInterceptorTest()
     {
-        private readonly QueueChannel channel;
-        private readonly IServiceProvider provider;
+        var services = new ServiceCollection();
+        var config = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
+        services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        _provider = services.BuildServiceProvider();
+        _channel = new QueueChannel(_provider.GetService<IApplicationContext>());
+    }
 
-        public ChannelInterceptorTest()
+    [Fact]
+    public void TestPreSendInterceptorReturnsMessage()
+    {
+        var interceptor = new PreSendReturnsMessageInterceptor();
+        _channel.AddInterceptor(interceptor);
+        _channel.Send(Message.Create("test"));
+        var result = _channel.Receive(0);
+        Assert.NotNull(result);
+        Assert.Equal("test", result.Payload);
+        Assert.Equal(1, result.Headers[nameof(PreSendReturnsMessageInterceptor)]);
+        Assert.True(interceptor.AfterCompletionInvoked);
+    }
+
+    [Fact]
+    public void TestPreSendInterceptorReturnsNull()
+    {
+        var interceptor = new PreSendReturnsNullInterceptor();
+        _channel.AddInterceptor(interceptor);
+        IMessage message = Message.Create("test");
+        _channel.Send(message);
+        Assert.Equal(1, interceptor.Counter);
+
+        Assert.True(_channel.RemoveInterceptor(interceptor));
+
+        _channel.Send(Message.Create("TEST"));
+        Assert.Equal(1, interceptor.Counter);
+
+        var result = _channel.Receive(0);
+        Assert.NotNull(result);
+        Assert.Equal("TEST", result.Payload);
+    }
+
+    [Fact]
+    public void TestPostSendInterceptorWithSentMessage()
+    {
+        var interceptor = new TestPostSendInterceptorWithSentMessageInterceptor();
+        _channel.AddInterceptor(interceptor);
+        _channel.Send(Message.Create("test"));
+        Assert.True(interceptor.Invoked);
+    }
+
+    [Fact]
+    public void TestPostSendInterceptorWithUnsentMessage()
+    {
+        var singleItemChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+        var interceptor = new TestPostSendInterceptorWithUnsentMessageInterceptor();
+        singleItemChannel.AddInterceptor(interceptor);
+        Assert.Equal(0, interceptor.InvokedCounter);
+        Assert.Equal(0, interceptor.SentCounter);
+        singleItemChannel.Send(Message.Create("test1"));
+        Assert.Equal(1, interceptor.InvokedCounter);
+        Assert.Equal(1, interceptor.SentCounter);
+        singleItemChannel.Send(Message.Create("test2"), 0);
+        Assert.Equal(2, interceptor.InvokedCounter);
+        Assert.Equal(1, interceptor.SentCounter);
+        Assert.NotNull(singleItemChannel.RemoveInterceptor(0));
+        singleItemChannel.Send(Message.Create("test2"), 0);
+        Assert.Equal(2, interceptor.InvokedCounter);
+        Assert.Equal(1, interceptor.SentCounter);
+    }
+
+    [Fact]
+    public void AfterCompletionWithSendException()
+    {
+        AbstractMessageChannel testChannel = new AfterCompletionWithSendExceptionChannel(_provider.GetService<IApplicationContext>());
+
+        var interceptor1 = new AfterCompletionTestInterceptor();
+        var interceptor2 = new AfterCompletionTestInterceptor();
+        testChannel.AddInterceptor(interceptor1);
+        testChannel.AddInterceptor(interceptor2);
+        try
         {
-            var services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
-            services.AddSingleton<IConfiguration>(config);
-            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-            services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
-            services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            provider = services.BuildServiceProvider();
-            channel = new QueueChannel(provider.GetService<IApplicationContext>());
+            testChannel.Send(IntegrationMessageBuilder.WithPayload("test").Build());
+        }
+        catch (Exception ex)
+        {
+            Assert.Equal("Simulated exception", ex.InnerException.Message);
         }
 
-        [Fact]
-        public void TestPreSendInterceptorReturnsMessage()
+        Assert.True(interceptor1.AfterCompletionInvoked);
+        Assert.True(interceptor2.AfterCompletionInvoked);
+    }
+
+    [Fact]
+    public void AfterCompletionWithPreSendException()
+    {
+        var interceptor1 = new AfterCompletionTestInterceptor();
+        var interceptor2 = new AfterCompletionTestInterceptor { ExceptionToRaise = new Exception("Simulated exception") };
+        _channel.AddInterceptor(interceptor1);
+        _channel.AddInterceptor(interceptor2);
+        try
         {
-            var interceptor = new PreSendReturnsMessageInterceptor();
-            channel.AddInterceptor(interceptor);
-            channel.Send(Message.Create("test"));
-            var result = channel.Receive(0);
-            Assert.NotNull(result);
-            Assert.Equal("test", result.Payload);
-            Assert.Equal(1, result.Headers[typeof(PreSendReturnsMessageInterceptor).Name]);
-            Assert.True(interceptor.AfterCompletionInvoked);
+            _channel.Send(IntegrationMessageBuilder.WithPayload("test").Build());
+        }
+        catch (Exception ex)
+        {
+            Assert.Equal("Simulated exception", ex.InnerException.Message);
         }
 
-        [Fact]
-        public void TestPreSendInterceptorReturnsNull()
+        Assert.True(interceptor1.AfterCompletionInvoked);
+        Assert.False(interceptor2.AfterCompletionInvoked);
+    }
+
+    [Fact]
+    public void TestPreReceiveInterceptorReturnsTrue()
+    {
+        var interceptor = new PreReceiveReturnsTrueInterceptor();
+        _channel.AddInterceptor(interceptor);
+        var message = Message.Create("test");
+        _channel.Send(message);
+        var result = _channel.Receive(0);
+        Assert.Equal(1, interceptor.Counter);
+        Assert.NotNull(result);
+        Assert.True(interceptor.AfterCompletionInvoked);
+    }
+
+    [Fact]
+    public void TestPreReceiveInterceptorReturnsFalse()
+    {
+        var interceptor = new PreReceiveReturnsFalseInterceptor();
+        _channel.AddInterceptor(interceptor);
+        var message = Message.Create("test");
+        _channel.Send(message);
+        var result = _channel.Receive(0);
+        Assert.Equal(1, interceptor.Counter);
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void TestPostReceiveInterceptor()
+    {
+        var interceptor = new TestPostReceiveInterceptorInterceptor();
+        _channel.AddInterceptor(interceptor);
+
+        _channel.Receive(0);
+        Assert.Equal(0, interceptor.Counter);
+        _channel.Send(Message.Create("test"));
+        var result = _channel.Receive(0);
+        Assert.NotNull(result);
+        Assert.Equal(1, interceptor.Counter);
+    }
+
+    [Fact]
+    public void AfterCompletionWithReceiveException()
+    {
+        var interceptor1 = new PreReceiveReturnsTrueInterceptor();
+        var interceptor2 = new PreReceiveReturnsTrueInterceptor { ExceptionToRaise = new Exception("Simulated exception") };
+        _channel.AddInterceptor(interceptor1);
+        _channel.AddInterceptor(interceptor2);
+
+        try
         {
-            var interceptor = new PreSendReturnsNullInterceptor();
-            channel.AddInterceptor(interceptor);
-            IMessage message = Message.Create("test");
-            channel.Send(message);
-            Assert.Equal(1, interceptor.Counter);
-
-            Assert.True(channel.RemoveInterceptor(interceptor));
-
-            channel.Send(Message.Create("TEST"));
-            Assert.Equal(1, interceptor.Counter);
-
-            var result = channel.Receive(0);
-            Assert.NotNull(result);
-            Assert.Equal("TEST", result.Payload);
+            _channel.Receive(0);
+        }
+        catch (Exception ex)
+        {
+            Assert.Equal("Simulated exception", ex.Message);
         }
 
-        [Fact]
-        public void TestPostSendInterceptorWithSentMessage()
+        Assert.True(interceptor1.AfterCompletionInvoked);
+        Assert.False(interceptor2.AfterCompletionInvoked);
+    }
+
+    public class TestPostReceiveInterceptorInterceptor : AbstractChannelInterceptor
+    {
+        public int Counter;
+
+        public override IMessage PostReceive(IMessage message, IMessageChannel channel)
         {
-            var interceptor = new TestPostSendInterceptorWithSentMessageInterceptor();
-            channel.AddInterceptor(interceptor);
-            channel.Send(Message.Create("test"));
-            Assert.True(interceptor.Invoked);
+            Assert.NotNull(channel);
+            Interlocked.Increment(ref Counter);
+            return message;
+        }
+    }
+
+    public class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
+    {
+        public AfterCompletionWithSendExceptionChannel(IApplicationContext context, ILogger logger = null)
+            : base(context, logger)
+        {
         }
 
-        [Fact]
-        public void TestPostSendInterceptorWithUnsentMessage()
+        protected override bool DoSendInternal(IMessage message, CancellationToken cancellationToken)
         {
-            var singleItemChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-            var interceptor = new TestPostSendInterceptorWithUnsentMessageInterceptor();
-            singleItemChannel.AddInterceptor(interceptor);
-            Assert.Equal(0, interceptor.InvokedCounter);
-            Assert.Equal(0, interceptor.SentCounter);
-            singleItemChannel.Send(Message.Create("test1"));
-            Assert.Equal(1, interceptor.InvokedCounter);
-            Assert.Equal(1, interceptor.SentCounter);
-            singleItemChannel.Send(Message.Create("test2"), 0);
-            Assert.Equal(2, interceptor.InvokedCounter);
-            Assert.Equal(1, interceptor.SentCounter);
-            Assert.NotNull(singleItemChannel.RemoveInterceptor(0));
-            singleItemChannel.Send(Message.Create("test2"), 0);
-            Assert.Equal(2, interceptor.InvokedCounter);
-            Assert.Equal(1, interceptor.SentCounter);
+            throw new Exception("Simulated exception");
+        }
+    }
+
+    public class TestPostSendInterceptorWithUnsentMessageInterceptor : AbstractChannelInterceptor
+    {
+        public int InvokedCounter;
+        public int SentCounter;
+
+        public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
+        {
+            Assert.NotNull(message);
+            Assert.NotNull(channel);
+            if (sent)
+            {
+                Interlocked.Increment(ref SentCounter);
+            }
+
+            Interlocked.Increment(ref InvokedCounter);
+        }
+    }
+
+    private sealed class TestPostSendInterceptorWithSentMessageInterceptor : AbstractChannelInterceptor
+    {
+        public bool Invoked;
+
+        public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
+        {
+            Assert.NotNull(message);
+            Assert.NotNull(channel);
+            Assert.True(sent);
+            Invoked = true;
+        }
+    }
+
+    private sealed class PreSendReturnsMessageInterceptor : AbstractChannelInterceptor
+    {
+        public int Counter;
+        public volatile bool AfterCompletionInvoked;
+
+        public override IMessage PreSend(IMessage message, IMessageChannel channel)
+        {
+            Assert.NotNull(message);
+            var value = Interlocked.Increment(ref Counter);
+            return IntegrationMessageBuilder.FromMessage(message)
+                .SetHeader(GetType().Name, value)
+                .Build();
         }
 
-        [Fact]
-        public void AfterCompletionWithSendException()
+        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
         {
-            AbstractMessageChannel testChannel = new AfterCompletionWithSendExceptionChannel(provider.GetService<IApplicationContext>());
+            AfterCompletionInvoked = true;
+        }
+    }
 
-            var interceptor1 = new AfterCompletionTestInterceptor();
-            var interceptor2 = new AfterCompletionTestInterceptor();
-            testChannel.AddInterceptor(interceptor1);
-            testChannel.AddInterceptor(interceptor2);
-            try
+    private sealed class PreSendReturnsNullInterceptor : AbstractChannelInterceptor
+    {
+        public int Counter;
+
+        public override IMessage PreSend(IMessage message, IMessageChannel channel)
+        {
+            Assert.NotNull(message);
+            Interlocked.Increment(ref Counter);
+            return null;
+        }
+    }
+
+    private sealed class AfterCompletionTestInterceptor : AbstractChannelInterceptor
+    {
+        public Exception ExceptionToRaise;
+        public int Counter;
+        public volatile bool AfterCompletionInvoked;
+
+        public override IMessage PreSend(IMessage message, IMessageChannel channel)
+        {
+            Assert.NotNull(message);
+            Interlocked.Increment(ref Counter);
+            if (ExceptionToRaise != null)
             {
-                testChannel.Send(Support.IntegrationMessageBuilder.WithPayload("test").Build());
-            }
-            catch (Exception ex)
-            {
-                Assert.Equal("Simulated exception", ex.InnerException.Message);
+                throw ExceptionToRaise;
             }
 
-            Assert.True(interceptor1.AfterCompletionInvoked);
-            Assert.True(interceptor2.AfterCompletionInvoked);
+            return message;
         }
 
-        [Fact]
-        public void AfterCompletionWithPreSendException()
+        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
         {
-            var interceptor1 = new AfterCompletionTestInterceptor();
-            var interceptor2 = new AfterCompletionTestInterceptor();
-            interceptor2.ExceptionToRaise = new Exception("Simulated exception");
-            channel.AddInterceptor(interceptor1);
-            channel.AddInterceptor(interceptor2);
-            try
+            AfterCompletionInvoked = true;
+        }
+    }
+
+    private sealed class PreReceiveReturnsTrueInterceptor : AbstractChannelInterceptor
+    {
+        public Exception ExceptionToRaise;
+        public int Counter;
+        public volatile bool AfterCompletionInvoked;
+
+        public override bool PreReceive(IMessageChannel channel)
+        {
+            Interlocked.Increment(ref Counter);
+            if (ExceptionToRaise != null)
             {
-                channel.Send(Support.IntegrationMessageBuilder.WithPayload("test").Build());
-            }
-            catch (Exception ex)
-            {
-                Assert.Equal("Simulated exception", ex.InnerException.Message);
+                throw ExceptionToRaise;
             }
 
-            Assert.True(interceptor1.AfterCompletionInvoked);
-            Assert.False(interceptor2.AfterCompletionInvoked);
+            return true;
         }
 
-        [Fact]
-        public void TestPreReceiveInterceptorReturnsTrue()
+        public override void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception ex)
         {
-            var interceptor = new PreReceiveReturnsTrueInterceptor();
-            channel.AddInterceptor(interceptor);
-            var message = Message.Create("test");
-            channel.Send(message);
-            var result = channel.Receive(0);
-            Assert.Equal(1, interceptor.Counter);
-            Assert.NotNull(result);
-            Assert.True(interceptor.AfterCompletionInvoked);
+            AfterCompletionInvoked = true;
         }
+    }
 
-        [Fact]
-        public void TestPreReceiveInterceptorReturnsFalse()
+    private sealed class PreReceiveReturnsFalseInterceptor : AbstractChannelInterceptor
+    {
+        public int Counter;
+
+        public override bool PreReceive(IMessageChannel channel)
         {
-            var interceptor = new PreReceiveReturnsFalseInterceptor();
-            channel.AddInterceptor(interceptor);
-            var message = Message.Create("test");
-            channel.Send(message);
-            var result = channel.Receive(0);
-            Assert.Equal(1, interceptor.Counter);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void TestPostReceiveInterceptor()
-        {
-            var interceptor = new TestPostReceiveInterceptorInterceptor();
-            channel.AddInterceptor(interceptor);
-
-            channel.Receive(0);
-            Assert.Equal(0, interceptor.Counter);
-            channel.Send(Message.Create("test"));
-            var result = channel.Receive(0);
-            Assert.NotNull(result);
-            Assert.Equal(1, interceptor.Counter);
-        }
-
-        [Fact]
-        public void AfterCompletionWithReceiveException()
-        {
-            var interceptor1 = new PreReceiveReturnsTrueInterceptor();
-            var interceptor2 = new PreReceiveReturnsTrueInterceptor();
-            interceptor2.ExceptionToRaise = new Exception("Simulated exception");
-            channel.AddInterceptor(interceptor1);
-            channel.AddInterceptor(interceptor2);
-
-            try
-            {
-                channel.Receive(0);
-            }
-            catch (Exception ex)
-            {
-                Assert.Equal("Simulated exception", ex.Message);
-            }
-
-            Assert.True(interceptor1.AfterCompletionInvoked);
-            Assert.False(interceptor2.AfterCompletionInvoked);
-        }
-
-        public class TestPostReceiveInterceptorInterceptor : AbstractChannelInterceptor
-        {
-            public int Counter;
-
-            public override IMessage PostReceive(IMessage message, IMessageChannel channel)
-            {
-                Assert.NotNull(channel);
-                Interlocked.Increment(ref Counter);
-                return message;
-            }
-        }
-
-        public class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
-        {
-            public AfterCompletionWithSendExceptionChannel(IApplicationContext context, ILogger logger = null)
-                : base(context, logger)
-            {
-            }
-
-            protected override bool DoSendInternal(IMessage message, CancellationToken cancellationToken)
-            {
-                throw new Exception("Simulated exception");
-            }
-        }
-
-        public class TestPostSendInterceptorWithUnsentMessageInterceptor : AbstractChannelInterceptor
-        {
-            public int InvokedCounter;
-            public int SentCounter;
-
-            public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
-            {
-                {
-                    Assert.NotNull(message);
-                    Assert.NotNull(channel);
-                    if (sent)
-                    {
-                        Interlocked.Increment(ref SentCounter);
-                    }
-
-                    Interlocked.Increment(ref InvokedCounter);
-                }
-            }
-        }
-
-        private class TestPostSendInterceptorWithSentMessageInterceptor : AbstractChannelInterceptor
-        {
-            public bool Invoked;
-
-            public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
-            {
-                Assert.NotNull(message);
-                Assert.NotNull(channel);
-                Assert.True(sent);
-                Invoked = true;
-            }
-        }
-
-        private class PreSendReturnsMessageInterceptor : AbstractChannelInterceptor
-        {
-            public int Counter;
-            public volatile bool AfterCompletionInvoked;
-
-            public PreSendReturnsMessageInterceptor()
-            {
-            }
-
-            public override IMessage PreSend(IMessage message, IMessageChannel channel)
-            {
-                Assert.NotNull(message);
-                var value = Interlocked.Increment(ref Counter);
-                return Support.IntegrationMessageBuilder.FromMessage(message)
-                        .SetHeader(GetType().Name, value)
-                        .Build();
-            }
-
-            public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
-            {
-                AfterCompletionInvoked = true;
-            }
-        }
-
-        private class PreSendReturnsNullInterceptor : AbstractChannelInterceptor
-        {
-            public int Counter;
-
-            public PreSendReturnsNullInterceptor()
-            {
-            }
-
-            public override IMessage PreSend(IMessage message, IMessageChannel channel)
-            {
-                Assert.NotNull(message);
-                Interlocked.Increment(ref Counter);
-                return null;
-            }
-        }
-
-        private class AfterCompletionTestInterceptor : AbstractChannelInterceptor
-        {
-            public Exception ExceptionToRaise;
-            public int Counter;
-            public volatile bool AfterCompletionInvoked;
-
-            public AfterCompletionTestInterceptor()
-            {
-            }
-
-            public override IMessage PreSend(IMessage message, IMessageChannel channel)
-            {
-                Assert.NotNull(message);
-                Interlocked.Increment(ref Counter);
-                if (ExceptionToRaise != null)
-                {
-                    throw ExceptionToRaise;
-                }
-
-                return message;
-            }
-
-            public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
-            {
-                AfterCompletionInvoked = true;
-            }
-        }
-
-        private class PreReceiveReturnsTrueInterceptor : AbstractChannelInterceptor
-        {
-            public Exception ExceptionToRaise;
-            public int Counter;
-            public volatile bool AfterCompletionInvoked;
-
-            public PreReceiveReturnsTrueInterceptor()
-            {
-            }
-
-            public override bool PreReceive(IMessageChannel channel)
-            {
-                Interlocked.Increment(ref Counter);
-                if (ExceptionToRaise != null)
-                {
-                    throw ExceptionToRaise;
-                }
-
-                return true;
-            }
-
-            public override void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception ex)
-            {
-                AfterCompletionInvoked = true;
-            }
-        }
-
-        private class PreReceiveReturnsFalseInterceptor : AbstractChannelInterceptor
-        {
-            public int Counter;
-
-            public PreReceiveReturnsFalseInterceptor()
-            {
-            }
-
-            public override bool PreReceive(IMessageChannel channel)
-            {
-                Interlocked.Increment(ref Counter);
-                return false;
-            }
+            Interlocked.Increment(ref Counter);
+            return false;
         }
     }
 }

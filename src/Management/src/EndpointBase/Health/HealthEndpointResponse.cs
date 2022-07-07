@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Health
+namespace Steeltoe.Management.Endpoint.Health;
+
+public class HealthEndpointResponse : HealthCheckResult
 {
-    public class HealthEndpointResponse : HealthCheckResult
+    public HealthEndpointResponse(HealthCheckResult result)
     {
         public HealthEndpointResponse(HealthCheckResult result)
         {
@@ -33,4 +35,9 @@ namespace Steeltoe.Management.Endpoint.Health
         [JsonPropertyOrder(5)]
         public IEnumerable<string> Groups { get; set; }
     }
+
+    /// <summary>
+    /// Gets or sets the list of available health groups
+    /// </summary>
+    public IEnumerable<string> Groups { get; set; }
 }

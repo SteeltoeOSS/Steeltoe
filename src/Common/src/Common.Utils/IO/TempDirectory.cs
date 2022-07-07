@@ -4,32 +4,34 @@
 
 using System.IO;
 
-namespace Steeltoe.Common.Utils.IO
+namespace Steeltoe.Common.Utils.IO;
+
+/// <summary>
+/// A temporary directory.
+/// </summary>
+public class TempDirectory : TempPath
 {
     /// <summary>
-    /// A temporary directory.
+    /// Initializes a new instance of the <see cref="TempDirectory"/> class.
     /// </summary>
-    public class TempDirectory : TempPath
+    /// <param name="prefix">Temporary directory prefix.</param>
+    public TempDirectory(string prefix = null)
+        : base(prefix)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TempDirectory"/> class.
-        /// </summary>
-        /// <param name="prefix">Temporary directory prefix.</param>
-        public TempDirectory(string prefix = null)
-            : base(prefix)
-        {
-        }
+    }
 
-        /// <summary>
-        /// Creates the temporary directory.
-        /// </summary>
-        protected override void InitializePath()
-        {
-            Directory.CreateDirectory(FullPath);
-        }
+    /// <summary>
+    /// Creates the temporary directory.
+    /// </summary>
+    protected override void InitializePath()
+    {
+        Directory.CreateDirectory(FullPath);
+    }
 
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
             if (!Directory.Exists(FullPath))
             {

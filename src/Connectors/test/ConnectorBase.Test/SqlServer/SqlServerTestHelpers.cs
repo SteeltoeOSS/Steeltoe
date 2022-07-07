@@ -1,12 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.SqlServer.Test
+namespace Steeltoe.Connector.SqlServer.Test;
+
+public static class SqlServerTestHelpers
 {
-    public class SqlServerTestHelpers
-    {
-        public static string SingleServerVCAP = @"
+    public static string SingleServerVCAP = @"
             {
                 ""SqlServer"": [
                     {
@@ -28,7 +28,7 @@ namespace Steeltoe.Connector.SqlServer.Test
                 ]
             }";
 
-        public static string SingleServerVCAPNoTag = @"
+    public static string SingleServerVCAPNoTag = @"
             {
                 ""SqlServer"": [
                     {
@@ -49,7 +49,7 @@ namespace Steeltoe.Connector.SqlServer.Test
                 ]
             }";
 
-        public static string SingleServerVCAPIgnoreName = @"
+    public static string SingleServerVCAPIgnoreName = @"
             {
                 ""user-provided"": [{
                         ""credentials"": {
@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.SqlServer.Test
                 ]
             }";
 
-        public static string SingleServerVCAP_CredsInUrl = @"
+    public static string SingleServerVCAP_CredsInUrl = @"
             {
                 ""SqlServer"": [{
                         ""credentials"": {
@@ -85,7 +85,7 @@ namespace Steeltoe.Connector.SqlServer.Test
                 ]
             }";
 
-        public static string TwoServerVCAP = @"
+    public static string TwoServerVCAP = @"
             {
                 ""SqlServer"": [{
                         ""credentials"": {
@@ -117,5 +117,4 @@ namespace Steeltoe.Connector.SqlServer.Test
                     },
                 ]
             }";
-    }
 }

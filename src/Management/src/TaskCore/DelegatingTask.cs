@@ -5,20 +5,19 @@
 using Steeltoe.Common;
 using System;
 
-namespace Steeltoe.Management.TaskCore
+namespace Steeltoe.Management.TaskCore;
+
+public class DelegatingTask : IApplicationTask
 {
-    public class DelegatingTask : IApplicationTask
+    private readonly Action _run;
+
+    public DelegatingTask(string name, Action run)
     {
-        private readonly Action _run;
-
-        public DelegatingTask(string name, Action run)
-        {
-            _run = run;
-            Name = name;
-        }
-
-        public string Name { get; }
-
-        public void Run() => _run();
+        _run = run;
+        Name = name;
     }
+
+    public string Name { get; }
+
+    public void Run() => _run();
 }

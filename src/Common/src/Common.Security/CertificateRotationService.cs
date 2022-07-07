@@ -7,74 +7,67 @@ using Steeltoe.Common.Options;
 using System;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Common.Security;
+
+public class CertificateRotationService : IDisposable, ICertificateRotationService
 {
-    public class CertificateRotationService : IDisposable, ICertificateRotationService
+    private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
+    private readonly IDisposable _subscription;
+    private CertificateOptions _lastValue;
+
+    public CertificateRotationService(IOptionsMonitor<CertificateOptions> optionsMonitor)
     {
-        private readonly bool _isStarted = false;
-        private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
-        private readonly IDisposable _subscription;
-        private CertificateOptions _lastValue;
+        _optionsMonitor = optionsMonitor;
+        _subscription = _optionsMonitor.OnChange(RotateCert);
+    }
 
-        public CertificateRotationService(IOptionsMonitor<CertificateOptions> optionsMonitor)
+    public void Start()
+    {
+        RotateCert(_optionsMonitor.CurrentValue);
+        _lastValue = _optionsMonitor.CurrentValue;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            _optionsMonitor = optionsMonitor;
-            _subscription = _optionsMonitor.OnChange(RotateCert);
+            _subscription.Dispose();
+        }
+    }
+
+    private void RotateCert(CertificateOptions newCert)
+    {
+        if (newCert.Certificate == null)
+        {
+            return;
         }
 
-        public void Start()
+        var personalCertStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+        var authorityCertStore = new X509Store(StoreName.CertificateAuthority, StoreLocation.CurrentUser);
+        personalCertStore.Open(OpenFlags.ReadWrite);
+        authorityCertStore.Open(OpenFlags.ReadWrite);
+        if (_lastValue != null)
         {
-            if (_isStarted)
+            personalCertStore.Certificates.Remove(_lastValue.Certificate);
+            foreach (var cert in _lastValue.IssuerChain)
             {
-                return;
-            }
-
-            RotateCert(_optionsMonitor.CurrentValue);
-            _lastValue = _optionsMonitor.CurrentValue;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _subscription.Dispose();
+                personalCertStore.Certificates.Remove(cert);
             }
         }
 
-        private void RotateCert(CertificateOptions newCert)
+        personalCertStore.Certificates.Add(newCert.Certificate);
+        foreach (var cert in newCert.IssuerChain)
         {
-            if (newCert.Certificate == null)
-            {
-                return;
-            }
-
-            var personalCertStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-            var authorityCertStore = new X509Store(StoreName.CertificateAuthority, StoreLocation.CurrentUser);
-            personalCertStore.Open(OpenFlags.ReadWrite);
-            authorityCertStore.Open(OpenFlags.ReadWrite);
-            if (_lastValue != null)
-            {
-                personalCertStore.Certificates.Remove(_lastValue.Certificate);
-                foreach (var cert in _lastValue.IssuerChain)
-                {
-                    personalCertStore.Certificates.Remove(cert);
-                }
-            }
-
-            personalCertStore.Certificates.Add(newCert.Certificate);
-            foreach (var cert in newCert.IssuerChain)
-            {
-                personalCertStore.Certificates.Add(cert);
-            }
-
-            personalCertStore.Close();
-            authorityCertStore.Close();
+            personalCertStore.Certificates.Add(cert);
         }
+
+        personalCertStore.Close();
+        authorityCertStore.Close();
     }
 }

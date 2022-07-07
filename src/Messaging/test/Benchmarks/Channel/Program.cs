@@ -40,7 +40,7 @@ public class Program
         }
     }
 
-    private class CounterHandler : IMessageHandler
+    private sealed class CounterHandler : IMessageHandler
     {
         public int Count;
 
