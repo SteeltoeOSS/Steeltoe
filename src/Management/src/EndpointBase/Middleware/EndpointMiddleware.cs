@@ -65,20 +65,7 @@ public class EndpointMiddleware<TResult>
         }
         catch (Exception e)
         {
-            serializerOptions ??= new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
-            if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
-            {
-                serializerOptions.Converters.Add(new JsonStringEnumConverter());
-            }
-
-            if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
-            {
-                serializerOptions.Converters.Add(new MetricsResponseConverter());
-            }
-
-            return serializerOptions;
+            _logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
         }
 
         return string.Empty;
@@ -87,10 +74,11 @@ public class EndpointMiddleware<TResult>
     internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
     {
         serializerOptions ??= new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        serializerOptions.IgnoreNullValues = true;
-        if (serializerOptions.Converters?.Any(c => c is HealthConverter) != true)
+        serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
+        if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
         {
-            serializerOptions.Converters.Add(new HealthConverter());
+            serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
         if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)

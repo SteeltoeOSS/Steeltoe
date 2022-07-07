@@ -37,17 +37,6 @@ public class HealthConverter : JsonConverter<HealthEndpointResponse>
                     JsonSerializer.Serialize(writer, detail.Value, options);
                 }
 
-                if (health.Groups != null && health.Groups.Any())
-                {
-                    writer.WritePropertyName("groups");
-                    writer.WriteStartObject();
-                    foreach (var group in health.Groups)
-                    {
-                        writer.WritePropertyName(group);
-                    }
-                }
-            }
-
                 writer.WriteEndObject();
             }
         }

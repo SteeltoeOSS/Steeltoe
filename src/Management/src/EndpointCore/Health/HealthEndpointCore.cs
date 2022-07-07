@@ -57,7 +57,6 @@ public class HealthEndpointCore : HealthEndpoint
         var result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
             ? _aggregator.Aggregate(filteredContributors)
             : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider);
-      
 
         return GetHealthEndpointResponse(result, securityContext);
     }

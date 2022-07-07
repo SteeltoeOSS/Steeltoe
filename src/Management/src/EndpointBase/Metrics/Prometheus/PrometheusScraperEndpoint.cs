@@ -33,25 +33,18 @@ public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusSc
             {
                 try
                 {
-                    try
+                    if (collectionResponse.View.Count > 0)
                     {
-                        if (collectionResponse.View.Count > 0)
-                        {
-                            result = Encoding.UTF8.GetString(collectionResponse.View.Array, 0, collectionResponse.View.Count);
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("Collection failure.");
-                        }
+                        result = Encoding.UTF8.GetString(collectionResponse.View.Array, 0, collectionResponse.View.Count);
                     }
-                    finally
+                    else
                     {
-                        _exporter.CollectionManager.ExitCollect();
+                        throw new InvalidOperationException("Collection failure.");
                     }
                 }
-                else
+                finally
                 {
-                    _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
+                    _exporter.CollectionManager.ExitCollect();
                 }
             }
             else

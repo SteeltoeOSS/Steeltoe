@@ -6,10 +6,7 @@ namespace Steeltoe.Management.Endpoint;
 
 public enum MediaTypeVersion
 {
-    public enum MediaTypeVersion
-    {
-        V1,
-        V2,
-        V3
-    }
+    V1,
+    V2,
+    V3
 }

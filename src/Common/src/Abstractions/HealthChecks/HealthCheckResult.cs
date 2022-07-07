@@ -5,15 +5,10 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Common.HealthChecks;
-
-/// <summary>
-/// The result of a health check
-/// </summary>
-public class HealthCheckResult
+namespace Steeltoe.Common.HealthChecks
 {
     /// <summary>
-    /// Gets or sets the status of the check
+    /// The result of a health check
     /// </summary>
     public class HealthCheckResult
     {

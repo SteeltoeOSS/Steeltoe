@@ -20,8 +20,10 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
     private readonly IList<IHealthContributor> _contributors;
     private readonly ILogger<HealthEndpoint> _logger;
 
-        public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
+    public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
             : base(options)
+    {
+        if (contributors == null)
         {
             throw new ArgumentNullException(nameof(contributors));
         }
@@ -42,45 +44,48 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
             : 200;
     }
 
-            var healthCheckResult = _aggregator.Aggregate(filteredContributors);
-
-            return GetHealthEndpointResponse(healthCheckResult, securityContext);
-        }
-
-        protected HealthEndpointResponse GetHealthEndpointResponse(HealthCheckResult healthCheckResult, ISecurityContext securityContext)
+    protected virtual HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
+    {
+        var groupName = GetRequestedHealthGroup(securityContext);
+        IList<IHealthContributor> filteredContributors;
+        if (!string.IsNullOrEmpty(groupName))
         {
-            var hideDetails = Options.ShowDetails == ShowDetails.Never ||
-                              (Options.ShowDetails == ShowDetails.WhenAuthorized &&
-                               !securityContext.HasClaim(Options.Claim));
-            var result = new HealthEndpointResponse(healthCheckResult);
-
-            if (hideDetails)
-            {
-                result.Details = null;
-                result.Components = null;
-            }
-            else
-            {
-                switch (securityContext?.GetMediaType() ?? Options.DefaultVersion)
-                {
-                    case MediaTypeVersion.V3:
-                        result.Details = null;
-                        break;
-                    default:
-                        result.Components = null;
-                        break;
-                }
-
-                result.Groups = Options.Groups.Select(g => g.Key);
-            }
-
-        var showDetails = Options.ShowDetails;
-        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(Options.Claim)))
-        {
-            result.Details = new Dictionary<string, object>();
+            filteredContributors = GetFilteredContributorList(groupName, _contributors);
         }
         else
         {
+            filteredContributors = _contributors;
+        }
+
+        var healthCheckResult = _aggregator.Aggregate(filteredContributors);
+
+        return GetHealthEndpointResponse(healthCheckResult, securityContext);
+    }
+
+    protected HealthEndpointResponse GetHealthEndpointResponse(HealthCheckResult healthCheckResult, ISecurityContext securityContext)
+    {
+        var hideDetails = Options.ShowDetails == ShowDetails.Never ||
+                          (Options.ShowDetails == ShowDetails.WhenAuthorized &&
+                           !securityContext.HasClaim(Options.Claim));
+        var result = new HealthEndpointResponse(healthCheckResult);
+
+        if (hideDetails)
+        {
+            result.Details = null;
+            result.Components = null;
+        }
+        else
+        {
+            switch (securityContext?.GetMediaType() ?? Options.DefaultVersion)
+            {
+                case MediaTypeVersion.V3:
+                    result.Details = null;
+                    break;
+                default:
+                    result.Components = null;
+                    break;
+            }
+
             result.Groups = Options.Groups.Select(g => g.Key);
         }
 

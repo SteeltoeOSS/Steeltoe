@@ -69,8 +69,7 @@ public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
 
     public string Role { get; set; }
 
-        public MediaTypeVersion DefaultVersion { get; set; } = MediaTypeVersion.V2;
+    public MediaTypeVersion DefaultVersion { get; set; } = MediaTypeVersion.V2;
 
-        public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new Dictionary<string, HealthGroupOptions>(StringComparer.InvariantCultureIgnoreCase);
-    }
+    public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new Dictionary<string, HealthGroupOptions>(StringComparer.InvariantCultureIgnoreCase);
 }
