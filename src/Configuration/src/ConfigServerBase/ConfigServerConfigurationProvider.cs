@@ -20,6 +20,7 @@ using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -177,7 +178,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     internal JsonSerializerOptions SerializerOptions { get; private set; } =
         new ()
         {
-            IgnoreNullValues = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNameCaseInsensitive = true,
         };
 
