@@ -198,28 +198,6 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         return serviceMetadata;
     }
 
-#if NETSTANDARD2_0
-    private V1EndpointPort FindEndpointPort(V1EndpointSubset subset)
-    {
-        var ports = subset.Ports;
-        V1EndpointPort endpointPort;
-        if (ports.Count == 1)
-        {
-            endpointPort = ports[0];
-        }
-        else
-        {
-            endpointPort = ports
-                .FirstOrDefault(port =>
-                    string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) ||
-                    _discoveryOptions.CurrentValue.PrimaryPortName.ToUpper().Equals(port.Name.ToUpper()));
-        }
-
-        return endpointPort;
-    }
-#endif
-
-#if NETSTANDARD2_1
     private Corev1EndpointPort FindEndpointPort(V1EndpointSubset subset)
     {
         var ports = subset.Ports;
@@ -238,7 +216,6 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         return endpointPort;
     }
-#endif
 
     private EndpointSubsetNs GetSubsetsFromEndpoints(V1Endpoints endpoints)
     {

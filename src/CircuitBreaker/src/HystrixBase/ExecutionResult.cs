@@ -164,11 +164,8 @@ public class ExecutionResult
 
         public override int GetHashCode()
         {
-            var result = GetHashCode(_events);
-            result = (31 * result) + _numEmissions;
-            result = (31 * result) + _numFallbackEmissions;
-            result = (31 * result) + _numCollapsed;
-            return result;
+            var eventsHashCode = GetHashCode(_events);
+            return HashCode.Combine(eventsHashCode, _numEmissions, _numFallbackEmissions, _numCollapsed);
         }
 
         public override string ToString()

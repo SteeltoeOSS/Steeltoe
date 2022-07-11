@@ -363,7 +363,7 @@ internal class PdbInfo
     /// <returns></returns>
     public override int GetHashCode()
     {
-        return Guid.GetHashCode() ^ Revision;
+        return HashCode.Combine(Guid, Revision);
     }
 
     /// <summary>

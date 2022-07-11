@@ -21,7 +21,9 @@ public class CredHubClient : ICredHubClient
 {
     internal JsonSerializerOptions SerializerOptions { get; set; } = new ()
     {
+#pragma warning disable SYSLIB0020 // Type or member is obsolete
         IgnoreNullValues = true,
+#pragma warning restore SYSLIB0020 // Type or member is obsolete
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
     };

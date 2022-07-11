@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <Description>Package for using Steeltoe Service Discovery Client in ASP.NET Core applications</Description>
     <PackageTags>aspnetcore;service discovery;service registry;Spring Cloud;eureka;consul;kubernetes</PackageTags>
     <RootNamespace>Steeltoe.Discovery.Client</RootNamespace>

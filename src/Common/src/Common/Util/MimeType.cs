@@ -317,10 +317,7 @@ public class MimeType : IComparable<MimeType>
 
     public override int GetHashCode()
     {
-        var result = Type.GetHashCode();
-        result = (31 * result) + Subtype.GetHashCode();
-        result = (31 * result) + Parameters.GetHashCode();
-        return result;
+        return HashCode.Combine(Type, Subtype, Parameters);
     }
 
     public override string ToString()

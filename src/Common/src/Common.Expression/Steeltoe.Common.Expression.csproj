@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Steeltoe common expression language library</Description>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Steeltoe.Common.Expression</AssemblyName>
     <PackageId>Steeltoe.Common.Expression</PackageId>
     <PackageTags>NET Core;Expression;SPEL</PackageTags>

@@ -2,9 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NETCOREAPP3_1_OR_GREATER
-using System;
-#endif
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -26,25 +23,9 @@ internal static partial class PrometheusSerializer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int WriteDouble(byte[] buffer, int cursor, double value)
     {
-#if NETCOREAPP3_1_OR_GREATER
-        if (double.IsFinite(value))
-#else
         if (!double.IsInfinity(value) && !double.IsNaN(value))
-#endif
         {
-#if NETCOREAPP3_1_OR_GREATER
-        Span<char> span = stackalloc char[128];
-
-        var result = value.TryFormat(span, out var cchWritten, "G", CultureInfo.InvariantCulture);
-        Debug.Assert(result, $"{nameof(result)} should be true.");
-
-        for (int i = 0; i < cchWritten; i++)
-        {
-            buffer[cursor++] = unchecked((byte)span[i]);
-        }
-#else
             cursor = WriteAsciiStringNoEscape(buffer, cursor, value.ToString(CultureInfo.InvariantCulture));
-#endif
         }
         else if (double.IsPositiveInfinity(value))
         {
@@ -66,20 +47,7 @@ internal static partial class PrometheusSerializer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int WriteLong(byte[] buffer, int cursor, long value)
     {
-#if NETCOREAPP3_1_OR_GREATER
-        Span<char> span = stackalloc char[20];
-
-        var result = value.TryFormat(span, out var cchWritten, "G", CultureInfo.InvariantCulture);
-        Debug.Assert(result, $"{nameof(result)} should be true.");
-
-        for (int i = 0; i < cchWritten; i++)
-        {
-            buffer[cursor++] = unchecked((byte)span[i]);
-        }
-#else
         cursor = WriteAsciiStringNoEscape(buffer, cursor, value.ToString(CultureInfo.InvariantCulture));
-#endif
-
         return cursor;
     }
 

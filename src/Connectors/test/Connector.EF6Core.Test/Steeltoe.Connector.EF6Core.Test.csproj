@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />
@@ -15,10 +15,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <!-- with netcoreapp3.1+ returns "Warning NU1701 Package restored using '.NETFramework,Version=...' instead of the project target framework. This package may not be fully compatible with your project." -->
-    <PackageReference Include="Oracle.ManagedDataAccess.EntityFramework" Version="19.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />

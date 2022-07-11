@@ -206,7 +206,10 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return _sourceType == other._sourceType && _targetType == other._targetType;
         }
 
-        public override int GetHashCode() => (_sourceType.GetHashCode() * 29) + _targetType.GetHashCode();
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_sourceType, _targetType);
+        }
 
         public override string ToString() => $"ConverterCacheKey [sourceType = {_sourceType}, targetType = {_targetType}]";
 
