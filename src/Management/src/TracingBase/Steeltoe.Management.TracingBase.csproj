@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Tracing</RootNamespace>
     <Description>Base package for enabling request tracing in distributed systems.</Description>
     <PackageTags>management;monitoring;distributed trace</PackageTags>

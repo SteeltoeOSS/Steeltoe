@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.CloudFoundry</RootNamespace>
     <Description>Package for adding Cloud Foundry environment variable configuration provider to ASP.NET Core applications</Description>
     <PackageTags>aspnetcore;CloudFoundry;Spring;Spring Cloud;vcap</PackageTags>

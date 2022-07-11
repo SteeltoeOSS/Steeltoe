@@ -62,11 +62,6 @@ public class OracleDbContextServiceCollectionExtensionsTest
         var service = serviceProvider.GetService<GoodOracleDbContext>();
         var serviceHealth = serviceProvider.GetService<IHealthContributor>();
         Assert.NotNull(service);
-#if NET461
-        Assert.NotNull(serviceHealth);
-        Assert.IsAssignableFrom<RelationalDbHealthContributor>(serviceHealth);
-#else
         Assert.Null(serviceHealth);
-#endif
     }
 }

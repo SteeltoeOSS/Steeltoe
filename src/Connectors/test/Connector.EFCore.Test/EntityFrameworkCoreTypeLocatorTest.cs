@@ -17,13 +17,13 @@ public class EntityFrameworkCoreTypeLocatorTest
         Assert.NotNull(type);
     }
 
-#if NETCOREAPP3_1
+#if NET6_0_OR_GREATER
     [Fact]
-    public void Options_Found_In_MySql_Assembly()
+    public void Options_Found_In_Pomelo_Assembly()
     {
         // arrange ~ narrow the assembly list to one specific nuget package
         var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "MySql.EntityFrameworkCore" };
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "Pomelo.EntityFrameworkCore.MySql" };
 
         var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
@@ -32,11 +32,11 @@ public class EntityFrameworkCoreTypeLocatorTest
     }
 #else
     [Fact]
-    public void Options_Found_In_Pomelo_Assembly()
+    public void Options_Found_In_MySql_Assembly()
     {
         // arrange ~ narrow the assembly list to one specific nuget package
         var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "Pomelo.EntityFrameworkCore.MySql" };
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "MySql.EntityFrameworkCore" };
 
         var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 

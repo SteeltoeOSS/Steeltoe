@@ -25,7 +25,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-#if !NET6_0
+#if !NET6_0_OR_GREATER
         AppContext.SetSwitch(
             "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif
@@ -41,7 +41,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
-#if !NET6_0
+#if !NET6_0_OR_GREATER
         AppContext.SetSwitch(
             "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif
@@ -59,7 +59,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
-#if !NET6_0
+#if !NET6_0_OR_GREATER
         AppContext.SetSwitch(
             "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
+
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class CommandAndCacheKey
@@ -32,9 +34,7 @@ public class CommandAndCacheKey
 
     public override int GetHashCode()
     {
-        var result = _commandName.GetHashCode();
-        result = (31 * result) + _cacheKey.GetHashCode();
-        return result;
+        return HashCode.Combine(_commandName, _cacheKey);
     }
 
     public override string ToString()

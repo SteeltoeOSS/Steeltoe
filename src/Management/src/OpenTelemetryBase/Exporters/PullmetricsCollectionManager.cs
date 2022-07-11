@@ -33,11 +33,7 @@ internal sealed partial class PullmetricsCollectionManager
         _onCollectRef = OnCollect;
     }
 
-#if NETCOREAPP3_1_OR_GREATER
-    public ValueTask<ICollectionResponse> EnterCollect()
-#else
     public Task<ICollectionResponse> EnterCollect()
-#endif
     {
         EnterGlobalLock();
 
@@ -49,11 +45,7 @@ internal sealed partial class PullmetricsCollectionManager
         {
             Interlocked.Increment(ref _readerCount);
             ExitGlobalLock();
-#if NETCOREAPP3_1_OR_GREATER
-            return new ValueTask<ICollectionResponse>(previousView);
-#else
             return Task.FromResult(_previousView);
-#endif
         }
 
         // If a collection is already running, return a task to wait on the result.
@@ -64,11 +56,7 @@ internal sealed partial class PullmetricsCollectionManager
 
             Interlocked.Increment(ref _readerCount);
             ExitGlobalLock();
-#if NETCOREAPP3_1_OR_GREATER
-            return new ValueTask<ICollectionResponse>(this.collectionTcs.Task);
-#else
             return _collectionTcs.Task;
-#endif
         }
 
         WaitForReadersToComplete();
@@ -103,11 +91,7 @@ internal sealed partial class PullmetricsCollectionManager
 
         ExitGlobalLock();
 
-#if NETCOREAPP3_1_OR_GREATER
-        return new ValueTask<ICollectionResponse>(response);
-#else
         return Task.FromResult(response);
-#endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

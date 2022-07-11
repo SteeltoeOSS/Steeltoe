@@ -2,103 +2,82 @@
   <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
     <VersionPrefix>4.0.0</VersionPrefix>
   </PropertyGroup>
+
   <PropertyGroup>
-    <CoreFxVersion>4.4.0</CoreFxVersion>
-    <CSharpVersion>4.5.0</CSharpVersion>
-    <DriveInfoVersion>4.3.1</DriveInfoVersion>
-    <HttpVersion>4.3.4</HttpVersion>
-    <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
-    <HttpClientVersion>4.3.4</HttpClientVersion>
-    <JwtTokensVersion>5.2.2</JwtTokensVersion>
-    <SymReaderVersion>1.2.0</SymReaderVersion>
-    <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
-    <SystemDiagnosticsVersion>5.0.1</SystemDiagnosticsVersion>
-    <SystemJsonVersion>5.0.2</SystemJsonVersion>
-    <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
-    <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
-    <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
-    <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
-    <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
-    <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
+    <!--
+      Non-exposed dependencies, only referenced from test projects or build infrastructure.
+      It's safe to update these at any time, so wildcards are allowed.
+    -->
 
-    <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
-    <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
-    <MySqlV8>8.0.23</MySqlV8>
-    <NpgsqlVersion>4.0.0</NpgsqlVersion>
-    <SqlClientVersion>4.8.1</SqlClientVersion>
-    <StackExchangeVersion>2.0.593</StackExchangeVersion>
+    <MongoDbClientVersion>2.16.*</MongoDbClientVersion>
+    <MySqlConnectorVersion>2.1.*</MySqlConnectorVersion>
+    <MySqlV8>8.0.*</MySqlV8>
+    <NpgsqlVersion>6.0.*</NpgsqlVersion>
+    <OracleVersion>3.21.*</OracleVersion>
+    <SqlClientVersion>4.8.*</SqlClientVersion>
+    <MicrosoftAzureCosmosVersion>3.28.*</MicrosoftAzureCosmosVersion>
+    <StackExchangeVersion>2.6.*</StackExchangeVersion>
+    <CoverletVersion>3.1.*</CoverletVersion>
+    <FluentAssertionsVersion>6.7.*</FluentAssertionsVersion>
+    <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
+    <MockHttpVersion>6.0.*</MockHttpVersion>
+    <MoqVersion>4.18.*</MoqVersion>
+    <TestSdkVersion>17.2.*</TestSdkVersion>
+    <XunitVersion>2.4.*</XunitVersion>
+    <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
+    <XunitStudioVersion>2.4.*</XunitStudioVersion>
+    <NSubstituteVersion>4.3.*</NSubstituteVersion>
+    <HealthChecksVersion>6.0.*</HealthChecksVersion>
+    <HealthChecksRabbitVersion>3.1.*</HealthChecksRabbitVersion>
+    <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
+    <SerilogExceptionsVersion>8.2.*</SerilogExceptionsVersion>
+    <SerilogSinksDebugVersion>2.0.*</SerilogSinksDebugVersion>
+    <SonarAnalyzerVersion>8.40.*</SonarAnalyzerVersion>
+    <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
+    <StyleCopVersion>1.1.*</StyleCopVersion>
+    <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
+    <EFCoreTestVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.0.*</EFCoreTestVersion>
+    <EFCoreTestVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</EFCoreTestVersion>
+    <EFCoreOracleTestVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">5.21.*</EFCoreOracleTestVersion>
+    <EFCoreOracleTestVersion Condition="'$(TargetFramework)' == 'net6.0'">6.21.*</EFCoreOracleTestVersion>
 
-    <AutofacVersion>4.6.1</AutofacVersion>
-    <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
-    <ConsulVersion>1.6.10.3</ConsulVersion>
-    <CoverletVersion>3.1.0</CoverletVersion>
-    <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
-    <HttpExtensionsVersion>3.1.0</HttpExtensionsVersion>
-    <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
-    <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
-    <JsonNetVersion>11.0.2</JsonNetVersion>
-    <MockHttpVersion>6.0.0</MockHttpVersion>
-    <MoqVersion>4.13.1</MoqVersion>
-    
-    <OpenTelemetryVersion>1.2.0</OpenTelemetryVersion>
+    <!--
+      Exposed dependencies, observable by Steeltoe consumers.
+      Be cautious with updates:
+      - Wildcards are only allowed when starting work on the next major version, until its release.
+      - Before release of the next major version, pin these down and never change them between minor/patch releases.
+    -->
+
+    <DriveInfoVersion>4.3.*</DriveInfoVersion>
+    <SystemVersion>6.0.*</SystemVersion>
+    <ExtensionsVersion>6.0.*</ExtensionsVersion>
+    <JwtTokensVersion>6.20.*</JwtTokensVersion>
+    <SymReaderVersion>1.4.*</SymReaderVersion>
+    <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
+    <KubernetesClientVersion>6.0.*</KubernetesClientVersion>
+    <BouncyCastleVersion>1.9.*</BouncyCastleVersion>
+    <ConsulVersion>1.6.10.*</ConsulVersion>
+    <HdrHistogramVersion>2.5.*</HdrHistogramVersion>
+    <JsonNetVersion>13.0.*</JsonNetVersion>
+    <OpenTelemetryVersion>1.3.*</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
-    
-    <RabbitClientVersion>5.0.1</RabbitClientVersion>
-    <ReactiveVersion>4.1.5</ReactiveVersion>
-    <TestSdkVersion>17.0.0</TestSdkVersion>
-    <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
-    <XunitVersion>2.4.1</XunitVersion>
-    <XunitStudioVersion>2.4.3</XunitStudioVersion>
-
-    <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
-    <HealthChecksMongoDbVersion>2.2.2</HealthChecksMongoDbVersion>
-    <HealthChecksNpgSqlVersion>2.2.0</HealthChecksNpgSqlVersion>
-    <HealthChecksRabbitmqVersion>2.2.1</HealthChecksRabbitmqVersion>
-    <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
-    <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
-
-    <SonarAnalyzerVersion>8.40.0.48530</SonarAnalyzerVersion>
-    <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
-    <StyleCopVersion>1.1.118</StyleCopVersion>
-
-    <EF6Version>6.3.0</EF6Version>
-
-    <PollyVersion>7.1.1</PollyVersion>
-    <PollyContribVersion>1.0.0</PollyContribVersion>
-    <CastleCoreVersion>4.4.0</CastleCoreVersion>
-    <RuntimeLoaderVersion>4.3.0</RuntimeLoaderVersion>
-
-    <ExtensionsVersion>3.1.0</ExtensionsVersion>
-    <EFCoreVersion>3.1.0</EFCoreVersion>
-    <HealthChecksVersion>3.1.0</HealthChecksVersion>
-    <LoggingVersion>3.1.0</LoggingVersion>
-    <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
-    <UnsafeCompilerServicesVersion>5.0.0</UnsafeCompilerServicesVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
-    <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
-    <EF6Version>6.3.0</EF6Version>
-    <ExtensionsVersion>3.1.0</ExtensionsVersion>
-    <MySqlEFCoreVersion>3.1.10</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
-    <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
-    <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
-    <MicrosoftExtensionsRedisVersion>3.1.19</MicrosoftExtensionsRedisVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
-    <EFCoreTestVersion>6.0.0</EFCoreTestVersion>
-    <MySqlEFCoreVersion>6.0.0</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion>6.0.0</NpgsqlEFCoreVersion>
-    <OracleEFCoreVersion>6.21.5</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>6.0.0</PomeloEFCoreVersion>
-    <EF6Version>6.4.0</EF6Version>
-    <ExtensionsVersion>6.0.0</ExtensionsVersion>
-    <MicrosoftExtensionsRedisVersion>6.0.0</MicrosoftExtensionsRedisVersion>
-    <SystemJsonVersion>6.0.0</SystemJsonVersion>
-    <SystemNetHttpJsonVersion>6.0.0</SystemNetHttpJsonVersion>
-    <UnsafeCompilerServicesVersion>6.0.0</UnsafeCompilerServicesVersion>
+    <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>3.3.*</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>4.0.*</SerilogSinksConsoleVersion>
+    <RabbitClientVersion>5.1.*</RabbitClientVersion>
+    <EasyNetQVersion>1.4.*</EasyNetQVersion>
+    <ReactiveVersion>5.0.*</ReactiveVersion>
+    <PollyVersion>7.2.*</PollyVersion>
+    <PollyContribVersion>1.1.*</PollyContribVersion>
+    <CastleCoreVersion>4.4.*</CastleCoreVersion>
+    <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
+    <DiagnosticsTracingVersion>3.0.*</DiagnosticsTracingVersion>
+    <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
+    <EFCoreVersion>5.0.*</EFCoreVersion>
+    <EFCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</EFCoreVersion>
+    <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
+    <AspNetCoreVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">3.1.*</AspNetCoreVersion>
+    <AspNetCoreVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.*</AspNetCoreVersion>
   </PropertyGroup>
 </Project>
