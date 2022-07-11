@@ -13,7 +13,7 @@ public class TracingCoreHostBuilderExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-#if !NET6_0
+#if !NET6_0_OR_GREATER
         AppContext.SetSwitch(
             "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif

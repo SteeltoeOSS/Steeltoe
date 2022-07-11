@@ -179,7 +179,9 @@ public class DynamicLoggingBuilderTest
         Assert.NotNull(options);
         Assert.NotNull(options.CurrentValue);
 #if !NET6_0_OR_GREATER
+#pragma warning disable CS0618 // Type or member is obsolete
         Assert.True(options.CurrentValue.DisableColors);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
     }
 
@@ -240,7 +242,9 @@ public class DynamicLoggingBuilderTest
 
         Assert.NotNull(options);
 #if !NET6_0_OR_GREATER
+#pragma warning disable CS0618 // Type or member is obsolete
         Assert.False(options.Value.DisableColors);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
     }
 
@@ -260,7 +264,9 @@ public class DynamicLoggingBuilderTest
 
         Assert.NotNull(options);
 #if !NET6_0_OR_GREATER
+#pragma warning disable CS0618 // Type or member is obsolete
         Assert.True(options.Value.DisableColors);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
     }

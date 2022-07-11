@@ -177,7 +177,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     internal JsonSerializerOptions SerializerOptions { get; private set; } =
         new ()
         {
+#pragma warning disable SYSLIB0020 // Type or member is obsolete
             IgnoreNullValues = true,
+#pragma warning restore SYSLIB0020 // Type or member is obsolete
             PropertyNameCaseInsensitive = true,
         };
 
@@ -751,7 +753,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             }
             catch (Exception e)
             {
-                _logger.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType(), e);
+                _logger.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
             }
         }
     }

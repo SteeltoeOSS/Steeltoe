@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
         {
             // new way compatible with .NET 6
             SetupConvention = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder),
-#if !NET6_0
+#if !NET6_0_OR_GREATER
             // old way for backwards compatibility, will be removed in the future
             Setup = (endpoints, convention) => endpoints.Map<TEndpoint>(convention)
 #endif

@@ -211,15 +211,7 @@ internal abstract class ClrInterface
     /// <returns>A hashcode for this object.</returns>
     public override int GetHashCode()
     {
-        int hashCode = 0;
-
-        if (Name != null)
-            hashCode ^= Name.GetHashCode();
-
-        if (BaseInterface != null)
-            hashCode ^= BaseInterface.GetHashCode();
-
-        return hashCode;
+        return HashCode.Combine(Name, BaseInterface);
     }
 }
 

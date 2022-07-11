@@ -17,14 +17,7 @@ public class KubernetesServiceInstance : IServiceInstance
     private const string Coln = ":";
 
     private readonly V1EndpointAddress _endpointAddress;
-
-#if NETSTANDARD2_0
-    private V1EndpointPort _endpointPort;
-#endif
-
-#if NETSTANDARD2_1
     private readonly Corev1EndpointPort _endpointPort;
-#endif
 
     public string InstanceId { get; }
 
@@ -40,25 +33,6 @@ public class KubernetesServiceInstance : IServiceInstance
 
     public IDictionary<string, string> Metadata { get; }
 
-#if NETSTANDARD2_0
-    public KubernetesServiceInstance(
-        string instanceId,
-        string serviceId,
-        V1EndpointAddress endpointAddress,
-        V1EndpointPort endpointPort,
-        IDictionary<string, string> metadata,
-        bool isSecure)
-    {
-        InstanceId = instanceId;
-        ServiceId = serviceId;
-        _endpointAddress = endpointAddress;
-        _endpointPort = endpointPort;
-        IsSecure = isSecure;
-        Metadata = metadata;
-    }
-#endif
-
-#if NETSTANDARD2_1
     public KubernetesServiceInstance(
         string instanceId,
         string serviceId,
@@ -74,7 +48,6 @@ public class KubernetesServiceInstance : IServiceInstance
         IsSecure = isSecure;
         Metadata = metadata;
     }
-#endif
 
     public string GetScheme()
     {

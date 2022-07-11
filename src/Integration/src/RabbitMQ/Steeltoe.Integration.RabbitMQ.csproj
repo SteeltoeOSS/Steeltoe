@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
     <Description>
       Steeltoe Integration RabbitMQ
       **PLEASE NOTE** The public API of this package is subject to change and is not recommended for direct use outside of Steeltoe.
     </Description>
-    <TargetFrameworks>netcoreapp3.1;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Integration.RabbitMQ</RootNamespace>
     <PackageTags>Integration, ASPNET Core, Spring, Spring Cloud, RabbitMQ</PackageTags>
   </PropertyGroup>

@@ -1,13 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
     <Description>Steeltoe Messaging RabbitMQ</Description>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Messaging.RabbitMQ</RootNamespace>
     <AssemblyName>Steeltoe.Messaging.RabbitMQ</AssemblyName>
     <PackageId>Steeltoe.Messaging.RabbitMQ</PackageId>
     <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
-    <!--<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>-->
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />
@@ -23,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
   </ItemGroup>
   

@@ -104,7 +104,7 @@ public class ActuatorRouteBuilderExtensionsTest
                             .UseEndpoints(endpoints =>
                             {
                                 endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
-#if NET6_0
+#if NET6_0_OR_GREATER
                                 endpoints.MapActuatorEndpoint(type, convention => convention.RequireAuthorization("TestAuth"));
 #else
 #pragma warning disable CS0618 // Type or member is obsolete

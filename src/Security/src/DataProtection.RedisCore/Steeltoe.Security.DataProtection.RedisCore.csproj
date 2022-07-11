@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.DataProtection.Redis</RootNamespace>
     <Description>Support for storing data protection keys in Redis.</Description>
     <PackageTags>CloudFoundry;aspnetcore;security;dataprotection;redis</PackageTags>

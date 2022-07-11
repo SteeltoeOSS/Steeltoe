@@ -65,7 +65,7 @@ public static class ActuatorRouteBuilderExtensions
         MapActuatorEndpoint(endpoints, typeof(TEndpoint), convention);
     }
 
-#if !NET6_0
+#if !NET6_0_OR_GREATER
     /// <summary>
     /// Generic routebuilder extension for Actuators.
     /// </summary>
@@ -103,7 +103,7 @@ public static class ActuatorRouteBuilderExtensions
         }
     }
 
-#if !NET6_0
+#if !NET6_0_OR_GREATER
     /// <summary>
     /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
     /// </summary>
@@ -177,8 +177,7 @@ public static class ActuatorRouteBuilderExtensions
         }
     }
 
-#if !NET6_0
-
+#if !NET6_0_OR_GREATER
     [Obsolete("MediaTypeVersion parameter is not used")]
     internal static IEndpointConventionBuilder MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, EndpointCollectionConventionBuilder conventionBuilder = null)
     {
@@ -219,7 +218,6 @@ public static class ActuatorRouteBuilderExtensions
 
         return builder;
     }
-
 #endif
 
     private static void ConnectEndpointOptionsWithManagementOptions(IEndpointRouteBuilder endpoints)
