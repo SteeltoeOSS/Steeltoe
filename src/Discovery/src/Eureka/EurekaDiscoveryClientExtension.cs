@@ -15,6 +15,7 @@ using Steeltoe.Common.Options;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Linq;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
@@ -82,7 +83,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 var inetOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
                 options.NetUtils = new InetUtils(inetOptions);
                 options.ApplyNetUtils();
-                var endpointAssembly = "Steeltoe.Management.EndpointBase";
+                const string endpointAssembly = "Steeltoe.Management.EndpointBase";
                 if (ReflectionHelpers.IsAssemblyLoaded(endpointAssembly))
                 {
                     var actuatorOptionsType = ReflectionHelpers.FindType(new string[] { endpointAssembly }, new string[] { "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions" });
@@ -97,7 +98,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                             var healthOptions = serviceProvider.GetService(healthOptionsType);
                             if (healthOptions is object)
                             {
-                                options.HealthCheckUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path").GetValue(healthOptions)).TrimStart('/');
+                                options.HealthCheckUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
                             }
                         }
 
@@ -107,7 +108,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                             var infoOptions = serviceProvider.GetService(infoOptionsType);
                             if (infoOptions is object)
                             {
-                                options.StatusPageUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path").GetValue(infoOptions)).TrimStart('/');
+                                options.StatusPageUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(infoOptions))?.TrimStart('/');
                             }
                         }
                     }
@@ -144,7 +145,6 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
         services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
 
-        var certOptions = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IConfigureOptions<CertificateOptions>));
         var existingHandler = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IHttpClientHandlerProvider));
 
         if (existingHandler is IHttpClientHandlerProvider handlerProvider)
@@ -154,15 +154,13 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         }
         else
         {
-            if (certOptions is null)
-            {
-                AddEurekaHttpClient(services);
-            }
-            else
-            {
-                AddEurekaHttpClient(services)
-                    .ConfigurePrimaryHttpMessageHandler(services => new ClientCertificateHttpHandler(services.GetRequiredService<IOptionsMonitor<CertificateOptions>>()));
-            }
+            AddEurekaHttpClient(services)
+                .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
+                {
+                    var certOptions = serviceProvider.GetService<IOptionsMonitor<CertificateOptions>>();
+                    var eurekaOptions = serviceProvider.GetService<IOptionsMonitor<EurekaClientOptions>>();
+                    return EurekaHttpClient.ConfigureEurekaHttpClientHandler(eurekaOptions.CurrentValue, certOptions is null ? null : new ClientCertificateHttpHandler(certOptions));
+                });
         }
     }
 
