@@ -75,7 +75,8 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
         else
         {
-            _logger.LogError("Error registering with SpringBootAdmin: {Message}", result?.ToString());
+            var errorResponse = result != null ? await result.Content.ReadAsStringAsync() : string.Empty;
+            _logger.LogError("Error registering with SpringBootAdmin: {Message} \n {Response} ", result?.ToString(), errorResponse);
         }
     }
 
