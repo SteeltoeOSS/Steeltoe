@@ -52,14 +52,21 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMS);
 
         HttpResponseMessage result = null;
-        string exceptionMessage = null;
         try
         {
             result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app, cancellationToken: cancellationToken);
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
-            exceptionMessage = ex.Message;
+            _logger.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
         }
 
         if (result is { IsSuccessStatusCode: true })
@@ -68,7 +75,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
         else
         {
-            _logger.LogError("Error registering with SpringBootAdmin: {message}.", result?.ToString() ?? exceptionMessage);
+            _logger.LogError("Error registering with SpringBootAdmin: {Message}", result?.ToString());
         }
     }
 
