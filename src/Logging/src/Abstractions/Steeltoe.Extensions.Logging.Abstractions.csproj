@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Logging</RootNamespace>
     <Description>Abstractions for use with dynamic logging</Description>
     <PackageTags></PackageTags>
@@ -10,6 +10,6 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(LoggingVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 </Project>

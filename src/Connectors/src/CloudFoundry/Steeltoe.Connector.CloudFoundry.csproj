@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <Description>Package for enabling Steeltoe Connectors on Cloud Foundry</Description>
     <PackageTags>CloudFoundry;vcap;connectors</PackageTags>
   </PropertyGroup>

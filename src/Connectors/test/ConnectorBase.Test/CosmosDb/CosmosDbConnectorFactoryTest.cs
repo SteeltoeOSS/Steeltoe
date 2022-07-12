@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Azure.Cosmos;
+using Microsoft.Azure.Cosmos;
 using Steeltoe.Connector.Services;
 using System;
 using Xunit;
@@ -39,20 +39,10 @@ public class CosmosDbConnectorFactoryTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfConfigNull_v3()
-    {
-        const CosmosDbConnectorOptions config = null;
-        const CosmosDbServiceInfo si = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, config, typeof(Microsoft.Azure.Cosmos.CosmosClient)));
-        Assert.Contains(nameof(config), ex.Message);
-    }
-
-    [Fact]
     public void Create_ReturnsCosmosDbConnection_v3()
     {
         var optionsTypes = CosmosDbTypeLocator.ClientOptionsTypeNames;
-        CosmosDbTypeLocator.ClientOptionsTypeNames = new[] { CosmosDbTypeLocator.ClientOptionsTypeNames[1] };
+        CosmosDbTypeLocator.ClientOptionsTypeNames = new[] { CosmosDbTypeLocator.ClientOptionsTypeNames[0] };
 
         var si = new CosmosDbServiceInfo("MyId")
         {
@@ -63,7 +53,7 @@ public class CosmosDbConnectorFactoryTest
             DatabaseLink = "databaseLink"
         };
 
-        var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(Microsoft.Azure.Cosmos.CosmosClient));
+        var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(CosmosClient));
         var connection = factory.Create(null);
         Assert.NotNull(connection);
         CosmosDbTypeLocator.ClientOptionsTypeNames = optionsTypes;

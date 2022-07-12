@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <Description>Steeltoe common library</Description>
     <PackageTags></PackageTags>
   </PropertyGroup>
@@ -13,9 +13,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
-    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="$(SystemReflectionVersion)" />
-    <PackageReference Include="System.Text.Json" Version="$(SystemJsonVersion)" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemVersion)" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="$(SystemVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(ExtensionsVersion)" />

@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.ConfigServer</RootNamespace>
     <Description>Configuration provider for reading from Spring Cloud Config Server</Description>
     <PackageTags>configuration;Spring Cloud;Spring Cloud Config Server</PackageTags>
@@ -10,7 +10,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
+    <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
   </ItemGroup>
   
   <ItemGroup>

@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
     <Description>Steeltoe Messaging Base</Description>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Messaging</RootNamespace>
     <AssemblyName>Steeltoe.Messaging.MessagingBase</AssemblyName>
     <PackageId>Steeltoe.Messaging.MessagingBase</PackageId>

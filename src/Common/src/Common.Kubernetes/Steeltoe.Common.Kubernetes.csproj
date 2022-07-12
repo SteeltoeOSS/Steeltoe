@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <Description>Steeltoe common library for Kubernetes</Description>
     <PackageTags>Kubernetes</PackageTags>
   </PropertyGroup>
@@ -8,11 +8,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="KubernetesClient" Version="2.0.16" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+  <ItemGroup>
     <PackageReference Include="KubernetesClient" Version="$(KubernetesClientVersion)" />
   </ItemGroup>
 

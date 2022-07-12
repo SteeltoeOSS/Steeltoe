@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Connector.Test</RootNamespace>
   </PropertyGroup>
   
@@ -15,16 +15,13 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.7.0" />
-    <PackageReference Include="Azure.Cosmos" Version="4.0.0-preview3" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsRedisVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
-    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV6)" /> -->
-    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV8)" />-->
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
   </ItemGroup>
