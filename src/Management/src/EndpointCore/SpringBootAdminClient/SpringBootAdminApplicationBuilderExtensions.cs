@@ -70,7 +70,7 @@ public static class SpringBootAdminApplicationBuilderExtensions
             {
                 result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
                 exceptionMessage = ex.Message;
             }
