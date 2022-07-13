@@ -52,10 +52,10 @@ public static class EurekaClientService
 
     internal static EurekaClientOptions ConfigureClientOptions(IConfiguration configuration)
     {
-        var clientConfigsection = configuration.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        var clientConfigSection = configuration.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
 
         var clientOptions = new EurekaClientOptions();
-        clientConfigsection.Bind(clientOptions);
+        clientConfigSection.Bind(clientOptions);
         clientOptions.ShouldFetchRegistry = true;
         clientOptions.ShouldRegisterWithEureka = false;
         return clientOptions;

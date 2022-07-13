@@ -63,7 +63,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     public override void OnMessage(IMessage amqpMessage, RC.IModel channel)
     {
-        PreprocesMessage(amqpMessage);
+        PreProcessMessage(amqpMessage);
         var headers = amqpMessage.Headers;
         var convertedObject = MessageConverter.FromMessage(amqpMessage, InferredArgumentType);
         if (convertedObject == null)
@@ -150,7 +150,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         }
     }
 
-    protected void PreprocesMessage(IMessage message)
+    protected void PreProcessMessage(IMessage message)
     {
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         if (Instance != null)
@@ -190,7 +190,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         return $"{description}\nEndpoint handler details:\nMethod [{HandlerAdapter.GetMethodAsString(payload)}]\nBean [{HandlerAdapter.Instance}]";
     }
 
-    private void ReturnOrThrow(IMessage amqpMessage, RC.IModel channel, IMessage message, Exception exceptionToRetrun, Exception exceptionToThrow)
+    private void ReturnOrThrow(IMessage amqpMessage, RC.IModel channel, IMessage message, Exception exceptionToReturn, Exception exceptionToThrow)
     {
         if (!ReturnExceptions)
         {
@@ -201,7 +201,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         {
             HandleResult(
                 new InvocationResult(
-                    exceptionToRetrun,
+                    exceptionToReturn,
                     null,
                     HandlerAdapter.GetReturnTypeFor(message.Payload),
                     HandlerAdapter.Instance,

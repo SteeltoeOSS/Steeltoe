@@ -50,9 +50,9 @@ public class HystrixEventSourceService : IHostedService
                     HystrixMetricsEventSource.EventLogger.CommandMetrics(
                         commandKey: commandMetrics.CommandKey.Name,
                         commandGroup: commandMetrics.CommandGroup.Name,
-                        isCiruitBreakerOpen: isOpen.HasValue && isOpen.Value,
-                        errorCount: commandMetrics.Healthcounts.ErrorCount,
-                        requestCount: commandMetrics.Healthcounts.TotalRequests,
+                        isCircuitBreakerOpen: isOpen.HasValue && isOpen.Value,
+                        errorCount: commandMetrics.HealthCounts.ErrorCount,
+                        requestCount: commandMetrics.HealthCounts.TotalRequests,
                         currentConcurrentExecutionCount: commandMetrics.CurrentConcurrentExecutionCount,
                         latencyExecuteMean: commandMetrics.ExecutionTimeMean,
                         latencyTotalMean: commandMetrics.TotalTimeMean,

@@ -143,8 +143,8 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
                 {
                     _logger?.LogError(e, "Exception during {attempt} attempts of retryable action, will retry", attempts);
                     Thread.CurrentThread.Join(backOff);
-                    var nextBackoff = (int)(backOff * options.Multiplier);
-                    backOff = Math.Min(nextBackoff, options.MaxInterval);
+                    var nextBackOff = (int)(backOff * options.Multiplier);
+                    backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
                 else
                 {

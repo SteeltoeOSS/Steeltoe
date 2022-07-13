@@ -44,9 +44,9 @@ public static class KubernetesConfigurationBuilderExtensions
                     .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory)))
                     .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
 
-                foreach (var configmap in appInfo.Config.Sources)
+                foreach (var configMap in appInfo.Config.Sources)
                 {
-                    configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configmap.Namespace, configmap.Name, appInfo.Reload, loggerFactory)));
+                    configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configMap.Namespace, configMap.Name, appInfo.Reload, loggerFactory)));
                 }
             }
 

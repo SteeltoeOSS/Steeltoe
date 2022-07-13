@@ -48,7 +48,7 @@ public static partial class ServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
-            var exporterOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+            var exporterOptions = new PullMetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
             return new SteeltoeExporter(exporterOptions);
         }));
         services.AddOpenTelemetryMetricsForSteeltoe();
@@ -81,7 +81,7 @@ public static partial class ServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoePrometheusExporter>(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
-            var exporterOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+            var exporterOptions = new PullMetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
             return new SteeltoePrometheusExporter(exporterOptions);
         }));
 

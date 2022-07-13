@@ -234,13 +234,13 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     public async Task CloudFoundrySecurityMiddleware_ReturnsError()
 #pragma warning restore S2699 // Tests should include assertions
     {
-        var mgmtOptions = new CloudFoundryManagementOptions();
+        var managementOptions = new CloudFoundryManagementOptions();
 
         var options = new CloudFoundryEndpointOptions();
-        mgmtOptions.EndpointOptions.Add(options);
+        managementOptions.EndpointOptions.Add(options);
         options.ApplicationId = "foo";
         options.CloudFoundryApi = "http://localhost:9999/foo";
-        var middle = new CloudFoundrySecurityMiddleware(null, options, mgmtOptions);
+        var middle = new CloudFoundrySecurityMiddleware(null, options, managementOptions);
         var context = CreateRequest("Get", "/cloudfoundryapplication");
         await middle.Invoke(context);
     }
@@ -317,9 +317,9 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     public void GetAccessToken_ReturnsExpected()
     {
         var opts = new CloudFoundryEndpointOptions();
-        var mgmtOptions = new CloudFoundryManagementOptions();
-        mgmtOptions.EndpointOptions.Add(opts);
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
         var context = CreateRequest("GET", "/");
         var token = middle.GetAccessToken(context.Request);
         Assert.Null(token);
@@ -334,9 +334,9 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     public async Task GetPermissions_ReturnsExpected()
     {
         var opts = new CloudFoundryEndpointOptions();
-        var mgmtOptions = new CloudFoundryManagementOptions();
-        mgmtOptions.EndpointOptions.Add(opts);
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
         var context = CreateRequest("GET", "/");
         var result = await middle.GetPermissions(context);
         Assert.NotNull(result);

@@ -330,7 +330,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
                 return binding;
             }
 
-            case FanoutExchange:
+            case FanOutExchange:
                 throw new ProvisioningException("A fanout exchange is not appropriate for partitioned apps");
             case HeadersExchange:
             {
@@ -374,9 +374,9 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
                 return binding;
             }
 
-            case FanoutExchange fanout:
+            case FanOutExchange fanOut:
             {
-                var binding = BindingBuilder.Bind(queue).To(fanout);
+                var binding = BindingBuilder.Bind(queue).To(fanOut);
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
@@ -398,8 +398,8 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         /*
          * When the delimiter is null, we get a String[1] containing the original.
          */
-        var delimeter = extendedProperties.BindingRoutingKeyDelimiter;
-        if (delimeter == null)
+        var delimiter = extendedProperties.BindingRoutingKeyDelimiter;
+        if (delimiter == null)
         {
             if (extendedProperties.BindingRoutingKey == null)
             {
@@ -414,7 +414,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
             return null;
         }
 
-        var trimmed = extendedProperties.BindingRoutingKey.Split(delimeter, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
+        var trimmed = extendedProperties.BindingRoutingKey.Split(delimiter, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
         return new List<string>(trimmed);
     }
 

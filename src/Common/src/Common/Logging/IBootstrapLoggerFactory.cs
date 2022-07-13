@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Logging;
 
-public interface IBoostrapLoggerFactory : ILoggerFactory
+public interface IBootstrapLoggerFactory : ILoggerFactory
 {
     void Update(IConfiguration value);
 

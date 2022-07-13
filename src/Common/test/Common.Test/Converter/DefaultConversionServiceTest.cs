@@ -137,10 +137,10 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestShortToString()
     {
-        short three = 3;
-        ushort uthree = 3;
-        Assert.Equal("3", ConversionService.Convert<string>(three));
-        Assert.Equal("3", ConversionService.Convert<string>(uthree));
+        short signedThree = 3;
+        ushort unsignedThree = 3;
+        Assert.Equal("3", ConversionService.Convert<string>(signedThree));
+        Assert.Equal("3", ConversionService.Convert<string>(unsignedThree));
     }
 
     [Fact]
@@ -776,7 +776,7 @@ public class DefaultConversionServiceTest
     }
 
     [Fact]
-    public void ConvertDictionaryBothElementConvertion()
+    public void ConvertDictionaryBothElementConversion()
     {
         var strings = new Dictionary<string, string> { { "3", "9" }, { "6", "31" } };
         var integers = ConversionService.Convert<IDictionary<int, int>>(strings);

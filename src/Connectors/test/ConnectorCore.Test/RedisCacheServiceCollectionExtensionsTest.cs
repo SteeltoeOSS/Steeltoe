@@ -95,7 +95,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddDistributedRedisCache_DoesntAddRedisHealthContributor_WhenCommunityHealthCheckExists()
+    public void AddDistributedRedisCache_DoesNotAddRedisHealthContributor_WhenCommunityHealthCheckExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

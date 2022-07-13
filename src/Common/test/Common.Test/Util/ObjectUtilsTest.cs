@@ -151,14 +151,14 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobject()
+    public void NullSafeHashCodeWithObject()
     {
         var str = "Luke";
         Assert.Equal(str.GetHashCode(), ObjectUtils.NullSafeHashCode(str));
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectArray()
+    public void NullSafeHashCodeWithObjectArray()
     {
         var expected = (31 * 7) + "Leia".GetHashCode();
         expected = (31 * expected) + "Han".GetHashCode();
@@ -170,14 +170,14 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectArrayEqualToNull()
+    public void NullSafeHashCodeWithObjectArrayEqualToNull()
     {
         const object[] value = null;
         Assert.Equal(0, ObjectUtils.NullSafeHashCode(value));
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingBooleanArray()
+    public void NullSafeHashCodeWithObjectBeingBooleanArray()
     {
         object array = new[] { true, false };
         var expected = ObjectUtils.NullSafeHashCode((bool[])array);
@@ -185,7 +185,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingByteArray()
+    public void NullSafeHashCodeWithObjectBeingByteArray()
     {
         object array = new byte[] { 6, 39 };
         var expected = ObjectUtils.NullSafeHashCode((byte[])array);
@@ -193,7 +193,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingCharArray()
+    public void NullSafeHashCodeWithObjectBeingCharArray()
     {
         object array = new[] { 'l', 'M' };
         var expected = ObjectUtils.NullSafeHashCode((char[])array);
@@ -201,7 +201,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingDoubleArray()
+    public void NullSafeHashCodeWithObjectBeingDoubleArray()
     {
         object array = new[] { 68930.993, 9022.009 };
         var expected = ObjectUtils.NullSafeHashCode((double[])array);
@@ -209,7 +209,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingFloatArray()
+    public void NullSafeHashCodeWithObjectBeingFloatArray()
     {
         object array = new[] { 9.9f, 9.54f };
         var expected = ObjectUtils.NullSafeHashCode((float[])array);
@@ -217,7 +217,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingIntArray()
+    public void NullSafeHashCodeWithObjectBeingIntArray()
     {
         object array = new[] { 89, 32 };
         var expected = ObjectUtils.NullSafeHashCode((int[])array);
@@ -225,7 +225,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingLongArray()
+    public void NullSafeHashCodeWithObjectBeingLongArray()
     {
         object array = new long[] { 4389, 320 };
         var expected = ObjectUtils.NullSafeHashCode((long[])array);
@@ -233,7 +233,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingobjectArray()
+    public void NullSafeHashCodeWithObjectBeingObjectArray()
     {
         object array = new object[] { "Luke", "Anakin" };
         var expected = ObjectUtils.NullSafeHashCode((object[])array);
@@ -241,7 +241,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectBeingShortArray()
+    public void NullSafeHashCodeWithObjectBeingShortArray()
     {
         object array = new short[] { 5, 3 };
         var expected = ObjectUtils.NullSafeHashCode((short[])array);
@@ -249,7 +249,7 @@ public class ObjectUtilsTest
     }
 
     [Fact]
-    public void NullSafeHashCodeWithobjectEqualToNull()
+    public void NullSafeHashCodeWithObjectEqualToNull()
     {
         const object value = null;
         Assert.Equal(0, ObjectUtils.NullSafeHashCode(value));

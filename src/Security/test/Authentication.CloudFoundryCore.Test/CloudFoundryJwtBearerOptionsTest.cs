@@ -25,7 +25,7 @@ public class CloudFoundryJwtBearerOptionsTest
     }
 
     [Fact]
-    public void DefaultConstructor_SetsupDefaultOptions()
+    public void DefaultConstructor_SetsUpDefaultOptions()
     {
         var opts = new CloudFoundryJwtBearerOptions();
 

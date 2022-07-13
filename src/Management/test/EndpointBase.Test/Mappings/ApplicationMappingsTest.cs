@@ -37,14 +37,14 @@ public class ApplicationMappingsTest : BaseTest
             Produces = new List<string> { "application/json" }
         };
 
-        var mappDescs = new List<MappingDescription>
+        var mappingDescriptions = new List<MappingDescription>
         {
             new ("foobar", routeDetail)
         };
 
         var mappingDict = new Dictionary<string, IList<MappingDescription>>
         {
-            { "controllerTypeName", mappDescs }
+            { "controllerTypeName", mappingDescriptions }
         };
 
         var contextMappings = new ContextMappings(mappingDict);

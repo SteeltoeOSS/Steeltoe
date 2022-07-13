@@ -34,15 +34,15 @@ public class BlockingQueueConsumerTest
     }
 
     [Fact]
-    public void TestDontRequeue()
+    public void TestDoNotRequeue()
     {
-        TestRequeueOrNotDefaultYes(new RabbitRejectAndDontRequeueException("fail"), false);
+        TestRequeueOrNotDefaultYes(new RabbitRejectAndDoNotRequeueException("fail"), false);
     }
 
     [Fact]
-    public void TestDontRequeueNested()
+    public void TestDoNotRequeueNested()
     {
-        var ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDontRequeueException("fail")));
+        var ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDoNotRequeueException("fail")));
         TestRequeueOrNotDefaultYes(ex, false);
     }
 
@@ -59,15 +59,15 @@ public class BlockingQueueConsumerTest
     }
 
     [Fact]
-    public void TestDontRequeueDefaultNot()
+    public void TestDoNotRequeueDefaultNot()
     {
-        TestRequeueOrNotDefaultNo(new RabbitRejectAndDontRequeueException("fail"), false);
+        TestRequeueOrNotDefaultNo(new RabbitRejectAndDoNotRequeueException("fail"), false);
     }
 
     [Fact]
-    public void TestDontRequeueNestedDefaultNot()
+    public void TestDoNotRequeueNestedDefaultNot()
     {
-        var ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDontRequeueException("fail")));
+        var ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDoNotRequeueException("fail")));
         TestRequeueOrNotDefaultNo(ex, false);
     }
 

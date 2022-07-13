@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test;
 public class ConsulServiceRegistryTest
 {
     [Fact]
-    public void Construtor_ThrowsOnNulls()
+    public void Constructor_ThrowsOnNulls()
     {
         var clientMoq = new Mock<IConsulClient>();
         Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistry(null, new ConsulDiscoveryOptions()));
@@ -68,7 +68,7 @@ public class ConsulServiceRegistryTest
     }
 
     [Fact]
-    public void DeegisterAsync_ThrowsOnNull()
+    public void DeregisterAsync_ThrowsOnNull()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();

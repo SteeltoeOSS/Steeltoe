@@ -46,7 +46,7 @@ public class SetValueTests : AbstractExpressionTests
     [Fact]
     public void TestSetArrayElementValueAllPrimitiveTypes()
     {
-        SetValue("ArrayContainer.Ints[1]", 3);
+        SetValue("ArrayContainer.Integers[1]", 3);
         SetValue("ArrayContainer.Floats[1]", 3.0f);
         SetValue("ArrayContainer.Booleans[1]", false);
         SetValue("ArrayContainer.Doubles[1]", 3.4d);
@@ -93,7 +93,7 @@ public class SetValueTests : AbstractExpressionTests
     public void TestSetArrayElementValueAllPrimitiveTypesErrors()
     {
         // none of these sets are possible due to (expected) conversion problems
-        SetValueExpectError("ArrayContainer.Ints[1]", "wibble");
+        SetValueExpectError("ArrayContainer.Integers[1]", "wibble");
         SetValueExpectError("ArrayContainer.Floats[1]", "dribble");
         SetValueExpectError("ArrayContainer.Booleans[1]", "nein");
 
@@ -183,21 +183,21 @@ public class SetValueTests : AbstractExpressionTests
     public void TestSetGenericMapElementRequiresCoercion()
     {
         var eContext = TestScenarioCreator.GetTestEvaluationContext();
-        var e = Parse("MapOfstringToBoolean[42]");
+        var e = Parse("MapOfStringToBoolean[42]");
         Assert.Null(e.GetValue(eContext));
 
         // Key should be coerced to string representation of 42
         e.SetValue(eContext, "true");
 
         // All keys should be strings
-        var ks = Parse("MapOfstringToBoolean.Keys").GetValue<ICollection>(eContext);
+        var ks = Parse("MapOfStringToBoolean.Keys").GetValue<ICollection>(eContext);
         foreach (var key in ks)
         {
             Assert.IsType<string>(key);
         }
 
         // All values should be booleans
-        var vs = Parse("MapOfstringToBoolean.Values").GetValue<ICollection>(eContext);
+        var vs = Parse("MapOfStringToBoolean.Values").GetValue<ICollection>(eContext);
         foreach (var val in vs)
         {
             Assert.IsType<bool>(val);
@@ -275,8 +275,8 @@ public class SetValueTests : AbstractExpressionTests
         }
     }
 
-    private IExpression Parse(string expressionstring)
+    private IExpression Parse(string expressionString)
     {
-        return Parser.ParseExpression(expressionstring);
+        return Parser.ParseExpression(expressionString);
     }
 }

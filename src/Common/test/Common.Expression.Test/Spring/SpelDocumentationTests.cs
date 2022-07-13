@@ -153,8 +153,8 @@ public class SpelDocumentationTests : AbstractExpressionTests
         societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
 
         // Officer's Dictionary
-        var pupin = Parser.ParseExpression("Officers['president']").GetValue<Inventor>(societyContext);
-        Assert.NotNull(pupin);
+        var president = Parser.ParseExpression("Officers['president']").GetValue<Inventor>(societyContext);
+        Assert.NotNull(president);
 
         // Evaluates to "Idvor"
         var city = Parser.ParseExpression("Officers['president'].PlaceOfBirth.City").GetValue<string>(societyContext);
@@ -316,9 +316,9 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Assert.Equal("Alexander Seovic2", Parser.ParseExpression("Foo").GetValue<string>(inventorContext));
 
         // alternatively
-        var aleks = Parser.ParseExpression("Foo = 'Alexandar Seovic'").GetValue<string>(inventorContext);
+        var alexander = Parser.ParseExpression("Foo = 'Alexandar Seovic'").GetValue<string>(inventorContext);
         Assert.Equal("Alexandar Seovic", Parser.ParseExpression("Foo").GetValue<string>(inventorContext));
-        Assert.Equal("Alexandar Seovic", aleks);
+        Assert.Equal("Alexandar Seovic", alexander);
     }
 
     // 7.5.6
@@ -394,8 +394,8 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestTernary()
     {
-        var falsestring = Parser.ParseExpression("false ? 'trueExp' : 'falseExp'").GetValue<string>();
-        Assert.Equal("falseExp", falsestring);
+        var falseString = Parser.ParseExpression("false ? 'trueExp' : 'falseExp'").GetValue<string>();
+        Assert.Equal("falseExp", falseString);
 
         var societyContext = new StandardEvaluationContext();
         societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
@@ -406,8 +406,8 @@ public class SpelDocumentationTests : AbstractExpressionTests
         var expression = "IsMember(#queryName)? #queryName + ' is a member of the ' "
                          + "+ Name + ' Society' : #queryName + ' is not a member of the ' + Name + ' Society'";
 
-        var queryResultstring = Parser.ParseExpression(expression).GetValue<string>(societyContext);
-        Assert.Equal("Nikola Tesla is a member of the IEEE Society", queryResultstring);
+        var queryResultString = Parser.ParseExpression(expression).GetValue<string>(societyContext);
+        Assert.Equal("Nikola Tesla is a member of the IEEE Society", queryResultString);
 
         // queryResultstring = "Nikola Tesla is a member of the IEEE Society"
     }
@@ -455,11 +455,11 @@ public class SpelDocumentationTests : AbstractExpressionTests
         public InstituteOfElectricalAndElectronicsEngineers()
         {
             Officers.Add("president", Pupin);
-            var linv = new List<object>
+            var list = new List<object>
             {
                 Tesla
             };
-            Officers.Add("advisors", linv);
+            Officers.Add("advisors", list);
             Members2.Add(Tesla);
             Members2.Add(Pupin);
 

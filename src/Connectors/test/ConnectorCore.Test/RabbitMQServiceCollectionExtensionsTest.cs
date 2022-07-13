@@ -142,7 +142,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddRabbitMQConnection_MultipleRabbitMQServices_DoesntThrow_IfNameUsed()
+    public void AddRabbitMQConnection_MultipleRabbitMQServices_DoesNotThrow_IfNameUsed()
     {
         var env2 = @"
                 {
@@ -251,7 +251,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddRabbitMQConnection_DoesntAddsRabbitMQHealthContributor_WhenCommunityHealthCheckExists()
+    public void AddRabbitMQConnection_DoesNotAddsRabbitMQHealthContributor_WhenCommunityHealthCheckExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

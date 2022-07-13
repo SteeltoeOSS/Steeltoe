@@ -16,38 +16,38 @@ public class CloudFoundryOpenIdConnectConfigurerTest
     [Fact]
     public void Configure_NoServiceInfo_ReturnsExpected()
     {
-        var oidcOptions = new OpenIdConnectOptions();
+        var connectOptions = new OpenIdConnectOptions();
 
-        CloudFoundryOpenIdConnectConfigurer.Configure(null, oidcOptions, new CloudFoundryOpenIdConnectOptions { ValidateCertificates = false });
+        CloudFoundryOpenIdConnectConfigurer.Configure(null, connectOptions, new CloudFoundryOpenIdConnectOptions { ValidateCertificates = false });
 
-        Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
-        Assert.Equal(CloudFoundryDefaults.ClientId, oidcOptions.ClientId);
-        Assert.Equal(CloudFoundryDefaults.ClientSecret, oidcOptions.ClientSecret);
-        Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), oidcOptions.CallbackPath);
-        Assert.Equal(19, oidcOptions.ClaimActions.Count());
-        Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
-        Assert.False(oidcOptions.SaveTokens);
-        Assert.NotNull(oidcOptions.BackchannelHttpHandler);
+        Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, connectOptions.ClaimsIssuer);
+        Assert.Equal(CloudFoundryDefaults.ClientId, connectOptions.ClientId);
+        Assert.Equal(CloudFoundryDefaults.ClientSecret, connectOptions.ClientSecret);
+        Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), connectOptions.CallbackPath);
+        Assert.Equal(19, connectOptions.ClaimActions.Count());
+        Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, connectOptions.SignInScheme);
+        Assert.False(connectOptions.SaveTokens);
+        Assert.NotNull(connectOptions.BackchannelHttpHandler);
     }
 
     [Fact]
     public void Configure_WithServiceInfo_ReturnsExpected()
     {
         var authUrl = "https://domain";
-        var oidcOptions = new OpenIdConnectOptions();
+        var connectOptions = new OpenIdConnectOptions();
         var info = new SsoServiceInfo("foobar", "clientId", "secret", authUrl);
 
-        CloudFoundryOpenIdConnectConfigurer.Configure(info, oidcOptions, new CloudFoundryOpenIdConnectOptions());
+        CloudFoundryOpenIdConnectConfigurer.Configure(info, connectOptions, new CloudFoundryOpenIdConnectOptions());
 
-        Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
-        Assert.Equal(authUrl, oidcOptions.Authority);
-        Assert.Equal("clientId", oidcOptions.ClientId);
-        Assert.Equal("secret", oidcOptions.ClientSecret);
-        Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), oidcOptions.CallbackPath);
-        Assert.Null(oidcOptions.BackchannelHttpHandler);
-        Assert.Equal(19, oidcOptions.ClaimActions.Count());
-        Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
-        Assert.False(oidcOptions.SaveTokens);
-        Assert.Null(oidcOptions.BackchannelHttpHandler);
+        Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, connectOptions.ClaimsIssuer);
+        Assert.Equal(authUrl, connectOptions.Authority);
+        Assert.Equal("clientId", connectOptions.ClientId);
+        Assert.Equal("secret", connectOptions.ClientSecret);
+        Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), connectOptions.CallbackPath);
+        Assert.Null(connectOptions.BackchannelHttpHandler);
+        Assert.Equal(19, connectOptions.ClaimActions.Count());
+        Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, connectOptions.SignInScheme);
+        Assert.False(connectOptions.SaveTokens);
+        Assert.Null(connectOptions.BackchannelHttpHandler);
     }
 }

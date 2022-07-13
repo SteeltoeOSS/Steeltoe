@@ -100,7 +100,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMySqlConnection_WithServiceName_AndVCAPS_AddsMySqlConnection()
+    public void AddMySqlConnection_WithServiceName_AndVCaps_AddsMySqlConnection()
     {
         IServiceCollection services = new ServiceCollection();
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
@@ -181,7 +181,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMySqlConnection_DoesntAddRelationalHealthContributor_WhenCommunityHealthExists()
+    public void AddMySqlConnection_DoesNotAddRelationalHealthContributor_WhenCommunityHealthExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

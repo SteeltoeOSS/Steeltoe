@@ -89,8 +89,8 @@ public class DelegatingInvocableHandler
         var handler = FindHandlerForPayload(inboundPayload.GetType());
         if (handler != null)
         {
-            _handlerSendTo.TryGetValue(handler, out var sendto);
-            return new InvocationResult(result, sendto, handler.Method.ReturnType, handler.Handler, handler.Method);
+            _handlerSendTo.TryGetValue(handler, out var sendTo);
+            return new InvocationResult(result, sendTo, handler.Method.ReturnType, handler.Handler, handler.Method);
         }
 
         return null;

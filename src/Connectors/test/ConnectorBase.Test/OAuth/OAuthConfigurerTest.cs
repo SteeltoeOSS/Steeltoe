@@ -77,7 +77,7 @@ public class OAuthConfigurerTest
     }
 
     [Fact]
-    public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
         var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
         var config = new OAuthConnectorOptions();

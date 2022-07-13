@@ -6,24 +6,24 @@ using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
-public class RabbitRejectAndDontRequeueException : RabbitException
+public class RabbitRejectAndDoNotRequeueException : RabbitException
 {
-    public RabbitRejectAndDontRequeueException(string message)
+    public RabbitRejectAndDoNotRequeueException(string message)
         : this(message, false, null)
     {
     }
 
-    public RabbitRejectAndDontRequeueException(Exception cause)
+    public RabbitRejectAndDoNotRequeueException(Exception cause)
         : this(null, false, cause)
     {
     }
 
-    public RabbitRejectAndDontRequeueException(string message, Exception cause)
+    public RabbitRejectAndDoNotRequeueException(string message, Exception cause)
         : this(message, false, cause)
     {
     }
 
-    public RabbitRejectAndDontRequeueException(string message, bool rejectManual, Exception cause)
+    public RabbitRejectAndDoNotRequeueException(string message, bool rejectManual, Exception cause)
         : base(message, cause)
     {
         IsRejectManual = rejectManual;

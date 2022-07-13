@@ -67,15 +67,15 @@ internal static class GenericsUtils
     {
         var binderInstanceType = binderInstance.GetType();
         var binderInterfaces = binderInstanceType.GetInterfaces();
-        foreach (var intf in binderInterfaces)
+        foreach (var binderInterface in binderInterfaces)
         {
-            if (typeof(IPollableConsumerBinder).IsAssignableFrom(intf))
+            if (typeof(IPollableConsumerBinder).IsAssignableFrom(binderInterface))
             {
                 var targetInterfaces = bindingTargetType.GetInterfaces();
                 var psType = FindPollableSourceType(targetInterfaces);
                 if (psType != null)
                 {
-                    return GetParameterType(binderInstance.GetType(), intf, 0).IsAssignableFrom(psType);
+                    return GetParameterType(binderInstance.GetType(), binderInterface, 0).IsAssignableFrom(psType);
                 }
             }
         }
@@ -85,11 +85,11 @@ internal static class GenericsUtils
 
     internal static Type FindPollableSourceType(Type[] targetInterfaces)
     {
-        foreach (var targetIntf in targetInterfaces)
+        foreach (var targetInterface in targetInterfaces)
         {
-            if (typeof(IPollableSource).IsAssignableFrom(targetIntf))
+            if (typeof(IPollableSource).IsAssignableFrom(targetInterface))
             {
-                var supers = targetIntf.GetInterfaces();
+                var supers = targetInterface.GetInterfaces();
                 foreach (var type in supers)
                 {
                     if (type.IsGenericType)

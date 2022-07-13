@@ -38,7 +38,7 @@ public partial class DynamicLoggingBuilderTest
     }
 
     [Fact]
-    public void AddDynamicConsole_DoesntSetColorLocal()
+    public void AddDynamicConsole_DoesNotSetColorLocal()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
         var services = new ServiceCollection()

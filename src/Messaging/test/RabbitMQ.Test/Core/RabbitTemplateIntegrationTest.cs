@@ -303,7 +303,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithPostProcessor()
     {
-        template.ConvertAndSend(Route, (object)"message", new PostProccessor1());
+        template.ConvertAndSend(Route, (object)"message", new PostProcessor1());
         template.SetAfterReceivePostProcessors(new PostProcessor2());
         var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
@@ -846,7 +846,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     }
 
     [Fact]
-    public void TtestReceiveAndReplyNonStandardCorrelationNotBytes()
+    public void TestReceiveAndReplyNonStandardCorrelationNotBytes()
     {
         template.DefaultReceiveQueue = Route;
         template.RoutingKey = Route;
@@ -1166,21 +1166,21 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             rabbitTemplate.Execute(channel =>
             {
-                channel.QueueDeclarePassive(Address.AmqRabbitmqReplyTo);
+                channel.QueueDeclarePassive(Address.AmqRabbitMQReplyTo);
             });
 
             rabbitTemplate.UseTemporaryReplyQueues = tempQueue;
             if (setDirectReplyToExplicitly)
             {
-                rabbitTemplate.ReplyAddress = Address.AmqRabbitmqReplyTo;
+                rabbitTemplate.ReplyAddress = Address.AmqRabbitMQReplyTo;
             }
 
             var container = new DirectMessageListenerContainer();
             container.ConnectionFactory = rabbitTemplate.ConnectionFactory;
             container.SetQueueNames(Route);
             var replyToWas = new AtomicReference<string>();
-            var delgate = new TestMessageHandler(replyToWas);
-            var messageListenerAdapter = new MessageListenerAdapter(null, delgate) { MessageConverter = null };
+            var handler = new TestMessageHandler(replyToWas);
+            var messageListenerAdapter = new MessageListenerAdapter(null, handler) { MessageConverter = null };
             container.MessageListener = messageListenerAdapter;
             container.Start().Wait();
             rabbitTemplate.DefaultReceiveQueue = Route;
@@ -1190,11 +1190,11 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             Assert.Equal("FOO", result);
             if (expectUsedTemp)
             {
-                Assert.False(replyToWas.Value.StartsWith(Address.AmqRabbitmqReplyTo));
+                Assert.False(replyToWas.Value.StartsWith(Address.AmqRabbitMQReplyTo));
             }
             else
             {
-                Assert.StartsWith(Address.AmqRabbitmqReplyTo, replyToWas.Value);
+                Assert.StartsWith(Address.AmqRabbitMQReplyTo, replyToWas.Value);
             }
         }
         catch (Exception e)
@@ -1291,8 +1291,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         template.ConvertAndSend(Route, "TEST");
         template.ReceiveTimeout = timeout;
         var payloadReference = new AtomicReference<string>();
-        var ttemplate = new TransactionTemplate(new TestTransactionManager());
-        var result4 = ttemplate.Execute(_ =>
+        var transactionTemplate = new TransactionTemplate(new TestTransactionManager());
+        var result4 = transactionTemplate.Execute(_ =>
         {
             var received1 = template.ReceiveAndReply<string, object>(
                 payload =>
@@ -1313,8 +1313,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         try
         {
-            ttemplate = new TransactionTemplate(new TestTransactionManager());
-            ttemplate.Execute(_ =>
+            transactionTemplate = new TransactionTemplate(new TestTransactionManager());
+            transactionTemplate.Execute(_ =>
             {
                 template.ReceiveAndReply<IMessage, IMessage>(
                     message => message,
@@ -1564,7 +1564,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
     }
 
-    private sealed class PostProccessor1 : IMessagePostProcessor
+    private sealed class PostProcessor1 : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -1591,16 +1591,16 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         public override IConnection CreateConnection()
         {
-            var dele = base.CreateConnection();
-            return new MockConnection(dele);
+            var connection = base.CreateConnection();
+            return new MockConnection(connection);
         }
     }
 
     private sealed class MockConnection : IConnection
     {
-        public MockConnection(IConnection deleg)
+        public MockConnection(IConnection connection)
         {
-            Delegate = deleg;
+            Delegate = connection;
         }
 
         public IConnection Delegate { get; }
@@ -1640,9 +1640,9 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private sealed class MockConsumer : RC.IBasicConsumer
     {
-        public MockConsumer(RC.IBasicConsumer deleg)
+        public MockConsumer(RC.IBasicConsumer consumer)
         {
-            Delegate = deleg;
+            Delegate = consumer;
         }
 
         public RC.IBasicConsumer Delegate { get; }

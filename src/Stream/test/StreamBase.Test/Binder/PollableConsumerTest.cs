@@ -265,7 +265,7 @@ public class PollableConsumerTest : AbstractTest
 
         var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
         configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-        pollableSource.AddInterceptor(new TestEmbededChannelInterceptor());
+        pollableSource.AddInterceptor(new TestEmbeddedChannelInterceptor());
 
         binder.BindConsumer("foo", "bar", pollableSource, bindingOptions.Consumer);
 
@@ -536,7 +536,7 @@ public class PollableConsumerTest : AbstractTest
         }
     }
 
-    private sealed class TestEmbededChannelInterceptor : AbstractChannelInterceptor
+    private sealed class TestEmbeddedChannelInterceptor : AbstractChannelInterceptor
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {

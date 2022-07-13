@@ -306,17 +306,17 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
         public System.Collections.IDictionary MapOnly(System.Collections.IDictionary map) => map;
 
-        public string PayloadAnnotationFirstName([Payload("Fname")] string fname) => fname;
+        public string PayloadAnnotationFirstName([Payload("FirstName")] string name) => name;
 
-        public string PayloadAnnotationFullName([Payload("Fname")] string first, [Payload("Lname")] string last) => $"{first} {last}";
+        public string PayloadAnnotationFullName([Payload("FirstName")] string first, [Payload("LastName")] string last) => $"{first} {last}";
 
-        public string PayloadArgAndHeaderArg([Payload("Fname")] string fname, [Header] string day) => fname + day;
+        public string PayloadArgAndHeaderArg([Payload("FirstName")] string name, [Header] string day) => name + day;
 
         public int? OptionalHeader([Header(Required = false)] int? num) => num;
 
         public int RequiredHeader([Header(Name = "num", Required = true)] int num) => num;
 
-        public string HeadersWithExpressions([Header("emp.Fname")] string firstName, [Header("emp.Lname.ToUpper()")] string lastName) => $"{lastName}, {firstName}";
+        public string HeadersWithExpressions([Header("emp.FirstName")] string firstName, [Header("emp.LastName.ToUpper()")] string lastName) => $"{lastName}, {firstName}";
 
         public string OptionalAndRequiredHeader([Header(Required = false)] string prop, [Header(Name = "num", Required = true)] int num) => (prop ?? "null") + num;
 
@@ -356,7 +356,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
         public string HeaderAnnotationWithExpression([Header("day")] string value) => value;
 
-        public object[] MultipleAnnotatedArguments([Header("day")] string argA, [Header("month")] string argB, [Payload] Employee payloadArg, [Payload("Fname")] string value, [Headers] IDictionary<string, object> headers)
+        public object[] MultipleAnnotatedArguments([Header("day")] string argA, [Header("month")] string argB, [Payload] Employee payloadArg, [Payload("FirstName")] string value, [Headers] IDictionary<string, object> headers)
             => new object[] { argA, argB, payloadArg, value, headers };
 
         public string IrrelevantAnnotation([Bogus] string value) => value;
@@ -382,14 +382,14 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
     public class Employee
     {
-        public Employee(string fname, string lname)
+        public Employee(string firstName, string lastName)
         {
-            Fname = fname;
-            Lname = lname;
+            FirstName = firstName;
+            LastName = lastName;
         }
 
-        public string Fname { get; }
+        public string FirstName { get; }
 
-        public string Lname { get; }
+        public string LastName { get; }
     }
 }

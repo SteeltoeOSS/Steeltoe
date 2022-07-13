@@ -46,7 +46,7 @@ public class RedisCacheConfigurerTest
     //// }
 
     [Fact]
-    public void UpdateOptions_FromServiceInfo_ReturnsExcpected()
+    public void UpdateOptions_FromServiceInfo_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
         var connOptions = new RedisCacheConnectorOptions();
@@ -78,7 +78,7 @@ public class RedisCacheConfigurerTest
     }
 
     [Fact]
-    public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
         var config = new RedisCacheConnectorOptions
@@ -119,7 +119,7 @@ public class RedisCacheConfigurerTest
     }
 
     [Fact]
-    public void ConfigureConnection_ServiceInfoOveridesConfig_ReturnsExpected()
+    public void ConfigureConnection_ServiceInfoOverridesConfig_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
         var config = new RedisCacheConnectorOptions

@@ -16,8 +16,8 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 {
     private readonly RequestDelegate _next;
 
-    public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
-        : base(mgmtOptions: mgmtOptions, logger: logger)
+    public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        : base(managementOptions: managementOptions, logger: logger)
     {
         _next = next;
     }
@@ -25,7 +25,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     public Task Invoke(HttpContext context, HealthEndpointCore endpoint)
     {
         innerEndpoint = endpoint;
-        if (innerEndpoint.ShouldInvoke(mgmtOptions))
+        if (innerEndpoint.ShouldInvoke(managementOptions))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -45,7 +45,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     protected internal string DoRequest(HttpContext context)
     {
         var result = innerEndpoint.Invoke(new CoreSecurityContext(context));
-        if (mgmtOptions.UseStatusCodeFromResponse)
+        if (managementOptions.UseStatusCodeFromResponse)
         {
             context.Response.StatusCode = ((HealthEndpoint)innerEndpoint).GetStatusCode(result);
         }

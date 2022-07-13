@@ -156,9 +156,9 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
                 if (options.Multiplex)
                 {
                     names = name.Split(',');
-                    foreach (var nayme in names)
+                    foreach (var nextName in names)
                     {
-                        queues.Add($"{consumerOptions.Prefix}{nayme.Trim()}.{group}");
+                        queues.Add($"{consumerOptions.Prefix}{nextName.Trim()}.{group}");
                     }
                 }
                 else
@@ -170,9 +170,9 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
 
         if (names != null)
         {
-            foreach (var nayme in names)
+            foreach (var nextName in names)
             {
-                exchanges.Add(consumerOptions.Prefix + nayme.Trim());
+                exchanges.Add(consumerOptions.Prefix + nextName.Trim());
             }
         }
         else

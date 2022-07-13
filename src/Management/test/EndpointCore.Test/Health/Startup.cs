@@ -29,7 +29,7 @@ public class Startup
                 services.AddHealthActuator(Configuration, typeof(DownContributor));
                 break;
             case "out":
-                services.AddHealthActuator(Configuration, typeof(OutOfSserviceContributor));
+                services.AddHealthActuator(Configuration, typeof(OutOfServiceContributor));
                 break;
             case "unknown":
                 services.AddHealthActuator(Configuration, typeof(UnknownContributor));

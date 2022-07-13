@@ -10,19 +10,19 @@ namespace Steeltoe.Messaging.Converter;
 
 public abstract class AbstractTypeMapper
 {
-    public const string DefaultClassidFieldName = MessageHeaders.TypeId;
-    public const string DefaultContentClassidFieldName = MessageHeaders.ContentTypeId;
-    public const string DefaultKeyClassidFieldName = MessageHeaders.KeyTypeId;
+    public const string DefaultClassIdFieldName = MessageHeaders.TypeId;
+    public const string DefaultContentClassIdFieldName = MessageHeaders.ContentTypeId;
+    public const string DefaultKeyClassIdFieldName = MessageHeaders.KeyTypeId;
 
     private readonly Dictionary<Type, string> _classIdMapping = new ();
 
     public Dictionary<string, Type> IdClassMapping { get; } = new ();
 
-    public string ClassIdFieldName { get; internal set; } = DefaultClassidFieldName;
+    public string ClassIdFieldName { get; internal set; } = DefaultClassIdFieldName;
 
-    public string ContentClassIdFieldName { get; internal set; } = DefaultContentClassidFieldName;
+    public string ContentClassIdFieldName { get; internal set; } = DefaultContentClassIdFieldName;
 
-    public string KeyClassIdFieldName { get; internal set; } = DefaultKeyClassidFieldName;
+    public string KeyClassIdFieldName { get; internal set; } = DefaultKeyClassIdFieldName;
 
     public void SetIdClassMapping(Dictionary<string, Type> mapping)
     {

@@ -462,13 +462,13 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
         if (messageTag == null)
         {
-            throw new RabbitRejectAndDontRequeueException("No correlation header in reply");
+            throw new RabbitRejectAndDoNotRequeueException("No correlation header in reply");
         }
 
         if (!ReplyHolder.TryGetValue((string)messageTag, out var pendingReply))
         {
             Logger?.LogWarning("Reply received after timeout for " + messageTag);
-            throw new RabbitRejectAndDontRequeueException("Reply received after timeout");
+            throw new RabbitRejectAndDoNotRequeueException("Reply received after timeout");
         }
         else
         {
@@ -481,7 +481,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         _isListener = true;
         List<string> replyQueue = null;
-        if (ReplyAddress == null || ReplyAddress == Address.AmqRabbitmqReplyTo)
+        if (ReplyAddress == null || ReplyAddress == Address.AmqRabbitMQReplyTo)
         {
             throw new InvalidOperationException("A listener container must not be provided when using direct reply-to");
         }
@@ -1364,7 +1364,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                 string replyTo;
                 if (UsingFastReplyTo)
                 {
-                    replyTo = Address.AmqRabbitmqReplyTo;
+                    replyTo = Address.AmqRabbitMQReplyTo;
                 }
                 else
                 {
@@ -1557,7 +1557,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
                     container.Start();
                     DirectReplyToContainers.TryAdd(connectionFactory, container);
-                    _replyAddress = Address.AmqRabbitmqReplyTo;
+                    _replyAddress = Address.AmqRabbitMQReplyTo;
                 }
             }
         }
@@ -1623,9 +1623,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var exch = exchangeArg;
+        var exchange = exchangeArg;
         var rKey = routingKeyArg;
-        exch ??= GetDefaultExchange();
+        exchange ??= GetDefaultExchange();
         rKey ??= GetDefaultRoutingKey();
 
         Logger?.LogTrace("Original message to publish: {message}", message);
@@ -1656,8 +1656,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        Logger?.LogDebug("Publishing message [{message}] on exchange [{exchange}], routingKey = [{routingKey}]", messageToUse, exch, rKey);
-        SendToRabbit(channel, exch, rKey, mandatory, messageToUse);
+        Logger?.LogDebug("Publishing message [{message}] on exchange [{exchange}], routingKey = [{routingKey}]", messageToUse, exchange, rKey);
+        SendToRabbit(channel, exchange, rKey, mandatory, messageToUse);
 
         // Check if commit needed
         if (IsChannelLocallyTransacted(channel))
@@ -1752,13 +1752,13 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        if (ReplyAddress == null || ReplyAddress == Address.AmqRabbitmqReplyTo)
+        if (ReplyAddress == null || ReplyAddress == Address.AmqRabbitMQReplyTo)
         {
             try
             {
                 return Execute(channel =>
                 {
-                    channel.QueueDeclarePassive(Address.AmqRabbitmqReplyTo);
+                    channel.QueueDeclarePassive(Address.AmqRabbitMQReplyTo);
                     return true;
                 });
             }

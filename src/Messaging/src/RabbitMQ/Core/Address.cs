@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class Address
 {
-    public const string AmqRabbitmqReplyTo = "amq.rabbitmq.reply-to";
+    public const string AmqRabbitMQReplyTo = "amq.rabbitmq.reply-to";
 
     private const string AddressPattern = "^(?:.*://)?([^/]*)/?(.*)$";
 
@@ -27,7 +27,7 @@ public class Address
             ExchangeName = string.Empty;
             RoutingKey = string.Empty;
         }
-        else if (address.StartsWith(AmqRabbitmqReplyTo))
+        else if (address.StartsWith(AmqRabbitMQReplyTo))
         {
             RoutingKey = address;
             ExchangeName = string.Empty;

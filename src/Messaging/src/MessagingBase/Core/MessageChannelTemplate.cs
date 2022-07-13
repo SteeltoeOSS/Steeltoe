@@ -339,13 +339,13 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     private static int? HeaderToInt(object headerValue)
     {
-        if (headerValue is int intval)
+        if (headerValue is int intValue)
         {
-            return intval;
+            return intValue;
         }
-        else if (headerValue is string strval)
+        else if (headerValue is string stringValue)
         {
-            return int.Parse(strval);
+            return int.Parse(stringValue);
         }
         else
         {

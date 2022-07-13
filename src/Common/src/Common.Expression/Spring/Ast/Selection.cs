@@ -42,13 +42,13 @@ public class Selection : SpelNode
         var operand = op.Value;
         var selectionCriteria = children[0];
 
-        if (operand is IDictionary mapdata)
+        if (operand is IDictionary mapData)
         {
             // Don't lose generic info for the new map
             var result = new Dictionary<object, object>();
             object lastKey = null;
 
-            foreach (DictionaryEntry entry in mapdata)
+            foreach (DictionaryEntry entry in mapData)
             {
                 try
                 {

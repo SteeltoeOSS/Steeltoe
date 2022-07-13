@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class SecurityBase
 {
-    public readonly int DefaultGetpermissionsTimeout = 5000;   // Milliseconds
+    public readonly int DefaultGetPermissionsTimeout = 5000;   // Milliseconds
     public readonly string ApplicationIdMissingMessage = "Application id is not available";
     public readonly string EndpointNotConfiguredMessage = "Endpoint is not available";
     public readonly string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
@@ -28,21 +28,21 @@ public class SecurityBase
     public readonly string Bearer = "bearer";
     public readonly string ReadSensitiveData = "read_sensitive_data";
     private readonly ICloudFoundryOptions _options;
-    private readonly IManagementOptions _mgmtOptions;
+    private readonly IManagementOptions _managementOptions;
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    public SecurityBase(ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger logger = null, HttpClient httpClient = null)
+    public SecurityBase(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _options = options;
-        _mgmtOptions = mgmtOptions;
+        _managementOptions = managementOptions;
         _logger = logger;
         _httpClient = httpClient;
     }
 
     public bool IsCloudFoundryRequest(string requestPath)
     {
-        var contextPath = _mgmtOptions == null ? _options.Path : _mgmtOptions.Path;
+        var contextPath = _managementOptions == null ? _options.Path : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.InvariantCultureIgnoreCase);
     }
 
@@ -80,7 +80,7 @@ public class SecurityBase
         try
         {
             _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
-            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetpermissionsTimeout);
+            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
             using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
             if (response.StatusCode != HttpStatusCode.OK)
             {

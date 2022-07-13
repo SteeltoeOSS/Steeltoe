@@ -15,7 +15,7 @@ public class InlineList : SpelNode
     private static readonly FieldInfo FieldInfo = typeof(CompiledExpression).GetField("DynamicFields", BindingFlags.NonPublic | BindingFlags.Instance);
     private static readonly MethodInfo GetItemMethod = typeof(Dictionary<string, object>).GetMethod("get_Item", BindingFlags.Public | BindingFlags.Instance);
     private static readonly MethodInfo AddMethod = typeof(IList).GetMethod(nameof(IList.Add), new[] { typeof(object) });
-    private static readonly ConstructorInfo ListConstr = typeof(List<object>).GetConstructor(Type.EmptyTypes);
+    private static readonly ConstructorInfo ListConstructor = typeof(List<object>).GetConstructor(Type.EmptyTypes);
 
     // If the list is purely literals, it is a constant value and can be computed and cached
     private ITypedValue _constant;
@@ -76,13 +76,13 @@ public class InlineList : SpelNode
     {
         var constantFieldName = $"inlineList${cf.NextFieldId()}";
         cf.RegisterNewField(constantFieldName, new List<object>());
-        cf.RegisterNewInitGenerator((initGenerator, cflow) => { GenerateInitCode(constantFieldName, initGenerator, cflow); });
+        cf.RegisterNewInitGenerator((initGenerator, flow) => { GenerateInitCode(constantFieldName, initGenerator, flow); });
 
         GenerateLoadListCode(gen, constantFieldName);
         cf.PushDescriptor(new TypeDescriptor(typeof(IList)));
     }
 
-    public void GenerateInitCode(string constantFieldName, ILGenerator gen, CodeFlow codeflow, bool nested = false)
+    public void GenerateInitCode(string constantFieldName, ILGenerator gen, CodeFlow codeFlow, bool nested = false)
     {
         LocalBuilder listLocal = null;
         if (!nested)
@@ -97,7 +97,7 @@ public class InlineList : SpelNode
         else
         {
             // Create nested list to work with
-            gen.Emit(OpCodes.Newobj, ListConstr);
+            gen.Emit(OpCodes.Newobj, ListConstructor);
             gen.Emit(OpCodes.Castclass, typeof(IList));
         }
 
@@ -118,12 +118,12 @@ public class InlineList : SpelNode
             // Instead, directly build the list here:
             if (children[c] is InlineList list)
             {
-                list.GenerateInitCode(constantFieldName, gen, codeflow, true);
+                list.GenerateInitCode(constantFieldName, gen, codeFlow, true);
             }
             else
             {
-                children[c].GenerateCode(gen, codeflow);
-                var lastDesc = codeflow.LastDescriptor();
+                children[c].GenerateCode(gen, codeFlow);
+                var lastDesc = codeFlow.LastDescriptor();
                 if (CodeFlow.IsValueType(lastDesc))
                 {
                     CodeFlow.InsertBoxIfNecessary(gen, lastDesc);
@@ -175,8 +175,8 @@ public class InlineList : SpelNode
         if (isConstant)
         {
             var constantList = new List<object>();
-            var childcount = ChildCount;
-            for (var c = 0; c < childcount; c++)
+            var childCount = ChildCount;
+            for (var c = 0; c < childCount; c++)
             {
                 var child = GetChild(c);
                 if (child is Literal literal)

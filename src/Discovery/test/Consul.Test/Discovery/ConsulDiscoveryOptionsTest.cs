@@ -15,7 +15,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test;
 public class ConsulDiscoveryOptionsTest
 {
     [Fact]
-    public void Constructor_InitsDefaults()
+    public void Constructor_InitializesDefaults()
     {
         var opts = new ConsulDiscoveryOptions();
         Assert.True(opts.Register);
@@ -49,7 +49,7 @@ public class ConsulDiscoveryOptionsTest
     }
 
     [Fact]
-    public void Options_DontUseInetUtilsByDefault()
+    public void Options_DoNotUseInetUtilsByDefault()
     {
         var mockNetUtils = new Mock<InetUtils>(null, null);
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();

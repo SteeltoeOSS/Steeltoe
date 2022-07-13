@@ -560,7 +560,7 @@ public class OperatorTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void TestMixedOperands_DoublesAndInts()
+    public void TestMixedOperands_DoublesAndIntegers()
     {
         Evaluate("3.0d + 5", 8.0d, typeof(double));
         Evaluate("3.0D - 5", -2.0d, typeof(double));

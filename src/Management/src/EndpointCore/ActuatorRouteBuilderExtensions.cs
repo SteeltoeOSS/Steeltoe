@@ -106,17 +106,17 @@ public static partial class ActuatorRouteBuilderExtensions
 
         var (middleware, optionsType) = LookupMiddleware(typeEndpoint);
         var options = endpoints.ServiceProvider.GetService(optionsType) as IEndpointOptions;
-        var mgmtOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
+        var managementOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
 
-        foreach (var mgmtOptions in mgmtOptionsCollection)
+        foreach (var managementOptions in managementOptionsCollection)
         {
-            if ((mgmtOptions is CloudFoundryManagementOptions && options is IActuatorHypermediaOptions)
-                || (mgmtOptions is ActuatorManagementOptions && options is ICloudFoundryOptions))
+            if ((managementOptions is CloudFoundryManagementOptions && options is IActuatorHypermediaOptions)
+                || (managementOptions is ActuatorManagementOptions && options is ICloudFoundryOptions))
             {
                 continue;
             }
 
-            var fullPath = options.GetContextPath(mgmtOptions);
+            var fullPath = options.GetContextPath(managementOptions);
 
             var pattern = RoutePatternFactory.Parse(fullPath);
 
@@ -124,7 +124,7 @@ public static partial class ActuatorRouteBuilderExtensions
             if (!endpoints.DataSources.Any(d => d.Endpoints.Any(ep => ep is RouteEndpoint endpoint && endpoint.RoutePattern.RawText == pattern.RawText)))
             {
                 var pipeline = endpoints.CreateApplicationBuilder()
-                    .UseMiddleware(middleware, mgmtOptions)
+                    .UseMiddleware(middleware, managementOptions)
                     .Build();
                 var allowedVerbs = options.AllowedVerbs ?? new List<string> { "Get" };
                 var conventionBuilder = endpoints.MapMethods(fullPath, allowedVerbs, pipeline);

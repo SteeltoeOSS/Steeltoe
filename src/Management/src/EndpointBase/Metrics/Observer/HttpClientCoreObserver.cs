@@ -62,7 +62,7 @@ public class HttpClientCoreObserver : MetricsObserver
             });
     }
 
-    public override void ProcessEvent(string evnt, object arg)
+    public override void ProcessEvent(string eventName, object arg)
     {
         if (arg == null)
         {
@@ -81,7 +81,7 @@ public class HttpClientCoreObserver : MetricsObserver
             return;
         }
 
-        if (evnt == StopEvent)
+        if (eventName == StopEvent)
         {
             Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
@@ -91,7 +91,7 @@ public class HttpClientCoreObserver : MetricsObserver
 
             Logger?.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
-        else if (evnt == ExceptionEvent)
+        else if (eventName == ExceptionEvent)
         {
             Logger?.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 

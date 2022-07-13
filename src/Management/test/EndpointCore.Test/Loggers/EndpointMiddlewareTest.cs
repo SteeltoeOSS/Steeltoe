@@ -39,10 +39,10 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleLoggersRequestAsync_ReturnsExpected()
     {
         var opts = new LoggersEndpointOptions();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
         var ep = new TestLoggersEndpoint(opts);
-        var middle = new LoggersEndpointMiddleware(null, ep, mopts);
+        var middle = new LoggersEndpointMiddleware(null, ep, managementOptions);
         var context = CreateRequest("GET", "/loggers");
         await middle.HandleLoggersRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

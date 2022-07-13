@@ -65,7 +65,7 @@ public class SpelMessage
     public static readonly SpelMessage ProjectionNotSupportedOnType = new (
         Kind.Error, 1019, "Projection is not supported on the type ''{0}''");
 
-    public static readonly SpelMessage ArglistShouldNotBeEvaluated = new (
+    public static readonly SpelMessage ArgListShouldNotBeEvaluated = new (
         Kind.Error, 1020, "The argument list of a lambda expression should never have getValue() called upon it");
 
     public static readonly SpelMessage ExceptionDuringPropertyRead = new (
@@ -89,7 +89,7 @@ public class SpelMessage
     public static readonly SpelMessage IndexingNotSupportedForType = new (
         Kind.Error, 1027, "Indexing into type ''{0}'' is not supported");
 
-    public static readonly SpelMessage InstanceofOperatorNeedsClassOperand = new (
+    public static readonly SpelMessage InstanceOfOperatorNeedsClassOperand = new (
         Kind.Error, 1028, "The operator 'instanceof' needs the right operand to be a class, not a ''{0}''");
 
     public static readonly SpelMessage ExceptionDuringMethodInvocation = new (
@@ -101,7 +101,7 @@ public class SpelMessage
     public static readonly SpelMessage ProblemLocatingMethod = new (
         Kind.Error, 1031, "Problem locating method {0} on type {1}");
 
-    public static readonly SpelMessage SetvalueNotSupported = new (
+    public static readonly SpelMessage SetValueNotSupported = new (
         Kind.Error, 1032, "setValue(ExpressionState, Object) not supported for ''{0}''");
 
     public static readonly SpelMessage MultiplePossibleMethods = new (
@@ -191,7 +191,7 @@ public class SpelMessage
     public static readonly SpelMessage IncorrectElementTypeForArray = new (
         Kind.Error, 1061, "The array of type ''{0}'' cannot have an element of type ''{1}'' inserted");
 
-    public static readonly SpelMessage MultidimArrayInitializerNotSupported = new (
+    public static readonly SpelMessage MultidimensionalArrayInitializerNotSupported = new (
         Kind.Error, 1062, "Using an initializer to build a multi-dimensional array is not currently supported");
 
     public static readonly SpelMessage MissingArrayDimension = new (

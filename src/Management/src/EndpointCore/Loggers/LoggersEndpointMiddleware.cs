@@ -17,15 +17,15 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 {
     private readonly RequestDelegate _next;
 
-    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<LoggersEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger)
+    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions managementOptions, ILogger<LoggersEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleLoggersRequestAsync(context);
         }
@@ -43,9 +43,9 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
             // POST - change a logger level
             var paths = new List<string>();
             logger?.LogDebug("Incoming path: {0}", request.Path.Value);
-            paths.Add(mgmtOptions == null
+            paths.Add(managementOptions == null
                 ? innerEndpoint.Path
-                : $"{mgmtOptions.Path}/{innerEndpoint.Path}".Replace("//", "/"));
+                : $"{managementOptions.Path}/{innerEndpoint.Path}".Replace("//", "/"));
 
             foreach (var path in paths.Distinct())
             {

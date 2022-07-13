@@ -123,7 +123,7 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
         // brackets must be in pairs: () [] {}
         // string literals are "..." or '...' and these may contain unmatched brackets
         var pos = afterPrefixIndex;
-        var maxlen = expressionString.Length;
+        var maxLength = expressionString.Length;
         var nextSuffix = expressionString.IndexOf(suffix, afterPrefixIndex);
         if (nextSuffix == -1)
         {
@@ -131,7 +131,7 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
         }
 
         var stack = new Stack<Bracket>();
-        while (pos < maxlen)
+        while (pos < maxLength)
         {
             if (IsSuffixHere(expressionString, pos, suffix) && stack.Count == 0)
             {

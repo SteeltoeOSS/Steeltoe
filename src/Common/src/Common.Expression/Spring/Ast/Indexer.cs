@@ -229,10 +229,10 @@ public class Indexer : SpelNode
         if (target is IDictionary dictionary)
         {
             var key = index;
-            var mapkeyType = ReflectionHelper.GetMapKeyTypeDescriptor(targetDescriptor);
-            if (mapkeyType != null)
+            var mapKeyType = ReflectionHelper.GetMapKeyTypeDescriptor(targetDescriptor);
+            if (mapKeyType != null)
             {
-                key = state.ConvertValue(key, mapkeyType);
+                key = state.ConvertValue(key, mapKeyType);
             }
 
             _indexedType = IndexedType.Map;

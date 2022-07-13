@@ -64,7 +64,7 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
 
                 foreach (var message in messages)
                 {
-                    PreprocesMessage(message);
+                    PreProcessMessage(message);
                     var convertedObject = MessageConverter.FromMessage(message, InferredArgumentType);
                     if (convertedObject == null)
                     {
@@ -120,7 +120,7 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
             return RabbitMessageBuilder.WithPayload(list).CopyHeaders(amqpMessage.Headers).Build();
         }
 
-        PreprocesMessage(amqpMessage);
+        PreProcessMessage(amqpMessage);
         var headers = amqpMessage.Headers;
         var convertedObject = MessageConverter.FromMessage(amqpMessage, InferredArgumentType);
         if (convertedObject == null)

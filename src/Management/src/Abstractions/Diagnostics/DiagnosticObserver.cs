@@ -87,5 +87,5 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
         }
     }
 
-    public abstract void ProcessEvent(string @event, object arg);
+    public abstract void ProcessEvent(string eventName, object arg);
 }

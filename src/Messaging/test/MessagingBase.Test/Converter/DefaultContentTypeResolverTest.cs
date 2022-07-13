@@ -24,7 +24,7 @@ public class DefaultContentTypeResolverTest
     }
 
     [Fact]
-    public void ResolvestringContentType()
+    public void ResolveStringContentType()
     {
         var map = new Dictionary<string, object>
         {
@@ -36,7 +36,7 @@ public class DefaultContentTypeResolverTest
     }
 
     [Fact]
-    public void ResolveInvalidstringContentType()
+    public void ResolveInvalidStringContentType()
     {
         var map = new Dictionary<string, object>
         {

@@ -19,18 +19,18 @@ public class RedisServiceConnectorFactory
     /// Initializes a new instance of the <see cref="RedisServiceConnectorFactory"/> class.
     /// Factory for creating Redis connections with either Microsoft.Extensions.Caching.Redis or StackExchange.Redis.
     /// </summary>
-    /// <param name="sinfo">Service Info.</param>
-    /// <param name="config">Service Configuration.</param>
+    /// <param name="serviceInfo">Service Info.</param>
+    /// <param name="options">Service Configuration.</param>
     /// <param name="connectionType">Redis connection Type.</param>
     /// <param name="optionsType">Options Type used to establish connection.</param>
-    /// <param name="initalizer">Method used to open connection.</param>
-    public RedisServiceConnectorFactory(RedisServiceInfo sinfo, RedisCacheConnectorOptions config, Type connectionType, Type optionsType, MethodInfo initalizer)
+    /// <param name="initializer">Method used to open connection.</param>
+    public RedisServiceConnectorFactory(RedisServiceInfo serviceInfo, RedisCacheConnectorOptions options, Type connectionType, Type optionsType, MethodInfo initializer)
     {
-        _info = sinfo;
-        _config = config ?? throw new ArgumentNullException(nameof(config), "Cache connector options must be provided");
+        _info = serviceInfo;
+        _config = options ?? throw new ArgumentNullException(nameof(options), "Cache connector options must be provided");
         ConnectorType = connectionType;
         OptionsType = optionsType;
-        Initializer = initalizer;
+        Initializer = initializer;
     }
 
     /// <summary>

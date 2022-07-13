@@ -22,11 +22,11 @@ public static class CredHubServiceCollectionExtensions
     public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;
-        ILogger credhubLogger = null;
+        ILogger credHubLogger = null;
         if (loggerFactory != null)
         {
             startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
-            credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
+            credHubLogger = loggerFactory.CreateLogger<CredHubClient>();
         }
 
         var credHubOptions = config.GetSection("CredHubClient").Get<CredHubOptions>();
@@ -36,7 +36,7 @@ public static class CredHubServiceCollectionExtensions
         try
         {
             startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-            credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
+            credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credHubLogger).GetAwaiter().GetResult();
 
             services.AddSingleton<ICredHubClient>(credHubClient);
         }

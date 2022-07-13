@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Retry;
 public class PollyRetryTemplate : RetryTemplate
 {
     private const string RecoveryCallbackKey = "PollyRetryTemplate.RecoveryCallback";
-    private const string RetrycontextKey = "PollyRetryTemplate.RetryContext";
+    private const string RetryContextKey = "PollyRetryTemplate.RetryContext";
 
     private const string Recovered = "context.recovered";
     private const string Closed = "context.closed";
@@ -49,14 +49,14 @@ public class PollyRetryTemplate : RetryTemplate
 
     public override T Execute<T>(Func<IRetryContext, T> retryCallback, Func<IRetryContext, T> recoveryCallback)
     {
-        var recovCallback = new FuncRecoveryCallback<T>(recoveryCallback, _logger);
-        return Execute(retryCallback, recovCallback);
+        var callback = new FuncRecoveryCallback<T>(recoveryCallback, _logger);
+        return Execute(retryCallback, callback);
     }
 
     public override void Execute(Action<IRetryContext> retryCallback, Action<IRetryContext> recoveryCallback)
     {
-        var recovCallback = new ActionRecoveryCallback(recoveryCallback, _logger);
-        Execute(retryCallback, recovCallback);
+        var callback = new ActionRecoveryCallback(recoveryCallback, _logger);
+        Execute(retryCallback, callback);
     }
 
     public override T Execute<T>(Func<IRetryContext, T> retryCallback, IRecoveryCallback<T> recoveryCallback)
@@ -65,7 +65,7 @@ public class PollyRetryTemplate : RetryTemplate
         var retryContext = new RetryContext();
         var context = new Context
         {
-            { RetrycontextKey, retryContext }
+            { RetryContextKey, retryContext }
         };
         RetrySynchronizationManager.Register(retryContext);
         if (recoveryCallback != null)
@@ -107,7 +107,7 @@ public class PollyRetryTemplate : RetryTemplate
         var retryContext = new RetryContext();
         var context = new Context
         {
-            { RetrycontextKey, retryContext }
+            { RetryContextKey, retryContext }
         };
         RetrySynchronizationManager.Register(retryContext);
         if (recoveryCallback != null)
@@ -168,7 +168,7 @@ public class PollyRetryTemplate : RetryTemplate
 
     private RetryContext GetRetryContext(Context context)
     {
-        if (context.TryGetValue(RetrycontextKey, out var obj))
+        if (context.TryGetValue(RetryContextKey, out var obj))
         {
             return (RetryContext)obj;
         }

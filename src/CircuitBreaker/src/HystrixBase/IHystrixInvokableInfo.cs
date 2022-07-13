@@ -59,7 +59,7 @@ public interface IHystrixInvokableInfo
 
     int ExecutionTimeInMilliseconds { get; }
 
-    long CommandRunStartTimeInNanos { get; }
+    long CommandRunStartTimeInNanoseconds { get; }
 
     ExecutionResult.EventCounts EventCounts { get; }
 }

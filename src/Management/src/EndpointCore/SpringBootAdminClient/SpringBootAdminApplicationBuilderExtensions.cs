@@ -43,7 +43,7 @@ public static class SpringBootAdminApplicationBuilderExtensions
         var logger = builder.ApplicationServices.GetService<ILogger<SpringBootAdminClientOptions>>();
         var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
         var options = new SpringBootAdminClientOptions(configuration, appInfo);
-        var mgmtOptions = new ManagementEndpointOptions(configuration);
+        var managementOptions = new ManagementEndpointOptions(configuration);
         var healthOptions = new HealthEndpointOptions(configuration);
         var basePath = options.BasePath.TrimEnd('/');
         httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, ConnectionTimeoutMs);
@@ -51,8 +51,8 @@ public static class SpringBootAdminApplicationBuilderExtensions
         var app = new Application
         {
             Name = options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{mgmtOptions.Path}/{healthOptions.Path}"),
-            ManagementUrl = new Uri($"{basePath}{mgmtOptions.Path}"),
+            HealthUrl = new Uri($"{basePath}{managementOptions.Path}/{healthOptions.Path}"),
+            ManagementUrl = new Uri($"{basePath}{managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
             Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
         };

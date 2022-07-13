@@ -30,7 +30,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
     [Fact]
     public void MultidimensionalArrays()
     {
-        EvaluateAndCheckError("new int[][]{{1,2},{3,4}}", SpelMessage.MultidimArrayInitializerNotSupported);
+        EvaluateAndCheckError("new int[][]{{1,2},{3,4}}", SpelMessage.MultidimensionalArrayInitializerNotSupported);
         EvaluateAndCheckError("new int[3][]", SpelMessage.MissingArrayDimension);
         EvaluateAndCheckError("new int[]", SpelMessage.MissingArrayDimension);
         EvaluateAndCheckError("new String[]", SpelMessage.MissingArrayDimension);
@@ -106,7 +106,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         EvaluateAndCheckError("new int[3]{'3','ghi','5'}", SpelMessage.TypeConversionError, 0);
     }
 
-    private void EvaluateArrayBuildingExpression(string expression, string expectedTostring)
+    private void EvaluateArrayBuildingExpression(string expression, string expectedToString)
     {
         var parser = new SpelExpressionParser();
         var e = parser.ParseExpression(expression);
@@ -217,6 +217,6 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
 
         s.Append(']');
-        Assert.Equal(expectedTostring, s.ToString());
+        Assert.Equal(expectedToString, s.ToString());
     }
 }

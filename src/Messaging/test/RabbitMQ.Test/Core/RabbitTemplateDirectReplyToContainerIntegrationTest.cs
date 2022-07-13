@@ -36,13 +36,13 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
         Assert.Same(rabbitTemplate.ReplyErrorHandler, container.ErrorHandler);
         var replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
 
-        var ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
+        var ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
         Assert.Contains("No correlation header in reply", ex.Message);
 
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
         accessor.CorrelationId = "foo";
 
-        ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
+        ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
         Assert.Contains("Reply received after timeout", ex.Message);
 
         _ = Task.Run(() =>

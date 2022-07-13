@@ -224,7 +224,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     }
 
     [Fact]
-    public void TestSkipBecauseShouldntDeclare()
+    public void TestSkipBecauseShouldNotDeclare()
     {
         var services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();

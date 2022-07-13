@@ -40,9 +40,9 @@ public class MongoDbHealthContributorTest
     {
         var mongoDbConfig = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
-        var logrFactory = new LoggerFactory();
+        var loggerFactory = new LoggerFactory();
         var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
-        var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>(), 1);
+        var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
         var status = h.Health();
 
@@ -55,9 +55,9 @@ public class MongoDbHealthContributorTest
     {
         var mongoDbConfig = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
-        var logrFactory = new LoggerFactory();
+        var loggerFactory = new LoggerFactory();
         var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
-        var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>());
+        var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>());
 
         var status = h.Health();
 

@@ -112,7 +112,7 @@ public partial class DynamicLoggingBuilderTest
     }
 
     [Fact]
-    public void DynamicLevelSetting_ParmLessAddDynamic_NotBrokenByAddConfiguration()
+    public void DynamicLevelSetting_ParameterlessAddDynamic_NotBrokenByAddConfiguration()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
         var services = new ServiceCollection()
@@ -171,10 +171,10 @@ public partial class DynamicLoggingBuilderTest
                 builder.AddDynamicConsole();
             }).BuildServiceProvider();
 
-        var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
         var logProviders = services.GetServices<ILoggerProvider>();
 
-        Assert.NotNull(dlogProvider);
+        Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
         Assert.Single(logProviders);
         Assert.IsType<DynamicConsoleLoggerProvider>(logProviders.SingleOrDefault());
@@ -195,9 +195,9 @@ public partial class DynamicLoggingBuilderTest
                 builder.AddDynamicConsole();
             }).BuildServiceProvider();
 
-        var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
 
         services.Dispose();
-        dlogProvider.Dispose();
+        dynamicLoggerProvider.Dispose();
     }
 }

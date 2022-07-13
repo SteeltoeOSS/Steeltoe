@@ -267,11 +267,11 @@ public static class HttpClientHelper
         var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
         request.Headers.Authorization = auth;
 
-        var reqparams = additionalParams is null
+        var parameters = additionalParams is null
             ? new Dictionary<string, string> { { "grant_type", "client_credentials" } }
             : new Dictionary<string, string>(additionalParams) { { "grant_type", "client_credentials" } };
 
-        request.Content = new FormUrlEncodedContent(reqparams);
+        request.Content = new FormUrlEncodedContent(parameters);
 
         try
         {

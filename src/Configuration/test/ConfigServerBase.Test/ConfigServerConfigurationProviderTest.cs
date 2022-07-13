@@ -333,10 +333,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 204 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
@@ -364,12 +364,12 @@ public class ConfigServerConfigurationProviderTest
    
                     ]
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = new ConfigServerClientSettings
         {
@@ -407,12 +407,12 @@ public class ConfigServerConfigurationProviderTest
                         }
                     ]
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
         TestConfigServerStartup.Label = "testlabel";
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         settings.Label = "label,testlabel";
@@ -445,10 +445,10 @@ public class ConfigServerConfigurationProviderTest
                         }
                     ]
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
@@ -476,10 +476,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500, 200 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
@@ -496,10 +496,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 404, 200 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
@@ -516,10 +516,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_ConfigServerReturnsNotFoundStatus()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 404 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
@@ -535,10 +535,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 404 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = _commonSettings;
@@ -555,8 +555,8 @@ public class ConfigServerConfigurationProviderTest
         var settings = _commonSettings;
         settings.FailFast = true;
         settings.Uri = "http://localhost:8888,http://localhost:8888";
-        var envir = HostingHelpers.GetHostingEnvironment();
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var environment = HostingHelpers.GetHostingEnvironment();
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
@@ -570,10 +570,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_ConfigServerReturnsBadStatus_FailFastEnabled()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         settings.FailFast = true;
@@ -586,10 +586,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500, 500, 500 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         settings.FailFast = true;
@@ -604,10 +604,10 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.ReturnStatus = new[] { 500, 500, 500, 500, 500, 500 };
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
 
         var settings = new ConfigServerClientSettings
@@ -644,10 +644,10 @@ public class ConfigServerConfigurationProviderTest
                         }
                     ]
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         using var client = server.CreateClient();
@@ -685,10 +685,10 @@ public class ConfigServerConfigurationProviderTest
                         ]
                     }";
 
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
         using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri) };
         var settings = _commonSettings;
         using var client = server.CreateClient();
@@ -795,7 +795,7 @@ public class ConfigServerConfigurationProviderTest
             Assert.True(provider.TryGet("spring:cloud:config:discovery:enabled", out value));
             Assert.Equal("False", value);
             Assert.True(provider.TryGet("spring:cloud:config:discovery:serviceId", out value));
-            Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceid, value);
+            Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceId, value);
             Assert.True(provider.TryGet("spring:cloud:config:retry:multiplier", out value));
             Assert.Equal("1.1", value);
         }

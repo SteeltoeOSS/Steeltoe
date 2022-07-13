@@ -8,10 +8,10 @@ using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Retry;
 
-public class RejectAndDontRequeueRecoverer : IMessageRecoverer
+public class RejectAndDoNotRequeueRecoverer : IMessageRecoverer
 {
     public void Recover(IMessage message, Exception exception)
     {
-        throw new ListenerExecutionFailedException("Retry Policy Exhausted", new RabbitRejectAndDontRequeueException(exception), message);
+        throw new ListenerExecutionFailedException("Retry Policy Exhausted", new RabbitRejectAndDoNotRequeueException(exception), message);
     }
 }

@@ -124,7 +124,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void ApplyServicesDoesntOverrideUserPathSettings()
+    public void ApplyServicesDoesNotOverrideUserPathSettings()
     {
         var appSettings = new Dictionary<string, string>
         {

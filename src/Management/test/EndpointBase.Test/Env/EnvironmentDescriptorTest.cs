@@ -14,10 +14,10 @@ public class EnvironmentDescriptorTest : BaseTest
     public void Constructor_SetsValues()
     {
         var profiles = new List<string>();
-        var propDescs = new List<PropertySourceDescriptor>();
-        var desc = new EnvironmentDescriptor(profiles, propDescs);
-        Assert.Same(profiles, desc.ActiveProfiles);
-        Assert.Same(propDescs, desc.PropertySources);
+        var propertySourceDescriptors = new List<PropertySourceDescriptor>();
+        var environmentDescriptor = new EnvironmentDescriptor(profiles, propertySourceDescriptors);
+        Assert.Same(profiles, environmentDescriptor.ActiveProfiles);
+        Assert.Same(propertySourceDescriptors, environmentDescriptor.PropertySources);
     }
 
     [Fact]
@@ -29,12 +29,12 @@ public class EnvironmentDescriptorTest : BaseTest
             { "key1", new PropertyValueDescriptor("value") },
             { "key2", new PropertyValueDescriptor(false) },
         };
-        var propDescs = new List<PropertySourceDescriptor>
+        var propertySourceDescriptors = new List<PropertySourceDescriptor>
         {
             new ("name", properties)
         };
-        var desc = new EnvironmentDescriptor(profiles, propDescs);
-        var result = Serialize(desc);
+        var environmentDescriptor = new EnvironmentDescriptor(profiles, propertySourceDescriptors);
+        var result = Serialize(environmentDescriptor);
         Assert.Equal("{\"activeProfiles\":[\"foobar\"],\"propertySources\":[{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}]}", result);
     }
 }

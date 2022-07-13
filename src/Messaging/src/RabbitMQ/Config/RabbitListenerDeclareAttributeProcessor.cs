@@ -13,10 +13,10 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-public static class RabbitListenerDeclareAtrributeProcessor
+public static class RabbitListenerDeclareAttributeProcessor
 {
-    private static readonly Dictionary<string, Queue> QueueDeclss = new ();
-    private static readonly Dictionary<string, QueueBinding> BindingDecls = new ();
+    private static readonly Dictionary<string, Queue> QueueMap = new ();
+    private static readonly Dictionary<string, QueueBinding> BindingMap = new ();
 
     internal static void ProcessDeclareAttributes(IServiceCollection services, IConfiguration configuration, Type targetClass)
     {
@@ -120,7 +120,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
     {
         foreach (var binding in bindings)
         {
-            BindingDecls.TryAdd(binding.ServiceName, binding);
+            BindingMap.TryAdd(binding.ServiceName, binding);
         }
     }
 
@@ -128,7 +128,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
     {
         foreach (var queue in queues)
         {
-            QueueDeclss.TryAdd(queue.ServiceName, queue);
+            QueueMap.TryAdd(queue.ServiceName, queue);
         }
     }
 
@@ -147,7 +147,7 @@ public static class RabbitListenerDeclareAtrributeProcessor
                 }
             }
 
-            if (QueueDeclss.TryGetValue(reference, out var queueRef))
+            if (QueueMap.TryGetValue(reference, out var queueRef))
             {
                 reference = queueRef.QueueName;
             }
@@ -187,9 +187,9 @@ public static class RabbitListenerDeclareAtrributeProcessor
             return new DirectExchange(name);
         }
 
-        if (type == ExchangeType.Fanout)
+        if (type == ExchangeType.FanOut)
         {
-            return new FanoutExchange(name);
+            return new FanOutExchange(name);
         }
 
         if (type == ExchangeType.Headers)

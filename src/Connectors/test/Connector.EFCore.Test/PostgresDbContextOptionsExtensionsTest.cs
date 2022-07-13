@@ -126,7 +126,7 @@ public class PostgresDbContextOptionsExtensionsTest
     }
 
     [Fact]
-    public void AddDbContexts_WithEDBVCAPs_AddsDbContexts()
+    public void AddDbContexts_WithEDbVCaps_AddsDbContexts()
     {
         IServiceCollection services = new ServiceCollection();
 

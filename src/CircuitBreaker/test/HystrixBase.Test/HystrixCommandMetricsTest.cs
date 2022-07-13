@@ -36,14 +36,14 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(0, metrics.HealthCounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
         cmd2.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(50, metrics.HealthCounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
         HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
@@ -52,7 +52,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(25, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(25, metrics.HealthCounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
         HystrixCommand<bool> cmd6 = new TimeoutCommand(key);
@@ -60,7 +60,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         cmd6.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(50, metrics.HealthCounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
         HystrixCommand<bool> cmd8 = new SuccessCommand(key, 0);
@@ -81,7 +81,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         // latent success not considered error
         // error percentage = 1 failure + 2 timeout / 10
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
-        Assert.Equal(30, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(30, metrics.HealthCounts.ErrorPercentage);
     }
 
     [Fact]
@@ -97,14 +97,14 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(0, metrics.HealthCounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
         cmd2.Execute();
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(50, metrics.HealthCounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 0);
         HystrixCommand<bool> cmd4 = new BadRequestCommand(key, 0);
@@ -129,7 +129,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(50, metrics.HealthCounts.ErrorPercentage);
 
         HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
         HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
@@ -138,7 +138,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        Assert.Equal(75, metrics.Healthcounts.ErrorPercentage);
+        Assert.Equal(75, metrics.HealthCounts.ErrorPercentage);
     }
 
     [Fact]

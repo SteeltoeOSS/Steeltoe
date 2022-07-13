@@ -55,8 +55,8 @@ public class EnableRabbitTest
     [Fact]
     public async Task NoRabbitAdminConfiguration()
     {
-        var excep = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(FullBean)));
-        Assert.Contains("rabbitAdmin", excep.Message);
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(FullBean)));
+        Assert.Contains("rabbitAdmin", exception.Message);
     }
 
     [Fact]
@@ -107,15 +107,15 @@ public class EnableRabbitTest
     [Fact]
     public async Task UnknownFactory()
     {
-        var excep = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(CustomBean)));
-        Assert.Contains("customFactory", excep.Message);
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(CustomBean)));
+        Assert.Contains("customFactory", exception.Message);
     }
 
     [Fact]
     public async Task InvalidPriorityConfiguration()
     {
-        var excep = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(InvalidPriorityBean)));
-        Assert.Contains("NotANumber", excep.Message);
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(InvalidPriorityBean)));
+        Assert.Contains("NotANumber", exception.Message);
     }
 
     [Fact]
@@ -227,8 +227,8 @@ public class EnableRabbitTest
         var testContainer = defaultFactory.GetListenerContainers()[0];
         var endpoint = testContainer.Endpoint;
         Assert.IsType<SimpleRabbitListenerEndpoint>(endpoint);
-        var simpEndpoint = endpoint as SimpleRabbitListenerEndpoint;
-        Assert.IsType<MessageListenerAdapter>(simpEndpoint.MessageListener);
+        var simpleEndpoint = endpoint as SimpleRabbitListenerEndpoint;
+        Assert.IsType<MessageListenerAdapter>(simpleEndpoint.MessageListener);
         var customRegistry = context.GetService<IRabbitListenerEndpointRegistry>();
         Assert.IsType<CustomRabbitListenerEndpointRegistry>(customRegistry);
         Assert.Equal(2, customRegistry.GetListenerContainerIds().Count);

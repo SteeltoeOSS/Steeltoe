@@ -204,11 +204,11 @@ public class RabbitListenerAttributeProcessorTest
     {
         var services = new ServiceCollection();
 
-        RabbitListenerDeclareAtrributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
+        RabbitListenerDeclareAttributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
         var exchanges = services.BuildServiceProvider().GetServices<IExchange>();
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Direct);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Topic);
-        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Fanout);
+        Assert.Contains(exchanges, ex => ex.Type == ExchangeType.FanOut);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Headers);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.System);
     }
@@ -264,7 +264,7 @@ public class RabbitListenerAttributeProcessorTest
     {
         [DeclareExchange(Name ="test", Type = ExchangeType.Direct)]
         [DeclareExchange(Name = "test", Type = ExchangeType.Topic)]
-        [DeclareExchange(Name = "test", Type = ExchangeType.Fanout)]
+        [DeclareExchange(Name = "test", Type = ExchangeType.FanOut)]
         [DeclareExchange(Name = "test", Type = ExchangeType.Headers)]
         [DeclareExchange(Name = "test", Type = ExchangeType.System)]
         public void Method()

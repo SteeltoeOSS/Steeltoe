@@ -97,13 +97,13 @@ public class EurekaServerHealthContributorTest
         Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
 
         results = new HealthCheckResult();
-        var clientconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             ShouldRegisterWithEureka = true
         };
-        var instconfig = new EurekaInstanceConfig();
+        var instanceConfig = new EurekaInstanceConfig();
 
-        contrib.AddHeartbeatStatus(clientconfig, instconfig, results, 0);
+        contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, 0);
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"]);
         Assert.Contains("heartbeatTime", results.Details.Keys);
@@ -112,9 +112,9 @@ public class EurekaServerHealthContributorTest
         Assert.Equal("UNKNOWN", results.Details["heartbeatStatus"]);
 
         results = new HealthCheckResult();
-        var ticks = DateTime.UtcNow.Ticks - (TimeSpan.TicksPerSecond * instconfig.LeaseRenewalIntervalInSeconds * 10);
+        var ticks = DateTime.UtcNow.Ticks - (TimeSpan.TicksPerSecond * instanceConfig.LeaseRenewalIntervalInSeconds * 10);
         var dateTime = new DateTime(ticks);
-        contrib.AddHeartbeatStatus(clientconfig, instconfig, results, ticks);
+        contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, ticks);
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["heartbeat"]);
         Assert.Contains("heartbeatTime", results.Details.Keys);

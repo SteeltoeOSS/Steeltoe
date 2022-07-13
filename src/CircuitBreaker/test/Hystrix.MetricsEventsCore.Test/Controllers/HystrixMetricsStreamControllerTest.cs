@@ -20,7 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
 public class HystrixMetricsStreamControllerTest : HystrixTestBase
 {
     [Fact]
-    public void Constructor_SetsupStream()
+    public void Constructor_SetsUpStream()
     {
         var stream = HystrixDashboardStream.GetInstance();
         var controller = new HystrixMetricsStreamController(stream);

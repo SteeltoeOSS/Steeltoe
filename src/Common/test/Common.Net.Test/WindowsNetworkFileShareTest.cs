@@ -32,11 +32,11 @@ public class WindowsNetworkFileShareTest
 
         Assert.Equal("user", fakeMpr.Username);
         Assert.Equal("password", fakeMpr.Password);
-        Assert.Equal(@"\\server\path", fakeMpr.Networkpath);
+        Assert.Equal(@"\\server\path", fakeMpr.NetworkPath);
     }
 
     [Fact]
-    public void WindowsNetworkFileShare_Constructor_ConcatsUserAndDomain()
+    public void WindowsNetworkFileShare_Constructor_ConcatenatesUserAndDomain()
     {
         var fakeMpr = new FakeMultipleProviderRouter();
 
@@ -44,7 +44,7 @@ public class WindowsNetworkFileShareTest
 
         Assert.Equal(@"domain\user", fakeMpr.Username);
         Assert.Equal("password", fakeMpr.Password);
-        Assert.Equal(@"\\server\path", fakeMpr.Networkpath);
+        Assert.Equal(@"\\server\path", fakeMpr.NetworkPath);
     }
 
     [Fact]

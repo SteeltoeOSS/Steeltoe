@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Logging;
 /// real log providers as the application utilization progresses.
 /// This class should only be used by components start are invoke before  logging infrastructure is build (prior to service container creation).
 /// </summary>
-internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
+internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 {
     public UpgradableBootstrapLoggerFactory()
         : this(DefaultConfigure)
@@ -40,7 +40,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
         });
     }
 
-    private readonly Dictionary<string, BoostrapLoggerInst> _loggers = new ();
+    private readonly Dictionary<string, BootstrapLoggerInst> _loggers = new ();
 
     private readonly object _lock = new ();
 
@@ -115,7 +115,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
             if (!_loggers.TryGetValue(categoryName, out var logger))
             {
                 var innerLogger = _factoryInstance.CreateLogger(categoryName);
-                logger = new BoostrapLoggerInst(innerLogger, categoryName);
+                logger = new BootstrapLoggerInst(innerLogger, categoryName);
                 _loggers.Add(categoryName, logger);
             }
 
@@ -125,13 +125,13 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBoostrapLoggerFactory
 
     private static void DefaultConfigure(ILoggingBuilder builder, IConfiguration configuration) => builder.AddConsole().AddConfiguration(configuration.GetSection("Logging"));
 
-    internal sealed class BoostrapLoggerInst : ILogger
+    internal sealed class BootstrapLoggerInst : ILogger
     {
         public volatile ILogger Logger;
 
         public string Name { get; }
 
-        public BoostrapLoggerInst(ILogger logger, string name)
+        public BootstrapLoggerInst(ILogger logger, string name)
         {
             Name = name;
             this.Logger = logger;

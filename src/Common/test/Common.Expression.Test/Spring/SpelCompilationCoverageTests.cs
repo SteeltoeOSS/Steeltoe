@@ -29,9 +29,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public static string Join(params string[] strings)
     {
         var buf = new StringBuilder();
-        foreach (var stringin in strings)
+        foreach (var value in strings)
         {
-            buf.Append(stringin);
+            buf.Append(value);
         }
 
         return buf.ToString();
@@ -955,10 +955,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         context.RegisterFunction("negate", m);
         context.SetVariable("arg", "2");
 
-        var ints = new[] { 1, 2, 3 };
-        context.SetVariable("ints", ints);
+        var integers = new[] { 1, 2, 3 };
+        context.SetVariable("integers", integers);
 
-        _expression = Parser.ParseExpression("#negate(#ints.?[#this<2][0])");
+        _expression = Parser.ParseExpression("#negate(#integers.?[#this<2][0])");
         Assert.Equal("-1", _expression.GetValue(context).ToString());
 
         // Selection isn't compilable.
@@ -1719,14 +1719,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpEq()
     {
-        var tvar = "35";
+        var value = "35";
         _expression = Parse("#root == 35");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
         _expression = Parse("35 == #root");
-        _expression.GetValue(tvar);
+        _expression.GetValue(value);
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
@@ -3699,10 +3699,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Assert.Equal("123", _expression.GetValue());
         // AssertCanCompile(_expression);
         // Assert.Equal("123", _expression.GetValue());
-        var testclass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
+        var testClass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
 
         // multi arg ctor that includes primitives
-        _expression = Parser.ParseExpression($"new {testclass8}(42,'123',4.0d,True)");
+        _expression = Parser.ParseExpression($"new {testClass8}(42,'123',4.0d,True)");
         Assert.IsType<TestClass8>(_expression.GetValue());
         AssertCanCompile(_expression);
         var o = _expression.GetValue();
@@ -3714,7 +3714,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.True(tc8.Z);
 
         // pass primitive to reference type ctor
-        _expression = Parser.ParseExpression($"new {testclass8}(42)");
+        _expression = Parser.ParseExpression($"new {testClass8}(42)");
         Assert.IsType<TestClass8>(_expression.GetValue());
         AssertCanCompile(_expression);
         o = _expression.GetValue();
@@ -3723,8 +3723,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(42, tc8.I);
 
         // private class, can't compile it
-        var testclass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
-        _expression = Parser.ParseExpression($"new {testclass9}(42)");
+        var testClass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
+        _expression = Parser.ParseExpression($"new {testClass9}(42)");
         Assert.IsType<TestClass9>(_expression.GetValue());
         AssertCantCompile(_expression);
     }
@@ -4199,10 +4199,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // changing target
         // from primitive array to reference type array
-        var intss = new[] { 1, 2, 3 };
+        var intArray = new[] { 1, 2, 3 };
         var strings = new[] { "a", "b", "c" };
         _expression = Parser.ParseExpression("[1]");
-        Assert.Equal(2, _expression.GetValue(intss));
+        Assert.Equal(2, _expression.GetValue(intArray));
         AssertCanCompile(_expression);
         Assert.Throws<SpelEvaluationException>(() => _expression.GetValue(strings));
         SpelCompiler.RevertToInterpreted(_expression);
@@ -4447,16 +4447,16 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal("bbb", _expression.GetValue(strings));
 
-        var ints = new List<int>
+        var intArray = new List<int>
         {
             123,
             456,
             789
         };
         _expression = Parser.ParseExpression("[2]");
-        Assert.Equal(789, _expression.GetValue(ints));
+        Assert.Equal(789, _expression.GetValue(intArray));
         AssertCanCompile(_expression);
-        Assert.Equal(789, _expression.GetValue(ints));
+        Assert.Equal(789, _expression.GetValue(intArray));
 
         var map1 = new Dictionary<string, int>
         {
@@ -4661,7 +4661,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void PlusNeedingCheckcast_SPR12426()
+    public void PlusNeedingCheckCast_SPR12426()
     {
         _expression = Parser.ParseExpression("Object + ' world'");
         var v = _expression.GetValue(new FooObject());
@@ -5918,14 +5918,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             return 3_277_700L;
         }
 
-        public static void Ten(int toset)
+        public static void Ten(int toSet)
         {
-            _I = toset;
+            _I = toSet;
         }
 
-        public static void Eight(string toset)
+        public static void Eight(string toSet)
         {
-            _S = toset;
+            _S = toSet;
         }
 
         public void Reset()
@@ -5952,9 +5952,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             return 3_277_700L;
         }
 
-        public void Seven(string toset)
+        public void Seven(string toSet)
         {
-            S = toset;
+            S = toSet;
         }
 
         public void TakeNumber(object n)
@@ -5967,55 +5967,55 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             S = s;
         }
 
-        public void Nine(int toset)
+        public void Nine(int toSet)
         {
-            I = toset;
+            I = toSet;
         }
 
-        public void Eleven(params string[] vargs)
+        public void Eleven(params string[] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 S = string.Empty;
             }
             else
             {
                 S = string.Empty;
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
-                    S += varg;
+                    S += arg;
                 }
             }
         }
 
-        public void Twelve(params int[] vargs)
+        public void Twelve(params int[] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 I = 0;
             }
             else
             {
                 I = 0;
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
-                    I += varg;
+                    I += arg;
                 }
             }
         }
 
-        public void Thirteen(string a, params string[] vargs)
+        public void Thirteen(string a, params string[] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 S = $"{a}::";
             }
             else
             {
                 S = $"{a}::";
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
-                    S += varg;
+                    S += arg;
                 }
             }
         }
@@ -6046,84 +6046,84 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             }
         }
 
-        public void Arrayd(params double[] vargs)
+        public void Arrayd(params double[] args)
         {
             S = string.Empty;
-            if (vargs != null)
+            if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in vargs)
+                foreach (var v in args)
                 {
                     S += v.ToString();
                 }
             }
         }
 
-        public void Arrayf(params float[] vargs)
+        public void Arrayf(params float[] args)
         {
             S = string.Empty;
-            if (vargs != null)
+            if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in vargs)
+                foreach (var v in args)
                 {
                     S += v.ToString();
                 }
             }
         }
 
-        public void Arrayj(params long[] vargs)
+        public void Arrayj(params long[] args)
         {
             S = string.Empty;
-            if (vargs != null)
+            if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in vargs)
+                foreach (var v in args)
                 {
                     S += v.ToString();
                 }
             }
         }
 
-        public void Arrayb(params byte[] vargs)
+        public void Arrayb(params byte[] args)
         {
             S = string.Empty;
-            if (vargs != null)
+            if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in vargs)
+                foreach (var v in args)
                 {
                     S += v.ToString();
                 }
             }
         }
 
-        public void Arrayc(params char[] vargs)
+        public void Arrayc(params char[] args)
         {
             S = string.Empty;
-            if (vargs != null)
+            if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in vargs)
+                foreach (var v in args)
                 {
                     S += v.ToString();
                 }
             }
         }
 
-        public void Fourteen(string a, params string[][] vargs)
+        public void Fourteen(string a, params string[][] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 S = $"{a}::";
             }
             else
             {
                 S = $"{a}::";
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
                     S += "{";
-                    foreach (var v in varg)
+                    foreach (var v in arg)
                     {
                         S += v;
                     }
@@ -6133,19 +6133,19 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             }
         }
 
-        public void Fifteen(string a, params int[][] vargs)
+        public void Fifteen(string a, params int[][] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 S = $"{a}::";
             }
             else
             {
                 S = $"{a}::";
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
                     S += "{";
-                    foreach (var v in varg)
+                    foreach (var v in arg)
                     {
                         S += v;
                     }
@@ -6155,18 +6155,18 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             }
         }
 
-        public void Sixteen(params object[] vargs)
+        public void Sixteen(params object[] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 S = string.Empty;
             }
             else
             {
                 S = string.Empty;
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
-                    S += varg;
+                    S += arg;
                 }
             }
         }
@@ -6186,18 +6186,18 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             S = $"::{arg}";
         }
 
-        public void Concat1(params string[] vargs)
+        public void Concat1(params string[] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 S = string.Empty;
             }
             else
             {
                 S = string.Empty;
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
-                    S += varg;
+                    S += arg;
                 }
             }
         }
@@ -6207,18 +6207,18 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             S = $"::{arg}";
         }
 
-        public void Concat2(params object[] vargs)
+        public void Concat2(params object[] args)
         {
-            if (vargs == null)
+            if (args == null)
             {
                 S = string.Empty;
             }
             else
             {
                 S = string.Empty;
-                foreach (var varg in vargs)
+                foreach (var arg in args)
                 {
-                    S += varg;
+                    S += arg;
                 }
             }
         }
@@ -6271,10 +6271,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         public readonly string Output;
 
-        public Obj2(params string[] strs)
+        public Obj2(params string[] strings)
         {
             var b = new StringBuilder();
-            foreach (var p in strs)
+            foreach (var p in strings)
             {
                 b.Append(p);
             }
@@ -6287,10 +6287,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         public readonly string Output;
 
-        public Obj3(params int[] ints)
+        public Obj3(params int[] integers)
         {
             var b = new StringBuilder();
-            foreach (var p in ints)
+            foreach (var p in integers)
             {
                 b.Append(p);
             }
@@ -6298,14 +6298,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             Output = b.ToString();
         }
 
-        public Obj3(string s, float f, params int[] ints)
+        public Obj3(string s, float f, params int[] integers)
         {
             var b = new StringBuilder();
             b.Append(s);
             b.Append(':');
             b.Append(f);
             b.Append(':');
-            foreach (var p in ints)
+            foreach (var p in integers)
             {
                 b.Append(p);
             }
@@ -6318,10 +6318,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         public readonly string Output;
 
-        public Obj4(int[] ints)
+        public Obj4(int[] integers)
         {
             var b = new StringBuilder();
-            foreach (var p in ints)
+            foreach (var p in integers)
             {
                 b.Append(p);
             }
@@ -6542,10 +6542,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             return b.ToString();
         }
 
-        public static int Sum(params int[] ints)
+        public static int Sum(params int[] integers)
         {
             var total = 0;
-            foreach (var i in ints)
+            foreach (var i in integers)
             {
                 total += i;
             }

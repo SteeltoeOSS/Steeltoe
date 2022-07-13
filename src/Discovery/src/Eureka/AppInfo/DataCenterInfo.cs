@@ -16,13 +16,13 @@ public class DataCenterInfo : IDataCenterInfo
         Name = name;
     }
 
-    internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo jcenter)
+    internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo dataCenterInfo)
     {
-        if (DataCenterName.MyOwn.ToString().Equals(jcenter.Name))
+        if (DataCenterName.MyOwn.ToString().Equals(dataCenterInfo.Name))
         {
             return new DataCenterInfo(DataCenterName.MyOwn);
         }
-        else if (DataCenterName.Amazon.ToString().Equals(jcenter.Name))
+        else if (DataCenterName.Amazon.ToString().Equals(dataCenterInfo.Name))
         {
             return new DataCenterInfo(DataCenterName.Amazon);
         }

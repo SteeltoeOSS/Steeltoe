@@ -17,7 +17,7 @@ namespace Steeltoe.Extensions.Logging.Test;
 public partial class DynamicLoggingBuilderTest
 {
     [Fact]
-    public void DynamicLevelSetting_ParmLessAddDynamic_AddsConsoleOptions()
+    public void DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
         var services = new ServiceCollection()
@@ -35,7 +35,7 @@ public partial class DynamicLoggingBuilderTest
     }
 
     [Fact]
-    public void AddDynamicConsole_DoesntSetColorLocal()
+    public void AddDynamicConsole_DoesNotSetColorLocal()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
         var services = new ServiceCollection()

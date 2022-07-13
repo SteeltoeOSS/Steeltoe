@@ -91,7 +91,7 @@ internal sealed class HystrixCircuitBreakerImpl : ICircuitBreaker
             }
 
             // we're closed, so let's see if errors have made us so we should trip the circuit open
-            var health = _metrics.Healthcounts;
+            var health = _metrics.HealthCounts;
 
             // check if we are past the statisticalWindowVolumeThreshold
             if (health.TotalRequests < _options.CircuitBreakerRequestVolumeThreshold)

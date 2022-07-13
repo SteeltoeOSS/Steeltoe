@@ -47,7 +47,7 @@ public class SqlServerDbContextConnectorFactoryTest
         var factory = new SqlServerDbContextConnectorFactory(si, config, typeof(GoodSqlServerDbContext));
         var context = factory.Create(null);
         Assert.NotNull(context);
-        var gcontext = context as GoodSqlServerDbContext;
-        Assert.NotNull(gcontext);
+        var goodSqlServerDbContext = context as GoodSqlServerDbContext;
+        Assert.NotNull(goodSqlServerDbContext);
     }
 }

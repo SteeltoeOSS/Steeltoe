@@ -207,20 +207,20 @@ public class PlaceholderResolverConfigurationExtensionsTest
             "--spring:line:name=${spring:json:name?noName}"
         };
         using var sandbox = new Sandbox();
-        var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonfileName = Path.GetFileName(jsonpath);
-        var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlfileName = Path.GetFileName(xmlpath);
-        var inipath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
-        var inifileName = Path.GetFileName(inipath);
+        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        var jsonFileName = Path.GetFileName(jsonPath);
+        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        var xmlFileName = Path.GetFileName(xmlPath);
+        var iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
+        var iniFileName = Path.GetFileName(iniPath);
 
-        var directory = Path.GetDirectoryName(jsonpath);
+        var directory = Path.GetDirectoryName(jsonPath);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        configurationBuilder.AddJsonFile(jsonfileName, false, false);
-        configurationBuilder.AddXmlFile(xmlfileName, false, false);
-        configurationBuilder.AddIniFile(inifileName, false, false);
+        configurationBuilder.AddJsonFile(jsonFileName, false, false);
+        configurationBuilder.AddXmlFile(xmlFileName, false, false);
+        configurationBuilder.AddIniFile(iniFileName, false, false);
         configurationBuilder.AddCommandLine(appsettingsLine);
 
         configurationBuilder.AddPlaceholderResolver();

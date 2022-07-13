@@ -70,10 +70,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 204;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -81,11 +81,11 @@ public class EurekaHttpClientTest : AbstractBaseTest
         var config = new EurekaInstanceConfig();
         var info = InstanceInfo.FromInstanceConfig(config);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
 
         var resp = await client.RegisterAsync(info);
         Assert.NotNull(resp);
@@ -96,10 +96,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task RegisterAsync_SendsValidPOSTData()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 204;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -111,11 +111,11 @@ public class EurekaHttpClientTest : AbstractBaseTest
 
         var info = InstanceInfo.FromInstanceConfig(config);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         await client.RegisterAsync(info);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -124,15 +124,15 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("/apps/FOOBAR", TestConfigServerStartup.LastRequest.Path.Value);
 
         // Check JSON payload
-        var recvJson = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(new StreamReader(TestConfigServerStartup.LastRequest.Body).ReadToEnd());
-        Assert.NotNull(recvJson);
-        Assert.NotNull(recvJson.Instance);
+        var receivedJson = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(new StreamReader(TestConfigServerStartup.LastRequest.Body).ReadToEnd());
+        Assert.NotNull(receivedJson);
+        Assert.NotNull(receivedJson.Instance);
 
         // Compare a few random values
         var sentJsonObj = info.ToJsonInstance();
-        Assert.Equal(sentJsonObj.ActionType, recvJson.Instance.ActionType);
-        Assert.Equal(sentJsonObj.AppName, recvJson.Instance.AppName);
-        Assert.Equal(sentJsonObj.HostName, recvJson.Instance.HostName);
+        Assert.Equal(sentJsonObj.ActionType, receivedJson.Instance.ActionType);
+        Assert.Equal(sentJsonObj.AppName, receivedJson.Instance.AppName);
+        Assert.Equal(sentJsonObj.HostName, receivedJson.Instance.HostName);
     }
 
     [Fact]
@@ -165,10 +165,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -180,11 +180,11 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
         var info = InstanceInfo.FromInstanceConfig(config);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.Unknown);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -232,20 +232,20 @@ public class EurekaHttpClientTest : AbstractBaseTest
                         }]
                     }
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var resp = await client.GetApplicationsAsync();
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -269,7 +269,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("localhost:foo", instance.InstanceId);
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
-            Assert.Equal("192.168.56.1", instance.IpAddr);
+            Assert.Equal("192.168.56.1", instance.IpAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
     }
@@ -332,20 +332,20 @@ public class EurekaHttpClientTest : AbstractBaseTest
                         }]
                     }
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var resp = await client.GetApplicationAsync("foo");
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -364,7 +364,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("localhost:foo", instance.InstanceId);
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
-            Assert.Equal("192.168.56.1", instance.IpAddr);
+            Assert.Equal("192.168.56.1", instance.IpAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
@@ -402,21 +402,21 @@ public class EurekaHttpClientTest : AbstractBaseTest
                         }]
                     }
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
         TestConfigServerStartup.ReturnStatus = 200;
         TestConfigServerStartup.Host = "localhost:8888";
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var resp = await client.GetApplicationAsync("foo");
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -435,7 +435,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("localhost:foo", instance.InstanceId);
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
-            Assert.Equal("192.168.56.1", instance.IpAddr);
+            Assert.Equal("192.168.56.1", instance.IpAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
@@ -502,20 +502,20 @@ public class EurekaHttpClientTest : AbstractBaseTest
                         ""asgName"":null
                     }
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -527,7 +527,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.InstanceId);
         Assert.Equal("DESKTOP-GNQ5SUT:80", resp.Response.VipAddress);
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
-        Assert.Equal("192.168.0.147", resp.Response.IpAddr);
+        Assert.Equal("192.168.0.147", resp.Response.IpAddress);
         Assert.Equal(InstanceStatus.Up, resp.Response.Status);
 
         Assert.Equal("http://localhost:8888/", client.ServiceUrl);
@@ -566,21 +566,21 @@ public class EurekaHttpClientTest : AbstractBaseTest
                         ""asgName"":null
                     }
                 }";
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
         TestConfigServerStartup.ReturnStatus = 200;
         TestConfigServerStartup.Host = "localhost:8888";
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -592,7 +592,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.InstanceId);
         Assert.Equal("DESKTOP-GNQ5SUT:80", resp.Response.VipAddress);
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
-        Assert.Equal("192.168.0.147", resp.Response.IpAddr);
+        Assert.Equal("192.168.0.147", resp.Response.IpAddress);
         Assert.Equal(InstanceStatus.Up, resp.Response.Status);
 
         Assert.Equal("http://localhost:8888/", client.ServiceUrl);
@@ -619,20 +619,20 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var resp = await client.CancelAsync("foo", "bar");
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -674,20 +674,20 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var now = DateTime.UtcNow.Ticks;
         var javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
         var resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.Down, new InstanceInfo { LastDirtyTimestamp = now });
@@ -732,19 +732,19 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
-        var cconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             EurekaServerServiceUrls = uri
         };
-        var client = new EurekaHttpClient(cconfig, server.CreateClient());
+        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
         var now = DateTime.UtcNow.Ticks;
         var javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
         var resp = await client.DeleteStatusOverrideAsync("foo", "bar", new InstanceInfo { LastDirtyTimestamp = now });
@@ -774,14 +774,14 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void MakeServiceUrl_DoesntAppendSlash_IfPresent()
+    public void MakeServiceUrl_DoesNotAppendSlash_IfPresent()
     {
         var result = EurekaHttpClient.MakeServiceUrl("http://boo:123/");
         Assert.Equal("http://boo:123/", result);
     }
 
     [Fact]
-    public void GetRequestMessage_ReturnsCorrectMesssage_WithAdditionalHeaders()
+    public void GetRequestMessage_ReturnsCorrectMessage_WithAdditionalHeaders()
     {
         var headers = new Dictionary<string, string>
         {
@@ -799,7 +799,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetRequestMessage_No_Auth_When_Creds_Not_In_Url()
+    public void GetRequestMessage_No_Auth_When_Credentials_Not_In_Url()
     {
         var config = new EurekaClientConfig
         {
@@ -823,7 +823,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetRequestMessage_Adds_Auth_When_Creds_In_Url()
+    public void GetRequestMessage_Adds_Auth_When_Credentials_In_Url()
     {
         var config = new EurekaClientConfig
         {

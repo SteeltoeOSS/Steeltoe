@@ -14,7 +14,7 @@ public class HystrixRollingNumber
 {
     internal readonly int TimeInMilliseconds;
     internal readonly int NumberOfBuckets;
-    internal readonly int BucketSizeInMillseconds;
+    internal readonly int BucketSizeInMilliseconds;
 
     internal readonly BucketCircularArray Buckets;
     internal readonly CumulativeSum DefaultCumulativeSum = new ();
@@ -39,7 +39,7 @@ public class HystrixRollingNumber
             throw new ArgumentException("The timeInMilliseconds must divide equally into numberOfBuckets. For example 1000/10 is ok, 1000/11 is not.");
         }
 
-        BucketSizeInMillseconds = timeInMilliseconds / numberOfBuckets;
+        BucketSizeInMilliseconds = timeInMilliseconds / numberOfBuckets;
 
         Buckets = new BucketCircularArray(numberOfBuckets);
     }
@@ -166,7 +166,7 @@ public class HystrixRollingNumber
          * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
          */
         var currentBucket = Buckets.PeekLast;
-        if (currentBucket != null && currentTime < currentBucket.WindowStart + BucketSizeInMillseconds)
+        if (currentBucket != null && currentTime < currentBucket.WindowStart + BucketSizeInMilliseconds)
         {
             // if we're within the bucket 'window of time' return the current one
             // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
@@ -216,14 +216,14 @@ public class HystrixRollingNumber
                     {
                         // we have at least 1 bucket so retrieve it
                         var lastBucket = Buckets.PeekLast;
-                        if (currentTime < lastBucket.WindowStart + BucketSizeInMillseconds)
+                        if (currentTime < lastBucket.WindowStart + BucketSizeInMilliseconds)
                         {
                             // if we're within the bucket 'window of time' return the current one
                             // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
                             // we'll just use the latest as long as we're not AFTER the window
                             return lastBucket;
                         }
-                        else if (currentTime - (lastBucket.WindowStart + BucketSizeInMillseconds) > TimeInMilliseconds)
+                        else if (currentTime - (lastBucket.WindowStart + BucketSizeInMilliseconds) > TimeInMilliseconds)
                         {
                             // the time passed is greater than the entire rolling counter so we want to clear it all and start from scratch
                             Reset();
@@ -236,7 +236,7 @@ public class HystrixRollingNumber
                         {
                             // we're past the window so we need to create a new bucket
                             // create a new bucket and add it as the new 'last'
-                            Buckets.AddLast(new Bucket(lastBucket.WindowStart + BucketSizeInMillseconds));
+                            Buckets.AddLast(new Bucket(lastBucket.WindowStart + BucketSizeInMilliseconds));
 
                             // add the lastBucket values to the cumulativeSum
                             DefaultCumulativeSum.AddBucket(lastBucket);
@@ -456,7 +456,7 @@ public class HystrixRollingNumber
                 */
             internal readonly AtomicReferenceArray<Bucket> Data;
             internal readonly int Size;
-            internal readonly int Listtail;
+            internal readonly int ListTail;
             internal readonly int Head;
             internal readonly BucketCircularArray Ca;
 
@@ -464,7 +464,7 @@ public class HystrixRollingNumber
             {
                 this.Ca = ca;
                 this.Head = head;
-                Listtail = tail;
+                ListTail = tail;
                 if (head == 0 && tail == 0)
                 {
                     Size = 0;
@@ -526,7 +526,7 @@ public class HystrixRollingNumber
                  * In either case, a single Bucket will be returned as "last" and data loss should not occur and everything keeps in sync for head/tail.
                  * Also, it's fine to set it before incrementTail because nothing else should be referencing that index position until incrementTail occurs.
                  */
-                Data[Listtail] = b;
+                Data[ListTail] = b;
                 return IncrementTail();
             }
 
@@ -543,12 +543,12 @@ public class HystrixRollingNumber
                 if (Size == Ca._numBuckets)
                 {
                     // increment tail and head
-                    return new ListState(Ca, Data, (Head + 1) % Ca._dataLength, (Listtail + 1) % Ca._dataLength);
+                    return new ListState(Ca, Data, (Head + 1) % Ca._dataLength, (ListTail + 1) % Ca._dataLength);
                 }
                 else
                 {
                     // increment only tail
-                    return new ListState(Ca, Data, Head, (Listtail + 1) % Ca._dataLength);
+                    return new ListState(Ca, Data, Head, (ListTail + 1) % Ca._dataLength);
                 }
             }
         }

@@ -187,7 +187,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddSqlServerConnection_DoesntAddsRelationalHealthContributor_WhenCommunityHealthCheckExists()
+    public void AddSqlServerConnection_DoesNotAddsRelationalHealthContributor_WhenCommunityHealthCheckExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

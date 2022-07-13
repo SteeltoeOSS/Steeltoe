@@ -50,27 +50,27 @@ public class RedisCacheConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new RedisCacheConnectorOptions(config);
-        Assert.Equal("localhost", sconfig.Host);
-        Assert.Equal(1234, sconfig.Port);
-        Assert.Equal("password", sconfig.Password);
-        Assert.Equal("instanceid", sconfig.InstanceName);
+        var options = new RedisCacheConnectorOptions(config);
+        Assert.Equal("localhost", options.Host);
+        Assert.Equal(1234, options.Port);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("instanceid", options.InstanceName);
 
-        Assert.True(sconfig.AllowAdmin);
-        Assert.Equal("foobar", sconfig.ClientName);
-        Assert.Equal(100, sconfig.ConnectRetry);
-        Assert.Equal(100, sconfig.ConnectTimeout);
-        Assert.True(sconfig.AbortOnConnectFail);
-        Assert.Equal(100, sconfig.KeepAlive);
-        Assert.True(sconfig.ResolveDns);
-        Assert.Equal("foobar", sconfig.ServiceName);
-        Assert.True(sconfig.Ssl);
-        Assert.Equal("foobar", sconfig.SslHost);
-        Assert.Equal("foobar", sconfig.TieBreaker);
-        Assert.Equal(100, sconfig.WriteBuffer);
-        Assert.Equal(100, sconfig.SyncTimeout);
+        Assert.True(options.AllowAdmin);
+        Assert.Equal("foobar", options.ClientName);
+        Assert.Equal(100, options.ConnectRetry);
+        Assert.Equal(100, options.ConnectTimeout);
+        Assert.True(options.AbortOnConnectFail);
+        Assert.Equal(100, options.KeepAlive);
+        Assert.True(options.ResolveDns);
+        Assert.Equal("foobar", options.ServiceName);
+        Assert.True(options.Ssl);
+        Assert.Equal("foobar", options.SslHost);
+        Assert.Equal("foobar", options.TieBreaker);
+        Assert.Equal(100, options.WriteBuffer);
+        Assert.Equal(100, options.SyncTimeout);
 
-        Assert.Null(sconfig.ConnectionString);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
@@ -84,9 +84,9 @@ public class RedisCacheConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new RedisCacheConnectorOptions(config);
+        var options = new RedisCacheConnectorOptions(config);
 
-        Assert.Equal(appsettings["redis:client:ConnectionString"], sconfig.ToString());
+        Assert.Equal(appsettings["redis:client:ConnectionString"], options.ToString());
     }
 
     [Fact]
@@ -109,8 +109,8 @@ public class RedisCacheConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new RedisCacheConnectorOptions(config);
+        var options = new RedisCacheConnectorOptions(config);
 
-        Assert.NotEqual(appsettings["redis:client:ConnectionString"], sconfig.ToString());
+        Assert.NotEqual(appsettings["redis:client:ConnectionString"], options.ToString());
     }
 }

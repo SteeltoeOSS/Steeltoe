@@ -340,8 +340,8 @@ public class CredHubClientTests
             .WithContent("{\"mode\":\"converge\",\"parameters\":{\"common_name\":\"TestCA\",\"duration\":365,\"is_ca\":true,\"self_sign\":false,\"key_length\":2048},\"name\":\"example-ca\",\"type\":\"Certificate\"}")
             .Respond("application/json", "{\"type\":\"certificate\",\"transitional\":false,\"version_created_at\":\"2017-11-20T15:55:24Z\",\"id\":\"0d698309-cca6-4626-aae3-a72ed664304a\",\"name\":\"/example-ca\",\"value\":{\"ca\":null,\"certificate\":\"-----BEGIN CERTIFICATE-----\\nFakeCertificateText\\n-----END CERTIFICATE-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
         var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var parms = new CertificateGenerationParameters { CommonName = "TestCA", IsCertificateAuthority = true };
-        var request = new CertificateGenerationRequest("example-ca", parms);
+        var parameters = new CertificateGenerationParameters { CommonName = "TestCA", IsCertificateAuthority = true };
+        var request = new CertificateGenerationRequest("example-ca", parameters);
 
         var response = await client.GenerateAsync<CertificateCredential>(request);
 
@@ -579,7 +579,7 @@ public class CredHubClientTests
     }
 
     [Fact]
-    public async Task GetPermissionsAsync_ReturnsPermissionedActors()
+    public async Task GetPermissionsAsync_ReturnsPermittedActors()
     {
         var mockHttpMessageHandler = InitializedHandlerWithLogin();
         var mockRequest = mockHttpMessageHandler

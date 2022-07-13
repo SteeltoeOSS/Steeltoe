@@ -40,7 +40,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected readonly ILoggerFactory LoggerFactory;
 
     protected int innerRecoveryInterval = DefaultRecoveryInterval;
-    private string _listenerid;
+    private string _listenerId;
     private IConnectionFactory _connectionFactory;
 
     private List<IQueue> Queues { get; set; } = new ();
@@ -99,9 +99,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual string ListenerId
     {
-        get => _listenerid ?? ServiceName;
+        get => _listenerId ?? ServiceName;
 
-        set => _listenerid = value;
+        set => _listenerId = value;
     }
 
     public virtual IConsumerTagStrategy ConsumerTagStrategy { get; set; }
@@ -1053,7 +1053,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             {
                 return true;
             }
-            else if (cause is RabbitRejectAndDontRequeueException)
+            else if (cause is RabbitRejectAndDoNotRequeueException)
             {
                 return false;
             }
@@ -1100,7 +1100,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             {
                 throw new ListenerExecutionFailedException(
                     "Cannot retry message more than once without an ID",
-                    new RabbitRejectAndDontRequeueException("Not retryable; rejecting and not requeuing", ex),
+                    new RabbitRejectAndDoNotRequeueException("Not retryable; rejecting and not requeuing", ex),
                     message);
             }
         }

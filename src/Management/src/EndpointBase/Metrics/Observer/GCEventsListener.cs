@@ -22,7 +22,7 @@ public class GCEventsListener : EventSourceListener
     private const string GCHeapStats = "GCHeapStats_V1";
     private const string GCHeapStatsV2 = "GCHeapStats_V2";
     private const EventKeywords GCEventsKeywords = (EventKeywords)0x1;
-    private const string GenerationTagvalueName = "gen";
+    private const string GenerationTagValueName = "gen";
 
     private static readonly string[] IgnorePayloadNames =
     {
@@ -89,8 +89,8 @@ public class GCEventsListener : EventSourceListener
                 count -= _previousCollectionCounts[i];
             }
 
-            var genKeylabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GenerationTagvalueName + i) };
-            _collectionCount.Add(count, genKeylabelSet.AsReadonlySpan());
+            var genKeyLabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GenerationTagValueName + i) };
+            _collectionCount.Add(count, genKeyLabelSet.AsReadonlySpan());
         }
 
         _previousCollectionCounts = counts;

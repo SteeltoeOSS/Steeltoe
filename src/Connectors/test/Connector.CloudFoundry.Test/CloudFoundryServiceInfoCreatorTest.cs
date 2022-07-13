@@ -288,7 +288,7 @@ public class CloudFoundryServiceInfoCreatorTest
     }
 
     [Fact]
-    public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMonogoBinding_BuildsExpected()
+    public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMongoBinding_BuildsExpected()
     {
         var environment2 = @"
                 {
@@ -418,8 +418,8 @@ public class CloudFoundryServiceInfoCreatorTest
         var redis1 = result1.First();
         Assert.Equal("10.66.32.54", redis1.Host);
 
-        var resutlt2 = creator.GetServiceInfos<MongoDbServiceInfo>();
-        Assert.Equal(2, resutlt2.Count());
+        var result2 = creator.GetServiceInfos<MongoDbServiceInfo>();
+        Assert.Equal(2, result2.Count());
 
         var result3 = creator.GetServiceInfos<EurekaServiceInfo>();
         Assert.Single(result3);

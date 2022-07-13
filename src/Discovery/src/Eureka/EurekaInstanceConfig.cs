@@ -14,7 +14,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
     public const int DefaultSecurePort = 443;
     public const int DefaultLeaseRenewalIntervalInSeconds = 30;
     public const int DefaultLeaseExpirationDurationInSeconds = 90;
-    public const string DefaultAppname = "unknown";
+    public const string DefaultAppName = "unknown";
     public const string DefaultStatusPageUrlPath = "/Status";
     public const string DefaultHomePageUrlPath = "/";
     public const string DefaultHealthCheckUrlPath = "/healthcheck";
@@ -39,7 +39,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
         VirtualHostName = $"{thisHostName}:{NonSecurePort}";
         SecureVirtualHostName = $"{thisHostName}:{SecurePort}";
         IpAddress = thisHostAddress;
-        AppName = DefaultAppname;
+        AppName = DefaultAppName;
         StatusPageUrlPath = DefaultStatusPageUrlPath;
         HomePageUrlPath = DefaultHomePageUrlPath;
         HealthCheckUrlPath = DefaultHealthCheckUrlPath;

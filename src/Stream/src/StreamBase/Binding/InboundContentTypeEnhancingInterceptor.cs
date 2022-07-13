@@ -31,11 +31,11 @@ internal sealed class InboundContentTypeEnhancingInterceptor : AbstractContentTy
             var ct = message.Headers.Get<object>(BinderHeaders.BinderOriginalContentType);
             switch (ct)
             {
-                case string strval:
-                    contentType = MimeType.ToMimeType(strval);
+                case string stringValue:
+                    contentType = MimeType.ToMimeType(stringValue);
                     break;
-                case MimeType mimeval:
-                    contentType = mimeval;
+                case MimeType mimeType:
+                    contentType = mimeType;
                     break;
             }
 
@@ -50,9 +50,9 @@ internal sealed class InboundContentTypeEnhancingInterceptor : AbstractContentTy
         {
             messageHeaders.RawHeaders.Add(MessageHeaders.ContentType, contentType);
         }
-        else if (message.Headers.TryGetValue(MessageHeaders.ContentType, out var header) && header is string strheader)
+        else if (message.Headers.TryGetValue(MessageHeaders.ContentType, out var header) && header is string stringHeader)
         {
-            messageHeaders.RawHeaders[MessageHeaders.ContentType] = MimeType.ToMimeType(strheader);
+            messageHeaders.RawHeaders[MessageHeaders.ContentType] = MimeType.ToMimeType(stringHeader);
         }
 
         return message;

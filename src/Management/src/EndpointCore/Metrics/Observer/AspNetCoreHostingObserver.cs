@@ -63,7 +63,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
         */
     }
 
-    public override void ProcessEvent(string evnt, object arg)
+    public override void ProcessEvent(string eventName, object arg)
     {
         if (arg == null)
         {
@@ -76,7 +76,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
             return;
         }
 
-        if (evnt == StopEvent)
+        if (eventName == StopEvent)
         {
             Logger?.LogTrace("HandleStopEvent start{thread}", Thread.CurrentThread.ManagedThreadId);
 

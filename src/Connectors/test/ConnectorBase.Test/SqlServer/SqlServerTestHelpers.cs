@@ -68,7 +68,7 @@ public static class SqlServerTestHelpers
                 ]
             }";
 
-    public static string SingleServerVcapCredsInUrl = @"
+    public static string SingleServerVcapCredentialsInUrl = @"
             {
                 ""SqlServer"": [{
                         ""credentials"": {

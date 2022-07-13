@@ -61,7 +61,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public int? DefaultCommandTimeout { get; set; }
 
-    public int? Keepalive { get; set; }
+    public int? KeepAlive { get; set; }
 
     public bool? OldGuids { get; set; }
 
@@ -77,9 +77,9 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public bool? ConnectionReset { get; set; }
 
-    public int? MaximumPoolsize { get; set; }
+    public int? MaximumPoolSize { get; set; }
 
-    public int? MinimumPoolsize { get; set; }
+    public int? MinimumPoolSize { get; set; }
 
     public bool? Pooling { get; set; }
 
@@ -104,9 +104,9 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
         AddKeyValue(sb, nameof(ConnectionTimeout), ConnectionTimeout);
         AddKeyValue(sb, nameof(ConvertZeroDateTime), ConvertZeroDateTime);
         AddKeyValue(sb, nameof(DefaultCommandTimeout), DefaultCommandTimeout);
-        AddKeyValue(sb, nameof(Keepalive), Keepalive);
-        AddKeyValue(sb, nameof(MaximumPoolsize), MaximumPoolsize);
-        AddKeyValue(sb, nameof(MinimumPoolsize), MinimumPoolsize);
+        AddKeyValue(sb, nameof(KeepAlive), KeepAlive);
+        AddKeyValue(sb, nameof(MaximumPoolSize), MaximumPoolSize);
+        AddKeyValue(sb, nameof(MinimumPoolSize), MinimumPoolSize);
         AddKeyValue(sb, nameof(OldGuids), OldGuids);
         AddKeyValue(sb, nameof(PersistSecurityInfo), PersistSecurityInfo);
         AddKeyValue(sb, nameof(Pooling), Pooling);

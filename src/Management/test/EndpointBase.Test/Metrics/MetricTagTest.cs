@@ -15,17 +15,17 @@ public class MetricTagTest : BaseTest
     public void Constructor_SetsValues()
     {
         var tags = new HashSet<string> { "tagValue" };
-        var mtag = new MetricTag("tagname", tags);
-        Assert.Equal("tagname", mtag.Tag);
-        Assert.Same(tags, mtag.Values);
+        var metricTag = new MetricTag("tagname", tags);
+        Assert.Equal("tagname", metricTag.Tag);
+        Assert.Same(tags, metricTag.Values);
     }
 
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
         var tags = new HashSet<string> { "tagValue" };
-        var mtag = new MetricTag("tagname", tags);
-        var result = Serialize(mtag);
+        var metricTag = new MetricTag("tagname", tags);
+        var result = Serialize(metricTag);
         Assert.Equal("{\"tag\":\"tagname\",\"values\":[\"tagValue\"]}", result);
     }
 }

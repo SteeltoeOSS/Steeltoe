@@ -93,23 +93,23 @@ public partial class PlaceholderResolverExtensionsTest
             "--spring:line:name=${spring:json:name?noName}"
         };
         using var sandbox = new Sandbox();
-        var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonfileName = Path.GetFileName(jsonpath);
-        var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlfileName = Path.GetFileName(xmlpath);
-        var inipath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
-        var inifileName = Path.GetFileName(inipath);
+        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        var jsonFileName = Path.GetFileName(jsonPath);
+        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        var xmlFileName = Path.GetFileName(xmlPath);
+        var iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
+        var iniFileName = Path.GetFileName(iniPath);
 
-        var directory = Path.GetDirectoryName(jsonpath);
+        var directory = Path.GetDirectoryName(jsonPath);
 
         var hostBuilder = new WebHostBuilder()
             .UseStartup<TestServerStartup1>()
             .ConfigureAppConfiguration(configurationBuilder =>
             {
                 configurationBuilder.SetBasePath(directory);
-                configurationBuilder.AddJsonFile(jsonfileName);
-                configurationBuilder.AddXmlFile(xmlfileName);
-                configurationBuilder.AddIniFile(inifileName);
+                configurationBuilder.AddJsonFile(jsonFileName);
+                configurationBuilder.AddXmlFile(xmlFileName);
+                configurationBuilder.AddIniFile(iniFileName);
                 configurationBuilder.AddCommandLine(appsettingsLine);
             })
             .AddPlaceholderResolver();
@@ -145,18 +145,18 @@ public partial class PlaceholderResolverExtensionsTest
                     </spring>
                 </settings>";
         using var sandbox = new Sandbox();
-        var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonfileName = Path.GetFileName(jsonpath);
-        var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlfileName = Path.GetFileName(xmlpath);
-        var directory = Path.GetDirectoryName(jsonpath);
+        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        var jsonFileName = Path.GetFileName(jsonPath);
+        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        var xmlFileName = Path.GetFileName(xmlPath);
+        var directory = Path.GetDirectoryName(jsonPath);
 
         var hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer())
             .ConfigureAppConfiguration(configurationBuilder =>
             {
                 configurationBuilder.SetBasePath(directory);
-                configurationBuilder.AddJsonFile(jsonfileName);
-                configurationBuilder.AddXmlFile(xmlfileName);
+                configurationBuilder.AddJsonFile(jsonFileName);
+                configurationBuilder.AddXmlFile(xmlFileName);
             })
             .AddPlaceholderResolver();
 

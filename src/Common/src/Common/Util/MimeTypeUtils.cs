@@ -100,7 +100,7 @@ public static class MimeTypeUtils
         return tokens;
     }
 
-    public static string Tostring(ICollection<MimeType> mimeTypes)
+    public static string ToString(ICollection<MimeType> mimeTypes)
     {
         var builder = new StringBuilder();
         foreach (var mimeType in mimeTypes)

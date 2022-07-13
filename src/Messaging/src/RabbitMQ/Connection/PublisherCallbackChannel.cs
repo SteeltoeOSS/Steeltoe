@@ -595,8 +595,8 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             }
         }
 
-        var seqs = new List<ulong>(involvedListeners.Select(kvp => kvp.Key));
-        foreach (var key in seqs)
+        var sequence = new List<ulong>(involvedListeners.Select(kvp => kvp.Key));
+        foreach (var key in sequence)
         {
             _listenerForSeq.Remove(key);
         }

@@ -17,7 +17,7 @@ internal sealed class Tokenizer
 
     private static readonly byte IsDigitFlag = 0x01;
 
-    private static readonly byte IsHexdigitFlag = 0x02;
+    private static readonly byte IsHexDigitFlag = 0x02;
 
     private static readonly byte IsAlphaFlag = 0x04;
 
@@ -25,17 +25,17 @@ internal sealed class Tokenizer
     {
         for (int ch = '0'; ch <= '9'; ch++)
         {
-            Flags[ch] |= (byte)(IsDigitFlag | IsHexdigitFlag);
+            Flags[ch] |= (byte)(IsDigitFlag | IsHexDigitFlag);
         }
 
         for (int ch = 'A'; ch <= 'F'; ch++)
         {
-            Flags[ch] |= IsHexdigitFlag;
+            Flags[ch] |= IsHexDigitFlag;
         }
 
         for (int ch = 'a'; ch <= 'f'; ch++)
         {
-            Flags[ch] |= IsHexdigitFlag;
+            Flags[ch] |= IsHexDigitFlag;
         }
 
         for (int ch = 'A'; ch <= 'Z'; ch++)
@@ -126,25 +126,25 @@ internal sealed class Tokenizer
                         PushCharToken(TokenKind.Mod);
                         break;
                     case '(':
-                        PushCharToken(TokenKind.Lparen);
+                        PushCharToken(TokenKind.LeftParen);
                         break;
                     case ')':
-                        PushCharToken(TokenKind.Rparen);
+                        PushCharToken(TokenKind.RightParen);
                         break;
                     case '[':
-                        PushCharToken(TokenKind.Lsquare);
+                        PushCharToken(TokenKind.LeftSquare);
                         break;
                     case '#':
                         PushCharToken(TokenKind.Hash);
                         break;
                     case ']':
-                        PushCharToken(TokenKind.Rsquare);
+                        PushCharToken(TokenKind.RightSquare);
                         break;
                     case '{':
-                        PushCharToken(TokenKind.Lcurly);
+                        PushCharToken(TokenKind.LeftCurly);
                         break;
                     case '}':
-                        PushCharToken(TokenKind.Rcurly);
+                        PushCharToken(TokenKind.RightCurly);
                         break;
                     case '@':
                         PushCharToken(TokenKind.ServiceRef);
@@ -214,13 +214,13 @@ internal sealed class Tokenizer
                         {
                             PushPairToken(TokenKind.Elvis);
                         }
-                        else if (IsTwoCharToken(TokenKind.SafeNavi))
+                        else if (IsTwoCharToken(TokenKind.SafeNavigator))
                         {
-                            PushPairToken(TokenKind.SafeNavi);
+                            PushPairToken(TokenKind.SafeNavigator);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.Qmark);
+                            PushCharToken(TokenKind.QuestionMark);
                         }
 
                         break;
@@ -327,7 +327,7 @@ internal sealed class Tokenizer
         }
 
         _pos++;
-        _tokens.Add(new Token(TokenKind.LiteralString, Subarray(start, _pos), start, _pos));
+        _tokens.Add(new Token(TokenKind.LiteralString, SubArray(start, _pos), start, _pos));
     }
 
     // DQ_STRING_LITERAL: '"'! (~'"')* '"'!;
@@ -359,7 +359,7 @@ internal sealed class Tokenizer
         }
 
         _pos++;
-        _tokens.Add(new Token(TokenKind.LiteralString, Subarray(start, _pos), start, _pos));
+        _tokens.Add(new Token(TokenKind.LiteralString, SubArray(start, _pos), start, _pos));
     }
 
     // REAL_LITERAL :
@@ -395,12 +395,12 @@ internal sealed class Tokenizer
             while (IsHexadecimalDigit(_charsToProcess[_pos]));
             if (IsChar('L', 'l'))
             {
-                PushHexIntToken(Subarray(start + 2, _pos), true, start, _pos);
+                PushHexIntToken(SubArray(start + 2, _pos), true, start, _pos);
                 _pos++;
             }
             else
             {
-                PushHexIntToken(Subarray(start + 2, _pos), false, start, _pos);
+                PushHexIntToken(SubArray(start + 2, _pos), false, start, _pos);
             }
 
             return;
@@ -420,7 +420,7 @@ internal sealed class Tokenizer
         if (ch == '.')
         {
             isReal = true;
-            var dotpos = _pos;
+            var dotPos = _pos;
 
             // carry on consuming digits
             do
@@ -428,13 +428,13 @@ internal sealed class Tokenizer
                 _pos++;
             }
             while (IsDigit(_charsToProcess[_pos]));
-            if (_pos == dotpos + 1)
+            if (_pos == dotPos + 1)
             {
                 // the number is something like '3.'. It is really an int but may be
                 // part of something like '3.toString()'. In this case process it as
                 // an int and leave the dot as a separate token.
-                _pos = dotpos;
-                PushIntToken(Subarray(start, _pos), false, start, _pos);
+                _pos = dotPos;
+                PushIntToken(SubArray(start, _pos), false, start, _pos);
                 return;
             }
         }
@@ -452,7 +452,7 @@ internal sealed class Tokenizer
                 RaiseParseException(start, SpelMessage.RealCannotBeLong);
             }
 
-            PushIntToken(Subarray(start, endOfNumber), true, start, endOfNumber);
+            PushIntToken(SubArray(start, endOfNumber), true, start, endOfNumber);
             _pos++;
         }
         else if (IsExponentChar(_charsToProcess[_pos]))
@@ -481,7 +481,7 @@ internal sealed class Tokenizer
                 ++_pos;
             }
 
-            PushRealToken(Subarray(start, _pos), isFloat, start, _pos);
+            PushRealToken(SubArray(start, _pos), isFloat, start, _pos);
         }
         else
         {
@@ -501,11 +501,11 @@ internal sealed class Tokenizer
 
             if (isReal)
             {
-                PushRealToken(Subarray(start, endOfNumber), isFloat, start, endOfNumber);
+                PushRealToken(SubArray(start, endOfNumber), isFloat, start, endOfNumber);
             }
             else
             {
-                PushIntToken(Subarray(start, endOfNumber), false, start, endOfNumber);
+                PushIntToken(SubArray(start, endOfNumber), false, start, endOfNumber);
             }
         }
     }
@@ -518,22 +518,22 @@ internal sealed class Tokenizer
             _pos++;
         }
         while (IsIdentifier(_charsToProcess[_pos]));
-        var subarray = Subarray(start, _pos);
+        var subArray = SubArray(start, _pos);
 
         // Check if this is the alternative (textual) representation of an operator (see
         // alternativeOperatorNames)
         if (_pos - start == 2 || _pos - start == 3)
         {
-            var asString = new string(subarray).ToUpper();
+            var asString = new string(subArray).ToUpper();
             var idx = Array.BinarySearch(AlternativeOperatorNames, asString);
             if (idx >= 0)
             {
-                PushOneCharOrTwoCharToken(TokenKind.ValueOf(asString), start, subarray);
+                PushOneCharOrTwoCharToken(TokenKind.ValueOf(asString), start, subArray);
                 return;
             }
         }
 
-        _tokens.Add(new Token(TokenKind.Identifier, subarray, start, _pos));
+        _tokens.Add(new Token(TokenKind.Identifier, subArray, start, _pos));
     }
 
     private void PushIntToken(char[] data, bool isLong, int start, int end)
@@ -558,8 +558,8 @@ internal sealed class Tokenizer
         }
 
         _tokens.Add(isLong
-            ? new Token(TokenKind.LiteralHexlong, data, start, end)
-            : new Token(TokenKind.LiteralHexint, data, start, end));
+            ? new Token(TokenKind.LiteralHexLong, data, start, end)
+            : new Token(TokenKind.LiteralHexInt, data, start, end));
     }
 
     private void PushRealToken(char[] data, bool isFloat, int start, int end)
@@ -569,7 +569,7 @@ internal sealed class Tokenizer
             : new Token(TokenKind.LiteralReal, data, start, end));
     }
 
-    private char[] Subarray(int start, int end)
+    private char[] SubArray(int start, int end)
     {
         var result = new char[end - start];
         Array.Copy(_charsToProcess, start, result, 0, end - start);
@@ -659,7 +659,7 @@ internal sealed class Tokenizer
             return false;
         }
 
-        return (Flags[ch] & IsHexdigitFlag) != 0;
+        return (Flags[ch] & IsHexDigitFlag) != 0;
     }
 
     private bool IsExhausted()

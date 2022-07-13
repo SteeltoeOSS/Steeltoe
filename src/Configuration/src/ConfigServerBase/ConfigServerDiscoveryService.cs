@@ -88,8 +88,8 @@ internal sealed class ConfigServerDiscoveryService
             if (attempts <= Settings.RetryAttempts)
             {
                 Thread.CurrentThread.Join(backOff);
-                var nextBackoff = (int)(backOff * Settings.RetryMultiplier);
-                backOff = Math.Min(nextBackoff, Settings.RetryMaxInterval);
+                var nextBackOff = (int)(backOff * Settings.RetryMultiplier);
+                backOff = Math.Min(nextBackOff, Settings.RetryMaxInterval);
             }
             else
             {

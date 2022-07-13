@@ -35,11 +35,11 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
     public virtual object Invoke(IMessage requestMessage, params object[] args)
     {
-        var argVals = GetMethodArgumentValues(requestMessage, args);
+        var argValues = GetMethodArgumentValues(requestMessage, args);
 
         _logger?.LogTrace("Arguments: " + string.Join(", ", args));
 
-        return DoInvoke(argVals);
+        return DoInvoke(argValues);
     }
 
     protected virtual object[] GetMethodArgumentValues(IMessage message, params object[] providedArgs)

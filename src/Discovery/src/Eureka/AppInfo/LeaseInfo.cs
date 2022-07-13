@@ -27,18 +27,18 @@ public class LeaseInfo
 
     public long ServiceUpTimestamp { get; internal set; }
 
-    internal static LeaseInfo FromJson(JsonLeaseInfo jinfo)
+    internal static LeaseInfo FromJson(JsonLeaseInfo leaseInfo)
     {
         var info = new LeaseInfo();
-        if (jinfo != null)
+        if (leaseInfo != null)
         {
-            info.RenewalIntervalInSecs = jinfo.RenewalIntervalInSecs;
-            info.DurationInSecs = jinfo.DurationInSecs;
-            info.RegistrationTimestamp = DateTimeConversions.FromJavaMillis(jinfo.RegistrationTimestamp).Ticks;
-            info.LastRenewalTimestamp = DateTimeConversions.FromJavaMillis(jinfo.LastRenewalTimestamp).Ticks;
-            info.LastRenewalTimestampLegacy = DateTimeConversions.FromJavaMillis(jinfo.LastRenewalTimestampLegacy).Ticks;
-            info.EvictionTimestamp = DateTimeConversions.FromJavaMillis(jinfo.EvictionTimestamp).Ticks;
-            info.ServiceUpTimestamp = DateTimeConversions.FromJavaMillis(jinfo.ServiceUpTimestamp).Ticks;
+            info.RenewalIntervalInSecs = leaseInfo.RenewalIntervalInSecs;
+            info.DurationInSecs = leaseInfo.DurationInSecs;
+            info.RegistrationTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.RegistrationTimestamp).Ticks;
+            info.LastRenewalTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.LastRenewalTimestamp).Ticks;
+            info.LastRenewalTimestampLegacy = DateTimeConversions.FromJavaMillis(leaseInfo.LastRenewalTimestampLegacy).Ticks;
+            info.EvictionTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.EvictionTimestamp).Ticks;
+            info.ServiceUpTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.ServiceUpTimestamp).Ticks;
         }
 
         return info;
@@ -62,7 +62,7 @@ public class LeaseInfo
 
     internal JsonLeaseInfo ToJson()
     {
-        var jinfo = new JsonLeaseInfo
+        var leaseInfo = new JsonLeaseInfo
         {
             RenewalIntervalInSecs = RenewalIntervalInSecs,
             DurationInSecs = DurationInSecs,
@@ -72,6 +72,6 @@ public class LeaseInfo
             EvictionTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(EvictionTimestamp, DateTimeKind.Utc)),
             ServiceUpTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(ServiceUpTimestamp, DateTimeKind.Utc))
         };
-        return jinfo;
+        return leaseInfo;
     }
 }

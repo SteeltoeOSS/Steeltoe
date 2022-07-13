@@ -216,7 +216,7 @@ public class HystrixCommandMetrics : HystrixMetrics
         }
     }
 
-    public HealthCounts Healthcounts => _healthCountsStream.Latest;
+    public HealthCounts HealthCounts => _healthCountsStream.Latest;
 
     private void UnsubscribeAll()
     {

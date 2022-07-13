@@ -8,5 +8,5 @@ public class SpringCloudConfigHealth
 {
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultHealthEnabled;
 
-    public long TimeToLive { get; set; } = ConfigServerClientSettings.DefaultHealthTimetolive;
+    public long TimeToLive { get; set; } = ConfigServerClientSettings.DefaultHealthTimeToLive;
 }

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
@@ -17,7 +16,7 @@ using Xunit.Abstractions;
 
 #pragma warning disable S3966 // Objects should not be disposed more than once
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample.Test;
 
 public class HystrixUtilizationStreamTest : CommandStreamTest
 {

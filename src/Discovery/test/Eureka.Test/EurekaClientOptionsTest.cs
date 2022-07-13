@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public class EurekaClientOptionsTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Intializes_Defaults()
+    public void Constructor_Initializes_Defaults()
     {
         var opts = new EurekaClientOptions();
         Assert.True(opts.Enabled);

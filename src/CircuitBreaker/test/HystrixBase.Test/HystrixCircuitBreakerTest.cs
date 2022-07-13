@@ -66,7 +66,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.HealthCounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
     }
@@ -106,7 +106,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.HealthCounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
     }
@@ -146,7 +146,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.HealthCounts);
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
         Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
     }
@@ -295,7 +295,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + Time.CurrentTimeMillis + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.HealthCounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
@@ -307,14 +307,14 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // we should now allow 1 request, and upon success, should cause the circuit to be closed
         HystrixCommand<bool> cmd5 = new SuccessCommand(key, 10, sleepWindow);
-        _output.WriteLine("Starting test cmd : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Starting test cmd : " + Time.CurrentTimeMillis + cmd1.Metrics.HealthCounts);
         _ = await cmd5.Observe();
 
         // Allow window to pass, all requests should be open again
         // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        _output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.HealthCounts);
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (1)!");
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (2)!");
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (3)!");
@@ -504,14 +504,14 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         {
             get
             {
-                // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.Healthcounts);
+                // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.HealthCounts);
                 if (_forceShortCircuit)
                 {
                     return true;
                 }
                 else
                 {
-                    return _metrics.Healthcounts.ErrorCount >= 3;
+                    return _metrics.HealthCounts.ErrorCount >= 3;
                 }
             }
         }

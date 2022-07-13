@@ -41,10 +41,10 @@ public class TypeReference : SpelNode
             if (tc != SpelTypeCode.Object)
             {
                 // It is a primitive type
-                var atype = MakeArrayIfNecessary(tc.Type);
+                var type = MakeArrayIfNecessary(tc.Type);
                 exitTypeDescriptor = TypeDescriptor.Type;
-                _type = atype;
-                return new TypedValue(atype);
+                _type = type;
+                return new TypedValue(type);
             }
         }
 

@@ -65,8 +65,8 @@ public class RabbitMQHealthContributor : IHealthContributor
 
             try
             {
-                var serverproperties = RabbitMQTypeLocator.ConnectionInterface.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
-                result.Details.Add("version", Encoding.UTF8.GetString(serverproperties["version"] as byte[]));
+                var serverProperties = RabbitMQTypeLocator.ConnectionInterface.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
+                result.Details.Add("version", Encoding.UTF8.GetString(serverProperties["version"] as byte[]));
             }
             catch (Exception e)
             {

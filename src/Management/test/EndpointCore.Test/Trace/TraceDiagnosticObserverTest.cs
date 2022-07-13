@@ -47,11 +47,11 @@ public class TraceDiagnosticObserverTest : BaseTest
         var context = CreateRequest();
 
         var session = new TestSession();
-        ISessionFeature sessFeature = new SessionFeature
+        ISessionFeature sessionFeature = new SessionFeature
         {
             Session = session
         };
-        context.Features.Set(sessFeature);
+        context.Features.Set(sessionFeature);
 
         var result = obs.GetSessionId(context);
         Assert.Equal("TestSessionId", result);

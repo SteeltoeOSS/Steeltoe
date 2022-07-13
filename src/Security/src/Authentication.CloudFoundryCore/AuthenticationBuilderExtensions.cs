@@ -259,9 +259,9 @@ public static class AuthenticationBuilderExtensions
     /// <returns><see cref="AuthenticationBuilder"/> configured to use JWT Bearer tokens from UAA or Pivotal SSO.</returns>
     public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config, Action<JwtBearerOptions, IConfiguration> configurer)
     {
-        builder.AddJwtBearer(authenticationScheme, displayName, jwtoptions =>
+        builder.AddJwtBearer(authenticationScheme, displayName, jwtOptions =>
         {
-            configurer(jwtoptions, config);
+            configurer(jwtOptions, config);
         });
         return builder;
     }

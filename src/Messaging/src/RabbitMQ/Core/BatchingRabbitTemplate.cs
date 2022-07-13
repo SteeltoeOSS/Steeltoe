@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 public class BatchingRabbitTemplate : RabbitTemplate
 {
     private readonly IBatchingStrategy _batchingStrategy;
-    private readonly object _batchlock = new ();
+    private readonly object _batchLock = new ();
     private CancellationTokenSource _cancellationTokenSource;
     private Task _scheduledTask;
     private int _count;
@@ -77,7 +77,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
 
     public override void Send(string exchange, string routingKey, IMessage message, CorrelationData correlationData)
     {
-        lock (_batchlock)
+        lock (_batchLock)
         {
             _count++;
             if (correlationData != null)
@@ -132,7 +132,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
             return;
         }
 
-        lock (_batchlock)
+        lock (_batchLock)
         {
             foreach (var batch in _batchingStrategy.ReleaseBatches())
             {

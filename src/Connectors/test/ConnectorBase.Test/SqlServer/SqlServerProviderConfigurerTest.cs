@@ -47,7 +47,7 @@ public class SqlServerProviderConfigurerTest
     }
 
     [Fact]
-    public void Update_With_ServiceInfo_CredsInUrl_Updates_Config()
+    public void Update_With_ServiceInfo_CredentialsInUrl_Updates_Config()
     {
         var configurer = new SqlServerProviderConfigurer();
         var si = new SqlServerServiceInfo("MyId", "sqlserver://updateduser:updatedpassword@updatedserver:1433;databaseName=updateddb");
@@ -90,7 +90,7 @@ public class SqlServerProviderConfigurerTest
     }
 
     [Fact]
-    public void Configure_With_ServiceInfo_CredsInUrl_Overrides_Config()
+    public void Configure_With_ServiceInfo_CredentialsInUrl_Overrides_Config()
     {
         var configurer = new SqlServerProviderConfigurer();
 

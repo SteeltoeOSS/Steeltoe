@@ -17,12 +17,12 @@ public class BindingBuilderTest
     }
 
     [Fact]
-    public void FanoutBinding()
+    public void FanOutBinding()
     {
-        var fanoutExchange = new FanoutExchange("f");
-        var binding = BindingBuilder.Bind(_queue).To(fanoutExchange);
+        var fanOutExchange = new FanOutExchange("f");
+        var binding = BindingBuilder.Bind(_queue).To(fanOutExchange);
         Assert.NotNull(binding);
-        Assert.Equal(fanoutExchange.ExchangeName, binding.Exchange);
+        Assert.Equal(fanOutExchange.ExchangeName, binding.Exchange);
         Assert.Equal(string.Empty, binding.RoutingKey);
         Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
@@ -82,16 +82,16 @@ public class BindingBuilderTest
     [Fact]
     public void CustomBinding()
     {
-        var argumentobject = new object();
+        var argumentObject = new object();
         var customExchange = new CustomExchange("c");
         var routingKey = "r";
         var binding = BindingBuilder.
             Bind(_queue).
             To(customExchange).
             With(routingKey).
-            And(new Dictionary<string, object> { { "k", argumentobject } });
+            And(new Dictionary<string, object> { { "k", argumentObject } });
         Assert.NotNull(binding);
-        Assert.Equal(argumentobject, binding.Arguments["k"]);
+        Assert.Equal(argumentObject, binding.Arguments["k"]);
         Assert.Equal(customExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.Queue, binding.Type);
         Assert.Equal(_queue.QueueName, binding.Destination);
@@ -102,10 +102,10 @@ public class BindingBuilderTest
     public void ExchangeBinding()
     {
         var directExchange = new DirectExchange("d");
-        var fanoutExchange = new FanoutExchange("f");
-        var binding = BindingBuilder.Bind(directExchange).To(fanoutExchange);
+        var fanOutExchange = new FanOutExchange("f");
+        var binding = BindingBuilder.Bind(directExchange).To(fanOutExchange);
         Assert.NotNull(binding);
-        Assert.Equal(fanoutExchange.ExchangeName, binding.Exchange);
+        Assert.Equal(fanOutExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.Exchange, binding.Type);
         Assert.Equal(directExchange.ExchangeName, binding.Destination);
         Assert.Equal(string.Empty, binding.RoutingKey);

@@ -15,15 +15,15 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 {
     private readonly RequestDelegate _next;
 
-    public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<RefreshEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IManagementOptions managementOptions, ILogger<RefreshEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleRefreshRequestAsync(context);
         }

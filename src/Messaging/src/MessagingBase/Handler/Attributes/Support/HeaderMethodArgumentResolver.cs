@@ -25,13 +25,13 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
 
     protected override NamedValueInfo CreateNamedValueInfo(ParameterInfo parameter)
     {
-        var annot = parameter.GetCustomAttribute<HeaderAttribute>();
-        if (annot == null)
+        var annotation = parameter.GetCustomAttribute<HeaderAttribute>();
+        if (annotation == null)
         {
             throw new InvalidOperationException("No Header annotation");
         }
 
-        return new HeaderNamedValueInfo(annot);
+        return new HeaderNamedValueInfo(annotation);
     }
 
     protected override object ResolveArgumentInternal(ParameterInfo parameter, IMessage message, string name)

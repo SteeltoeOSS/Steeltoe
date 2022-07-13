@@ -306,8 +306,8 @@ public static class ReflectionHelpers
         var runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
         using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(AllRelevantPaths(runtimeAssemblies, typeof(T))));
         var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-        var assemblypaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory).Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
-        foreach (var assembly in assemblypaths)
+        var assemblyPaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory).Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
+        foreach (var assembly in assemblyPaths)
         {
             var filename = Path.GetFileNameWithoutExtension(assembly);
             if (!loadedAssemblies.Any(a => a.FullName.StartsWith(filename, StringComparison.InvariantCultureIgnoreCase)))

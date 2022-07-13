@@ -154,11 +154,11 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     /// <returns>This object typed as RedisCacheOptions.</returns>
     public object ToMicrosoftExtensionObject(Type optionsType)
     {
-        var msftConnection = Activator.CreateInstance(optionsType);
-        msftConnection.GetType().GetProperty("Configuration").SetValue(msftConnection, ToString());
-        msftConnection.GetType().GetProperty("InstanceName").SetValue(msftConnection, InstanceName);
+        var microsoftConnection = Activator.CreateInstance(optionsType);
+        microsoftConnection.GetType().GetProperty("Configuration").SetValue(microsoftConnection, ToString());
+        microsoftConnection.GetType().GetProperty("InstanceName").SetValue(microsoftConnection, InstanceName);
 
-        return msftConnection;
+        return microsoftConnection;
     }
 
     /// <summary>

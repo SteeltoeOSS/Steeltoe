@@ -65,8 +65,8 @@ public class DefaultTypeMapperTest
     {
         var accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(List<>).FullName);
-        var excep = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
-        Assert.Contains("Could not resolve ", excep.Message);
+        var exception = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
+        Assert.Contains("Could not resolve ", exception.Message);
     }
 
     [Fact]
@@ -115,8 +115,8 @@ public class DefaultTypeMapperTest
         accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
         accessor.SetHeader(_typeMapper.KeyClassIdFieldName, typeof(string).ToString());
 
-        var excep = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
-        Assert.Contains("Could not resolve ", excep.Message);
+        var exception = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
+        Assert.Contains("Could not resolve ", exception.Message);
     }
 
     [Fact]

@@ -120,17 +120,17 @@ public class QueueChannelTest
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         var latch1 = new CountdownEvent(1);
         var latch2 = new CountdownEvent(1);
-        void RecvAction1()
+        void ReceiveAction1()
         {
             var message = channel.Receive(0);
             messageNull = message == null;
             latch1.Signal();
         }
 
-        Task.Run(RecvAction1);
+        Task.Run(ReceiveAction1);
         Assert.True(latch1.Wait(10000));
         channel.Send(Message.Create("testing"));
-        void RecvAction2()
+        void ReceiveAction2()
         {
             var message = channel.Receive(0);
             if (message != null)
@@ -139,7 +139,7 @@ public class QueueChannelTest
             }
         }
 
-        Task.Run(RecvAction2);
+        Task.Run(ReceiveAction2);
         Assert.True(latch2.Wait(10000));
     }
 

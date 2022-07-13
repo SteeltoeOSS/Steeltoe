@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint;
 public class Exposure
 {
     private const string ExposurePrefix = "management:endpoints:actuator:exposure";
-    private const string ExposureSecondchancePrefix = "management:endpoints:web:exposure";
+    private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";
     private static readonly List<string> DefaultInclude = new () { "health", "info" };
 
     public Exposure()
@@ -27,7 +27,7 @@ public class Exposure
             section.Bind(this);
         }
 
-        var secondSection = config.GetSection(ExposureSecondchancePrefix);
+        var secondSection = config.GetSection(ExposureSecondChancePrefix);
         if (secondSection.Exists())
         {
             Include = GetListFromConfigCsvString(secondSection, "include");

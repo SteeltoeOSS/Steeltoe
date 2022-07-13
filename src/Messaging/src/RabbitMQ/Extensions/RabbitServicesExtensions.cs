@@ -405,12 +405,12 @@ public static class RabbitServicesExtensions
         return services.AddRabbitListenerEndpointRegistry(null, configure);
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistry<TRegisty>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TRegisty> configure = null)
-        where TRegisty : IRabbitListenerEndpointRegistry
+    public static IServiceCollection AddRabbitListenerEndpointRegistry<TRegistry>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TRegistry> configure = null)
+        where TRegistry : IRabbitListenerEndpointRegistry
     {
         services.TryAddSingleton<IRabbitListenerEndpointRegistry>(p =>
         {
-            var instance = (TRegisty)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(TRegisty));
+            var instance = (TRegistry)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(TRegistry));
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -633,12 +633,12 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitDirecListenerContainer(this IServiceCollection services, Func<IServiceProvider, DirectMessageListenerContainer> factory)
+    public static IServiceCollection AddRabbitDirectListenerContainer(this IServiceCollection services, Func<IServiceProvider, DirectMessageListenerContainer> factory)
     {
         return services.AddRabbitListenerContainer(factory);
     }
 
-    public static IServiceCollection AddRabbitDirecListenerContainer(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, DirectMessageListenerContainer> configure = null)
+    public static IServiceCollection AddRabbitDirectListenerContainer(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, DirectMessageListenerContainer> configure = null)
     {
         return services.AddRabbitListenerContainer(serviceName, configure);
     }

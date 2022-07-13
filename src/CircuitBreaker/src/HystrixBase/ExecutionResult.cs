@@ -437,7 +437,7 @@ public class ExecutionResult
     /// </summary>
     public int UserThreadLatency { get; }
 
-    public long CommandRunStartTimeInNanos => StartTimestamp * 1000 * 1000;
+    public long CommandRunStartTimeInNanoseconds => StartTimestamp * 1000 * 1000;
 
     public Exception Exception { get; }
 

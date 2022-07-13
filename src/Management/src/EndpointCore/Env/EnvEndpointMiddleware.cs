@@ -14,15 +14,15 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 {
     private readonly RequestDelegate _next;
 
-    public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleEnvRequestAsync(context);
         }

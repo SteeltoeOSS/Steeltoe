@@ -11,7 +11,7 @@ public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
 {
     public static readonly Tags HystrixRabbitServiceTags = new ("hystrix-amqp");
 
-    private static readonly string[] Scheme = { RabbitMQServiceInfo.AmqpScheme, RabbitMQServiceInfo.AmqpsScheme };
+    private static readonly string[] Scheme = { RabbitMQServiceInfo.AmqpScheme, RabbitMQServiceInfo.AmqpSecureScheme };
 
     public HystrixRabbitMQServiceInfoFactory()
         : base(HystrixRabbitServiceTags, Scheme)

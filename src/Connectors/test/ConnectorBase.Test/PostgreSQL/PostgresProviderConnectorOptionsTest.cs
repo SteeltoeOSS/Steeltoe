@@ -37,13 +37,13 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new PostgresProviderConnectorOptions(config);
-        Assert.Equal("localhost", sconfig.Host);
-        Assert.Equal(1234, sconfig.Port);
-        Assert.Equal("password", sconfig.Password);
-        Assert.Equal("username", sconfig.Username);
-        Assert.Equal("searchpath", sconfig.SearchPath);
-        Assert.Null(sconfig.ConnectionString);
+        var options = new PostgresProviderConnectorOptions(config);
+        Assert.Equal("localhost", options.Host);
+        Assert.Equal(1234, options.Port);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("username", options.Username);
+        Assert.Equal("searchpath", options.SearchPath);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
@@ -57,9 +57,9 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(config);
 
-        Assert.StartsWith(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
+        Assert.StartsWith(appsettings["postgres:client:ConnectionString"], options.ToString());
     }
 
     [Fact]
@@ -79,9 +79,9 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(config);
 
-        Assert.Equal(expected, sconfig.ToString());
+        Assert.Equal(expected, options.ToString());
     }
 
     [Fact]
@@ -104,9 +104,9 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(config);
 
-        Assert.NotEqual(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
+        Assert.NotEqual(appsettings["postgres:client:ConnectionString"], options.ToString());
     }
 
     [Fact]
@@ -130,9 +130,9 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(config);
 
-        Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
-        Assert.EndsWith($"Search Path={sconfig.SearchPath};", sconfig.ToString());
+        Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString());
+        Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString());
     }
 }

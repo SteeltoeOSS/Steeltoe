@@ -290,12 +290,12 @@ public class MethodInvocationTests : AbstractExpressionTests
 
         private bool IsAnnotated(MethodInfo method)
         {
-            var anno = method.GetCustomAttribute<AnnoAttribute>();
-            return anno != null;
+            var attribute = method.GetCustomAttribute<AnnotationAttribute>();
+            return attribute != null;
         }
     }
 
-    public class AnnoAttribute : Attribute
+    public class AnnotationAttribute : Attribute
     {
     }
 
@@ -306,7 +306,7 @@ public class MethodInvocationTests : AbstractExpressionTests
             return i;
         }
 
-        [Anno]
+        [Annotation]
         public string DoIt(double d)
         {
             return $"double {d:F1}";

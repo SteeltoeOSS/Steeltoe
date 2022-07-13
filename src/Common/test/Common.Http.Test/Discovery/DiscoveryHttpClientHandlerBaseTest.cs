@@ -33,7 +33,7 @@ public class DiscoveryHttpClientHandlerBaseTest
     }
 
     [Fact]
-    public void LookupService_DoesntFindService_ReturnsOriginalURI()
+    public void LookupService_DoesNotFindService_ReturnsOriginalURI()
     {
         IDiscoveryClient client = new TestDiscoveryClient();
         var handler = new DiscoveryHttpClientHandlerBase(client);
@@ -66,7 +66,7 @@ public class DiscoveryHttpClientHandlerBaseTest
     }
 
     [Fact]
-    public async Task LookupServiceAsync_DoesntFindService_ReturnsOriginalURI()
+    public async Task LookupServiceAsync_DoesNotFindService_ReturnsOriginalURI()
     {
         IDiscoveryClient client = new TestDiscoveryClient();
         var handler = new DiscoveryHttpClientHandlerBase(client);

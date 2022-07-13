@@ -19,16 +19,16 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test;
 
 public class MetricsEndpointMiddlewareTest : BaseTest
 {
-    private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
+    private readonly PullMetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
 
     [Fact]
     public void ParseTag_ReturnsExpected()
     {
         var opts = new MetricsEndpointOptions();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
         var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
-        var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         Assert.Null(middle.ParseTag("foobar"));
         Assert.Equal(new KeyValuePair<string, string>("foo", "bar"), middle.ParseTag("foo:bar"));
@@ -40,11 +40,11 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public void ParseTags_ReturnsExpected()
     {
         var opts = new MetricsEndpointOptions();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
-        var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
         var result = middle.ParseTags(context1.Request.Query);
@@ -74,11 +74,11 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public void GetMetricName_ReturnsExpected()
     {
         var opts = new MetricsEndpointOptions();
-        var mopts = new CloudFoundryManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
-        var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
         Assert.Null(middle.GetMetricName(context1.Request));
@@ -94,12 +94,12 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
     {
         var opts = new MetricsEndpointOptions();
-        var mopts = new ActuatorManagementOptions { Path = "/" };
+        var managementOptions = new ActuatorManagementOptions { Path = "/" };
 
-        mopts.EndpointOptions.Add(opts);
+        managementOptions.EndpointOptions.Add(opts);
 
         var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { new SteeltoeExporter(_scraperOptions) });
-        var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         var context1 = CreateRequest("GET", "/metrics");
         Assert.Null(middle.GetMetricName(context1.Request));
@@ -115,14 +115,14 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
     {
         var opts = new MetricsEndpointOptions();
-        var mopts = new CloudFoundryManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
         using var meterProvider = GetTestMetrics(null, exporter, null);
         var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { exporter });
-        var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
 
@@ -137,13 +137,13 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
     {
         var opts = new MetricsEndpointOptions();
-        var mopts = new CloudFoundryManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
         var exporter = new SteeltoeExporter(_scraperOptions);
         var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { exporter });
 
         using var meterProvider = GetTestMetrics(null, exporter, null);
-        var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
 
@@ -155,13 +155,13 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
     {
         var opts = new MetricsEndpointOptions();
-        var mopts = new CloudFoundryManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
         var exporter = new SteeltoeExporter(_scraperOptions);
         using var meterProvider = GetTestMetrics(null, exporter, null);
 
         var ep = new MetricsEndpoint(opts, new List<MetricsExporter> { exporter });
-        var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         SetupTestView(exporter);
 

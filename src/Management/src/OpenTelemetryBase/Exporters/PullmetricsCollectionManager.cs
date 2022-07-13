@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
 // Adapted from OpenTelemetry.Net project
-internal sealed partial class PullmetricsCollectionManager
+internal sealed partial class PullMetricsCollectionManager
 {
     private readonly MetricsExporter _exporter;
     private readonly Func<Batch<Metric>, ExportResult> _onCollectRef;
@@ -26,7 +26,7 @@ internal sealed partial class PullmetricsCollectionManager
 
     private ICollectionResponse _previousView;
 
-    public PullmetricsCollectionManager(MetricsExporter exporter)
+    public PullMetricsCollectionManager(MetricsExporter exporter)
     {
         this._exporter = exporter;
         _scrapeResponseCacheDurationInMilliseconds = exporter.ScrapeResponseCacheDurationMilliseconds;

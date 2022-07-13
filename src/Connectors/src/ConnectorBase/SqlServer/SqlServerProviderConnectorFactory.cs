@@ -18,10 +18,10 @@ public class SqlServerProviderConnectorFactory
     {
     }
 
-    public SqlServerProviderConnectorFactory(SqlServerServiceInfo sinfo, SqlServerProviderConnectorOptions config, Type type)
+    public SqlServerProviderConnectorFactory(SqlServerServiceInfo serviceInfo, SqlServerProviderConnectorOptions options, Type type)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
-        _info = sinfo;
+        _config = options ?? throw new ArgumentNullException(nameof(options));
+        _info = serviceInfo;
         ConnectorType = type;
     }
 

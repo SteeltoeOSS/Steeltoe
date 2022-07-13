@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class SimpleEvaluationContext : IEvaluationContext
 {
-    private static readonly List<IConstructorResolver> EmptyConstrResolver = new ();
+    private static readonly List<IConstructorResolver> EmptyConstructorResolver = new ();
     private readonly Dictionary<string, object> _variables = new ();
 
     private SimpleEvaluationContext(List<IPropertyAccessor> accessors, List<IMethodResolver> resolvers, ITypeConverter converter, ITypedValue rootObject)
@@ -25,7 +25,7 @@ public class SimpleEvaluationContext : IEvaluationContext
 
     public List<IPropertyAccessor> PropertyAccessors { get; }
 
-    public List<IConstructorResolver> ConstructorResolvers => EmptyConstrResolver;
+    public List<IConstructorResolver> ConstructorResolvers => EmptyConstructorResolver;
 
     public List<IMethodResolver> MethodResolvers { get; }
 

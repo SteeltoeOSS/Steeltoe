@@ -7,7 +7,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test;
 public class CredHubServiceCollectionExtensionsTest
 {
     ////[Fact(Skip = "This test is incomplete, would require a mocked server to return the token")]
-    ////public void AddCredHubClient_WithUAACreds_UsesUAACreds()
+    ////public void AddCredHubClient_WithUAACredentials_UsesUAACredentials()
     ////{
     ////    // Arrange
     ////    IServiceCollection services = new ServiceCollection();

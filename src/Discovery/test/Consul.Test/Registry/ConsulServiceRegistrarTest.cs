@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test;
 public class ConsulServiceRegistrarTest
 {
     [Fact]
-    public void Construtor_ThrowsOnNulls()
+    public void Constructor_ThrowsOnNulls()
     {
         var registry = new Mock<IConsulServiceRegistry>().Object;
         var options = new ConsulDiscoveryOptions();

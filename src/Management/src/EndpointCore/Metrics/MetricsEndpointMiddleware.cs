@@ -17,15 +17,15 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 {
     private readonly RequestDelegate _next;
 
-    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger)
+    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions managementOptions, ILogger<MetricsEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -78,12 +78,12 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal string GetMetricName(HttpRequest request)
     {
-        if (mgmtOptions == null)
+        if (managementOptions == null)
         {
             return GetMetricName(request, innerEndpoint.Path);
         }
 
-        var path = $"{mgmtOptions.Path}/{innerEndpoint.Id}".Replace("//", "/");
+        var path = $"{managementOptions.Path}/{innerEndpoint.Id}".Replace("//", "/");
         var metricName = GetMetricName(request, path);
 
         return metricName;

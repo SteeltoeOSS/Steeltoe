@@ -15,15 +15,15 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
 {
     private readonly RequestDelegate _next;
 
-    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions managementOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleEntityFrameworkRequestAsync(context);
         }

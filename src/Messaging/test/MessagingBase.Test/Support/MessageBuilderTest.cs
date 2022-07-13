@@ -194,7 +194,7 @@ public class MessageBuilderTest
     {
         var headerAccessor = new MessageHeaderAccessor
         {
-            IdGenerator = new TestIdGenerater()
+            IdGenerator = new TestIdGenerator()
         };
 
         var message = MessageBuilder.CreateMessage("foo", headerAccessor.MessageHeaders);
@@ -222,7 +222,7 @@ public class MessageBuilderTest
         Assert.Equal("bar3", message3.Headers.Get<string>("foo"));
     }
 
-    private sealed class TestIdGenerater : IIdGenerator
+    private sealed class TestIdGenerator : IIdGenerator
     {
         public string GenerateId()
         {

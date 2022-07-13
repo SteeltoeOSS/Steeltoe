@@ -12,10 +12,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 public class CloudFoundryOAuthOptionsTest
 {
     private const string DefaultOauthUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}";
-    private const string DefaultAccesstokenUrl = DefaultOauthUrl + CloudFoundryDefaults.AccessTokenUri;
+    private const string DefaultAccessTokenUrl = DefaultOauthUrl + CloudFoundryDefaults.AccessTokenUri;
     private const string DefaultAuthorizationUrl = DefaultOauthUrl + CloudFoundryDefaults.AuthorizationUri;
-    private const string DefaultChecktokenUrl = DefaultOauthUrl + CloudFoundryDefaults.CheckTokenUri;
-    private const string DefaultUserinfoUrl = DefaultOauthUrl + CloudFoundryDefaults.UserInfoUri;
+    private const string DefaultCheckTokenUrl = DefaultOauthUrl + CloudFoundryDefaults.CheckTokenUri;
+    private const string DefaultUserInfoUrl = DefaultOauthUrl + CloudFoundryDefaults.UserInfoUri;
 
     public static TheoryData<string, string, string, string, string> SetEndpointsData()
     {
@@ -35,7 +35,7 @@ public class CloudFoundryOAuthOptionsTest
     }
 
     [Fact]
-    public void DefaultConstructor_SetsupDefaultOptions()
+    public void DefaultConstructor_SetsUpDefaultOptions()
     {
         var opts = new CloudFoundryOAuthOptions();
 
@@ -43,10 +43,10 @@ public class CloudFoundryOAuthOptionsTest
         Assert.Equal(CloudFoundryDefaults.ClientId, opts.ClientId);
         Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);
         Assert.Equal(new PathString("/signin-cloudfoundry"), opts.CallbackPath);
-        Assert.Equal(DefaultAccesstokenUrl, opts.TokenEndpoint);
+        Assert.Equal(DefaultAccessTokenUrl, opts.TokenEndpoint);
         Assert.Equal(DefaultAuthorizationUrl, opts.AuthorizationEndpoint);
-        Assert.Equal(DefaultChecktokenUrl, opts.TokenInfoUrl);
-        Assert.Equal(DefaultUserinfoUrl, opts.UserInformationEndpoint);
+        Assert.Equal(DefaultCheckTokenUrl, opts.TokenInfoUrl);
+        Assert.Equal(DefaultUserInfoUrl, opts.UserInformationEndpoint);
         Assert.True(opts.ValidateCertificates);
         Assert.Equal(6, opts.ClaimActions.Count());
         Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, opts.SignInScheme);
@@ -66,9 +66,9 @@ public class CloudFoundryOAuthOptionsTest
 
         options.SetEndpoints(newDomain);
 
-        Assert.Equal(expectedAccessTokenUrl ?? DefaultAccesstokenUrl, options.TokenEndpoint);
+        Assert.Equal(expectedAccessTokenUrl ?? DefaultAccessTokenUrl, options.TokenEndpoint);
         Assert.Equal(expectedAuthorizationUrl ?? DefaultAuthorizationUrl, options.AuthorizationEndpoint);
-        Assert.Equal(expectedCheckTokenUrl ?? DefaultChecktokenUrl, options.TokenInfoUrl);
-        Assert.Equal(expectedUserInfoUrl ?? DefaultUserinfoUrl, options.UserInformationEndpoint);
+        Assert.Equal(expectedCheckTokenUrl ?? DefaultCheckTokenUrl, options.TokenInfoUrl);
+        Assert.Equal(expectedUserInfoUrl ?? DefaultUserInfoUrl, options.UserInformationEndpoint);
     }
 }

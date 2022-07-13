@@ -91,8 +91,8 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         DefaultRequeueRejected = containerOptions.DefaultRequeueRejected;
         if (containerOptions.IdleEventInterval.HasValue)
         {
-            var asMilli = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
-            IdleEventInterval = asMilli;
+            var asMilliseconds = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
+            IdleEventInterval = asMilliseconds;
         }
 
         MissingQueuesFatal = containerOptions.MissingQueuesFatal;
@@ -107,7 +107,7 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
             //                RabbitRetryTemplateCustomizer.Target.LISTENER);
             // builder.retryOperations(retryTemplate);
             // MessageRecoverer recoverer = (this.messageRecoverer != null)
-            //        ? this.messageRecoverer : new RejectAndDontRequeueRecoverer();
+            //        ? this.messageRecoverer : new RejectAndDoNotRequeueRecoverer();
             // builder.recoverer(recoverer);
             // factory.setAdviceChain(builder.build());
         }

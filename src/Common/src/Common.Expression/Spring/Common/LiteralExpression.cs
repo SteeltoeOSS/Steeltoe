@@ -84,12 +84,12 @@ public class LiteralExpression : IExpression
         return typeof(string);
     }
 
-    public Type GetValueType(object rootobject)
+    public Type GetValueType(object rootObject)
     {
         return typeof(string);
     }
 
-    public Type GetValueType(IEvaluationContext context, object rootobject)
+    public Type GetValueType(IEvaluationContext context, object rootObject)
     {
         return typeof(string);
     }
@@ -99,7 +99,7 @@ public class LiteralExpression : IExpression
         return typeof(string);
     }
 
-    public bool IsWritable(object rootobject)
+    public bool IsWritable(object rootObject)
     {
         return false;
     }
@@ -109,12 +109,12 @@ public class LiteralExpression : IExpression
         return false;
     }
 
-    public bool IsWritable(IEvaluationContext context, object rootobject)
+    public bool IsWritable(IEvaluationContext context, object rootObject)
     {
         return false;
     }
 
-    public void SetValue(object rootobject, object value)
+    public void SetValue(object rootObject, object value)
     {
         throw new EvaluationException(ExpressionString, "Cannot call SetValue() on a LiteralExpression");
     }
@@ -124,7 +124,7 @@ public class LiteralExpression : IExpression
         throw new EvaluationException(ExpressionString, "Cannot call SetValue() on a LiteralExpression");
     }
 
-    public void SetValue(IEvaluationContext context, object rootobject, object value)
+    public void SetValue(IEvaluationContext context, object rootObject, object value)
     {
         throw new EvaluationException(ExpressionString, "Cannot call SetValue() on a LiteralExpression");
     }

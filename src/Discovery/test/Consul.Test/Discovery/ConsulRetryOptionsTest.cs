@@ -9,7 +9,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test;
 public class ConsulRetryOptionsTest
 {
     [Fact]
-    public void Constructor_InitsDefaults()
+    public void Constructor_InitializesDefaults()
     {
         var opts = new ConsulRetryOptions();
         Assert.False(opts.Enabled);

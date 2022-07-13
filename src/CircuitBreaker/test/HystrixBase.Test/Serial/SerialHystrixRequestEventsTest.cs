@@ -454,7 +454,7 @@ public class SerialHystrixRequestEventsTest
             get { return _executionResult.ExecutionLatency; }
         }
 
-        public long CommandRunStartTimeInNanos
+        public long CommandRunStartTimeInNanoseconds
         {
             get { return Time.CurrentTimeMillis; }
         }

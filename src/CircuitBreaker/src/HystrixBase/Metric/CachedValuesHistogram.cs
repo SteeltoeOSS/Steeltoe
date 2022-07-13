@@ -43,9 +43,9 @@ public class CachedValuesHistogram
 
     public static LongHistogram GetNewHistogram()
     {
-        var histo = new LongHistogram(1, 2, NumberSignificantDigits);
-        histo.Reset();
-        return histo;
+        var histogram = new LongHistogram(1, 2, NumberSignificantDigits);
+        histogram.Reset();
+        return histogram;
     }
 
     public static CachedValuesHistogram BackedBy(LongHistogram underlying)

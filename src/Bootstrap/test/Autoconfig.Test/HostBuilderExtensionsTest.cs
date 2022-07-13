@@ -50,7 +50,7 @@ public class HostBuilderExtensionsTest
                 SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore,
                 SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore
             });
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
         var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
@@ -160,7 +160,7 @@ public class HostBuilderExtensionsTest
     {
         var exclusions = SteeltoeAssemblies.AllAssemblies
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeDiscoveryClientBase });
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -176,7 +176,7 @@ public class HostBuilderExtensionsTest
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeDiscoveryClientCore });
 
         var host = new HostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .AddSteeltoe(exclusions).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
 
@@ -257,7 +257,7 @@ public class HostBuilderExtensionsTest
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementEndpointCore });
 
         var host = new HostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
             .AddSteeltoe(exclusions).Build();
         var exporter = host.Services.GetService<WavefrontMetricsExporter>();
 
@@ -271,7 +271,7 @@ public class HostBuilderExtensionsTest
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementTracingCore });
 
         var host = new HostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
             .AddSteeltoe(exclusions).Build();
 
         var tracerProvider = host.Services.GetService<TracerProvider>();

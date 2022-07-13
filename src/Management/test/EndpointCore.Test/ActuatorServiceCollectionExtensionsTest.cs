@@ -50,7 +50,7 @@ public class ActuatorServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddAllActuators_YesCFonCF()
+    public void AddAllActuators_YesCF_onCF()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
@@ -63,7 +63,7 @@ public class ActuatorServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddAllActuators_NoCFoffCF()
+    public void AddAllActuators_NoCF_offCF()
     {
         var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 

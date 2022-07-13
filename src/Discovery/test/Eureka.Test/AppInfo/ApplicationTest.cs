@@ -91,12 +91,12 @@ public class ApplicationTest : AbstractBaseTest
     [Fact]
     public void FromJsonApplication_Correct()
     {
-        var jinfo = new JsonInstanceInfo
+        var instanceInfo = new JsonInstanceInfo
         {
             InstanceId = "InstanceId",
             AppName = "myApp",
             AppGroupName = "AppGroupName",
-            IpAddr = "IpAddr",
+            IpAddress = "IpAddr",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
@@ -129,13 +129,13 @@ public class ApplicationTest : AbstractBaseTest
             AsgName = "AsgName"
         };
 
-        var japp = new JsonApplication
+        var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo> { jinfo }
+            Instances = new List<JsonInstanceInfo> { instanceInfo }
         };
 
-        var app = Application.FromJsonApplication(japp);
+        var app = Application.FromJsonApplication(application);
 
         // Verify
         Assert.NotNull(app);
@@ -149,10 +149,10 @@ public class ApplicationTest : AbstractBaseTest
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("myApp", info.AppName);
         Assert.Equal("AppGroupName", info.AppGroupName);
-        Assert.Equal("IpAddr", info.IpAddr);
+        Assert.Equal("IpAddr", info.IpAddress);
         Assert.Equal("Sid", info.Sid);
         Assert.Equal(100, info.Port);
-        Assert.True(info.IsUnsecurePortEnabled);
+        Assert.True(info.IsInsecurePortEnabled);
         Assert.Equal(100, info.SecurePort);
         Assert.False(info.IsSecurePortEnabled);
         Assert.Equal("HomePageUrl", info.HomePageUrl);

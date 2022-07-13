@@ -177,20 +177,20 @@ public static class MySqlDbContextOptionsExtensions
         var extensionType = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         MethodInfo useMethod;
-        object[] parms;
+        object[] parameters;
 
         // the signature changed in 5.0 to require a param of type ServerVersion - use the presence of this new type to select the signature
         if (EntityFrameworkCoreTypeLocator.MySqlVersionType == null)
         {
             useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
-            parms = new[] { builder, connection, mySqlOptionsAction };
+            parameters = new[] { builder, connection, mySqlOptionsAction };
         }
         else
         {
             // If the server version wasn't passed in, use the EF Core lib to autodetect it (this is the part that creates an extra connection)
             serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new object[] { connection });
             useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), EntityFrameworkCoreTypeLocator.MySqlVersionType, typeof(Action<DbContextOptionsBuilder>) });
-            parms = new[] { builder, connection, serverVersion, mySqlOptionsAction };
+            parameters = new[] { builder, connection, serverVersion, mySqlOptionsAction };
         }
 
         if (extensionType == null)
@@ -198,7 +198,7 @@ public static class MySqlDbContextOptionsExtensions
             throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql EntityFramework Core assembly");
         }
 
-        var result = ReflectionHelpers.Invoke(useMethod, null, parms);
+        var result = ReflectionHelpers.Invoke(useMethod, null, parameters);
         if (result == null)
         {
             throw new ConnectorException($"Failed to invoke UseMySql extension, connection: {connection}");

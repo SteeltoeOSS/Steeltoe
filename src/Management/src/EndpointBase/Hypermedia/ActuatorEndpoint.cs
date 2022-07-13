@@ -12,12 +12,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
 {
     private readonly ILogger<ActuatorEndpoint> _logger;
-    private readonly ActuatorManagementOptions _mgmtOption;
+    private readonly ActuatorManagementOptions _managementOption;
 
-    public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
+    public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions managementOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)
     {
-        _mgmtOption = mgmtOptions;
+        _managementOption = managementOptions;
         _logger = logger;
     }
 
@@ -25,7 +25,7 @@ public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoi
 
     public override Links Invoke(string baseUrl)
     {
-        var service = new HypermediaService(_mgmtOption, innerOptions, _logger);
+        var service = new HypermediaService(_managementOption, innerOptions, _logger);
         return service.Invoke(baseUrl);
     }
 }

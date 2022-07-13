@@ -58,8 +58,8 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -72,8 +72,8 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         template.Send(string.Empty, Route, message);
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -103,10 +103,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -123,10 +123,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
         template.Send(string.Empty, Route, message);
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003bar\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003bar\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -141,10 +141,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -159,10 +159,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("f", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("f", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -177,8 +177,8 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
         template.Send(string.Empty, Route, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -542,11 +542,11 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         {
             ConnectionFactory = _connectionFactory
         };
-        var deflatorPostProcessor = new DeflaterPostProcessor
+        var deflaterPostProcessor = new DeflaterPostProcessor
         {
             Level = CompressionLevel.Optimal
         };
-        template.SetBeforePublishPostProcessors(deflatorPostProcessor);
+        template.SetBeforePublishPostProcessors(deflaterPostProcessor);
         var accessor = new RabbitHeaderAccessor(new MessageHeaders());
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
@@ -568,11 +568,11 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         {
             ConnectionFactory = _connectionFactory
         };
-        var deflatorPostProcessor = new DeflaterPostProcessor
+        var deflaterPostProcessor = new DeflaterPostProcessor
         {
             Level = CompressionLevel.Fastest
         };
-        template.SetBeforePublishPostProcessors(deflatorPostProcessor);
+        template.SetBeforePublishPostProcessors(deflaterPostProcessor);
         var accessor = new RabbitHeaderAccessor(new MessageHeaders());
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
@@ -594,11 +594,11 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         {
             ConnectionFactory = _connectionFactory
         };
-        var deflatorPostProcessor = new DeflaterPostProcessor
+        var deflaterPostProcessor = new DeflaterPostProcessor
         {
             Level = CompressionLevel.Fastest
         };
-        template.SetBeforePublishPostProcessors(deflatorPostProcessor);
+        template.SetBeforePublishPostProcessors(deflaterPostProcessor);
         var accessor = new RabbitHeaderAccessor(new MessageHeaders())
         {
             ContentEncoding = "foo"

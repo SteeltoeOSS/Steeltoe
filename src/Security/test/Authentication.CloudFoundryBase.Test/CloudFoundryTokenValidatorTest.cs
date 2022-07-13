@@ -11,10 +11,10 @@ public class CloudFoundryTokenValidatorTest
     [Fact]
     public void ValidateIssuer_ValidatesCorrectly()
     {
-        var cftv = new CloudFoundryTokenValidator();
+        var validator = new CloudFoundryTokenValidator();
 
-        var uaaResult = cftv.ValidateIssuer("https://uaa.system.testcloud.com/", null, null);
-        var foobarResult = cftv.ValidateIssuer("https://foobar.system.testcloud.com/", null, null);
+        var uaaResult = validator.ValidateIssuer("https://uaa.system.testcloud.com/", null, null);
+        var foobarResult = validator.ValidateIssuer("https://foobar.system.testcloud.com/", null, null);
 
         Assert.NotNull(uaaResult);
         Assert.Null(foobarResult);

@@ -37,9 +37,9 @@ public class RedisHealthContributorTest
     {
         var redisOptions = new RedisCacheConnectorOptions { ConnectTimeout = 1 };
         var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6378");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new RedisServiceConnectorFactory(sInfo, redisOptions, RedisTypeLocator.StackExchangeImplementation, RedisTypeLocator.StackExchangeOptions, RedisTypeLocator.StackExchangeInitializer);
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.StackExchangeImplementation, logrFactory.CreateLogger<RedisHealthContributor>());
+        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.StackExchangeImplementation, factory.CreateLogger<RedisHealthContributor>());
 
         var status = h.Health();
 
@@ -52,9 +52,9 @@ public class RedisHealthContributorTest
     {
         var redisOptions = new RedisCacheConnectorOptions();
         var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6379");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new RedisServiceConnectorFactory(sInfo, redisOptions, RedisTypeLocator.StackExchangeImplementation, RedisTypeLocator.StackExchangeOptions, RedisTypeLocator.StackExchangeInitializer);
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.StackExchangeImplementation, logrFactory.CreateLogger<RedisHealthContributor>());
+        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.StackExchangeImplementation, factory.CreateLogger<RedisHealthContributor>());
 
         var status = h.Health();
 
@@ -66,9 +66,9 @@ public class RedisHealthContributorTest
     {
         var redisOptions = new RedisCacheConnectorOptions { ConnectTimeout = 1 };
         var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6378");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new RedisServiceConnectorFactory(sInfo, redisOptions, RedisTypeLocator.MicrosoftImplementation, RedisTypeLocator.MicrosoftOptions, null);
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.MicrosoftImplementation, logrFactory.CreateLogger<RedisHealthContributor>());
+        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.MicrosoftImplementation, factory.CreateLogger<RedisHealthContributor>());
 
         var status = h.Health();
 
@@ -81,9 +81,9 @@ public class RedisHealthContributorTest
     {
         var redisOptions = new RedisCacheConnectorOptions();
         var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6379");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new RedisServiceConnectorFactory(sInfo, redisOptions, RedisTypeLocator.MicrosoftImplementation, RedisTypeLocator.MicrosoftOptions, null);
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.MicrosoftImplementation, logrFactory.CreateLogger<RedisHealthContributor>());
+        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.MicrosoftImplementation, factory.CreateLogger<RedisHealthContributor>());
 
         var status = h.Health();
 

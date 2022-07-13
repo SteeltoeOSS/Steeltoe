@@ -46,7 +46,7 @@ namespace Steeltoe.Stream.Binder.Rabbit;
 
 public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 {
-    private static readonly SimplePassthroughMessageConverter PassThoughConverter = new ();
+    private static readonly SimplePassThroughMessageConverter PassThoughConverter = new ();
     private static readonly IMessageHeadersConverter InboundMessagePropertiesConverter = new DefaultBinderMessagePropertiesConverter();
     private static readonly RabbitMessageHeaderErrorMessageStrategy ErrorMessageStrategy = new ();
     private static readonly Regex InterceptorNeededPattern = new ("(Payload|#root|#this)");
@@ -543,7 +543,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     private sealed class RejectingErrorMessageHandler : IMessageHandler
     {
-        private readonly RejectAndDontRequeueRecoverer _recoverer = new ();
+        private readonly RejectAndDoNotRequeueRecoverer _recoverer = new ();
         private readonly ILogger _logger;
 
         public RejectingErrorMessageHandler(ILogger logger)
@@ -559,7 +559,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             if (message is not MessagingSupport.ErrorMessage errorMessage)
             {
                 _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
-                throw new ListenerExecutionFailedException($"Unexpected error message {message}", new RabbitRejectAndDontRequeueException(string.Empty), null);
+                throw new ListenerExecutionFailedException($"Unexpected error message {message}", new RabbitRejectAndDoNotRequeueException(string.Empty), null);
             }
 
             _recoverer.Recover(errorMessage, errorMessage.Payload);
@@ -572,7 +572,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         private readonly RabbitTemplate _template;
         private readonly string _exchange;
         private readonly string _routingKey;
-        private readonly int _frameMaxHeaderoom;
+        private readonly int _frameMaxHeadroom;
         private readonly RabbitConsumerOptions _properties;
         private readonly ILogger _logger;
         private int _maxStackTraceLength = -1;
@@ -586,7 +586,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             };
             _exchange = GetDeadLetterExchangeName(properties);
             _routingKey = properties.DeadLetterRoutingKey;
-            _frameMaxHeaderoom = properties.FrameMaxHeadroom.Value;
+            _frameMaxHeadroom = properties.FrameMaxHeadroom.Value;
             _properties = properties;
             _logger = logger;
             ServiceName = $"{GetType()}@{GetHashCode()}";
@@ -616,7 +616,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
                 var result = RabbitUtils.GetMaxFrame(_binder.ConnectionFactory);
                 if (result > 0)
                 {
-                    _maxStackTraceLength = result - _frameMaxHeaderoom;
+                    _maxStackTraceLength = result - _frameMaxHeadroom;
                 }
             }
 
@@ -649,7 +649,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         private static bool ShouldRepublish(Exception exception)
         {
             var cause = exception;
-            while (cause != null && cause is not RabbitRejectAndDontRequeueException && cause is not ImmediateAcknowledgeException)
+            while (cause != null && cause is not RabbitRejectAndDoNotRequeueException && cause is not ImmediateAcknowledgeException)
             {
                 cause = cause.InnerException;
             }
@@ -688,7 +688,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         }
     }
 
-    private sealed class SimplePassthroughMessageConverter : AbstractMessageConverter
+    private sealed class SimplePassThroughMessageConverter : AbstractMessageConverter
     {
         private readonly SimpleMessageConverter _converter = new ();
 

@@ -42,10 +42,10 @@ public static partial class ServiceCollectionExtensions
         services.TryAddSingleton(provider =>
         {
             var options = provider.GetService<ICloudFoundryOptions>();
-            var mgmtOptions = provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().SingleOrDefault();
-            mgmtOptions.EndpointOptions.Add(options);
+            var managementOptions = provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+            managementOptions.EndpointOptions.Add(options);
 
-            return new CloudFoundryEndpoint(options, mgmtOptions);
+            return new CloudFoundryEndpoint(options, managementOptions);
         });
         services.TryAddSingleton<ICloudFoundryEndpoint>(provider => provider.GetRequiredService<CloudFoundryEndpoint>());
 

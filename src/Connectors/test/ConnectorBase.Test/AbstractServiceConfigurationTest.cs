@@ -29,7 +29,7 @@ public class AbstractServiceConfigurationTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new TestServiceConfiguration(config);
-        Assert.Equal("myString", sconfig.Test);
+        var configuration = new TestServiceConfiguration(config);
+        Assert.Equal("myString", configuration.Test);
     }
 }

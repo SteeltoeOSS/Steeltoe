@@ -31,9 +31,9 @@ internal sealed class TestOutputLogger : ILogger
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
-        var formattetMessage = formatter(state, exception);
+        var formattedMessage = formatter(state, exception);
 
-        _output?.WriteLine(formattetMessage);
+        _output?.WriteLine(formattedMessage);
         if (exception != null)
         {
             _output?.WriteLine(exception.StackTrace);

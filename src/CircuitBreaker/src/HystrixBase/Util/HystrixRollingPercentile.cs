@@ -64,10 +64,10 @@ public class HystrixRollingPercentile
         {
             try
             {
-                var cbucket = GetCurrentBucket();
-                if (cbucket != null)
+                var currentBucket = GetCurrentBucket();
+                if (currentBucket != null)
                 {
-                    cbucket.Data.AddValue(v);
+                    currentBucket.Data.AddValue(v);
                 }
             }
             catch (Exception)
@@ -256,13 +256,13 @@ public class HystrixRollingPercentile
 
     internal sealed class PercentileBucketData
     {
-        internal readonly int Datalength;
+        internal readonly int DataLength;
         internal readonly AtomicIntegerArray List;
         internal readonly AtomicInteger Index = new ();
 
         public PercentileBucketData(int dataLength)
         {
-            Datalength = dataLength;
+            DataLength = dataLength;
             List = new AtomicIntegerArray(dataLength);
         }
 
@@ -271,7 +271,7 @@ public class HystrixRollingPercentile
             foreach (var l in latency)
             {
                 /* We just wrap around the beginning and over-write if we go past 'dataLength' as that will effectively cause us to "sample" the most recent data */
-                List[Index.GetAndIncrement() % Datalength] = l;
+                List[Index.GetAndIncrement() % DataLength] = l;
 
                 // TODO Alternative to AtomicInteger? The getAndIncrement may be a source of contention on high throughput circuits on large multi-core systems.
                 // LongAdder isn't suited to this as it is not consistent. Perhaps a different data structure that doesn't need indexed adds?
@@ -309,7 +309,7 @@ public class HystrixRollingPercentile
             // also this way we capture the actual index size rather than the max so size the int[] to only what we need
             foreach (var bd in buckets)
             {
-                lengthFromBuckets += bd.Data.Datalength;
+                lengthFromBuckets += bd.Data.DataLength;
             }
 
             _data = new int[lengthFromBuckets];
@@ -427,7 +427,7 @@ public class HystrixRollingPercentile
              */
             internal readonly AtomicReferenceArray<Bucket> Data;
             internal readonly int Size;
-            internal readonly int Buckettail;
+            internal readonly int BucketTail;
             internal readonly int Head;
             internal BucketCircularArray Cb;
 
@@ -435,7 +435,7 @@ public class HystrixRollingPercentile
             {
                 this.Cb = cb;
                 this.Head = head;
-                Buckettail = tail;
+                BucketTail = tail;
                 if (head == 0 && tail == 0)
                 {
                     Size = 0;
@@ -497,7 +497,7 @@ public class HystrixRollingPercentile
                  * In either case, a single Bucket will be returned as "last" and data loss should not occur and everything keeps in sync for head/tail.
                  * Also, it's fine to set it before incrementTail because nothing else should be referencing that index position until incrementTail occurs.
                  */
-                Data[Buckettail] = b;
+                Data[BucketTail] = b;
                 return IncrementTail();
             }
 
@@ -514,12 +514,12 @@ public class HystrixRollingPercentile
                 if (Size == Cb._numBuckets)
                 {
                     // increment tail and head
-                    return new ListState(Cb, Data, (Head + 1) % Cb._dataLength, (Buckettail + 1) % Cb._dataLength);
+                    return new ListState(Cb, Data, (Head + 1) % Cb._dataLength, (BucketTail + 1) % Cb._dataLength);
                 }
                 else
                 {
                     // increment only tail
-                    return new ListState(Cb, Data, Head, (Buckettail + 1) % Cb._dataLength);
+                    return new ListState(Cb, Data, Head, (BucketTail + 1) % Cb._dataLength);
                 }
             }
         }

@@ -188,7 +188,7 @@ public class HealthEndpointTest : BaseTest
     public void InvokeWithInvalidGroupReturnsAllContributors()
     {
         using var tc = new TestContext(_output);
-        var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
+        var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new OutOfServiceContributor(), new UnknownContributor(), new UpContributor() };
 
         tc.AdditionalServices = (services, configuration) =>
         {

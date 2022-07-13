@@ -17,9 +17,9 @@ namespace Steeltoe.Stream;
 
 public abstract class AbstractTest
 {
-    protected virtual ServiceCollection CreateStreamsContainerWithDefaultBindings(List<string> serachDirectories, params string[] properties)
+    protected virtual ServiceCollection CreateStreamsContainerWithDefaultBindings(List<string> searchDirectories, params string[] properties)
     {
-        var container = CreateStreamsContainer(serachDirectories, properties);
+        var container = CreateStreamsContainer(searchDirectories, properties);
         container.AddDefaultBindings();
         return container;
     }
@@ -34,7 +34,7 @@ public abstract class AbstractTest
         return CreateStreamsContainer(null, properties);
     }
 
-    protected virtual ServiceCollection CreateStreamsContainer(List<string> serachDirectories, params string[] properties)
+    protected virtual ServiceCollection CreateStreamsContainer(List<string> searchDirectories, params string[] properties)
     {
         var configuration = CreateTestConfiguration(properties);
         var container = new ServiceCollection();
@@ -51,13 +51,13 @@ public abstract class AbstractTest
         container.AddCoreServices();
         container.AddIntegrationServices();
         container.AddStreamCoreServices(configuration);
-        if (serachDirectories == null || serachDirectories.Count == 0)
+        if (searchDirectories == null || searchDirectories.Count == 0)
         {
             container.AddBinderServices(configuration);
         }
         else
         {
-            var registry = new DefaultBinderTypeRegistry(serachDirectories, false);
+            var registry = new DefaultBinderTypeRegistry(searchDirectories, false);
             container.AddSingleton<IBinderTypeRegistry>(registry);
             container.AddBinderServices(registry, configuration);
         }
@@ -65,30 +65,30 @@ public abstract class AbstractTest
         return container;
     }
 
-    protected virtual ServiceCollection CreateStreamsContainerWithBinding(List<string> serachDirectories, Type bindingType, params string[] properties)
+    protected virtual ServiceCollection CreateStreamsContainerWithBinding(List<string> searchDirectories, Type bindingType, params string[] properties)
     {
-        var collection = CreateStreamsContainer(serachDirectories, properties);
+        var collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddStreamBindings(bindingType);
         return collection;
     }
 
-    protected virtual ServiceCollection CreateStreamsContainerWithIProcessorBinding(List<string> serachDirectories, params string[] properties)
+    protected virtual ServiceCollection CreateStreamsContainerWithIProcessorBinding(List<string> searchDirectories, params string[] properties)
     {
-        var collection = CreateStreamsContainer(serachDirectories, properties);
+        var collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddProcessorStreamBinding();
         return collection;
     }
 
-    protected virtual ServiceCollection CreateStreamsContainerWithISinkBinding(List<string> serachDirectories, params string[] properties)
+    protected virtual ServiceCollection CreateStreamsContainerWithISinkBinding(List<string> searchDirectories, params string[] properties)
     {
-        var collection = CreateStreamsContainer(serachDirectories, properties);
+        var collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddSinkStreamBinding();
         return collection;
     }
 
-    protected virtual ServiceCollection CreateStreamsContainerWithISourceBinding(List<string> serachDirectories, params string[] properties)
+    protected virtual ServiceCollection CreateStreamsContainerWithISourceBinding(List<string> searchDirectories, params string[] properties)
     {
-        var collection = CreateStreamsContainer(serachDirectories, properties);
+        var collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddSourceStreamBinding();
         return collection;
     }

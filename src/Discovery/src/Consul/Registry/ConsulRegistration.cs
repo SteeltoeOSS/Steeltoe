@@ -200,12 +200,12 @@ public class ConsulRegistration : IConsulRegistration
 
         var normalized = new StringBuilder();
         char prev = default;
-        foreach (var curr in s)
+        foreach (var ch in s)
         {
             char toAppend = default;
-            if (char.IsLetterOrDigit(curr))
+            if (char.IsLetterOrDigit(ch))
             {
-                toAppend = curr;
+                toAppend = ch;
             }
             else if (prev == default(char) || prev != Separator)
             {

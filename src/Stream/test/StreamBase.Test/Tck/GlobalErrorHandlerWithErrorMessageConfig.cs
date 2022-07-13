@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Tck;
 
 public class GlobalErrorHandlerWithErrorMessageConfig
 {
-    public bool GlobalErroInvoked { get; set; }
+    public bool GlobalErrorInvoked { get; set; }
 
     [StreamListener(ISink.InputName)]
     public void Input(string value)
@@ -22,6 +22,6 @@ public class GlobalErrorHandlerWithErrorMessageConfig
     [StreamListener("errorChannel")]
     public void GeneralError(IMessage message)
     {
-        GlobalErroInvoked = true;
+        GlobalErrorInvoked = true;
     }
 }

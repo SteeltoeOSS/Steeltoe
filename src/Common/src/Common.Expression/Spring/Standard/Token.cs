@@ -50,7 +50,7 @@ public class Token
 
     public Token AsInstanceOfToken()
     {
-        return new Token(TokenKind.Instanceof, StartPos, EndPos);
+        return new Token(TokenKind.InstanceOf, StartPos, EndPos);
     }
 
     public Token AsMatchesToken()

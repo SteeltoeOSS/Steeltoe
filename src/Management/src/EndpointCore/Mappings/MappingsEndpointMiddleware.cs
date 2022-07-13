@@ -31,13 +31,13 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     public MappingsEndpointMiddleware(
         RequestDelegate next,
         IMappingsOptions options,
-        IManagementOptions mgmtOptions,
+        IManagementOptions managementOptions,
         MappingsEndpoint endpoint,
         IRouteMappings routeMappings = null,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
         IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
         ILogger<MappingsEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
         _options = options;
@@ -48,7 +48,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMappingsRequestAsync(context);
         }
@@ -90,39 +90,39 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         IDictionary<string, IList<MappingDescription>> mappingDescriptions = new Dictionary<string, IList<MappingDescription>>();
         foreach (var desc in apiContext.Results)
         {
-            var cdesc = desc.ActionDescriptor as ControllerActionDescriptor;
+            var descriptor = desc.ActionDescriptor as ControllerActionDescriptor;
             var details = GetRouteDetails(desc);
-            mappingDescriptions.TryGetValue(cdesc.ControllerTypeInfo.FullName, out var mapList);
+            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out var mapList);
 
             if (mapList == null)
             {
                 mapList = new List<MappingDescription>();
-                mappingDescriptions.Add(cdesc.ControllerTypeInfo.FullName, mapList);
+                mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName, mapList);
             }
 
-            var mapDesc = new MappingDescription(cdesc.MethodInfo, details);
+            var mapDesc = new MappingDescription(descriptor.MethodInfo, details);
             mapList.Add(mapDesc);
         }
 
         foreach (var desc in apiContext.Actions)
         {
-            if (desc is ControllerActionDescriptor cdesc)
+            if (desc is ControllerActionDescriptor descriptor)
             {
-                if (apiContext.Results.Any() && mappingDescriptions.Any(description => description.Value.Any(n => n.Handler.Equals(cdesc.MethodInfo.ToString()))))
+                if (apiContext.Results.Any() && mappingDescriptions.Any(description => description.Value.Any(n => n.Handler.Equals(descriptor.MethodInfo.ToString()))))
                 {
                     continue;
                 }
 
                 var details = GetRouteDetails(desc);
-                mappingDescriptions.TryGetValue(cdesc.ControllerTypeInfo.FullName, out var mapList);
+                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out var mapList);
 
                 if (mapList == null)
                 {
                     mapList = new List<MappingDescription>();
-                    mappingDescriptions.Add(cdesc.ControllerTypeInfo.FullName, mapList);
+                    mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName, mapList);
                 }
 
-                var mapDesc = new MappingDescription(cdesc.MethodInfo, details);
+                var mapDesc = new MappingDescription(descriptor.MethodInfo, details);
                 mapList.Add(mapDesc);
             }
         }
@@ -143,8 +143,8 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         }
         else
         {
-            var cdesc = desc.ActionDescriptor as ControllerActionDescriptor;
-            routeDetails.RouteTemplate = $"/{cdesc.ControllerName}/{cdesc.ActionName}";
+            var descriptor = desc.ActionDescriptor as ControllerActionDescriptor;
+            routeDetails.RouteTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
         }
 
         var produces = new List<string>();
@@ -184,8 +184,8 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         }
         else
         {
-            var cdesc = desc as ControllerActionDescriptor;
-            routeDetails.RouteTemplate = $"/{cdesc.ControllerName}/{cdesc.ActionName}";
+            var descriptor = desc as ControllerActionDescriptor;
+            routeDetails.RouteTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
         }
 
         foreach (var filter in desc.FilterDescriptors.Where(f => f.Filter is ProducesAttribute).Select(f => (ProducesAttribute)f.Filter))

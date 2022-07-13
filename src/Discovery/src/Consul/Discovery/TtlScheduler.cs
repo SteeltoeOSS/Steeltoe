@@ -84,7 +84,7 @@ public class TtlScheduler : IScheduler
 
         if (HeartbeatOptions != null)
         {
-            var interval = HeartbeatOptions.ComputeHearbeatInterval();
+            var interval = HeartbeatOptions.ComputeHeartbeatInterval();
 
             var checkId = instanceId;
             if (!checkId.StartsWith("service:"))

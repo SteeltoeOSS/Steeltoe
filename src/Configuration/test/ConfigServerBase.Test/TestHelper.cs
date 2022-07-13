@@ -12,7 +12,7 @@ public static class TestHelper
     public static void VerifyDefaults(ConfigServerClientSettings settings)
     {
         Assert.Equal(ConfigServerClientSettings.DefaultProviderEnabled, settings.Enabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultFailfast, settings.FailFast);
+        Assert.Equal(ConfigServerClientSettings.DefaultFailFast, settings.FailFast);
         Assert.Equal(ConfigServerClientSettings.DefaultUri, settings.Uri);
         Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal(ConfigServerClientSettings.DefaultAccessTokenUri, settings.AccessTokenUri);
@@ -28,9 +28,9 @@ public static class TestHelper
         Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenRenewRate, settings.TokenRenewRate);
         Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenTtl, settings.TokenTtl);
         Assert.Equal(ConfigServerClientSettings.DefaultDiscoveryEnabled, settings.DiscoveryEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceid, settings.DiscoveryServiceId);
+        Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceId, settings.DiscoveryServiceId);
         Assert.Equal(ConfigServerClientSettings.DefaultHealthEnabled, settings.HealthEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultHealthTimetolive, settings.HealthTimeToLive);
+        Assert.Equal(ConfigServerClientSettings.DefaultHealthTimeToLive, settings.HealthTimeToLive);
 
         try
         {

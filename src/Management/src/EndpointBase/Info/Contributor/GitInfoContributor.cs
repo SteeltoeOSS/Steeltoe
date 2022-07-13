@@ -14,15 +14,15 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
 public class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
 {
-    private const string GitsettingsPrefix = "git";
-    private const string GitpropertiesFile = "git.properties";
+    private const string GitSettingsPrefix = "git";
+    private const string GitPropertiesFile = "git.properties";
 
     private static readonly List<string> DatetimeInputKeys = new () { "time" };
     private readonly string _propFile;
     private readonly ILogger _logger;
 
     public GitInfoContributor(ILogger<GitInfoContributor> logger = null)
-        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GitpropertiesFile)
+        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GitPropertiesFile)
     {
         _logger = logger;
     }
@@ -36,7 +36,7 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
     public virtual void Contribute(IInfoBuilder builder)
     {
         config = ReadGitProperties(_propFile);
-        Contribute(builder, GitsettingsPrefix, true);
+        Contribute(builder, GitSettingsPrefix, true);
     }
 
     public virtual IConfiguration ReadGitProperties(string propFile)

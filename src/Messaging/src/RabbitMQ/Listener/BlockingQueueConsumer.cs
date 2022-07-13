@@ -647,10 +647,10 @@ public class BlockingQueueConsumer
 
         var body = delivery.Body;
         var messageProperties = MessageHeadersConverter.ToMessageHeaders(delivery.Properties, delivery.Envelope, EncodingUtils.Utf8);
-        var accesor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
-        accesor.ConsumerTag = delivery.ConsumerTag;
-        accesor.ConsumerQueue = delivery.Queue;
-        var message = Message.Create(body, accesor.MessageHeaders);
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
+        accessor.ConsumerTag = delivery.ConsumerTag;
+        accessor.ConsumerQueue = delivery.Queue;
+        var message = Message.Create(body, accessor.MessageHeaders);
         Logger?.LogDebug("Received message: {message}", message);
         if (messageProperties.DeliveryTag() != null)
         {

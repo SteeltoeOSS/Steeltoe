@@ -42,8 +42,8 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var mgmtOptions = new ActuatorManagementOptions();
-        mgmtOptions.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
@@ -52,7 +52,7 @@ public class EndpointMiddlewareTest : BaseTest
         helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[] { "applied" });
         var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper);
 
-        var middle = new DbMigrationsEndpointMiddleware(null, ep, mgmtOptions);
+        var middle = new DbMigrationsEndpointMiddleware(null, ep, managementOptions);
 
         var context = CreateRequest("GET", "/dbmigrations");
         await middle.HandleEntityFrameworkRequestAsync(context);
@@ -81,9 +81,9 @@ public class EndpointMiddlewareTest : BaseTest
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
         using var server = new TestServer(builder);

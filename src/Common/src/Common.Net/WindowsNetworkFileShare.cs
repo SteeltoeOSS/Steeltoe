@@ -27,7 +27,7 @@ public class WindowsNetworkFileShare : IDisposable
     private const int ErrorInvalidAddress = 487;
     private const int ErrorInvalidParameter = 87;
     private const int ErrorInvalidPassword = 86;
-    private const int ErrorInvalidPasswordname = 1216;
+    private const int ErrorInvalidPasswordName = 1216;
     private const int ErrorMoreData = 234;
     private const int ErrorNoMoreItems = 259;
     private const int ErrorNoNetOrBadPath = 1203;
@@ -53,7 +53,7 @@ public class WindowsNetworkFileShare : IDisposable
         new (ErrorInvalidAddress, "Error: Invalid Address"),
         new (ErrorInvalidParameter, "Error: Invalid Parameter"),
         new (ErrorInvalidPassword, "Error: Invalid Password"),
-        new (ErrorInvalidPasswordname, "Error: Invalid Password Format"),
+        new (ErrorInvalidPasswordName, "Error: Invalid Password Format"),
         new (ErrorMoreData, "Error: More Data"),
         new (ErrorNoMoreItems, "Error: No More Items"),
         new (ErrorNoNetOrBadPath, "Error: No Net Or Bad Path"),
@@ -87,7 +87,7 @@ public class WindowsNetworkFileShare : IDisposable
         {
             Scope = ResourceScope.GlobalNetwork,
             ResourceType = ResourceType.Disk,
-            DisplayType = ResourceDisplaytype.Share,
+            DisplayType = ResourceDisplayType.Share,
             RemoteName = networkName
         };
 
@@ -129,7 +129,7 @@ public class WindowsNetworkFileShare : IDisposable
     /// <summary>
     /// The display options for the network object in a network browsing user interface.
     /// </summary>
-    public enum ResourceDisplaytype
+    public enum ResourceDisplayType
     {
         Generic = 0x0,
         Domain = 0x01,
@@ -139,10 +139,10 @@ public class WindowsNetworkFileShare : IDisposable
         Group = 0x05,
         Network = 0x06,
         Root = 0x07,
-        Shareadmin = 0x08,
+        ShareAdmin = 0x08,
         Directory = 0x09,
         Tree = 0x0a,
-        Ndscontainer = 0x0b
+        NdsContainer = 0x0b
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ public class WindowsNetworkFileShare : IDisposable
     {
         public ResourceScope Scope;
         public ResourceType ResourceType;
-        public ResourceDisplaytype DisplayType;
+        public ResourceDisplayType DisplayType;
         public int Usage;
         public string LocalName;
         public string RemoteName;

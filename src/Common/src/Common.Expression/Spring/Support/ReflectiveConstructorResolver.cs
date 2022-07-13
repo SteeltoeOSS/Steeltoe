@@ -22,9 +22,9 @@ public class ReflectiveConstructorResolver : IConstructorResolver
                 return new PrimitiveConstructorExecutor(type);
             }
 
-            var ctors = type.GetConstructors();
+            var constructors = type.GetConstructors();
 
-            Array.Sort(ctors, (c1, c2) =>
+            Array.Sort(constructors, (c1, c2) =>
             {
                 var c1Pl = c1.GetParameters().Length;
                 var c2Pl = c2.GetParameters().Length;
@@ -34,7 +34,7 @@ public class ReflectiveConstructorResolver : IConstructorResolver
             ConstructorInfo closeMatch = null;
             ConstructorInfo matchRequiringConversion = null;
 
-            foreach (var ctor in ctors)
+            foreach (var ctor in constructors)
             {
                 var parameters = ctor.GetParameters();
                 var paramCount = parameters.Length;

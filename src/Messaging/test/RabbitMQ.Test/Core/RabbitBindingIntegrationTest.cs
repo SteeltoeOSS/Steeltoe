@@ -223,11 +223,11 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     }
 
     [Fact]
-    public void TestSendAndReceiveWithFanout()
+    public void TestSendAndReceiveWithFanOut()
     {
         _provider = _services.BuildServiceProvider();
         var admin = _provider.GetRabbitAdmin();
-        var exchange = new FanoutExchange("fanout");
+        var exchange = new FanOutExchange("fanout");
         admin.DeclareExchange(exchange);
         admin.DeclareBinding(BindingBuilder.Bind(_queue).To(exchange));
 

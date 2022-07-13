@@ -17,7 +17,7 @@ public class InstanceInfoTest : AbstractBaseTest
         var info = new InstanceInfo();
         Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
         Assert.False(info.IsSecurePortEnabled);
-        Assert.True(info.IsUnsecurePortEnabled);
+        Assert.True(info.IsInsecurePortEnabled);
         Assert.Equal(1, info.CountryId);
         Assert.Equal(7001, info.Port);
         Assert.Equal(7002, info.SecurePort);
@@ -32,12 +32,12 @@ public class InstanceInfoTest : AbstractBaseTest
     [Fact]
     public void FromJsonInstance_Correct()
     {
-        var jinfo = new JsonInstanceInfo
+        var instanceInfo = new JsonInstanceInfo
         {
             InstanceId = "InstanceId",
             AppName = "AppName",
             AppGroupName = "AppGroupName",
-            IpAddr = "IpAddr",
+            IpAddress = "IpAddr",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
@@ -70,17 +70,17 @@ public class InstanceInfoTest : AbstractBaseTest
             AsgName = "AsgName"
         };
 
-        var info = InstanceInfo.FromJsonInstance(jinfo);
+        var info = InstanceInfo.FromJsonInstance(instanceInfo);
         Assert.NotNull(info);
 
         // Verify
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("AppName", info.AppName);
         Assert.Equal("AppGroupName", info.AppGroupName);
-        Assert.Equal("IpAddr", info.IpAddr);
+        Assert.Equal("IpAddr", info.IpAddress);
         Assert.Equal("Sid", info.Sid);
         Assert.Equal(100, info.Port);
-        Assert.True(info.IsUnsecurePortEnabled);
+        Assert.True(info.IsInsecurePortEnabled);
         Assert.Equal(100, info.SecurePort);
         Assert.False(info.IsSecurePortEnabled);
         Assert.Equal("HomePageUrl", info.HomePageUrl);
@@ -120,12 +120,12 @@ public class InstanceInfoTest : AbstractBaseTest
 
         // Verify
         Assert.Equal(config.GetHostName(false), info.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.DefaultAppname.ToUpperInvariant(), info.AppName);
+        Assert.Equal(EurekaInstanceConfig.DefaultAppName.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
-        Assert.Equal(config.IpAddress, info.IpAddr);
+        Assert.Equal(config.IpAddress, info.IpAddress);
         Assert.Equal("na", info.Sid);
         Assert.Equal(80, info.Port);
-        Assert.True(info.IsUnsecurePortEnabled);
+        Assert.True(info.IsInsecurePortEnabled);
         Assert.Equal(443, info.SecurePort);
         Assert.False(info.IsSecurePortEnabled);
         Assert.Equal($"http://{config.GetHostName(false)}:{80}/", info.HomePageUrl);
@@ -168,12 +168,12 @@ public class InstanceInfoTest : AbstractBaseTest
 
         // Verify
         Assert.Equal(config.GetHostName(false), info.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.DefaultAppname.ToUpperInvariant(), info.AppName);
+        Assert.Equal(EurekaInstanceConfig.DefaultAppName.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
-        Assert.Equal(config.IpAddress, info.IpAddr);
+        Assert.Equal(config.IpAddress, info.IpAddress);
         Assert.Equal("na", info.Sid);
         Assert.Equal(80, info.Port);
-        Assert.False(info.IsUnsecurePortEnabled);
+        Assert.False(info.IsInsecurePortEnabled);
         Assert.Equal(443, info.SecurePort);
         Assert.True(info.IsSecurePortEnabled);
         Assert.Equal($"https://{config.GetHostName(false)}:{443}/", info.HomePageUrl);
@@ -210,49 +210,49 @@ public class InstanceInfoTest : AbstractBaseTest
         var info = InstanceInfo.FromInstanceConfig(config);
         Assert.NotNull(info);
 
-        var jinfo = info.ToJsonInstance();
+        var instanceInfo = info.ToJsonInstance();
 
         // Verify
-        Assert.Equal(config.GetHostName(false), jinfo.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.DefaultAppname.ToUpperInvariant(), jinfo.AppName);
-        Assert.Null(jinfo.AppGroupName);
-        Assert.Equal(config.IpAddress, jinfo.IpAddr);
-        Assert.Equal("na", jinfo.Sid);
-        Assert.NotNull(jinfo.Port);
-        Assert.Equal(80, jinfo.Port.Port);
-        Assert.True(jinfo.Port.Enabled);
-        Assert.NotNull(jinfo.SecurePort);
-        Assert.Equal(443, jinfo.SecurePort.Port);
-        Assert.False(jinfo.SecurePort.Enabled);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/", jinfo.HomePageUrl);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/Status", jinfo.StatusPageUrl);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/healthcheck", jinfo.HealthCheckUrl);
-        Assert.Null(jinfo.SecureHealthCheckUrl);
-        Assert.Equal($"{config.GetHostName(false)}:{80}", jinfo.VipAddress);
-        Assert.Equal($"{config.GetHostName(false)}:{443}", jinfo.SecureVipAddress);
-        Assert.Equal(1, jinfo.CountryId);
-        Assert.NotNull(jinfo.DataCenterInfo);
-        Assert.Equal("MyOwn", jinfo.DataCenterInfo.Name);
-        Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", jinfo.DataCenterInfo.ClassName);
-        Assert.Equal(config.GetHostName(false), jinfo.HostName);
-        Assert.Equal(InstanceStatus.Starting, jinfo.Status);
-        Assert.Equal(InstanceStatus.Unknown, jinfo.OverriddenStatus);
-        Assert.NotNull(jinfo.LeaseInfo);
-        Assert.Equal(30, jinfo.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, jinfo.LeaseInfo.DurationInSecs);
-        Assert.Equal(0, jinfo.LeaseInfo.RegistrationTimestamp);
-        Assert.Equal(0, jinfo.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, jinfo.LeaseInfo.LastRenewalTimestampLegacy);
-        Assert.Equal(0, jinfo.LeaseInfo.EvictionTimestamp);
-        Assert.Equal(0, jinfo.LeaseInfo.ServiceUpTimestamp);
-        Assert.False(jinfo.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(jinfo.Metadata);
-        Assert.Single(jinfo.Metadata);
-        Assert.True(jinfo.Metadata.ContainsKey("@class"));
-        Assert.True(jinfo.Metadata.ContainsValue("java.util.Collections$EmptyMap"));
-        Assert.Equal(jinfo.LastDirtyTimestamp, jinfo.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.Added, jinfo.ActionType);
-        Assert.Null(jinfo.AsgName);
+        Assert.Equal(config.GetHostName(false), instanceInfo.InstanceId);
+        Assert.Equal(EurekaInstanceConfig.DefaultAppName.ToUpperInvariant(), instanceInfo.AppName);
+        Assert.Null(instanceInfo.AppGroupName);
+        Assert.Equal(config.IpAddress, instanceInfo.IpAddress);
+        Assert.Equal("na", instanceInfo.Sid);
+        Assert.NotNull(instanceInfo.Port);
+        Assert.Equal(80, instanceInfo.Port.Port);
+        Assert.True(instanceInfo.Port.Enabled);
+        Assert.NotNull(instanceInfo.SecurePort);
+        Assert.Equal(443, instanceInfo.SecurePort.Port);
+        Assert.False(instanceInfo.SecurePort.Enabled);
+        Assert.Equal($"http://{config.GetHostName(false)}:{80}/", instanceInfo.HomePageUrl);
+        Assert.Equal($"http://{config.GetHostName(false)}:{80}/Status", instanceInfo.StatusPageUrl);
+        Assert.Equal($"http://{config.GetHostName(false)}:{80}/healthcheck", instanceInfo.HealthCheckUrl);
+        Assert.Null(instanceInfo.SecureHealthCheckUrl);
+        Assert.Equal($"{config.GetHostName(false)}:{80}", instanceInfo.VipAddress);
+        Assert.Equal($"{config.GetHostName(false)}:{443}", instanceInfo.SecureVipAddress);
+        Assert.Equal(1, instanceInfo.CountryId);
+        Assert.NotNull(instanceInfo.DataCenterInfo);
+        Assert.Equal("MyOwn", instanceInfo.DataCenterInfo.Name);
+        Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", instanceInfo.DataCenterInfo.ClassName);
+        Assert.Equal(config.GetHostName(false), instanceInfo.HostName);
+        Assert.Equal(InstanceStatus.Starting, instanceInfo.Status);
+        Assert.Equal(InstanceStatus.Unknown, instanceInfo.OverriddenStatus);
+        Assert.NotNull(instanceInfo.LeaseInfo);
+        Assert.Equal(30, instanceInfo.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(90, instanceInfo.LeaseInfo.DurationInSecs);
+        Assert.Equal(0, instanceInfo.LeaseInfo.RegistrationTimestamp);
+        Assert.Equal(0, instanceInfo.LeaseInfo.LastRenewalTimestamp);
+        Assert.Equal(0, instanceInfo.LeaseInfo.LastRenewalTimestampLegacy);
+        Assert.Equal(0, instanceInfo.LeaseInfo.EvictionTimestamp);
+        Assert.Equal(0, instanceInfo.LeaseInfo.ServiceUpTimestamp);
+        Assert.False(instanceInfo.IsCoordinatingDiscoveryServer);
+        Assert.NotNull(instanceInfo.Metadata);
+        Assert.Single(instanceInfo.Metadata);
+        Assert.True(instanceInfo.Metadata.ContainsKey("@class"));
+        Assert.True(instanceInfo.Metadata.ContainsValue("java.util.Collections$EmptyMap"));
+        Assert.Equal(instanceInfo.LastDirtyTimestamp, instanceInfo.LastUpdatedTimestamp);
+        Assert.Equal(ActionType.Added, instanceInfo.ActionType);
+        Assert.Null(instanceInfo.AsgName);
     }
 
     [Fact]

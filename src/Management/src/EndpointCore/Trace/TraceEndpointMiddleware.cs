@@ -15,15 +15,15 @@ public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 {
     private readonly RequestDelegate _next;
 
-    public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IManagementOptions managementOptions, ILogger<TraceEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions))
+        if (innerEndpoint.ShouldInvoke(managementOptions))
         {
             return HandleTraceRequestAsync(context);
         }

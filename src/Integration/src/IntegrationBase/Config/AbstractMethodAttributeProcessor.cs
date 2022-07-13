@@ -38,14 +38,14 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected virtual string InputChannelProperty { get; } = InputChannelPropertyName;
 
-    protected AbstractMethodAttributeProcessor(IApplicationContext applicatonContext, ILogger logger)
+    protected AbstractMethodAttributeProcessor(IApplicationContext applicationContext, ILogger logger)
     {
-        ApplicationContext = applicatonContext ?? throw new ArgumentNullException(nameof(applicatonContext));
+        ApplicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         _logger = logger;
         MessageHandlerProperties.Add(SendTimeoutPropertyName);
         ConversionService = ApplicationContext.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
 
-        ChannelResolver = new DefaultMessageChannelDestinationResolver(applicatonContext);
+        ChannelResolver = new DefaultMessageChannelDestinationResolver(applicationContext);
         AnnotationType = typeof(TAttribute);
     }
 

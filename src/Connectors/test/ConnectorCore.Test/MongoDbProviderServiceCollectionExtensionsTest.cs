@@ -196,7 +196,7 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMongoClientConnection_AddingCommunityContributor_DoesntAddSteeltoeHealthCheck()
+    public void AddMongoClientConnection_AddingCommunityContributor_DoesNotAddSteeltoeHealthCheck()
     {
         IServiceCollection services = new ServiceCollection();
 

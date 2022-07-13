@@ -65,7 +65,7 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddLoadBalancerT_DoesntAddT_ToServices()
+    public void AddLoadBalancerT_DoesNotAddT_ToServices()
     {
         var services = new ServiceCollection();
 

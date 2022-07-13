@@ -14,15 +14,15 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
     private readonly RequestDelegate _next;
 
-    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions managementOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleHeapDumpRequestAsync(context);
         }

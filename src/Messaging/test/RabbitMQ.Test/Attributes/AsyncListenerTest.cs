@@ -46,7 +46,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
 
         var reply2 = await template.ConvertSendAndReceiveAsync<string>(queue1.QueueName, "foo");
         Assert.Equal("FOO", reply2);
-        var pp = template.AfterReceivePostProcessors[0] as TemplateAfterRecvPostProcessor;
+        var pp = template.AfterReceivePostProcessors[0] as TemplateAfterReceivePostProcessor;
         Assert.Equal("System.String", pp.TypeId);
 
         var queue2 = context.GetService<IQueue>("queue2");
@@ -83,7 +83,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void TestOverrideDontRequeue()
+    public void TestOverrideDoNotRequeue()
     {
         var template = _provider.GetRabbitTemplate();
         var context = _provider.GetApplicationContext();
@@ -151,7 +151,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             services.AddRabbitAdmin();
             services.AddRabbitTemplate((_, t) =>
             {
-                t.SetAfterReceivePostProcessors(new TemplateAfterRecvPostProcessor());
+                t.SetAfterReceivePostProcessors(new TemplateAfterReceivePostProcessor());
             });
 
             var queue5Dlq = new AnonymousQueue("queue5DLQ");
@@ -177,10 +177,10 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
                 f.AcknowledgeMode = AcknowledgeMode.Manual;
             });
 
-            // Add dontRequeueFactory container factory
+            // Add doNotRequeueFactory container factory
             services.AddRabbitListenerContainerFactory((_, f) =>
             {
-                f.ServiceName = "dontRequeueFactory";
+                f.ServiceName = "doNotRequeueFactory";
                 f.MismatchedQueuesFatal = true;
                 f.AcknowledgeMode = AcknowledgeMode.Manual;
                 f.DefaultRequeueRejected = false;
@@ -255,7 +255,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         [RabbitListener("queue5", Id = "fiz")]
         public Task Listen5(string foo)
         {
-            return Task.FromException(new RabbitRejectAndDontRequeueException("asyncToDLQ"));
+            return Task.FromException(new RabbitRejectAndDoNotRequeueException("asyncToDLQ"));
         }
 
         [RabbitListener("queue5DLQ", Id = "buz")]
@@ -264,7 +264,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             Latch5.Signal();
         }
 
-        [RabbitListener("queue6", Id = "fix", ContainerFactory = "dontRequeueFactory")]
+        [RabbitListener("queue6", Id = "fix", ContainerFactory = "doNotRequeueFactory")]
         public Task Listen6(string foo)
         {
             return Task.FromException(new InvalidOperationException("asyncDefaultToDLQ"));
@@ -276,7 +276,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             Latch6.Signal();
         }
 
-        [RabbitListener("queue7", Id = "overrideFactoryRequeue", ContainerFactory = "dontRequeueFactory")]
+        [RabbitListener("queue7", Id = "overrideFactoryRequeue", ContainerFactory = "doNotRequeueFactory")]
         public Task<string> Listen7(string foo)
         {
             if (First7.CompareAndSet(true, false))
@@ -298,7 +298,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
     }
 
-    public class TemplateAfterRecvPostProcessor : IMessagePostProcessor
+    public class TemplateAfterReceivePostProcessor : IMessagePostProcessor
     {
         public object TypeId { get; set; }
 

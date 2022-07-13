@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts;
 
-public class DictionaryAcessorTests
+public class DictionaryAccessorTests
 {
     [Fact]
     public void MapAccessorCompilable()

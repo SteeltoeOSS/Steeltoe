@@ -110,7 +110,7 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectionWithArray()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Ints.?[#this<5]");
+        var expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
         var context = new StandardEvaluationContext(new ArrayTestBean());
         var value = expression.GetValue(context);
         Assert.True(value.GetType().IsArray);
@@ -128,7 +128,7 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectFirstItemInArray()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Ints.^[#this<5]");
+        var expression = new SpelExpressionParser().ParseRaw("Integers.^[#this<5]");
         var context = new StandardEvaluationContext(new ArrayTestBean());
         var value = expression.GetValue(context);
         var condition = value is int;
@@ -139,7 +139,7 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectLastItemInArray()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Ints.$[#this<5]");
+        var expression = new SpelExpressionParser().ParseRaw("Integers.$[#this<5]");
         var context = new StandardEvaluationContext(new ArrayTestBean());
         var value = expression.GetValue(context);
         var condition = value is int;
@@ -298,11 +298,11 @@ public class SelectionAndProjectionTests
         {
             for (var i = 0; i < 10; i++)
             {
-                Ints[i] = i;
+                Integers[i] = i;
             }
         }
 
-        public int[] Ints { get; } = new int[10];
+        public int[] Integers { get; } = new int[10];
     }
 
     public class MapTestBean

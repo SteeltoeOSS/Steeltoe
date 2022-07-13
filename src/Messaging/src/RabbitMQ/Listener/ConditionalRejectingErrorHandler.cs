@@ -30,7 +30,7 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
         _exceptionStrategy = exceptionStrategy;
     }
 
-    public virtual bool DiscardFatalsWithXDeath { get; set; } = true;
+    public virtual bool DiscardFatalErrorsWithXDeath { get; set; } = true;
 
     public virtual bool RejectManual { get; set; } = true;
 
@@ -39,9 +39,9 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
     public virtual bool HandleError(Exception exception)
     {
         _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
-        if (!CauseChainContainsRradre(exception) && _exceptionStrategy.IsFatal(exception))
+        if (!CauseChainContainsRabbitRejectAndDoNotRequeueException(exception) && _exceptionStrategy.IsFatal(exception))
         {
-            if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException listenerException)
+            if (DiscardFatalErrorsWithXDeath && exception is ListenerExecutionFailedException listenerException)
             {
                 var failed = listenerException.FailedMessage;
                 if (failed != null)
@@ -58,18 +58,18 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
                 }
             }
 
-            throw new RabbitRejectAndDontRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
+            throw new RabbitRejectAndDoNotRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
         }
 
         return true;
     }
 
-    protected virtual bool CauseChainContainsRradre(Exception exception)
+    protected virtual bool CauseChainContainsRabbitRejectAndDoNotRequeueException(Exception exception)
     {
         var cause = exception.InnerException;
         while (cause != null)
         {
-            if (cause is RabbitRejectAndDontRequeueException)
+            if (cause is RabbitRejectAndDoNotRequeueException)
             {
                 return true;
             }

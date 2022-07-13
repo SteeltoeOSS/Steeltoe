@@ -20,11 +20,11 @@ public static class CredHubHostBuilderExtensions
     public static IWebHostBuilder UseCredHubInterpolation(this IWebHostBuilder webHostBuilder, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;
-        ILogger credhubLogger = null;
+        ILogger credHubLogger = null;
         if (loggerFactory != null)
         {
             startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
-            credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
+            credHubLogger = loggerFactory.CreateLogger<CredHubClient>();
         }
 
         var vcapServices = Environment.GetEnvironmentVariable("VCAP_SERVICES");
@@ -42,7 +42,7 @@ public static class CredHubHostBuilderExtensions
                 try
                 {
                     startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-                    credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
+                    credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credHubLogger).GetAwaiter().GetResult();
                 }
                 catch (Exception e)
                 {

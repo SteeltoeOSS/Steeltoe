@@ -576,8 +576,8 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         if (cacheChannel.CheckoutTimeout.HasValue)
         {
-            var asMilli = (int)cacheChannel.CheckoutTimeout.Value.TotalMilliseconds;
-            ChannelCheckoutTimeout = asMilli;
+            var asMilliseconds = (int)cacheChannel.CheckoutTimeout.Value.TotalMilliseconds;
+            ChannelCheckoutTimeout = asMilliseconds;
         }
 
         var cacheConnection = options.Cache.Connection;
@@ -663,9 +663,9 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 factory.Ssl.CertPath = options.Ssl.CertPath;
             }
 
-            if (!string.IsNullOrEmpty(options.Ssl.CertPassphrase))
+            if (!string.IsNullOrEmpty(options.Ssl.CertPassPhrase))
             {
-                factory.Ssl.CertPassphrase = options.Ssl.CertPassphrase;
+                factory.Ssl.CertPassphrase = options.Ssl.CertPassPhrase;
             }
 
             factory.Ssl.Version = options.Ssl.Algorithm;

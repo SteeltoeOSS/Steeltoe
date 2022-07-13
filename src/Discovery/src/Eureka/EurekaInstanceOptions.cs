@@ -14,8 +14,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public const string EurekaInstanceConfigurationPrefix = "eureka:instance";
     public new const string DefaultStatusPageUrlPath = "/info";
     public new const string DefaultHealthCheckUrlPath = "/health";
-    internal const int DefaultNonsecureport = 80;
-    internal const int DefaultSecureport = 443;
 
     public EurekaInstanceOptions()
     {
@@ -124,11 +122,11 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
         {
             foreach (var address in addresses)
             {
-                if (address.Scheme == "http" && Port == DefaultNonsecureport)
+                if (address.Scheme == "http" && Port == DefaultNonSecurePort)
                 {
                     Port = address.Port;
                 }
-                else if (address.Scheme == "https" && SecurePort == DefaultSecureport)
+                else if (address.Scheme == "https" && SecurePort == DefaultSecurePort)
                 {
                     SecurePort = address.Port;
                     SecurePortEnabled = true;

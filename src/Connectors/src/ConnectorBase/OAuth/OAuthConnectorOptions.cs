@@ -53,8 +53,8 @@ public class OAuthConnectorOptions : AbstractServiceConnectorOptions
 
     public bool ValidateCertificates { get; set; } = OAuthConnectorDefaults.DefaultValidateCertificates;
 
-    private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
+    private static bool GetCertificateValidation(IConfigurationSection configurationSection, IConfiguration resolve, bool def)
     {
-        return ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
+        return ConfigurationValuesHelper.GetBoolean("validate_certificates", configurationSection, resolve, def);
     }
 }

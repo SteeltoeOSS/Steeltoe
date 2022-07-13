@@ -119,27 +119,27 @@ public class EvaluationTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void TestRelOperatorsInstanceof01()
+    public void TestRelOperatorsInstanceOf01()
     {
         Evaluate("'xyz' instanceof T(int)", "False", typeof(bool));
     }
 
     [Fact]
-    public void TestRelOperatorsInstanceof04()
+    public void TestRelOperatorsInstanceOf04()
     {
         Evaluate("null instanceof T(String)", "False", typeof(bool));
     }
 
     [Fact]
-    public void TestRelOperatorsInstanceof05()
+    public void TestRelOperatorsInstanceOf05()
     {
         Evaluate("null instanceof T(System.Int32)", "False", typeof(bool));
     }
 
     [Fact]
-    public void TestRelOperatorsInstanceof06()
+    public void TestRelOperatorsInstanceOf06()
     {
-        EvaluateAndCheckError("'A' instanceof null", SpelMessage.InstanceofOperatorNeedsClassOperand, 15, "null");
+        EvaluateAndCheckError("'A' instanceof null", SpelMessage.InstanceOfOperatorNeedsClassOperand, 15, "null");
     }
 
     [Fact]
@@ -261,10 +261,10 @@ public class EvaluationTests : AbstractExpressionTests
     {
         // repeated evaluation to drive use of cached executor
         var e = (SpelExpression)Parser.ParseExpression("new String('wibble')");
-        var newstring = e.GetValue<string>();
-        Assert.Equal("wibble", newstring);
-        newstring = e.GetValue<string>();
-        Assert.Equal("wibble", newstring);
+        var newString = e.GetValue<string>();
+        Assert.Equal("wibble", newString);
+        newString = e.GetValue<string>();
+        Assert.Equal("wibble", newString);
 
         // not writable
         Assert.False(e.IsWritable(new StandardEvaluationContext()));
@@ -1316,31 +1316,31 @@ public class EvaluationTests : AbstractExpressionTests
         Assert.Equal(100, helper.Iii);
     }
 
-    private void ExpectFailNotAssignable(IExpressionParser parser, IEvaluationContext eContext, string expressionstring)
+    private void ExpectFailNotAssignable(IExpressionParser parser, IEvaluationContext eContext, string expressionString)
     {
-        ExpectFail(parser, eContext, expressionstring, SpelMessage.NotAssignable);
+        ExpectFail(parser, eContext, expressionString, SpelMessage.NotAssignable);
     }
 
-    private void ExpectFailSetValueNotSupported(IExpressionParser parser, IEvaluationContext eContext, string expressionstring)
+    private void ExpectFailSetValueNotSupported(IExpressionParser parser, IEvaluationContext eContext, string expressionString)
     {
-        ExpectFail(parser, eContext, expressionstring, SpelMessage.SetvalueNotSupported);
+        ExpectFail(parser, eContext, expressionString, SpelMessage.SetValueNotSupported);
     }
 
-    private void ExpectFailNotIncrementable(IExpressionParser parser, IEvaluationContext eContext, string expressionstring)
+    private void ExpectFailNotIncrementable(IExpressionParser parser, IEvaluationContext eContext, string expressionString)
     {
-        ExpectFail(parser, eContext, expressionstring, SpelMessage.OperandNotIncrementable);
+        ExpectFail(parser, eContext, expressionString, SpelMessage.OperandNotIncrementable);
     }
 
-    private void ExpectFailNotDecrementable(IExpressionParser parser, IEvaluationContext eContext, string expressionstring)
+    private void ExpectFailNotDecrementable(IExpressionParser parser, IEvaluationContext eContext, string expressionString)
     {
-        ExpectFail(parser, eContext, expressionstring, SpelMessage.OperandNotDecrementable);
+        ExpectFail(parser, eContext, expressionString, SpelMessage.OperandNotDecrementable);
     }
 
-    private void ExpectFail(IExpressionParser parser, IEvaluationContext eContext, string expressionstring, SpelMessage messageCode)
+    private void ExpectFail(IExpressionParser parser, IEvaluationContext eContext, string expressionString, SpelMessage messageCode)
     {
         var ex = Assert.Throws<SpelEvaluationException>(() =>
         {
-            var e = parser.ParseExpression(expressionstring);
+            var e = parser.ParseExpression(expressionString);
             if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);

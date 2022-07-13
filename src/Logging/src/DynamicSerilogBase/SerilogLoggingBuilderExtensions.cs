@@ -45,7 +45,7 @@ public static class SerilogLoggingBuilderExtensions
             else
             {
                 builder.Services.AddOptions<SerilogOptions>()
-                    .Configure<IConfiguration>((options, iconfiguration) => options.SetSerilogOptions(iconfiguration));
+                    .Configure<IConfiguration>((options, configuration) => options.SetSerilogOptions(configuration));
             }
 
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, SerilogDynamicProvider>());

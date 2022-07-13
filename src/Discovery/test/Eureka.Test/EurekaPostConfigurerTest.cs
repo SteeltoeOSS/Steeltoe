@@ -62,18 +62,18 @@ public class EurekaPostConfigurerTest
 
         var instOpts = new EurekaInstanceOptions
         {
-            AppName = "dontChange",
-            InstanceId = "dontChange",
-            RegistrationMethod = "dontChange"
+            AppName = "doNotChange",
+            InstanceId = "doNotChange",
+            RegistrationMethod = "doNotChange"
         };
 
         EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
 
-        Assert.Equal("dontChange", instOpts.AppName);
-        Assert.Equal("dontChange", instOpts.InstanceId);
-        Assert.Equal("dontChange", instOpts.RegistrationMethod);
-        Assert.Equal("dontChange", instOpts.VirtualHostName);
-        Assert.Equal("dontChange", instOpts.SecureVirtualHostName);
+        Assert.Equal("doNotChange", instOpts.AppName);
+        Assert.Equal("doNotChange", instOpts.InstanceId);
+        Assert.Equal("doNotChange", instOpts.RegistrationMethod);
+        Assert.Equal("doNotChange", instOpts.VirtualHostName);
+        Assert.Equal("doNotChange", instOpts.SecureVirtualHostName);
     }
 
     [Fact]
@@ -113,18 +113,18 @@ public class EurekaPostConfigurerTest
 
         var instOpts = new EurekaInstanceOptions
         {
-            AppName = "dontChange",
-            InstanceId = "dontChange",
-            RegistrationMethod = "dontChange"
+            AppName = "doNotChange",
+            InstanceId = "doNotChange",
+            RegistrationMethod = "doNotChange"
         };
 
         EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
 
-        Assert.Equal("dontChange", instOpts.AppName);
-        Assert.Equal("dontChange", instOpts.InstanceId);
-        Assert.Equal("dontChange", instOpts.RegistrationMethod);
-        Assert.Equal("dontChange", instOpts.VirtualHostName);
-        Assert.Equal("dontChange", instOpts.SecureVirtualHostName);
+        Assert.Equal("doNotChange", instOpts.AppName);
+        Assert.Equal("doNotChange", instOpts.InstanceId);
+        Assert.Equal("doNotChange", instOpts.RegistrationMethod);
+        Assert.Equal("doNotChange", instOpts.VirtualHostName);
+        Assert.Equal("doNotChange", instOpts.SecureVirtualHostName);
     }
 
     [Fact]

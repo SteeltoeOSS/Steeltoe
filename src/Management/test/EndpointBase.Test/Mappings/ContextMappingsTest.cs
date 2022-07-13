@@ -19,9 +19,9 @@ public class ContextMappingsTest : BaseTest
             { "dispatcherServlet", mappingList }
         };
         var contextMappings = new ContextMappings(mappingDict);
-        var smappings = contextMappings.Mappings;
-        Assert.Contains("dispatcherServlets", smappings.Keys);
-        var mappings = smappings["dispatcherServlets"];
+        var contextMappingsMappings = contextMappings.Mappings;
+        Assert.Contains("dispatcherServlets", contextMappingsMappings.Keys);
+        var mappings = contextMappingsMappings["dispatcherServlets"];
         Assert.Contains("dispatcherServlet", mappings.Keys);
         Assert.Same(mappingList, mappings["dispatcherServlet"]);
     }
@@ -37,14 +37,14 @@ public class ContextMappingsTest : BaseTest
             Produces = new List<string> { "application/json" }
         };
 
-        var mappDescs = new List<MappingDescription>
+        var mappingDescriptions = new List<MappingDescription>
         {
             new ("foobar", routeDetail)
         };
 
         var mappingDict = new Dictionary<string, IList<MappingDescription>>
         {
-            { "controllerTypeName", mappDescs }
+            { "controllerTypeName", mappingDescriptions }
         };
 
         var contextMappings = new ContextMappings(mappingDict);

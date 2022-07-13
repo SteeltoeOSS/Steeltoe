@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 [Obsolete("To be removed in the next major version.")]
 public class HttpClientCoreObserverTest : BaseTest
 {
-    private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
+    private readonly PullMetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
 
     [Fact]
     public void Constructor_RegistersExpectedViews()
@@ -116,7 +116,7 @@ public class HttpClientCoreObserverTest : BaseTest
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
         var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
         var req = GetHttpRequestMessage();
@@ -161,7 +161,7 @@ public class HttpClientCoreObserverTest : BaseTest
         var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
 
         var req = GetHttpRequestMessage();
 

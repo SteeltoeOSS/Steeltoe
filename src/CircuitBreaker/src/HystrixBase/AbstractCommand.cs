@@ -1504,7 +1504,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     public IHystrixCommandOptions CommandOptions => InnerOptions;
 
-    public long CommandRunStartTimeInNanos => ExecutionResult.CommandRunStartTimeInNanos;
+    public long CommandRunStartTimeInNanoseconds => ExecutionResult.CommandRunStartTimeInNanoseconds;
 
     public ExecutionResult.EventCounts EventCounts => CommandResult.Eventcounts;
 

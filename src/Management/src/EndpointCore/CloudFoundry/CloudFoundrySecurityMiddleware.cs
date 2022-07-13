@@ -17,24 +17,24 @@ public class CloudFoundrySecurityMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly ICloudFoundryOptions _options;
-    private readonly IManagementOptions _mgmtOptions;
+    private readonly IManagementOptions _managementOptions;
     private readonly SecurityBase _base;
 
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, CloudFoundryManagementOptions mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
     {
         _next = next;
         _logger = logger;
         _options = options;
-        _mgmtOptions = mgmtOptions;
+        _managementOptions = managementOptions;
 
-        _base = new SecurityBase(options, _mgmtOptions, logger);
+        _base = new SecurityBase(options, _managementOptions, logger);
     }
 
     public async Task Invoke(HttpContext context)
     {
-        _logger?.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
+        _logger?.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _managementOptions.Path);
 
-        var isEndpointExposed = _mgmtOptions == null || _options.IsExposed(_mgmtOptions);
+        var isEndpointExposed = _managementOptions == null || _options.IsExposed(_managementOptions);
 
         if (Platform.IsCloudFoundry
             && isEndpointExposed
@@ -102,10 +102,10 @@ public class CloudFoundrySecurityMiddleware
     {
         List<IEndpointOptions> configEndpoints;
 
-        configEndpoints = _mgmtOptions.EndpointOptions;
+        configEndpoints = _managementOptions.EndpointOptions;
         foreach (var ep in configEndpoints)
         {
-            var contextPath = _mgmtOptions.Path;
+            var contextPath = _managementOptions.Path;
             if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(ep.Path))
             {
                 contextPath += "/";
@@ -135,7 +135,7 @@ public class CloudFoundrySecurityMiddleware
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
 
         // allowing override of 400-level errors is more likely to cause confusion than to be useful
-        if (_mgmtOptions.UseStatusCodeFromResponse || (int)error.Code < 500)
+        if (_managementOptions.UseStatusCodeFromResponse || (int)error.Code < 500)
         {
             context.Response.StatusCode = (int)error.Code;
         }

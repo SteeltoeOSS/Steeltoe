@@ -26,11 +26,11 @@ public class OutboundEndpointTest
         var context = new GenericApplicationContext(services, config);
 
         var connectionFactory = new Mock<IConnectionFactory>();
-        var ampqTemplate = new TestRabbitTemplate
+        var rabbitTemplate = new TestRabbitTemplate
         {
             ConnectionFactory = connectionFactory.Object
         };
-        var endpoint = new RabbitOutboundEndpoint(context, ampqTemplate, null)
+        var endpoint = new RabbitOutboundEndpoint(context, rabbitTemplate, null)
         {
             ExchangeName = "foo",
             RoutingKey = "bar"
@@ -39,27 +39,27 @@ public class OutboundEndpointTest
         endpoint.Initialize();
 
         endpoint.HandleMessage(Message.Create("foo"));
-        Assert.NotNull(ampqTemplate.SendMessage);
-        Assert.Equal("foo", ampqTemplate.ExchangeName);
-        Assert.Equal("bar", ampqTemplate.RoutingKey);
-        Assert.Equal(42, ampqTemplate.SendMessage.Headers.Delay().Value);
+        Assert.NotNull(rabbitTemplate.SendMessage);
+        Assert.Equal("foo", rabbitTemplate.ExchangeName);
+        Assert.Equal("bar", rabbitTemplate.RoutingKey);
+        Assert.Equal(42, rabbitTemplate.SendMessage.Headers.Delay().Value);
 
         endpoint.ExpectReply = true;
         endpoint.OutputChannel = new NullChannel();
         endpoint.HandleMessage(Message.Create("foo"));
-        Assert.NotNull(ampqTemplate.SendAndReceiveMessage);
-        Assert.Equal("foo", ampqTemplate.ExchangeName);
-        Assert.Equal("bar", ampqTemplate.RoutingKey);
-        Assert.Equal(42, ampqTemplate.SendAndReceiveMessage.Headers.Delay().Value);
+        Assert.NotNull(rabbitTemplate.SendAndReceiveMessage);
+        Assert.Equal("foo", rabbitTemplate.ExchangeName);
+        Assert.Equal("bar", rabbitTemplate.RoutingKey);
+        Assert.Equal(42, rabbitTemplate.SendAndReceiveMessage.Headers.Delay().Value);
 
         endpoint.SetDelay(23);
         endpoint.RoutingKey = "baz";
         endpoint.Initialize();
         endpoint.HandleMessage(Message.Create("foo"));
-        Assert.NotNull(ampqTemplate.SendAndReceiveMessage);
-        Assert.Equal("foo", ampqTemplate.ExchangeName);
-        Assert.Equal("baz", ampqTemplate.RoutingKey);
-        Assert.Equal(23, ampqTemplate.SendAndReceiveMessage.Headers.Delay().Value);
+        Assert.NotNull(rabbitTemplate.SendAndReceiveMessage);
+        Assert.Equal("foo", rabbitTemplate.ExchangeName);
+        Assert.Equal("baz", rabbitTemplate.RoutingKey);
+        Assert.Equal(23, rabbitTemplate.SendAndReceiveMessage.Headers.Delay().Value);
     }
 
     public class TestRabbitTemplate : RabbitTemplate

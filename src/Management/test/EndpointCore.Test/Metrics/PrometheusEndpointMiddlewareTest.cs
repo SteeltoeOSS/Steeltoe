@@ -24,14 +24,14 @@ public class PrometheusEndpointMiddlewareTest : BaseTest
     public async Task HandlePrometheusRequestAsync_ReturnsExpected()
     {
         var opts = new PrometheusEndpointOptions();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
         var exporter = new SteeltoePrometheusExporter();
         var viewRegistry = new ViewRegistry();
-        using var otel = GetTestMetrics(viewRegistry, null, exporter, "test1", "1.0");
+        using var metrics = GetTestMetrics(viewRegistry, null, exporter, "test1", "1.0");
 
         var ep = new PrometheusScraperEndpoint(opts, new List<MetricsExporter> { exporter });
-        var middle = new PrometheusScraperEndpointMiddleware(null, ep, mopts);
+        var middle = new PrometheusScraperEndpointMiddleware(null, ep, managementOptions);
         var meter = new Meter("test1", "1.0");
         var measure = meter.CreateCounter<double>("test");
         var labels = new Dictionary<string, object>

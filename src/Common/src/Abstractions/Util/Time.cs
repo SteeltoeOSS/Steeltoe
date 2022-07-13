@@ -29,9 +29,9 @@ public static class Time
         }
     }
 
-    public static bool WaitUntil(Func<bool> check, int maxWaitMilli)
+    public static bool WaitUntil(Func<bool> check, int maxWaitMilliseconds)
     {
-        var ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
+        var ticksToWait = maxWaitMilliseconds * TimeSpan.TicksPerMillisecond;
         var start = DateTime.Now.Ticks;
 
         while (true)
@@ -64,16 +64,16 @@ public static class Time
     }
 
     // Used by unit tests only
-    public static void Wait(int maxWaitMilli)
+    public static void Wait(int maxWaitMilliseconds)
     {
-        if (maxWaitMilli <= 0)
+        if (maxWaitMilliseconds <= 0)
         {
             return;
         }
 
-        Thread.Sleep(maxWaitMilli);
+        Thread.Sleep(maxWaitMilliseconds);
 
-        // long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
+        // long ticksToWait = maxWaitMilliseconds * TimeSpan.TicksPerMillisecond;
 
         // if (ticksToWait <= 0)
         // {

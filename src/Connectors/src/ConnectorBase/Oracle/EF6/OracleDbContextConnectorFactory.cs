@@ -10,8 +10,8 @@ namespace Steeltoe.Connector.Oracle.EF6;
 
 public class OracleDbContextConnectorFactory : OracleProviderConnectorFactory
 {
-    public OracleDbContextConnectorFactory(OracleServiceInfo info, OracleProviderConnectorOptions config, Type dbContextType)
-        : base(info, config, dbContextType)
+    public OracleDbContextConnectorFactory(OracleServiceInfo info, OracleProviderConnectorOptions options, Type dbContextType)
+        : base(info, options, dbContextType)
     {
         if (dbContextType == null)
         {

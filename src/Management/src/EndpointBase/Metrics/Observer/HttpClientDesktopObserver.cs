@@ -24,7 +24,7 @@ public class HttpClientDesktopObserver : MetricsObserver
     internal const string DefaultObserverName = "HttpClientDesktopObserver";
 
     internal const string StopEvent = "System.Net.Http.Desktop.HttpRequestOut.Stop";
-    internal const string StopexEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
+    internal const string StopExEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
 
     private readonly string _statusTagKey = "status";
     private readonly string _uriTagKey = "uri";
@@ -62,7 +62,7 @@ public class HttpClientDesktopObserver : MetricsObserver
             });
     }
 
-    public override void ProcessEvent(string evnt, object arg)
+    public override void ProcessEvent(string eventName, object arg)
     {
         if (arg == null)
         {
@@ -81,7 +81,7 @@ public class HttpClientDesktopObserver : MetricsObserver
             return;
         }
 
-        if (evnt == StopEvent)
+        if (eventName == StopEvent)
         {
             Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
@@ -93,7 +93,7 @@ public class HttpClientDesktopObserver : MetricsObserver
 
             Logger?.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
-        else if (evnt == StopexEvent)
+        else if (eventName == StopExEvent)
         {
             Logger?.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
 

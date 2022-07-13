@@ -146,7 +146,7 @@ internal sealed class MiniDumper
 
     [DllImport("DbgHelp", SetLastError = true)]
 
-    private static extern int MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MiniDumpTypes dumpType, IntPtr excepParam, IntPtr userParam, IntPtr callParam);
+    private static extern int MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MiniDumpTypes dumpType, IntPtr exceptionParam, IntPtr userParam, IntPtr callParam);
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     internal delegate int MiniDumpCallback(IntPtr callbackParam, IntPtr callbackInput, IntPtr callbackOutput);

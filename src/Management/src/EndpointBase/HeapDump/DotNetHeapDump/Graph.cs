@@ -2355,7 +2355,7 @@ internal sealed class GraphSampler
     /// you should add this node to the graph being built.   If 'mustAdd' is true or
     /// if we need samples it keep the right sample/total ratio, then add the sample.  
     /// </summary>
-    private void VisitNode(NodeIndex nodeIdx, bool mustAdd, bool dontAddAncestors)
+    private void VisitNode(NodeIndex nodeIdx, bool mustAdd, bool doNotAddAncestors)
     {
         var newNodeIdx = m_newIndex[(int)nodeIdx];
         // If this node has been selected already, there is nothing to do.    
@@ -2446,7 +2446,7 @@ internal sealed class GraphSampler
             }
 
             // For all ancestors, require them to be in the list
-            if (!dontAddAncestors)
+            if (!doNotAddAncestors)
             {
                 for (; ; )
                 {

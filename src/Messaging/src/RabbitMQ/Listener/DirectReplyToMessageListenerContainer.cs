@@ -32,7 +32,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
     public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
         : base(applicationContext, connectionFactory, name, loggerFactory)
     {
-        base.SetQueueNames(Address.AmqRabbitmqReplyTo);
+        base.SetQueueNames(Address.AmqRabbitMQReplyTo);
         AcknowledgeMode = AcknowledgeMode.None;
         base.ConsumersPerQueue = 0;
         IdleEventInterval = DefaultIdle;
@@ -174,9 +174,9 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
             long reduce = 0;
             foreach (var c in Consumers)
             {
-                if (WhenUsed.TryGetValue(c, out var howlong)
+                if (WhenUsed.TryGetValue(c, out var howLong)
                     && !InUseConsumerChannels.Values.Contains(c)
-                    && howlong < now - IdleEventInterval)
+                    && howLong < now - IdleEventInterval)
                 {
                     reduce++;
                 }

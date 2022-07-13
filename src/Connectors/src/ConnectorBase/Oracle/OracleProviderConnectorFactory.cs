@@ -18,10 +18,10 @@ public class OracleProviderConnectorFactory
     {
     }
 
-    public OracleProviderConnectorFactory(OracleServiceInfo sinfo, OracleProviderConnectorOptions config, Type type)
+    public OracleProviderConnectorFactory(OracleServiceInfo serviceInfo, OracleProviderConnectorOptions options, Type type)
     {
-        _info = sinfo;
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _info = serviceInfo;
+        _config = options ?? throw new ArgumentNullException(nameof(options));
         ConnectorType = type;
     }
 

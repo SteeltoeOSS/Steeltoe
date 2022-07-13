@@ -59,14 +59,14 @@ public class MutableMessageTest
         var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
         // UUID as string; timestamp as string
-        var headerDictionarystrings = new Dictionary<string, object>
+        var headerDictionaryStrings = new Dictionary<string, object>
         {
             { MessageHeaders.IdName, uuid.ToString() },
             { MessageHeaders.TimestampName, timestamp.ToString() }
         };
-        var mutableMessagestrings = new MutableMessage<object>(payload, headerDictionarystrings);
-        Assert.Equal(uuid.ToString(), mutableMessagestrings.Headers.Id);
-        Assert.Equal(timestamp, mutableMessagestrings.Headers.Timestamp);
+        var mutableMessageStrings = new MutableMessage<object>(payload, headerDictionaryStrings);
+        Assert.Equal(uuid.ToString(), mutableMessageStrings.Headers.Id);
+        Assert.Equal(timestamp, mutableMessageStrings.Headers.Timestamp);
 
         // UUID as byte[]; timestamp as Long
         var headerDictionaryByte = new Dictionary<string, object>();

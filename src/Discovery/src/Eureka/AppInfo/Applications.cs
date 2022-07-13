@@ -157,14 +157,14 @@ public class Applications
     {
         lock (_addRemoveInstanceLock)
         {
-            var addressUppper = address.ToUpperInvariant();
-            dict.TryGetValue(addressUppper, out var instances);
+            var addressUpper = address.ToUpperInvariant();
+            dict.TryGetValue(addressUpper, out var instances);
             if (instances != null)
             {
                 instances.TryRemove(info.InstanceId, out _);
                 if (instances.Count <= 0)
                 {
-                    _ = dict.TryRemove(addressUppper, out _);
+                    _ = dict.TryRemove(addressUpper, out _);
                 }
             }
         }
@@ -243,19 +243,19 @@ public class Applications
 
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new ();
 
-    internal static Applications FromJsonApplications(JsonApplications japps)
+    internal static Applications FromJsonApplications(JsonApplications applications)
     {
         var apps = new Applications();
-        if (japps != null)
+        if (applications != null)
         {
-            apps.Version = japps.VersionDelta;
-            apps.AppsHashCode = japps.AppsHashCode;
+            apps.Version = applications.VersionDelta;
+            apps.AppsHashCode = applications.AppsHashCode;
 
-            if (japps.Applications != null)
+            if (applications.Applications != null)
             {
-                foreach (var japp in japps.Applications)
+                foreach (var application in applications.Applications)
                 {
-                    var app = Application.FromJsonApplication(japp);
+                    var app = Application.FromJsonApplication(application);
                     apps.Add(app);
                 }
             }

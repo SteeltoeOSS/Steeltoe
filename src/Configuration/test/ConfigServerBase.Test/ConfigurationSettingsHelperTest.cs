@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 public class ConfigurationSettingsHelperTest
 {
     [Fact]
-    public void Initalize_ThrowsOnNulls()
+    public void Initialize_ThrowsOnNulls()
     {
         const string configPrefix = null;
         const ConfigServerClientSettings settings = null;

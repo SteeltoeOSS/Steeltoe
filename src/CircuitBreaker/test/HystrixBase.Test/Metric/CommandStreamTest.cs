@@ -101,7 +101,7 @@ public abstract class CommandStreamTest : HystrixTestBase
             HystrixEventType desiredFallbackEventType,
             int fallbackLatency)
         {
-            var topts = new HystrixThreadPoolOptions
+            var options = new HystrixThreadPoolOptions
             {
                 CoreSize = 10,
                 MaxQueueSize = -1,
@@ -124,7 +124,7 @@ public abstract class CommandStreamTest : HystrixTestBase
                 RequestLogEnabled = true,
                 FallbackIsolationSemaphoreMaxConcurrentRequests = 5,
                 ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name),
-                ThreadPoolOptions = topts
+                ThreadPoolOptions = options
             };
 
             string uniqueArg;
@@ -155,12 +155,12 @@ public abstract class CommandStreamTest : HystrixTestBase
         {
             var cmd1 = From(groupKey, key, HystrixEventType.Success);
             var cmd2 = From(groupKey, key, HystrixEventType.ResponseFromCache);
-            var cmds = new List<Command>
+            var commands = new List<Command>
             {
                 cmd1,
                 cmd2
             };
-            return cmds;
+            return commands;
         }
 
         // public Stopwatch sw = new Stopwatch();

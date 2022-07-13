@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-public interface IFanoutExchange : IExchange
+public interface IFanOutExchange : IExchange
 {
 }

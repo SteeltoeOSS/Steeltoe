@@ -37,19 +37,19 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
-        var foundpartInterceptor = false;
+        var foundPartInterceptor = false;
         foreach (var interceptor in messageChannel.ChannelInterceptors)
         {
             if (interceptor is PartitioningInterceptor partInterceptor)
             {
-                foundpartInterceptor = true;
+                foundPartInterceptor = true;
                 Assert.NotNull(partInterceptor.PartitionHandler);
                 Assert.IsType<CustomPartitionKeyExtractorClass>(partInterceptor.PartitionHandler.PartitionKeyExtractorStrategy);
                 Assert.IsType<CustomPartitionSelectorClass>(partInterceptor.PartitionHandler.PartitionSelectorStrategy);
             }
         }
 
-        Assert.True(foundpartInterceptor);
+        Assert.True(foundPartInterceptor);
 
         await provider.GetRequiredService<ILifecycleProcessor>().Stop();
     }
@@ -73,19 +73,19 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
-        var foundpartInterceptor = false;
+        var foundPartInterceptor = false;
         foreach (var interceptor in messageChannel.ChannelInterceptors)
         {
             if (interceptor is PartitioningInterceptor partInterceptor)
             {
-                foundpartInterceptor = true;
+                foundPartInterceptor = true;
                 Assert.NotNull(partInterceptor.PartitionHandler);
                 Assert.IsType<CustomPartitionKeyExtractorClass>(partInterceptor.PartitionHandler.PartitionKeyExtractorStrategy);
                 Assert.IsType<CustomPartitionSelectorClass>(partInterceptor.PartitionHandler.PartitionSelectorStrategy);
             }
         }
 
-        Assert.True(foundpartInterceptor);
+        Assert.True(foundPartInterceptor);
         await provider.GetRequiredService<ILifecycleProcessor>().Stop();
     }
 
@@ -113,19 +113,19 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
-        var foundpartInterceptor = false;
+        var foundPartInterceptor = false;
         foreach (var interceptor in messageChannel.ChannelInterceptors)
         {
             if (interceptor is PartitioningInterceptor partInterceptor)
             {
-                foundpartInterceptor = true;
+                foundPartInterceptor = true;
                 Assert.NotNull(partInterceptor.PartitionHandler);
                 Assert.IsType<CustomPartitionKeyExtractorClassOne>(partInterceptor.PartitionHandler.PartitionKeyExtractorStrategy);
                 Assert.IsType<CustomPartitionSelectorClassTwo>(partInterceptor.PartitionHandler.PartitionSelectorStrategy);
             }
         }
 
-        Assert.True(foundpartInterceptor);
+        Assert.True(foundPartInterceptor);
 
         await provider.GetRequiredService<ILifecycleProcessor>().Stop();
     }

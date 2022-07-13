@@ -464,21 +464,21 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                 }";
         using var sandbox = new Sandbox();
         var appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
-        var appsettingsfileName = Path.GetFileName(appsettingsPath);
+        var appSettingsFileName = Path.GetFileName(appsettingsPath);
 
         var vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
-        var vcapAppfileName = Path.GetFileName(vcapAppPath);
+        var vcapAppFileName = Path.GetFileName(vcapAppPath);
 
         var vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
-        var vcapServicesfileName = Path.GetFileName(vcapServicesPath);
+        var vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
         var environment = HostingHelpers.GetHostingEnvironment("Production");
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
-        configurationBuilder.AddJsonFile(appsettingsfileName);
-        configurationBuilder.AddJsonFile(vcapAppfileName);
-        configurationBuilder.AddJsonFile(vcapServicesfileName);
+        configurationBuilder.AddJsonFile(appSettingsFileName);
+        configurationBuilder.AddJsonFile(vcapAppFileName);
+        configurationBuilder.AddJsonFile(vcapServicesFileName);
 
         configurationBuilder.AddConfigServer(environment);
         var config = configurationBuilder.Build();
@@ -569,22 +569,22 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
         using var sandbox = new Sandbox();
-        var appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
-        var appsettingsfileName = Path.GetFileName(appsettingsPath);
+        var appSettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
+        var appSettingsFileName = Path.GetFileName(appSettingsPath);
 
         var vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
-        var vcapAppfileName = Path.GetFileName(vcapAppPath);
+        var vcapAppFileName = Path.GetFileName(vcapAppPath);
 
         var vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
-        var vcapServicesfileName = Path.GetFileName(vcapServicesPath);
+        var vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
         var environment = HostingHelpers.GetHostingEnvironment("Production");
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
-        configurationBuilder.AddJsonFile(appsettingsfileName);
-        configurationBuilder.AddJsonFile(vcapAppfileName);
-        configurationBuilder.AddJsonFile(vcapServicesfileName);
+        configurationBuilder.AddJsonFile(appSettingsFileName);
+        configurationBuilder.AddJsonFile(vcapAppFileName);
+        configurationBuilder.AddJsonFile(vcapServicesFileName);
 
         configurationBuilder.AddConfigServer(environment);
         var config = configurationBuilder.Build();

@@ -176,7 +176,7 @@ public class RabbitOptions
 
         public string CertPath { get; set; }
 
-        public string CertPassphrase { get; set; }
+        public string CertPassPhrase { get; set; }
 
         public string ServerHostName { get; set; }
 
@@ -314,9 +314,9 @@ public class RabbitOptions
             if (input.Contains("@"))
             {
                 var split = input.Split("@", StringSplitOptions.RemoveEmptyEntries);
-                var creds = split[0];
+                var credentials = split[0];
                 input = split[1];
-                split = creds.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                split = credentials.Split(":", StringSplitOptions.RemoveEmptyEntries);
                 Username = split[0];
                 if (split.Length > 0)
                 {

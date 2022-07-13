@@ -445,7 +445,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var zipped = o1.Zip(o2, (healthCounts, healthCounts2) => healthCounts == healthCounts2);
         var reduced = zipped.Aggregate(true, (a, b) => a && b).Select(n => n);
 
-        var rdisp = reduced.Subscribe(
+        var disposable = reduced.Subscribe(
             b =>
             {
                 _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnNext : " + b);
@@ -472,7 +472,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
         Assert.True(allEqual.Value);
 
-        rdisp.Dispose();
+        disposable.Dispose();
 
         // we should be getting the same object from both streams.  this ensures that multiple subscribers don't induce extra work
     }

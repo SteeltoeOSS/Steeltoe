@@ -77,8 +77,8 @@ public class SerilogOptions : ISerilogOptions
     public LoggerConfiguration GetSerilogConfiguration() => _serilogConfiguration; // Method, so it won't `Bind` to anything
 
     [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+    public IEnumerable<string> SubLoggerConfigKeyExclusions { get; set; }
 
     [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> FullnameExclusions => new List<string>();
+    public IEnumerable<string> FullNameExclusions => new List<string>();
 }

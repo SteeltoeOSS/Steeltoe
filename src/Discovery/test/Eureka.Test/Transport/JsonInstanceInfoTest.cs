@@ -43,7 +43,7 @@ public class JsonInstanceInfoTest : AbstractBaseTest
         Assert.Equal("localhost:foo", result.InstanceId);
         Assert.Equal("localhost", result.HostName);
         Assert.Equal("FOO", result.AppName);
-        Assert.Equal("192.168.56.1", result.IpAddr);
+        Assert.Equal("192.168.56.1", result.IpAddress);
         Assert.Equal(InstanceStatus.Up, result.Status);
         Assert.Equal(InstanceStatus.Unknown, result.OverriddenStatus);
         var port = result.Port;

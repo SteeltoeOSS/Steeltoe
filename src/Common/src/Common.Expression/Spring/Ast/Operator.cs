@@ -46,18 +46,18 @@ public abstract class Operator : SpelNode
             return false;
         }
 
-        var tcode = targetConv.GetTypeCode();
-        return tcode == TypeCode.Byte ||
-               tcode == TypeCode.Decimal ||
-               tcode == TypeCode.Double ||
-               tcode == TypeCode.Int16 ||
-               tcode == TypeCode.Int32 ||
-               tcode == TypeCode.Int64 ||
-               tcode == TypeCode.SByte ||
-               tcode == TypeCode.Single ||
-               tcode == TypeCode.UInt16 ||
-               tcode == TypeCode.UInt32 ||
-               tcode == TypeCode.UInt64;
+        var typeCode = targetConv.GetTypeCode();
+        return typeCode == TypeCode.Byte ||
+               typeCode == TypeCode.Decimal ||
+               typeCode == TypeCode.Double ||
+               typeCode == TypeCode.Int16 ||
+               typeCode == TypeCode.Int32 ||
+               typeCode == TypeCode.Int64 ||
+               typeCode == TypeCode.SByte ||
+               typeCode == TypeCode.Single ||
+               typeCode == TypeCode.UInt16 ||
+               typeCode == TypeCode.UInt32 ||
+               typeCode == TypeCode.UInt64;
     }
 
     public static bool EqualityCheck(IEvaluationContext context, object left, object right)

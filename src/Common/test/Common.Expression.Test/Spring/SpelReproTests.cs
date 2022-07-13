@@ -396,7 +396,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         // Assignment
         ex = Assert.Throws<SpelEvaluationException>(() => new SpelExpressionParser().ParseRaw("(='default')").GetValue(context));
-        Assert.Equal(SpelMessage.SetvalueNotSupported, ex.MessageCode);
+        Assert.Equal(SpelMessage.SetValueNotSupported, ex.MessageCode);
     }
 
     [Fact]
@@ -548,16 +548,16 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void WideningPrimitiveConversion_SPR8224()
     {
-        var iNTEGER_VALUE = 7;
+        var integerValue = 7;
         var target = new WideningPrimitiveConversion();
         var emptyEvalContext = new StandardEvaluationContext();
 
         var args = new List<Type> { typeof(int) };
 
         var me = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target, "GetX", args);
-        var actual = (int)me.Execute(emptyEvalContext, target, iNTEGER_VALUE).Value;
+        var actual = (int)me.Execute(emptyEvalContext, target, integerValue).Value;
 
-        var compiler = target.GetX(iNTEGER_VALUE);
+        var compiler = target.GetX(integerValue);
         Assert.Equal(compiler, actual);
     }
 
@@ -1176,7 +1176,7 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Equal(Abc.B, asArray.GetValue(1));
         Assert.Equal(Abc.C, asArray.GetValue(2));
 
-        context.AddMethodResolver(new ValuesMethodReslover());
+        context.AddMethodResolver(new ValuesMethodResolver());
         result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
@@ -1538,7 +1538,7 @@ public class SpelReproTests : AbstractExpressionTests
 
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE1006 // Naming Styles
-    public class ValuesMethodReslover : IMethodResolver
+    public class ValuesMethodResolver : IMethodResolver
     {
         public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes) => new ValuesMethodExecutor();
     }

@@ -35,9 +35,9 @@ public class CertificateGenerationRequest : CredHubGenerateRequest
         Mode = overwriteMode;
     }
 
-    private bool AtLeastOneProvided(List<string> parms)
+    private bool AtLeastOneProvided(List<string> parameters)
     {
-        foreach (var s in parms)
+        foreach (var s in parameters)
         {
             if (!string.IsNullOrEmpty(s))
             {

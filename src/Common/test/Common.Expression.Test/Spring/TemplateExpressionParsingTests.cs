@@ -108,9 +108,9 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
         ex = parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1]==3]} world", DefaultTemplateParserContextSingleton);
         Assert.IsType<CompositeStringExpression>(ex);
         var cse = (CompositeStringExpression)ex;
-        var exprs = cse.Expressions;
-        Assert.Equal(3, exprs.Count);
-        Assert.Equal("ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1]==3]", exprs[1].ExpressionString);
+        var expressions = cse.Expressions;
+        Assert.Equal(3, expressions.Count);
+        Assert.Equal("ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1]==3]", expressions[1].ExpressionString);
         s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
         Assert.Equal("hello  world", s);
 

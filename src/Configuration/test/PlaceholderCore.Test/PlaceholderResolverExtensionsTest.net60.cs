@@ -40,16 +40,16 @@ public partial class PlaceholderResolverExtensionsTest
                 </spring>
             </settings>";
         using var sandbox = new Sandbox();
-        var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonfileName = Path.GetFileName(jsonpath);
-        var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlfileName = Path.GetFileName(xmlpath);
-        var directory = Path.GetDirectoryName(jsonpath);
+        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        var jsonFileName = Path.GetFileName(jsonPath);
+        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        var xmlFileName = Path.GetFileName(xmlPath);
+        var directory = Path.GetDirectoryName(jsonPath);
 
         var hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.SetBasePath(directory);
-        hostBuilder.Configuration.AddJsonFile(jsonfileName);
-        hostBuilder.Configuration.AddXmlFile(xmlfileName);
+        hostBuilder.Configuration.AddJsonFile(jsonFileName);
+        hostBuilder.Configuration.AddXmlFile(xmlFileName);
         hostBuilder.AddPlaceholderResolver();
 
         using var server = hostBuilder.Build();

@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 public class ArrayContainer
 {
-    public int[] Ints = new int[3];
+    public int[] Integers = new int[3];
     public long[] Longs = new long[3];
     public double[] Doubles = new double[3];
     public byte[] Bytes = new byte[3];
@@ -18,7 +18,7 @@ public class ArrayContainer
     public ArrayContainer()
     {
         // setup some values
-        Ints[0] = 42;
+        Integers[0] = 42;
         Longs[0] = 42L;
         Doubles[0] = 42.0d;
         Bytes[0] = 42;

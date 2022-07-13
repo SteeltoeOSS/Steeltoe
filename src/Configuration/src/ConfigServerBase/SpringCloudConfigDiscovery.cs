@@ -8,5 +8,5 @@ public class SpringCloudConfigDiscovery
 {
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultDiscoveryEnabled;
 
-    public string ServiceId { get; set; } = ConfigServerClientSettings.DefaultConfigserverServiceid;
+    public string ServiceId { get; set; } = ConfigServerClientSettings.DefaultConfigserverServiceId;
 }

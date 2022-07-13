@@ -36,12 +36,12 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleTraceRequestAsync_ReturnsExpected()
     {
         var opts = new TraceEndpointOptions();
-        var mopts = new CloudFoundryManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         var obs = new TraceDiagnosticObserver(opts);
         var ep = new TestTraceEndpoint(opts, obs);
-        var middle = new TraceEndpointMiddleware(null, ep, mopts);
+        var middle = new TraceEndpointMiddleware(null, ep, managementOptions);
         var context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -54,12 +54,12 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleTraceRequestAsync_OtherPathReturnsExpected()
     {
         var opts = new TraceEndpointOptions();
-        var mopts = new CloudFoundryManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         var obs = new TraceDiagnosticObserver(opts);
         var ep = new TestTraceEndpoint(opts, obs);
-        var middle = new TraceEndpointMiddleware(null, ep, mopts);
+        var middle = new TraceEndpointMiddleware(null, ep, managementOptions);
         var context = CreateRequest("GET", "/cloudfoundryapplication/trace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -74,9 +74,9 @@ public class EndpointMiddlewareTest : BaseTest
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
 

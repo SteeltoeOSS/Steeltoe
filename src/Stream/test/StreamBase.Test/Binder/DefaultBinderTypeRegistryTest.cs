@@ -58,7 +58,7 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
     }
 
     [Fact]
-    public void AddBinderTypes_WithBinderAllreadyLoaded_ReturnsBinder()
+    public void AddBinderTypes_WithBinderAlreadyLoaded_ReturnsBinder()
     {
         var result = new Dictionary<string, IBinderType>();
 

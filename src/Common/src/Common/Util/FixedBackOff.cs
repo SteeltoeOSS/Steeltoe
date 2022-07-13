@@ -31,20 +31,20 @@ public class FixedBackOff : IBackOff
 
     private sealed class FixedBackOffExecution : IBackOffExecution
     {
-        private readonly FixedBackOff _backoff;
+        private readonly FixedBackOff _backOff;
         private int _currentAttempts;
 
-        public FixedBackOffExecution(FixedBackOff backoff)
+        public FixedBackOffExecution(FixedBackOff backOff)
         {
-            _backoff = backoff;
+            _backOff = backOff;
         }
 
         public int NextBackOff()
         {
             _currentAttempts++;
-            if (_currentAttempts <= _backoff.MaxAttempts)
+            if (_currentAttempts <= _backOff.MaxAttempts)
             {
-                return _backoff.Interval;
+                return _backOff.Interval;
             }
             else
             {
@@ -54,8 +54,8 @@ public class FixedBackOff : IBackOff
 
         public override string ToString()
         {
-            var attemptValue = _backoff.MaxAttempts == int.MaxValue ? "unlimited" : _backoff.MaxAttempts.ToString();
-            return $"FixedBackOff{{interval={_backoff.Interval}, currentAttempts={_currentAttempts}, maxAttempts={attemptValue}}}";
+            var attemptValue = _backOff.MaxAttempts == int.MaxValue ? "unlimited" : _backOff.MaxAttempts.ToString();
+            return $"FixedBackOff{{interval={_backOff.Interval}, currentAttempts={_currentAttempts}, maxAttempts={attemptValue}}}";
         }
     }
 }

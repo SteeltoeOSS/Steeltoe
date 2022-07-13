@@ -335,9 +335,9 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         };
 
         object value;
-        if (properties is string strval)
+        if (properties is string stringValue)
         {
-            value = JsonSerializer.Deserialize<Dictionary<string, object>>(strval);
+            value = JsonSerializer.Deserialize<Dictionary<string, object>>(stringValue);
         }
         else
         {

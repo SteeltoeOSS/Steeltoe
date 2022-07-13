@@ -576,8 +576,8 @@ public class DiscoveryClient : IEurekaClient
             }
 
             logger.LogInformation("Starting HeartBeat");
-            var intervalInMilli = appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-            innerHeartBeatTimer = StartTimer("HeartBeat", intervalInMilli, HeartBeatTaskAsync);
+            var intervalInMilliseconds = appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
+            innerHeartBeatTimer = StartTimer("HeartBeat", intervalInMilliseconds, HeartBeatTaskAsync);
             if (ClientConfig.ShouldOnDemandUpdateStatusChange)
             {
                 appInfoManager.StatusChanged += HandleInstanceStatusChanged;
@@ -587,8 +587,8 @@ public class DiscoveryClient : IEurekaClient
         if (ClientConfig.ShouldFetchRegistry)
         {
             await FetchRegistryAsync(true).ConfigureAwait(false);
-            var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
-            innerCacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
+            var intervalInMilliseconds = ClientConfig.RegistryFetchIntervalSeconds * 1000;
+            innerCacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTaskAsync);
         }
 
         Interlocked.Exchange(ref logger, regularLogger);

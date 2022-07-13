@@ -317,7 +317,7 @@ public class HystrixCollapserTest : HystrixTestBase
     }
 
     [Fact]
-    public void TestUnsubscribeOnOneDoesntKillBatch()
+    public void TestUnsubscribeOnOneDoesNotKillBatch()
     {
         var timer = new TestCollapserTimer(_output);
         HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(_output, timer, 1);
@@ -2097,8 +2097,8 @@ public class HystrixCollapserTest : HystrixTestBase
             var t = new ATask(_output, listener);
             Tasks.TryAdd(t, t);
 
-            var refr = new TestTimerReference(this, listener, TimeSpan.FromMilliseconds(0));
-            return refr;
+            var reference = new TestTimerReference(this, listener, TimeSpan.FromMilliseconds(0));
+            return reference;
         }
 
         public void IncrementTime(int timeInMilliseconds)
@@ -2115,12 +2115,12 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class TestTimerReference : TimerReference
     {
-        private readonly TestCollapserTimer _ctimer;
+        private readonly TestCollapserTimer _collapserTimer;
 
-        public TestTimerReference(TestCollapserTimer ctimer, ITimerListener listener, TimeSpan period)
+        public TestTimerReference(TestCollapserTimer collapserTimer, ITimerListener listener, TimeSpan period)
             : base(listener, period)
         {
-            _ctimer = ctimer;
+            _collapserTimer = collapserTimer;
         }
 
         protected override void Dispose(bool disposing)
@@ -2128,11 +2128,11 @@ public class HystrixCollapserTest : HystrixTestBase
             if (disposing)
             {
                 // Called when context is disposed
-                foreach (var v in _ctimer.Tasks.Values)
+                foreach (var v in _collapserTimer.Tasks.Values)
                 {
                     if (v.Task == Listener)
                     {
-                        _ = _ctimer.Tasks.TryRemove(v, out _);
+                        _ = _collapserTimer.Tasks.TryRemove(v, out _);
                     }
                 }
             }
@@ -2476,11 +2476,11 @@ public class HystrixCollapserTest : HystrixTestBase
 
         public IDisposable Subscription { get; set; }
 
-        public void AwaitTerminalEvent(int timeInMilli)
+        public void AwaitTerminalEvent(int timeInMilliseconds)
         {
             try
             {
-                _latch.Wait(timeInMilli);
+                _latch.Wait(timeInMilliseconds);
             }
             catch (Exception e)
             {

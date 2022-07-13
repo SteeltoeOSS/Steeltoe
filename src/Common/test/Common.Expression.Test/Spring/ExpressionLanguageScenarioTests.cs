@@ -81,7 +81,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void TestScenario_UsingADifferentRootContextobject()
+    public void TestScenario_UsingADifferentRootContextObject()
     {
         // Create a parser
         var parser = new SpelExpressionParser();
@@ -163,7 +163,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // Use the standard evaluation context
         var ctx = new StandardEvaluationContext();
 
-        ctx.AddPropertyAccessor(new FruitColourAccessor());
+        ctx.AddPropertyAccessor(new FruitColorAccessor());
         var expr = parser.ParseRaw("Orange");
         var value = expr.GetValue(ctx);
         Assert.Equal(Color.Orange, value);
@@ -180,7 +180,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // Use the standard evaluation context
         var ctx = new StandardEvaluationContext();
 
-        ctx.AddPropertyAccessor(new VegetableColourAccessor());
+        ctx.AddPropertyAccessor(new VegetableColorAccessor());
         var expr = parser.ParseRaw("Pea");
         var value = expr.GetValue(ctx);
         Assert.Equal(Color.Green, value);
@@ -188,11 +188,11 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
     }
 
-    public class FruitColourAccessor : IPropertyAccessor
+    public class FruitColorAccessor : IPropertyAccessor
     {
         private static readonly Dictionary<string, Color> PropertyMap = new ();
 
-        static FruitColourAccessor()
+        static FruitColorAccessor()
         {
             PropertyMap.Add("Banana", Color.Yellow);
             PropertyMap.Add("Apple", Color.Red);
@@ -225,11 +225,11 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         }
     }
 
-    public class VegetableColourAccessor : IPropertyAccessor
+    public class VegetableColorAccessor : IPropertyAccessor
     {
         private static readonly Dictionary<string, Color> PropertyMap = new ();
 
-        static VegetableColourAccessor()
+        static VegetableColorAccessor()
         {
             PropertyMap.Add("Pea", Color.Green);
             PropertyMap.Add("Carrot", Color.Orange);

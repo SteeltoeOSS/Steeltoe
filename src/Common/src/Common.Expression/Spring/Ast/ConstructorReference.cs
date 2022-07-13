@@ -293,7 +293,7 @@ public class ConstructorReference : SpelNode
             {
                 // There is an initializer but this is a multi-dimensional array (e.g. new int[][]{{1,2},{3,4}}) - this
                 // is not currently supported
-                throw new SpelEvaluationException(StartPosition, SpelMessage.MultidimArrayInitializerNotSupported);
+                throw new SpelEvaluationException(StartPosition, SpelMessage.MultidimensionalArrayInitializerNotSupported);
             }
 
             var typeConverter = state.EvaluationContext.TypeConverter;

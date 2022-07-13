@@ -426,11 +426,11 @@ public class MethodReference : SpelNode
         private readonly object _value;
         private readonly Type _targetType;
         private readonly object[] _arguments;
-        private readonly MethodReference _mref;
+        private readonly MethodReference _methodReference;
 
-        public MethodValueRef(MethodReference mref, ExpressionState state, object[] arguments)
+        public MethodValueRef(MethodReference methodReference, ExpressionState state, object[] arguments)
         {
-            _mref = mref;
+            _methodReference = methodReference;
             _evaluationContext = state.EvaluationContext;
             _value = state.GetActiveContextObject().Value;
             _targetType = state.GetActiveContextObject().TypeDescriptor;
@@ -439,8 +439,8 @@ public class MethodReference : SpelNode
 
         public ITypedValue GetValue()
         {
-            var result = _mref.GetValueInternal(_evaluationContext, _value, _targetType, _arguments);
-            _mref.UpdateExitTypeDescriptor(result.Value);
+            var result = _methodReference.GetValueInternal(_evaluationContext, _value, _targetType, _arguments);
+            _methodReference.UpdateExitTypeDescriptor(result.Value);
             return result;
         }
 

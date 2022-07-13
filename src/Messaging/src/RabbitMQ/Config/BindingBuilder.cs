@@ -43,7 +43,7 @@ public class BindingBuilder
             Type = type;
         }
 
-        public IBinding To(FanoutExchange exchange)
+        public IBinding To(FanOutExchange exchange)
         {
             var bindingName = $"{exchange.ExchangeName}.{Name}";
             return Binding.Create(bindingName, Name, Type, exchange.ExchangeName, string.Empty, new Dictionary<string, object>());

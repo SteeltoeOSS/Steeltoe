@@ -197,7 +197,7 @@ public class StreamListenerMethodValidator
         {
             if (ObjectUtils.IsNullOrEmpty(sendTo.Destinations))
             {
-                throw new ArgumentException(StreamListenerErrorMessages.AtleastOneOutput);
+                throw new ArgumentException(StreamListenerErrorMessages.AtLeastOneOutput);
             }
 
             if (sendTo.Destinations.Length != 1)
@@ -218,7 +218,7 @@ public class StreamListenerMethodValidator
         {
             if (string.IsNullOrEmpty(output.Name))
             {
-                throw new ArgumentException(StreamListenerErrorMessages.AtleastOneOutput);
+                throw new ArgumentException(StreamListenerErrorMessages.AtLeastOneOutput);
             }
 
             return output.Name;

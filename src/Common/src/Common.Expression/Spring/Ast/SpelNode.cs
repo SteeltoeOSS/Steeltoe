@@ -64,7 +64,7 @@ public abstract class SpelNode : ISpelNode
 
     public virtual void SetValue(ExpressionState state, object newValue)
     {
-        throw new SpelEvaluationException(StartPosition, SpelMessage.SetvalueNotSupported, GetType());
+        throw new SpelEvaluationException(StartPosition, SpelMessage.SetValueNotSupported, GetType());
     }
 
     public virtual ISpelNode GetChild(int index)
@@ -174,12 +174,12 @@ public abstract class SpelNode : ISpelNode
                 gen.Emit(OpCodes.Newarr, arrElemType);
 
                 // Package up the remaining arguments into the array
-                var arrayindex = 0;
+                var arrayIndex = 0;
                 while (p < childCount)
                 {
                     var child = arguments[p];
                     gen.Emit(OpCodes.Dup);
-                    gen.Emit(OpCodes.Ldc_I4, arrayindex++);
+                    gen.Emit(OpCodes.Ldc_I4, arrayIndex++);
                     GenerateCodeForArgument(gen, cf, child, arrElemDesc);
                     gen.Emit(GetStelemInsn(arrElemType));
                     p++;

@@ -252,8 +252,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                     if (attempts < innerSettings.RetryAttempts)
                     {
                         Thread.CurrentThread.Join(backOff);
-                        var nextBackoff = (int)(backOff * innerSettings.RetryMultiplier);
-                        backOff = Math.Min(nextBackoff, innerSettings.RetryMaxInterval);
+                        var nextBackOff = (int)(backOff * innerSettings.RetryMultiplier);
+                        backOff = Math.Min(nextBackOff, innerSettings.RetryMaxInterval);
                     }
                     else
                     {
@@ -941,16 +941,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         return request;
     }
 
-    [Obsolete("Will be removed in next release. See GetVaultRenewMessage(string)")]
-    protected internal virtual HttpRequestMessage GetValutRenewMessage(string requestUri)
-    {
-        return GetVaultRenewMessage(requestUri);
-    }
-
     protected internal bool IsDiscoveryFirstEnabled()
     {
-        var clientConfigsection = configuration.GetSection(Prefix);
-        return clientConfigsection.GetValue("discovery:enabled", innerSettings.DiscoveryEnabled);
+        var clientConfigSection = configuration.GetSection(Prefix);
+        return clientConfigSection.GetValue("discovery:enabled", innerSettings.DiscoveryEnabled);
     }
 
     /// <summary>

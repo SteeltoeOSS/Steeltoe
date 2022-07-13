@@ -41,9 +41,9 @@ public class RabbitMQHealthContributorTest
         var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
         var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
         var sInfo = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@localhost:5672/si_vhost");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);
-        var h = new RabbitMQHealthContributor(connFactory, logrFactory.CreateLogger<RabbitMQHealthContributor>());
+        var h = new RabbitMQHealthContributor(connFactory, factory.CreateLogger<RabbitMQHealthContributor>());
 
         var status = h.Health();
 
@@ -57,9 +57,9 @@ public class RabbitMQHealthContributorTest
         var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
         var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
         var sInfo = new RabbitMQServiceInfo("MyId", "amqp://localhost:5672");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);
-        var h = new RabbitMQHealthContributor(connFactory, logrFactory.CreateLogger<RabbitMQHealthContributor>());
+        var h = new RabbitMQHealthContributor(connFactory, factory.CreateLogger<RabbitMQHealthContributor>());
 
         var status = h.Health();
 

@@ -25,13 +25,13 @@ public class DestinationVariableMethodArgumentResolver : AbstractNamedValueMetho
 
     protected override NamedValueInfo CreateNamedValueInfo(ParameterInfo parameter)
     {
-        var annot = parameter.GetCustomAttribute<DestinationVariableAttribute>();
-        if (annot == null)
+        var annotation = parameter.GetCustomAttribute<DestinationVariableAttribute>();
+        if (annotation == null)
         {
             throw new InvalidOperationException("No DestinationVariable annotation");
         }
 
-        return new DestinationVariableNamedValueInfo(annot);
+        return new DestinationVariableNamedValueInfo(annotation);
     }
 
     protected override object ResolveArgumentInternal(ParameterInfo parameter, IMessage message, string name)

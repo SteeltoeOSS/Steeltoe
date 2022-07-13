@@ -38,9 +38,9 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         return new HttpTraceResult(Queue.ToList());
     }
 
-    public override void ProcessEvent(string key, object value)
+    public override void ProcessEvent(string eventName, object value)
     {
-        if (!StopEvent.Equals(key))
+        if (!StopEvent.Equals(eventName))
         {
             return;
         }
@@ -96,8 +96,8 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     protected internal string GetTimeTaken(TimeSpan duration)
     {
-        var timeInMilli = (long)duration.TotalMilliseconds;
-        return timeInMilli.ToString();
+        var timeInMilliseconds = (long)duration.TotalMilliseconds;
+        return timeInMilliseconds.ToString();
     }
 
     protected internal string GetRequestUri(HttpRequest request)

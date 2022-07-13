@@ -85,7 +85,7 @@ public class RabbitTemplateTest
 
     [Fact]
 #pragma warning disable S2699 // Tests should include assertions
-    public void DontHangConsumerThread()
+    public void DoNotHangConsumerThread()
 #pragma warning restore S2699 // Tests should include assertions
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
@@ -177,7 +177,7 @@ public class RabbitTemplateTest
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
         mockChannel.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
-        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitmqReplyTo)).Throws(new ShutdownSignalException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.QueueClassId, RabbitUtils.DeclareMethodId)));
+        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo)).Throws(new ShutdownSignalException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.QueueClassId, RabbitUtils.DeclareMethodId)));
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -200,8 +200,8 @@ public class RabbitTemplateTest
 
         mockChannel.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitmqReplyTo))
-            .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitmqReplyTo, 0, 0));
+        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo))
+            .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -262,7 +262,7 @@ public class RabbitTemplateTest
     {
         var template = new RabbitTemplate
         {
-            ReplyAddress = Address.AmqRabbitmqReplyTo
+            ReplyAddress = Address.AmqRabbitMQReplyTo
         };
         Assert.Throws<InvalidOperationException>(() => template.GetExpectedQueueNames());
     }

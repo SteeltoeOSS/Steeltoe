@@ -57,10 +57,10 @@ public class CloudFoundryTokenKeyResolver
             return new List<SecurityKey> { resolved };
         }
 
-        var keyset = FetchKeySet().GetAwaiter().GetResult();
-        if (keyset != null)
+        var keySet = FetchKeySet().GetAwaiter().GetResult();
+        if (keySet != null)
         {
-            foreach (var key in keyset.Keys)
+            foreach (var key in keySet.Keys)
             {
                 FixupKey(key);
                 Resolved[key.Kid] = key;

@@ -36,9 +36,9 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
         var opts = new HypermediaEndpointOptions();
-        var mgmtOpts = new ActuatorManagementOptions();
-        var ep = new TestHypermediaEndpoint(opts, mgmtOpts);
-        var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, mgmtOpts);
+        var managementOptions = new ActuatorManagementOptions();
+        var ep = new TestHypermediaEndpoint(opts, managementOptions);
+        var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, managementOptions);
         var context = CreateRequest("GET", "/");
         await middle.Invoke(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

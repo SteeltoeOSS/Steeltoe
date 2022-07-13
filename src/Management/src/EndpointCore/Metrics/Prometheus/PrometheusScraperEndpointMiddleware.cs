@@ -14,15 +14,15 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 {
     private readonly RequestDelegate _next;
 
-    public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger)
+    public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions managementOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMetricsRequestAsync(context);
         }

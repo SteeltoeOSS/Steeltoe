@@ -51,7 +51,7 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void IsExposedCorrectly()
     {
-        var mgmtOptions = new ActuatorManagementOptions
+        var managementOptions = new ActuatorManagementOptions
         {
             Exposure =
             {
@@ -60,6 +60,6 @@ public class ManagementEndpointOptionsTest : BaseTest
         };
 
         var options = new InfoEndpointOptions();
-        Assert.False(options.IsExposed(mgmtOptions));
+        Assert.False(options.IsExposed(managementOptions));
     }
 }

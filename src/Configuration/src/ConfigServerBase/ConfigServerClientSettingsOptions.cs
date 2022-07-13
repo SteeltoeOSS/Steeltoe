@@ -28,7 +28,7 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultProviderEnabled;
 
-    public bool FailFast { get; set; } = ConfigServerClientSettings.DefaultFailfast;
+    public bool FailFast { get; set; } = ConfigServerClientSettings.DefaultFailFast;
 
     public string Env { get; set; }
 
@@ -71,11 +71,11 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 
     public bool DiscoveryEnabled => Discovery != null && Discovery.Enabled;
 
-    public string DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : ConfigServerClientSettings.DefaultConfigserverServiceid;
+    public string DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : ConfigServerClientSettings.DefaultConfigserverServiceId;
 
     public bool HealthEnabled => Health == null || Health.Enabled;
 
-    public long HealthTimeToLive => Health?.TimeToLive ?? ConfigServerClientSettings.DefaultHealthTimetolive;
+    public long HealthTimeToLive => Health?.TimeToLive ?? ConfigServerClientSettings.DefaultHealthTimeToLive;
 
     // ReSharper disable once InconsistentNaming
     public string Access_Token_Uri { get; set; }

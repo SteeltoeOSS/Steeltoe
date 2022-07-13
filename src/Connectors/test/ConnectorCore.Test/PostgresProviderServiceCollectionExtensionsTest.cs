@@ -148,7 +148,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPostgresConnection_WithCruncyVCAPs_AddsPostgresConnection()
+    public void AddPostgresConnection_WithCrunchyVCAPs_AddsPostgresConnection()
     {
         IServiceCollection services = new ServiceCollection();
 
@@ -176,7 +176,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPosgreSqlConnection_AddsRelationalHealthContributor()
+    public void AddPostgreSqlConnection_AddsRelationalHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
@@ -190,7 +190,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPosgreSqlConnection_DoesntAddRelationalHealthContributor_WhenCommunityHealthCheckExists()
+    public void AddPostgreSqlConnection_DoesNotAddRelationalHealthContributor_WhenCommunityHealthCheckExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
@@ -208,7 +208,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPosgreSqlConnection_AddsRelationalHealthContributor_WhenCommunityHealthCheckExistsAndForced()
+    public void AddPostgreSqlConnection_AddsRelationalHealthContributor_WhenCommunityHealthCheckExistsAndForced()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

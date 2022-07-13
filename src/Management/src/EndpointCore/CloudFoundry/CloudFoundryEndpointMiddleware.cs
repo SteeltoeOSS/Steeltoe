@@ -20,8 +20,8 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     private readonly ICloudFoundryOptions _options;
     private readonly RequestDelegate _next;
 
-    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions managementOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
         _options = endpoint.Options as ICloudFoundryOptions;
@@ -31,7 +31,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     {
         logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleCloudFoundryRequestAsync(context);
         }

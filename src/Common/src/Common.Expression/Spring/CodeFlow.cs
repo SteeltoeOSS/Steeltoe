@@ -179,15 +179,15 @@ public class CodeFlow
         if (stackDescriptor.IsBoxedNumber)
         {
             gen.Emit(OpCodes.Unbox_Any, stackDescriptor.Value);
-            InsertAnyNecessaryTypeConversionBytecodes(gen, targetDescriptor, stackDescriptor.UnBox());
+            InsertAnyNecessaryTypeConversionBytecode(gen, targetDescriptor, stackDescriptor.UnBox());
         }
         else
         {
-            InsertAnyNecessaryTypeConversionBytecodes(gen, targetDescriptor, stackDescriptor);
+            InsertAnyNecessaryTypeConversionBytecode(gen, targetDescriptor, stackDescriptor);
         }
     }
 
-    public static void InsertAnyNecessaryTypeConversionBytecodes(ILGenerator gen, TypeDescriptor targetDescriptor, TypeDescriptor stackDescriptor)
+    public static void InsertAnyNecessaryTypeConversionBytecode(ILGenerator gen, TypeDescriptor targetDescriptor, TypeDescriptor stackDescriptor)
     {
         if (IsValueType(stackDescriptor))
         {

@@ -147,7 +147,7 @@ public static class IntegrationServicesExtensions
     {
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
-        services.TryAddSingleton<DefaultDatatypeChannelMessageConverter>();
+        services.TryAddSingleton<DefaultDataTypeChannelMessageConverter>();
         services.TryAddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
 
         services.AddNullChannel();

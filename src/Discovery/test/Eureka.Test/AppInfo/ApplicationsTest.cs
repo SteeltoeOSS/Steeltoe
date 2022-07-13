@@ -616,12 +616,12 @@ public class ApplicationsTest : AbstractBaseTest
     [Fact]
     public void FromJsonApplications_Correct()
     {
-        var jinfo = new JsonInstanceInfo
+        var instanceInfo = new JsonInstanceInfo
         {
             InstanceId = "InstanceId",
             AppName = "myApp",
             AppGroupName = "AppGroupName",
-            IpAddr = "IpAddr",
+            IpAddress = "IpAddr",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
@@ -653,20 +653,20 @@ public class ApplicationsTest : AbstractBaseTest
             ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
-        var japp = new JsonApplication
+        var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo> { jinfo }
+            Instances = new List<JsonInstanceInfo> { instanceInfo }
         };
 
-        var japps = new JsonApplications
+        var applications = new JsonApplications
         {
             AppsHashCode = "AppsHashCode",
             VersionDelta = 1L,
-            Applications = new List<JsonApplication> { japp }
+            Applications = new List<JsonApplication> { application }
         };
 
-        var apps = Applications.FromJsonApplications(japps);
+        var apps = Applications.FromJsonApplications(applications);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);
@@ -687,10 +687,10 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("myApp", info.AppName);
         Assert.Equal("AppGroupName", info.AppGroupName);
-        Assert.Equal("IpAddr", info.IpAddr);
+        Assert.Equal("IpAddr", info.IpAddress);
         Assert.Equal("Sid", info.Sid);
         Assert.Equal(100, info.Port);
-        Assert.True(info.IsUnsecurePortEnabled);
+        Assert.True(info.IsInsecurePortEnabled);
         Assert.Equal(100, info.SecurePort);
         Assert.False(info.IsSecurePortEnabled);
         Assert.Equal("HomePageUrl", info.HomePageUrl);
@@ -724,12 +724,12 @@ public class ApplicationsTest : AbstractBaseTest
     [Fact]
     public void FromJsonApplications_WithMissingInstanceId()
     {
-        var jinfo = new JsonInstanceInfo
+        var instanceInfo = new JsonInstanceInfo
         {
             // InstanceId = "InstanceId",
             AppName = "myApp",
             AppGroupName = "AppGroupName",
-            IpAddr = "IpAddr",
+            IpAddress = "IpAddr",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
@@ -761,20 +761,20 @@ public class ApplicationsTest : AbstractBaseTest
             ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
-        var japp = new JsonApplication
+        var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo> { jinfo }
+            Instances = new List<JsonInstanceInfo> { instanceInfo }
         };
 
-        var japps = new JsonApplications
+        var applications = new JsonApplications
         {
             AppsHashCode = "AppsHashCode",
             VersionDelta = 1L,
-            Applications = new List<JsonApplication> { japp }
+            Applications = new List<JsonApplication> { application }
         };
 
-        var apps = Applications.FromJsonApplications(japps);
+        var apps = Applications.FromJsonApplications(applications);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);

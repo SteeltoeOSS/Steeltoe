@@ -9,13 +9,13 @@ using System;
 
 namespace Steeltoe.Integration.Support.Converter;
 
-public class DefaultDatatypeChannelMessageConverter : IMessageConverter
+public class DefaultDataTypeChannelMessageConverter : IMessageConverter
 {
-    public const string DefaultServiceName = nameof(DefaultDatatypeChannelMessageConverter);
+    public const string DefaultServiceName = nameof(DefaultDataTypeChannelMessageConverter);
 
     private readonly IConversionService _conversionService;
 
-    public DefaultDatatypeChannelMessageConverter(IConversionService conversionService = null)
+    public DefaultDataTypeChannelMessageConverter(IConversionService conversionService = null)
     {
         _conversionService = conversionService ?? DefaultConversionService.Singleton;
     }

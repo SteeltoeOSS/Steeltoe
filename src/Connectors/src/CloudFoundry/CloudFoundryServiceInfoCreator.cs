@@ -50,11 +50,11 @@ public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
         ServiceInfos.Clear();
 
         var appInfo = new CloudFoundryApplicationOptions(Configuration);
-        var serviceOpts = new CloudFoundryServicesOptions(Configuration);
+        var serviceOptions = new CloudFoundryServicesOptions(Configuration);
 
-        foreach (var serviceopt in serviceOpts.Services)
+        foreach (var serviceOption in serviceOptions.Services)
         {
-            foreach (var s in serviceopt.Value)
+            foreach (var s in serviceOption.Value)
             {
                 var factory = FindFactory(s);
                 if (factory != null && factory.Create(s) is ServiceInfo info)

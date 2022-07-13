@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public class EurekaInstanceOptionsTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Intializes_Defaults()
+    public void Constructor_Initializes_Defaults()
     {
         var opts = new EurekaInstanceOptions();
         Assert.NotNull(opts.InstanceId);
@@ -157,7 +157,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
     }
 
     [Fact]
-    public void Options_DontUseInetUtilsByDefault()
+    public void Options_DoNotUseInetUtilsByDefault()
     {
         var mockNetUtils = new Mock<InetUtils>(null, null);
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();

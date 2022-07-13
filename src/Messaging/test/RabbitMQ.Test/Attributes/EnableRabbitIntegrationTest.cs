@@ -115,7 +115,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void AutoDeclareFanout()
+    public void AutoDeclareFanOut()
     {
         var template = _context.GetRabbitTemplate();
         var reply = template.ConvertSendAndReceive<string>("auto.exch.fanout", string.Empty, "foo");
@@ -123,7 +123,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void AutoDeclareAnonWitAtts()
+    public void AutoDeclareAnonWitAttributes()
     {
         var template = _context.GetRabbitTemplate();
         var received = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.atts.rk", "foo");
@@ -403,7 +403,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.True(_fixture.ErrorHandlerLatch.Wait(TimeSpan.FromSeconds(10)));
         var exception = _fixture.ErrorHandlerError.Value;
         Assert.NotNull(exception);
-        Assert.IsType<RabbitRejectAndDontRequeueException>(exception);
+        Assert.IsType<RabbitRejectAndDoNotRequeueException>(exception);
         var cause = exception.InnerException;
         Assert.IsType<ListenerExecutionFailedException>(cause);
         var cause2 = cause.InnerException;
@@ -458,11 +458,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void TestFanout()
+    public void TestFanOut()
     {
         var template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.metaFanout", string.Empty, "foo");
-        var service = _context.GetService<FanoutListener>();
+        var service = _context.GetService<FanOutListener>();
         Assert.True(service.Latch.Wait(TimeSpan.FromSeconds(10)));
     }
 
@@ -856,7 +856,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddSingleton<ITxClassLevel, TxClassLevel>();
             services.AddSingleton<MultiListenerService>();
             services.AddSingleton<MultiListenerJsonService>();
-            services.AddSingleton<FanoutListener>();
+            services.AddSingleton<FanOutListener>();
 
             services.AddRabbitListeners<MyService>(config);
             services.AddRabbitListeners<IMyServiceInterface>(config);
@@ -864,7 +864,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitListeners<MultiListenerService>(config);
             services.AddRabbitListeners<MultiListenerJsonService>(config);
             services.AddRabbitListeners<ITxClassLevel>(config);
-            services.AddRabbitListeners<FanoutListener>(config);
+            services.AddRabbitListeners<FanOutListener>(config);
 
             services.AddRabbitQueue(new Queue("sendTo.replies", false, false, false));
             services.AddRabbitQueue(new Queue("sendTo.replies.spel", false, false, false));
@@ -906,7 +906,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
                 return result;
             });
 
-            services.AddRabbitListenerErrorHandler<UpcaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
+            services.AddRabbitListenerErrorHandler<UpperCaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
             services.AddRabbitListenerErrorHandler<AlwaysBarListenerErrorHandler>("alwaysBARHandler");
             services.AddRabbitListenerErrorHandler("throwANewException", _ => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
             return services;
@@ -933,8 +933,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         };
     }
 
-    [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.Fanout)]
-    public class FanoutListener
+    [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.FanOut)]
+    public class FanOutListener
     {
         public CountdownEvent Latch { get; } = new (2);
 
@@ -1002,10 +1002,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         }
 
         [DeclareQueue(Name = "auto.declare.fanout", AutoDelete = "True")]
-        [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = ExchangeType.Fanout)]
+        [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = ExchangeType.FanOut)]
         [DeclareQueueBinding(Name = "auto.fanout.binding", QueueName = "auto.declare.fanout", ExchangeName = "auto.exch.fanout")]
         [RabbitListener(Binding = "auto.fanout.binding")]
-        public string HandleWithFanout(string foo) => foo.ToUpper() + foo.ToUpper();
+        public string HandleWithFanOut(string foo) => foo.ToUpper() + foo.ToUpper();
 
         [DeclareAnonymousQueue("anon2")]
         [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
@@ -1017,7 +1017,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
         [DeclareQueueBinding(Name = "auto.exch.anon.atts.rk", QueueName = "#{@anon3}", ExchangeName = "auto.exch", RoutingKey = "auto.anon.atts.rk")]
         [RabbitListener(Binding = "auto.exch.anon.atts.rk")]
-        public string HandleWithDeclareAnonQueueWithAtts(string foo, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue) =>
+        public string HandleWithDeclareAnonQueueWithAttributes(string foo, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue) =>
             $"{foo}:{queue}";
 
         [RabbitListener("test.simple", Group = "testGroup")]
@@ -1094,7 +1094,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public string HandleWithHeadersExchange(string foo) => foo.ToUpper();
 
         [RabbitListener(Id = "defaultDLX", Binding = "amqp656.binding")]
-        public string HandleWithDeadLetterDefaultExchange(string foo) => throw new RabbitRejectAndDontRequeueException("dlq");
+        public string HandleWithDeadLetterDefaultExchange(string foo) => throw new RabbitRejectAndDoNotRequeueException("dlq");
 
         [RabbitListener("test.return.exceptions", ReturnExceptions = "${some:prop?True}")]
         public string AlwaysFails(string data) => throw new InvalidOperationException("return this");
@@ -1369,9 +1369,9 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception) => "BAR";
     }
 
-    public class UpcaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
+    public class UpperCaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
     {
-        public string ServiceName { get; set; } = nameof(UpcaseAndRepeatListenerErrorHandler);
+        public string ServiceName { get; set; } = nameof(UpperCaseAndRepeatListenerErrorHandler);
 
         public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
         {

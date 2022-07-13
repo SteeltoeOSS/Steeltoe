@@ -6,7 +6,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
-public class OutOfSserviceContributor : IHealthContributor
+public class OutOfServiceContributor : IHealthContributor
 {
     public string Id { get; } = "Out";
 

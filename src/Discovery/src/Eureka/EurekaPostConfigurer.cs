@@ -13,13 +13,13 @@ namespace Steeltoe.Discovery.Eureka;
 
 public static class EurekaPostConfigurer
 {
-    public const string SpringCloudDiscoveryRegistrationmethodKey = "spring:cloud:discovery:registrationMethod";
+    public const string SpringCloudDiscoveryRegistrationMethodKey = "spring:cloud:discovery:registrationMethod";
 
     internal const string EurekaUriSuffix = "/eureka/";
 
-    internal const string RouteRegistrationmethod = "route";
-    internal const string DirectRegistrationmethod = "direct";
-    internal const string HostRegistrationmethod = "hostname";
+    internal const string RouteRegistrationMethod = "route";
+    internal const string DirectRegistrationMethod = "direct";
+    internal const string HostRegistrationMethod = "hostname";
 
     internal const string CFAppGuid = "cfAppGuid";
     internal const string CFInstanceIndex = "cfInstanceIndex";
@@ -74,9 +74,9 @@ public static class EurekaPostConfigurer
     public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
     {
         var defaultIdEnding =
-            $":{EurekaInstanceConfig.DefaultAppname}:{EurekaInstanceConfig.DefaultNonSecurePort}";
+            $":{EurekaInstanceConfig.DefaultAppName}:{EurekaInstanceConfig.DefaultNonSecurePort}";
 
-        if (EurekaInstanceConfig.DefaultAppname.Equals(options.AppName))
+        if (EurekaInstanceConfig.DefaultAppName.Equals(options.AppName))
         {
             var springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
 
@@ -103,7 +103,7 @@ public static class EurekaPostConfigurer
 
         if (string.IsNullOrEmpty(options.RegistrationMethod))
         {
-            var springRegMethod = config.GetValue<string>(SpringCloudDiscoveryRegistrationmethodKey);
+            var springRegMethod = config.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
             if (!string.IsNullOrEmpty(springRegMethod))
             {
                 options.RegistrationMethod = springRegMethod;
@@ -149,25 +149,25 @@ public static class EurekaPostConfigurer
             return;
         }
 
-        if (EurekaInstanceConfig.DefaultAppname.Equals(instOptions.AppName))
+        if (EurekaInstanceConfig.DefaultAppName.Equals(instOptions.AppName))
         {
             instOptions.AppName = si.ApplicationInfo.ApplicationName;
         }
 
         if (string.IsNullOrEmpty(instOptions.RegistrationMethod) ||
-            RouteRegistrationmethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+            RouteRegistrationMethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
             UpdateWithDefaultsForRoute(si, instOptions);
             return;
         }
 
-        if (DirectRegistrationmethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+        if (DirectRegistrationMethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
             UpdateWithDefaultsForDirect(si, instOptions);
             return;
         }
 
-        if (HostRegistrationmethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+        if (HostRegistrationMethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
             UpdateWithDefaultsForHost(si, instOptions, instOptions.HostName);
         }
@@ -192,8 +192,8 @@ public static class EurekaPostConfigurer
     private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
     {
         UpdateWithDefaults(si, instOptions);
-        instOptions.NonSecurePort = EurekaInstanceOptions.DefaultNonsecureport;
-        instOptions.SecurePort = EurekaInstanceOptions.DefaultSecureport;
+        instOptions.NonSecurePort = EurekaInstanceConfig.DefaultNonSecurePort;
+        instOptions.SecurePort = EurekaInstanceConfig.DefaultSecurePort;
 
         if (si.ApplicationInfo.Uris.Any())
         {

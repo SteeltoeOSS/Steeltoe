@@ -27,7 +27,7 @@ public class ConfigServerClientSettings
     /// <summary>
     /// Default fail fast setting.
     /// </summary>
-    public const bool DefaultFailfast = false;
+    public const bool DefaultFailFast = false;
 
     /// <summary>
     /// Default Config Server provider enabled setting.
@@ -107,7 +107,7 @@ public class ConfigServerClientSettings
     /// <summary>
     /// Default discovery first service id setting.
     /// </summary>
-    public const string DefaultConfigserverServiceid = "configserver";
+    public const string DefaultConfigserverServiceId = "configserver";
 
     /// <summary>
     /// Default health check enabled setting.
@@ -117,7 +117,7 @@ public class ConfigServerClientSettings
     /// <summary>
     /// Default health check time to live in milliseconds setting.
     /// </summary>
-    public const long DefaultHealthTimetolive = 60 * 5 * 1000;
+    public const long DefaultHealthTimeToLive = 60 * 5 * 1000;
 
     private static readonly char[] ColonDelimit = { ':' };
     private static readonly char[] CommaDelimit = { ',' };
@@ -132,7 +132,7 @@ public class ConfigServerClientSettings
     public ConfigServerClientSettings()
     {
         ValidateCertificates = DefaultCertificateValidation;
-        FailFast = DefaultFailfast;
+        FailFast = DefaultFailFast;
         Environment = DefaultEnvironment;
         Enabled = DefaultProviderEnabled;
         Uri = DefaultUri;
@@ -143,9 +143,9 @@ public class ConfigServerClientSettings
         RetryMultiplier = DefaultRetryMultiplier;
         Timeout = DefaultTimeoutMilliseconds;
         DiscoveryEnabled = DefaultDiscoveryEnabled;
-        DiscoveryServiceId = DefaultConfigserverServiceid;
+        DiscoveryServiceId = DefaultConfigserverServiceId;
         HealthEnabled = DefaultHealthEnabled;
-        HealthTimeToLive = DefaultHealthTimetolive;
+        HealthTimeToLive = DefaultHealthTimeToLive;
     }
 
     /// <summary>

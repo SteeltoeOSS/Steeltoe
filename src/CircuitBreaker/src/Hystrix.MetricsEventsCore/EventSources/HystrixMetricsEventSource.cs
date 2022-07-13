@@ -37,7 +37,7 @@ public class HystrixMetricsEventSource : EventSource
     public void CommandMetrics(
         string commandKey,
         string commandGroup,
-        bool isCiruitBreakerOpen,
+        bool isCircuitBreakerOpen,
         long errorCount,
         long requestCount,
         int currentConcurrentExecutionCount,
@@ -52,7 +52,7 @@ public class HystrixMetricsEventSource : EventSource
                 1,
                 commandKey,
                 commandGroup,
-                isCiruitBreakerOpen,
+                isCircuitBreakerOpen,
                 errorCount,
                 requestCount,
                 currentConcurrentExecutionCount,

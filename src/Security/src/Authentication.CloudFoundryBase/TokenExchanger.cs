@@ -23,10 +23,10 @@ public class TokenExchanger
     private readonly AuthServerOptions _options;
     private readonly HttpClient _httpClient;
 
-    public TokenExchanger(AuthServerOptions options, HttpClient httpclient = null, ILogger logger = null)
+    public TokenExchanger(AuthServerOptions options, HttpClient httpClient = null, ILogger logger = null)
     {
         _options = options;
-        _httpClient = httpclient ?? HttpClientHelper.GetHttpClient(options.ValidateCertificates, options.ClientTimeout);
+        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(options.ValidateCertificates, options.ClientTimeout);
         _logger = logger;
     }
 
@@ -133,20 +133,20 @@ public class TokenExchanger
     /// <returns>Content for HTTP request.</returns>
     internal List<KeyValuePair<string, string>> AuthCodeTokenRequestParameters(string code)
     {
-        var parms = CommonTokenRequestParams();
-        parms.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsRedirectUri, _options.CallbackUrl));
-        parms.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsCode, code));
-        parms.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsGrantType, OpenIdConnectGrantTypes.AuthorizationCode));
+        var parameters = CommonTokenRequestParams();
+        parameters.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsRedirectUri, _options.CallbackUrl));
+        parameters.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsCode, code));
+        parameters.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsGrantType, OpenIdConnectGrantTypes.AuthorizationCode));
 
-        return parms;
+        return parameters;
     }
 
     internal List<KeyValuePair<string, string>> ClientCredentialsTokenRequestParameters()
     {
-        var parms = CommonTokenRequestParams();
-        parms.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsGrantType, OpenIdConnectGrantTypes.ClientCredentials));
+        var parameters = CommonTokenRequestParams();
+        parameters.Add(new KeyValuePair<string, string>(CloudFoundryDefaults.ParamsGrantType, OpenIdConnectGrantTypes.ClientCredentials));
 
-        return parms;
+        return parameters;
     }
 
     internal List<KeyValuePair<string, string>> CommonTokenRequestParams()

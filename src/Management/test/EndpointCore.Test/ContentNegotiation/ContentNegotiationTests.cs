@@ -39,7 +39,7 @@ public class ContentNegotiationTests
                 new { epName = EndpointNames.Refresh, epPath = "http://localhost/actuator/refresh" }
             };
 
-            var negotations = new[]
+            var negotiations = new[]
             {
                 new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptAppJson_RetrunsAppJson" },
                 new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptInvalid_RetrunsAppJson" },
@@ -52,9 +52,9 @@ public class ContentNegotiationTests
 
             foreach (var endpoint in endpoints)
             {
-                foreach (var negotation in negotations)
+                foreach (var negotiation in negotiations)
                 {
-                    yield return new object[] { endpoint.epName, endpoint.epPath, negotation.accepts, negotation.contentType };
+                    yield return new object[] { endpoint.epName, endpoint.epPath, negotiation.accepts, negotiation.contentType };
                 }
             }
         }
@@ -68,9 +68,9 @@ public class ContentNegotiationTests
         var builder = new WebHostBuilder()
             .StartupByEpName(epName)
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
 

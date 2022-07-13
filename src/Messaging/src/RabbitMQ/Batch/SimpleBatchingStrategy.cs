@@ -30,14 +30,14 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         _timeout = timeout;
     }
 
-    public MessageBatch? AddToBatch(string exch, string routKey, IMessage input)
+    public MessageBatch? AddToBatch(string exchange, string routKey, IMessage input)
     {
-        if (_exchange != null && _exchange != exch)
+        if (_exchange != null && _exchange != exchange)
         {
             throw new ArgumentException("Cannot send to different exchanges in the same batch");
         }
 
-        _exchange = exch;
+        _exchange = exchange;
 
         if (_routingKey != null && _routingKey != routKey)
         {
@@ -56,7 +56,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         if (_messages.Count > 0 && _currentSize + bufferUse > _bufferLimit)
         {
             batch = DoReleaseBatch();
-            _exchange = exch;
+            _exchange = exchange;
             _routingKey = routKey;
         }
 

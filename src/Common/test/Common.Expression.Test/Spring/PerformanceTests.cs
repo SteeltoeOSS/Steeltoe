@@ -25,8 +25,8 @@ public class PerformanceTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void TestPerformanceOfPropertyAccess()
     {
-        long starttime = 0;
-        long endtime = 0;
+        long startTime = 0;
+        long endTime = 0;
         IExpression expr;
 
         // warmup
@@ -37,7 +37,7 @@ public class PerformanceTests
             expr.GetValue(EContext);
         }
 
-        starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         for (var i = 0; i < Iterations; i++)
         {
             expr = Parser.ParseExpression("PlaceOfBirth.City");
@@ -45,8 +45,8 @@ public class PerformanceTests
             expr.GetValue(EContext);
         }
 
-        endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var freshParseTime = endtime - starttime;
+        endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var freshParseTime = endTime - startTime;
         if (IsDebug)
         {
             _output.WriteLine("PropertyAccess: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
@@ -54,14 +54,14 @@ public class PerformanceTests
 
         expr = Parser.ParseExpression("PlaceOfBirth.City");
         Assert.NotNull(expr);
-        starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         for (var i = 0; i < Iterations; i++)
         {
             expr.GetValue(EContext);
         }
 
-        endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var reuseTime = endtime - starttime;
+        endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var reuseTime = endTime - startTime;
         if (IsDebug)
         {
             _output.WriteLine("PropertyAccess: Time for just evaluation x 10000: " + reuseTime + "ms");
@@ -78,8 +78,8 @@ public class PerformanceTests
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     public void TestPerformanceOfMethodAccess()
     {
-        long starttime = 0;
-        long endtime = 0;
+        long startTime = 0;
+        long endTime = 0;
         IExpression expr;
 
         // warmup
@@ -90,7 +90,7 @@ public class PerformanceTests
             expr.GetValue(EContext);
         }
 
-        starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         for (var i = 0; i < Iterations; i++)
         {
             expr = Parser.ParseExpression("get_PlaceOfBirth().get_City()");
@@ -98,8 +98,8 @@ public class PerformanceTests
             expr.GetValue(EContext);
         }
 
-        endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var freshParseTime = endtime - starttime;
+        endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var freshParseTime = endTime - startTime;
         if (IsDebug)
         {
             _output.WriteLine("MethodExpression: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
@@ -107,14 +107,14 @@ public class PerformanceTests
 
         expr = Parser.ParseExpression("get_PlaceOfBirth().get_City()");
         Assert.NotNull(expr);
-        starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         for (var i = 0; i < Iterations; i++)
         {
             expr.GetValue(EContext);
         }
 
-        endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var reuseTime = endtime - starttime;
+        endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var reuseTime = endTime - startTime;
         if (IsDebug)
         {
             _output.WriteLine("MethodExpression: Time for just evaluation x 10000: " + reuseTime + "ms");

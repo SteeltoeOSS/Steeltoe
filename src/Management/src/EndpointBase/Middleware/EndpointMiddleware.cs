@@ -15,20 +15,20 @@ public class EndpointMiddleware<TResult>
 {
     protected IEndpoint<TResult> innerEndpoint;
     protected ILogger logger;
-    protected IManagementOptions mgmtOptions;
+    protected IManagementOptions managementOptions;
 
-    public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
+    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
     {
         this.logger = logger;
-        this.mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
-        if (this.mgmtOptions is ManagementEndpointOptions mgmt)
+        this.managementOptions = managementOptions ?? throw new ArgumentNullException(nameof(managementOptions));
+        if (this.managementOptions is ManagementEndpointOptions options)
         {
-            mgmt.SerializerOptions = GetSerializerOptions(mgmt.SerializerOptions);
+            options.SerializerOptions = GetSerializerOptions(options.SerializerOptions);
         }
     }
 
-    public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
-        : this(mgmtOptions, logger)
+    public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+        : this(managementOptions, logger)
     {
         innerEndpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
@@ -51,9 +51,9 @@ public class EndpointMiddleware<TResult>
         try
         {
             JsonSerializerOptions options;
-            if (mgmtOptions is ManagementEndpointOptions mgmt)
+            if (managementOptions is ManagementEndpointOptions endpointOptions)
             {
-                options = mgmt.SerializerOptions;
+                options = endpointOptions.SerializerOptions;
             }
             else
             {
@@ -101,14 +101,14 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
         set => innerEndpoint = value;
     }
 
-    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
-        : base(mgmtOptions, logger)
+    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+        : base(managementOptions, logger)
     {
         innerEndpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
-    public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
-        : base(mgmtOptions, logger)
+    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
+        : base(managementOptions, logger)
     {
     }
 

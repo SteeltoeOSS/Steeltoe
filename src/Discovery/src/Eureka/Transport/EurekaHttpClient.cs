@@ -42,7 +42,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     protected HttpClient httpClient;
     protected ILogger logger;
-    private const int DefaultGetaccesstokenTimeout = 10000; // Milliseconds
+    private const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
     private static readonly char[] ColonDelimit = { ':' };
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
@@ -93,7 +93,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         }
 
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -106,7 +106,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri($"{serviceUrl}apps/{info.AppName}");
             var request = GetRequestMessage(HttpMethod.Post, requestUri);
 
@@ -188,7 +188,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         }
 
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -200,17 +200,17 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri($"{serviceUrl}apps/{info.AppName}/{id}", queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
 
             try
             {
                 using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
-                JsonInstanceInfo jinfo = null;
+                JsonInstanceInfo instanceInfo = null;
                 try
                 {
-                    jinfo = await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions);
+                    instanceInfo = await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions);
                 }
                 catch (Exception e)
                 {
@@ -226,9 +226,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                 }
 
                 InstanceInfo infoResp = null;
-                if (jinfo != null)
+                if (instanceInfo != null)
                 {
-                    infoResp = InstanceInfo.FromJsonInstance(jinfo);
+                    infoResp = InstanceInfo.FromJsonInstance(instanceInfo);
                 }
 
                 logger?.LogDebug(
@@ -317,7 +317,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     private async Task<EurekaHttpResponse<Application>> GetApplicationAsyncInternal(string appName)
     {
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -329,19 +329,19 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri($"{serviceUrl}apps/{appName}");
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
 
             try
             {
                 using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
-                var jroot = await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                var applicationRoot = await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions).ConfigureAwait(false);
 
                 Application appResp = null;
-                if (jroot != null)
+                if (applicationRoot != null)
                 {
-                    appResp = Application.FromJsonApplication(jroot.Application);
+                    appResp = Application.FromJsonApplication(applicationRoot.Application);
                 }
 
                 logger?.LogDebug(
@@ -430,7 +430,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     private async Task<EurekaHttpResponse> CancelAsyncInternal(string appName, string id)
     {
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -443,7 +443,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}");
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
 
@@ -502,7 +502,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         };
 
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -515,7 +515,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
 
@@ -579,7 +579,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         };
 
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -592,7 +592,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
 
@@ -638,7 +638,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 config.AccessTokenUri,
                 config.ClientId,
                 config.ClientSecret,
-                DefaultGetaccesstokenTimeout,
+                DefaultGetAccessTokenTimeout,
                 config.ValidateCertificates).GetAwaiter().GetResult();
 
     internal IList<string> GetServiceUrlCandidates()
@@ -697,17 +697,17 @@ public class EurekaHttpClient : IEurekaHttpClient
         }
     }
 
-    internal string GetServiceUrl(IList<string> candidateServiceUrls, ref int indx)
+    internal string GetServiceUrl(IList<string> candidateServiceUrls, ref int index)
     {
         var serviceUrl = this.ServiceUrl;
         if (string.IsNullOrEmpty(serviceUrl))
         {
-            if (indx >= candidateServiceUrls.Count)
+            if (index >= candidateServiceUrls.Count)
             {
                 throw new EurekaTransportException("Cannot execute request on any known server");
             }
 
-            serviceUrl = candidateServiceUrls[indx++];
+            serviceUrl = candidateServiceUrls[index++];
         }
 
         return serviceUrl;
@@ -797,7 +797,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path)
     {
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -810,19 +810,19 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri(serviceUrl + path);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
 
             try
             {
                 using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
-                var jroot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                var infoRoot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions).ConfigureAwait(false);
 
                 InstanceInfo infoResp = null;
-                if (jroot != null)
+                if (infoRoot != null)
                 {
-                    infoResp = InstanceInfo.FromJsonInstance(jroot.Instance);
+                    infoResp = InstanceInfo.FromJsonInstance(infoRoot.Instance);
                 }
 
                 logger?.LogDebug(
@@ -869,7 +869,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         }
 
         var candidateServiceUrls = GetServiceUrlCandidates();
-        var indx = 0;
+        var index = 0;
         string serviceUrl = null;
         httpClient ??= GetHttpClient(Config);
 
@@ -882,17 +882,17 @@ public class EurekaHttpClient : IEurekaHttpClient
                 out var prevProtocols,
                 out var prevValidator);
 
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref indx);
+            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             var requestUri = GetRequestUri(serviceUrl + path, queryArgs);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
 
             try
             {
                 using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
-                JsonApplicationsRoot jroot = null;
+                JsonApplicationsRoot root = null;
                 try
                 {
-                    jroot = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                    root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -900,9 +900,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                 }
 
                 Applications appsResp = null;
-                if (response.StatusCode == HttpStatusCode.OK && jroot != null)
+                if (response.StatusCode == HttpStatusCode.OK && root != null)
                 {
-                    appsResp = Applications.FromJsonApplications(jroot.Applications);
+                    appsResp = Applications.FromJsonApplications(root.Applications);
                 }
 
                 logger?.LogDebug(

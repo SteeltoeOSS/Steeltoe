@@ -15,8 +15,8 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
 {
     private readonly RequestDelegate _next;
 
-    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
@@ -25,7 +25,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     {
         logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
 
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleInfoRequestAsync(context);
         }

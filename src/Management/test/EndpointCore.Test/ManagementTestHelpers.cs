@@ -11,8 +11,8 @@ public static class ManagementTestHelpers
 {
     public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
     {
-        var mgmtOptions = new CloudFoundryManagementOptions();
-        mgmtOptions.EndpointOptions.AddRange(options);
-        return new List<IManagementOptions> { mgmtOptions };
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.AddRange(options);
+        return new List<IManagementOptions> { managementOptions };
     }
 }

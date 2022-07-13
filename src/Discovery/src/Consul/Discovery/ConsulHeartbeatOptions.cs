@@ -43,7 +43,7 @@ public class ConsulHeartbeatOptions
         }
     }
 
-    internal TimeSpan ComputeHearbeatInterval()
+    internal TimeSpan ComputeHeartbeatInterval()
     {
         var second = TimeSpan.FromSeconds(1);
         var ttl = DateTimeConversions.ToTimeSpan(TtlValue, TtlUnit);

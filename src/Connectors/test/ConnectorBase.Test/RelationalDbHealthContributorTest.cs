@@ -110,9 +110,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = SqlServerTypeLocator.SqlConnection;
         var sqlConfig = new SqlServerProviderConnectorOptions { Timeout = 1 };
         var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 
@@ -126,9 +126,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = SqlServerTypeLocator.SqlConnection;
         var sqlConfig = new SqlServerProviderConnectorOptions { Timeout = 1, ConnectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true" };
         var sInfo = new SqlServerServiceInfo("MyId", string.Empty);
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 
@@ -141,9 +141,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = MySqlTypeLocator.MySqlConnection;
         var sqlConfig = new MySqlProviderConnectorOptions { ConnectionTimeout = 1 };
         var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 
@@ -157,9 +157,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = MySqlTypeLocator.MySqlConnection;
         var sqlConfig = new MySqlProviderConnectorOptions { ConnectionTimeout = 1 };
         var sInfo = new MySqlServiceInfo("MyId", "mysql://steeltoe:steeltoe@localhost:3306");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 
@@ -172,9 +172,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
         var sqlConfig = new PostgresProviderConnectorOptions { Timeout = 1 };
         var sInfo = new PostgresServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 
@@ -188,9 +188,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
         var sqlConfig = new PostgresProviderConnectorOptions();
         var sInfo = new PostgresServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 
@@ -203,9 +203,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = OracleTypeLocator.OracleConnection;
         var sqlConfig = new OracleProviderConnectorOptions { ConnectionTimeout = 1 };
         var sInfo = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/someService");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new OracleProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 
@@ -219,9 +219,9 @@ public class RelationalDbHealthContributorTest
         var implementationType = OracleTypeLocator.OracleConnection;
         var sqlConfig = new OracleProviderConnectorOptions();
         var sInfo = new OracleServiceInfo("MyId", "oracle://hr:hr@localhost:1521/orclpdb1");
-        var logrFactory = new LoggerFactory();
+        var factory = new LoggerFactory();
         var connFactory = new OracleProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         var status = h.Health();
 

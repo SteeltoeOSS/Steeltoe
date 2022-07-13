@@ -28,7 +28,7 @@ public class HystrixRollingNumberTest
             // confirm the initial settings
             Assert.Equal(200, counter.TimeInMilliseconds);
             Assert.Equal(10, counter.NumberOfBuckets);
-            Assert.Equal(20, counter.BucketSizeInMillseconds);
+            Assert.Equal(20, counter.BucketSizeInMilliseconds);
 
             // we start out with 0 buckets in the queue
             Assert.Equal(0, counter.Buckets.Size);
@@ -37,7 +37,7 @@ public class HystrixRollingNumberTest
             for (var i = 0; i < counter.NumberOfBuckets; i++)
             {
                 counter.Increment(HystrixRollingNumberEvent.Success);
-                time.Increment(counter.BucketSizeInMillseconds);
+                time.Increment(counter.BucketSizeInMilliseconds);
             }
 
             // confirm we have all 10 buckets
@@ -102,7 +102,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(1, counter.Buckets.Size);
 
             // wait past 3 bucket time periods (the 1st bucket then 2 empty ones)
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             // add another
             counter.Increment(HystrixRollingNumberEvent.Success);
@@ -168,7 +168,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(1, counter.GetRollingSum(HystrixRollingNumberEvent.Timeout));
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             // increment again in latest bucket
             counter.Increment(HystrixRollingNumberEvent.Timeout);
@@ -208,7 +208,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(1, counter.GetRollingSum(HystrixRollingNumberEvent.ShortCircuited));
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             // increment again in latest bucket
             counter.Increment(HystrixRollingNumberEvent.ShortCircuited);
@@ -273,7 +273,7 @@ public class HystrixRollingNumberTest
             counter.Increment(HystrixRollingNumberEvent.ShortCircuited);
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             // Increment
             counter.Increment(HystrixRollingNumberEvent.Success);
@@ -334,7 +334,7 @@ public class HystrixRollingNumberTest
             counter.Increment(HystrixRollingNumberEvent.Failure);
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             // we should have 1 bucket since nothing has triggered the update of buckets in the elapsed time
             Assert.Equal(1, counter.Buckets.Size);
@@ -386,7 +386,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(10, counter.GetRollingMaxValue(HystrixRollingNumberEvent.ThreadMaxActive));
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             // Increment again in latest bucket
             counter.UpdateRollingMax(HystrixRollingNumberEvent.ThreadMaxActive, 20);
@@ -432,7 +432,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(30, counter.GetRollingMaxValue(HystrixRollingNumberEvent.ThreadMaxActive));
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             counter.UpdateRollingMax(HystrixRollingNumberEvent.ThreadMaxActive, 30);
             counter.UpdateRollingMax(HystrixRollingNumberEvent.ThreadMaxActive, 30);
@@ -472,17 +472,17 @@ public class HystrixRollingNumberTest
             counter.UpdateRollingMax(type, 10);
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds);
+            time.Increment(counter.BucketSizeInMilliseconds);
 
             counter.UpdateRollingMax(type, 30);
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds);
+            time.Increment(counter.BucketSizeInMilliseconds);
 
             counter.UpdateRollingMax(type, 40);
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds);
+            time.Increment(counter.BucketSizeInMilliseconds);
 
             counter.UpdateRollingMax(type, 15);
 
@@ -536,7 +536,7 @@ public class HystrixRollingNumberTest
             counter.GetCurrentBucket();
             try
             {
-                time.Increment(counter.BucketSizeInMillseconds);
+                time.Increment(counter.BucketSizeInMilliseconds);
             }
             catch (Exception)
             {
@@ -568,7 +568,7 @@ public class HystrixRollingNumberTest
             counter.Increment(type);
             try
             {
-                time.Increment(counter.BucketSizeInMillseconds);
+                time.Increment(counter.BucketSizeInMilliseconds);
             }
             catch (Exception)
             {
@@ -600,7 +600,7 @@ public class HystrixRollingNumberTest
             counter.Increment(type);
             try
             {
-                time.Increment(counter.BucketSizeInMillseconds);
+                time.Increment(counter.BucketSizeInMilliseconds);
             }
             catch (Exception)
             {
@@ -641,7 +641,7 @@ public class HystrixRollingNumberTest
         {
             try
             {
-                time.Increment(counter.BucketSizeInMillseconds);
+                time.Increment(counter.BucketSizeInMilliseconds);
             }
             catch (Exception)
             {
@@ -682,7 +682,7 @@ public class HystrixRollingNumberTest
         {
             try
             {
-                time.Increment(counter.BucketSizeInMillseconds);
+                time.Increment(counter.BucketSizeInMilliseconds);
             }
             catch (Exception)
             {
@@ -718,7 +718,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(1, counter.GetRollingSum(type));
 
             // sleep to get to a new bucket
-            time.Increment(counter.BucketSizeInMillseconds * 3);
+            time.Increment(counter.BucketSizeInMilliseconds * 3);
 
             // Increment again in latest bucket
             counter.Increment(type);

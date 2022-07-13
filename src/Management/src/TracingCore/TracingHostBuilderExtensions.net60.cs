@@ -16,7 +16,7 @@ public static partial class TracingHostBuilderExtensions
     /// </summary>
     /// <param name="hostBuilder">Your HostBuilder.</param>
     /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
-    public static WebApplicationBuilder AddDistributedTracincAspNetCore(this WebApplicationBuilder hostBuilder,  Action<TracerProviderBuilder> action = null)
+    public static WebApplicationBuilder AddDistributedTracingAspNetCore(this WebApplicationBuilder hostBuilder,  Action<TracerProviderBuilder> action = null)
     {
         hostBuilder.Services.AddDistributedTracingAspNetCore(action);
         return hostBuilder;

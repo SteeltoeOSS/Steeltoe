@@ -51,7 +51,7 @@ public class WebHostBuilderExtensionsTest
                 SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore
             });
         var hostBuilder = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -165,7 +165,7 @@ public class WebHostBuilderExtensionsTest
         var exclusions = SteeltoeAssemblies.AllAssemblies
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeDiscoveryClientBase });
         var hostBuilder = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .Configure(_ => { });
 
         var host = hostBuilder.AddSteeltoe(exclusions).Build();
@@ -182,7 +182,7 @@ public class WebHostBuilderExtensionsTest
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeDiscoveryClientCore });
 
         var host = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
             .AddSteeltoe(exclusions).Configure(_ => { }).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
 
@@ -197,7 +197,7 @@ public class WebHostBuilderExtensionsTest
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementEndpointCore });
 
         var host = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
             .AddSteeltoe(exclusions).Configure(_ => { }).Build();
         var exporter = host.Services.GetService<WavefrontMetricsExporter>();
 
@@ -211,7 +211,7 @@ public class WebHostBuilderExtensionsTest
             .Except(new List<string> { SteeltoeAssemblies.SteeltoeManagementTracingCore });
 
         var host = new WebHostBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
             .AddSteeltoe(exclusions).Configure(_ => { }).Build();
 
         var tracerProvider = host.Services.GetService<TracerProvider>();

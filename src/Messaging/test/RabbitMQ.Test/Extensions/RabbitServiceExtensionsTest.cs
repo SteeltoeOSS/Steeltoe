@@ -274,7 +274,7 @@ public class RabbitServiceExtensionsTest
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
-        services.AddRabbitExchanges(new DirectExchange("1"), new FanoutExchange("2"));
+        services.AddRabbitExchanges(new DirectExchange("1"), new FanOutExchange("2"));
         var provider = services.BuildServiceProvider();
         var context = provider.GetService<IApplicationContext>();
         var e1 = context.GetService<IExchange>("1");

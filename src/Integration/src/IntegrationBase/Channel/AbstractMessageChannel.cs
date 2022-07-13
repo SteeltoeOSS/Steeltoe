@@ -62,7 +62,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
     {
         get
         {
-            _messageConverter ??= ApplicationContext.GetService<DefaultDatatypeChannelMessageConverter>();
+            _messageConverter ??= ApplicationContext.GetService<DefaultDataTypeChannelMessageConverter>();
             return _messageConverter;
         }
 
@@ -207,9 +207,9 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
     private IMessage ConvertPayloadIfNecessary(IMessage message)
     {
         // first pass checks if the payload type already matches any of the data types
-        foreach (var datatype in DataTypes)
+        foreach (var dataType in DataTypes)
         {
-            if (datatype.IsInstanceOfType(message.Payload))
+            if (dataType.IsInstanceOfType(message.Payload))
             {
                 return message;
             }
@@ -218,9 +218,9 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
         if (MessageConverter != null)
         {
             // second pass applies conversion if possible, attempting data types in order
-            foreach (var datatype in DataTypes)
+            foreach (var dataType in DataTypes)
             {
-                var converted = MessageConverter.FromMessage(message, datatype);
+                var converted = MessageConverter.FromMessage(message, dataType);
                 if (converted != null)
                 {
                     return converted as IMessage ?? IntegrationServices

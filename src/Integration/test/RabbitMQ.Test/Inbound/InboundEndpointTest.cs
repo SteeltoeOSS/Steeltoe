@@ -49,8 +49,8 @@ public class InboundEndpointTest
         container.ConnectionFactory = connectionFactory.Object;
         container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.Manual;
         var adapter = new RabbitInboundChannelAdapter(context, container) { MessageConverter = new JsonMessageConverter() };
-        var qchannel = new QueueChannel(context);
-        adapter.OutputChannel = qchannel;
+        var queueChannel = new QueueChannel(context);
+        adapter.OutputChannel = queueChannel;
         adapter.BindSourceMessage = true;
         object payload = new Foo("bar1");
         var objectToJsonTransformer = new ObjectToJsonTransformer(context, typeof(byte[]));
@@ -61,7 +61,7 @@ public class InboundEndpointTest
         var listener = container.MessageListener as IChannelAwareMessageListener;
         var rabbitChannel = new Mock<RC.IModel>();
         listener.OnMessage(jsonMessage, rabbitChannel.Object);
-        var result = qchannel.Receive(1000);
+        var result = queueChannel.Receive(1000);
         Assert.Equal(payload, result.Payload);
         Assert.Same(rabbitChannel.Object, result.Headers.Get<RC.IModel>(RabbitMessageHeaders.Channel));
         Assert.Equal(123ul, result.Headers.DeliveryTag());
@@ -86,14 +86,14 @@ public class InboundEndpointTest
         var container = new DirectMessageListenerContainer();
         container.ConnectionFactory = connectionFactory.Object;
         var adapter = new RabbitInboundChannelAdapter(context, container);
-        var qchannel = new QueueChannel(context);
-        adapter.OutputChannel = qchannel;
+        var queueChannel = new QueueChannel(context);
+        adapter.OutputChannel = queueChannel;
         object payload = new Foo("bar1");
         var headers = new MessageHeaders();
         var amqpMessage = new JsonMessageConverter().ToMessage(payload, headers);
         var listener = container.MessageListener as IChannelAwareMessageListener;
         listener.OnMessage(amqpMessage, null);
-        var receive = qchannel.Receive(1000);
+        var receive = queueChannel.Receive(1000);
         var result = new JsonToObjectTransformer(context).Transform(receive);
         Assert.NotNull(result);
         Assert.Equal(payload, result.Payload);
@@ -180,7 +180,7 @@ public class InboundEndpointTest
     }
 
     [Fact]
-    public void TestBatchdAdapter()
+    public void TestBatchedAdapter()
     {
         var config = new ConfigurationBuilder().Build();
         var services = new ServiceCollection().BuildServiceProvider();
@@ -188,8 +188,8 @@ public class InboundEndpointTest
 
         var container = new DirectMessageListenerContainer();
         var adapter = new RabbitInboundChannelAdapter(context, container);
-        var outchan = new QueueChannel(context);
-        adapter.OutputChannel = outchan;
+        var outChannel = new QueueChannel(context);
+        adapter.OutputChannel = outChannel;
         var listener = container.MessageListener as IChannelAwareMessageListener;
         var bs = new SimpleBatchingStrategy(2, 10_000, 10_000L);
         var accessor = new MessageHeaderAccessor { ContentType = "text/plain" };
@@ -199,7 +199,7 @@ public class InboundEndpointTest
         var batched = bs.AddToBatch("foo", "bar", message);
         Assert.NotNull(batched);
         listener.OnMessage(batched.Value.Message, null);
-        var received = outchan.Receive();
+        var received = outChannel.Receive();
         Assert.NotNull(received);
         var asList = received.Payload as List<object>;
         Assert.NotNull(asList);

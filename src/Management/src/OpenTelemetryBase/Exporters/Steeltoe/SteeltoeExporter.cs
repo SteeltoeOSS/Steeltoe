@@ -17,7 +17,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 [ExportModes(ExportModes.Pull)]
 public class SteeltoeExporter : MetricsExporter
 {
-    internal PullmetricsCollectionManager CollectionManager { get; }
+    internal PullMetricsCollectionManager CollectionManager { get; }
 
     internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
@@ -27,10 +27,10 @@ public class SteeltoeExporter : MetricsExporter
     /// Initializes a new instance of the <see cref="SteeltoeExporter"/> class.
     /// </summary>
     /// <param name="options">Options for the exporter.</param>
-    internal SteeltoeExporter(IPullmetricsExporterOptions options)
+    internal SteeltoeExporter(IPullMetricsExporterOptions options)
     {
         ScrapeResponseCacheDurationMilliseconds = options?.ScrapeResponseCacheDurationMilliseconds ?? 5000;
-        CollectionManager = new PullmetricsCollectionManager(this);
+        CollectionManager = new PullMetricsCollectionManager(this);
     }
 
     public override Func<int, bool> Collect { get; set; }

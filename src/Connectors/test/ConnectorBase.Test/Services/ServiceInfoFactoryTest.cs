@@ -45,7 +45,7 @@ public class ServiceInfoFactoryTest
     }
 
     [Fact]
-    public void TagsMatch_DoesntMatch()
+    public void TagsMatch_DoesNotMatch()
     {
         var tags = new Tags(new[] { "foo", "bar" });
         var scheme = "scheme";
@@ -74,7 +74,7 @@ public class ServiceInfoFactoryTest
     }
 
     [Fact]
-    public void LabelStartsWithTag_DoesntMatch()
+    public void LabelStartsWithTag_DoesNotMatch()
     {
         var tags = new Tags(new[] { "foo", "bar" });
         var scheme = "scheme";
@@ -108,7 +108,7 @@ public class ServiceInfoFactoryTest
     }
 
     [Fact]
-    public void UriMatchesScheme_DoesntMatch()
+    public void UriMatchesScheme_DoesNotMatch()
     {
         var tags = new Tags(new[] { "foo", "bar" });
         var scheme = "scheme";
@@ -137,19 +137,19 @@ public class ServiceInfoFactoryTest
         var scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var uname = sif.GetUsernameFromCredentials(credentials);
-        Assert.Equal("username", uname);
+        var username = sif.GetUsernameFromCredentials(credentials);
+        Assert.Equal("username", username);
 
         credentials = new Dictionary<string, Credential>
         {
             { "user", new Credential("username") }
         };
-        uname = sif.GetUsernameFromCredentials(credentials);
-        Assert.Equal("username", uname);
+        username = sif.GetUsernameFromCredentials(credentials);
+        Assert.Equal("username", username);
 
         credentials = new Dictionary<string, Credential>();
-        uname = sif.GetUsernameFromCredentials(credentials);
-        Assert.Null(uname);
+        username = sif.GetUsernameFromCredentials(credentials);
+        Assert.Null(username);
     }
 
     [Fact]

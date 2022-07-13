@@ -63,7 +63,7 @@ public class HttpClientDesktopObserverTest : BaseTest
         var act = new Activity("Test");
         act.Start();
         observer.ProcessEvent(HttpClientDesktopObserver.StopEvent, null);
-        observer.ProcessEvent(HttpClientDesktopObserver.StopexEvent, null);
+        observer.ProcessEvent(HttpClientDesktopObserver.StopExEvent, null);
         act.Stop();
     }
 
@@ -92,11 +92,11 @@ public class HttpClientDesktopObserverTest : BaseTest
 
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var scraperOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 10 };
+        var scraperOptions = new PullMetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 10 };
         var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
         var exporter = new SteeltoeExporter(scraperOptions);
 
-        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
 
         var req = GetHttpRequestMessage();
 

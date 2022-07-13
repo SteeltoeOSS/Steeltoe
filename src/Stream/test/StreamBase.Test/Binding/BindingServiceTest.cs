@@ -353,7 +353,7 @@ public class BindingServiceTest : AbstractTest
     }
 
     [Fact]
-    public async Task TestBindingAutostartup()
+    public async Task TestBindingAutoStartup()
     {
         var searchDirectories = GetSearchDirectories("TestBinder");
         var provider = CreateStreamsContainerWithISinkBinding(

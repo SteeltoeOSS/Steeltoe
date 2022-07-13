@@ -415,9 +415,9 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumeroptions.DeclareExchange = false;
-        rabbitConsumeroptions.QueueNameGroupOnly = true;
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        rabbitConsumerOptions.DeclareExchange = false;
+        rabbitConsumerOptions.QueueNameGroupOnly = true;
 
         var consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
         var endpoint = ExtractEndpoint(consumerBinding);
@@ -438,10 +438,10 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumeroptions.DeclareExchange = false;
-        rabbitConsumeroptions.QueueNameGroupOnly = true;
-        rabbitConsumeroptions.AnonymousGroupPrefix = "customPrefix.";
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        rabbitConsumerOptions.DeclareExchange = false;
+        rabbitConsumerOptions.QueueNameGroupOnly = true;
+        rabbitConsumerOptions.AnonymousGroupPrefix = "customPrefix.";
 
         var consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
         var endpoint = ExtractEndpoint(consumerBinding);
@@ -461,12 +461,12 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-        rabbitConsumeroptions.ExchangeType = ExchangeType.Direct;
-        rabbitConsumeroptions.BindingRoutingKey = "foo,bar";
-        rabbitConsumeroptions.BindingRoutingKeyDelimiter = ",";
-        rabbitConsumeroptions.QueueNameGroupOnly = true;
+        rabbitConsumerOptions.ExchangeType = ExchangeType.Direct;
+        rabbitConsumerOptions.BindingRoutingKey = "foo,bar";
+        rabbitConsumerOptions.BindingRoutingKeyDelimiter = ",";
+        rabbitConsumerOptions.QueueNameGroupOnly = true;
 
         // properties.Extension.DelayedExchange = true; // requires delayed message
 
@@ -665,19 +665,19 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumeroptions.ExchangeType = ExchangeType.Headers;
-        rabbitConsumeroptions.AutoBindDlq = true;
-        rabbitConsumeroptions.DeadLetterExchange = ExchangeType.Headers;
-        rabbitConsumeroptions.DeadLetterExchange = "propsHeader.dlx";
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        rabbitConsumerOptions.ExchangeType = ExchangeType.Headers;
+        rabbitConsumerOptions.AutoBindDlq = true;
+        rabbitConsumerOptions.DeadLetterExchange = ExchangeType.Headers;
+        rabbitConsumerOptions.DeadLetterExchange = "propsHeader.dlx";
 
         var queueBindingArguments = new Dictionary<string, string>
         {
             { "x-match", "any" },
             { "foo", "bar" }
         };
-        rabbitConsumeroptions.QueueBindingArguments = queueBindingArguments;
-        rabbitConsumeroptions.DlqBindingArguments = queueBindingArguments;
+        rabbitConsumerOptions.QueueBindingArguments = queueBindingArguments;
+        rabbitConsumerOptions.DlqBindingArguments = queueBindingArguments;
 
         var group = "bindingArgs";
         var consumerBinding = binder.BindConsumer("propsHeader", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
@@ -1026,11 +1026,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
 
-        var rabbitprod = rabbitBindingsOptions.GetRabbitProducerOptions("test");
-        rabbitprod.Prefix = "rets";
-        var rabbitprod2 = rabbitBindingsOptions.GetRabbitProducerOptions("test");
+        var producerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("test");
+        producerOptions.Prefix = "rets";
+        var producerOptions2 = rabbitBindingsOptions.GetRabbitProducerOptions("test");
 
-        Assert.Equal(rabbitprod.Prefix, rabbitprod2.Prefix);
+        Assert.Equal(producerOptions.Prefix, producerOptions2.Prefix);
     }
 
     [Fact]
@@ -1248,7 +1248,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestAutoBindDlQwithRepublish()
+    public void TestAutoBindDlQWithRepublish()
     {
         maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
         Assert.True(maxStackTraceSize > 0);
@@ -1268,14 +1268,14 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var exception = BigCause();
 
         Assert.True(exception.StackTrace.Length > maxStackTraceSize);
-        var dontRepublish = new AtomicBoolean();
+        var noNotRepublish = new AtomicBoolean();
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
             OnHandleMessage = _ =>
             {
-                if (dontRepublish.Value)
+                if (noNotRepublish.Value)
                 {
-                    throw new ImmediateAcknowledgeException("testDontRepublish");
+                    throw new ImmediateAcknowledgeException("testDoNotRepublish");
                 }
 
                 ExceptionDispatchInfo.Capture(exception).Throw();
@@ -1304,7 +1304,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("bar", ((byte[])deadLetter.Payload).GetString());
         Assert.Contains(RepublishMessageRecoverer.XExceptionStacktrace, deadLetter.Headers);
 
-        dontRepublish.GetAndSet(true);
+        noNotRepublish.GetAndSet(true);
         template.ConvertAndSend(string.Empty, $"{TestPrefix}foo.dlqpubtest2.foo", "baz");
         template.ReceiveTimeout = 500;
         Assert.Null(template.Receive($"{TestPrefix}foo.dlqpubtest2.foo.dlq"));
@@ -1622,7 +1622,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, _) =>
+            PreSendHandler = (message, _) =>
             {
                 Assert.Equal("rkeTest", message.Headers[RabbitExpressionEvaluatingInterceptor.RoutingKeyHeader]);
                 return message;
@@ -1667,7 +1667,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, _) =>
+            PreSendHandler = (message, _) =>
             {
                 Assert.Equal("rkepTest", message.Headers[RabbitExpressionEvaluatingInterceptor.RoutingKeyHeader]);
 
@@ -2051,8 +2051,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
     private void RegisterGlobalErrorChannel(RabbitTestBinder binder)
     {
-        var appcontext = binder.ApplicationContext;
-        var errorChannel = new BinderErrorChannel(appcontext, IntegrationContextUtils.ErrorChannelBeanName, LoggerFactory.CreateLogger<BinderErrorChannel>());
-        appcontext.Register(IntegrationContextUtils.ErrorChannelBeanName, errorChannel);
+        var applicationContext = binder.ApplicationContext;
+        var errorChannel = new BinderErrorChannel(applicationContext, IntegrationContextUtils.ErrorChannelBeanName, LoggerFactory.CreateLogger<BinderErrorChannel>());
+        applicationContext.Register(IntegrationContextUtils.ErrorChannelBeanName, errorChannel);
     }
 }

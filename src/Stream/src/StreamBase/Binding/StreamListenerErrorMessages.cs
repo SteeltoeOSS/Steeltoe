@@ -10,7 +10,7 @@ public static class StreamListenerErrorMessages
 
     public const string InvalidOutboundName = "The Output attribute must have the name of an output as value";
 
-    public const string AtleastOneOutput = "At least one output must be specified";
+    public const string AtLeastOneOutput = "At least one output must be specified";
 
     public const string SendToMultipleDestinations = "Multiple destinations cannot be specified";
 

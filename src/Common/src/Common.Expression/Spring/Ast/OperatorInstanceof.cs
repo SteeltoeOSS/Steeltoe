@@ -8,11 +8,11 @@ using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
-public class OperatorInstanceof : Operator
+public class OperatorInstanceOf : Operator
 {
     private Type _type;
 
-    public OperatorInstanceof(int startPos, int endPos, params SpelNode[] operands)
+    public OperatorInstanceOf(int startPos, int endPos, params SpelNode[] operands)
         : base("instanceof", startPos, endPos, operands)
     {
     }
@@ -27,7 +27,7 @@ public class OperatorInstanceof : Operator
         BooleanTypedValue result;
         if (rightValue is not Type rightClass)
         {
-            throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.InstanceofOperatorNeedsClassOperand, rightValue == null ? "null" : rightValue.GetType().FullName);
+            throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.InstanceOfOperatorNeedsClassOperand, rightValue == null ? "null" : rightValue.GetType().FullName);
         }
 
         if (leftValue == null)

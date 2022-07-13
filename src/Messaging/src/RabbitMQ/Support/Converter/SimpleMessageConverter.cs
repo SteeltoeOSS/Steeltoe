@@ -25,7 +25,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
     {
     }
 
-    public override object FromMessage(IMessage from, Type targetType, object convertionsHint)
+    public override object FromMessage(IMessage from, Type targetType, object conversionHint)
     {
         if (from is not IMessage<byte[]> message)
         {

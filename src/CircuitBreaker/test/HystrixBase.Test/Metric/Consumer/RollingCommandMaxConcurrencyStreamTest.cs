@@ -301,10 +301,10 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
             rejected.Add(Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore));
         }
 
-        var sattasks = new List<Task>();
+        var tasks = new List<Task>();
         foreach (var saturatingCmd in saturators)
         {
-            sattasks.Add(Task.Run(() => saturatingCmd.Execute()));
+            tasks.Add(Task.Run(() => saturatingCmd.Execute()));
         }
 
         await Task.Delay(50);
@@ -314,7 +314,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
             await Task.Run(() => rejectedCmd.Execute());
         }
 
-        Task.WaitAll(sattasks.ToArray());
+        Task.WaitAll(tasks.ToArray());
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
         Assert.Equal(10, _stream.LatestRollingMax);
     }

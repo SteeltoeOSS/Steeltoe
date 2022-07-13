@@ -96,8 +96,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
         Assert.Equal("lazy", arguments.GetValue<string>("x-queue-mode"));
         Assert.Equal("random", arguments.GetValue<string>("x-queue-master-locator"));
 
-        var exchConfig = await GetExchangeConfiguration("dlx.test.requestEx");
-        var arguments2 = exchConfig.GetSection("arguments");
+        var exchangeConfig = await GetExchangeConfiguration("dlx.test.requestEx");
+        var arguments2 = exchangeConfig.GetSection("arguments");
         Assert.Equal("alternate", arguments2.GetValue<string>("alternate-exchange"));
     }
 
@@ -271,10 +271,10 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
                 var context = p.GetApplicationContext();
                 var factory = p.GetService<IConnectionFactory>();
                 var logFactory = p.GetService<ILoggerFactory>();
-                var rqueue = p.GetRabbitQueue(replyQueue.QueueName);
+                var queue = p.GetRabbitQueue(replyQueue.QueueName);
                 var template = p.GetRabbitTemplate("fixedReplyQRabbitTemplate");
                 var container = new DirectMessageListenerContainer(context, factory, "replyListenerContainer", logFactory);
-                container.SetQueues(rqueue);
+                container.SetQueues(queue);
                 container.MessageListener = template;
                 return container;
             });
@@ -285,9 +285,9 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
                 var context = p.GetApplicationContext();
                 var factory = p.GetService<IConnectionFactory>();
                 var logFactory = p.GetService<ILoggerFactory>();
-                var rqueue = p.GetRabbitQueue(requestQueue.QueueName);
+                var queue = p.GetRabbitQueue(requestQueue.QueueName);
                 var container = new DirectMessageListenerContainer(context, factory, "serviceListenerContainer", logFactory);
-                container.SetQueues(rqueue);
+                container.SetQueues(queue);
                 var pojoListener = p.GetService<PojoListener>();
                 container.MessageListener = new MessageListenerAdapter(context, pojoListener, p.GetService<ILogger<MessageListenerAdapter>>());
                 return container;

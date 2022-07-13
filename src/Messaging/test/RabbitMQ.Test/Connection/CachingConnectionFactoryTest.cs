@@ -1413,7 +1413,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     }
 
     [Fact]
-    public void TestFirstConnectionDoesntWait()
+    public void TestFirstConnectionDoesNotWait()
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();

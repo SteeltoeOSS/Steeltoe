@@ -88,10 +88,10 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 {
                     var actuatorOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions" });
                     var endpointOptionsBaseType = ReflectionHelpers.FindType(new[] { "Steeltoe.Management.Abstractions" }, new[] { "Steeltoe.Management.IEndpointOptions" });
-                    var mgmtOptions = serviceProvider.GetService(actuatorOptionsType);
-                    if (mgmtOptions != null)
+                    var managementOptions = serviceProvider.GetService(actuatorOptionsType);
+                    if (managementOptions != null)
                     {
-                        var basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(mgmtOptions)}/";
+                        var basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(managementOptions)}/";
                         if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
                         {
                             var healthOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Health.IHealthOptions" });

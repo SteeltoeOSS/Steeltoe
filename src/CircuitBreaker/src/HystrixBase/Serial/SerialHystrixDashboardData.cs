@@ -214,7 +214,7 @@ public static class SerialHystrixDashboardData
             writer.WriteBooleanField("isCircuitBreakerOpen", circuitBreaker.IsOpen);
         }
 
-        var healthCounts = commandMetrics.Healthcounts;
+        var healthCounts = commandMetrics.HealthCounts;
         writer.WriteIntegerField("errorPercentage", healthCounts.ErrorPercentage);
         writer.WriteLongField("errorCount", healthCounts.ErrorCount);
         writer.WriteLongField("requestCount", healthCounts.TotalRequests);

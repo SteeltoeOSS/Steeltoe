@@ -15,7 +15,7 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
     public const string DefaultServer = "127.0.0.1";
     public const int DefaultPort = 5672;
     public const int DefaultSslPort = 5671;
-    private const string RabbitmqClientSectionPrefix = "rabbitmq:client";
+    private const string RabbitMQClientSectionPrefix = "rabbitmq:client";
     private const string RabbitClientSectionPrefix = "rabbit:client";
 
     public RabbitMQProviderConnectorOptions()
@@ -32,7 +32,7 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
         var section = config.GetSection(RabbitClientSectionPrefix);
         section.Bind(this);
 
-        var sectionMQ = config.GetSection(RabbitmqClientSectionPrefix);
+        var sectionMQ = config.GetSection(RabbitMQClientSectionPrefix);
         sectionMQ.Bind(this);
     }
 

@@ -8,13 +8,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util;
 
 public static class SemaphoreSlimExtensions
 {
-    public static bool TryAcquire(this SemaphoreSlim sema)
+    public static bool TryAcquire(this SemaphoreSlim semaphore)
     {
-        if (sema == null)
+        if (semaphore == null)
         {
             return true;
         }
 
-        return sema.Wait(0);
+        return semaphore.Wait(0);
     }
 }

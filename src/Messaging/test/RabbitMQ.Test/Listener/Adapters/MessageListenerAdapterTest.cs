@@ -43,8 +43,8 @@ public class MessageListenerAdapterTest
         var extendedAdapter = new ExtendedListenerAdapter(null);
         var called = new AtomicBoolean(false);
         var channelMock = new Mock<RC.IModel>();
-        var delgate = new TestDelegate(called);
-        extendedAdapter.Instance = delgate;
+        var testDelegate = new TestDelegate(called);
+        extendedAdapter.Instance = testDelegate;
         extendedAdapter.ContainerAckMode = AcknowledgeMode.Manual;
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         extendedAdapter.OnMessage(Message.Create(bytes, _messageProperties), channelMock.Object);
@@ -55,8 +55,8 @@ public class MessageListenerAdapterTest
     public void TestDefaultListenerMethod()
     {
         var called = new AtomicBoolean(false);
-        var dele = new TestDelegate1(called);
-        _adapter.Instance = dele;
+        var delegate1 = new TestDelegate1(called);
+        _adapter.Instance = @delegate1;
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
@@ -66,8 +66,8 @@ public class MessageListenerAdapterTest
     public void TestAlternateConstructor()
     {
         var called = new AtomicBoolean(false);
-        var dele = new TestDelegate2(called);
-        _adapter = new MessageListenerAdapter(null, dele, nameof(TestDelegate2.MyPojoMessageMethod));
+        var delegate2 = new TestDelegate2(called);
+        _adapter = new MessageListenerAdapter(null, delegate2, nameof(TestDelegate2.MyPojoMessageMethod));
         var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
@@ -137,9 +137,9 @@ public class MessageListenerAdapterTest
         Assert.Equal("Handle", _simpleService.Called);
         Assert.NotNull(replyMessage.Value);
         Assert.NotNull(replyAddress.Value);
-        var addr = replyAddress.Value;
-        Assert.Equal("foo", addr.ExchangeName);
-        Assert.Equal("bar", addr.RoutingKey);
+        var address = replyAddress.Value;
+        Assert.Equal("foo", address.ExchangeName);
+        Assert.Equal("bar", address.RoutingKey);
         Assert.Same(ex, throwable.Value);
     }
 
@@ -147,8 +147,8 @@ public class MessageListenerAdapterTest
     public void TestTaskReturn()
     {
         var called = new CountdownEvent(1);
-        var dele = new TestAsyncDelegate();
-        _adapter = new MessageListenerAdapter(null, dele, nameof(TestAsyncDelegate.MyPojoMessageMethod))
+        var @delegate = new TestAsyncDelegate();
+        _adapter = new MessageListenerAdapter(null, @delegate, nameof(TestAsyncDelegate.MyPojoMessageMethod))
         {
             ContainerAckMode = AcknowledgeMode.Manual,
             ResponseExchange = "default"

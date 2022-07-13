@@ -19,7 +19,7 @@ public partial class CloudFoundryHostBuilderExtensionsTest
         var host = hostbuilder.Build();
 
         var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-        Assert.Contains(config.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        Assert.Contains(config.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 }
 #endif

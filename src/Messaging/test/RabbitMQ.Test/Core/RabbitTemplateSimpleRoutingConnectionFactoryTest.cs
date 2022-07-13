@@ -48,8 +48,8 @@ public class RabbitTemplateSimpleRoutingConnectionFactoryTest
             connection.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            channel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitmqReplyTo))
-                .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitmqReplyTo, 0, 0));
+            channel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo))
+                .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
             return channel;
         }
 

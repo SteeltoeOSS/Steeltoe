@@ -6,5 +6,5 @@ namespace Steeltoe.Common.Logging;
 
 internal static class BootstrapLoggerFactory
 {
-    public static IBoostrapLoggerFactory Instance { get; } = new UpgradableBootstrapLoggerFactory();
+    public static IBootstrapLoggerFactory Instance { get; } = new UpgradableBootstrapLoggerFactory();
 }

@@ -17,19 +17,19 @@ namespace Steeltoe.Discovery.Consul.Registry.Test;
 public class ConsulRegistrationTest
 {
     [Fact]
-    public void Construtor_ThrowsOnNulls()
+    public void Constructor_ThrowsOnNulls()
     {
-        var areg = new AgentServiceRegistration();
+        var registration = new AgentServiceRegistration();
         var options = new ConsulDiscoveryOptions();
 
         Assert.Throws<ArgumentNullException>(() => new ConsulRegistration(null, options));
-        Assert.Throws<ArgumentNullException>(() => new ConsulRegistration(areg, (ConsulDiscoveryOptions)null));
+        Assert.Throws<ArgumentNullException>(() => new ConsulRegistration(registration, (ConsulDiscoveryOptions)null));
     }
 
     [Fact]
     public void Constructor_SetsProperties()
     {
-        var areg = new AgentServiceRegistration
+        var registration = new AgentServiceRegistration
         {
             ID = "id",
             Name = "name",
@@ -39,7 +39,7 @@ public class ConsulRegistrationTest
         };
 
         var options = new ConsulDiscoveryOptions();
-        var reg = new ConsulRegistration(areg, options);
+        var reg = new ConsulRegistration(registration, options);
         Assert.Equal("id", reg.InstanceId);
         Assert.Equal("name", reg.ServiceId);
         Assert.Equal("address", reg.Host);

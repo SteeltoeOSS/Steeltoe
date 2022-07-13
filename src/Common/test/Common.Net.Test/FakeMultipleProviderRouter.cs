@@ -11,7 +11,7 @@ internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
 {
     internal string Username;
     internal string Password;
-    internal string Networkpath;
+    internal string NetworkPath;
     internal bool ShouldConnect;
 
     public FakeMultipleProviderRouter(bool shouldConnect = true)
@@ -36,7 +36,7 @@ internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
 
     public int UseConnection(IntPtr hwndOwner, WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize, string lpResult)
     {
-        Networkpath = netResource.RemoteName;
+        NetworkPath = netResource.RemoteName;
         this.Username = username;
         this.Password = password;
         if (ShouldConnect)

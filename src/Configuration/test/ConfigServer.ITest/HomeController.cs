@@ -40,9 +40,9 @@ public class HomeController : Controller
         if (_health != null)
         {
             var health = _health.Health();
-            health.Details.TryGetValue("propertySources", out var sourcelist);
+            health.Details.TryGetValue("propertySources", out var sourceList);
 
-            var nameList = ToCSV(sourcelist as IList<string>);
+            var nameList = ToCSV(sourceList as IList<string>);
             return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{nameList}";
         }
         else

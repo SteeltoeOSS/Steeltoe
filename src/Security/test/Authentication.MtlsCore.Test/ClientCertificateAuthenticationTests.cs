@@ -287,7 +287,7 @@ public class ClientCertificateAuthenticationTests
     }
 
     [Fact]
-    public async Task VerifySideloadedCaSignedCertReturnsOk()
+    public async Task VerifySideLoadedCaSignedCertReturnsOk()
     {
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
@@ -370,7 +370,7 @@ public class ClientCertificateAuthenticationTests
     }
 
     [Fact]
-    public async Task VerifyNoEventWireupWithAValidCertificateCreatesADefaultUser()
+    public async Task VerifyNoEventWireUpWithAValidCertificateCreatesADefaultUser()
     {
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
@@ -475,7 +475,7 @@ public class ClientCertificateAuthenticationTests
     }
 
     [Fact]
-    public async Task VerifyValidationEventPrincipalIsPropogated()
+    public async Task VerifyValidationEventPrincipalIsPropagated()
     {
         const string expected = "John Doe";
 

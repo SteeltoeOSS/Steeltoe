@@ -31,10 +31,10 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         _binderTypes = FindBinders(searchDirectories);
     }
 
-    public DefaultBinderTypeRegistry(List<string> searchDirectories, bool checkLoadedAssemblys = true)
+    public DefaultBinderTypeRegistry(List<string> searchDirectories, bool checkLoadedAssemblies = true)
     {
         SearchDirectories = searchDirectories;
-        _binderTypes = FindBinders(searchDirectories, checkLoadedAssemblys);
+        _binderTypes = FindBinders(searchDirectories, checkLoadedAssemblies);
     }
 
     internal DefaultBinderTypeRegistry(Dictionary<string, IBinderType> binderTypes)
@@ -55,18 +55,18 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         return _binderTypes;
     }
 
-    internal static Dictionary<string, IBinderType> FindBinders(List<string> searchDirectories, bool checkLoadedAssemblys = true)
+    internal static Dictionary<string, IBinderType> FindBinders(List<string> searchDirectories, bool checkLoadedAssemblies = true)
     {
         var binderTypes = new Dictionary<string, IBinderType>();
 
-        ParseBinderConfigurations(searchDirectories, binderTypes, checkLoadedAssemblys);
+        ParseBinderConfigurations(searchDirectories, binderTypes, checkLoadedAssemblies);
 
         return binderTypes;
     }
 
-    internal static void ParseBinderConfigurations(List<string> searchDirectories, Dictionary<string, IBinderType> registrations, bool checkLoadedAssemblys = true)
+    internal static void ParseBinderConfigurations(List<string> searchDirectories, Dictionary<string, IBinderType> registrations, bool checkLoadedAssemblies = true)
     {
-        if (checkLoadedAssemblys)
+        if (checkLoadedAssemblies)
         {
             AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), registrations);
         }
@@ -92,9 +92,9 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
     internal static void AddBinderTypes(string directory, Dictionary<string, IBinderType> registrations)
     {
         var context = new MetadataLoadContext(GetAssemblyResolver(directory));
-        var dirinfo = new DirectoryInfo(directory);
+        var directoryInfo = new DirectoryInfo(directory);
 
-        foreach (var file in dirinfo.EnumerateFiles("*.dll"))
+        foreach (var file in directoryInfo.EnumerateFiles("*.dll"))
         {
             try
             {

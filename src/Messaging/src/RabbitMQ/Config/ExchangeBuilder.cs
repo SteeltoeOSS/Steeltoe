@@ -35,9 +35,9 @@ public class ExchangeBuilder : AbstractBuilder
         return new ExchangeBuilder(name, ExchangeType.Topic);
     }
 
-    public static ExchangeBuilder FanoutExchange(string name)
+    public static ExchangeBuilder FanOutExchange(string name)
     {
-        return new ExchangeBuilder(name, ExchangeType.Fanout);
+        return new ExchangeBuilder(name, ExchangeType.FanOut);
     }
 
     public static ExchangeBuilder HeadersExchange(string name)
@@ -55,9 +55,9 @@ public class ExchangeBuilder : AbstractBuilder
         {
             return new TopicExchange(exchangeName);
         }
-        else if (ExchangeType.Fanout.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+        else if (ExchangeType.FanOut.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
-            return new FanoutExchange(exchangeName);
+            return new FanOutExchange(exchangeName);
         }
         else if (ExchangeType.Headers.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {

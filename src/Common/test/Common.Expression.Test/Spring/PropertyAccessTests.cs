@@ -77,13 +77,13 @@ public class PropertyAccessTests : AbstractExpressionTests
         var o = expr.GetValue(ctx);
         Assert.NotNull(o);
 
-        var flibbleexpr = parser.ParseRaw("new String('hello').flibbles");
-        flibbleexpr.SetValue(ctx, 99);
-        i = flibbleexpr.GetValue(ctx, typeof(int));
+        var expression = parser.ParseRaw("new String('hello').flibbles");
+        expression.SetValue(ctx, 99);
+        i = expression.GetValue(ctx, typeof(int));
         Assert.Equal(99, (int)i);
 
         // Cannot set it to a string value
-        Assert.Throws<SpelEvaluationException>(() => flibbleexpr.SetValue(ctx, "not allowed"));
+        Assert.Throws<SpelEvaluationException>(() => expression.SetValue(ctx, "not allowed"));
 
         // message will be: EL1063E:(pos 20): A problem occurred whilst attempting to set the property
         // 'flibbles': 'Cannot set flibbles to an object of type 'class java.lang.String''

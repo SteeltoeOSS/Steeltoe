@@ -38,12 +38,12 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var opts = new ThreadDumpEndpointOptions();
 
-        var mgmtOptions = new ActuatorManagementOptions();
-        mgmtOptions.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         var obs = new ThreadDumperEp(opts);
         var ep = new ThreadDumpEndpoint(opts, obs);
-        var middle = new ThreadDumpEndpointMiddleware(null, ep, mgmtOptions);
+        var middle = new ThreadDumpEndpointMiddleware(null, ep, managementOptions);
         var context = CreateRequest("GET", "/dump");
         await middle.HandleThreadDumpRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -61,9 +61,9 @@ public class EndpointMiddlewareTest : BaseTest
         var builder = new WebHostBuilder()
             .UseStartup<StartupV1>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
 
@@ -79,16 +79,16 @@ public class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task ThreadDumpActuatorv2_ReturnsExpectedData()
+    public async Task ThreadDumpActuatorV2_ReturnsExpectedData()
     {
         if (Platform.IsWindows)
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                .ConfigureLogging((webHostContext, loggingBuilder) =>
                 {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
                     loggingBuilder.AddDynamicConsole();
                 });
 

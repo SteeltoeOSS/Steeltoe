@@ -18,9 +18,9 @@ public class JsonMessageConverter : AbstractMessageConverter
 {
     public const string DefaultServiceName = nameof(JsonMessageConverter);
 
-    public const string DefaultClassidFieldName = "__TypeId__";
-    public const string DefaultContentClassidFieldName = "__ContentTypeId__";
-    public const string DefaultKeyClassidFieldName = "__KeyTypeId__";
+    public const string DefaultClassIdFieldName = "__TypeId__";
+    public const string DefaultContentClassIdFieldName = "__ContentTypeId__";
+    public const string DefaultKeyClassIdFieldName = "__KeyTypeId__";
 
     public JsonSerializerSettings Settings { get; set; }
 
@@ -84,7 +84,7 @@ public class JsonMessageConverter : AbstractMessageConverter
         return content;
     }
 
-    protected override IMessage CreateMessage(object objectToConvert, IMessageHeaders headers, object convertionHint)
+    protected override IMessage CreateMessage(object objectToConvert, IMessageHeaders headers, object conversionHint)
     {
         byte[] bytes;
         try
@@ -117,9 +117,9 @@ public class JsonMessageConverter : AbstractMessageConverter
         object content;
         try
         {
-            if (conversionHint is ParameterInfo pinfo)
+            if (conversionHint is ParameterInfo parameterInfo)
             {
-                content = ConvertBytesToObject(message.Payload, encoding, pinfo.ParameterType);
+                content = ConvertBytesToObject(message.Payload, encoding, parameterInfo.ParameterType);
             }
             else if (targetType != null)
             {

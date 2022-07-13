@@ -31,7 +31,7 @@ public class SpringBootAdminClientHostedServiceTest
         var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         var appInfo = new ApplicationInstanceInfo(config);
         var sbaOptions = new SpringBootAdminClientOptions(config, appInfo);
-        var mgmtOptions = new ManagementEndpointOptions(config);
+        var managementOptions = new ManagementEndpointOptions(config);
         var healthOptions = new HealthEndpointOptions(config);
         var httpMessageHandler = new MockHttpMessageHandler();
         httpMessageHandler
@@ -42,7 +42,7 @@ public class SpringBootAdminClientHostedServiceTest
             .Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
         Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
-        var service = new SpringBootAdminClientHostedService(sbaOptions, mgmtOptions, healthOptions, httpMessageHandler.ToHttpClient());
+        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions, httpMessageHandler.ToHttpClient());
         await service.StartAsync(default);
         await service.StopAsync(default);
 

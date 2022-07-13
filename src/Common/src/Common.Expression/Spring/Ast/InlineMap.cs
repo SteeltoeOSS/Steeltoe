@@ -29,8 +29,8 @@ public class InlineMap : SpelNode
         else
         {
             var returnValue = new Dictionary<object, object>();
-            var childcount = ChildCount;
-            for (var c = 0; c < childcount; c++)
+            var childCount = ChildCount;
+            for (var c = 0; c < childCount; c++)
             {
                 // Allow for key being PropertyOrFieldReference like Indexer on maps
                 var keyChild = GetChild(c++);

@@ -36,14 +36,14 @@ public class HystrixProviderConfigurationTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new HystrixProviderConnectorOptions(config);
-        Assert.Equal("localhost", sconfig.Server);
-        Assert.Equal(1234, sconfig.Port);
-        Assert.Equal("password", sconfig.Password);
-        Assert.Equal("username", sconfig.Username);
-        Assert.Null(sconfig.Uri);
-        Assert.True(sconfig.SslEnabled);
-        Assert.Equal(HystrixProviderConnectorOptions.DefaultSslPort, sconfig.SslPort);
+        var options = new HystrixProviderConnectorOptions(config);
+        Assert.Equal("localhost", options.Server);
+        Assert.Equal(1234, options.Port);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("username", options.Username);
+        Assert.Null(options.Uri);
+        Assert.True(options.SslEnabled);
+        Assert.Equal(HystrixProviderConnectorOptions.DefaultSslPort, options.SslPort);
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public class HystrixProviderConfigurationTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new HystrixProviderConnectorOptions(config);
-        var result = sconfig.ToString();
+        var options = new HystrixProviderConnectorOptions(config);
+        var result = options.ToString();
         Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
     }
 }

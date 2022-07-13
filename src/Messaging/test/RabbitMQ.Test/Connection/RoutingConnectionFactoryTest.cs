@@ -111,7 +111,7 @@ public class RoutingConnectionFactoryTest
         var defaultConnectionFactory = new Mock<IConnectionFactory>();
         var connection1 = new Mock<IConnection>();
         var connection2 = new Mock<IConnection>();
-        var defautConnection = new Mock<IConnection>();
+        var defaultConnection = new Mock<IConnection>();
         var channel1 = new Mock<RC.IModel>();
         var channel2 = new Mock<RC.IModel>();
         var defaultChannel = new Mock<RC.IModel>();
@@ -124,7 +124,7 @@ public class RoutingConnectionFactoryTest
             .Returns(connection2.Object);
 
         defaultConnectionFactory.SetupSequence(f => f.CreateConnection())
-            .Returns(defautConnection.Object);
+            .Returns(defaultConnection.Object);
 
         connection1.Setup(c => c.IsOpen).Returns(true);
         connection1.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel1.Object);
@@ -132,8 +132,8 @@ public class RoutingConnectionFactoryTest
         connection2.Setup(c => c.IsOpen).Returns(true);
         connection2.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel2.Object);
 
-        defautConnection.Setup(c => c.IsOpen).Returns(true);
-        defautConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(defaultChannel.Object);
+        defaultConnection.Setup(c => c.IsOpen).Returns(true);
+        defaultConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(defaultChannel.Object);
 
         channel1.Setup(c => c.IsOpen).Returns(true);
         channel2.Setup(c => c.IsOpen).Returns(true);
@@ -231,7 +231,7 @@ public class RoutingConnectionFactoryTest
     }
 
     [Fact]
-    public async Task TestWithDrtdmlcAndConnectionListenerExistingRfk()
+    public async Task TestWithDrtDmlcAndConnectionListenerExistingRfk()
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connection1 = new Mock<IConnection>();

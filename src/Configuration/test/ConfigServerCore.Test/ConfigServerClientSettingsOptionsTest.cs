@@ -92,7 +92,7 @@ public class ConfigServerClientSettingsOptionsTest
         Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenRenewRate, options.TokenRenewRate);
         Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenTtl, options.TokenTtl);
         Assert.Equal(ConfigServerClientSettings.DefaultDiscoveryEnabled, options.DiscoveryEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceid, options.DiscoveryServiceId);
+        Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceId, options.DiscoveryServiceId);
         Assert.Null(options.Name);
         Assert.Null(options.Label);
         Assert.Null(options.Username);
@@ -122,9 +122,9 @@ public class ConfigServerClientSettingsOptionsTest
         Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenRenewRate, settings.TokenRenewRate);
         Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenTtl, settings.TokenTtl);
         Assert.Equal(ConfigServerClientSettings.DefaultDiscoveryEnabled, settings.DiscoveryEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceid, settings.DiscoveryServiceId);
+        Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceId, settings.DiscoveryServiceId);
         Assert.Equal(ConfigServerClientSettings.DefaultHealthEnabled, settings.HealthEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultHealthTimetolive, settings.HealthTimeToLive);
+        Assert.Equal(ConfigServerClientSettings.DefaultHealthTimeToLive, settings.HealthTimeToLive);
         Assert.Null(settings.Name);
         Assert.Null(settings.Label);
         Assert.Null(settings.Username);

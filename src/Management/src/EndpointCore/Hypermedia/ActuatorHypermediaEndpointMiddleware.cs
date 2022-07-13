@@ -16,8 +16,8 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 {
     private readonly RequestDelegate _next;
 
-    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions managementOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
@@ -26,7 +26,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
     {
         logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-        if (innerEndpoint.ShouldInvoke(mgmtOptions, logger))
+        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
         {
             var serialInfo = HandleRequest(innerEndpoint, GetRequestUri(context.Request), logger);
             logger?.LogDebug("Returning: {0}", serialInfo);

@@ -291,8 +291,8 @@ public class BroadcastingDispatcherTest
         var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
         dispatcher.AddHandler(_targetMock1.Object);
         _targetMock1.Object.HandleMessage(_messageMock.Object);
-        var dontReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
-        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
+        var doNotReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
+        _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(doNotReplaceThisMessage, "Mock Exception"));
 
         try
         {
@@ -301,7 +301,7 @@ public class BroadcastingDispatcherTest
         }
         catch (MessagingException e)
         {
-            Assert.Equal(dontReplaceThisMessage, e.FailedMessage);
+            Assert.Equal(doNotReplaceThisMessage, e.FailedMessage);
         }
     }
 
