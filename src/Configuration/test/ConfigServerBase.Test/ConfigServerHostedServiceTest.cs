@@ -31,9 +31,13 @@ public class ConfigServerHostedServiceTest
         configurationManager.AddConfigServer();
         var service = new ConfigServerHostedService(configurationManager, null);
 
-        await service.StartAsync(default);
-        await service.StopAsync(default);
-        Assert.True(true, "Service constructed, started and stopped without exception");
+        var startStopAction = async () =>
+        {
+            await service.StartAsync(default);
+            await service.StopAsync(default);
+        };
+
+        await startStopAction.Should().NotThrowAsync("ConfigServerHostedService should start");
     }
 #endif
 
