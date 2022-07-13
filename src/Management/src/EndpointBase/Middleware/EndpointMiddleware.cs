@@ -8,6 +8,7 @@ using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Middleware
 {
@@ -74,7 +75,13 @@ namespace Steeltoe.Management.Endpoint.Middleware
         {
             serializerOptions ??= new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             serializerOptions.IgnoreNullValues = true;
-            if (serializerOptions.Converters?.Any(c => c is HealthConverter) != true)
+
+            if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
+            {
+                serializerOptions.Converters.Add(new JsonStringEnumConverter());
+            }
+
+            if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
             {
                 serializerOptions.Converters.Add(new HealthConverter());
             }

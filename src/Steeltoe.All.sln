@@ -334,8 +334,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootCore.Test", "Configuration\test\SpringBootCore.Test\Steeltoe.Extensions.Configuration.SpringBootCore.Test.csproj", "{5D86C95F-A0C3-417E-A9E3-4426927E2897}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry.Test", "Management\test\OpenTelemetry.Test\Steeltoe.OpenTelemetry.Test.csproj", "{9F40820C-82C9-4AC2-999F-87D3F48E6636}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{656A7881-FE4F-4EE0-81C8-DA1DE6CDF29E}"
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
@@ -909,10 +907,6 @@ Global
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9F40820C-82C9-4AC2-999F-87D3F48E6636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F40820C-82C9-4AC2-999F-87D3F48E6636}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F40820C-82C9-4AC2-999F-87D3F48E6636}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F40820C-82C9-4AC2-999F-87D3F48E6636}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1055,7 +1049,6 @@ Global
 		{15BDC5D8-7594-4506-B81A-A60D5DF1947C} = {283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}
 		{B748B8B7-D6B8-40AC-AD19-73B6213CA363} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
-		{9F40820C-82C9-4AC2-999F-87D3F48E6636} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{FC49CC5C-EFB6-4B08-AE63-05364EB27021} = {656A7881-FE4F-4EE0-81C8-DA1DE6CDF29E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B86A4082-6F42-4BFC-A1F2-83CC422AD493}"
 EndProject
@@ -84,9 +84,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Kuberne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicSerilogCore", "..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj", "{D9250B38-5792-4534-BC15-E345E95E68F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry.Test", "test\OpenTelemetry.Test\Steeltoe.OpenTelemetry.Test.csproj", "{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{821340BF-7830-4F73-A1C9-E38065152482}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{821340BF-7830-4F73-A1C9-E38065152482}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -214,10 +212,6 @@ Global
 		{D9250B38-5792-4534-BC15-E345E95E68F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9250B38-5792-4534-BC15-E345E95E68F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9250B38-5792-4534-BC15-E345E95E68F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{821340BF-7830-4F73-A1C9-E38065152482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{821340BF-7830-4F73-A1C9-E38065152482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{821340BF-7830-4F73-A1C9-E38065152482}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -257,7 +251,6 @@ Global
 		{B42F1632-D935-4CCA-9CB8-2F346B21C8E3} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{9C4D7E41-7CED-4463-AD08-1A95BBF2D7DD} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{D9250B38-5792-4534-BC15-E345E95E68F1} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
-		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{821340BF-7830-4F73-A1C9-E38065152482} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
