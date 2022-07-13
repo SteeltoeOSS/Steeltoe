@@ -64,10 +64,6 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         {
             _logger.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
         }
-        catch (TaskCanceledException ex)
-        {
-            _logger.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
-        }
 
         if (result is { IsSuccessStatusCode: true })
         {
