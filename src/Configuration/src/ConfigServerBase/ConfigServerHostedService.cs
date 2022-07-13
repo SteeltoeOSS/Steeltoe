@@ -33,13 +33,11 @@ public class ConfigServerHostedService : IHostedService
 
         if (configuration.Providers.Count() == 1 && configuration.Providers.First() is PlaceholderResolverProvider resolverProvider)
         {
-            _configuration =
-                resolverProvider.Providers.First(provider => provider is ConfigServerConfigurationProvider) as
-                    ConfigServerConfigurationProvider;
+            _configuration = resolverProvider.Providers.OfType<ConfigServerConfigurationProvider>().First();
         }
         else
         {
-            _configuration = configuration.Providers.First(provider => provider is ConfigServerConfigurationProvider) as ConfigServerConfigurationProvider;
+            _configuration = configuration.Providers.OfType<ConfigServerConfigurationProvider>().First();
         }
 
         _loggerFactory = loggerFactory ?? BootstrapLoggerFactory.Instance;
