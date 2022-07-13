@@ -130,7 +130,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
 
         // Compare a few random values
         var sentJsonObj = info.ToJsonInstance();
-        Assert.Equal(sentJsonObj.Actiontype, recvJson.Instance.Actiontype);
+        Assert.Equal(sentJsonObj.ActionType, recvJson.Instance.ActionType);
         Assert.Equal(sentJsonObj.AppName, recvJson.Instance.AppName);
         Assert.Equal(sentJsonObj.HostName, recvJson.Instance.HostName);
     }

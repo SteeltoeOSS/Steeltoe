@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
@@ -89,17 +90,19 @@ public class HystrixRequestLog
                     builder.Append('[');
                     foreach (var ev in events)
                     {
+                        var eventName = ev.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+
                         switch (ev)
                         {
                             case HystrixEventType.Emit:
                                 var numEmissions = command.NumberEmissions;
                                 if (numEmissions > 1)
                                 {
-                                    builder.Append(ev).Append('x').Append(numEmissions).Append(", ");
+                                    builder.Append(eventName).Append('x').Append(numEmissions).Append(", ");
                                 }
                                 else
                                 {
-                                    builder.Append(ev).Append(", ");
+                                    builder.Append(eventName).Append(", ");
                                 }
 
                                 break;
@@ -107,16 +110,16 @@ public class HystrixRequestLog
                                 var numFallbackEmissions = command.NumberFallbackEmissions;
                                 if (numFallbackEmissions > 1)
                                 {
-                                    builder.Append(ev).Append('x').Append(numFallbackEmissions).Append(", ");
+                                    builder.Append(eventName).Append('x').Append(numFallbackEmissions).Append(", ");
                                 }
                                 else
                                 {
-                                    builder.Append(ev).Append(", ");
+                                    builder.Append(eventName).Append(", ");
                                 }
 
                                 break;
                             default:
-                                builder.Append(ev).Append(", ");
+                                builder.Append(eventName).Append(", ");
                                 break;
                         }
                     }

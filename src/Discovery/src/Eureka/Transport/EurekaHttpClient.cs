@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
+using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Util;
 using System;
@@ -177,7 +178,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
         var queryArgs = new Dictionary<string, string>
         {
-            { "status", info.Status.ToString() },
+            { "status", info.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
             { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
         };
 
@@ -573,7 +574,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
         var queryArgs = new Dictionary<string, string>
         {
-            { "value", newStatus.ToString() },
+            { "value", newStatus.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
             { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
         };
 

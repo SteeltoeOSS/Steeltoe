@@ -14,11 +14,11 @@ public class HystrixProviderConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const HystrixProviderConnectorOptions config = null;
+        const HystrixProviderConnectorOptions options = null;
         const HystrixRabbitMQServiceInfo si = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, options, typeof(ConnectionFactory)));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]

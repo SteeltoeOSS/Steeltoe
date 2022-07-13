@@ -381,7 +381,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var app3 = new Application("app3");
-        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.Added });
+        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", ActionType = ActionType.Added });
         delta.Add(app3);
         apps.UpdateFromDelta(delta);
 
@@ -443,7 +443,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id3", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.Added });
+        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id3", VipAddress = "vapp2", SecureVipAddress = "svapp2", ActionType = ActionType.Added });
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
@@ -495,7 +495,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up, Actiontype = ActionType.Modified });
+        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up, ActionType = ActionType.Modified });
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
@@ -550,7 +550,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.Deleted });
+        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", ActionType = ActionType.Deleted });
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
@@ -605,7 +605,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var app3 = new Application("app3");
-        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.Added, Status = InstanceStatus.Starting });
+        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", ActionType = ActionType.Added, Status = InstanceStatus.Starting });
         delta.Add(app3);
         apps.UpdateFromDelta(delta);
 
@@ -650,7 +650,7 @@ public class ApplicationsTest : AbstractBaseTest
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
-            Actiontype = ActionType.Added,
+            ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
         var japp = new JsonApplication
@@ -717,7 +717,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Empty(info.Metadata);
         Assert.Equal(635_935_705_417_080_000L, info.LastUpdatedTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LastDirtyTimestamp);
-        Assert.Equal(ActionType.Added, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.ActionType);
         Assert.Equal("AsgName", info.AsgName);
     }
 
@@ -758,7 +758,7 @@ public class ApplicationsTest : AbstractBaseTest
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
-            Actiontype = ActionType.Added,
+            ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
         var japp = new JsonApplication

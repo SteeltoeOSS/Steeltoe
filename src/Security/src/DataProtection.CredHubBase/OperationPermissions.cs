@@ -3,21 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
-
-// ReSharper disable InconsistentNaming
-#pragma warning disable SA1300 // ElementMustBeginWithUpperCaseLetter
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 /// <summary>
 /// Operations that can be allowed for an actor.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(SnakeCaseNoCapsEnumMemberJsonConverter))]
 public enum OperationPermissions
 {
-    read,
-    write,
-    delete,
-    read_acl,
-    write_acl
+    Read,
+    Write,
+    Delete,
+    ReadAcl,
+    WriteAcl
 }

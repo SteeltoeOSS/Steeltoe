@@ -8,6 +8,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -47,7 +48,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             ? "At least one monitored application has no instances UP"
             : "All monitored applications have at least one instance UP";
 
-        result.Details.Add("status", result.Status.ToString());
+        result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         result.Details.Add("statusDescription", result.Description);
         return result;
     }

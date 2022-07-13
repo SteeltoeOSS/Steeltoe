@@ -208,6 +208,6 @@ public class ConnectionStringManagerTest
     {
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
         var exception = Assert.Throws<ConnectorException>(() => manager.GetFromServiceInfo(new Db2ServiceInfo("id", "http://idk")));
-        Assert.Contains("DB2ServiceInfo", exception.Message);
+        Assert.Contains("Db2ServiceInfo", exception.Message);
     }
 }

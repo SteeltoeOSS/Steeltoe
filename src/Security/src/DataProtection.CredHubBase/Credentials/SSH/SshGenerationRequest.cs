@@ -15,10 +15,10 @@ public class SshGenerationRequest : CredHubGenerateRequest
     /// <param name="credentialName">Name of credential.</param>
     /// <param name="parameters">Optional parameters (defaults to key length 2048 and no SSH Comment).</param>
     /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
-    public SshGenerationRequest(string credentialName, SshGenerationParameters parameters = null, OverwiteMode overwriteMode = OverwiteMode.converge)
+    public SshGenerationRequest(string credentialName, SshGenerationParameters parameters = null, OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
         Name = credentialName;
-        Type = CredentialType.Ssh;
+        Type = CredentialType.SSH;
         Parameters = parameters ?? _defaultParams;
         Mode = overwriteMode;
     }

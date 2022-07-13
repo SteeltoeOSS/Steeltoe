@@ -13,7 +13,7 @@ public class UserGenerationRequest : CredHubGenerateRequest
     /// <param name="credentialName">Name of credential.</param>
     /// <param name="parameters">Variables for username and password generation.</param>
     /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
-    public UserGenerationRequest(string credentialName, UserGenerationParameters parameters, OverwiteMode overwriteMode = OverwiteMode.converge)
+    public UserGenerationRequest(string credentialName, UserGenerationParameters parameters, OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
         Name = credentialName;
         Type = CredentialType.User;

@@ -63,7 +63,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Json, response.Type);
+        Assert.Equal(CredentialType.JSON, response.Type);
         Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("b84cd415-2218-41c9-9455-b3e4c6a5ec0f"), response.Id);
         Assert.Equal("/example-json", response.Name);
@@ -178,7 +178,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(CredentialType.RSA, response.Type);
         Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-rsa", response.Name);
@@ -201,7 +201,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Ssh, response.Type);
+        Assert.Equal(CredentialType.SSH, response.Type);
         Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-ssh", response.Name);
@@ -222,7 +222,7 @@ public class CredHubClientTests
         var response = await client.GetByIdAsync<SshCredential>(credId);
 
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Ssh, response.Type);
+        Assert.Equal(CredentialType.SSH, response.Type);
         Assert.Equal(new DateTime(2017, 11, 20, 17, 37, 57, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(credId, response.Id);
         Assert.Equal("/example-ssh", response.Name);
@@ -244,7 +244,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(CredentialType.RSA, response.Type);
         Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-rsa", response.Name);
@@ -371,7 +371,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(CredentialType.RSA, response.Type);
         Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-rsa", response.Name);
@@ -394,7 +394,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Ssh, response.Type);
+        Assert.Equal(CredentialType.SSH, response.Type);
         Assert.Equal(new DateTime(2017, 11, 10, 15, 55, 24, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("2af5191f-9c05-4746-b72c-78b3283aef46"), response.Id);
         Assert.Equal("/example-ssh", response.Name);
@@ -438,7 +438,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Equal(CredentialType.Rsa, response.Type);
+        Assert.Equal(CredentialType.RSA, response.Type);
         Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.VersionCreatedAt);
         Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
         Assert.Equal("/regenerated-rsa", response.Name);
@@ -595,11 +595,11 @@ public class CredHubClientTests
         var permission = response.First();
         Assert.Equal("uaa-user:credhub_client", permission.Actor);
         Assert.Equal(5, permission.Operations.Count);
-        Assert.Contains(OperationPermissions.read, permission.Operations);
-        Assert.Contains(OperationPermissions.write, permission.Operations);
-        Assert.Contains(OperationPermissions.read_acl, permission.Operations);
-        Assert.Contains(OperationPermissions.write_acl, permission.Operations);
-        Assert.Contains(OperationPermissions.delete, permission.Operations);
+        Assert.Contains(OperationPermissions.Read, permission.Operations);
+        Assert.Contains(OperationPermissions.Write, permission.Operations);
+        Assert.Contains(OperationPermissions.ReadAcl, permission.Operations);
+        Assert.Contains(OperationPermissions.WriteAcl, permission.Operations);
+        Assert.Contains(OperationPermissions.Delete, permission.Operations);
     }
 
     [Fact]
@@ -640,7 +640,7 @@ public class CredHubClientTests
             .Expect(HttpMethod.Get, $"{_credHubBase}/v1/permissions?credential_name={credentialName}")
             .Respond("application/json", $"{{\"credential_name\":\"{credentialName}\",\"permissions\":[{{\"actor\":\"uaa-user:credhub_client\",\"operations\":[\"read\",\"write\",\"delete\"]}}]}}");
         var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var newPermissions = new CredentialPermission { Actor = "uaa-user:credhub_client", Operations = new List<OperationPermissions> { OperationPermissions.read, OperationPermissions.write, OperationPermissions.delete } };
+        var newPermissions = new CredentialPermission { Actor = "uaa-user:credhub_client", Operations = new List<OperationPermissions> { OperationPermissions.Read, OperationPermissions.Write, OperationPermissions.Delete } };
 
         var response = await client.AddPermissionsAsync(credentialName, new List<CredentialPermission> { newPermissions });
 
@@ -651,11 +651,11 @@ public class CredHubClientTests
         var permission = response.First();
         Assert.Equal("uaa-user:credhub_client", permission.Actor);
         Assert.Equal(3, permission.Operations.Count);
-        Assert.Contains(OperationPermissions.read, permission.Operations);
-        Assert.Contains(OperationPermissions.write, permission.Operations);
-        Assert.DoesNotContain(OperationPermissions.read_acl, permission.Operations);
-        Assert.DoesNotContain(OperationPermissions.write_acl, permission.Operations);
-        Assert.Contains(OperationPermissions.delete, permission.Operations);
+        Assert.Contains(OperationPermissions.Read, permission.Operations);
+        Assert.Contains(OperationPermissions.Write, permission.Operations);
+        Assert.DoesNotContain(OperationPermissions.ReadAcl, permission.Operations);
+        Assert.DoesNotContain(OperationPermissions.WriteAcl, permission.Operations);
+        Assert.Contains(OperationPermissions.Delete, permission.Operations);
     }
 
     [Fact]

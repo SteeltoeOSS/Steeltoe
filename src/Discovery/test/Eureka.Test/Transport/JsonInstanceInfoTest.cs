@@ -75,6 +75,6 @@ public class JsonInstanceInfoTest : AbstractBaseTest
         Assert.False(result.IsCoordinatingDiscoveryServer);
         Assert.Equal(1_457_714_988_223, result.LastUpdatedTimestamp);
         Assert.Equal(1_457_714_988_172, result.LastDirtyTimestamp);
-        Assert.Equal(ActionType.Added, result.Actiontype);
+        Assert.Equal(ActionType.Added, result.ActionType);
     }
 }

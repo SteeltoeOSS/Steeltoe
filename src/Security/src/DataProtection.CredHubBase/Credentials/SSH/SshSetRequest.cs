@@ -15,7 +15,7 @@ public class SshSetRequest : CredentialSetRequest
     public SshSetRequest(string credentialName, string privateKey, string publicKey)
     {
         Name = credentialName;
-        Type = CredentialType.Ssh;
+        Type = CredentialType.SSH;
         Value = new SshCredential { PrivateKey = privateKey, PublicKey = publicKey };
     }
 }

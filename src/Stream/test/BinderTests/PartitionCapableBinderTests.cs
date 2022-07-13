@@ -260,7 +260,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
 
     protected ILifecycle ExtractEndpoint(IBinding binding)
     {
-        return GetFieldValue<ILifecycle>(binding, "_lifecycle");
+        return GetFieldValue<ILifecycle>(binding, "Lifecycle");
     }
 
     protected TValue GetFieldValue<TValue>(object current, string name)

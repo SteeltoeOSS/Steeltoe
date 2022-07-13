@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
@@ -182,7 +183,7 @@ public class Applications
                     existingApp = GetRegisteredApplication(instance.AppName);
                 }
 
-                switch (instance.Actiontype)
+                switch (instance.ActionType)
                 {
                     case ActionType.Added:
                     case ActionType.Modified:
@@ -213,13 +214,15 @@ public class Applications
         {
             foreach (var inst in app.Instances)
             {
-                if (!statusMap.TryGetValue(inst.Status.ToString(), out var count))
+                string instanceStatus = inst.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+
+                if (!statusMap.TryGetValue(instanceStatus, out var count))
                 {
-                    statusMap.Add(inst.Status.ToString(), 1);
+                    statusMap.Add(instanceStatus, 1);
                 }
                 else
                 {
-                    statusMap[inst.Status.ToString()] = count + 1;
+                    statusMap[instanceStatus] = count + 1;
                 }
             }
         }

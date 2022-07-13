@@ -1131,13 +1131,13 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("test.bytes.to.string")]
         public string BytesToString(string input) => input.ToUpper();
 
-        [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "MANUAL")]
+        [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "Manual")]
         public string Manual1(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DeliveryTag)] ulong tag)
         {
             return InnerManual(input, channel, tag);
         }
 
-        [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{T(Steeltoe.Messaging.RabbitMQ.Core.AcknowledgeMode).MANUAL}")]
+        [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{T(Steeltoe.Messaging.RabbitMQ.Core.AcknowledgeMode).Manual}")]
         public string Manual2(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DeliveryTag)] ulong tag)
         {
             return InnerManual(input, channel, tag);

@@ -3510,9 +3510,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
     }
 
-    /**
-        * Test variants of using T(...) and static/non-static method/property/field references.
-        */
+    // Test variants of using T(...) and static/non-static method/property/field references.
+
     [Fact]
     public void ConstructorReference_SPR13781()
     {
@@ -5474,8 +5473,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     }
 
 #pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable IDE0051 // Remove unused private members
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
+#pragma warning disable IDE0051 // Remove unused private members
+#pragma warning disable S1144 // Unused private types or members should be removed
+#pragma warning disable S2326 // Unused type parameters should be removed
+#pragma warning disable S1118 // Utility classes should not have public constructors
 
     public static class AHolder
     {
@@ -5500,12 +5502,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             return -1;
         }
 
-#pragma warning disable S1144 // Unused private types or members should be removed
         private static int PrivateCompare(object o1, object o2)
         {
             return -1;
         }
-#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     public struct A
@@ -5750,9 +5750,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
     }
 
-#pragma warning disable S2326 // Unused type parameters should be removed
     public interface IMessage<T>
-#pragma warning restore S2326 // Unused type parameters should be removed
     {
         MessageHeaders Headers { get; }
 
@@ -6253,12 +6251,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             I = (int)i;
         }
 
-#pragma warning disable S1144 // Unused private types or members should be removed
         private TestClass8(string a, string b)
         {
             S = a + b;
         }
-#pragma warning restore S1144 // Unused private types or members should be removed
     }
 
     public class Obj
@@ -6399,9 +6395,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public Dictionary<string, string> Data { get; }
     }
 
-#pragma warning disable S1118 // Utility classes should not have public constructors
     public class TestClass7
-#pragma warning restore S1118 // Utility classes should not have public constructors
     {
         public static string Property = "UK 123".Split(' ')[0];
 
@@ -6485,9 +6479,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-#pragma warning disable S1118 // Utility classes should not have public constructors
     public class SomeCompareMethod2
-#pragma warning restore S1118 // Utility classes should not have public constructors
     {
         public static int Negate(int i1)
         {
@@ -6586,7 +6578,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Three
     {
-        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1307:Accessible fields should begin with upper-case letter", Justification = "Used in Test")]
         public double four = 0.04d;
 
         public double Four => four;
@@ -6594,7 +6585,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class StaticsHelper
     {
-        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1307:Accessible fields should begin with upper-case letter", Justification = "Used in Test")]
         public static StaticsHelper sh = new ();
         public static StaticsHelper Fielda = sh;
         public static string Fieldb = "fb";
@@ -6658,8 +6648,4 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         {
         }
     }
-
-#pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
-#pragma warning restore IDE1006 // Naming Styles
-#pragma warning restore IDE0051 // Remove unused private members
 }

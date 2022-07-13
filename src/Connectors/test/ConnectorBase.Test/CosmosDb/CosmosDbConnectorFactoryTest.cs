@@ -14,11 +14,11 @@ public class CosmosDbConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const CosmosDbConnectorOptions config = null;
+        const CosmosDbConnectorOptions options = null;
         const CosmosDbServiceInfo si = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, config, typeof(CosmosClient)));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, options, typeof(CosmosClient)));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]

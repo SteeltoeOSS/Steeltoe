@@ -66,7 +66,7 @@ public class InstanceInfoTest : AbstractBaseTest
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
-            Actiontype = ActionType.Added,
+            ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
 
@@ -107,7 +107,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Empty(info.Metadata);
         Assert.Equal(635_935_705_417_080_000L, info.LastUpdatedTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LastDirtyTimestamp);
-        Assert.Equal(ActionType.Added, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.ActionType);
         Assert.Equal("AsgName", info.AsgName);
     }
 
@@ -151,7 +151,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(info.Metadata);
         Assert.Empty(info.Metadata);
         Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.Added, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.ActionType);
         Assert.Null(info.AsgName);
     }
 
@@ -199,7 +199,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(info.Metadata);
         Assert.Empty(info.Metadata);
         Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.Added, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.ActionType);
         Assert.Null(info.AsgName);
     }
 
@@ -251,7 +251,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.True(jinfo.Metadata.ContainsKey("@class"));
         Assert.True(jinfo.Metadata.ContainsValue("java.util.Collections$EmptyMap"));
         Assert.Equal(jinfo.LastDirtyTimestamp, jinfo.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.Added, jinfo.Actiontype);
+        Assert.Equal(ActionType.Added, jinfo.ActionType);
         Assert.Null(jinfo.AsgName);
     }
 

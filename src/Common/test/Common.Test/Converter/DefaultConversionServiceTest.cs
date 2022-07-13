@@ -241,7 +241,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestEnumToString()
     {
-        Assert.Equal("BAR", ConversionService.Convert<string>(Foo.Bar));
+        Assert.Equal("Bar", ConversionService.Convert<string>(Foo.Bar));
     }
 
     [Fact]

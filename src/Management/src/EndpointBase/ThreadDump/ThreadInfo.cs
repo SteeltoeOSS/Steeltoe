@@ -43,7 +43,6 @@ public class ThreadInfo
     public string ThreadName { get; set; }
 
     [JsonPropertyName("threadState")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public State ThreadState { get; set; }
 
     [JsonPropertyName("waitedCount")]

@@ -50,7 +50,7 @@ public class JsonInstanceInfoRootTest : AbstractBaseTest
         Assert.NotNull(result.Instance);
 
         // Random check some values
-        Assert.Equal(ActionType.Added, result.Instance.Actiontype);
+        Assert.Equal(ActionType.Added, result.Instance.ActionType);
         Assert.Equal("http://DESKTOP-GNQ5SUT:80/healthcheck", result.Instance.HealthCheckUrl);
         Assert.Equal("FOOBAR", result.Instance.AppName);
     }

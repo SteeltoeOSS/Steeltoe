@@ -103,7 +103,7 @@ public class InstanceInfo
 
     public long LastDirtyTimestamp { get; internal set; }
 
-    public ActionType Actiontype { get; internal set; }
+    public ActionType ActionType { get; internal set; }
 
     public string AsgName { get; internal set; }
 
@@ -174,7 +174,7 @@ public class InstanceInfo
         sb.Append(',');
         sb.Append($"SecureVipAddress={SecureVipAddress}");
         sb.Append(',');
-        sb.Append($"ActionType={Actiontype}");
+        sb.Append($"ActionType={ActionType}");
         sb.Append(']');
         return sb.ToString();
     }
@@ -279,7 +279,7 @@ public class InstanceInfo
             info.IsCoordinatingDiscoveryServer = json.IsCoordinatingDiscoveryServer;
             info.LastUpdatedTimestamp = DateTimeConversions.FromJavaMillis(json.LastUpdatedTimestamp).Ticks;
             info.LastDirtyTimestamp = DateTimeConversions.FromJavaMillis(json.LastDirtyTimestamp).Ticks;
-            info.Actiontype = json.Actiontype;
+            info.ActionType = json.ActionType;
             info.AsgName = json.AsgName;
             info._metaData = GetMetaDataFromJson(json.Metadata);
             info.InstanceId = GetInstanceIdFromJson(json, info._metaData);
@@ -314,7 +314,7 @@ public class InstanceInfo
             IsCoordinatingDiscoveryServer = IsCoordinatingDiscoveryServer,
             LastUpdatedTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastUpdatedTimestamp, DateTimeKind.Utc)),
             LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
-            Actiontype = Actiontype,
+            ActionType = ActionType,
             AsgName = AsgName,
             Metadata = Metadata.Count == 0 ? new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
         };

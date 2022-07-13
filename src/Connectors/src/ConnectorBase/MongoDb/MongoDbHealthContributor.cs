@@ -10,6 +10,7 @@ using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 using System.Threading;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Connector.MongoDb;
 
@@ -63,7 +64,7 @@ public class MongoDbHealthContributor : IHealthContributor
                 throw new ConnectorException("Failed to open MongoDb connection!");
             }
 
-            result.Details.Add("status", HealthStatus.Up.ToString());
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
             _logger?.LogTrace("MongoDb connection is up!");
         }
@@ -76,7 +77,7 @@ public class MongoDbHealthContributor : IHealthContributor
 
             _logger?.LogError("MongoDb connection is down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.Down.ToString());
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;
             result.Description = e.Message;
         }

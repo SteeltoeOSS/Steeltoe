@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.HealthChecks;
 using System.IO;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
@@ -35,7 +36,7 @@ public class DiskSpaceContributor : IHealthContributor
             result.Details.Add("total", d.TotalSize);
             result.Details.Add("free", freeSpace);
             result.Details.Add("threshold", _options.Threshold);
-            result.Details.Add("status", result.Status.ToString());
+            result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
 
         return result;

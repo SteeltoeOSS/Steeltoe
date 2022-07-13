@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Connector.RabbitMQ;
 
@@ -72,7 +73,7 @@ public class RabbitMQHealthContributor : IHealthContributor
                 _logger?.LogTrace(e, "Failed to find server version while checking RabbitMQ connection health");
             }
 
-            result.Details.Add("status", HealthStatus.Up.ToString());
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
             _logger?.LogTrace("RabbitMQ connection up!");
         }
@@ -85,7 +86,7 @@ public class RabbitMQHealthContributor : IHealthContributor
 
             _logger?.LogError("RabbitMQ connection down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.Down.ToString());
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;
             result.Description = e.Message;
         }

@@ -2,24 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.ComponentModel;
-using System.Text.Json.Serialization;
+// ReSharper disable IdentifierTypo
 
-// ReSharper disable InconsistentNaming
-#pragma warning disable SA1300 // ElementMustBeginWithUpperCaseLetter
+using System.Text.Json.Serialization;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 /// <summary>
 /// Extended key usage for certificates.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(SnakeCaseNoCapsEnumMemberJsonConverter))]
 public enum ExtendedKeyUsage
 {
-    [Description("Client Auth")]
-    client_auth,
-    server_auth,
-    code_signing,
-    email_protection,
-    timestamping
+    ClientAuth,
+    ServerAuth,
+    CodeSigning,
+    EmailProtection,
+    Timestamping
 }

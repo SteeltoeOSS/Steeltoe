@@ -9,7 +9,7 @@ public abstract class CredHubGenerateRequest : CredHubBaseObject
     /// <summary>
     /// Gets or sets a value indicating the overwrite interaction mode.
     /// </summary>
-    public OverwiteMode Mode { get; set; } = OverwiteMode.converge;
+    public OverwriteMode Mode { get; set; } = OverwriteMode.Converge;
 
     /// <summary>
     /// Gets or sets parameters for generating credential.

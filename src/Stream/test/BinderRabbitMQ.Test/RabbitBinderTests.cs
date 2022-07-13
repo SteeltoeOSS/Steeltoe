@@ -64,10 +64,10 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var moduleInputChannel = CreateBindableChannel("input", GetDefaultBindingOptions());
         var producerBinding = binder.BindProducer("bad.0", moduleOutputChannel, GetProducerOptions("output", bindingsOptions));
 
-        var endpoint = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "_lifecycle");
+        var endpoint = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "Lifecycle");
 
         Assert.True(endpoint.HeadersMappedLast);
-        Assert.Contains("Passthrough", endpoint.Template.MessageConverter.GetType().Name);
+        Assert.Contains("PassThrough", endpoint.Template.MessageConverter.GetType().Name);
 
         var consumerProps = GetConsumerOptions("input", bindingsOptions);
         var rabbitConsumerOptions = bindingsOptions.GetRabbitConsumerOptions("input");
@@ -76,8 +76,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         var consumerBinding = binder.BindConsumer("bad.0", "test", moduleInputChannel, consumerProps);
 
-        var inbound = GetFieldValue<RabbitInboundChannelAdapter>(consumerBinding, "_lifecycle");
-        Assert.Contains("Passthrough", inbound.MessageConverter.GetType().Name);
+        var inbound = GetFieldValue<RabbitInboundChannelAdapter>(consumerBinding, "Lifecycle");
+        Assert.Contains("PassThrough", inbound.MessageConverter.GetType().Name);
         var container = GetPropertyValue<DirectMessageListenerContainer>(inbound, "MessageListenerContainer");
         Assert.NotNull(container);
 

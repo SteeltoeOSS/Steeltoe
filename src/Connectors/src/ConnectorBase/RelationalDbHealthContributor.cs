@@ -13,6 +13,7 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
 using System;
 using System.Data;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Connector;
 
@@ -101,7 +102,7 @@ public class RelationalDbHealthContributor : IHealthContributor
             var cmd = Connection.CreateCommand();
             cmd.CommandText = Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1 ? "SELECT 1 FROM dual" : "SELECT 1;";
             cmd.ExecuteScalar();
-            result.Details.Add("status", HealthStatus.Up.ToString());
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
             _logger?.LogTrace("{DbConnection} up!", Id);
         }
@@ -109,7 +110,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         {
             _logger?.LogError("{DbConnection} down! {HealthCheckException}", Id, e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.Down.ToString());
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;
             result.Description = $"{Id} health check failed";
         }

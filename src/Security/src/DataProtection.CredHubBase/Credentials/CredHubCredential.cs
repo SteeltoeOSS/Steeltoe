@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 
@@ -11,6 +12,7 @@ public class CredHubCredential<T> : CredHubBaseObject
     /// <summary>
     /// Gets or sets when this (version of this) credential was created.
     /// </summary>
+    [JsonPropertyName("version_created_at")]
     public DateTime VersionCreatedAt { get; set; }
 
     /// <summary>

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -37,7 +38,7 @@ public static class HealthCheckExtensions
             healthCheckResult.Description = res.Description;
             healthCheckResult.Details = new Dictionary<string, object>(res.Data)
             {
-                { "status", status.ToString() },
+                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
                 { "description", res.Description }
             };
 

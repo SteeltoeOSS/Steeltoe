@@ -461,10 +461,10 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
         public bool Property4 { get; }
 
+        // ReSharper disable InconsistentNaming
 #pragma warning disable SA1300 // Element should begin with upper-case letter
-        // ReSharper disable once InconsistentNaming
+
         public string iD { get; } = "iD";
-#pragma warning restore SA1300 // Element should begin with upper-case letter
 
         public string Id { get; } = "id";
 
@@ -474,9 +474,9 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
         public string XyZ { get; } = "xyZ";
 
-#pragma warning disable SA1300 // Element should begin with upper-case letter
-        // ReSharper disable once InconsistentNaming
         public string pEBS { get; set; } = "pEBS";
+
+        // ReSharper restore InconsistentNaming
 #pragma warning restore SA1300 // Element should begin with upper-case letter
     }
 }

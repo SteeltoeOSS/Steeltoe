@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using System.Collections.Generic;
 using System.IO;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Serial;
 
@@ -48,13 +49,13 @@ public static class SerialHystrixRequestEvents
                 if (eventCount > 1)
                 {
                     json.WriteStartObject();
-                    json.WriteStringField("name", eventType.ToString());
+                    json.WriteStringField("name", eventType.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                     json.WriteIntegerField("count", eventCount);
                     json.WriteEndObject();
                 }
                 else
                 {
-                    json.WriteValue(eventType.ToString());
+                    json.WriteValue(eventType.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 }
             }
         }

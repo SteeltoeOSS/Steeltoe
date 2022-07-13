@@ -16,7 +16,7 @@ public class CertificateGenerationRequest : CredHubGenerateRequest
     /// <param name="credentialName">Name of the credential.</param>
     /// <param name="parameters">Variables for certificate generation.</param>
     /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
-    public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, OverwiteMode overwriteMode = OverwiteMode.converge)
+    public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
         var subjects = new List<string> { parameters.CommonName, parameters.Organization, parameters.OrganizationUnit, parameters.Locality, parameters.State, parameters.Country };
         if (!AtLeastOneProvided(subjects))

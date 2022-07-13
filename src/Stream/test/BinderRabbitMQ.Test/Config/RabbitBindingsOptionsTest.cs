@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -274,7 +275,16 @@ public class RabbitBindingsOptionsTest
             }
             else
             {
-                yield return new Tuple<string, string, string>($"{inputBindingsKey}:{child.Key}", value?.ToString(), child.Value);
+                string childValue = child.Value;
+
+                if (pi != null)
+                {
+                    TypeConverter converter = TypeDescriptor.GetConverter(pi.PropertyType);
+                    object childObject = converter.ConvertFromString(childValue);
+                    childValue = childObject?.ToString();
+                }
+
+                yield return new Tuple<string, string, string>($"{inputBindingsKey}:{child.Key}", value?.ToString(), childValue);
             }
         }
     }
