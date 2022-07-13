@@ -65,14 +65,13 @@ public static class SpringBootAdminApplicationBuilderExtensions
             logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
 
             HttpResponseMessage result = null;
-            string exceptionMessage = null;
             try
             {
                 result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                exceptionMessage = ex.Message;
+                logger?.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
             }
 
             if (result is { IsSuccessStatusCode: true })
@@ -81,7 +80,8 @@ public static class SpringBootAdminApplicationBuilderExtensions
             }
             else
             {
-                logger?.LogError("Error registering with SpringBootAdmin: {result}.", result?.ToString() ?? exceptionMessage);
+                var errorResponse = result != null ? result.Content.ReadAsStringAsync().Result : string.Empty;
+                logger?.LogError("Error registering with SpringBootAdmin: {Result} \n {Message}", result, errorResponse);
             }
         });
 
