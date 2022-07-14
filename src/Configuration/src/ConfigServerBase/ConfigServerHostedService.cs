@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
+using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Linq;
 using System.Threading;
@@ -30,7 +31,15 @@ public class ConfigServerHostedService : IHostedService
             throw new ArgumentNullException(nameof(configuration));
         }
 
-        _configuration = configuration.Providers.First(provider => provider is ConfigServerConfigurationProvider) as ConfigServerConfigurationProvider;
+        if (configuration.Providers.Count() == 1 && configuration.Providers.First() is PlaceholderResolverProvider resolverProvider)
+        {
+            _configuration = resolverProvider.Providers.OfType<ConfigServerConfigurationProvider>().First();
+        }
+        else
+        {
+            _configuration = configuration.Providers.OfType<ConfigServerConfigurationProvider>().First();
+        }
+
         _loggerFactory = loggerFactory ?? BootstrapLoggerFactory.Instance;
         _discoveryClient = discoveryClient;
     }
