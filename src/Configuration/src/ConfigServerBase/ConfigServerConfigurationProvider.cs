@@ -752,9 +752,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 var value = ConvertValue(kvp.Value);
                 data[key] = value;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                innerLogger.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
+                innerLogger.LogError(exception, "Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
             }
         }
     }
