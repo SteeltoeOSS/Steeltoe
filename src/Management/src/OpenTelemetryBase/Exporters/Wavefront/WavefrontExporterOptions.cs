@@ -36,7 +36,7 @@ public class WavefrontExporterOptions : IWavefrontExporterOptions
 
     public string Name => ApplicationOptions?.Name ?? "SteeltoeApp";
 
-    public string Service => ApplicationOptions?.Service ?? "SteeltoeAppservice";
+    public string Service => ApplicationOptions?.Service ?? "SteeltoeAppService";
 
     public string Cluster { get; set; }
 }

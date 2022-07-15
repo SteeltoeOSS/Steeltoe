@@ -101,7 +101,7 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
             _complete = true;
             if (!CompletionSource.TrySetException(value))
             {
-                throw new InvalidOperationException($"Task has already terminated so exectpion can not be set : {value}");
+                throw new InvalidOperationException($"Task has already terminated so exception can not be set : {value}");
             }
         }
     }

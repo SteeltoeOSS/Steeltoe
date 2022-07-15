@@ -289,7 +289,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             }
         }
 
-        [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asycErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]
+        [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asyncErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]
         public async Task<string> HandleMessage(string msg)
         {
             await Task.Run(() => Console.WriteLine("Running Listener"));

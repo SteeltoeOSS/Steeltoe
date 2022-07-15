@@ -304,7 +304,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
     {
         if (consumerOptions.Multiplex)
         {
-            throw new InvalidOperationException("The Polled MessageSource does not currently support muiltiple queues");
+            throw new InvalidOperationException("The Polled MessageSource does not currently support multiple queues");
         }
 
         var source = new RabbitMessageSource(ApplicationContext, ConnectionFactory, destination.Name)

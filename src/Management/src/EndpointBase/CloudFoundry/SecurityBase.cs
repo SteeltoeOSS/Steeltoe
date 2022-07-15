@@ -116,7 +116,7 @@ public class SecurityBase
         {
             json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            _logger?.LogDebug("GetPermisions returned json: {0}", SecurityUtilities.SanitizeInput(json));
+            _logger?.LogDebug("GetPermissions returned json: {0}", SecurityUtilities.SanitizeInput(json));
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
@@ -132,7 +132,7 @@ public class SecurityBase
             throw;
         }
 
-        _logger?.LogDebug("GetPermisions returning: {0}", permissions);
+        _logger?.LogDebug("GetPermissions returning: {0}", permissions);
         return permissions;
     }
 }

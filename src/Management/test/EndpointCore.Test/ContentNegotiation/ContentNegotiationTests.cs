@@ -41,13 +41,13 @@ public class ContentNegotiationTests
 
             var negotiations = new[]
             {
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptAppJson_RetrunsAppJson" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptInvalid_RetrunsAppJson" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1Json }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptV1_RetrunsAppJson_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptV2_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.Any }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptANY_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleAscOrdered_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleDescOrdered_RetrunsV2_WhenV2Configured" }
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptAppJson_ReturnsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptInvalid_ReturnsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1Json }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptV1_ReturnsAppJson_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptV2_ReturnsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.Any }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptANY_ReturnsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleAscOrdered_ReturnsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleDescOrdered_ReturnsV2_WhenV2Configured" }
             };
 
             foreach (var endpoint in endpoints)

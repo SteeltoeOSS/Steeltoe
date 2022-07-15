@@ -41,7 +41,7 @@ public class StringToCollectionConverter : AbstractToCollectionConverter
         var list = ConversionUtils.CreateCompatListFor(targetType);
         if (list == null)
         {
-            throw new InvalidOperationException("Unable to create compatable list");
+            throw new InvalidOperationException("Unable to create compatible list");
         }
 
         foreach (var sourceElement in fields)

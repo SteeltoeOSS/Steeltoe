@@ -285,7 +285,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             channel =>
             {
                 var queuePurged = channel.QueuePurge(queueName);
-                _logger?.LogDebug("Purged queue: {queuename} : {result}", queueName, queuePurged);
+                _logger?.LogDebug("Purged queue: {queueName} : {result}", queueName, queuePurged);
                 return queuePurged;
             });
     }
@@ -385,7 +385,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             if (!exchange.IsDurable || exchange.IsAutoDelete)
             {
                 _logger?.LogInformation(
-                    "Auto-declaring a non-durable or auto-delete Exchange ({exchange}), durable:{durable}, auto-delete:{autodelete}. "
+                    "Auto-declaring a non-durable or auto-delete Exchange ({exchange}), durable:{durable}, auto-delete:{autoDelete}. "
                     + "It will be deleted by the broker if it shuts down, and can be redeclared by closing and reopening the connection.",
                     exchange.ExchangeName,
                     exchange.IsDurable,
@@ -398,7 +398,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             if (!queue.IsDurable || queue.IsAutoDelete || queue.IsExclusive)
             {
                 _logger?.LogInformation(
-                    "Auto-declaring a non-durable, auto-delete, or exclusive Queue ({queueName}) durable:{durable}, auto-delete:{autodelete}, exclusive:{exclusive}."
+                    "Auto-declaring a non-durable, auto-delete, or exclusive Queue ({queueName}) durable:{durable}, auto-delete:{autoDelete}, exclusive:{exclusive}."
                     + "It will be redeclared if the broker stops and is restarted while the connection factory is alive, but all messages will be lost.",
                     queue.QueueName,
                     queue.IsDurable,

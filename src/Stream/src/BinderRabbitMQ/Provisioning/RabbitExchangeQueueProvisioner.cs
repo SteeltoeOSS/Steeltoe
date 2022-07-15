@@ -331,7 +331,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
             }
 
             case FanOutExchange:
-                throw new ProvisioningException("A fanout exchange is not appropriate for partitioned apps");
+                throw new ProvisioningException("A fan-out exchange is not appropriate for partitioned apps");
             case HeadersExchange:
             {
                 var binding = new RabbitConfig.Binding($"{queue.QueueName}.{exchange.ExchangeName}.binding", queue.QueueName, DestinationType.Queue, exchange.ExchangeName, string.Empty, arguments);

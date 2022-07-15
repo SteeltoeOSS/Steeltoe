@@ -494,7 +494,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
             else
             {
-                Logger?.LogInformation("Cannot verify reply queue because 'replyAddress' is not a simple queue name: {replyAddres}", ReplyAddress);
+                Logger?.LogInformation("Cannot verify reply queue because 'replyAddress' is not a simple queue name: {replyAddress}", ReplyAddress);
             }
         }
 

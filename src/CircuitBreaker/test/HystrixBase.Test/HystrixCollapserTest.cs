@@ -2492,7 +2492,7 @@ public class HystrixCollapserTest : HystrixTestBase
         {
             if (OnErrorEvents.Count > 0)
             {
-                Assert.False(true, "Unexpecteed onError events");
+                Assert.False(true, "Unexpected onError events");
             }
         }
 

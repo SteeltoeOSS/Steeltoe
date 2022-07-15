@@ -438,8 +438,8 @@ public class AntPathMatcherTest
         Assert.Equal(1, comparator.Compare("/hotels/{hotel}/bookings/{booking}", "/hotels/{hotel}/booking"));
 
         // SPR-10550
-        Assert.Equal(-1, comparator.Compare("/hotels/{hotel}/bookings/{booking}/cutomers/{customer}", "/**"));
-        Assert.Equal(1, comparator.Compare("/**", "/hotels/{hotel}/bookings/{booking}/cutomers/{customer}"));
+        Assert.Equal(-1, comparator.Compare("/hotels/{hotel}/bookings/{booking}/customers/{customer}", "/**"));
+        Assert.Equal(1, comparator.Compare("/**", "/hotels/{hotel}/bookings/{booking}/customers/{customer}"));
         Assert.Equal(0, comparator.Compare("/**", "/**"));
 
         Assert.Equal(-1, comparator.Compare("/hotels/{hotel}", "/hotels/*"));
@@ -452,8 +452,8 @@ public class AntPathMatcherTest
         Assert.Equal(2, comparator.Compare("/hotels/{hotel}", "/hotels/{hotel}.*"));
 
         // SPR-6741
-        Assert.Equal(-1, comparator.Compare("/hotels/{hotel}/bookings/{booking}/cutomers/{customer}", "/hotels/**"));
-        Assert.Equal(1, comparator.Compare("/hotels/**", "/hotels/{hotel}/bookings/{booking}/cutomers/{customer}"));
+        Assert.Equal(-1, comparator.Compare("/hotels/{hotel}/bookings/{booking}/customers/{customer}", "/hotels/**"));
+        Assert.Equal(1, comparator.Compare("/hotels/**", "/hotels/{hotel}/bookings/{booking}/customers/{customer}"));
         Assert.Equal(1, comparator.Compare("/hotels/foo/bar/**", "/hotels/{hotel}"));
         Assert.Equal(-1, comparator.Compare("/hotels/{hotel}", "/hotels/foo/bar/**"));
         Assert.Equal(2, comparator.Compare("/hotels/**/bookings/**", "/hotels/**"));

@@ -248,7 +248,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
         catch (FatalListenerStartupException fe)
         {
-            Logger?.LogError(fe, "Fatal exception while reclare elements");
+            Logger?.LogError(fe, "Fatal exception while redeclare elements");
             throw;
         }
         catch (Exception e)

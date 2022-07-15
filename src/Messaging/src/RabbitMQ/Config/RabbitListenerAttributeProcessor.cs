@@ -139,7 +139,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             var attribute = method.GetCustomAttribute<RabbitHandlerAttribute>();
             if (attribute == null)
             {
-                throw new InvalidOperationException("Multimethod must contain RabbitHandlerAttribute");
+                throw new InvalidOperationException("MultiMethod must contain RabbitHandlerAttribute");
             }
 
             if (attribute.IsDefault)

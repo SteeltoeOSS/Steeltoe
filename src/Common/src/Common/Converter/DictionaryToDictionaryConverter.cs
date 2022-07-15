@@ -47,7 +47,7 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
         var dict = ConversionUtils.CreateCompatDictionaryFor(targetType);
         if (dict == null)
         {
-            throw new InvalidOperationException("Unable to create compatable dictionary");
+            throw new InvalidOperationException("Unable to create compatible dictionary");
         }
 
         if (!targetType.IsGenericType)

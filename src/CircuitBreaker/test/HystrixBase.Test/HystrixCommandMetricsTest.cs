@@ -177,7 +177,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
             },
             e =>
             {
-                _output.WriteLine("Error duing command execution");
+                _output.WriteLine("Error during command execution");
                 _output.WriteLine(e.ToString());
                 latch.SignalEx();
             },

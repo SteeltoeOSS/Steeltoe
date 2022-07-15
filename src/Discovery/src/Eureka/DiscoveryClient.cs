@@ -488,7 +488,7 @@ public class DiscoveryClient : IEurekaClient
             var hashCode = localRegionApps.ComputeHashCode();
             if (!hashCode.Equals(delta.AppsHashCode))
             {
-                logger.LogWarning($"FetchRegistryDelta discarding delta, hashcodes mismatch: {hashCode}!={delta.AppsHashCode}");
+                logger.LogWarning($"FetchRegistryDelta discarding delta, hash codes mismatch: {hashCode}!={delta.AppsHashCode}");
                 return await FetchFullRegistryAsync().ConfigureAwait(false);
             }
             else

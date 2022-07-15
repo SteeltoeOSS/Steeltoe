@@ -234,7 +234,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         throw new MessageDeliveryException(
             message,
-            $"Channel '{ServiceName}' expected one of the following datataypes [{string.Join(",", DataTypes)}], but received [{message.Payload.GetType()}]");
+            $"Channel '{ServiceName}' expected one of the following data types [{string.Join(",", DataTypes)}], but received [{message.Payload.GetType()}]");
     }
 
     internal sealed class ChannelInterceptorList

@@ -469,7 +469,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.False(cmd.Execute()); // fallback should fire
         _output.WriteLine("RESULT : " + cmd.ExecutionEvents);
-        Assert.True(cmd.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly closed");
+        Assert.True(cmd.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly closed");
     }
 
     [Fact]
@@ -485,7 +485,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(cmd.Execute()); // fallback should fire
         _output.WriteLine("RESULT : " + cmd.ExecutionEvents);
-        Assert.False(cmd.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open");
+        Assert.False(cmd.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly open");
     }
 
     [Fact]
@@ -506,8 +506,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(attempt1.IsFailedExecution, "Unexpected execution success (1)");
         Assert.True(attempt1.IsResponseFromFallback, "Response not from fallback as was expected (1)");
-        Assert.False(attempt1.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open (1)");
-        Assert.False(attempt1.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (1)");
+        Assert.False(attempt1.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly open (1)");
+        Assert.False(attempt1.IsResponseShortCircuited, "CircuitBreaker unexpectedly short circuited (1)");
 
         // failure 2 with a different command, same circuit breaker
         var attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
@@ -518,8 +518,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(attempt2.IsFailedExecution, "Unexpected execution success (2)");
         Assert.True(attempt2.IsResponseFromFallback, "Response not from fallback as was expected (2)");
-        Assert.False(attempt2.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open (2)");
-        Assert.False(attempt2.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (2)");
+        Assert.False(attempt2.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly open (2)");
+        Assert.False(attempt2.IsResponseShortCircuited, "CircuitBreaker unexpectedly short circuited (2)");
 
         // failure 3 of the Hystrix, 2nd for this particular HystrixCommand
         var attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
@@ -530,14 +530,14 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(attempt3.IsFailedExecution, "Unexpected execution success (3)");
         Assert.True(attempt3.IsResponseFromFallback, "Response not from fallback as was expected (3)");
-        Assert.False(attempt3.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (3)");
+        Assert.False(attempt3.IsResponseShortCircuited, "CircuitBreaker unexpectedly short circuited (3)");
 
         // Time.Wait(150);
         Assert.True(WaitForHealthCountToUpdate(key.Name, 250, _output), "Health count update took to long");
 
         // it should now be 'open' and prevent further executions
         // after having 3 failures on the Hystrix that these 2 different HystrixCommand objects are for
-        Assert.True(attempt3.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly closed (3)");
+        Assert.True(attempt3.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly closed (3)");
 
         // attempt 4
         var attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
@@ -549,10 +549,10 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.True(attempt4.IsResponseFromFallback, "Response not from fallback as was expected (4)");
 
         // this should now be true as the response will be short-circuited
-        Assert.True(attempt4.IsResponseShortCircuited, "Circuitbreaker not short circuited as expected (4)");
+        Assert.True(attempt4.IsResponseShortCircuited, "CircuitBreaker not short circuited as expected (4)");
 
         // this should remain open
-        Assert.True(attempt4.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly closed (4)");
+        Assert.True(attempt4.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly closed (4)");
 
         AssertSaneHystrixRequestLog(4);
         AssertCommandExecutionEvents(attempt1, HystrixEventType.Failure, HystrixEventType.FallbackSuccess);
@@ -622,7 +622,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // the time should be 50+ since we timeout at 50ms
         Assert.True(command.ExecutionTimeInMilliseconds >= 50);
-        Assert.False(command.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open");
+        Assert.False(command.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly open");
         Assert.False(command.IsResponseShortCircuited);
         Assert.True(command.IsResponseTimedOut);
         Assert.True(command.IsResponseFromFallback);
@@ -677,7 +677,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         /* response should still be the same as 'testCircuitBreakerOnExecutionTimeout' */
         Assert.True(command.IsResponseFromFallback);
-        Assert.False(command.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open");
+        Assert.False(command.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly open");
         Assert.False(command.IsResponseShortCircuited);
 
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -3510,7 +3510,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         o.OnSubscribe(() =>
         {
-            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribee");
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribe");
         }).OnDispose(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");

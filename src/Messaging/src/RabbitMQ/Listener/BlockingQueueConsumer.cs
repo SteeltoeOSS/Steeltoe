@@ -472,7 +472,7 @@ public class BlockingQueueConsumer
         }
         else if (e.FailedQueues.Count < Queues.Count)
         {
-            Logger?.LogWarning("Not all queues are available; only listening on those that are - configured: {queues}; not available: {notavail}", string.Join(',', Queues), string.Join(',', e.FailedQueues));
+            Logger?.LogWarning("Not all queues are available; only listening on those that are - configured: {queues}; not available: {notAvailable}", string.Join(',', Queues), string.Join(',', e.FailedQueues));
             lock (MissingQueues)
             {
                 foreach (var q in e.FailedQueues)
