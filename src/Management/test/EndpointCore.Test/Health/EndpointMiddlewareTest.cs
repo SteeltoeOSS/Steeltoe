@@ -169,7 +169,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"), "Health should contain key: status");
             Assert.False(health.ContainsKey("details"), "Health should not contain key: details");
-            Assert.True(health.ContainsKey("components"), "Health should not contain key: components");
+            Assert.True(health.ContainsKey("components"), "Health should contain key: components");
             var componentString = health["components"].ToString() ?? string.Empty;
             Assert.Contains("diskSpace", componentString);
             Assert.Contains("details", componentString);
