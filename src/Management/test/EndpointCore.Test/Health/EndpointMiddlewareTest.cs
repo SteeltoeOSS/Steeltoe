@@ -150,6 +150,32 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
+        public async Task HealthActuatorV3_ReturnsDetails()
+        {
+            var settings = new Dictionary<string, string>(appSettings) { { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName} };
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+
+            // {"status":"UP","components":{"diskSpace":{"status":"UP","details":{"total":1003588939776,"free":597722619904,"threshold":10485760,"status":"UP"}},"readiness":{"status":"UNKNOWN","description":"Failed to get current availability state","details":{}}}}
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            Assert.NotNull(health);
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.False(health.ContainsKey("details"), "Health should not contain key: details");
+            Assert.True(health.ContainsKey("components"), "Health should not contain key: components");
+            var componentString = health["components"].ToString() ?? string.Empty;
+            Assert.Contains("diskSpace", componentString);
+            Assert.Contains("details", componentString);
+        }
+
+        [Fact]
         public async Task HealthActuator_ReturnsMicrosoftHealthDetails()
         {
             var settings = new Dictionary<string, string>(appSettings);
