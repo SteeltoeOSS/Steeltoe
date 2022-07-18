@@ -152,7 +152,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public async Task HealthActuatorV3_ReturnsDetails()
         {
-            var settings = new Dictionary<string, string>(appSettings) { { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName} };
+            var settings = new Dictionary<string, string>(appSettings) { { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName } };
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
