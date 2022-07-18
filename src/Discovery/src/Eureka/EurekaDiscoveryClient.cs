@@ -25,7 +25,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
         public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
         {
-            base.innerConfig = null;
+            base.config = null;
             _configOptions = config ?? throw new ArgumentNullException(nameof(config));
             base.handlerProvider = handlerProvider;
             Initialize(new Dictionary<string, string>(), logFactory);
@@ -50,7 +50,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     {
         _thisInstance = new ThisServiceInstance(instConfig);
         _configOptions = clientConfig;
-        base.innerHttpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
+        base.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
 
         Initialize();
     }

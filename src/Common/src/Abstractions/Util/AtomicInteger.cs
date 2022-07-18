@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Util;
 
 public class AtomicInteger
 {
-    protected volatile int innerValue;
+    protected volatile int value;
 
     public AtomicInteger()
         : this(0)
@@ -17,38 +17,38 @@ public class AtomicInteger
 
     public AtomicInteger(int value)
     {
-        this.innerValue = value;
+        this.value = value;
     }
 
     public int Value
     {
-        get => innerValue;
+        get => value;
 
-        set => this.innerValue = value;
+        set => this.value = value;
     }
 
     public bool CompareAndSet(int expected, int update)
     {
-        return Interlocked.CompareExchange(ref innerValue, update, expected) == expected;
+        return Interlocked.CompareExchange(ref value, update, expected) == expected;
     }
 
     public int IncrementAndGet()
     {
-        return Interlocked.Increment(ref innerValue);
+        return Interlocked.Increment(ref value);
     }
 
     public int DecrementAndGet()
     {
-        return Interlocked.Decrement(ref innerValue);
+        return Interlocked.Decrement(ref value);
     }
 
     public int GetAndIncrement()
     {
-        return Interlocked.Increment(ref innerValue) - 1;
+        return Interlocked.Increment(ref value) - 1;
     }
 
     public int AddAndGet(int value)
     {
-        return Interlocked.Add(ref this.innerValue, value);
+        return Interlocked.Add(ref this.value, value);
     }
 }

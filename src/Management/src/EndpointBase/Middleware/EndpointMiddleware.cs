@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public class EndpointMiddleware<TResult>
 {
-    protected IEndpoint<TResult> innerEndpoint;
+    protected IEndpoint<TResult> endpoint;
     protected ILogger logger;
     protected IManagementOptions managementOptions;
 
@@ -30,19 +30,19 @@ public class EndpointMiddleware<TResult>
     public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions managementOptions, ILogger logger = null)
         : this(managementOptions, logger)
     {
-        innerEndpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
     public IEndpoint<TResult> Endpoint
     {
-        get => innerEndpoint;
+        get => endpoint;
 
-        set => innerEndpoint = value;
+        set => endpoint = value;
     }
 
     public virtual string HandleRequest()
     {
-        var result = innerEndpoint.Invoke();
+        var result = endpoint.Invoke();
         return Serialize(result);
     }
 
@@ -92,19 +92,19 @@ public class EndpointMiddleware<TResult>
 
 public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
-    protected new IEndpoint<TResult, TRequest> innerEndpoint;
+    protected new IEndpoint<TResult, TRequest> endpoint;
 
     internal new IEndpoint<TResult, TRequest> Endpoint
     {
-        get => innerEndpoint;
+        get => endpoint;
 
-        set => innerEndpoint = value;
+        set => endpoint = value;
     }
 
     public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
-        innerEndpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
     public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
@@ -114,7 +114,7 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 
     public virtual string HandleRequest(TRequest arg)
     {
-        var result = innerEndpoint.Invoke(arg);
+        var result = endpoint.Invoke(arg);
         return Serialize(result);
     }
 }

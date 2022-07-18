@@ -18,11 +18,11 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class DiscoveryClient : IEurekaClient
 {
-    protected Timer innerHeartBeatTimer;
-    protected Timer innerCacheRefreshTimer;
+    protected Timer heartBeatTimer;
+    protected Timer cacheRefreshTimer;
     protected volatile Applications localRegionApps;
-    protected long innerRegistryFetchCounter;
-    protected IEurekaHttpClient innerHttpClient;
+    protected long registryFetchCounter;
+    protected IEurekaHttpClient httpClient;
     protected Random random = new ();
     protected ILogger logger;
     protected ILogger regularLogger;
@@ -42,7 +42,7 @@ public class DiscoveryClient : IEurekaClient
 
     public InstanceStatus LastRemoteInstanceStatus { get; internal set; } = InstanceStatus.Unknown;
 
-    public IEurekaHttpClient HttpClient => innerHttpClient;
+    public IEurekaHttpClient HttpClient => httpClient;
 
     public Applications Applications
     {
@@ -59,7 +59,7 @@ public class DiscoveryClient : IEurekaClient
         : this(ApplicationInfoManager.Instance, logFactory)
     {
         ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
-        this.innerHttpClient = httpClient ?? new EurekaHttpClient(clientConfig, logFactory);
+        this.httpClient = httpClient ?? new EurekaHttpClient(clientConfig, logFactory);
 
         Initialize();
     }
@@ -208,16 +208,16 @@ public class DiscoveryClient : IEurekaClient
             return;
         }
 
-        if (innerCacheRefreshTimer != null)
+        if (cacheRefreshTimer != null)
         {
-            innerCacheRefreshTimer.Dispose();
-            innerCacheRefreshTimer = null;
+            cacheRefreshTimer.Dispose();
+            cacheRefreshTimer = null;
         }
 
-        if (innerHeartBeatTimer != null)
+        if (heartBeatTimer != null)
         {
-            innerHeartBeatTimer.Dispose();
-            innerHeartBeatTimer = null;
+            heartBeatTimer.Dispose();
+            heartBeatTimer = null;
         }
 
         if (ClientConfig.ShouldOnDemandUpdateStatusChange)
@@ -242,9 +242,9 @@ public class DiscoveryClient : IEurekaClient
 
     public InstanceStatus GetInstanceRemoteStatus() => InstanceStatus.Unknown;
 
-    internal Timer HeartBeatTimer => innerHeartBeatTimer;
+    internal Timer HeartBeatTimer => heartBeatTimer;
 
-    internal Timer CacheRefreshTimer => innerCacheRefreshTimer;
+    internal Timer CacheRefreshTimer => cacheRefreshTimer;
 
     internal async void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
     {
@@ -426,7 +426,7 @@ public class DiscoveryClient : IEurekaClient
 
     protected internal async T.Task<Applications> FetchFullRegistryAsync()
     {
-        var startingCounter = innerRegistryFetchCounter;
+        var startingCounter = registryFetchCounter;
         Applications fetched = null;
 
         EurekaHttpResponse<Applications> resp;
@@ -448,7 +448,7 @@ public class DiscoveryClient : IEurekaClient
             fetched = resp.Response;
         }
 
-        if (fetched != null && Interlocked.CompareExchange(ref innerRegistryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
+        if (fetched != null && Interlocked.CompareExchange(ref registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
         {
             // Log
             LastGoodFullRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
@@ -466,7 +466,7 @@ public class DiscoveryClient : IEurekaClient
 
     protected internal async T.Task<Applications> FetchRegistryDeltaAsync()
     {
-        var startingCounter = innerRegistryFetchCounter;
+        var startingCounter = registryFetchCounter;
         Applications delta = null;
 
         var resp = await HttpClient.GetDeltaAsync().ConfigureAwait(false);
@@ -482,7 +482,7 @@ public class DiscoveryClient : IEurekaClient
             return await FetchFullRegistryAsync().ConfigureAwait(false);
         }
 
-        if (Interlocked.CompareExchange(ref innerRegistryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
+        if (Interlocked.CompareExchange(ref registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
         {
             localRegionApps.UpdateFromDelta(delta);
             var hashCode = localRegionApps.ComputeHashCode();
@@ -577,7 +577,7 @@ public class DiscoveryClient : IEurekaClient
 
             logger.LogInformation("Starting HeartBeat");
             var intervalInMilliseconds = appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-            innerHeartBeatTimer = StartTimer("HeartBeat", intervalInMilliseconds, HeartBeatTaskAsync);
+            heartBeatTimer = StartTimer("HeartBeat", intervalInMilliseconds, HeartBeatTaskAsync);
             if (ClientConfig.ShouldOnDemandUpdateStatusChange)
             {
                 appInfoManager.StatusChanged += HandleInstanceStatusChanged;
@@ -588,7 +588,7 @@ public class DiscoveryClient : IEurekaClient
         {
             await FetchRegistryAsync(true).ConfigureAwait(false);
             var intervalInMilliseconds = ClientConfig.RegistryFetchIntervalSeconds * 1000;
-            innerCacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTaskAsync);
+            cacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTaskAsync);
         }
 
         Interlocked.Exchange(ref logger, regularLogger);

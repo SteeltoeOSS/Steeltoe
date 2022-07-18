@@ -31,7 +31,7 @@ public class HealthEndpointCore : HealthEndpoint
         _logger = logger;
     }
 
-    public new IHealthOptions Options => innerOptions as IHealthOptions;
+    public new IHealthOptions Options => options as IHealthOptions;
 
     public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
     {

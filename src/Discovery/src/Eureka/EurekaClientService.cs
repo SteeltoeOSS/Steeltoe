@@ -66,10 +66,10 @@ public static class EurekaClientService
         public LookupClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
             : base(clientConfig, httpClient, logFactory)
         {
-            if (innerCacheRefreshTimer != null)
+            if (cacheRefreshTimer != null)
             {
-                innerCacheRefreshTimer.Dispose();
-                innerCacheRefreshTimer = null;
+                cacheRefreshTimer.Dispose();
+                cacheRefreshTimer = null;
             }
         }
 

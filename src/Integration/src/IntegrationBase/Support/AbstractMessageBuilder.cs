@@ -19,7 +19,7 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     protected volatile bool modified;
 
-    protected IList<string> innerReadOnlyHeaders;
+    protected IList<string> readOnlyHeaders;
 
     protected AbstractMessageBuilder()
     {
@@ -204,9 +204,9 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     protected bool ContainsReadOnly(IMessageHeaders headers)
     {
-        if (innerReadOnlyHeaders != null)
+        if (readOnlyHeaders != null)
         {
-            foreach (var readOnly in innerReadOnlyHeaders)
+            foreach (var readOnly in readOnlyHeaders)
             {
                 if (headers.ContainsKey(readOnly))
                 {

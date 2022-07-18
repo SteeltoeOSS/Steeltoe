@@ -19,7 +19,7 @@ public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
         _logger = logger;
     }
 
-    public new IHeapDumpOptions Options => innerOptions as IHeapDumpOptions;
+    public new IHeapDumpOptions Options => options as IHeapDumpOptions;
 
     public override string Invoke()
     {

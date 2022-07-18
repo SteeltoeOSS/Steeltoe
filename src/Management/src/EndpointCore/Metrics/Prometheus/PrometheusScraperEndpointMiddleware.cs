@@ -22,7 +22,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -32,7 +32,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 
     public override string HandleRequest()
     {
-        var result = innerEndpoint.Invoke();
+        var result = endpoint.Invoke();
         return result;
     }
 

@@ -25,7 +25,7 @@ public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
     {
         get
         {
-            return innerOptions as IRefreshOptions;
+            return options as IRefreshOptions;
         }
     }
 

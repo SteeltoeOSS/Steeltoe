@@ -23,7 +23,7 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleEntityFrameworkRequestAsync(context);
         }

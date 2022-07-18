@@ -25,7 +25,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -35,7 +35,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     public override string HandleRequest(MetricsRequest arg)
     {
-        var result = innerEndpoint.Invoke(arg);
+        var result = endpoint.Invoke(arg);
         return result == null ? null : Serialize(result);
     }
 
@@ -80,10 +80,10 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     {
         if (managementOptions == null)
         {
-            return GetMetricName(request, innerEndpoint.Path);
+            return GetMetricName(request, endpoint.Path);
         }
 
-        var path = $"{managementOptions.Path}/{innerEndpoint.Id}".Replace("//", "/");
+        var path = $"{managementOptions.Path}/{endpoint.Id}".Replace("//", "/");
         var metricName = GetMetricName(request, path);
 
         return metricName;

@@ -58,9 +58,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         public new CommandState Value
         {
-            get => (CommandState)innerValue;
+            get => (CommandState)value;
 
-            set => base.innerValue = (int)value;
+            set => base.value = (int)value;
         }
 
         public bool CompareAndSet(CommandState expected, CommandState update)
@@ -78,9 +78,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         public new ThreadState Value
         {
-            get => (ThreadState)innerValue;
+            get => (ThreadState)value;
 
-            set => base.innerValue = (int)value;
+            set => base.value = (int)value;
         }
 
         public bool CompareAndSet(ThreadState expected, ThreadState update)
@@ -98,9 +98,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         public new TimedOutStatus Value
         {
-            get => (TimedOutStatus)innerValue;
+            get => (TimedOutStatus)value;
 
-            set => base.innerValue = (int)value;
+            set => base.value = (int)value;
         }
 
         public bool CompareAndSet(TimedOutStatus expected, TimedOutStatus update)
@@ -1550,13 +1550,13 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     public string PublicCacheKey => CacheKey;
 
-    protected bool innerIsFallbackUserDefined;
+    protected bool isFallbackUserDefined;
 
     public virtual bool IsFallbackUserDefined
     {
-        get => innerIsFallbackUserDefined;
+        get => isFallbackUserDefined;
 
-        set => innerIsFallbackUserDefined = value;
+        set => isFallbackUserDefined = value;
     }
 
     public Exception ExecutionException => ExecutionResult.ExecutionException;

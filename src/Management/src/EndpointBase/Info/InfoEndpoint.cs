@@ -26,7 +26,7 @@ public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoE
     {
         get
         {
-            return innerOptions as IInfoOptions;
+            return options as IInfoOptions;
         }
     }
 

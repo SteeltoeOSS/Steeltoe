@@ -21,11 +21,11 @@ public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoi
         _logger = logger;
     }
 
-    protected new IActuatorHypermediaOptions Options => innerOptions as IActuatorHypermediaOptions;
+    protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
 
     public override Links Invoke(string baseUrl)
     {
-        var service = new HypermediaService(_managementOption, innerOptions, _logger);
+        var service = new HypermediaService(_managementOption, options, _logger);
         return service.Invoke(baseUrl);
     }
 }

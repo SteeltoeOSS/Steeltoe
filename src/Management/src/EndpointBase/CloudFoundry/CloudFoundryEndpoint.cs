@@ -31,11 +31,11 @@ public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFound
         _logger = logger;
     }
 
-    protected new ICloudFoundryOptions Options => innerOptions as ICloudFoundryOptions;
+    protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
 
     public override Links Invoke(string baseUrl)
     {
-        var hypermediaService = new HypermediaService(_managementOption, innerOptions, _logger);
+        var hypermediaService = new HypermediaService(_managementOption, options, _logger);
         return hypermediaService.Invoke(baseUrl);
     }
 }

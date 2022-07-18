@@ -24,7 +24,7 @@ public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDum
     {
         get
         {
-            return innerOptions as IThreadDumpOptions;
+            return options as IThreadDumpOptions;
         }
     }
 

@@ -32,13 +32,13 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     protected IDictionary<string, string> headers;
 
-    protected IEurekaClientConfig innerConfig;
+    protected IEurekaClientConfig config;
     protected IHttpClientHandlerProvider handlerProvider;
 
     private const int DefaultNumberOfRetries = 3;
     private const string HttpXDiscoveryAllowRedirect = "X-Discovery-AllowRedirect";
 
-    protected virtual IEurekaClientConfig Config => _configOptions != null ? _configOptions.CurrentValue : innerConfig;
+    protected virtual IEurekaClientConfig Config => _configOptions != null ? _configOptions.CurrentValue : config;
 
     protected HttpClient httpClient;
     protected ILogger logger;
@@ -50,7 +50,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IHttpClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
     {
-        this.innerConfig = null;
+        this.config = null;
         _configOptions = config ?? throw new ArgumentNullException(nameof(config));
         this.handlerProvider = handlerProvider;
         Initialize(new Dictionary<string, string>(), logFactory);
@@ -66,7 +66,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
     {
-        this.innerConfig = config ?? throw new ArgumentNullException(nameof(config));
+        this.config = config ?? throw new ArgumentNullException(nameof(config));
         this.handlerProvider = handlerProvider;
         Initialize(headers, logFactory);
     }

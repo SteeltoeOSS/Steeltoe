@@ -33,7 +33,7 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
     {
         get
         {
-            return innerOptions as IEnvOptions;
+            return options as IEnvOptions;
         }
     }
 

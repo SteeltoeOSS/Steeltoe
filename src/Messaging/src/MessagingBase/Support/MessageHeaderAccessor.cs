@@ -447,19 +447,19 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
     protected class AccessorMessageHeaders : MessageHeaders
     {
-        protected MessageHeaderAccessor innerAccessor;
+        protected MessageHeaderAccessor accessor;
         private bool _mutable = true;
 
         public AccessorMessageHeaders(MessageHeaderAccessor accessor, IDictionary<string, object> headers)
             : base(headers, IdValueNone, -1L)
         {
-            this.innerAccessor = accessor;
+            this.accessor = accessor;
         }
 
         public AccessorMessageHeaders(MessageHeaderAccessor accessor, MessageHeaders other)
             : base(other)
         {
-            this.innerAccessor = accessor;
+            this.accessor = accessor;
         }
 
         public new IDictionary<string, object> RawHeaders
@@ -486,7 +486,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
             if (Id == null)
             {
-                var idGenerator = innerAccessor.IdGenerator ?? IdGenerator;
+                var idGenerator = accessor.IdGenerator ?? IdGenerator;
                 var id = idGenerator.GenerateId();
                 if (id != IdValueNone)
                 {
@@ -494,7 +494,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
                 }
             }
 
-            if (Timestamp == null && innerAccessor.EnableTimestamp)
+            if (Timestamp == null && accessor.EnableTimestamp)
             {
                 RawHeaders[TimestampName] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             }
@@ -502,6 +502,6 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
             _mutable = false;
         }
 
-        public virtual MessageHeaderAccessor Accessor => innerAccessor;
+        public virtual MessageHeaderAccessor Accessor => accessor;
     }
 }

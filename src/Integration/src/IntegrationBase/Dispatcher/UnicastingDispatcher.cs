@@ -60,7 +60,7 @@ public class UnicastingDispatcher : AbstractDispatcher
             return true;
         }
 
-        var handlers = base.innerHandlers;
+        var handlers = base.handlers;
         if (handlers.Count == 0)
         {
             throw new MessageDispatchingException(message, "Dispatcher has no subscribers");

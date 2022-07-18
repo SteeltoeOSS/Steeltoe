@@ -23,7 +23,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         _logger = logger;
     }
 
-    public new IMetricsEndpointOptions Options => innerOptions as IMetricsEndpointOptions;
+    public new IMetricsEndpointOptions Options => options as IMetricsEndpointOptions;
 
     public override IMetricsResponse Invoke(MetricsRequest request)
     {

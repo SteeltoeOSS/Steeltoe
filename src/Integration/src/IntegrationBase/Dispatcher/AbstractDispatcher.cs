@@ -23,7 +23,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
     protected readonly ILogger InnerLogger;
     protected readonly TaskScheduler Executor;
     protected readonly TaskFactory Factory;
-    protected List<IMessageHandler> innerHandlers = new ();
+    protected List<IMessageHandler> handlers = new ();
 
     private readonly object _lock = new ();
     private readonly MessageHandlerComparer _comparer = new ();
@@ -44,7 +44,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
     public virtual int MaxSubscribers { get; set; } = int.MaxValue;
 
-    public virtual int HandlerCount => innerHandlers.Count;
+    public virtual int HandlerCount => handlers.Count;
 
     public virtual ILoadBalancingStrategy LoadBalancingStrategy { get; set; }
 
@@ -88,22 +88,22 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
         lock (_lock)
         {
-            if (this.innerHandlers.Count == MaxSubscribers)
+            if (this.handlers.Count == MaxSubscribers)
             {
                 throw new ArgumentException("Maximum subscribers exceeded");
             }
 
-            var handlers = new List<IMessageHandler>(this.innerHandlers);
-            if (handlers.Contains(handler))
+            var newHandlers = new List<IMessageHandler>(this.handlers);
+            if (newHandlers.Contains(handler))
             {
                 return false;
             }
 
-            handlers.Add(handler);
-            handlers.Sort(_comparer);
-            _theOneHandler = handlers.Count == 1 ? handler : null;
+            newHandlers.Add(handler);
+            newHandlers.Sort(_comparer);
+            _theOneHandler = newHandlers.Count == 1 ? handler : null;
 
-            this.innerHandlers = handlers;
+            this.handlers = newHandlers;
         }
 
         return true;
@@ -118,19 +118,19 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
         lock (_lock)
         {
-            var handlers = new List<IMessageHandler>(this.innerHandlers);
-            var removed = handlers.Remove(handler);
-            if (handlers.Count == 1)
+            var newHandlers = new List<IMessageHandler>(this.handlers);
+            var removed = newHandlers.Remove(handler);
+            if (newHandlers.Count == 1)
             {
-                _theOneHandler = handlers[0];
+                _theOneHandler = newHandlers[0];
             }
             else
             {
-                handlers.Sort(_comparer);
+                newHandlers.Sort(_comparer);
                 _theOneHandler = null;
             }
 
-            this.innerHandlers = handlers;
+            this.handlers = newHandlers;
 
             return removed;
         }
@@ -138,7 +138,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
     public override string ToString()
     {
-        return $"{GetType().Name} with handlers: {innerHandlers.Count}";
+        return $"{GetType().Name} with handlers: {handlers.Count}";
     }
 
     public virtual bool Dispatch(IMessage message, CancellationToken cancellationToken = default)
@@ -173,7 +173,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
         return false;
     }
 
-    internal List<IMessageHandler> Handlers => new (innerHandlers);
+    internal List<IMessageHandler> Handlers => new (handlers);
 
     private sealed class MessageHandlerComparer : OrderComparer, IComparer<IMessageHandler>
     {

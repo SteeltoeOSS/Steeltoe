@@ -41,9 +41,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     public const string TokenHeader = "X-Config-Token";
     public const string StateHeader = "X-Config-State";
 
-    protected ConfigServerClientSettings innerSettings; // Current settings
+    protected ConfigServerClientSettings settings; // Current settings
     protected HttpClient httpClient;
-    protected ILogger innerLogger;
+    protected ILogger logger;
     protected ILoggerFactory loggerFactory;
     protected IConfiguration configuration;
     protected Timer tokenRenewTimer;
@@ -120,15 +120,15 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal void Initialize(ConfigServerConfigurationSource source, HttpClient httpClient = null, ILoggerFactory logFactory = null)
     {
-        var settings = source.DefaultSettings;
+        var newSettings = source.DefaultSettings;
         var configurationValue = WrapWithPlaceholderResolver(source.Configuration);
-        Initialize(settings, configurationValue, httpClient, logFactory);
+        Initialize(newSettings, configurationValue, httpClient, logFactory);
     }
 
     internal void Initialize(ConfigServerClientSettings settings, IConfiguration configuration = null, HttpClient httpClient = null, ILoggerFactory logFactory = null)
     {
         loggerFactory = logFactory ?? new NullLoggerFactory();
-        innerLogger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
+        logger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
         if (configuration != null)
         {
             this.configuration = configuration;
@@ -140,39 +140,39 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             hasConfiguration = false;
         }
 
-        this.innerSettings = settings;
-        this.httpClient = httpClient ?? GetHttpClient(this.innerSettings);
+        this.settings = settings;
+        this.httpClient = httpClient ?? GetHttpClient(this.settings);
 
         OnSettingsChanged();
     }
 
     private void OnSettingsChanged()
     {
-        var existingPollingInterval = innerSettings.PollingInterval;
+        var existingPollingInterval = settings.PollingInterval;
         if (hasConfiguration)
         {
-            ConfigurationSettingsHelper.Initialize(Prefix, innerSettings, configuration);
+            ConfigurationSettingsHelper.Initialize(Prefix, settings, configuration);
             configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
         }
 
-        if (innerSettings.PollingInterval == TimeSpan.Zero)
+        if (settings.PollingInterval == TimeSpan.Zero)
         {
             refreshTimer?.Dispose();
         }
         else if (refreshTimer == null)
         {
-            refreshTimer = new Timer(_ => DoLoad(), null, TimeSpan.Zero, innerSettings.PollingInterval);
+            refreshTimer = new Timer(_ => DoLoad(), null, TimeSpan.Zero, settings.PollingInterval);
         }
-        else if (existingPollingInterval != innerSettings.PollingInterval)
+        else if (existingPollingInterval != settings.PollingInterval)
         {
-            refreshTimer.Change(TimeSpan.Zero, innerSettings.PollingInterval);
+            refreshTimer.Change(TimeSpan.Zero, settings.PollingInterval);
         }
     }
 
     /// <summary>
     /// Gets the configuration settings the provider uses when accessing the server.
     /// </summary>
-    public virtual ConfigServerClientSettings Settings => innerSettings;
+    public virtual ConfigServerClientSettings Settings => settings;
 
     internal JsonSerializerOptions SerializerOptions { get; private set; } =
         new ()
@@ -185,7 +185,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal IDictionary<string, string> Properties => Data;
 
-    internal ILogger Logger => innerLogger;
+    internal ILogger Logger => logger;
 
     internal ConfigServerDiscoveryService ConfigServerDiscoveryService;
 
@@ -213,47 +213,47 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
 
         configuration = WrapWithPlaceholderResolver(config.Build());
-        ConfigurationSettingsHelper.Initialize(Prefix, innerSettings, configuration);
+        ConfigurationSettingsHelper.Initialize(Prefix, settings, configuration);
         return this;
     }
 
     internal ConfigEnvironment LoadInternal(bool updateDictionary = true)
     {
-        if (!innerSettings.Enabled)
+        if (!settings.Enabled)
         {
-            innerLogger.LogInformation("Config Server client disabled, did not fetch configuration!");
+            logger.LogInformation("Config Server client disabled, did not fetch configuration!");
             return null;
         }
 
         if (IsDiscoveryFirstEnabled())
         {
-            ConfigServerDiscoveryService ??= new ConfigServerDiscoveryService(configuration, innerSettings, loggerFactory);
+            ConfigServerDiscoveryService ??= new ConfigServerDiscoveryService(configuration, settings, loggerFactory);
             DiscoverServerInstances();
         }
 
         // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
         AddConfigServerClientSettings();
 
-        if (innerSettings.RetryEnabled && innerSettings.FailFast)
+        if (settings.RetryEnabled && settings.FailFast)
         {
             var attempts = 0;
-            var backOff = innerSettings.RetryInitialInterval;
+            var backOff = settings.RetryInitialInterval;
             do
             {
-                innerLogger.LogInformation("Fetching config from server at: {0}", innerSettings.Uri);
+                logger.LogInformation("Fetching config from server at: {0}", settings.Uri);
                 try
                 {
                     return DoLoad(updateDictionary);
                 }
                 catch (ConfigServerException e)
                 {
-                    innerLogger.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", innerSettings.Uri, e);
+                    logger.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", settings.Uri, e);
                     attempts++;
-                    if (attempts < innerSettings.RetryAttempts)
+                    if (attempts < settings.RetryAttempts)
                     {
                         Thread.CurrentThread.Join(backOff);
-                        var nextBackOff = (int)(backOff * innerSettings.RetryMultiplier);
-                        backOff = Math.Min(nextBackOff, innerSettings.RetryMaxInterval);
+                        var nextBackOff = (int)(backOff * settings.RetryMultiplier);
+                        backOff = Math.Min(nextBackOff, settings.RetryMaxInterval);
                     }
                     else
                     {
@@ -265,7 +265,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
         else
         {
-            innerLogger.LogInformation("Fetching config from server at: {0}", innerSettings.Uri);
+            logger.LogInformation("Fetching config from server at: {0}", settings.Uri);
             return DoLoad(updateDictionary);
         }
     }
@@ -275,7 +275,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         Exception error = null;
 
         // Get arrays of config server uris to check
-        var uris = innerSettings.GetUris();
+        var uris = settings.GetUris();
 
         try
         {
@@ -285,7 +285,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
                 if (uris.Length > 1)
                 {
-                    innerLogger.LogInformation("Multiple Config Server Uris listed.");
+                    logger.LogInformation("Multiple Config Server Uris listed.");
 
                     // Invoke config servers
                     task = RemoteLoadAsync(uris, label);
@@ -307,7 +307,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 // Update config Data dictionary with any results
                 if (env != null)
                 {
-                    innerLogger.LogInformation(
+                    logger.LogInformation(
                         "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                     if (updateDictionary)
                     {
@@ -360,9 +360,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             error = e;
         }
 
-        innerLogger.LogWarning("Could not locate PropertySource: " + error);
+        logger.LogWarning("Could not locate PropertySource: " + error);
 
-        if (innerSettings.FailFast)
+        if (settings.FailFast)
         {
             throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
         }
@@ -372,12 +372,12 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal string[] GetLabels()
     {
-        if (string.IsNullOrWhiteSpace(innerSettings.Label))
+        if (string.IsNullOrWhiteSpace(settings.Label))
         {
             return EmptyLabels;
         }
 
-        return innerSettings.Label.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
+        return settings.Label.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
     }
 
     internal void DiscoverServerInstances()
@@ -385,7 +385,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         var instances = ConfigServerDiscoveryService.GetConfigServerInstances();
         if (!instances.Any())
         {
-            if (innerSettings.FailFast)
+            if (settings.FailFast)
             {
                 throw new ConfigServerException("Could not locate config server via discovery, are you missing a Discovery service assembly?");
             }
@@ -393,7 +393,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             return;
         }
 
-        UpdateSettingsFromDiscovery(instances, innerSettings);
+        UpdateSettingsFromDiscovery(instances, settings);
     }
 
     internal void UpdateSettingsFromDiscovery(IEnumerable<IServiceInstance> instances, ConfigServerClientSettings settings)
@@ -460,18 +460,18 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// <returns>The HttpRequestMessage built from the path.</returns>
     protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri, string username, string password)
     {
-        var request = string.IsNullOrEmpty(innerSettings.AccessTokenUri)
+        var request = string.IsNullOrEmpty(settings.AccessTokenUri)
             ? HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password)
             : HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, FetchAccessToken);
 
-        if (!string.IsNullOrEmpty(innerSettings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(innerSettings.Uri))
+        if (!string.IsNullOrEmpty(settings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(settings.Uri))
         {
-            if (!innerSettings.DisableTokenRenewal)
+            if (!settings.DisableTokenRenewal)
             {
-                RenewToken(innerSettings.Token);
+                RenewToken(settings.Token);
             }
 
-            request.Headers.Add(TokenHeader, innerSettings.Token);
+            request.Headers.Add(TokenHeader, settings.Token);
         }
 
         return request;
@@ -485,7 +485,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     [Obsolete("Will be removed in next release. See GetRequestMessage(string, string, string)")]
     protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
     {
-        return GetRequestMessage(requestUri, innerSettings.Username, innerSettings.Password);
+        return GetRequestMessage(requestUri, settings.Username, settings.Password);
     }
 
     /// <summary>
@@ -507,41 +507,41 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     protected internal virtual void AddConfigServerClientSettings(IDictionary<string, string> data)
     {
         var culture = CultureInfo.InvariantCulture;
-        data["spring:cloud:config:enabled"] = innerSettings.Enabled.ToString(culture);
-        data["spring:cloud:config:failFast"] = innerSettings.FailFast.ToString(culture);
-        data["spring:cloud:config:env"] = innerSettings.Environment;
-        data["spring:cloud:config:label"] = innerSettings.Label;
-        data["spring:cloud:config:name"] = innerSettings.Name;
-        data["spring:cloud:config:password"] = innerSettings.Password;
-        data["spring:cloud:config:uri"] = innerSettings.Uri;
-        data["spring:cloud:config:username"] = innerSettings.Username;
-        data["spring:cloud:config:token"] = innerSettings.Token;
-        data["spring:cloud:config:timeout"] = innerSettings.Timeout.ToString(culture);
-        data["spring:cloud:config:validate_certificates"] = innerSettings.ValidateCertificates.ToString(culture);
-        data["spring:cloud:config:retry:enabled"] = innerSettings.RetryEnabled.ToString(culture);
-        data["spring:cloud:config:retry:maxAttempts"] = innerSettings.RetryAttempts.ToString(culture);
-        data["spring:cloud:config:retry:initialInterval"] = innerSettings.RetryInitialInterval.ToString(culture);
-        data["spring:cloud:config:retry:maxInterval"] = innerSettings.RetryMaxInterval.ToString(culture);
-        data["spring:cloud:config:retry:multiplier"] = innerSettings.RetryMultiplier.ToString(culture);
+        data["spring:cloud:config:enabled"] = settings.Enabled.ToString(culture);
+        data["spring:cloud:config:failFast"] = settings.FailFast.ToString(culture);
+        data["spring:cloud:config:env"] = settings.Environment;
+        data["spring:cloud:config:label"] = settings.Label;
+        data["spring:cloud:config:name"] = settings.Name;
+        data["spring:cloud:config:password"] = settings.Password;
+        data["spring:cloud:config:uri"] = settings.Uri;
+        data["spring:cloud:config:username"] = settings.Username;
+        data["spring:cloud:config:token"] = settings.Token;
+        data["spring:cloud:config:timeout"] = settings.Timeout.ToString(culture);
+        data["spring:cloud:config:validate_certificates"] = settings.ValidateCertificates.ToString(culture);
+        data["spring:cloud:config:retry:enabled"] = settings.RetryEnabled.ToString(culture);
+        data["spring:cloud:config:retry:maxAttempts"] = settings.RetryAttempts.ToString(culture);
+        data["spring:cloud:config:retry:initialInterval"] = settings.RetryInitialInterval.ToString(culture);
+        data["spring:cloud:config:retry:maxInterval"] = settings.RetryMaxInterval.ToString(culture);
+        data["spring:cloud:config:retry:multiplier"] = settings.RetryMultiplier.ToString(culture);
 
-        data["spring:cloud:config:access_token_uri"] = innerSettings.AccessTokenUri;
-        data["spring:cloud:config:client_secret"] = innerSettings.ClientSecret;
-        data["spring:cloud:config:client_id"] = innerSettings.ClientId;
-        data["spring:cloud:config:tokenTtl"] = innerSettings.TokenTtl.ToString(culture);
-        data["spring:cloud:config:tokenRenewRate"] = innerSettings.TokenRenewRate.ToString(culture);
-        data["spring:cloud:config:disableTokenRenewal"] = innerSettings.DisableTokenRenewal.ToString(culture);
+        data["spring:cloud:config:access_token_uri"] = settings.AccessTokenUri;
+        data["spring:cloud:config:client_secret"] = settings.ClientSecret;
+        data["spring:cloud:config:client_id"] = settings.ClientId;
+        data["spring:cloud:config:tokenTtl"] = settings.TokenTtl.ToString(culture);
+        data["spring:cloud:config:tokenRenewRate"] = settings.TokenRenewRate.ToString(culture);
+        data["spring:cloud:config:disableTokenRenewal"] = settings.DisableTokenRenewal.ToString(culture);
 
-        data["spring:cloud:config:discovery:enabled"] = innerSettings.DiscoveryEnabled.ToString(culture);
-        data["spring:cloud:config:discovery:serviceId"] = innerSettings.DiscoveryServiceId.ToString(culture);
+        data["spring:cloud:config:discovery:enabled"] = settings.DiscoveryEnabled.ToString(culture);
+        data["spring:cloud:config:discovery:serviceId"] = settings.DiscoveryServiceId.ToString(culture);
 
-        data["spring:cloud:config:health:enabled"] = innerSettings.HealthEnabled.ToString(culture);
-        data["spring:cloud:config:health:timeToLive"] = innerSettings.HealthTimeToLive.ToString(culture);
+        data["spring:cloud:config:health:enabled"] = settings.HealthEnabled.ToString(culture);
+        data["spring:cloud:config:health:timeToLive"] = settings.HealthTimeToLive.ToString(culture);
     }
 
     protected internal async Task<ConfigEnvironment> RemoteLoadAsync(string[] requestUris, string label)
     {
         // Get client if not already set
-        httpClient ??= GetHttpClient(innerSettings);
+        httpClient ??= GetHttpClient(settings);
 
         Exception error = null;
         foreach (var requestUri in requestUris)
@@ -550,9 +550,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
             // Get a config server uri and username passwords to use
             var trimUri = requestUri.Trim();
-            var serverUri = innerSettings.GetRawUri(trimUri);
-            var username = innerSettings.GetUserName(trimUri);
-            var password = innerSettings.GetPassword(trimUri);
+            var serverUri = settings.GetRawUri(trimUri);
+            var username = settings.GetUserName(trimUri);
+            var password = settings.GetPassword(trimUri);
 
             // Make Config Server URI from settings
             var path = GetConfigServerUri(serverUri, label);
@@ -561,7 +561,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             var request = GetRequestMessage(path, username, password);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(innerSettings.ValidateCertificates, out var prevProtocols, out var prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(settings.ValidateCertificates, out var prevProtocols, out var prevValidator);
 
             // Invoke config server
             try
@@ -570,7 +570,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
                 // Log status
                 var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-                innerLogger.LogInformation(WebUtility.UrlEncode(message));
+                logger.LogInformation(WebUtility.UrlEncode(message));
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -596,7 +596,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             catch (Exception e)
             {
                 error = e;
-                innerLogger.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
+                logger.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
                 if (IsContinueExceptionType(e))
                 {
                     continue;
@@ -606,7 +606,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(innerSettings.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
 
@@ -628,13 +628,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
     {
         // Get client if not already set
-        httpClient ??= GetHttpClient(innerSettings);
+        httpClient ??= GetHttpClient(settings);
 
         // Get the request message
         var request = GetRequestMessage(requestUri);
 
         // If certificate validation is disabled, inject a callback to handle properly
-        HttpClientHelper.ConfigureCertificateValidation(innerSettings.ValidateCertificates, out var prevProtocols, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(settings.ValidateCertificates, out var prevProtocols, out var prevValidator);
 
         // Invoke config server
         try
@@ -650,7 +650,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 // Log status
                 var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
 
-                innerLogger.LogInformation(WebUtility.UrlEncode(message));
+                logger.LogInformation(WebUtility.UrlEncode(message));
 
                 // Throw if status >= 400
                 if (response.StatusCode >= HttpStatusCode.BadRequest)
@@ -668,12 +668,12 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         catch (Exception e)
         {
             // Log and rethrow
-            innerLogger.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
+            logger.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
             throw;
         }
         finally
         {
-            HttpClientHelper.RestoreCertificateValidation(innerSettings.ValidateCertificates, prevProtocols, prevValidator);
+            HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
         }
     }
 
@@ -690,7 +690,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             throw new ArgumentException(nameof(baseRawUri));
         }
 
-        var path = $"{innerSettings.Name}/{innerSettings.Environment}";
+        var path = $"{settings.Name}/{settings.Environment}";
         if (!string.IsNullOrWhiteSpace(label))
         {
             // If label contains slash, replace it
@@ -718,7 +718,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     [Obsolete("Will be removed in next release. See GetConfigServerUri(string, string)")]
     protected internal virtual string GetConfigServerUri(string label)
     {
-        return GetConfigServerUri(innerSettings.RawUri, label);
+        return GetConfigServerUri(settings.RawUri, label);
     }
 
     /// <summary>
@@ -754,7 +754,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             }
             catch (Exception exception)
             {
-                innerLogger.LogError(exception, "Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
+                logger.LogError(exception, "Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
             }
         }
     }
@@ -844,8 +844,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         tokenRenewTimer ??= new Timer(
             RefreshVaultTokenAsync,
             null,
-            TimeSpan.FromMilliseconds(innerSettings.TokenRenewRate),
-            TimeSpan.FromMilliseconds(innerSettings.TokenRenewRate));
+            TimeSpan.FromMilliseconds(settings.TokenRenewRate),
+            TimeSpan.FromMilliseconds(settings.TokenRenewRate));
     }
 
     /// <summary>
@@ -855,19 +855,19 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// <returns>The task object representing asynchronous operation.</returns>
     protected internal string FetchAccessToken()
     {
-        if (string.IsNullOrEmpty(innerSettings.AccessTokenUri))
+        if (string.IsNullOrEmpty(settings.AccessTokenUri))
         {
             return null;
         }
 
         return HttpClientHelper.GetAccessToken(
-            innerSettings.AccessTokenUri,
-            innerSettings.ClientId,
-            innerSettings.ClientSecret,
-            innerSettings.Timeout,
-            innerSettings.ValidateCertificates,
+            settings.AccessTokenUri,
+            settings.ClientId,
+            settings.ClientSecret,
+            settings.Timeout,
+            settings.ValidateCertificates,
             httpClient,
-            innerLogger).GetAwaiter().GetResult();
+            logger).GetAwaiter().GetResult();
     }
 
     // fire and forget
@@ -884,7 +884,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
         // If certificate validation is disabled, inject a callback to handle properly
         HttpClientHelper.ConfigureCertificateValidation(
-            innerSettings.ValidateCertificates,
+            settings.ValidateCertificates,
             out var prevProtocols,
             out var prevValidator);
 
@@ -895,21 +895,21 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             var uri = GetVaultRenewUri();
             var message = GetVaultRenewMessage(uri);
 
-            innerLogger.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
+            logger.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
 
             using var response = await httpClient.SendAsync(message).ConfigureAwait(false);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                innerLogger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
+                logger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
             }
         }
         catch (Exception e)
         {
-            innerLogger.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
+            logger.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
         }
         finally
         {
-            HttpClientHelper.RestoreCertificateValidation(innerSettings.ValidateCertificates, prevProtocols, prevValidator);
+            HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
         }
     }
 
@@ -944,7 +944,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     protected internal bool IsDiscoveryFirstEnabled()
     {
         var clientConfigSection = configuration.GetSection(Prefix);
-        return clientConfigSection.GetValue("discovery:enabled", innerSettings.DiscoveryEnabled);
+        return clientConfigSection.GetValue("discovery:enabled", settings.DiscoveryEnabled);
     }
 
     /// <summary>

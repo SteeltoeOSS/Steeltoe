@@ -10,9 +10,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
 public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskScheduler
 {
-    protected int innerCorePoolSize;
-    protected TimeSpan innerKeepAliveTime;
-    protected int innerMaximumPoolSize;
+    protected int corePoolSize;
+    protected TimeSpan keepAliveTime;
+    protected int maximumPoolSize;
     protected int runningThreads;
     protected int queueSizeRejectionThreshold;
     protected bool shutdown;
@@ -36,9 +36,9 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
         }
 
         allowMaxToDivergeFromCore = options.AllowMaximumSizeToDivergeFromCoreSize;
-        innerCorePoolSize = options.CoreSize;
-        innerMaximumPoolSize = options.MaximumSize;
-        innerKeepAliveTime = TimeSpan.FromMinutes(options.KeepAliveTimeMinutes);
+        corePoolSize = options.CoreSize;
+        maximumPoolSize = options.MaximumSize;
+        keepAliveTime = TimeSpan.FromMinutes(options.KeepAliveTimeMinutes);
         queueSize = options.MaxQueueSize;
         queueSizeRejectionThreshold = options.QueueSizeRejectionThreshold;
 
@@ -51,11 +51,11 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
 
     public virtual int CurrentCompletedTaskCount => completedTasks;
 
-    public virtual int CurrentCorePoolSize => innerCorePoolSize;
+    public virtual int CurrentCorePoolSize => corePoolSize;
 
-    public virtual int CurrentLargestPoolSize => innerCorePoolSize;
+    public virtual int CurrentLargestPoolSize => corePoolSize;
 
-    public virtual int CurrentMaximumPoolSize => innerCorePoolSize;
+    public virtual int CurrentMaximumPoolSize => corePoolSize;
 
     public virtual int CurrentPoolSize => runningThreads;
 
@@ -65,21 +65,21 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
 
     public virtual int CorePoolSize
     {
-        get => innerCorePoolSize;
+        get => corePoolSize;
 
         set => throw new NotImplementedException();
     }
 
     public virtual int MaximumPoolSize
     {
-        get => innerMaximumPoolSize;
+        get => maximumPoolSize;
 
         set => throw new NotImplementedException();
     }
 
     public virtual TimeSpan KeepAliveTime
     {
-        get => innerKeepAliveTime;
+        get => keepAliveTime;
 
         set => throw new NotImplementedException();
     }
@@ -92,7 +92,7 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
         GC.SuppressFinalize(this);
     }
 
-    public override int MaximumConcurrencyLevel => innerMaximumPoolSize;
+    public override int MaximumConcurrencyLevel => maximumPoolSize;
 
     public bool IsShutdown => shutdown;
 

@@ -67,22 +67,22 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
             return;
         }
 
-        if (runningThreads < innerCorePoolSize)
+        if (runningThreads < corePoolSize)
         {
             lock (_lock)
             {
-                if (runningThreads < innerCorePoolSize)
+                if (runningThreads < corePoolSize)
                 {
                     Interlocked.Increment(ref runningThreads);
                     StartThreadPoolWorker();
                 }
             }
         }
-        else if (allowMaxToDivergeFromCore && runningThreads < innerMaximumPoolSize)
+        else if (allowMaxToDivergeFromCore && runningThreads < maximumPoolSize)
         {
             lock (_lock)
             {
-                if (runningThreads < innerMaximumPoolSize)
+                if (runningThreads < maximumPoolSize)
                 {
                     Interlocked.Increment(ref runningThreads);
                     StartThreadPoolWorker();

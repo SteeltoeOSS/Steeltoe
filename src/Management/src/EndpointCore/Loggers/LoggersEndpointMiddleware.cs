@@ -25,7 +25,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
     public Task Invoke(HttpContext context)
     {
-        if (innerEndpoint.ShouldInvoke(managementOptions, logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleLoggersRequestAsync(context);
         }
@@ -44,8 +44,8 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
             var paths = new List<string>();
             logger?.LogDebug("Incoming path: {0}", request.Path.Value);
             paths.Add(managementOptions == null
-                ? innerEndpoint.Path
-                : $"{managementOptions.Path}/{innerEndpoint.Path}".Replace("//", "/"));
+                ? endpoint.Path
+                : $"{managementOptions.Path}/{endpoint.Path}".Replace("//", "/"));
 
             foreach (var path in paths.Distinct())
             {
@@ -75,7 +75,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         {
             var loggerName = remaining.Value.TrimStart('/');
 
-            var change = ((LoggersEndpoint)innerEndpoint).DeserializeRequest(request.Body);
+            var change = ((LoggersEndpoint)endpoint).DeserializeRequest(request.Body);
 
             change.TryGetValue("configuredLevel", out var level);
 

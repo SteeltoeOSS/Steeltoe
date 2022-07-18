@@ -257,7 +257,7 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
 
     public IMessageBuilder ReadOnlyHeaders(IList<string> readOnlyHeaders)
     {
-        base.innerReadOnlyHeaders = readOnlyHeaders;
+        base.readOnlyHeaders = readOnlyHeaders;
         HeaderAccessor.SetReadOnlyHeaders(readOnlyHeaders);
         return this;
     }

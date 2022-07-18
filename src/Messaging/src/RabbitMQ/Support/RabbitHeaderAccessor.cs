@@ -334,6 +334,6 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
         {
         }
 
-        public new RabbitHeaderAccessor Accessor => innerAccessor as RabbitHeaderAccessor;
+        public new RabbitHeaderAccessor Accessor => accessor as RabbitHeaderAccessor;
     }
 }

@@ -13,7 +13,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 {
     protected MutableMessage mutableMessage;
 
-    protected IDictionary<string, object> innerHeaders;
+    protected IDictionary<string, object> headers;
 
     protected MutableIntegrationMessageBuilder()
     {
@@ -28,12 +28,12 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 
         mutableMessage = message as MutableMessage ?? new MutableMessage(message.Payload, message.Headers);
 
-        innerHeaders = mutableMessage.RawHeaders;
+        headers = mutableMessage.RawHeaders;
     }
 
     public override object Payload => mutableMessage.Payload;
 
-    public override IDictionary<string, object> Headers => innerHeaders;
+    public override IDictionary<string, object> Headers => headers;
 
     public static MutableIntegrationMessageBuilder WithPayload(object payload) => WithPayload(payload, true);
 
@@ -69,7 +69,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         }
         else
         {
-            innerHeaders[headerName] = headerValue;
+            headers[headerName] = headerValue;
         }
 
         return this;
@@ -77,9 +77,9 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 
     public override IMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue)
     {
-        if (!innerHeaders.ContainsKey(headerName))
+        if (!headers.ContainsKey(headerName))
         {
-            innerHeaders.Add(headerName, headerValue);
+            headers.Add(headerName, headerValue);
         }
 
         return this;
@@ -94,7 +94,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
             {
                 if (pattern.Contains('*'))
                 {
-                    headersToRemove.AddRange(GetMatchingHeaderNames(pattern, innerHeaders));
+                    headersToRemove.AddRange(GetMatchingHeaderNames(pattern, headers));
                 }
                 else
                 {
@@ -115,7 +115,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         if (!string.IsNullOrEmpty(headerName))
         {
-            innerHeaders.Remove(headerName);
+            headers.Remove(headerName);
         }
 
         return this;
@@ -127,7 +127,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         {
             foreach (var header in headersToCopy)
             {
-                innerHeaders.Add(header);
+                headers.Add(header);
             }
         }
 
@@ -151,7 +151,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.SequenceDetails, out var result))
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceDetails, out var result))
             {
                 return (List<List<object>>)result;
             }
@@ -164,7 +164,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out var result))
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out var result))
             {
                 return result;
             }
@@ -177,7 +177,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var result))
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var result))
             {
                 return result;
             }
@@ -190,7 +190,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         get
         {
-            if (innerHeaders.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out var result))
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out var result))
             {
                 return result;
             }
@@ -230,7 +230,7 @@ public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuil
 
         mutableMessage = message as MutableMessage<T> ?? new MutableMessage<T>(message.Payload, message.Headers);
 
-        innerHeaders = mutableMessage.RawHeaders;
+        headers = mutableMessage.RawHeaders;
     }
 
     public new T Payload => (T)mutableMessage.Payload;

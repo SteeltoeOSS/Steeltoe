@@ -39,7 +39,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected readonly ILogger Logger;
     protected readonly ILoggerFactory LoggerFactory;
 
-    protected int innerRecoveryInterval = DefaultRecoveryInterval;
+    protected int recoveryInterval = DefaultRecoveryInterval;
     private string _listenerId;
     private IConnectionFactory _connectionFactory;
 
@@ -122,11 +122,11 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual int RecoveryInterval
     {
-        get => innerRecoveryInterval;
+        get => recoveryInterval;
         set
         {
-            innerRecoveryInterval = value;
-            RecoveryBackOff = new FixedBackOff(innerRecoveryInterval, FixedBackOff.UnlimitedAttempts);
+            recoveryInterval = value;
+            RecoveryBackOff = new FixedBackOff(recoveryInterval, FixedBackOff.UnlimitedAttempts);
         }
     }
 

@@ -24,7 +24,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
     public HystrixSyncTaskScheduler(IHystrixThreadPoolOptions options)
         : base(options)
     {
-        SetupWorkQueues(innerCorePoolSize);
+        SetupWorkQueues(corePoolSize);
     }
 
     protected override void QueueTask(Task task)
@@ -36,7 +36,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
             return;
         }
 
-        if (runningThreads < innerCorePoolSize)
+        if (runningThreads < corePoolSize)
         {
             StartThreadPoolWorker();
         }
@@ -49,7 +49,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     protected virtual void StartThreadPoolWorker()
     {
-        for (var i = 0; i < innerCorePoolSize; i++)
+        for (var i = 0; i < corePoolSize; i++)
         {
             if (!_workQueues[i].ThreadAssigned)
             {

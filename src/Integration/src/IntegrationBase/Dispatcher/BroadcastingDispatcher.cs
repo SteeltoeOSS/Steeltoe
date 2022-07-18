@@ -66,7 +66,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
     {
         var dispatched = 0;
         var sequenceNumber = 1;
-        var handlers = base.innerHandlers;
+        var handlers = base.handlers;
 
         if (_requireSubscribers && handlers.Count == 0)
         {

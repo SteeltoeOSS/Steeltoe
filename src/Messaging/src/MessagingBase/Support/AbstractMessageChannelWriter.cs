@@ -12,12 +12,12 @@ namespace Steeltoe.Messaging.Support;
 
 public abstract class AbstractMessageChannelWriter : ChannelWriter<IMessage>
 {
-    protected AbstractMessageChannel innerChannel;
+    protected AbstractMessageChannel channel;
     protected ILogger logger;
 
     protected AbstractMessageChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
     {
-        this.innerChannel = channel ?? throw new ArgumentNullException(nameof(channel));
+        this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
         this.logger = logger;
     }
 
@@ -28,7 +28,7 @@ public abstract class AbstractMessageChannelWriter : ChannelWriter<IMessage>
 
     public override bool TryWrite(IMessage message)
     {
-        return innerChannel.Send(message);
+        return channel.Send(message);
     }
 
     public override ValueTask<bool> WaitToWriteAsync(CancellationToken cancellationToken = default)

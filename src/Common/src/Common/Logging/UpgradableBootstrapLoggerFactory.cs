@@ -46,7 +46,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 
     private ILoggerFactory _factoryInstance;
 
-    private ILoggerFactory _innerFactory;
+    private ILoggerFactory _factory;
 
     /// <summary>
     /// Updates existing loggers to use configuration from the supplied config.
@@ -58,7 +58,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
             throw new ArgumentNullException(nameof(value));
         }
 
-        if (_innerFactory != null)
+        if (_factory != null)
         {
             return;
         }
@@ -87,7 +87,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
             }
         }
 
-        _innerFactory = value;
+        _factory = value;
     }
 
     private readonly Action<ILoggingBuilder, IConfiguration> _bootstrapLoggingBuilder;
