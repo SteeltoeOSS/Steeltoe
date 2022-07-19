@@ -44,6 +44,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     {
         var admin = new RabbitAdmin(_connectionFactory);
         admin.DeleteQueue(ROUTE);
+        _connectionFactory.Dispose();
     }
 
     [Fact]
@@ -222,6 +223,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         finally
         {
             container.Stop();
+            container.Dispose();
         }
     }
 
@@ -267,6 +269,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         finally
         {
             container.Stop();
+            container.Dispose();
         }
     }
 
@@ -301,6 +304,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         finally
         {
             container.Stop();
+            container.Dispose();
         }
     }
 

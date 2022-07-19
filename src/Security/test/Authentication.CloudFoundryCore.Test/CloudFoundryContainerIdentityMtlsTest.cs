@@ -28,7 +28,7 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_AcceptsSameSpace()
     {
-        var host = await GetHostBuilder().StartAsync();
+        using var host = await GetHostBuilder().StartAsync();
 
         var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
@@ -38,7 +38,7 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_AcceptsSameOrg()
     {
-        var host = await GetHostBuilder().StartAsync();
+        using var host = await GetHostBuilder().StartAsync();
 
         var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
 
@@ -48,7 +48,7 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_RejectsOrgMismatch()
     {
-        var host = await GetHostBuilder().StartAsync();
+        using var host = await GetHostBuilder().StartAsync();
 
         var response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
 
@@ -58,7 +58,7 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_RejectsSpaceMismatch()
     {
-        var host = await GetHostBuilder().StartAsync();
+        using var host = await GetHostBuilder().StartAsync();
 
         var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
@@ -68,7 +68,7 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task AddCloudFoundryCertificateAuth_ForbiddenWithoutCert()
     {
-        var host = await GetHostBuilder().StartAsync();
+        using var host = await GetHostBuilder().StartAsync();
 
         var response = await host.GetTestClient().GetAsync($"http://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 

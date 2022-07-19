@@ -86,8 +86,9 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             admin.DeleteQueue(ROUTE);
             admin.DeleteQueue(REPLY_QUEUE_NAME);
-            template.Stop().Wait();
-            _connectionFactory.Destroy();
+            admin.ConnectionFactory.Dispose();
+            template.Dispose();
+            _connectionFactory.Dispose();
         }
     }
 
@@ -188,7 +189,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestReceiveConsumerCanceled()
     {
-        var connectionFactory = new MockSingleConnectionFactory("localhost");
+        using var connectionFactory = new MockSingleConnectionFactory("localhost");
         template = new RabbitTemplate(connectionFactory)
         {
             ReceiveTimeout = 10000
@@ -495,8 +496,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestAtomicSendAndReceive()
     {
-        var cachingConnectionFactory = new CachingConnectionFactory("localhost");
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
+        using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
         rabbitTemplate.DefaultSendDestination = new RabbitDestination(string.Empty, ROUTE);
         rabbitTemplate.DefaultReceiveDestination = new RabbitDestination(ROUTE);
         var task = Task.Run(() =>
@@ -527,8 +528,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestAtomicSendAndReceiveUserCorrelation()
     {
-        var cachingConnectionFactory = new CachingConnectionFactory("localhost");
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
+        using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
         rabbitTemplate.DefaultSendDestination = new RabbitDestination(string.Empty, ROUTE);
         rabbitTemplate.DefaultReceiveDestination = new RabbitDestination(ROUTE);
         var remoteCorrelationId = new AtomicReference<string>();
@@ -568,8 +569,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestAtomicSendAndReceiveWithRoutingKey()
     {
-        var cachingConnectionFactory = new CachingConnectionFactory("localhost");
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
+        using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
 
         // Set up a consumer to respond to our producer
         var received = Task.Run(() =>
@@ -605,8 +606,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestAtomicSendAndReceiveWithExchangeAndRoutingKey()
     {
-        var cachingConnectionFactory = new CachingConnectionFactory("localhost");
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
+        using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
 
         // Set up a consumer to respond to our producer
         var received = Task.Run(() =>
@@ -642,8 +643,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestAtomicSendAndReceiveWithConversion()
     {
-        var cachingConnectionFactory = new CachingConnectionFactory("localhost");
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
+        using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
         rabbitTemplate.RoutingKey = ROUTE;
         rabbitTemplate.DefaultReceiveQueue = ROUTE;
 
@@ -697,7 +698,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             this.template.Send(message.Headers.ReplyTo(), message);
             return this.template.MessageConverter.FromMessage<string>(message);
         });
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
         var result = rabbitTemplate.ConvertSendAndReceive<string>(ROUTE, "message");
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("message", received.Result);
@@ -730,7 +731,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             this.template.Send(message.Headers.ReplyTo(), message);
             return this.template.MessageConverter.FromMessage<string>(message);
         });
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
         var result = rabbitTemplate.ConvertSendAndReceive<string>(string.Empty, ROUTE, "message");
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("message", received.Result);
@@ -744,8 +745,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestAtomicSendAndReceiveWithConversionAndMessagePostProcessor()
     {
-        var cachingConnectionFactory = new CachingConnectionFactory("localhost");
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
+        using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
         rabbitTemplate.RoutingKey = ROUTE;
         rabbitTemplate.DefaultReceiveQueue = ROUTE;
 
@@ -801,7 +802,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             this.template.Send(message.Headers.ReplyTo(), message);
             return this.template.MessageConverter.FromMessage<string>(message);
         });
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
         var result = rabbitTemplate.ConvertSendAndReceive<string>(ROUTE, (object)"message", new PostProcessor3());
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("MESSAGE", received.Result);
@@ -834,7 +835,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             this.template.Send(message.Headers.ReplyTo(), message);
             return this.template.MessageConverter.FromMessage<string>(message);
         });
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
         var result = rabbitTemplate.ConvertSendAndReceive<string>(string.Empty, ROUTE, "message", new PostProcessor3());
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("MESSAGE", received.Result);
@@ -876,7 +877,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestSymmetricalReceiveAndReply()
     {
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
         rabbitTemplate.DefaultReceiveQueue = ROUTE;
         rabbitTemplate.RoutingKey = ROUTE;
         rabbitTemplate.ReplyAddress = REPLY_QUEUE_NAME;
@@ -1004,7 +1005,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         container.MessageListener = messageListener;
         container.Initialize();
         container.Start().Wait();
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(this.template.ConnectionFactory);
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(this.template.ConnectionFactory);
         try
         {
             var props = new RabbitHeaderAccessor { ContentType = "text/plain" };
@@ -1161,7 +1162,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private void SendAndReceiveFastGuts(bool tempQueue, bool setDirectReplyToExplicitly, bool expectUsedTemp)
     {
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
         try
         {
             rabbitTemplate.Execute(channel =>

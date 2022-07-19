@@ -65,8 +65,8 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddDbMigrationsActuator().Start();
-
+        using var host = hostBuilder.AddDbMigrationsActuator().Start();
+    
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -90,7 +90,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddEnvActuator().Start();
+        using var host = hostBuilder.AddEnvActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/env");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -143,7 +143,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddHealthActuator().Start();
+        using var host = hostBuilder.AddHealthActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -155,7 +155,7 @@ public class ManagementWebHostBuilderExtensionsTest
         var hostBuilder = _testServerWithRouting;
 
         // start the server, get a client
-        var host = hostBuilder.AddHealthActuator().Start();
+        using var host = hostBuilder.AddHealthActuator().Start();
         var client = host.GetTestClient();
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
@@ -197,7 +197,7 @@ public class ManagementWebHostBuilderExtensionsTest
         {
             var hostBuilder = _testServerWithRouting;
 
-            var host = hostBuilder.AddHeapDumpActuator().Start();
+            using var host = hostBuilder.AddHeapDumpActuator().Start();
 
             var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -223,7 +223,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddHypermediaActuator().Start();
+        using var host = hostBuilder.AddHypermediaActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -262,7 +262,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddInfoActuator().Start();
+        using var host = hostBuilder.AddInfoActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -287,7 +287,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddLoggersActuator().Start();
+        using var host = hostBuilder.AddLoggersActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -299,7 +299,7 @@ public class ManagementWebHostBuilderExtensionsTest
         // Add Serilog + DynamicConsole = runs OK
         var hostBuilder = _testServerWithRouting.ConfigureLogging(builder => builder.AddDynamicSerilog().AddDynamicConsole());
 
-        var host = hostBuilder.AddLoggersActuator().Start();
+        using var host = hostBuilder.AddLoggersActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -335,7 +335,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddMappingsActuator().Start();
+        using var host = hostBuilder.AddMappingsActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -360,7 +360,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddMetricsActuator().Start();
+        using var host = hostBuilder.AddMetricsActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -385,7 +385,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddRefreshActuator().Start();
+        using var host = hostBuilder.AddRefreshActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -415,7 +415,7 @@ public class ManagementWebHostBuilderExtensionsTest
         {
             var hostBuilder = _testServerWithRouting;
 
-            var host = hostBuilder.AddThreadDumpActuator().Start();
+            using var host = hostBuilder.AddThreadDumpActuator().Start();
 
             var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -441,7 +441,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddTraceActuator().Start();
+        using var host = hostBuilder.AddTraceActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -466,7 +466,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddAllActuators().Start();
+        using var host = hostBuilder.AddAllActuators().Start();
         var client = host.GetTestServer().CreateClient();
 
         var response = await client.GetAsync("/actuator");
@@ -482,7 +482,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithSecureRouting;
 
-        var host = hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
+        using var host = hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
         var client = host.GetTestServer().CreateClient();
 
         var response = await client.GetAsync("/actuator");
@@ -512,7 +512,7 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         var hostBuilder = _testServerWithRouting;
 
-        var host = hostBuilder.AddCloudFoundryActuator().Start();
+        using var host = hostBuilder.AddCloudFoundryActuator().Start();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -527,7 +527,7 @@ public class ManagementWebHostBuilderExtensionsTest
             .AddHealthActuator()
             .AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
 
-        var host = hostBuilder.Start();
+        using var host = hostBuilder.Start();
         var client = host.GetTestServer().CreateClient();
 
         Assert.Single(host.Services.GetServices<IStartupFilter>());
@@ -551,7 +551,7 @@ public class ManagementWebHostBuilderExtensionsTest
                 .AddInfoActuator()
                 .AddHealthActuator();
 
-        var host = hostBuilder.Start();
+        using var host = hostBuilder.Start();
         var client = host.GetTestServer().CreateClient();
 
         // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
@@ -613,7 +613,7 @@ public class ManagementWebHostBuilderExtensionsTest
         new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         using (var unConsole = new ConsoleOutputBorrower())
         {
-            var host = hostBuilder
+            using var host = hostBuilder
                 .ConfigureServices(services => services.AddOpenTelemetryMetrics(
                     builder => builder
                         .AddMeter("TestMeter")
@@ -649,7 +649,7 @@ public class ManagementWebHostBuilderExtensionsTest
         new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         using (var unConsole = new ConsoleOutputBorrower())
         {
-            var host = hostBuilder
+            using var host = hostBuilder
                 .ConfigureServices(services => services.AddOpenTelemetryMetrics(
                     builder => builder
                         .ConfigureSteeltoeMetrics()
@@ -689,7 +689,7 @@ public class ManagementWebHostBuilderExtensionsTest
         new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         using (var unConsole = new ConsoleOutputBorrower())
         {
-            var host = hostBuilder
+            using var host = hostBuilder
                 .AddAllActuators()
                 .ConfigureServices(services => services.AddOpenTelemetryMetrics(
                     builder => builder

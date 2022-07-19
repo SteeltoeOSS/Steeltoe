@@ -170,6 +170,11 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
         _containerAdmin.DeleteQueue(_expiringQueue.ActualName);
         _containerAdmin.DeleteExchange("testContainerWithAutoDeleteQueues");
         _containerAdmin.DeleteExchange("otherExchange");
+        _connectionFactory.Dispose();
+        _listenerContainer1.Dispose();
+        _listenerContainer2.Dispose();
+        _listenerContainer3.Dispose();
+        _listenerContainer4.Dispose();
     }
 
     private sealed class AppendingListener : IReplyingMessageListener<string, string>

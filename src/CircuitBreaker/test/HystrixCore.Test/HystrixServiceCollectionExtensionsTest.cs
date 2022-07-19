@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
-public class HystrixServiceCollectionExtensionsTest
+public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
 {
     private readonly IHystrixCommandGroupKey _groupKey = HystrixCommandGroupKeyDefault.AsKey("DummyCommand");
     private readonly IHystrixCommandKey _commandKey = HystrixCommandKeyDefault.AsKey("DummyCommand");

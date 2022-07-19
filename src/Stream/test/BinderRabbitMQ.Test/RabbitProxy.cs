@@ -24,6 +24,7 @@ public class RabbitProxy
         _listener.Start();
         _logger = logger;
         var listenerThread = new Thread(StartListener);
+        listenerThread.IsBackground = true;
         listenerThread.Start();
     }
 
@@ -56,6 +57,7 @@ public class RabbitProxy
                 {
                     _logger.LogInformation("Connected to client!");
                     var t = new Thread(HandleConnection);
+                    t.IsBackground = true;
                     t.Start(client);
                 }
                 else
@@ -81,6 +83,9 @@ public class RabbitProxy
         rabbitClient.Connect("localhost", 5672);
         var rabbitStream = rabbitClient.GetStream();
 
+        rabbitStream.ReadTimeout = 100;
+        stream.ReadTimeout = 100;
+
         var bytes = new byte[1];
         var serverBytes = new byte[1];
         try
@@ -90,7 +95,7 @@ public class RabbitProxy
 
             var t = Task.Run(() =>
             {
-                while (rabbitStream.CanRead)
+                while (rabbitStream.CanRead && _run)
                 {
                     try
                     {
@@ -109,13 +114,20 @@ public class RabbitProxy
                 }
             });
 
-            while (stream.CanRead)
+            while (stream.CanRead && _run)
             {
-                var clientBytesRead = stream.Read(bytes, 0, bytes.Length);
-                totalClientBytes += clientBytesRead;
-                if (clientBytesRead != 0 && rabbitStream.CanWrite)
+                try
                 {
-                    rabbitStream.Write(bytes, 0, bytes.Length);
+                    var clientBytesRead = stream.Read(bytes, 0, bytes.Length);
+                    totalClientBytes += clientBytesRead;
+                    if (clientBytesRead != 0 && rabbitStream.CanWrite)
+                    {
+                        rabbitStream.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogInformation(ex.Message + ex.StackTrace);
                 }
             }
 
@@ -124,8 +136,13 @@ public class RabbitProxy
         catch (Exception e)
         {
             _logger.LogInformation("Exception: {0}", e.ToString());
+        }
+        finally
+        {
             client.Close();
             rabbitClient.Close();
+            client.Dispose();
+            rabbitClient.Dispose();
         }
     }
 }

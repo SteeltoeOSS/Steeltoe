@@ -64,10 +64,11 @@ public class ContainerShutDownTest : AbstractTest
         {
             container.Stop();
             Assert.Equal(1, channels.Count);
+            container.Dispose();
 
-            cf.Destroy();
             testEnded.Signal();
             admin.DeleteQueue("test.shutdown");
+            cf.Dispose();
         }
     }
 

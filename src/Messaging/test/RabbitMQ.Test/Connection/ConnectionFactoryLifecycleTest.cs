@@ -35,7 +35,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         await hostService.StartAsync(default);
         var myLifecycle = provider.GetService<MyLifecycle>();
         var cf = provider.GetService<IConnectionFactory>() as CachingConnectionFactory;
-        provider.Dispose();
+        await provider.DisposeAsync();
 
         Assert.False(myLifecycle.IsRunning);
         Assert.True(cf._stopped);
@@ -49,6 +49,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         services.AddRabbitConnectionFactory((_, f) =>
         {
             f.Host = "localhost";
+            f.ServiceName = "TestBlockedConnection";
         });
         services.AddRabbitAdmin();
         var provider = services.BuildServiceProvider();
@@ -66,7 +67,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         Assert.True(blockedConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
         amqConnection.HandleConnectionUnblocked();
         Assert.True(unblockedConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
-        provider.Dispose();
+        await provider.DisposeAsync();
     }
 
     public class TestBlockedListener : IBlockedListener

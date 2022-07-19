@@ -98,7 +98,7 @@ public class CloudFoundryHostBuilderExtensionsTest
             .ConfigureWebHost(_testServerWithRouting)
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-        var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
+        using var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
 
         var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
         Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
@@ -115,7 +115,7 @@ public class CloudFoundryHostBuilderExtensionsTest
             .ConfigureWebHost(_testServerWithRouting)
             .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
-        var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
+        using var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
 
         var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
         Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
