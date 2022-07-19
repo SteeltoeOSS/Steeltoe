@@ -1,10 +1,10 @@
-pr:
-  branches:
-    include:
-    - main
-
 # https://github.com/MicrosoftDocs/azure-devops-docs/issues/4206
 trigger: none
+
+#pr:
+#  branches:
+#    include:
+#    - main
 
 jobs:
 - job: Hello_World
