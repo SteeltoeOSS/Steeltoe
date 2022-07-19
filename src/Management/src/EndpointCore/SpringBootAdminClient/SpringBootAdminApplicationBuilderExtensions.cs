@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [Obsolete("This extension will be removed in a future release, please use SpringBootAdminClientHostedService instead")]
 public static class SpringBootAdminApplicationBuilderExtensions
 {
-    private const int ConnectionTimeoutMs = 100000;
+    private const int _connectionTimeoutMs = 100000;
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
@@ -46,7 +46,7 @@ public static class SpringBootAdminApplicationBuilderExtensions
         var managementOptions = new ManagementEndpointOptions(configuration);
         var healthOptions = new HealthEndpointOptions(configuration);
         var basePath = options.BasePath.TrimEnd('/');
-        httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, ConnectionTimeoutMs);
+        httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, _connectionTimeoutMs);
 
         var app = new Application
         {
@@ -64,14 +64,24 @@ public static class SpringBootAdminApplicationBuilderExtensions
         {
             logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
 
-            var result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
-            if (result.IsSuccessStatusCode)
+            HttpResponseMessage result = null;
+            try
+            {
+                result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                logger?.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
+            }
+
+            if (result is { IsSuccessStatusCode: true })
             {
                 RegistrationResult = result.Content.ReadFromJsonAsync<RegistrationResult>().GetAwaiter().GetResult();
             }
             else
             {
-                logger.LogError($"Error registering with SpringBootAdmin {result}");
+                var errorResponse = result != null ? result.Content.ReadAsStringAsync().Result : string.Empty;
+                logger?.LogError("Error registering with SpringBootAdmin: {Result} \n {Message}", result, errorResponse);
             }
         });
 

@@ -22,17 +22,17 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     private readonly ManagementEndpointOptions _managementOptions;
     private readonly HealthEndpointOptions _healthOptions;
     private readonly HttpClient _httpClient;
-    private readonly ILogger _logger;
+    private readonly ILogger<SpringBootAdminClientHostedService> _logger;
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger logger = null)
+    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
     {
         _options = options;
         _managementOptions = managementOptions;
         _healthOptions = healthOptions;
         _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
-        _logger = logger ?? NullLogger.Instance;
+        _logger = logger ?? NullLogger<SpringBootAdminClientHostedService>.Instance;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -50,14 +50,25 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         app.Metadata.Merge(_options.Metadata);
 
         _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMs);
-        var result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app);
-        if (result.IsSuccessStatusCode)
+
+        HttpResponseMessage result = null;
+        try
+        {
+            result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app, cancellationToken: cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error connecting to SpringBootAdmin: {Message}", exception.Message);
+        }
+
+        if (result is { IsSuccessStatusCode: true })
         {
             RegistrationResult = await result.Content.ReadFromJsonAsync<RegistrationResult>();
         }
         else
         {
-            _logger.LogError($"Error registering with SpringBootAdmin {result}");
+            var errorResponse = result != null ? await result.Content.ReadAsStringAsync() : string.Empty;
+            _logger.LogError("Error registering with SpringBootAdmin: {Message} \n {Response} ", result?.ToString(), errorResponse);
         }
     }
 
