@@ -1,0 +1,16 @@
+pr:
+  branches:
+    include:
+    - main
+
+# https://github.com/MicrosoftDocs/azure-devops-docs/issues/4206
+trigger: none
+
+jobs:
+- job: Hello_World
+  pool:
+    vmImage: windows-latest
+  steps:
+  - pwsh: |
+      Write-Host "Hello world"
+    displayName: Write message
